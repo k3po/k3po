@@ -7,7 +7,7 @@
   "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 <module name="Checker">
 <!--
-  <module name="com.kaazing.build.checkstyle.SuppressionFilter">
+  <module name="org.kaazing.build.checkstyle.SuppressionFilter">
     <property name="pattern" value="(test[^/]*/.*|LocalTimeProtocol|LinkedTransferQueue|Version|jzlib/.*|com/sun/nio/sctp/.*)\.java" />
   </module>
 -->
@@ -31,7 +31,7 @@
   </module>
   <!-- Force svn:eol-style native line separator -->
 <!-- Disabled for now because Eclipse (m2e) chokes on it due to shipping with an earlier version of CheckStyle
-  <module name="com.kaazing.build.checks.NativeEndOfLineCheck"/>
+  <module name="org.kaazing.build.checks.NativeEndOfLineCheck"/>
 -->
   <!-- Trailing whitespace -->
   <module name="RegexpSingleline">

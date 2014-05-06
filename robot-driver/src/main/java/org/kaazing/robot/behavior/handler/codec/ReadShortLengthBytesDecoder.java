@@ -1,0 +1,22 @@
+/**
+ * Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
+ */
+
+package org.kaazing.robot.behavior.handler.codec;
+
+import org.jboss.netty.buffer.ChannelBuffer;
+
+import org.kaazing.robot.lang.el.ExpressionContext;
+
+public class ReadShortLengthBytesDecoder extends ReadFixedLengthBytesDecoder<Short> {
+
+    public ReadShortLengthBytesDecoder(ExpressionContext environment, String captureName) {
+        super(Short.SIZE / Byte.SIZE, environment, captureName);
+    }
+
+    // Read the data into a Short
+    @Override
+    public Short readBuffer(ChannelBuffer buffer) {
+        return buffer.readShort();
+    }
+}
