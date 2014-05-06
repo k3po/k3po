@@ -301,7 +301,7 @@ public class V2HttpRobotIT {
 
     }
 
-    private String SCRIPT_PATH = "src/test/scripts/com/kaazing/robot/http/";
+    private String SCRIPT_PATH = "src/test/scripts/org/kaazing/robot/http/";
 
     private String combineScripts(String... scriptNames) throws IOException {
         StringBuilder sb = new StringBuilder();
