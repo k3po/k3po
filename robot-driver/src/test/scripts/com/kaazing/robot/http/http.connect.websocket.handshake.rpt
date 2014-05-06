@@ -1,0 +1,29 @@
+#
+# Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
+#
+
+connect http://localhost:8001/echo
+connected
+write method "GET"
+write header "Upgrade" "websocket" 
+write header "Connection" "Upgrade" 
+write header "Host" "localhost:8001" 
+write header "Origin" "http://localhost:8001" 
+write header "Sec-WebSocket-Key" "uoH83mU2xzVTb+Gw6YWVJg==" 
+write header "Sec-WebSocket-Version" "13" 
+close request
+read status "101" "Web Socket Protocol Handshake"
+read header "Connection" "Upgrade"
+read header "Date" "Tue, 15 Apr 2014 01:13:18 GMT"
+read header "Sec-WebSocket-Accept" "TXCKJSpylVJ7v9ZGLGbt58vypzE="
+read header "Server" "Kaazing Gateway"
+read header "Upgrade" "websocket"
+close response
+
+# Request WS Connection Close
+write [0x88 0x02 0x03 0xE8] 
+
+# Response WS Connection Close
+read [0x88 0x02 0x03 0xE8]
+
+closed

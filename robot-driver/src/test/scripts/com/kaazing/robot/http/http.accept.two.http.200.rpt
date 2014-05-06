@@ -1,0 +1,25 @@
+#
+# Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
+#
+
+accept http://localhost:8000/path1
+accepted
+connected
+read method "GET"
+read header "some" "header" 
+close request
+write header "some" "header"
+write content-length
+write "content"
+close response
+
+accept http://localhost:8000/path2
+accepted
+connected
+read method "GET"
+read header "some" "header" 
+close request
+write header "some" "header"
+write content-length
+write "content"
+close response
