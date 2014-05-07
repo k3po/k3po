@@ -54,6 +54,7 @@
         <module>robot-maven-plugin</module>
         <module>robot-control</module>
         <module>robot-junit</module>
+        <module>robot-all</module>
     </modules>
 
     <dependencies>
