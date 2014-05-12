@@ -17,7 +17,7 @@ public class CloseHandler extends AbstractCommandHandler {
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
 
-        LOGGER.info("closing channel");
+        LOGGER.debug("closing channel");
         ChannelFuture handlerFuture = getHandlerFuture();
         Channels.close(ctx, handlerFuture);
     }

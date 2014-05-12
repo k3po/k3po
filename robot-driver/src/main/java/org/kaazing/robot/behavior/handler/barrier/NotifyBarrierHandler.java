@@ -41,7 +41,7 @@ public class NotifyBarrierHandler extends AbstractBarrierHandler {
                 @Override
                 public void operationComplete(final ChannelFuture f) throws Exception {
                     if (f.isSuccess()) {
-                        LOGGER.info("Notifying barrier");
+                        LOGGER.debug("Notifying barrier");
                         // We only want to set barrier future when the pipeline is success. Otherwise it could cause other
                         // streams
                         // to "fail" incorrectly.

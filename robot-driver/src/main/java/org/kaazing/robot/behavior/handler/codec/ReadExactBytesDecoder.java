@@ -24,7 +24,7 @@ public class ReadExactBytesDecoder extends MessageDecoder {
     protected Object decodeBuffer(ChannelBuffer buffer) throws Exception {
 
         if (buffer.readableBytes() < expected.readableBytes()) {
-            LOGGER.info("not enough bytes are ready to read. Expecting " + expected.readableBytes()
+            LOGGER.debug("not enough bytes are ready to read. Expecting " + expected.readableBytes()
                     + " bytes. Read to read is " + buffer.readableBytes());
             return null;
         }

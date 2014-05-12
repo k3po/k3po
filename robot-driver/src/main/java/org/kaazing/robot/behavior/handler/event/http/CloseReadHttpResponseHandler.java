@@ -28,7 +28,7 @@ public class CloseReadHttpResponseHandler extends AbstractEventHandler {
         Object message = e.getMessage();
         // consume all message until it is the end of http message buffer
         if (message == HttpUtils.END_OF_HTTP_MESSAGE_BUFFER) {
-            LOGGER.info("close read http response");
+            LOGGER.debug("close read http response");
             ChannelFuture handlerFuture = getHandlerFuture();
             assert handlerFuture != null;
             handlerFuture.setSuccess();

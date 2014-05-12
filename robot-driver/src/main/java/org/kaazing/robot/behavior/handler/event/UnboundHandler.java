@@ -23,7 +23,7 @@ public class UnboundHandler extends AbstractEventHandler {
     @Override
     public void channelUnbound(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
 
-        LOGGER.info("channel unbound");
+        LOGGER.debug("channel unbound");
         ChannelFuture handlerFuture = getHandlerFuture();
         assert handlerFuture != null;
         handlerFuture.setSuccess();

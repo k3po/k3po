@@ -119,7 +119,7 @@ public class RobotServer {
 
             @Override
             public void childChannelOpen(ChannelHandlerContext ctx, ChildChannelStateEvent e) throws Exception {
-                LOGGER.info("Control Channel Opened");
+                LOGGER.debug("Control Channel Opened");
                 Channel childChannel = e.getChildChannel();
                 channelGroup.add(childChannel);
                 final ControlServerHandler controller =

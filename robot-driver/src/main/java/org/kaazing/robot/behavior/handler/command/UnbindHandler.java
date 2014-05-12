@@ -17,7 +17,7 @@ public class UnbindHandler extends AbstractCommandHandler {
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
 
-        LOGGER.info("Unbinding channel");
+        LOGGER.debug("Unbinding channel");
         ChannelFuture handlerFuture = getHandlerFuture();
         Channels.unbind(ctx, handlerFuture);
     }

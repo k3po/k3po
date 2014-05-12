@@ -182,7 +182,7 @@ public class Robot {
         for (final ClientBootstrap client : configuration.getClientBootstraps()) {
 
             if (infoLogEnabled) {
-                LOGGER.info("Connecting to remote address " + client.getOption("remoteAddress"));
+                LOGGER.debug("Connecting to remote address " + client.getOption("remoteAddress"));
             }
 
             ChannelFuture connectFuture = client.connect();
@@ -230,9 +230,7 @@ public class Robot {
             releaseExternalResources();
         } catch (Exception e) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.info("Caught exception releasing resources", e);
-            } else {
-                LOGGER.info("Caught exception releasing resources: " + e);
+                LOGGER.debug("Caught exception releasing resources", e);
             }
             return false;
         }
@@ -342,7 +340,7 @@ public class Robot {
                         }
                     } else {
                         // Then we just get the empty script
-                        LOGGER.info("Abort received but script not prepared");
+                        LOGGER.debug("Abort received but script not prepared");
                         finishedFuture.setObservedScript("");
                     }
                 }
@@ -420,8 +418,8 @@ public class Robot {
         /* Accept's ... Robot acting as a server */
         for (final ServerBootstrap server : configuration.getServerBootstraps()) {
 
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("Binding to address " + server.getOption("localAddress"));
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Binding to address " + server.getOption("localAddress"));
             }
 
             final LocationInfo location = (LocationInfo) server.getOption("locationInfo");

@@ -35,13 +35,13 @@ public class RobotServerIT {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(RobotServerIT.class);
 
-    @Rule
-    public TestWatcher watcher = new TestWatcher() {
-        @Override
-        protected void failed(Throwable e, Description description) {
-            LOGGER.info("Failed test: " + description.getMethodName() + " Cause: " + e);
-        }
-    };
+//    @Rule
+//    public TestWatcher watcher = new TestWatcher() {
+//        @Override
+//        protected void failed(Throwable e, Description description) {
+//            LOGGER.info("Failed test: " + description.getMethodName() + " Cause: " + e);
+//        }
+//    };
 
     private RobotServer robot;
     private Socket control;
@@ -90,6 +90,8 @@ public class RobotServerIT {
         }
 
         server.close();
+
+        Thread.sleep(1000);
 
     }
 

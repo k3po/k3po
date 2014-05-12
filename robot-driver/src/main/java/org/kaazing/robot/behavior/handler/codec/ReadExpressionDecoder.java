@@ -33,8 +33,8 @@ public class ReadExpressionDecoder extends MessageDecoder {
         byte[] expected = (byte[]) expression.getValue(environment);
 
         if (buffer.readableBytes() < expected.length) {
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("Not enough bytes ready to read. expecting " + expected.length + " ready to read "
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Not enough bytes ready to read. expecting " + expected.length + " ready to read "
                         + buffer.readableBytes());
             }
             return null;

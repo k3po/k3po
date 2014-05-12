@@ -76,7 +76,7 @@ public class AwaitBarrierDownstreamHandler extends AbstractBarrierHandler implem
             public void operationComplete(ChannelFuture future) throws Exception {
                 if (future.isSuccess()) {
                     synchronized (ctx) {
-                        LOGGER.info("Barrier has been notified. Releasing queued downstream events");
+                        LOGGER.debug("Barrier has been notified. Releasing queued downstream events");
                         Queue<ChannelEvent> pending = queue;
                         queue = null;
                         for (ChannelEvent evt : pending) {
@@ -108,8 +108,8 @@ public class AwaitBarrierDownstreamHandler extends AbstractBarrierHandler implem
 
         } else if (!getHandlerFuture().isDone()) {
             // while handler future not complete, queue channel events
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("Awaiting on barrier notification. Queueing downstream event " + evt);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Awaiting on barrier notification. Queueing downstream event " + evt);
             }
             queue.add(evt);
             return;

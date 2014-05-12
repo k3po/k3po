@@ -23,7 +23,7 @@ public class EndOfWriteHttpHeadersHandler extends AbstractCommandHandler {
 
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
-        LOGGER.info("Invoking end of write http headers");
+        LOGGER.debug("Invoking end of write http headers");
         Channels.write(ctx.getChannel(), httpMessage);
         getHandlerFuture().setSuccess();
     }

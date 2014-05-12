@@ -23,7 +23,7 @@ public class ConnectedHandler extends AbstractEventHandler {
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
 
-        LOGGER.info("channel connected");
+        LOGGER.debug("channel connected");
         ChannelFuture handlerFuture = getHandlerFuture();
         assert handlerFuture != null;
         handlerFuture.setSuccess();
