@@ -13,6 +13,7 @@ import java.net.URI;
 import java.util.concurrent.Callable;
 
 import org.kaazing.robot.control.RobotControl;
+import org.kaazing.robot.control.RobotControlFactories;
 import org.kaazing.robot.control.RobotControlFactory;
 import org.kaazing.robot.control.command.AbortCommand;
 import org.kaazing.robot.control.command.PrepareCommand;
@@ -50,7 +51,7 @@ final class ScriptRunner implements Callable<String> {
         // TODO: make this port number a constant? Configurable?
         URI controlURI = URI.create("tcp://localhost:11642");
 
-        this.controllerFactory = new RobotControlFactory();
+        this.controllerFactory = RobotControlFactories.createRobotServerFactory();
         this.controller = controllerFactory.newClient(controlURI);
         this.name = name;
         this.expected = expected;

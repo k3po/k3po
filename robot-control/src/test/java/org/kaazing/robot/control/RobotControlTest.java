@@ -56,7 +56,7 @@ public class RobotControlTest {
         input = mockery.mock(InputStream.class);
         output = mockery.mock(OutputStream.class);
 
-        control = new RobotControl(new URL(null, "test://internal", new URLStreamHandler() {
+        control = new DefaultRobotControl(new URL(null, "test://internal", new URLStreamHandler() {
             @Override
             protected URLConnection openConnection(URL location) throws IOException {
                 return new URLConnection(location) {

@@ -15,6 +15,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 
 import org.kaazing.maven.plugins.logging.MavenLoggerFactory;
 import org.kaazing.robot.RobotServer;
+import org.kaazing.robot.RobotServerFactories;
 
 /**
  * Start the Robot
@@ -45,7 +46,7 @@ public class RobotStartMojo extends AbstractRobotMojo {
     protected void executeImpl() throws MojoExecutionException {
 
         try {
-            RobotServer server = new RobotServer();
+            RobotServer server = RobotServerFactories.createRobotServerFactory().createRobotServer();
             server.setAccept(connectURI);
             server.setVerbose(verbose);
 
@@ -63,7 +64,7 @@ public class RobotStartMojo extends AbstractRobotMojo {
             long checkpoint = currentTimeMillis();
             server.start();
             float duration = (currentTimeMillis() - checkpoint) / 1000.0f;
-            getLog().info(format("Robot [%08x] started in %.3fsec", identityHashCode(server), duration));
+            getLog().debug(format("Robot [%08x] started in %.3fsec", identityHashCode(server), duration));
 
             setServer(server);
 

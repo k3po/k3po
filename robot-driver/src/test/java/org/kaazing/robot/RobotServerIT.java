@@ -28,8 +28,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
 
 public class RobotServerIT {
 
@@ -66,7 +64,7 @@ public class RobotServerIT {
 
     @Before
     public void setupRobot() throws Exception {
-        robot = new RobotServer();
+        robot = new DefaultRobotServer();
         robot.setAccept(URI.create("tcp://localhost:61234"));
         robot.start();
         control = new Socket();
