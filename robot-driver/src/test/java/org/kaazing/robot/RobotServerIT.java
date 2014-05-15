@@ -64,8 +64,7 @@ public class RobotServerIT {
 
     @Before
     public void setupRobot() throws Exception {
-        robot = new DefaultRobotServer();
-        robot.setAccept(URI.create("tcp://localhost:61234"));
+        robot = new TcpControlledRobotServer(URI.create("tcp://localhost:61234"), false);
         robot.start();
         control = new Socket();
         control.connect(new InetSocketAddress("localhost", 61234));

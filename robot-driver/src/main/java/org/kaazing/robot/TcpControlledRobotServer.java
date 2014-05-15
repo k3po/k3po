@@ -40,31 +40,22 @@ import org.kaazing.robot.control.handler.ControlServerHandler;
 import org.kaazing.robot.lang.parser.ScriptParserImpl;
 import org.kaazing.robot.netty.bootstrap.SingletonBootstrapFactory;
 
-public class DefaultRobotServer implements RobotServer {
+public class TcpControlledRobotServer implements RobotServer {
 
     private final ChannelGroup channelGroup;
     private final List<ControlServerHandler> controlHandlers;
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(DefaultRobotServer.class);
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(TcpControlledRobotServer.class);
 
     private ServerBootstrap server;
-    private URI acceptURI;
+    private final URI acceptURI;
     private Channel serverChannel;
+    private final boolean verbose;
 
-    private boolean verbose;
-
-    protected DefaultRobotServer() {
+    protected TcpControlledRobotServer(URI acceptURI, boolean verbose) {
+        this.acceptURI = acceptURI;
+        this.verbose = verbose;
         channelGroup = new DefaultChannelGroup("robot-server");
         controlHandlers = new CopyOnWriteArrayList<ControlServerHandler>();
-    }
-
-    @Override
-    public void setAccept(URI acceptURI) {
-        this.acceptURI = acceptURI;
-    }
-
-    @Override
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
     }
 
     @Override

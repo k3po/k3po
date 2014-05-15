@@ -51,7 +51,7 @@ final class ScriptRunner implements Callable<String> {
         // TODO: make this port number a constant? Configurable?
         URI controlURI = URI.create("tcp://localhost:11642");
 
-        this.controllerFactory = RobotControlFactories.createRobotServerFactory();
+        this.controllerFactory = RobotControlFactories.createRobotControlFactory();
         this.controller = controllerFactory.newClient(controlURI);
         this.name = name;
         this.expected = expected;

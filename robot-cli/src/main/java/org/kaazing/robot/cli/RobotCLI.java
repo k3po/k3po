@@ -20,17 +20,16 @@ public final class RobotCLI {
             // interactive
             Interpreter interpreter = new InteractiveInterpreter();
             AbstractRobotController controller = new InProcessRobotController(interpreter,
-                    RobotControlFactories.createRobotServerFactory(),
+                    RobotControlFactories.createRobotControlFactory(),
                     RobotServerFactories.createRobotServerFactory());
             interpreter.run(controller);
         } else {
             // non interactive
             Interpreter interpreter = new NonInteractiveInterpreter(args);
+            // may use FileDrivenRobotController when completed, this will save temporary data
             AbstractRobotController controller = new InProcessRobotController(interpreter,
-                    RobotControlFactories.createRobotServerFactory(),
+                    RobotControlFactories.createRobotControlFactory(),
                     RobotServerFactories.createRobotServerFactory());
-            // TODO use FileDrivenRobotController when completed
-//            RobotController controller = new FileDrivenRobotController(interpreter);
             interpreter.run(controller);
         }
 

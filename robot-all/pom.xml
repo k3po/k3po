@@ -70,13 +70,6 @@
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>robot-cli</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -88,7 +81,7 @@
                 <configuration>
                     <artifactSet>
                         <includes>
-                            <include>*</include>
+                            <include>org.kaazing:*</include>
                         </includes>
                     </artifactSet>
                     <createDependencyReducedPom>false</createDependencyReducedPom>

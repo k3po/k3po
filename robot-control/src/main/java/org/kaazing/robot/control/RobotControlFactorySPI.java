@@ -10,5 +10,9 @@ public abstract class RobotControlFactorySPI implements RobotControlFactory {
 
     public abstract RobotControl newClient(URI controlURI) throws Exception;
 
-    public abstract String getName();
+    /**
+     * Returns the name of the scheme provided by factories using this
+     * service provider.
+     */
+    public abstract String getSchemeName();
 }

@@ -15,6 +15,7 @@ import org.kaazing.robot.control.event.PreparedEvent;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -28,9 +29,14 @@ public abstract class AbstractRobotController implements RobotController {
         this.interpreter = interpreter;
     }
 
+    abstract RobotControl getRobotClient() throws Exception;
+
     @Override
     public void test(File scriptFile, Integer timeout) throws Exception {
-        RobotControl client = getRobotClient();
+        test(getRobotClient(), scriptFile, timeout);
+    }
+
+    public void test(RobotControl client, File scriptFile, Integer timeout) throws Exception {
         try {
             // prepare
             PrepareCommand prepareCommand = new PrepareCommand();
@@ -46,7 +52,7 @@ public abstract class AbstractRobotController implements RobotController {
                 throw new Exception("Unexpected event: " + event);
             }
 
-            // start
+            // startRobotServer
             StartCommand startCommand = new StartCommand();
             startCommand.setName(testName);
             client.writeCommand(startCommand);
@@ -62,7 +68,7 @@ public abstract class AbstractRobotController implements RobotController {
                     writeErrorResultToFile(testName, "Failed to start test");
                     throw new Exception("Test Error: Failed to start test");
                 default:
-                    throw new Exception("Failed to start script, Unexpected event: " + event);
+                    throw new Exception("Failed to startRobotServer script, Unexpected event: " + event);
             }
 
             try {

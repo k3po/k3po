@@ -46,9 +46,7 @@ public class RobotStartMojo extends AbstractRobotMojo {
     protected void executeImpl() throws MojoExecutionException {
 
         try {
-            RobotServer server = RobotServerFactories.createRobotServerFactory().createRobotServer();
-            server.setAccept(connectURI);
-            server.setVerbose(verbose);
+            RobotServer server = RobotServerFactories.createRobotServerFactory().createRobotServer(connectURI, verbose);
 
             // TODO: detect Maven version to determine logger factory
             //         3.0 -> MavenLoggerFactory

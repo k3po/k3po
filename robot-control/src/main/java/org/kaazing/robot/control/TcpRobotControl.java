@@ -37,7 +37,7 @@ import org.kaazing.robot.control.event.FinishedEvent;
 import org.kaazing.robot.control.event.PreparedEvent;
 import org.kaazing.robot.control.event.StartedEvent;
 
-public class DefaultRobotControl implements RobotControl {
+public class TcpRobotControl implements RobotControl {
 
     private static final Pattern HEADER_PATTERN = Pattern.compile("([a-z\\-]+):([^\n]+)");
     private static final Charset UTF_8 = Charset.forName("UTF-8");
@@ -45,7 +45,7 @@ public class DefaultRobotControl implements RobotControl {
     private final URL location;
     private URLConnection connection;
 
-    public DefaultRobotControl(URL location) {
+    public TcpRobotControl(URL location) {
         this.location = location;
     }
 

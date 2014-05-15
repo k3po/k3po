@@ -4,6 +4,8 @@
 
 package org.kaazing.robot.cli;
 
+import jline.console.ConsoleReader;
+
 import java.io.File;
 
 public class NonInteractiveInterpreter extends AbstractInterpreter {
@@ -16,8 +18,8 @@ public class NonInteractiveInterpreter extends AbstractInterpreter {
     }
 
     private enum SupportedCommand {
-        //        START(Command.START),
-//        STOP(Command.STOP),
+        START(Command.START),
+        //        STOP(Command.STOP),
         TEST(Command.TEST),
         HELP(Command.HELP),
         SET_OUTPUT_DIR(Command.SET_OUTPUT_DIR);
@@ -38,16 +40,15 @@ public class NonInteractiveInterpreter extends AbstractInterpreter {
             }
             throw new IllegalArgumentException("No Supported Command found");
         }
-
     }
 
     /**
      * TODO When running the CLI in non interactive mode, it should be possible to launch the robot and leave it running
-     * The FileDrivenRobotController Needs to be completed before this is done, once that is finished this class should
-     * implement more commands, such as start, stop, and test will not start and stop the robot implicitly
+     * With out blocking the process, a temp file will save the pid so it can be stopped in the future via the Stop
+     * Command
      */
     @Override
-    public void run(AbstractRobotController robotController) {
+    public void run(RobotController robotController) {
         try {
             if (args.length < 1) {
                 throw new BadCommandException();
@@ -62,25 +63,32 @@ public class NonInteractiveInterpreter extends AbstractInterpreter {
                     case HELP:
                         printHelp();
                         break;
-//                    case START:
-//                        if (args.length == 2) {
+                    case START:
+                        if (args.length == 2) {
 //                            final String uri = args[1];
-//                            robotController.start(URI.create(uri));
-//                        } else if (args.length == 1) {
-//                            robotController.start();
-//                        } else {
-//                            throw new BadCommandException();
-//                        }
-//                        break;
+//                            URI uri = URI.create(uri)
+//                            robotController.startRobotServer();
+                            throw new Exception("As of now the non interactive cli does not support " +
+                                    "launching the robot on a specified url");
+                        } else if (args.length == 1) {
+                            robotController.startRobotServer();
+                            ConsoleReader reader = new ConsoleReader();
+                            reader.setPrompt("Hit enter to kill robot>");
+                            reader.readLine();
+                            robotController.stopRobotServer();
+                        } else {
+                            throw new BadCommandException();
+                        }
+                        break;
 //                    case STOP:
-//                        robotController.stop();
+//                        robotController.stopRobotServer();
 //                        break;
                     case TEST:
                         if (args.length == 3) {
                             final File file = new File(args[1]);
-                            robotController.start();
+                            robotController.startRobotServer();
                             robotController.test(file, Integer.valueOf(args[2]));
-                            robotController.stop();
+                            robotController.stopRobotServer();
                         } else {
                             throw new BadCommandException();
                         }

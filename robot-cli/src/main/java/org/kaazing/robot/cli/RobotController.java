@@ -10,13 +10,11 @@ import java.io.File;
 import java.net.URI;
 
 public interface RobotController {
+    void startRobotServer() throws Exception;
+
+    void stopRobotServer() throws Exception;
+
     void test(File scriptFile, Integer timeout) throws Exception;
 
-    void start() throws Exception;
-
-    void start(URI uri) throws Exception;
-
-    void stop() throws Exception;
-
-    RobotControl getRobotClient() throws Exception;
+    void setURI(URI uri);
 }

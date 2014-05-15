@@ -4,50 +4,53 @@
 
 package org.kaazing.robot;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ServiceLoader;
+import java.net.URI;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
-public final class RobotServerFactories {
+import static java.lang.String.format;
 
-    private RobotServerFactories() {
-
-    }
-
-    private static final Map<String, RobotServerFactorySPI> factories;
-
-    static {
-        Class<RobotServerFactorySPI> clazz = RobotServerFactorySPI.class;
-        ServiceLoader<RobotServerFactorySPI> loader = ServiceLoader.load(clazz);
-        factories = new HashMap<String, RobotServerFactorySPI>();
-
-        for (RobotServerFactorySPI factory : loader) {
-            String name = factory.getName();
-
-            if (name != null) {
-                factories.put(name, factory);
-            }
-        }
-    }
+public class RobotServerFactories {
 
     public static RobotServerFactory createRobotServerFactory() {
-        return new DefaultRobotServerFactory();
+        return createRobotServerFactory(Thread.currentThread().getContextClassLoader());
+
     }
 
-    public static RobotServerFactory createRobotServerFactory(String name) {
-        RobotServerFactory result;
-        if ("Default".equalsIgnoreCase("name")) {
-            result = new DefaultRobotServerFactory();
-        } else {
-            result = factories.get(name);
+    public static RobotServerFactory createRobotServerFactory(ClassLoader classLoader) {
+        Class<RobotServerFactorySPI> clazz = RobotServerFactorySPI.class;
+        ServiceLoader<RobotServerFactorySPI> loader = (classLoader != null) ?
+                ServiceLoader.load(clazz, classLoader) : ServiceLoader.load(clazz);
+        ConcurrentMap<String, RobotServerFactorySPI> factories = new ConcurrentHashMap<>();
+        for (RobotServerFactorySPI factory : loader) {
+            // just return first one, maybe in the future we will look for them by a parameter or name
+            factories.putIfAbsent(factory.getSchemeName(), factory);
         }
-        return result;
+        return new RobotServerFactoryImpl(factories);
     }
 
-    private static final class DefaultRobotServerFactory implements RobotServerFactory {
+    private static class RobotServerFactoryImpl implements RobotServerFactory {
 
-        public RobotServer createRobotServer() {
-            return new DefaultRobotServer();
+        private final Map<String, RobotServerFactorySPI> factories;
+
+        public RobotServerFactoryImpl(Map<String, RobotServerFactorySPI> factories) {
+            this.factories = factories;
+        }
+
+        @Override
+        public RobotServer createRobotServer(URI uri, boolean verbose) {
+            final String schemeName = uri.getScheme();
+            if (schemeName == null) {
+                throw new NullPointerException("scheme");
+            }
+
+            RobotServerFactorySPI factory = factories.get(schemeName);
+            if(factory == null){
+                throw new IllegalArgumentException(format("Unable to load scheme '%s': No appropriate Robot Server" +
+                        " factory found", schemeName));
+            }
+            return factory.createRobotServer(uri, verbose);
         }
     }
 }

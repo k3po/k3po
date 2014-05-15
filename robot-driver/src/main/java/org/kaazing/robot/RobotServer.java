@@ -8,10 +8,6 @@ import java.net.URI;
 import java.util.concurrent.TimeoutException;
 
 public interface RobotServer {
-    void setAccept(URI acceptURI);
-
-    void setVerbose(boolean verbose);
-
     void start() throws Exception;
 
     void start(String format) throws Exception;

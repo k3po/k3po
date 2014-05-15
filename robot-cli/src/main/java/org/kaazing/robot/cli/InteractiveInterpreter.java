@@ -80,9 +80,8 @@ public class InteractiveInterpreter extends AbstractInterpreter {
 
 
     @Override
-    public void run(AbstractRobotController robotController) {
+    public void run(RobotController robotController) {
         try {
-            // start robot
             reader.clearScreen();
             reader.addCompleter(new AggregateCompleter(completors));
             reader.setPrompt("\u001B[1mRobot$ \u001B[0m");
@@ -111,15 +110,16 @@ public class InteractiveInterpreter extends AbstractInterpreter {
                             case START:
                                 if (tokens.length == 2) {
                                     final String uri = tokens[1];
-                                    robotController.start(URI.create(uri));
+                                    robotController.setURI(URI.create(uri));
+                                    robotController.startRobotServer();
                                 } else if (tokens.length == 1) {
-                                    robotController.start();
+                                    robotController.startRobotServer();
                                 } else {
                                     throw new Exception("Invalid command");
                                 }
                                 break;
                             case STOP:
-                                robotController.stop();
+                                robotController.stopRobotServer();
                                 break;
                             case TEST:
                                 if (tokens.length == 3) {

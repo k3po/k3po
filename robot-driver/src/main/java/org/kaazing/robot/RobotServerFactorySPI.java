@@ -4,10 +4,17 @@
 
 package org.kaazing.robot;
 
-public abstract class RobotServerFactorySPI implements RobotServerFactory {
-    public abstract String getName();
+import java.net.URI;
 
+public abstract class RobotServerFactorySPI implements RobotServerFactory {
     @Override
-    public abstract RobotServer createRobotServer();
+    public abstract RobotServer createRobotServer(URI uri, boolean verbose);
+
+    /**
+     * Returns the name of the scheme provided by factories using this
+     * service provider.
+     */
+    public abstract String getSchemeName();
+
 
 }

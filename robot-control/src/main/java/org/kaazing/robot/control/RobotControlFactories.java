@@ -9,56 +9,49 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import static java.lang.String.format;
 
 public final class RobotControlFactories {
 
-    private RobotControlFactories() {
-
+    public static RobotControlFactory createRobotControlFactory() {
+        return createRobotControlFactory(Thread.currentThread().getContextClassLoader());
     }
 
-    private static final Map<String, RobotControlFactorySPI> factories;
-
-    static {
+    public static RobotControlFactory createRobotControlFactory(ClassLoader classLoader) {
         Class<RobotControlFactorySPI> clazz = RobotControlFactorySPI.class;
-        ServiceLoader<RobotControlFactorySPI> loader = ServiceLoader.load(clazz);
-        factories = new HashMap<String, RobotControlFactorySPI>();
-
+        ServiceLoader<RobotControlFactorySPI> loader = (classLoader != null) ?
+                ServiceLoader.load(clazz, classLoader) : ServiceLoader.load(clazz);
+        ConcurrentMap<String, RobotControlFactorySPI> factories = new ConcurrentHashMap<>();
         for (RobotControlFactorySPI factory : loader) {
-            String name = factory.getName();
-
-            if (name != null) {
-                factories.put(name, factory);
-            }
+            // just return first one, maybe in the future we will look for them by a parameter or name
+            factories.putIfAbsent(factory.getSchemeName(), factory);
         }
+        return new RobotServerFactoryImpl(factories);
     }
 
-    public static RobotControlFactory createRobotServerFactory() {
-        return new DefaultRobotControlFactory();
-    }
+    private static class RobotServerFactoryImpl implements RobotControlFactory {
+        private final Map<String,RobotControlFactorySPI> factories;
 
-    public static RobotControlFactory createRobotServerFactory(String name) {
-        RobotControlFactory result;
-        if ("Default".equalsIgnoreCase(name)) {
-            result = new DefaultRobotControlFactory();
-        } else {
-            result = factories.get(name);
+        public RobotServerFactoryImpl(Map<String, RobotControlFactorySPI> factories) {
+            this.factories = factories;
         }
-        return result;
-    }
-
-    private static class DefaultRobotControlFactory implements RobotControlFactory {
 
         @Override
         public RobotControl newClient(URI controlURI) throws Exception {
-
-            String scheme = controlURI.getScheme();
-            if (!"tcp".equals(scheme)) {
-                throw new IllegalArgumentException("Unrecognized scheme: " + scheme);
+            final String schemeName = controlURI.getScheme();
+            if (schemeName == null) {
+                throw new NullPointerException("scheme");
             }
 
-            URL location = new URL(null, controlURI.toASCIIString(), new TcpURLStreamHandler());
-
-            return new DefaultRobotControl(location);
+            RobotControlFactorySPI factory = factories.get(schemeName);
+            if(factory == null){
+                throw new IllegalArgumentException(format("Unable to load scheme '%s': No appropriate Robot Control " +
+                        "factory found", schemeName));
+            }
+            return factory.newClient(controlURI);
         }
     }
 }

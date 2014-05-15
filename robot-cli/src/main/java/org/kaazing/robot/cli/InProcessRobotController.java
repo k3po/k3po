@@ -15,8 +15,8 @@ public class InProcessRobotController extends AbstractRobotController {
 
     private final RobotServerFactory robotServerFactory;
     private RobotServer server;
-    private URI uri = URI.create("tcp://localhost:11642");
     private final RobotControlFactory robotControlFactory;
+    private URI uri = URI.create("tcp://localhost:11642");
 
     public InProcessRobotController(Interpreter interpreter, RobotControlFactory robotControlFactory,
                                     RobotServerFactory robotServerFactory) {
@@ -26,17 +26,13 @@ public class InProcessRobotController extends AbstractRobotController {
     }
 
     @Override
-    public void start() throws Exception {
+    public void startRobotServer() throws Exception {
         if (server == null) {
-            server = robotServerFactory.createRobotServer();
-            server.setAccept(uri);
-            server.setVerbose(false);
-            server.join();
+            server = robotServerFactory.createRobotServer(uri, false);
             try {
                 interpreter.println("Starting robot");
                 server.start();
                 interpreter.println("Started robot");
-
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new Exception("Robot failed to start");
@@ -47,13 +43,7 @@ public class InProcessRobotController extends AbstractRobotController {
     }
 
     @Override
-    public void start(URI uri) throws Exception {
-        this.uri = uri;
-        start();
-    }
-
-    @Override
-    public void stop() throws Exception {
+    public void stopRobotServer() throws Exception {
         if (server == null) {
             throw new Exception("Robot not running, thus can not be stopped");
         } else {
@@ -69,11 +59,12 @@ public class InProcessRobotController extends AbstractRobotController {
     }
 
     @Override
-    public RobotControl getRobotClient() throws Exception {
-        if (server == null) {
-            interpreter.println("Robot is not running, starting robot");
-            start();
-        }
+    public void setURI(URI uri) {
+        this.uri = uri;
+    }
+
+    @Override
+    RobotControl getRobotClient() throws Exception {
         RobotControl client;
         try {
             client = robotControlFactory.newClient(uri);

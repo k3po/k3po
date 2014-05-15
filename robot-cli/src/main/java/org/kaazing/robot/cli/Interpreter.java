@@ -8,7 +8,7 @@ package org.kaazing.robot.cli;
 
 public interface Interpreter {
 
-    void run(AbstractRobotController robotController);
+    void run(RobotController robotController);
 
     File getOutputDir();
 

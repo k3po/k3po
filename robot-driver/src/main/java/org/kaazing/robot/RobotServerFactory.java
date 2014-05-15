@@ -4,6 +4,8 @@
 
 package org.kaazing.robot;
 
+import java.net.URI;
+
 public interface RobotServerFactory {
-    RobotServer createRobotServer();
+    RobotServer createRobotServer(URI uri, boolean verbose);
 }

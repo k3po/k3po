@@ -4,7 +4,6 @@
 
 package org.kaazing.robot.cli;
 
-import org.kaazing.robot.DefaultRobotServer;
 import org.kaazing.robot.RobotServer;
 import org.kaazing.robot.RobotServerFactory;
 import org.kaazing.robot.control.RobotControl;
@@ -18,17 +17,16 @@ import java.io.PrintWriter;
 import java.net.URI;
 
 /**
- * TODO When running the CLI in non interactive mode, it should be possible to launch the robot and leave it running
- * As Of now we just startup the server before and after a test, this class/implementation needs to be completed before
- * we can do this
+ *  When running the CLI in non interactive mode, it should be possible to launch the robot and leave it running,
+ *  One option is to save state to disk, the other is to require two terminals.  This was the implementation that
+ *  would save state to disk, it is currently not in use though it may be in the future.
  */
 public class FileDrivenRobotController extends AbstractRobotController {
 
-    private static final URI DEFAULT_URI = URI.create("tcp://localhost:11642");
     private final RobotServerFactory robotServerFactory;
     private final RobotControlFactory robotControlFactory;
+    private URI uri = URI.create("tcp://localhost:11642");
     private File robotInfoFile;
-    private URI uri;
     private Boolean running = false;
     private String pid;
 
@@ -40,15 +38,13 @@ public class FileDrivenRobotController extends AbstractRobotController {
     }
 
     @Override
-    public void start() throws Exception {
+    public void startRobotServer() throws Exception {
         loadRobotStatus();
         if (running) {
             throw new Exception("Robot is already running according to " + robotInfoFile + ", will not override file");
         }
-        RobotServer server = robotServerFactory.createRobotServer();
-        server.setAccept(uri);
-        server.setVerbose(false);
-        server.join();
+        this.uri = uri;
+        RobotServer server = robotServerFactory.createRobotServer(uri, false);
         try {
             interpreter.println("Starting robot");
             server.start();
@@ -63,15 +59,7 @@ public class FileDrivenRobotController extends AbstractRobotController {
     }
 
     @Override
-    public void start(URI uri) throws Exception {
-        loadRobotStatus();
-        this.uri = uri;
-        saveRobotStatus();
-        start();
-    }
-
-    @Override
-    public void stop() throws Exception {
+    public void stopRobotServer() throws Exception {
         loadRobotStatus();
 
         running = false;
@@ -79,12 +67,12 @@ public class FileDrivenRobotController extends AbstractRobotController {
     }
 
     @Override
+    public void setURI(URI uri) {
+        this.uri = uri;
+    }
+
+    @Override
     public RobotControl getRobotClient() throws Exception {
-        loadRobotStatus();
-        if (!running) {
-            interpreter.println("Robot is not running, starting robot");
-            start();
-        }
         RobotControl client = null;
         try {
             client = robotControlFactory.newClient(uri);
@@ -105,7 +93,9 @@ public class FileDrivenRobotController extends AbstractRobotController {
         robotInfoFile.createNewFile();
         PrintWriter writer = new PrintWriter(robotInfoFile);
         writer.println("running," + running);
-        writer.println("uri," + uri);
+        if (uri != null) {
+            writer.println("uri," + uri);
+        }
     }
 
     private void loadRobotStatus() throws IOException {
@@ -134,7 +124,7 @@ public class FileDrivenRobotController extends AbstractRobotController {
             br.close();
         } else {
             running = false;
-            uri = DEFAULT_URI;
+            uri = null;
             pid = null;
         }
 
