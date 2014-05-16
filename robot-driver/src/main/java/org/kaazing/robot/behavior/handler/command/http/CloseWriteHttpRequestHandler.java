@@ -22,7 +22,7 @@ public class CloseWriteHttpRequestHandler extends AbstractCommandHandler {
 
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
-        LOGGER.info("Invoking close http write request");
+        LOGGER.debug("Invoking close http write request");
         write(ctx, getHandlerFuture(), END_OF_HTTP_MESSAGE_BUFFER);
     }
 

@@ -26,7 +26,7 @@ public class BindHandler extends AbstractCommandHandler {
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
 
-        LOGGER.info("binding channel");
+        LOGGER.debug("binding channel");
         ChannelFuture handlerFuture = getHandlerFuture();
         bind(ctx, handlerFuture, localAddress);
     }

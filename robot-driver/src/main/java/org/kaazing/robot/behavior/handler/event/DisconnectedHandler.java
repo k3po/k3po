@@ -23,7 +23,7 @@ public class DisconnectedHandler extends AbstractEventHandler {
     @Override
     public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
 
-        LOGGER.info("channel disconnected");
+        LOGGER.debug("channel disconnected");
 
         ChannelFuture handlerFuture = getHandlerFuture();
         assert handlerFuture != null;

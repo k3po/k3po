@@ -97,7 +97,7 @@ public class ReadHandler extends AbstractEventHandler {
             iterator.remove();
         }
 
-        LOGGER.info("Read handler completed");
+        LOGGER.debug("Read handler completed");
 
         // If we get through the list of decoders without an exception we are done.
         handlerFuture.setSuccess();

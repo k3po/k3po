@@ -24,7 +24,7 @@ public class ClosedHandler extends AbstractEventHandler {
     @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
 
-        LOGGER.info("channel closed");
+        LOGGER.debug("channel closed");
         ChannelFuture handlerFuture = getHandlerFuture();
         assert handlerFuture != null;
         handlerFuture.setSuccess();

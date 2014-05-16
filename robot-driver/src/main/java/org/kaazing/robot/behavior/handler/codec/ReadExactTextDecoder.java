@@ -27,8 +27,8 @@ public class ReadExactTextDecoder extends MessageDecoder {
     protected Object decodeBuffer(ChannelBuffer buffer) throws Exception {
 
         if (buffer.readableBytes() < expected.readableBytes()) {
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("not enough bytes are ready to read. Expecting " + expected.readableBytes()
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("not enough bytes are ready to read. Expecting " + expected.readableBytes()
                         + " bytes. Read to read is " + buffer.readableBytes());
             }
             return null;

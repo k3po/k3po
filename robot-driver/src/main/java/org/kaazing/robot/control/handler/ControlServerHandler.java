@@ -34,7 +34,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     public ControlServerHandler(String scriptFormat) {
         this.scriptFormat = scriptFormat;
-        logger.info("Control channel initialized with scriptFormat " + scriptFormat);
+        logger.debug("Control channel initialized with scriptFormat " + scriptFormat);
     }
 
     private final ChannelFuture channelClosedFuture = Channels.future(null);
@@ -62,8 +62,10 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-        logger.info("Control channel closed");
-        robot.destroy();
+        logger.debug("Control channel closed");
+        if(robot != null){
+            robot.destroy();
+        }
         channelClosedFuture.setSuccess();
         ctx.sendUpstream(e);
     }
@@ -80,8 +82,8 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             format = scriptFormat;
         }
 
-        if (logger.isInfoEnabled()) {
-            logger.info("preparing robot execution for script " + prepare.getScriptName() + " with format " + format);
+        if (logger.isDebugEnabled()) {
+            logger.debug("preparing robot execution for script " + prepare.getScriptName() + " with format " + format);
         }
 
         robot = new Robot();
@@ -111,12 +113,12 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     @Override
     public void startReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
 
-        final boolean infoLogEnabled = logger.isInfoEnabled();
+        final boolean infoDebugEnabled = logger.isDebugEnabled();
         final StartMessage start = (StartMessage) evt.getMessage();
         final String scriptName = start.getScriptName();
 
-        if (infoLogEnabled) {
-            logger.info("starting robot execution for script " + scriptName);
+        if (infoDebugEnabled) {
+            logger.debug("starting robot execution for script " + scriptName);
         }
 
         try {
@@ -142,8 +144,8 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             public void operationComplete(final ChannelFuture f) {
                 String observedScript = scriptDoneFuture.getObservedScript();
 
-                if (logger.isInfoEnabled()) {
-                    logger.info("Script " + scriptName + " completed");
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Script " + scriptName + " completed");
                 }
                 FinishedMessage finished = new FinishedMessage();
                 finished.setScriptName(scriptName);
@@ -157,7 +159,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     public void abortReceived(ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
         AbortMessage abort = (AbortMessage) evt.getMessage();
         if (logger.isInfoEnabled()) {
-            logger.info("Aborting script " + abort.getScriptName());
+            logger.debug("Aborting script " + abort.getScriptName());
         }
         robot.abort();
     }

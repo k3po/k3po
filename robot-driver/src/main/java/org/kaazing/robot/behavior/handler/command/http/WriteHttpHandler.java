@@ -25,7 +25,7 @@ public class WriteHttpHandler extends AbstractCommandHandler {
 
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
-        LOGGER.info(String.format("Invoking write http handler with: %s", httpEncoder));
+        LOGGER.debug(String.format("Invoking write http handler with: %s", httpEncoder));
         httpEncoder.encode(httpMessage);
         getHandlerFuture().setSuccess();
     }

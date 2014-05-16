@@ -41,8 +41,8 @@ public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
     protected Object decodeBuffer(ChannelBuffer buffer) throws Exception {
 
         if (buffer.readableBytes() < length) {
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("not enough bytes are ready to read. Expecting " + length + " bytes. Read to read is "
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("not enough bytes are ready to read. Expecting " + length + " bytes. Read to read is "
                         + buffer.readableBytes());
             }
             return null;

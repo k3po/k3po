@@ -17,7 +17,7 @@ public class DisconnectHandler extends AbstractCommandHandler {
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
 
-        LOGGER.info("disconnecting channel");
+        LOGGER.debug("disconnecting channel");
         ChannelFuture handlerFuture = getHandlerFuture();
         Channels.disconnect(ctx, handlerFuture);
     }

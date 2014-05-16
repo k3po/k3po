@@ -23,7 +23,7 @@ public class BoundHandler extends AbstractEventHandler {
     @Override
     public void channelBound(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
 
-        LOGGER.info("channel bound");
+        LOGGER.debug("channel bound");
         ChannelFuture handlerFuture = getHandlerFuture();
         assert handlerFuture != null;
         handlerFuture.setSuccess();

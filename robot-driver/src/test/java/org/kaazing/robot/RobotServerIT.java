@@ -28,20 +28,18 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
 
 public class RobotServerIT {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(RobotServerIT.class);
 
-    @Rule
-    public TestWatcher watcher = new TestWatcher() {
-        @Override
-        protected void failed(Throwable e, Description description) {
-            LOGGER.info("Failed test: " + description.getMethodName() + " Cause: " + e);
-        }
-    };
+//    @Rule
+//    public TestWatcher watcher = new TestWatcher() {
+//        @Override
+//        protected void failed(Throwable e, Description description) {
+//            LOGGER.info("Failed test: " + description.getMethodName() + " Cause: " + e);
+//        }
+//    };
 
     private RobotServer robot;
     private Socket control;
@@ -66,8 +64,7 @@ public class RobotServerIT {
 
     @Before
     public void setupRobot() throws Exception {
-        robot = new RobotServer();
-        robot.setAccept(URI.create("tcp://localhost:61234"));
+        robot = new TcpControlledRobotServer(URI.create("tcp://localhost:61234"), false);
         robot.start();
         control = new Socket();
         control.connect(new InetSocketAddress("localhost", 61234));
@@ -90,6 +87,8 @@ public class RobotServerIT {
         }
 
         server.close();
+
+        Thread.sleep(1000);
 
     }
 

@@ -38,8 +38,8 @@ public class ReadVariableLengthBytesDecoder extends MessageDecoder {
         int resolvedLength = (Integer) length.getValue(environment);
 
         if (buffer.readableBytes() < resolvedLength) {
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("not enough bytes are ready to read. Expecting " + resolvedLength + " bytes. Read to read is "
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("not enough bytes are ready to read. Expecting " + resolvedLength + " bytes. Read to read is "
                         + buffer.readableBytes());
             }
             return null;

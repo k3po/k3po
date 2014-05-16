@@ -24,7 +24,7 @@ public class CloseReadHttpRequestHandler extends AbstractEventHandler {
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        LOGGER.info("close read http request");
+        LOGGER.debug("close read http request");
         ChannelFuture handlerFuture = getHandlerFuture();
         assert handlerFuture != null;
         handlerFuture.setSuccess();

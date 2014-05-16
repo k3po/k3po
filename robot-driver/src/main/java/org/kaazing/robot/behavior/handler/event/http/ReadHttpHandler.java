@@ -29,7 +29,7 @@ public class ReadHttpHandler extends AbstractEventHandler {
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        LOGGER.info(String.format("Message Received with: %s", this.toString()));
+        LOGGER.debug(String.format("Message Received with: %s", this.toString()));
         Object message = e.getMessage();
         if (message instanceof HttpMessage) {
 

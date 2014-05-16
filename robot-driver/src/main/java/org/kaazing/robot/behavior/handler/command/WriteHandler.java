@@ -39,7 +39,7 @@ public class WriteHandler extends AbstractCommandHandler {
             buffers[idx] = encoder.encode();
             idx++;
         }
-        LOGGER.info("Invoking write command");
+        LOGGER.debug("Invoking write command");
         Channels.write(ctx, getHandlerFuture(), wrappedBuffer(buffers));
     }
 

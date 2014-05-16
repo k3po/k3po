@@ -23,7 +23,7 @@ public class OpenedHandler extends AbstractEventHandler {
     @Override
     public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
 
-        LOGGER.info("channel opened");
+        LOGGER.debug("channel opened");
         ChannelFuture handlerFuture = getHandlerFuture();
         assert handlerFuture != null;
         handlerFuture.setSuccess();

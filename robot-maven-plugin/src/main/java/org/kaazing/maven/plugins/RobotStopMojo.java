@@ -33,7 +33,7 @@ public class RobotStopMojo extends AbstractRobotMojo {
             long checkpoint = currentTimeMillis();
             server.stop();
             float duration = (currentTimeMillis() - checkpoint) / 1000.0f;
-            getLog().info(format("Robot [%08x] stopped in %.3fsec", identityHashCode(server), duration));
+            getLog().debug(format("Robot [%08x] stopped in %.3fsec", identityHashCode(server), duration));
 
             setServer(null);
         }

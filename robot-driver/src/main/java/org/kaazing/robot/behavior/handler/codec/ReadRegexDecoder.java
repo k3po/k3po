@@ -123,8 +123,8 @@ public class ReadRegexDecoder extends MessageDecoder {
         boolean isDebugEnabled = LOGGER.isDebugEnabled();
 
         if (buffer.bytesBefore(indexFinder) < 0) {
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("Regex decoder has not encountered terminator yet. Waiting for more data");
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Regex decoder has not encountered terminator yet. Waiting for more data");
             }
             // Terminating sequence not found; keep looking...
             return null;
