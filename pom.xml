@@ -114,6 +114,12 @@
 
         <dependency>
             <groupId>org.kaazing</groupId>
+            <artifactId>kaaz-net-api</artifactId>
+            <version>0.0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kaazing</groupId>
             <artifactId>kaaz-net-data</artifactId>
             <version>0.0.0.1-SNAPSHOT</version>
         </dependency>

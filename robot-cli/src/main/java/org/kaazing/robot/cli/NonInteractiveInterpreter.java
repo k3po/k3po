@@ -21,8 +21,8 @@ public class NonInteractiveInterpreter extends AbstractInterpreter {
         START(Command.START),
         //        STOP(Command.STOP),
         TEST(Command.TEST),
-        HELP(Command.HELP),
-        SET_OUTPUT_DIR(Command.SET_OUTPUT_DIR);
+        //        SET_OUTPUT_DIR(Command.SET_OUTPUT_DIR),
+        HELP(Command.HELP);
 
         private final Command cmd;
         private final String value;
@@ -93,13 +93,13 @@ public class NonInteractiveInterpreter extends AbstractInterpreter {
                             throw new BadCommandException();
                         }
                         break;
-                    case SET_OUTPUT_DIR:
-                        if (args.length == 2) {
-                            setOutputDir(args[1]);
-                        } else {
-                            throw new BadCommandException();
-                        }
-                        break;
+//                    case SET_OUTPUT_DIR:
+//                        if (args.length == 2) {
+//                            setOutputDir(args[1]);
+//                        } else {
+//                            throw new BadCommandException();
+//                        }
+//                        break;
                     default:
                         throw new BadCommandException();
                 }
@@ -118,7 +118,7 @@ public class NonInteractiveInterpreter extends AbstractInterpreter {
 
     @Override
     public void printHelp() {
-        println("Usage");
+        println("Commands:");
         for (SupportedCommand supportedCommand : SupportedCommand.values()) {
             for (String hint : supportedCommand.cmd.getHints()) {
                 println("\t" + hint);

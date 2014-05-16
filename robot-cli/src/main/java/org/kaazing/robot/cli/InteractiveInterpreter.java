@@ -159,7 +159,7 @@ public class InteractiveInterpreter extends AbstractInterpreter {
 
     @Override
     public void printHelp() {
-        println("Usage");
+        println("Commands:");
         for (SupportedCommand supportedCommand : SupportedCommand.values()) {
             for (String hint : supportedCommand.cmd.getHints()) {
                 println(hint);
