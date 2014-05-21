@@ -22,9 +22,8 @@ public final class FileUtil {
                 for (File child : file.listFiles()) {
                     deleteFile(child);
                 }
-            } else {
-                assert file.delete();
             }
+            file.delete();
         }
     }
 }
