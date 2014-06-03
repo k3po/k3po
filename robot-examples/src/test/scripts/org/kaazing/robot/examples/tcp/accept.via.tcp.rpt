@@ -1,3 +1,6 @@
+# Accept a single TCP connection on port 8000
+# and then close that conenction from the server.
+
 accept tcp://127.0.0.1:8000
 accepted
 
