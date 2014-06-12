@@ -116,6 +116,7 @@ public class RobotControlTest {
         final byte[] expectedPrepare =
                 ("PREPARE\n" +
                  "name:my.script\n" +
+                 "content-type:text/x-robot-2\n" +
                  "content-length:9\n" +
                  "\n" +
                  "# comment").getBytes(UTF_8);
