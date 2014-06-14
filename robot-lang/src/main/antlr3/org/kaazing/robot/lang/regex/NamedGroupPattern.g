@@ -6,6 +6,13 @@ options {
 
 @lexer::header {
 package org.kaazing.robot.lang.regex;
+
+}
+
+@lexer::members {
+	public void reportError(RecognitionException e){
+	
+	}
 }
 
 @parser::header {
@@ -14,7 +21,6 @@ package org.kaazing.robot.lang.regex;
 import java.util.Collections;
 import java.util.regex.Pattern;
 import org.kaazing.robot.lang.regex.NamedGroupPattern;
-
 }
 
 // Disable automatic error recovery
@@ -30,7 +36,7 @@ import org.kaazing.robot.lang.regex.NamedGroupPattern;
     } 
 
     @Override
-	  protected Object recoverFromMismatchedToken(IntStream input,
+    protected Object recoverFromMismatchedToken(IntStream input,
                                                 int ttype,
                                                 BitSet follow)
         throws RecognitionException {
@@ -39,100 +45,47 @@ import org.kaazing.robot.lang.regex.NamedGroupPattern;
     } 
 }
    
-namedGroupPattern returns [NamedGroupPattern value]
+namedGroupPattern [String pattern] returns [NamedGroupPattern value]
   :     { List<String> groupNames = new ArrayList<String>(); }
-  ForwardSlash expression=regex[groupNames] ForwardSlash 
-    { $value = new NamedGroupPattern(Pattern.compile($expression.text), groupNames); }
+    ForwardSlash '^'? expression[groupNames] '$'? ForwardSlash 
+    { $value = new NamedGroupPattern(Pattern.compile($pattern.substring(1, $pattern.length() -1)), groupNames); }
   ;
 
-// Problem Can't do one or more so: .*(?<name>.*) and (?<name1>.*)(?<name2>.*) do not parse
-regex  [List<String> groupNames]
-  : (namedGroupProduction[groupNames]
-        | RegexLiteral    )
+expression [List<String> groupNames]
+  : sequence[groupNames] ( '|' sequence[groupNames] )*
   ;
   
-namedGroupProduction [List<String> groupNames]
-  : 
-        name=NamedGroup regex[groupNames]* RightParen
-        {
-          $groupNames.add($name.text.substring(1));
-        }  
-    ;
-    
+sequence [List<String> groupNames]
+  : pattern[groupNames]+
+  ;
+
+pattern [List<String> groupNames]
+  : PatternNonGroup
+  | group0[groupNames]
+  ;
   
-NamedGroup returns [String name]:
-  StartCaptureGroup id=Identifier GreaterThan {
-    $name=$id.text;
-  };
+group0 [List<String> groupNames]
+  : LeftParen group[groupNames] RightParen PatternQuantifiers?
+  ;
+  
+group [List<String> groupNames]
+  : PatternNonCapturing expression[groupNames]
+  | capture=PatternCapturing expression[groupNames]  { groupNames.add($capture.text.substring(2, $capture.text.length() - 1)); }
+  | expression[groupNames]
+  ;
 
-//*************In Progress
-//regex  [List<String> groupNames]
-//  : atom
-//   ;
-//
-//atom
-//  :
-//  | capture
-//  | non_capture
-//  | RegexLiteral
-//  ;
-//
-//
-//capture
-// : '(' '?' '<' Identifier '>' regex ')'
-// | '(' regex ')'
-// ;
-//
-//non_capture
-// : '(' '?' ':' regex ')' 
-// | '(' '?' '|' regex ')'
-// | '(' '?' '>' regex ')'
-// ;
-
-
-fragment  
-StartCaptureGroup: '(?<';
-
-fragment
-GreaterThan: '>';
-
-fragment
-LessThan: '<';
- 
 ForwardSlash: '/';
 
 LeftParen: '(';
- 
-//QuestionMark: '?';
 
 RightParen: ')';
- 
- 
-// How do I express a regex literal that is not name capturing  other groups with and w/o ? 
-RegexLiteral
-  : ( ~( ForwardSlash | BackSlash | LeftParen | RightParen | '?' | CR | LF | StartCaptureGroup) 
-      | BackSlash ~( CR | LF )
-    )+
-    | GroupingRegex
-  ;
- 
-fragment  
-GroupingRegex
-  : '(' RegexLiteral RightParen
-    | '(' '?' ~LessThan RegexLiteral RightParen
-  ;
-  
-//RegexLiteral
-//  : ( options {greedy=false;}
-//    : PatternNonTerminal
-//    )*
-//    PatternTerminal
-//  ;
 
-//CaptureLiteral
-//    : Colon Identifier
-//    ;
-//
+PatternNonGroup
+  : PatternCharacterClasses PatternQuantifiers?
+  | PatternCharacters
+  | PatternFlags
+  ;
+
 //fragment
 //PatternTerminal
 //  : PatternCharacters
@@ -174,132 +127,168 @@ GroupingRegex
 //  | '\\9'
 //  ;
 //
-//fragment
-//PatternNonCapturing
-//  : '?:'
-//  | '?='
-//  | '?!'
-//  | '?<='
-//  | '?<!'
-//  | '?>'
-//  ;
-//
-//fragment
-//PatternCharacters
-//  : PatternCharacter+
-//  ;
-//
-//fragment
-//PatternCharacter
-//  : Letter
-//  | ':'
-//  | ' '
-//  | '\\\\'
-//  | '\\0' Digit ( Digit ( Digit )? )?
-//  | '\\x' HexDigit HexDigit
-//  | '\\u' HexDigit HexDigit HexDigit HexDigit
-//  | '\\t'
-//  | '\\n'
-//  | '\\r'
-//  | '\\f'
-//  | '\\a'
-//  | '\\e'
-//  | '\\c' Letter
-//	;
-//
-//fragment
-//PatternCharacterClasses
-//  : ('[' | '[^')  PatternCharacterClass+ ( PatternCharacterClassIntersection )? PatternCharacterClasses? ']'
-//  | '.'
-//  | '\\d'
-//  | '\\D'
-//  | '\\s'
-//  | '\\S'
-//  | '\\w'
-//  | '\\W'
-//  | PatternPosixCharacterClass 
-//  | PatternJavaCharacterClass
-//  ;
-//
-//fragment
-//PatternCharacterClassIntersection
-//  : '&&'
-//  ;
-//
-//fragment
-//PatternPosixCharacterClass
-//  : '\\p{Lower}'
-//  | '\\p{Upper}'
-//  | '\\p{ASCII}'
-//  | '\\p{Alpha}'
-//  | '\\p{Digit}'
-//  | '\\p{Alnum}'
-//  | '\\p{Punct}'
-//  | '\\p{Graph}'
-//  | '\\p{Print}'
-//  | '\\p{Blank}'
-//  | '\\p{Cntrl}'
-//  | '\\p{XDigit}'
-//  | '\\p{Space}'
-//  ;
-//
-//fragment
-//PatternJavaCharacterClass
-//  : '\\p{javaLowerCase}'
-//  | '\\p{javaUpperCase}'
-//  | '\\p{javaWhitespace}'
-//  | '\\p{javaMirrored}'
-//  ;
-//
-//fragment
-//PatternUnicodCharacterClass
-//  : '\\p{InBasicLatin}'
-//  // TODO: more unicode block names
-//  | '\\p{InGreek}'
-//  | '\\p{C}'
-//  | '\\p{Cc}'
-//  | '\\p{Cf}'
-//  | '\\p{Cn}'
-//  | '\\p{Co}'
-//  | '\\p{Cs}'
-//  | '\\p{L}'
-//  | '\\p{LC}'
-//  | '\\p{Ll}'
-//  | '\\p{Lm}'
-//  | '\\p{Lo}'
-//  | '\\p{Lt}'
-//  | '\\p{Lu}'
-//  | '\\p{M}'
-//  | '\\p{Mc}'
-//  | '\\p{Me}'
-//  | '\\p{Mn}'
-//  | '\\p{N}'
-//  | '\\p{Nd}'
-//  | '\\p{Nl}'
-//  | '\\p{No}'
-//  | '\\p{P}'
-//  | '\\p{Pd}'
-//  | '\\p{Pe}'
-//  | '\\p{Pf}'
-//  | '\\p{Pi}'
-//  | '\\p{Po}'
-//  | '\\p{Ps}'
-//  | '\\p{S}'
-//  | '\\p{Sc}'
-//  | '\\p{Sk}'
-//  | '\\p{Sm}'
-//  | '\\p{So}'
-//  | '\\p{Z}'
-//  | '\\p{Zl}'
-//  | '\\p{Zp}'
-//  | '\\p{Zs}'
-//  ;
-//
-//fragment
-//PatternCharacterClass
-//  : Letter ( '-' Letter | Letter* )
-//  ;
-//
+PatternNonCapturing
+  : '?:'
+  | '?='
+  | '?!'
+  | '?<='
+  | '?<!'
+  | '?>'
+  | '?i:'
+  | '?d:'
+  | '?m:'
+  | '?s:'
+  | '?u:'
+  | '?x:'
+  | '?-i:'
+  | '?-d:'
+  | '?-m:'
+  | '?-s:'
+  | '?-u:'
+  | '?-x:'
+  ;
+
+PatternCapturing
+    : '?<' Letter (Letter | Digit)* '>'
+    ;
+
+fragment
+PatternFlags
+  : '?i'
+  | '?d'
+  | '?m'
+  | '?s'
+  | '?u'
+  | '?x'
+  | '?-i'
+  | '?-d'
+  | '?-m'
+  | '?-s'
+  | '?-u'
+  | '?-x'
+  ;
+
+fragment
+PatternCharacters
+  : PatternCharacter+
+  ;
+
+fragment
+PatternCharacter
+  : Letter
+  | Digit
+  | ':'
+  | ' '
+  | '\\/'
+  | '\\0' Digit ( Digit ( Digit )? )?
+  | '\\x' HexDigit HexDigit
+  | '\\u' HexDigit HexDigit HexDigit HexDigit
+  | '\\t'
+  | '\\n'
+  | '\\r'
+  | '\\f'
+  | '\\a'
+  | '\\e'
+  | '\\c' Letter
+  | '\\.'
+  | '\\['
+  | '\\('
+  | '\\|'
+  ;
+
+fragment
+PatternCharacterClasses
+  : ('[' | '[^')  PatternCharacterClass+ ( PatternCharacterClassIntersection )? PatternCharacterClasses? ']'
+  | '.'
+  | '\\d'
+  | '\\D'
+  | '\\s'
+  | '\\S'
+  | '\\w'
+  | '\\W'
+  | PatternPosixCharacterClass 
+  | PatternJavaCharacterClass
+  ;
+
+fragment
+PatternCharacterClassIntersection
+  : '&&'
+  ;
+
+fragment
+PatternPosixCharacterClass
+  : '\\p{Lower}'
+  | '\\p{Upper}'
+  | '\\p{ASCII}'
+  | '\\p{Alpha}'
+  | '\\p{Digit}'
+  | '\\p{Alnum}'
+  | '\\p{Punct}'
+  | '\\p{Graph}'
+  | '\\p{Print}'
+  | '\\p{Blank}'
+  | '\\p{Cntrl}'
+  | '\\p{XDigit}'
+  | '\\p{Space}'
+  ;
+
+fragment
+PatternJavaCharacterClass
+  : '\\p{javaLowerCase}'
+  | '\\p{javaUpperCase}'
+  | '\\p{javaWhitespace}'
+  | '\\p{javaMirrored}'
+  ;
+
+fragment
+PatternUnicodCharacterClass
+  : '\\p{InBasicLatin}'
+  // TODO: more unicode block names
+  | '\\p{InGreek}'
+  | '\\p{C}'
+  | '\\p{Cc}'
+  | '\\p{Cf}'
+  | '\\p{Cn}'
+  | '\\p{Co}'
+  | '\\p{Cs}'
+  | '\\p{L}'
+  | '\\p{LC}'
+  | '\\p{Ll}'
+  | '\\p{Lm}'
+  | '\\p{Lo}'
+  | '\\p{Lt}'
+  | '\\p{Lu}'
+  | '\\p{M}'
+  | '\\p{Mc}'
+  | '\\p{Me}'
+  | '\\p{Mn}'
+  | '\\p{N}'
+  | '\\p{Nd}'
+  | '\\p{Nl}'
+  | '\\p{No}'
+  | '\\p{P}'
+  | '\\p{Pd}'
+  | '\\p{Pe}'
+  | '\\p{Pf}'
+  | '\\p{Pi}'
+  | '\\p{Po}'
+  | '\\p{Ps}'
+  | '\\p{S}'
+  | '\\p{Sc}'
+  | '\\p{Sk}'
+  | '\\p{Sm}'
+  | '\\p{So}'
+  | '\\p{Z}'
+  | '\\p{Zl}'
+  | '\\p{Zp}'
+  | '\\p{Zs}'
+  ;
+
+fragment
+PatternCharacterClass
+  : Letter ( '-' Letter | Letter* )
+  ;
+
 //fragment
 //PatternBoundaryMatchers
 //  : '^'
@@ -312,19 +301,19 @@ GroupingRegex
 //  | '\\z'
 //  ;
 //
-//fragment
-//PatternQuantifiers
-//  : '?'
-//  | '??'
-//  | '?+'
-//  | '*'
-//  | '*?'
-//  | '*+'
-//  | '+'
-//  | '+?'
-//  | '++'
-//  | '{' Digit+ ( ',' Digit* )? ( '}' | '}?' | '}+' )
-//  ;
+
+PatternQuantifiers
+  : '?'
+  | '??'
+  | '?+'
+  | '*'
+  | '*?'
+  | '*+'
+  | '+'
+  | '+?'
+  | '++'
+  | '{' Digit+ ( ',' Digit* )? ( '}' | '}?' | '}+' )
+  ;
 
 fragment     
 Letter
@@ -337,9 +326,9 @@ Letter
 fragment
 Digit: '0'..'9';
 
-//fragment
-//HexDigit: Digit | 'a'..'f' | 'A'..'F';
-//  
+fragment
+HexDigit: Digit | 'a'..'f' | 'A'..'F';
+  
 fragment
 CR: '\r';
 
@@ -352,20 +341,6 @@ FF: '\u000C';
 fragment
 TAB: '\t';
 
-fragment
-BackSlash: '\\';
-//
-//fragment
-//Colon: ':';
-//
-//fragment
-//EscapedForwardSlash: BackSlash ForwardSlash; 
-//
-//fragment
-//EscapedBackSlash: BackSlash BackSlash;
-
-fragment
-Identifier: Letter (Digit | Letter)*;
- 
 WS: (' ' | CR | LF | TAB | FF)+
     { $channel = HIDDEN; };
+

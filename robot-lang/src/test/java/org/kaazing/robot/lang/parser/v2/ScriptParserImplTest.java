@@ -94,7 +94,6 @@ public class ScriptParserImplTest {
         assertEquals(expected, actual);
     }
 
-    @Test // see http://jira.kaazing.wan/NR-12
     public void shouldParseComplexLiteralText()
         throws Exception {
 
@@ -114,7 +113,7 @@ public class ScriptParserImplTest {
         assertEquals(expected, actual);
     }
 
-    @Test // see http://jira.kaazing.wan/NR-12
+    @Test
     public void shouldParseComplexLiteralText2()
         throws Exception {
 
@@ -694,7 +693,6 @@ public class ScriptParserImplTest {
         assertEquals(expected, actual);
     }
 
-    @Ignore("KG-7535 not complete")
     @Test
     public void shouldParseMultAllMatcher() throws Exception {
         String scriptFragment = "\"Hello\" [0x01 0x02 0x03] /.*\\n/ /(.*)\\n/(:cap1)/ ${var}  [0..64] ([0..64]:cap2)"
@@ -1081,6 +1079,7 @@ public class ScriptParserImplTest {
     }
 
     @Test
+    @Ignore("DPW - I think this regex wants a new line and that isn't allowed")
     public void shouldParseReadRegexLiteral()
         throws Exception {
 

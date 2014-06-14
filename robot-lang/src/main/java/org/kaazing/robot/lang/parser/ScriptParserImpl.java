@@ -25,10 +25,7 @@ public class ScriptParserImpl implements ScriptParser {
         this.format = format;
         setFormatVersion();
         switch (formatVersion) {
-            case 1:
-                parser = new org.kaazing.robot.lang.parser.v1.ScriptParserImpl();
-                break;
-            case 2:
+            default:
                 parser = new org.kaazing.robot.lang.parser.v2.ScriptParserImpl();
                 break;
         }
@@ -38,10 +35,7 @@ public class ScriptParserImpl implements ScriptParser {
         this.format = format;
         setFormatVersion();
         switch (formatVersion) {
-            case 1:
-                parser = new org.kaazing.robot.lang.parser.v1.ScriptParserImpl(factory, context);
-                break;
-            case 2:
+            default:
                 parser = new org.kaazing.robot.lang.parser.v2.ScriptParserImpl(factory, context);
                 break;
         }

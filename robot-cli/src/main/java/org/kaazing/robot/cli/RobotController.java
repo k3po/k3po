@@ -4,8 +4,6 @@
 
 package org.kaazing.robot.cli;
 
-import org.kaazing.robot.control.RobotControl;
-
 import java.io.File;
 import java.net.URI;
 

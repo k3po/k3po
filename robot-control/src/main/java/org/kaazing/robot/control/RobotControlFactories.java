@@ -4,15 +4,13 @@
 
 package org.kaazing.robot.control;
 
+import static java.lang.String.format;
+
 import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import static java.lang.String.format;
 
 public final class RobotControlFactories {
 

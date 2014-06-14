@@ -4,6 +4,13 @@
 
 package org.kaazing.robot.cli;
 
+import java.io.File;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
+
 import org.kaazing.robot.control.RobotControl;
 import org.kaazing.robot.control.command.AbortCommand;
 import org.kaazing.robot.control.command.PrepareCommand;
@@ -12,14 +19,6 @@ import org.kaazing.robot.control.event.CommandEvent;
 import org.kaazing.robot.control.event.ErrorEvent;
 import org.kaazing.robot.control.event.FinishedEvent;
 import org.kaazing.robot.control.event.PreparedEvent;
-
-import java.io.File;
-import java.io.PrintWriter;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractRobotController implements RobotController {
 

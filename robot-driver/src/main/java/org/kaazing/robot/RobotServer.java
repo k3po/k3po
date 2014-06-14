@@ -4,7 +4,6 @@
 
 package org.kaazing.robot;
 
-import java.net.URI;
 import java.util.concurrent.TimeoutException;
 
 public interface RobotServer {

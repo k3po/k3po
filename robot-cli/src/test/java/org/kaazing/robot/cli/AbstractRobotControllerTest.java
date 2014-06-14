@@ -4,26 +4,10 @@
 
 package org.kaazing.robot.cli;
 
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.Sequence;
-
-import static org.junit.Assert.assertTrue;
+import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.kaazing.robot.RobotServer;
-import org.kaazing.robot.RobotServerFactories;
-import org.kaazing.robot.RobotServerFactory;
-import org.kaazing.robot.RobotServerFactorySPI;
-import org.kaazing.robot.cli.utils.ServiceClassLoader;
-import org.kaazing.robot.control.RobotControl;
-import org.kaazing.robot.control.RobotControlFactories;
-import org.kaazing.robot.control.RobotControlFactory;
-import org.kaazing.robot.control.RobotControlFactorySPI;
+import static org.junit.Assert.assertTrue;
+import static org.kaazing.net.URLFactory.createURL;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -36,8 +20,19 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static java.lang.String.format;
-import static org.kaazing.net.URLFactory.createURL;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.kaazing.robot.RobotServer;
+import org.kaazing.robot.RobotServerFactories;
+import org.kaazing.robot.RobotServerFactory;
+import org.kaazing.robot.RobotServerFactorySPI;
+import org.kaazing.robot.cli.utils.ServiceClassLoader;
+import org.kaazing.robot.control.RobotControl;
+import org.kaazing.robot.control.RobotControlFactories;
+import org.kaazing.robot.control.RobotControlFactory;
+import org.kaazing.robot.control.RobotControlFactorySPI;
 
 public abstract class AbstractRobotControllerTest {
 

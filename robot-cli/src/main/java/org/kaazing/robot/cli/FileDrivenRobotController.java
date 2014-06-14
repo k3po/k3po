@@ -4,17 +4,17 @@
 
 package org.kaazing.robot.cli;
 
-import org.kaazing.robot.RobotServer;
-import org.kaazing.robot.RobotServerFactory;
-import org.kaazing.robot.control.RobotControl;
-import org.kaazing.robot.control.RobotControlFactory;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
+
+import org.kaazing.robot.RobotServer;
+import org.kaazing.robot.RobotServerFactory;
+import org.kaazing.robot.control.RobotControl;
+import org.kaazing.robot.control.RobotControlFactory;
 
 /**
  *  When running the CLI in non interactive mode, it should be possible to launch the robot and leave it running,
@@ -28,8 +28,6 @@ public class FileDrivenRobotController extends AbstractRobotController {
     private URI uri = URI.create("tcp://localhost:11642");
     private File robotInfoFile;
     private Boolean running = false;
-    private String pid;
-
     public FileDrivenRobotController(Interpreter interpreter, RobotControlFactory robotControlFactory,
                                      RobotServerFactory robotServerFactory) {
         super(interpreter);
@@ -43,7 +41,6 @@ public class FileDrivenRobotController extends AbstractRobotController {
         if (running) {
             throw new Exception("Robot is already running according to " + robotInfoFile + ", will not override file");
         }
-        this.uri = uri;
         RobotServer server = robotServerFactory.createRobotServer(uri, false);
         try {
             interpreter.println("Starting robot");
@@ -114,8 +111,7 @@ public class FileDrivenRobotController extends AbstractRobotController {
                             this.uri = URI.create(tokens[1]);
                             break;
                         case "PID":
-                            this.pid = tokens[1];
-                            break;
+                        break;
                         default:
                             break;
                     }
@@ -125,7 +121,6 @@ public class FileDrivenRobotController extends AbstractRobotController {
         } else {
             running = false;
             uri = null;
-            pid = null;
         }
 
     }

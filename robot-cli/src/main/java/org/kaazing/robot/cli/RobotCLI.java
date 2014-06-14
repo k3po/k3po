@@ -6,7 +6,6 @@ package org.kaazing.robot.cli;
 
 import org.kaazing.robot.RobotServerFactories;
 import org.kaazing.robot.control.RobotControlFactories;
-import org.kaazing.robot.control.RobotControlFactory;
 
 public final class RobotCLI {
 

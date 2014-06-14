@@ -34,7 +34,7 @@ public class NamedGroupPattern {
             Lexer lexer = new NamedGroupPatternLexer(ais);
             TokenStream tokens = new CommonTokenStream(lexer);
             NamedGroupPatternParser parser = new NamedGroupPatternParser(tokens);
-            NamedGroupPattern pattern = parser.namedGroupPattern();
+            NamedGroupPattern pattern = parser.namedGroupPattern(regexWithGroupNames);
             if (pattern == null) {
                 int position = lexer.getCharPositionInLine();
                 throw new PatternSyntaxException("Invalid named group pattern", regexWithGroupNames, position);

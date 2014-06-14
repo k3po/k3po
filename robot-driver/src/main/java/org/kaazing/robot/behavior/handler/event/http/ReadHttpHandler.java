@@ -12,7 +12,6 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.behavior.handler.codec.http.HttpMessageContributingDecoder;
 import org.kaazing.robot.behavior.handler.event.AbstractEventHandler;
 
@@ -20,7 +19,6 @@ public class ReadHttpHandler extends AbstractEventHandler {
 
     private final HttpMessageContributingDecoder decoder;
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ReadHttpHandler.class);
-    private final boolean isDebugEnabled = LOGGER.isDebugEnabled();
 
     public ReadHttpHandler(HttpMessageContributingDecoder decoder) {
         super(of(ChannelEventKind.MESSAGE));

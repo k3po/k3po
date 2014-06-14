@@ -4,10 +4,10 @@
 
 package org.kaazing.robot.behavior.handler.codec;
 
-import static org.kaazing.robot.behavior.handler.codec.HttpUtils.removeHttpFiltersFromPipeline;
 import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
 import static org.jboss.netty.channel.Channels.write;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.setContentLength;
+import static org.kaazing.robot.behavior.handler.codec.HttpUtils.removeHttpFiltersFromPipeline;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;

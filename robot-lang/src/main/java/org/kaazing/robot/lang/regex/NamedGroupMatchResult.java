@@ -4,9 +4,11 @@
 
 package org.kaazing.robot.lang.regex;
 
-import java.util.regex.MatchResult;
+import java.util.Set;
 
-public interface NamedGroupMatchResult extends MatchResult {
+public interface NamedGroupMatchResult {
 
-    String groupName(int group);
+    Set<String> groupNames();
+
+    String group(String name);
 }

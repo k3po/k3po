@@ -9,29 +9,45 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class NamedGroupPatternTest {
 
-    @Ignore("KG-7535 not complete")
+    @Test
+    public void shouldCompileDotStar() {
+        NamedGroupPattern.compile("/what(.*)/");
+    }
+
+    @Test
+    public void shouldCompileNamedGroup() {
+        NamedGroupPattern.compile("/(?<groupA>.*)/");
+    }
+    
+    @Test
+    public void shouldCompilePlainText() {
+        NamedGroupPattern.compile("/plainText/");
+    }
+
     @Test
     public void shouldParseSuccessfully() {
         String scriptText = format("/^The quick brown fox (?<verb>[a-z]+) over the lazy dog$/");
         String inputText = "The quick brown fox jumps over the lazy dog";
 
+        Pattern jPattern = Pattern.compile(scriptText.substring(1, scriptText.length() - 1));
+        Matcher jMatcher = jPattern.matcher(inputText);
+        assertTrue(jMatcher.matches());
+        
         NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
         NamedGroupMatcher matcher = pattern.matcher(inputText);
 
         assertTrue(matcher.matches());
-        assertEquals(1, matcher.groupCount());
-        assertEquals("verb", matcher.groupName(0));
-        assertEquals("jumps", matcher.group(0));
+        assertEquals("jumps", matcher.group("verb"));
     }
 
-    @Ignore("KG-7535 not complete")
     @Test
     public void shouldParseRegex2() throws Exception {
 
@@ -42,12 +58,9 @@ public class NamedGroupPatternTest {
         NamedGroupMatcher matcher = pattern.matcher(inputText);
 
         assertTrue(matcher.matches());
-        assertEquals(1, matcher.groupCount());
-        assertEquals("hello", matcher.groupName(0));
-        assertEquals("      ", matcher.group(0));
+        assertEquals("      ", matcher.group("hello"));
     }
 
-    @Ignore("KG-7535 not complete")
     @Test
     public void shouldParseRegex3() throws Exception {
 
@@ -58,48 +71,46 @@ public class NamedGroupPatternTest {
         NamedGroupMatcher matcher = pattern.matcher(inputText);
 
         assertTrue(matcher.matches());
-        assertEquals(1, matcher.groupCount());
-        assertEquals("hello", matcher.groupName(0));
-        assertEquals("12345", matcher.group(0));
+        assertEquals("12345", matcher.group("hello"));
     }
 
-    @Ignore("KG-7535 not complete")
     @Test
     public void shouldParseRegex4() throws Exception {
-
         ArrayList<String> groupNames = new ArrayList<String>(1);
         groupNames.add("hello");
         groupNames.add("reason");
         String scriptText = format("/(?<hello>HTTP\\/1.1\\s401\\s(?<reason>.*)\\r\\n\\r\\n)/");
         String inputText = "HTTP/1.1 401 Unauthorized\r\n\r\n";
 
+        Pattern jPattern = Pattern.compile(scriptText.substring(1, scriptText.length() - 1));
+        Matcher jMatcher = jPattern.matcher(inputText);
+        assertTrue(jMatcher.matches());
+        assertEquals("Unauthorized", jMatcher.group(2));
+        
         NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
         NamedGroupMatcher matcher = pattern.matcher(inputText);
 
         assertTrue(matcher.matches());
-        assertEquals(2, matcher.groupCount());
-        assertEquals("hello", matcher.groupName(0));
-        assertEquals("reason", matcher.groupName(1));
-        assertEquals("Unauthorized", matcher.group(1));
+        assertEquals("Unauthorized", matcher.group("reason"));
     }
 
-    @Ignore("KG-7535 not complete")
     @Test
     public void shouldParseRegex5() throws Exception {
 
-        String scriptText = format("/(?<hello>)/");
+        String scriptText = format("/(?<hello>.*)/");
         String inputText = "foo";
 
+        Pattern jPattern = Pattern.compile(scriptText.substring(1, scriptText.length() - 1));
+        Matcher jMatcher = jPattern.matcher(inputText);
+        assertTrue(jMatcher.matches());
+        
         NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
         NamedGroupMatcher matcher = pattern.matcher(inputText);
 
         assertTrue(matcher.matches());
-        assertEquals(1, matcher.groupCount());
-        assertEquals("hello", matcher.groupName(0));
-        assertEquals("foo", matcher.group(0));
+        assertEquals("foo", matcher.group("hello"));
     }
 
-    @Ignore("KG-7535 not complete")
     @Test
     public void shouldParseRegex6() throws Exception {
 
@@ -110,14 +121,10 @@ public class NamedGroupPatternTest {
         NamedGroupMatcher matcher = pattern.matcher(inputText);
 
         assertTrue(matcher.matches());
-        assertEquals(2, matcher.groupCount());
-        assertEquals("hello", matcher.groupName(0));
-        assertEquals("foo", matcher.group(0));
-        assertEquals("goodbye", matcher.groupName(1));
-        assertEquals("123", matcher.group(1));
+        assertEquals("foo", matcher.group("hello"));
+        assertEquals("123", matcher.group("goodbye"));
     }
 
-    @Ignore("KG-7535 not complete")
     @Test
     public void shouldParseRegexWithColon() throws Exception {
 
@@ -128,14 +135,10 @@ public class NamedGroupPatternTest {
         NamedGroupMatcher matcher = pattern.matcher(inputText);
 
         assertTrue(matcher.matches());
-        assertEquals(2, matcher.groupCount());
-        assertEquals("left", matcher.groupName(0));
-        assertEquals("foo", matcher.group(0));
-        assertEquals("right", matcher.groupName(1));
-        assertEquals("bar", matcher.group(1));
+        assertEquals("foo", matcher.group("left"));
+        assertEquals("bar", matcher.group("right"));
     }
 
-    @Ignore("KG-7535 not complete")
     @Test
     public void shouldParseRegexWithLeftParen() throws Exception {
 
@@ -146,14 +149,22 @@ public class NamedGroupPatternTest {
         NamedGroupMatcher matcher = pattern.matcher(inputText);
 
         assertTrue(matcher.matches());
-        assertEquals(2, matcher.groupCount());
-        assertEquals("left", matcher.groupName(0));
-        assertEquals("foo", matcher.group(0));
-        assertEquals("right", matcher.groupName(1));
-        assertEquals("bar", matcher.group(1));
+        assertEquals("foo", matcher.group("left"));
+        assertEquals("bar", matcher.group("right"));
     }
 
-    @Ignore("KG-7535 not complete")
+    @Test
+    public void shouldParseRegexWithEscapedChars() throws Exception {
+
+        String scriptText = format("/HTTP\\/1.1\\s401\\sAuthorization Required/");
+        String inputText = "HTTP/1.1 401 Authorization Required";
+
+        NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
+        NamedGroupMatcher matcher = pattern.matcher(inputText);
+
+        assertTrue(matcher.matches());
+    }
+
     @Test
     public void shouldParseRegexWithLeftParenAndColon() throws Exception {
 
@@ -164,11 +175,8 @@ public class NamedGroupPatternTest {
         NamedGroupMatcher matcher = pattern.matcher(inputText);
 
         assertTrue(matcher.matches());
-        assertEquals(2, matcher.groupCount());
-        assertEquals("left", matcher.groupName(0));
-        assertEquals("foo", matcher.group(0));
-        assertEquals("right", matcher.groupName(1));
-        assertEquals("bar", matcher.group(1));
+        assertEquals("foo", matcher.group("left"));
+        assertEquals("bar", matcher.group("right"));
     }
 
     @Test(expected = PatternSyntaxException.class)

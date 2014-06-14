@@ -4,17 +4,20 @@
 
 package org.kaazing.robot.lang.regex;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 public class NamedGroupMatcher implements NamedGroupMatchResult {
 
     private final Matcher matcher;
-    private final List<String> groupNames;
+    private final Set<String> groupNames = new HashSet<String>();
 
     NamedGroupMatcher(Matcher matcher, List<String> groupNames) {
         this.matcher = matcher;
-        this.groupNames = groupNames;
+        this.groupNames.clear();
+        this.groupNames.addAll(groupNames);
     }
 
     public boolean matches() {
@@ -29,44 +32,39 @@ public class NamedGroupMatcher implements NamedGroupMatchResult {
         return matcher.hitEnd();
     }
 
-    @Override
-    public int start() {
-        return matcher.start();
-    }
-
-    @Override
-    public int start(int group) {
-        return matcher.start(group);
-    }
-
-    @Override
+//    @Override
+//    public int start() {
+//        return matcher.start();
+//    }
+//
+//    @Override
+//    public int start(int group) {
+//        return matcher.start(group);
+//    }
+//
     public int end() {
         return matcher.end();
     }
 
-    @Override
-    public int end(int group) {
-        return matcher.end(group);
-    }
+//
+//    @Override
+//    public String group() {
+//        return matcher.group();
+//    }
 
     @Override
-    public String group() {
-        return matcher.group();
+    public String group(String name) {
+        return matcher.group(name);
     }
 
-    @Override
-    public String group(int group) {
-        // We don't use group 0
-        return matcher.group(group + 1);
-    }
+//    @Override
+//    public int groupCount() {
+//        return matcher.groupCount();
+//    }
 
     @Override
-    public int groupCount() {
-        return matcher.groupCount();
+    public Set<String> groupNames() {
+        return groupNames;
     }
 
-    @Override
-    public String groupName(int group) {
-        return (groupNames == null || group >= groupNames.size()) ? null : groupNames.get(group);
-    }
 }

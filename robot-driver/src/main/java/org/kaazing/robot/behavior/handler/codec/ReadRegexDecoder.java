@@ -107,13 +107,10 @@ public class ReadRegexDecoder extends MessageDecoder {
     }
 
     private void captureGroups(NamedGroupMatcher matcher) {
-        for (int i = 0; i < matcher.groupCount(); i++) {
-            String captureName = matcher.groupName(i);
-            if (captureName != null) {
-                String captured = matcher.group(i);
-                byte[] bytes = captured.getBytes(UTF_8);
-                environment.getELResolver().setValue(environment, null, captureName, bytes);
-            }
+        for (String captureName : matcher.groupNames()) {
+            String captured = matcher.group(captureName);
+            byte[] bytes = captured.getBytes(UTF_8);
+            environment.getELResolver().setValue(environment, null, captureName, bytes);
         }
     }
 
