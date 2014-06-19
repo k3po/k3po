@@ -13,7 +13,6 @@ import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.EXPRESSION_MA
 import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.FIXED_LENGTH_BYTES_MATCHER;
 import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.LITERAL_BYTES_VALUE;
 import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.LITERAL_TEXT_VALUE;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.MATCHER_LIST;
 import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.READ;
 import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.READ_AWAIT;
 import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.READ_NOTIFY;
@@ -23,20 +22,18 @@ import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.VARIABLE_LENG
 import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.WRITE;
 import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.WRITE_AWAIT;
 import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.WRITE_NOTIFY;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.WRITE_VALUE_LIST;
+import static org.kaazing.robot.lang.regex.NamedGroupPattern.compile;
 import static org.kaazing.robot.lang.test.junit.Assert.assertEquals;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.kaazing.robot.lang.ast.AstAcceptNode;
 import org.kaazing.robot.lang.ast.AstCloseNode;
 import org.kaazing.robot.lang.ast.AstClosedNode;
@@ -278,17 +275,17 @@ public class ScriptParserImplTest {
         assertEquals(expected, actual);
     }
 
-    @Ignore("KG-7535 not complete")
+//    @Ignore("KG-7535 not complete")
     @Test
     public void shouldParseRegexMatcher()
         throws Exception {
 
-        String scriptFragment = "/([^\\s]+) followed by ([^\\s]+) before the end\\n/";
+        String scriptFragment = "/[a-f\\d]{8}(-[a-f\\d]{4}){3}-[a-f\\d]{12}/";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstRegexMatcher actual = parser.parseWithStrategy(scriptFragment, REGEX_MATCHER);
 
-        NamedGroupPattern regex = NamedGroupPattern.compile("/([^\\s]+) followed by ([^\\s]+) before the end\\n/");
+        NamedGroupPattern regex = NamedGroupPattern.compile("/[a-f\\d]{8}(-[a-f\\d]{4}){3}-[a-f\\d]{12}/");
         AstRegexMatcher expected = new AstRegexMatcher(regex);
 
         assertEquals(expected, actual);
@@ -474,152 +471,138 @@ public class ScriptParserImplTest {
     @Test
     public void shouldParseMultiCapturingByteLengthMatcher() throws Exception {
 
-        String scriptFragment = "(byte:capture) (byte:capture2)";
+        String scriptFragment = "read (byte:capture) (byte:capture2)";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValueMatcher> actual = parser.parseWithStrategy(scriptFragment, MATCHER_LIST);
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-        List<AstValueMatcher> expected = new ArrayList<AstValueMatcher>();
-        expected.add(new AstByteLengthBytesMatcher("capture"));
-        expected.add(new AstByteLengthBytesMatcher("capture2"));
-
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstByteLengthBytesMatcher("capture"),
+                                                            new AstByteLengthBytesMatcher("capture2")));
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldParseMultiCapturingShortLengthMatcher() throws Exception {
 
-        String scriptFragment = "(short:capture) (short:capture2)";
+        String scriptFragment = "read (short:capture) (short:capture2)";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValueMatcher> actual = parser.parseWithStrategy(scriptFragment, MATCHER_LIST);
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-        List<AstValueMatcher> expected = new ArrayList<AstValueMatcher>();
-        expected.add(new AstShortLengthBytesMatcher("capture"));
-        expected.add(new AstShortLengthBytesMatcher("capture2"));
-
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstShortLengthBytesMatcher("capture"),
+                                                            new AstShortLengthBytesMatcher("capture2")));
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldParseMultiCapturingIntLengthMatcher() throws Exception {
 
-        String scriptFragment = "(int:capture) (int:capture2)";
+        String scriptFragment = "read (int:capture) (int:capture2)";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValueMatcher> actual = parser.parseWithStrategy(scriptFragment, MATCHER_LIST);
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-        List<AstValueMatcher> expected = new ArrayList<AstValueMatcher>();
-        expected.add(new AstIntLengthBytesMatcher("capture"));
-        expected.add(new AstIntLengthBytesMatcher("capture2"));
-
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstIntLengthBytesMatcher("capture"),
+                                                            new AstIntLengthBytesMatcher("capture2")));
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldParseMultiCapturingLongLengthMatcher() throws Exception {
 
-        String scriptFragment = "(long:capture) (long:capture2)";
+        String scriptFragment = "read (long:capture) (long:capture2)";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValueMatcher> actual = parser.parseWithStrategy(scriptFragment, MATCHER_LIST);
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-        List<AstValueMatcher> expected = new ArrayList<AstValueMatcher>();
-        expected.add(new AstLongLengthBytesMatcher("capture"));
-        expected.add(new AstLongLengthBytesMatcher("capture2"));
-
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstLongLengthBytesMatcher("capture"),
+                                                            new AstLongLengthBytesMatcher("capture2")));
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldParseMultiExactText() throws Exception {
-        String scriptFragment = "\"Hello\" \"World\"";
+        String scriptFragment = "read \"Hello\" \"World\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValueMatcher> actual = parser.parseWithStrategy(scriptFragment, MATCHER_LIST);
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-        List<AstValueMatcher> expected = new ArrayList<AstValueMatcher>();
-        expected.add(new AstExactTextMatcher("Hello"));
-        expected.add(new AstExactTextMatcher("World"));
-
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactTextMatcher("Hello"),
+                                                            new AstExactTextMatcher("World")));
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldParseMultiExactBytes() throws Exception {
 
-        String scriptFragment = "[0x01 0xff 0XFA] [0x00 0xF0 0x03 0x05 0x08 0x04]";
+        String scriptFragment = "read [0x01 0xff 0XFA] [0x00 0xF0 0x03 0x05 0x08 0x04]";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValueMatcher> actual = parser.parseWithStrategy(scriptFragment, MATCHER_LIST);
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-        List<AstValueMatcher> expected = new ArrayList<AstValueMatcher>();
-        expected.add(new AstExactBytesMatcher(new byte[] { 0x01, (byte) 0xff, (byte) 0xfa }));
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(
         // @formatter:off
-        expected.add(new AstExactBytesMatcher(
-                new byte[] { 0x00, (byte) 0xf0, (byte) 0x03, (byte) 0x05, (byte) 0x08, (byte) 0x04 }));
+                new AstExactBytesMatcher(new byte[] { 0x01, (byte) 0xff, (byte) 0xfa }),
+                new AstExactBytesMatcher(new byte[] { 0x00, (byte) 0xf0, (byte) 0x03, 
+                                        (byte) 0x05, (byte) 0x08, (byte) 0x04 })));
         // @formatter:on
-
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldParseMultiRegex() throws Exception {
-        String scriptFragment = "/.*\\n/ /.+\\r/";
+        String scriptFragment = "read /.*\\n/ /.+\\r/";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValueMatcher> actual = parser.parseWithStrategy(scriptFragment, MATCHER_LIST);
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-        List<AstValueMatcher> expected = new ArrayList<AstValueMatcher>();
-        NamedGroupPattern regex1 = NamedGroupPattern.compile("/.*\\n/");
-        NamedGroupPattern regex2 = NamedGroupPattern.compile("/.+\\r/");
-
-        expected.add(new AstRegexMatcher(regex1));
-        expected.add(new AstRegexMatcher(regex2));
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(
+                new AstRegexMatcher(compile("/.*\\n/")),
+                new AstRegexMatcher(compile("/.+\\r/"))));
 
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldParseMultiRegexWithCaptures() throws Exception {
-        String scriptFragment = "/.*\\n/ /.+\\r/ /(.*\\n)/(:cap1)/ /(.+\\r)/(:cap2)/";
+        String scriptFragment = "read /.*\\n/ /.+\\r/ /(.*\\n)/(:cap1)/ /(.+\\r)/(:cap2)/";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValueMatcher> actual = parser.parseWithStrategy(scriptFragment, MATCHER_LIST);
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-        List<AstValueMatcher> expected = new ArrayList<AstValueMatcher>();
-
-        NamedGroupPattern regex1 = NamedGroupPattern.compile("/.*\\n/");
-        NamedGroupPattern regex2 = NamedGroupPattern.compile("/.+\\r/");
-        NamedGroupPattern regex3 = NamedGroupPattern.compile("/(.*\\n)/(:cap1)/");
-        NamedGroupPattern regex4 = NamedGroupPattern.compile("/(.+\\r)/(:cap2)/");
-
-
-        expected.add(new AstRegexMatcher(regex1));
-        expected.add(new AstRegexMatcher(regex2));
-        expected.add(new AstRegexMatcher(regex3));
-        expected.add(new AstRegexMatcher(regex4));
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(
+                new AstRegexMatcher(compile("/.*\\n/")),
+                new AstRegexMatcher(compile("/.+\\r/")),
+                new AstRegexMatcher(compile("/(.*\\n)/(:cap1)/")),
+                new AstRegexMatcher(compile("/(.+\\r)/(:cap2)/"))));
 
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldParseMultExpression() throws Exception {
-        String scriptFragment = "${var} ${var2}";
+        String scriptFragment = "read ${var} ${var2}";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValueMatcher> actual = parser.parseWithStrategy(scriptFragment, MATCHER_LIST);
-
-        List<AstValueMatcher> expected = new ArrayList<AstValueMatcher>();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
         ValueExpression value = factory.createValueExpression(context, "${var}", byte[].class);
         ValueExpression value2 = factory.createValueExpression(context, "${var2}", byte[].class);
 
-
-        expected.add(new AstExpressionMatcher(value));
-        expected.add(new AstExpressionMatcher(value2));
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(
+                new AstExpressionMatcher(value),
+                new AstExpressionMatcher(value2)));
 
         assertEquals(expected, actual);
     }
@@ -627,113 +610,110 @@ public class ScriptParserImplTest {
     @Test
     public void shouldParseMultiFixedLengthBytes()
         throws Exception {
-        String scriptFragment = "[0..1024] [0..4096]";
+        String scriptFragment = "read [0..1024] [0..4096]";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValueMatcher> actual = parser.parseWithStrategy(scriptFragment, MATCHER_LIST);
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-        List<AstValueMatcher> expected = new ArrayList<AstValueMatcher>();
-        expected.add(new AstFixedLengthBytesMatcher(1024));
-        expected.add(new AstFixedLengthBytesMatcher(4096));
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(
+                new AstFixedLengthBytesMatcher(1024),
+                new AstFixedLengthBytesMatcher(4096)));
 
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldParseMultiFixedLengthBytesWithCaptures() throws Exception {
-        String scriptFragment = "[0..1024] ([0..64]:var1) [0..4096] ([0..64]:var2)";
+        String scriptFragment = "read [0..1024] ([0..64]:var1) [0..4096] ([0..64]:var2)";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValueMatcher> actual = parser.parseWithStrategy(scriptFragment, MATCHER_LIST);
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-        List<AstValueMatcher> expected = new ArrayList<AstValueMatcher>();
-        expected.add(new AstFixedLengthBytesMatcher(1024));
-        expected.add(new AstFixedLengthBytesMatcher(64, "var1"));
-        expected.add(new AstFixedLengthBytesMatcher(4096));
-        expected.add(new AstFixedLengthBytesMatcher(64, "var2"));
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(
+                new AstFixedLengthBytesMatcher(1024),
+                new AstFixedLengthBytesMatcher(64, "var1"),
+                new AstFixedLengthBytesMatcher(4096),
+                new AstFixedLengthBytesMatcher(64, "var2")));
 
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldParseMultVariableLengthBytes() throws Exception {
-        String scriptFragment = "[0..${len1}] [0..${len2}]";
+        String scriptFragment = "read [0..${len1}] [0..${len2}]";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValueMatcher> actual = parser.parseWithStrategy(scriptFragment, MATCHER_LIST);
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-        List<AstValueMatcher> expected = new ArrayList<AstValueMatcher>();
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
         ValueExpression value = factory.createValueExpression(context, "${len1}", Integer.class);
         ValueExpression value2 = factory.createValueExpression(context, "${len2}", Integer.class);
 
-        expected.add(new AstVariableLengthBytesMatcher(value));
-        expected.add(new AstVariableLengthBytesMatcher(value2));
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(
+                new AstVariableLengthBytesMatcher(value),
+                new AstVariableLengthBytesMatcher(value2)));
 
         assertEquals(expected, actual);
-    }
+}
 
     @Test
     public void shouldParseMultVariableLengthBytesWithCapture() throws Exception {
-        String scriptFragment = "([0..${len1}]:var1) ([0..${len2}]:var2)";
+        String scriptFragment = "read ([0..${len1}]:var1) ([0..${len2}]:var2)";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValueMatcher> actual = parser.parseWithStrategy(scriptFragment, MATCHER_LIST);
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-        List<AstValueMatcher> expected = new ArrayList<AstValueMatcher>();
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
         ValueExpression value = factory.createValueExpression(context, "${len1}", Integer.class);
         ValueExpression value2 = factory.createValueExpression(context, "${len2}", Integer.class);
 
-        expected.add(new AstVariableLengthBytesMatcher(value, "var1"));
-        expected.add(new AstVariableLengthBytesMatcher(value2, "var2"));
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(
+                new AstVariableLengthBytesMatcher(value, "var1"),
+                new AstVariableLengthBytesMatcher(value2, "var2")));
 
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldParseMultAllMatcher() throws Exception {
-        String scriptFragment = "\"Hello\" [0x01 0x02 0x03] /.*\\n/ /(.*)\\n/(:cap1)/ ${var}  [0..64] ([0..64]:cap2)"
+        String scriptFragment = "read \"Hello\" [0x01 0x02 0x03] /.*\\n/ /(.*)\\n/(:cap1)/ ${var}  [0..64] ([0..64]:cap2)"
                         + "[0..${var}] [0..${var-1}] ([0..${var}]:cap3) ([0..${var-1}]:cap4)"
                         + "(byte:b) (short:s) (int:i) (long:l)";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValueMatcher> actual = parser.parseWithStrategy(scriptFragment, MATCHER_LIST);
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
-
-        List<AstValueMatcher> expected = new ArrayList<AstValueMatcher>();
-        expected.add(new AstExactTextMatcher("Hello"));
-        expected.add(new AstExactBytesMatcher(new byte[] { 0x01, (byte) 0x02, (byte) 0x03}));
-        expected.add(new AstRegexMatcher(NamedGroupPattern.compile("/.*\\n/")));
-
-        expected.add(new AstRegexMatcher(NamedGroupPattern.compile("/(.*)\\n/(:cap1)/")));
-
         ValueExpression value = factory.createValueExpression(context, "${var}", byte[].class);
-        expected.add(new AstExpressionMatcher(value));
-
-        expected.add(new AstFixedLengthBytesMatcher(64));
-        expected.add(new AstFixedLengthBytesMatcher(64, "cap2"));
-
         ValueExpression value2 = factory.createValueExpression(context, "${var}", Integer.class);
-        expected.add(new AstVariableLengthBytesMatcher(value2));
-
         ValueExpression value3 = factory.createValueExpression(context, "${var-1}", Integer.class);
-        expected.add(new AstVariableLengthBytesMatcher(value3));
-
         ValueExpression value4 = factory.createValueExpression(context, "${var}", Integer.class);
-        expected.add(new AstVariableLengthBytesMatcher(value4, "cap3"));
-
         ValueExpression value5 = factory.createValueExpression(context, "${var-1}", Integer.class);
-        expected.add(new AstVariableLengthBytesMatcher(value5, "cap4"));
 
-        expected.add(new AstByteLengthBytesMatcher("b"));
-        expected.add(new AstShortLengthBytesMatcher("s"));
-        expected.add(new AstIntLengthBytesMatcher("i"));
-        expected.add(new AstLongLengthBytesMatcher("l"));
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(
+                new AstExactTextMatcher("Hello"),
+                new AstExactBytesMatcher(new byte[] { 0x01, (byte) 0x02, (byte) 0x03}),
+                new AstRegexMatcher(NamedGroupPattern.compile("/.*\\n/")),
+                new AstRegexMatcher(NamedGroupPattern.compile("/(.*)\\n/(:cap1)/")),
+                new AstExpressionMatcher(value),
+                new AstFixedLengthBytesMatcher(64),
+                new AstFixedLengthBytesMatcher(64, "cap2"),
+                new AstVariableLengthBytesMatcher(value2),
+                new AstVariableLengthBytesMatcher(value3),
+                new AstVariableLengthBytesMatcher(value4, "cap3"),
+                new AstVariableLengthBytesMatcher(value5, "cap4"),
+                new AstByteLengthBytesMatcher("b"),
+                new AstShortLengthBytesMatcher("s"),
+                new AstIntLengthBytesMatcher("i"),
+                new AstLongLengthBytesMatcher("l")));
 
         assertEquals(expected, actual);
     }
@@ -776,63 +756,71 @@ public class ScriptParserImplTest {
 
     @Test
     public void shouldParseMultLiteralTextValue() throws Exception {
-        String scriptFragment = "\"Hello\" \"World\"";
+        String scriptFragment = "write \"Hello\" \"World\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValue> actual = parser.parseWithStrategy(scriptFragment, WRITE_VALUE_LIST);
+        AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
 
-        List<AstValue> expected = new ArrayList<AstValue>();
-        expected.add(new AstLiteralTextValue("Hello"));
-        expected.add(new AstLiteralTextValue("World"));
+        AstWriteValueNode expected = new AstWriteValueNode();
+        expected.setValues(Arrays.<AstValue>asList(
+                new AstLiteralTextValue("Hello"),
+                new AstLiteralTextValue("World")));
 
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldParseMultLiteralBytesValue() throws Exception {
-        String scriptFragment = "[0x01 0x02] [0x03 0x04]";
+        String scriptFragment = "write [0x01 0x02] [0x03 0x04]";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValue> actual = parser.parseWithStrategy(scriptFragment, WRITE_VALUE_LIST);
+        AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
 
-        List<AstValue> expected = new ArrayList<AstValue>();
-        expected.add(new AstLiteralBytesValue(new byte[] { (byte) 0x01, (byte) 0x02 }));
-        expected.add(new AstLiteralBytesValue(new byte[] { (byte) 0x03, (byte) 0x04 }));
+        AstWriteValueNode expected = new AstWriteValueNode();
+        expected.setValues(Arrays.<AstValue>asList(
+                new AstLiteralBytesValue(new byte[] { (byte) 0x01, (byte) 0x02 }),
+                new AstLiteralBytesValue(new byte[] { (byte) 0x03, (byte) 0x04 })));
 
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldParseMultExpressionValue() throws Exception {
-        String scriptFragment = "${var1} ${var2}";
+        String scriptFragment = "write ${var1} ${var2}";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValue> actual = parser.parseWithStrategy(scriptFragment, WRITE_VALUE_LIST);
+        AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
 
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
-
-        List<AstValue> expected = new ArrayList<AstValue>();
-        expected.add(new AstExpressionValue(factory.createValueExpression(context, "${var1}", byte[].class)));
-        expected.add(new AstExpressionValue(factory.createValueExpression(context, "${var2}", byte[].class)));
+        ValueExpression value1 = factory.createValueExpression(context, "${var1}", byte[].class);
+        ValueExpression value2 = factory.createValueExpression(context, "${var2}", byte[].class);
+        
+        AstWriteValueNode expected = new AstWriteValueNode();
+        expected.setValues(Arrays.<AstValue>asList(
+                new AstExpressionValue(value1),
+                new AstExpressionValue(value2)));
 
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldParseMultAllValue() throws Exception {
-        String scriptFragment = "\"Hello\" [0x01 0x02] ${var1}";
+        String scriptFragment = "write \"Hello\" [0x01 0x02] ${var1}";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        List<AstValue> actual = parser.parseWithStrategy(scriptFragment, WRITE_VALUE_LIST);
+        AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
 
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
+        ValueExpression value1 = factory.createValueExpression(context, "${var1}", byte[].class);
+        
+        AstWriteValueNode expected = new AstWriteValueNode();
+        expected.setValues(Arrays.<AstValue>asList(
+                new AstLiteralTextValue("Hello"),
+                new AstLiteralBytesValue(new byte[] { (byte) 0x01, (byte) 0x02 }),
+                new AstExpressionValue(value1)));
 
-        List<AstValue> expected = new ArrayList<AstValue>();
-        expected.add(new AstLiteralTextValue("Hello"));
-        expected.add(new AstLiteralBytesValue(new byte[] { (byte) 0x01, (byte) 0x02 }));
-        expected.add(new AstExpressionValue(factory.createValueExpression(context, "${var1}", byte[].class)));
         assertEquals(expected, actual);
     }
 

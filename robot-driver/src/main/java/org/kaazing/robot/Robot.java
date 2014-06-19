@@ -83,7 +83,7 @@ public class Robot {
         return finishedFuture;
     }
 
-    public ChannelFuture prepare(String script, String scriptFormat) throws Exception {
+    public ChannelFuture prepare(String script) throws Exception {
 
         if (preparedFuture != null) {
             throw new IllegalStateException("Script already prepared");
@@ -93,7 +93,7 @@ public class Robot {
 
         final boolean debugLogEnabled = LOGGER.isDebugEnabled();
 
-        final ScriptParser parser = new Parser(scriptFormat);
+        final ScriptParser parser = new Parser();
         scriptAST = parser.parse(new ByteArrayInputStream(expectedScript.getBytes(UTF_8)));
 
         if (debugLogEnabled) {
@@ -157,8 +157,8 @@ public class Robot {
         return preparedFuture;
     }
 
-    public ChannelFuture prepareAndStart(String script, String scriptFormat) throws Exception {
-        ChannelFuture prepareFuture = prepare(script, scriptFormat);
+    public ChannelFuture prepareAndStart(String script) throws Exception {
+        ChannelFuture prepareFuture = prepare(script);
         prepareFuture.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(final ChannelFuture future) throws Exception {

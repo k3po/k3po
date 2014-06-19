@@ -8,31 +8,24 @@ import java.io.InputStream;
 
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.behavior.visitor.AssociateStreamsVisitor;
-import org.kaazing.robot.behavior.visitor.InjectHttpEventsVisitor;
 import org.kaazing.robot.behavior.visitor.InjectBarriersVisitor;
 import org.kaazing.robot.behavior.visitor.InjectEventsVisitor;
+import org.kaazing.robot.behavior.visitor.InjectHttpEventsVisitor;
 import org.kaazing.robot.behavior.visitor.ValidateBarriersVisitor;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.parser.ScriptParseException;
 import org.kaazing.robot.lang.parser.ScriptParser;
-import org.kaazing.robot.lang.parser.ScriptParserImpl;
+import org.kaazing.robot.lang.parser.v2.ScriptParserImpl;
 
 public class Parser implements ScriptParser {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(Parser.class);
 
-    private final String format;
     private final ScriptParser parser;
 
-    public Parser(String format) {
-        this.format = format;
-        parser = new ScriptParserImpl(format);
-    }
-
-    public String getFormat() {
-        return format;
+    public Parser() {
+        parser = new ScriptParserImpl();
     }
 
     @Override

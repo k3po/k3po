@@ -34,7 +34,6 @@ import org.kaazing.robot.lang.parser.ScriptParseException;
 public class V2RobotIT {
 
     private static final long TEST_TIMEOUT = 2000;
-    private static final String FORMAT_VERSION = "text/x-robot-2";
 
     private Robot robot;
     private Socket client;
@@ -68,7 +67,7 @@ public class V2RobotIT {
         String script = "foobar";
 
         thrown.expect(ScriptParseException.class);
-        robot.prepare(script, FORMAT_VERSION);
+        robot.prepare(script);
     }
 
     @Test(timeout = TEST_TIMEOUT)
@@ -77,7 +76,7 @@ public class V2RobotIT {
         String script = "foobar";
 
         thrown.expect(ScriptParseException.class);
-        robot.prepareAndStart(script, FORMAT_VERSION);
+        robot.prepareAndStart(script);
     }
 
     @Test(timeout = TEST_TIMEOUT)
@@ -93,7 +92,7 @@ public class V2RobotIT {
         final String script = "";
         final String expected = script;
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
 
@@ -116,7 +115,7 @@ public class V2RobotIT {
         String expected = script;
         // @formatter:on
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
 
@@ -143,7 +142,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
 
@@ -176,7 +175,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 60001));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
 
@@ -220,7 +219,7 @@ public class V2RobotIT {
                 ".*";
         // @formatter:on
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
 
@@ -262,7 +261,7 @@ public class V2RobotIT {
                 "accept tcp://localhost:62345\n";
         // @formatter:on
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
 
@@ -290,7 +289,7 @@ public class V2RobotIT {
                 "accept tcp://localhost:62345\n";
         // @formatter:on
 
-        robot.prepare(script, FORMAT_VERSION).await();
+        robot.prepare(script).await();
 
         RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
 
@@ -316,7 +315,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -349,7 +348,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -382,7 +381,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -422,7 +421,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -455,7 +454,7 @@ public class V2RobotIT {
              "closed\n";
          // @formatter:on
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
 
@@ -486,7 +485,7 @@ public class V2RobotIT {
         String expected = script;
         // @formatter:on
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
 
@@ -526,7 +525,7 @@ public class V2RobotIT {
                 "closed\n";
         // @formatter:on
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
         doneFuture.await();
@@ -554,7 +553,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -582,7 +581,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -611,7 +610,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -640,7 +639,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -669,7 +668,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -698,7 +697,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -737,7 +736,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -773,7 +772,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -812,7 +811,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -846,7 +845,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -880,7 +879,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -915,7 +914,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -951,7 +950,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -987,7 +986,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1021,7 +1020,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1056,7 +1055,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1092,7 +1091,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1128,7 +1127,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1162,7 +1161,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1196,7 +1195,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1230,7 +1229,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1265,7 +1264,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1301,7 +1300,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1338,7 +1337,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1379,7 +1378,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1417,7 +1416,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1452,7 +1451,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1485,7 +1484,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1519,7 +1518,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1553,7 +1552,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1592,7 +1591,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1628,7 +1627,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1662,7 +1661,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1694,7 +1693,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         accepted = server.accept();
 
@@ -1718,7 +1717,7 @@ public class V2RobotIT {
             "closed\n";
         // @formatter:on
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
 
@@ -1760,7 +1759,7 @@ public class V2RobotIT {
 
         server.bind(new InetSocketAddress("localhost", 62346));
 
-        robot.prepareAndStart(script, FORMAT_VERSION).await();
+        robot.prepareAndStart(script).await();
 
         // Leave hung open we want this channel to be incomplete
         // accepted = server.accept();

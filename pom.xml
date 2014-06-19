@@ -96,8 +96,8 @@
 
         <dependency>
             <groupId>org.antlr</groupId>
-            <artifactId>antlr-runtime</artifactId>
-            <version>3.5</version>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.2.2</version>
         </dependency>
 
         <dependency>

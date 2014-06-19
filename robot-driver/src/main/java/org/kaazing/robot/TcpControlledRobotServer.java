@@ -27,7 +27,6 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.netty.bootstrap.BootstrapFactory;
 import org.kaazing.netty.bootstrap.ServerBootstrap;
 import org.kaazing.netty.channel.ChannelAddress;
@@ -37,7 +36,6 @@ import org.kaazing.robot.control.handler.ControlDecoderCompatibility;
 import org.kaazing.robot.control.handler.ControlEncoder;
 import org.kaazing.robot.control.handler.ControlEncoderCompatibility;
 import org.kaazing.robot.control.handler.ControlServerHandler;
-import org.kaazing.robot.lang.parser.ScriptParserImpl;
 import org.kaazing.robot.netty.bootstrap.SingletonBootstrapFactory;
 
 public class TcpControlledRobotServer implements RobotServer {
@@ -60,12 +58,6 @@ public class TcpControlledRobotServer implements RobotServer {
 
     @Override
     public void start() throws Exception {
-        start(ScriptParserImpl.EARLIEST_SUPPORTED_FORMAT);
-    }
-
-    @Override
-    public void start(final String format) throws Exception {
-
         if (acceptURI == null) {
             throw new NullPointerException("acceptURI");
         }
@@ -102,7 +94,7 @@ public class TcpControlledRobotServer implements RobotServer {
                     pipeline.addLast("control.logging", logging);
                 }
 
-                ChannelHandler controller = new ControlServerHandler(format);
+                ChannelHandler controller = new ControlServerHandler();
                 pipeline.addLast("control.handler", controller);
 
                 return pipeline;

@@ -4,21 +4,24 @@
 
 package org.kaazing.robot.lang.regex;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.kaazing.robot.lang.ast.util.AstUtil.equivalent;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.Lexer;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.TokenStream;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.TokenStream;
+import org.kaazing.robot.lang.regex.RegexParser.GroupNContext;
+import org.kaazing.robot.lang.regex.RegexParser.LiteralContext;
 
 public class NamedGroupPattern {
 
@@ -29,17 +32,23 @@ public class NamedGroupPattern {
 
     public static NamedGroupPattern compile(String regexWithGroupNames) {
         try {
-            ByteArrayInputStream input = new ByteArrayInputStream(regexWithGroupNames.getBytes(StandardCharsets.UTF_8));
+            ByteArrayInputStream input = new ByteArrayInputStream(regexWithGroupNames.getBytes(UTF_8));
             CharStream ais = new ANTLRInputStream(input);
-            Lexer lexer = new NamedGroupPatternLexer(ais);
+            Lexer lexer = new RegexLexer(ais);
             TokenStream tokens = new CommonTokenStream(lexer);
-            NamedGroupPatternParser parser = new NamedGroupPatternParser(tokens);
-            NamedGroupPattern pattern = parser.namedGroupPattern(regexWithGroupNames);
-            if (pattern == null) {
-                int position = lexer.getCharPositionInLine();
-                throw new PatternSyntaxException("Invalid named group pattern", regexWithGroupNames, position);
-            }
-            return pattern;
+            RegexParser parser = new RegexParser(tokens);
+            final List<String> groupNames = new ArrayList<String>();
+            parser.addParseListener(new RegexBaseListener() {
+                @Override
+                public void exitGroupN(GroupNContext ctx) {
+                    String capture = ctx.capture.getText();
+                    String groupName = capture.substring(2, capture.length() - 1);
+                    groupNames.add(groupName);
+                }
+            });
+            LiteralContext literal = parser.literal();
+            String regex = literal.regex.getText();
+            return new NamedGroupPattern(Pattern.compile(regex), groupNames);
         }
         catch (IOException e) {
             PatternSyntaxException pse = new PatternSyntaxException("I/O exception", regexWithGroupNames, 0);
@@ -47,7 +56,8 @@ public class NamedGroupPattern {
             throw pse;
         }
         catch (RecognitionException e) {
-            PatternSyntaxException pse = new PatternSyntaxException("Unexpected type", regexWithGroupNames, e.index);
+            PatternSyntaxException pse =
+                new PatternSyntaxException("Unexpected type", regexWithGroupNames, e.getInputStream().index());
             pse.initCause(e);
             throw pse;
         }
@@ -92,7 +102,6 @@ public class NamedGroupPattern {
 
     @Override
     public String toString() {
-        // To bad we cant generate a string with the proper nesting of parens here
-        return groupNames.isEmpty() ? String.format("/%s/", pattern) : String.format("/%s/%s/", pattern, groupNames);
+        return String.format("/%s/", pattern);
     }
 }

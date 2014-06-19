@@ -1,77 +1,34 @@
-grammar NamedGroupPattern;
+grammar Regex;
 
-options {
-  k=2;
-}
-
-@lexer::header {
-package org.kaazing.robot.lang.regex;
-
-}
-
-@lexer::members {
-	public void reportError(RecognitionException e){
-	
-	}
-}
-
-@parser::header {
-package org.kaazing.robot.lang.regex;
-
-import java.util.Collections;
-import java.util.regex.Pattern;
-import org.kaazing.robot.lang.regex.NamedGroupPattern;
-}
-
-// Disable automatic error recovery
-@members {
-
-    @Override
-    public Object recoverFromMismatchedSet(IntStream pattern,
-                                           RecognitionException re,
-                                           BitSet follow)
-        throws RecognitionException {
-
-        throw re;
-    } 
-
-    @Override
-    protected Object recoverFromMismatchedToken(IntStream input,
-                                                int ttype,
-                                                BitSet follow)
-        throws RecognitionException {
-
-        throw new MismatchedTokenException(ttype, input);
-    } 
-}
-   
-namedGroupPattern [String pattern] returns [NamedGroupPattern value]
-  :     { List<String> groupNames = new ArrayList<String>(); }
-    ForwardSlash '^'? expression[groupNames] '$'? ForwardSlash 
-    { $value = new NamedGroupPattern(Pattern.compile($pattern.substring(1, $pattern.length() -1)), groupNames); }
+literal
+  : ForwardSlash regex=pattern ForwardSlash 
   ;
 
-expression [List<String> groupNames]
-  : sequence[groupNames] ( '|' sequence[groupNames] )*
+pattern
+  : '^'? expression '$'?
+  ;
+
+expression
+  : sequence ( '|' sequence )*
   ;
   
-sequence [List<String> groupNames]
-  : pattern[groupNames]+
+sequence
+  : group+
   ;
 
-pattern [List<String> groupNames]
+group
   : PatternNonGroup
-  | group0[groupNames]
+  | group0
   ;
   
-group0 [List<String> groupNames]
-  : LeftParen group[groupNames] RightParen PatternQuantifiers?
+group0
+  : LeftParen groupN RightParen PatternQuantifiers?
   ;
   
-group [List<String> groupNames]
-  : PatternNonCapturing expression[groupNames]
-  | capture=PatternCapturing expression[groupNames]  { groupNames.add($capture.text.substring(2, $capture.text.length() - 1)); }
-  | expression[groupNames]
+groupN
+  : PatternNonCapturing expression
+  | capture=PatternCapturing expression
+  | expression
   ;
 
 ForwardSlash: '/';
@@ -341,6 +298,5 @@ FF: '\u000C';
 fragment
 TAB: '\t';
 
-WS: (' ' | CR | LF | TAB | FF)+
-    { $channel = HIDDEN; };
+WS: (' ' | CR | LF | TAB | FF)+ -> skip;
 
