@@ -9,8 +9,6 @@ import java.util.concurrent.TimeoutException;
 public interface RobotServer {
     void start() throws Exception;
 
-    void start(String format) throws Exception;
-
     void stop() throws TimeoutException;
 
     void join() throws InterruptedException;

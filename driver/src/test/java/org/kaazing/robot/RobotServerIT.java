@@ -28,18 +28,20 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 
 public class RobotServerIT {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(RobotServerIT.class);
 
 //    @Rule
-//    public TestWatcher watcher = new TestWatcher() {
-//        @Override
-//        protected void failed(Throwable e, Description description) {
-//            LOGGER.info("Failed test: " + description.getMethodName() + " Cause: " + e);
-//        }
-//    };
+    public TestWatcher watcher = new TestWatcher() {
+        @Override
+        protected void failed(Throwable e, Description description) {
+            LOGGER.info("Failed test: " + description.getMethodName() + " Cause: " + e);
+        }
+    };
 
     private RobotServer robot;
     private Socket control;
@@ -613,148 +615,4 @@ public class RobotServerIT {
         error.flip();
     }
 
-    @Test(timeout = 2000)
-    public void canOverrideFormatToV2() throws Exception {
-        // Restart the robot to make sure we have a default parser that is different
-        control.close();
-        robot.stop();
-        robot.start("text/x-robot");
-        control = new Socket();
-        control.connect(new InetSocketAddress("localhost", 61234));
-
-        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
-        out.append("PREPARE\n");
-        out.append("name:connect-then-close\n");
-        out.append("content-length:71\n");
-        out.append("content-type:text/x-robot-2\n");
-        out.append("\n");
-        out.append("accept tcp://localhost:62345\n");
-        out.append("accepted\n");
-        out.append("connected\n");
-        out.append("read 0x01\n");
-        out.append("close\n");
-        out.append("closed\n");
-        out.flush();
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
-
-        CharBuffer prepared = CharBuffer.allocate(34);
-        while (prepared.hasRemaining()) {
-            in.read(prepared);
-        }
-        prepared.flip();
-
-        // @formatter:off
-        CharBuffer expectedPrepared = CharBuffer.wrap(
-                "PREPARED\n" +
-                "name:connect-then-close\n" +
-                "\n");
-        // @formatter:on
-
-        assertEquals(expectedPrepared, prepared);
-
-        // Connect before we START
-        client.connect(new InetSocketAddress("localhost", 62345));
-
-        out.append("START\n");
-        out.append("name:connect-then-close\n");
-        out.append("\n");
-        out.flush();
-
-        CharBuffer started = CharBuffer.allocate(33);
-        while (started.hasRemaining()) {
-            in.read(started);
-        }
-        started.flip();
-
-        // @formatter:off
-        CharBuffer expectedStarted = CharBuffer.wrap(
-                "STARTED\n" +
-                "name:connect-then-close\n" +
-                "\n");
-        // @formatter:on
-        assertEquals(expectedStarted, started);
-
-        BufferedWriter clientOut = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-        clientOut.write(1);
-        clientOut.flush();
-
-        CharBuffer finished = CharBuffer.allocate(123);
-        while (finished.hasRemaining()) {
-            in.read(finished);
-        }
-        finished.flip();
-
-        // @formatter:off
-        CharBuffer expectedFinished = CharBuffer.wrap(
-                "FINISHED\n" +
-                "name:connect-then-close\n" +
-                "content-length:71\n" +
-                "\n" +
-                "accept tcp://localhost:62345\n" +
-                "accepted\n" +
-                "connected\n" +
-                "read 0x01\n" +
-                "close\n" +
-                "closed\n");
-        // @formatter:on
-
-        assertEquals(expectedFinished, finished);
-        assertFalse(in.ready());
-
-        assertEquals(-1, client.getInputStream().read());
-    }
-
-    @Test(timeout = 2000)
-    public void canOverrideFormatToV2UsingV1ScriptShouldFail() throws Exception {
-        // Restart the robot to make sure we have a default parser that is different
-        control.close();
-        robot.stop();
-        robot.start("text/x-robot");
-        control = new Socket();
-        control.connect(new InetSocketAddress("localhost", 61234));
-
-        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
-        out.append("PREPARE\n");
-        out.append("name:connect-then-close\n");
-        out.append("content-length:71\n");
-        out.append("content-type:text/x-robot-2\n");
-        out.append("\n");
-        out.append("accept tcp://localhost:62345\n");
-        out.append("accepted\n");
-        out.append("connected\n");
-        out.append("read byte\n");
-        out.append("close\n");
-        out.append("closed\n");
-        out.flush();
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
-
-        String msg = in.readLine();
-        assertEquals("ERROR", msg);
-
-        msg = in.readLine();
-        assertEquals("name:connect-then-close", msg);
-
-        msg = in.readLine();
-        Pattern p = Pattern.compile("summary:.+");
-        Matcher m = p.matcher(msg);
-        assertTrue(m.matches());
-
-        msg = in.readLine();
-        p = Pattern.compile("content-length:(\\d+)");
-        m = p.matcher(msg);
-        assertTrue(m.matches());
-
-        final int contentLength = Integer.parseInt(m.group(1));
-
-        // End of header
-        in.readLine();
-
-        CharBuffer error = CharBuffer.allocate(contentLength);
-        while (error.hasRemaining()) {
-            in.read(error);
-        }
-        error.flip();
-    }
 }

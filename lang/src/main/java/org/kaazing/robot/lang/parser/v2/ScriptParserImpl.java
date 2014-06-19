@@ -4,24 +4,22 @@
 
 package org.kaazing.robot.lang.parser.v2;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.kaazing.robot.lang.el.ExpressionFactoryUtils.newExpressionFactory;
 import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.SCRIPT;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 import javax.el.ExpressionFactory;
 
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.MismatchedSetException;
-import org.antlr.runtime.MismatchedTokenException;
-import org.antlr.runtime.NoViableAltException;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.Token;
-
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.InputMismatchException;
+import org.antlr.v4.runtime.NoViableAltException;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Token;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.el.ExpressionContext;
 import org.kaazing.robot.lang.parser.ScriptParseException;
@@ -62,7 +60,7 @@ public class ScriptParserImpl implements ScriptParser {
     // package-private for unit testing
     <T> T parseWithStrategy(String input, ScriptParseStrategy<T> strategy) throws ScriptParseException {
 
-        return parseWithStrategy(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)), strategy);
+        return parseWithStrategy(new ByteArrayInputStream(input.getBytes(UTF_8)), strategy);
     }
 
     <T> T parseWithStrategy(InputStream input, ScriptParseStrategy<T> strategy) throws ScriptParseException {
@@ -72,11 +70,9 @@ public class ScriptParserImpl implements ScriptParser {
             RobotLexer lexer = new RobotLexer(ais);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             RobotParser parser = new RobotParser(tokens);
-            parser.setExpressionFactory(factory);
-            parser.setExpressionContext(context);
 
             try {
-                return strategy.parse(parser);
+                return strategy.parse(parser, factory, context);
 
             }
             catch (IllegalArgumentException iae) {
@@ -99,30 +95,10 @@ public class ScriptParserImpl implements ScriptParser {
         }
     }
 
-    void lex(InputStream input) {
-        try {
-            ANTLRInputStream ais = new ANTLRInputStream(input);
-            RobotLexer lexer = new RobotLexer(ais);
-            Token token;
-            while ((token = lexer.nextToken()).getType() != Token.EOF) {
-                System.out.println("Token: " + token);
-            }
-
-        }
-        catch (Throwable t) {
-            System.out.println("Exception: " + t);
-            t.printStackTrace();
-        }
-    }
-
     private ScriptParseException createScriptParseException(RobotParser parser, RecognitionException re) {
 
-        if (re instanceof MismatchedSetException) {
-            return createScriptParseException(parser, (MismatchedSetException) re);
-
-        }
-        else if (re instanceof MismatchedTokenException) {
-            return createScriptParseException(parser, (MismatchedTokenException) re);
+        if (re instanceof InputMismatchException) {
+            return createScriptParseException(parser, (InputMismatchException) re);
 
         }
         else if (re instanceof NoViableAltException) {
@@ -130,7 +106,7 @@ public class ScriptParserImpl implements ScriptParser {
 
         }
         else {
-            Token token = re.token;
+            Token token = re.getOffendingToken();
             String desc = String.format("line %d:%d: ", token.getLine(), token.getCharPositionInLine());
 
             String tokenText = token.getText();
@@ -145,7 +121,7 @@ public class ScriptParserImpl implements ScriptParser {
 
                 @SuppressWarnings("unused")
                 String unexpectedTokenName =
-                        re.getUnexpectedType() != -1 ? parser.getTokenNames()[re.getUnexpectedType()]
+                        token.getType() != -1 ? parser.getTokenNames()[token.getType()]
                                 : parser.getTokenNames()[0];
 
                 msg = String.format("error: unexpected keyword '%s'", tokenText);
@@ -155,54 +131,10 @@ public class ScriptParserImpl implements ScriptParser {
         }
     }
 
-    private ScriptParseException createScriptParseException(RobotParser parser, MismatchedSetException mse) {
-
-        String desc = String.format("line %d:%d: ", mse.line, mse.charPositionInLine);
-
-        /*
-         * Unfortunately we can't do much with a MismatchedSetException. We
-         * COULD -- but only if the mse.expecting BitSet was properly filled in
-         * by the auto-generated parser. It isn't. Apparently it's a known ANTLR
-         * bug:
-         *
-         * http://www.antlr.org/pipermail/antlr-interest/2007-September/023590.html
-         * but not yet fixed. Sigh.
-         */
-
-        String msg = String.format("%sunexpected character: '%s'", desc, escapeChar((char) mse.c));
-
-        return new ScriptParseException(msg, mse);
-    }
-
-    private ScriptParseException createScriptParseException(RobotParser parser, MismatchedTokenException mte) {
-
-        String desc = String.format("line %d:%d: %s", mte.line, mte.charPositionInLine, mte.toString());
-
-        return new ScriptParseException(desc);
-        /*
-         * This didn't really give us a meaningful error. toString seems to do a
-         * better job
-         *
-         * char currChar = (char) mte.c;
-         *
-         * @SuppressWarnings("unused") String desc =
-         * String.format("line %d:%d: '%s'", mte.line, mte.charPositionInLine,
-         * escapeChar(currChar));
-         *
-         * char expectedChar = (char) mte.expecting;
-         *
-         * String msg =
-         * String.format("mismatched character: saw '%s', expected '%s'",
-         * escapeChar(currChar), escapeChar(expectedChar));
-         *
-         * return new ScriptParseException( msg );
-         */
-    }
-
     private ScriptParseException createScriptParseException(RobotParser parser, NoViableAltException nvae) {
 
-        String desc = String.format("line %d:%d: ", nvae.line, nvae.charPositionInLine);
-        String msg = String.format("%sunexpected character: '%s'", desc, escapeChar((char) nvae.c));
+        String desc = String.format("line %d:%d: ", nvae.getStartToken().getLine(), nvae.getOffendingToken().getCharPositionInLine());
+        String msg = String.format("%sunexpected character: '%s'", desc, escapeChar(nvae.getOffendingToken().getText().charAt(0)));
 
         return new ScriptParseException(msg);
     }

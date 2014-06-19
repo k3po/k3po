@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayInputStream;
 
 import org.junit.Test;
-
 import org.kaazing.robot.behavior.parser.Parser;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.builder.AstScriptNodeBuilder;
@@ -376,7 +375,7 @@ public class InjectEventsVisitorTest {
             "close\n" +
             "closed\n";
 
-        ScriptParser parser = new Parser(org.kaazing.robot.lang.parser.ScriptParserImpl.LATEST_SUPPORTED_FORMAT);
+        ScriptParser parser = new Parser();
         parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
     }
 
@@ -389,7 +388,7 @@ public class InjectEventsVisitorTest {
             "connect tcp://localhost:7788\n" +
             "connected\n";
 
-        ScriptParser parser = new Parser(org.kaazing.robot.lang.parser.ScriptParserImpl.LATEST_SUPPORTED_FORMAT);
+        ScriptParser parser = new Parser();
         parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
     }
 
@@ -406,7 +405,7 @@ public class InjectEventsVisitorTest {
             "close\n" +
             "closed\n";
 
-        ScriptParser parser = new Parser(org.kaazing.robot.lang.parser.ScriptParserImpl.LATEST_SUPPORTED_FORMAT);
+        ScriptParser parser = new Parser();
         parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
     }
 
@@ -423,7 +422,7 @@ public class InjectEventsVisitorTest {
             "close\n" +
             "closed\n";
 
-        ScriptParser parser = new Parser(org.kaazing.robot.lang.parser.ScriptParserImpl.LATEST_SUPPORTED_FORMAT);
+        ScriptParser parser = new Parser();
         parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
     }
 }

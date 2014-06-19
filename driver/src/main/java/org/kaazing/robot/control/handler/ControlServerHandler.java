@@ -30,12 +30,6 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     private Robot                       robot;
     private RobotCompletionFuture       scriptDoneFuture;
-    private final String scriptFormat;
-
-    public ControlServerHandler(String scriptFormat) {
-        this.scriptFormat = scriptFormat;
-        logger.debug("Control channel initialized with scriptFormat " + scriptFormat);
-    }
 
     private final ChannelFuture channelClosedFuture = Channels.future(null);
 
@@ -75,15 +69,8 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
         final PrepareMessage prepare = (PrepareMessage) evt.getMessage();
 
-        String format;
-        if (prepare.hasFormatOverride()) {
-            format = prepare.getScriptFormatOverride();
-        } else {
-            format = scriptFormat;
-        }
-
         if (logger.isDebugEnabled()) {
-            logger.debug("preparing robot execution for script " + prepare.getScriptName() + " with format " + format);
+            logger.debug("preparing robot execution for script " + prepare.getScriptName());
         }
 
         robot = new Robot();
@@ -91,7 +78,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         ChannelFuture prepareFuture;
         try {
             // @formatter:off
-            prepareFuture = robot.prepare(prepare.getExpectedScript(), format);
+            prepareFuture = robot.prepare(prepare.getExpectedScript());
             // @formatter:on
         }
         catch (Exception e) {

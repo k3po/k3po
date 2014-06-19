@@ -9,8 +9,8 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.Token;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.Token;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
