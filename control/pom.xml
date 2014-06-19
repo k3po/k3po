@@ -18,13 +18,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.kaazing</groupId>
-		<artifactId>robot-parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<groupId>org.kaazing.robot</groupId>
+        <artifactId>org.kaazing.robot.parent</artifactId>
+		<version>0.0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>robot-control</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>org.kaazing.robot.control</artifactId>
+	<version>0.0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>robot/control</name>

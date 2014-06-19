@@ -18,14 +18,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>robot-parent</artifactId>
-        <groupId>org.kaazing</groupId>
-        <version>0.0.1-SNAPSHOT</version>
+        <groupId>org.kaazing.robot</groupId>
+        <artifactId>org.kaazing.robot.parent</artifactId>
+        <version>0.0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>robot-examples</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>org.kaazing.robot.examples</artifactId>
+    <version>0.0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>robot/examples</name>
@@ -43,28 +43,28 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>robot-control</artifactId>
+            <artifactId>control</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>robot-driver</artifactId>
+            <artifactId>org.kaazing.robot.driver</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>robot-junit</artifactId>
+            <artifactId>org.kaazing.robot.junit</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>robot-lang</artifactId>
+            <artifactId>org.kaazing.robot.lang</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>

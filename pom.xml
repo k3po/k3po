@@ -18,10 +18,10 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.kaazing</groupId>
-    <artifactId>robot-parent</artifactId>
+    <groupId>org.kaazing.robot</groupId>
+    <artifactId>org.kaazing.robot.parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.0.1-SNAPSHOT</version>
 
     <name>robot/parent</name>
     <url>https://github.com/kaazing/robot</url>
@@ -49,14 +49,14 @@
     </properties>
 
     <modules>
-        <module>robot-lang</module>
-        <module>robot-driver</module>
+        <module>lang</module>
+        <module>driver</module>
         <module>robot-maven-plugin</module>
-        <module>robot-control</module>
-        <module>robot-junit</module>
-        <module>robot-examples</module>
-        <module>robot-all</module>
-        <module>robot-cli</module>
+        <module>control</module>
+        <module>junit</module>
+        <module>examples</module>
+        <module>all</module>
+        <module>cli</module>
     </modules>
 
     <dependencies>

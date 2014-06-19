@@ -13,21 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 -->
+
+<!-- A convenience project that packages the robot project into a runnable cli -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.kaazing</groupId>
-        <artifactId>robot-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <groupId>org.kaazing.robot</groupId>
+        <artifactId>org.kaazing.robot.parent</artifactId>
+        <version>0.0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>robot-all</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>org.kaazing.robot.all</artifactId>
+    <version>0.0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>robot/lang</name>
+    <name>robot/all</name>
     <url>https://github.com/kaazing/robot</url>
     <description>
         Robot lang
@@ -38,34 +40,32 @@
         <checkstyle.config.location>../config/checkstyle/checkstyle.xml</checkstyle.config.location>
     </properties>
 
-    <!-- <dependencies> </dependencies> -->
-
     <dependencies>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>robot-control</artifactId>
+            <artifactId>org.kaazing.robot.control</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>robot-driver</artifactId>
+            <artifactId>org.kaazing.robot.driver</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>robot-junit</artifactId>
+            <artifactId>org.kaazing.robot.junit</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>robot-lang</artifactId>
+            <artifactId>org.kaazing.robot.lang</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
