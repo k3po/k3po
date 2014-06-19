@@ -4,7 +4,7 @@
 //
 // TODO: Move back to Robot tests to test AST after visitor transformations.
 //
-package org.kaazing.robot.lang.parser.v2;
+package org.kaazing.robot.lang.parser;
 //
 // import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.SCRIPT;
 // import static org.junit.Assert.assertEquals;

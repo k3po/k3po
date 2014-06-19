@@ -2,7 +2,7 @@
  * Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
  */
 
-package org.kaazing.robot.lang.parser.v2;
+package org.kaazing.robot.lang.parser;
 
 //import org.kaazing.robot.behavior.BehaviorContext;
 //import org.kaazing.robot.channel.BehaviorPipelineFactory;

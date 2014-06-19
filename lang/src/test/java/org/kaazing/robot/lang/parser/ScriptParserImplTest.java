@@ -2,26 +2,26 @@
  * Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
  */
 
-package org.kaazing.robot.lang.parser.v2;
+package org.kaazing.robot.lang.parser;
 
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.ACCEPT;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.CLOSE;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.CLOSED;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.CONNECTED;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.EXACT_BYTES_MATCHER;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.EXPRESSION_MATCHER;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.FIXED_LENGTH_BYTES_MATCHER;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.LITERAL_BYTES_VALUE;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.LITERAL_TEXT_VALUE;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.READ;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.READ_AWAIT;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.READ_NOTIFY;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.REGEX_MATCHER;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.SCRIPT;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.VARIABLE_LENGTH_BYTES_MATCHER;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.WRITE;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.WRITE_AWAIT;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.WRITE_NOTIFY;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.ACCEPT;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.CLOSE;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.CLOSED;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.CONNECTED;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.EXACT_BYTES_MATCHER;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.EXPRESSION_MATCHER;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.FIXED_LENGTH_BYTES_MATCHER;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.LITERAL_BYTES_VALUE;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.LITERAL_TEXT_VALUE;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_AWAIT;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_NOTIFY;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.REGEX_MATCHER;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.SCRIPT;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.VARIABLE_LENGTH_BYTES_MATCHER;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_AWAIT;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_NOTIFY;
 import static org.kaazing.robot.lang.regex.NamedGroupPattern.compile;
 import static org.kaazing.robot.lang.test.junit.Assert.assertEquals;
 
@@ -73,6 +73,7 @@ import org.kaazing.robot.lang.ast.value.AstLiteralTextValue;
 import org.kaazing.robot.lang.ast.value.AstValue;
 import org.kaazing.robot.lang.el.ExpressionContext;
 import org.kaazing.robot.lang.parser.ScriptParseException;
+import org.kaazing.robot.lang.parser.ScriptParserImpl;
 import org.kaazing.robot.lang.regex.NamedGroupPattern;
 
 public class ScriptParserImplTest {

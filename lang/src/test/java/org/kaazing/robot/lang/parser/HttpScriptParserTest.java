@@ -2,29 +2,28 @@
  * Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
  */
 
-package org.kaazing.robot.lang.parser.v2;
+package org.kaazing.robot.lang.parser;
 
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.READ_HTTP_HEADER;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.SCRIPT;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.WRITE_HTTP_HEADER;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.WRITE_HTTP_CONTENT_LENGTH;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.READ_HTTP_METHOD;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.WRITE_HTTP_METHOD;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.READ_HTTP_PARAMETER;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.WRITE_HTTP_PARAMETER;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.READ_HTTP_VERSION;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.WRITE_HTTP_VERSION;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.READ_HTTP_STATUS;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.WRITE_HTTP_STATUS;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.CLOSE_HTTP_REQUEST;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.CLOSE_HTTP_RESPONSE;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.CLOSE_HTTP_REQUEST;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.CLOSE_HTTP_RESPONSE;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_HEADER;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_METHOD;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_PARAMETER;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_STATUS;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_VERSION;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.SCRIPT;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_CONTENT_LENGTH;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_HEADER;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_METHOD;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_PARAMETER;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_STATUS;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_VERSION;
 import static org.kaazing.robot.lang.test.junit.Assert.assertEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
 
 import org.junit.Test;
-
 import org.kaazing.robot.lang.ast.AstCloseHttpRequestNode;
 import org.kaazing.robot.lang.ast.AstCloseHttpResponseNode;
 import org.kaazing.robot.lang.ast.AstReadHttpHeaderNode;
@@ -53,6 +52,7 @@ import org.kaazing.robot.lang.ast.builder.AstWriteHttpMethodNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstWriteHttpParameterNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstWriteHttpStatusNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstWriteHttpVersionNodeBuilder;
+import org.kaazing.robot.lang.parser.ScriptParserImpl;
 
 public class HttpScriptParserTest {
 

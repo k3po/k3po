@@ -2,10 +2,10 @@
  * Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
  */
 
-package org.kaazing.robot.lang.parser.v2;
+package org.kaazing.robot.lang.parser;
 
 import static java.lang.Integer.parseInt;
-import static org.kaazing.robot.lang.parser.v2.ParserHelper.parseHexBytes;
+import static org.kaazing.robot.lang.parser.ParserHelper.parseHexBytes;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -72,6 +72,8 @@ import org.kaazing.robot.lang.ast.value.AstLiteralBytesValue;
 import org.kaazing.robot.lang.ast.value.AstLiteralTextValue;
 import org.kaazing.robot.lang.ast.value.AstValue;
 import org.kaazing.robot.lang.el.ExpressionContext;
+import org.kaazing.robot.lang.parser.v2.RobotBaseVisitor;
+import org.kaazing.robot.lang.parser.v2.RobotParser;
 import org.kaazing.robot.lang.parser.v2.RobotParser.AcceptNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.AcceptableNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.BarrierNodeContext;

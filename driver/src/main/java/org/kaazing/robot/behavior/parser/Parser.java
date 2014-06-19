@@ -16,7 +16,7 @@ import org.kaazing.robot.behavior.visitor.ValidateBarriersVisitor;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.parser.ScriptParseException;
 import org.kaazing.robot.lang.parser.ScriptParser;
-import org.kaazing.robot.lang.parser.v2.ScriptParserImpl;
+import org.kaazing.robot.lang.parser.ScriptParserImpl;
 
 public class Parser implements ScriptParser {
 

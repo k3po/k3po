@@ -2,7 +2,7 @@
  * Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
  */
 
-package org.kaazing.robot.lang.parser.v2;
+package org.kaazing.robot.lang.parser;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,6 +15,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.kaazing.robot.lang.parser.v2.RobotLexer;
 
 public class RobotScriptLexerTest {
     private File scriptFile;

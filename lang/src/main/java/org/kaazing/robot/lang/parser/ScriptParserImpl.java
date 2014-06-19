@@ -2,11 +2,11 @@
  * Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
  */
 
-package org.kaazing.robot.lang.parser.v2;
+package org.kaazing.robot.lang.parser;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.kaazing.robot.lang.el.ExpressionFactoryUtils.newExpressionFactory;
-import static org.kaazing.robot.lang.parser.v2.ScriptParseStrategy.SCRIPT;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.SCRIPT;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -22,8 +22,8 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.el.ExpressionContext;
-import org.kaazing.robot.lang.parser.ScriptParseException;
-import org.kaazing.robot.lang.parser.ScriptParser;
+import org.kaazing.robot.lang.parser.v2.RobotLexer;
+import org.kaazing.robot.lang.parser.v2.RobotParser;
 
 public class ScriptParserImpl implements ScriptParser {
 
