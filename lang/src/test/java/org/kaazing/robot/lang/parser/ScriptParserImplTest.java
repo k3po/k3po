@@ -27,6 +27,7 @@ import static org.kaazing.robot.lang.test.junit.Assert.assertEquals;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.el.ExpressionFactory;
@@ -34,6 +35,7 @@ import javax.el.ValueExpression;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.kaazing.robot.lang.LocationInfo;
 import org.kaazing.robot.lang.ast.AstAcceptNode;
 import org.kaazing.robot.lang.ast.AstCloseNode;
 import org.kaazing.robot.lang.ast.AstClosedNode;
@@ -222,7 +224,7 @@ public class ScriptParserImplTest {
         byte[] arr = { 0x00, 0x00, 0x00, 0x05 };
 
         AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
-
+      
         assertEquals(expected, actual);
     }
 
@@ -272,7 +274,6 @@ public class ScriptParserImplTest {
         byte[] arr = ByteBuffer.allocate(8).putLong(-5).array();
 
         AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
-
         assertEquals(expected, actual);
     }
 
@@ -292,24 +293,6 @@ public class ScriptParserImplTest {
         assertEquals(expected, actual);
     }
 
-    @Ignore("KG-7535 not complete")
-    @Test
-    public void shouldParseCapturingRegexMatcher()
-        throws Exception {
-
-        String scriptFragment = "/([^\\s]+) followed by ([^\\s]+) before the end\\n/(:group1)(:group2)/";
-
-        ScriptParserImpl parser = new ScriptParserImpl();
-        AstRegexMatcher actual = parser.parseWithStrategy(scriptFragment, REGEX_MATCHER);
-
-        // note: capture name extraction tested in NamedGroupPattern unit tests
-        NamedGroupPattern pattern =
-                NamedGroupPattern.compile("/([^\\s]+) followed by ([^\\s]+) before the end\\n/(:group1)(:group2)/");
-        AstRegexMatcher expected = new AstRegexMatcher(pattern);
-
-        assertEquals(expected, actual);
-    }
-
     @Test
     public void shouldParseFixedLengthBytesMatcher()
         throws Exception {
@@ -317,10 +300,9 @@ public class ScriptParserImplTest {
         String scriptFragment = "[0..25]";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstFixedLengthBytesMatcher actual = parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER);
+        AstFixedLengthBytesMatcher actual = parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER, new ArrayList<ScriptParseException>());
 
         AstFixedLengthBytesMatcher expected = new AstFixedLengthBytesMatcher(25);
-
         assertEquals(expected, actual);
     }
 
@@ -480,6 +462,7 @@ public class ScriptParserImplTest {
         AstReadValueNode expected = new AstReadValueNode();
         expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstByteLengthBytesMatcher("capture"),
                                                             new AstByteLengthBytesMatcher("capture2")));
+        expected.setLocationInfo(new LocationInfo(1, 0));
         assertEquals(expected, actual);
     }
 
@@ -494,6 +477,8 @@ public class ScriptParserImplTest {
         AstReadValueNode expected = new AstReadValueNode();
         expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstShortLengthBytesMatcher("capture"),
                                                             new AstShortLengthBytesMatcher("capture2")));
+        expected.setLocationInfo(1, 0);
+        
         assertEquals(expected, actual);
     }
 
@@ -508,6 +493,7 @@ public class ScriptParserImplTest {
         AstReadValueNode expected = new AstReadValueNode();
         expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstIntLengthBytesMatcher("capture"),
                                                             new AstIntLengthBytesMatcher("capture2")));
+        expected.setLocationInfo(1, 0);
         assertEquals(expected, actual);
     }
 
@@ -522,6 +508,7 @@ public class ScriptParserImplTest {
         AstReadValueNode expected = new AstReadValueNode();
         expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstLongLengthBytesMatcher("capture"),
                                                             new AstLongLengthBytesMatcher("capture2")));
+        expected.setLocationInfo(new LocationInfo(1, 0));
         assertEquals(expected, actual);
     }
 
@@ -535,6 +522,7 @@ public class ScriptParserImplTest {
         AstReadValueNode expected = new AstReadValueNode();
         expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactTextMatcher("Hello"),
                                                             new AstExactTextMatcher("World")));
+        expected.setLocationInfo(1, 0);
         assertEquals(expected, actual);
     }
 
@@ -553,6 +541,8 @@ public class ScriptParserImplTest {
                 new AstExactBytesMatcher(new byte[] { 0x00, (byte) 0xf0, (byte) 0x03, 
                                         (byte) 0x05, (byte) 0x08, (byte) 0x04 })));
         // @formatter:on
+        expected.setLocationInfo(1, 0);
+
         assertEquals(expected, actual);
     }
 
@@ -567,10 +557,12 @@ public class ScriptParserImplTest {
         expected.setMatchers(Arrays.<AstValueMatcher>asList(
                 new AstRegexMatcher(compile("/.*\\n/")),
                 new AstRegexMatcher(compile("/.+\\r/"))));
+        expected.setLocationInfo(1, 0);
 
         assertEquals(expected, actual);
     }
 
+    @Ignore("No longer using this regex capture syntax")
     @Test
     public void shouldParseMultiRegexWithCaptures() throws Exception {
         String scriptFragment = "read /.*\\n/ /.+\\r/ /(.*\\n)/(:cap1)/ /(.+\\r)/(:cap2)/";
@@ -604,6 +596,7 @@ public class ScriptParserImplTest {
         expected.setMatchers(Arrays.<AstValueMatcher>asList(
                 new AstExpressionMatcher(value),
                 new AstExpressionMatcher(value2)));
+        expected.setLocationInfo(1, 0);
 
         assertEquals(expected, actual);
     }
@@ -657,6 +650,7 @@ public class ScriptParserImplTest {
         expected.setMatchers(Arrays.<AstValueMatcher>asList(
                 new AstVariableLengthBytesMatcher(value),
                 new AstVariableLengthBytesMatcher(value2)));
+        expected.setLocationInfo(1, 0);
 
         assertEquals(expected, actual);
 }
@@ -677,6 +671,7 @@ public class ScriptParserImplTest {
         expected.setMatchers(Arrays.<AstValueMatcher>asList(
                 new AstVariableLengthBytesMatcher(value, "var1"),
                 new AstVariableLengthBytesMatcher(value2, "var2")));
+        expected.setLocationInfo(1, 0);
 
         assertEquals(expected, actual);
     }
@@ -763,10 +758,11 @@ public class ScriptParserImplTest {
         AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
 
         AstWriteValueNode expected = new AstWriteValueNode();
+        LocationInfo locationInfo = new LocationInfo(1, 0);
+		expected.setLocationInfo(locationInfo);
         expected.setValues(Arrays.<AstValue>asList(
                 new AstLiteralTextValue("Hello"),
                 new AstLiteralTextValue("World")));
-
         assertEquals(expected, actual);
     }
 
@@ -781,7 +777,7 @@ public class ScriptParserImplTest {
         expected.setValues(Arrays.<AstValue>asList(
                 new AstLiteralBytesValue(new byte[] { (byte) 0x01, (byte) 0x02 }),
                 new AstLiteralBytesValue(new byte[] { (byte) 0x03, (byte) 0x04 })));
-
+        expected.setLocationInfo(1, 0);
         assertEquals(expected, actual);
     }
 
@@ -801,6 +797,7 @@ public class ScriptParserImplTest {
         expected.setValues(Arrays.<AstValue>asList(
                 new AstExpressionValue(value1),
                 new AstExpressionValue(value2)));
+        expected.setLocationInfo(1, 0);
 
         assertEquals(expected, actual);
     }

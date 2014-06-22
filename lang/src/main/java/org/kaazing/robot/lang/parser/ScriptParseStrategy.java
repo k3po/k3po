@@ -672,7 +672,7 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstConnectNode visitStreamableNode(
                 StreamableNodeContext ctx) {
-            AstServerStreamableNodeVisitor visitor = new AstServerStreamableNodeVisitor(elFactory, elContext);
+            AstStreamableNodeVisitor visitor = new AstStreamableNodeVisitor(elFactory, elContext);
             AstStreamableNode streamable = visitor.visitStreamableNode(ctx);
             node.getStreamables().add(streamable);
             return node;
@@ -1269,14 +1269,14 @@ abstract class ScriptParseStrategy<T> {
                 return new AstExactBytesMatcher(array);
             }
             else if (ctx.longLiteral != null) {
-                ByteBuffer buf = ByteBuffer.allocate(Long.SIZE);
+                ByteBuffer buf = ByteBuffer.allocate(Long.SIZE / 8);
                 buf.putLong(Long.parseLong(ctx.longLiteral.getText()));
                 byte[] array = buf.array();
                 return new AstExactBytesMatcher(array);
             }
             else if (ctx.intLiteral != null) {
-                ByteBuffer buf = ByteBuffer.allocate(Integer.SIZE);
-                buf.putLong(Integer.parseInt(ctx.intLiteral.getText()));
+                ByteBuffer buf = ByteBuffer.allocate(Integer.SIZE / 8);
+                buf.putInt(Integer.parseInt(ctx.intLiteral.getText()));
                 byte[] array = buf.array();
                 return new AstExactBytesMatcher(array);
             }
