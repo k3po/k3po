@@ -23,7 +23,7 @@
 		<version>0.0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.kaazing.robot.robot-maven-plugin</artifactId>
+	<artifactId>robot-maven-plugin</artifactId>
 	<version>0.0.0.1-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 

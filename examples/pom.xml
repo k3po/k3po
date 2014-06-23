@@ -43,7 +43,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>control</artifactId>
+            <artifactId>org.kaazing.robot.control</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
