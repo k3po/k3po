@@ -232,8 +232,8 @@ exactBytesMatcher
     : bytes=BytesLiteral
     | byteLiteral=ByteLiteral
     | shortLiteral=TwoByteLiteral
-    | longLiteral=SignedDecimalLiteral 'L'
-    | intLiteral=SignedDecimalLiteral
+    | longLiteral=(SignedDecimalLiteral | DecimalLiteral) 'L'
+    | intLiteral=(SignedDecimalLiteral | DecimalLiteral)
     ;
 
 regexMatcher
@@ -286,7 +286,7 @@ expressionValue
 SignedDecimalLiteral
     :  Plus DecimalLiteral
     |  Minus DecimalLiteral
-    |  DecimalLiteral
+//    |  DecimalLiteral
     ;
 
 ShortKeyword

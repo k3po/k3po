@@ -95,6 +95,7 @@ public class ReadRegexDecoderTest {
         decoder.decode(copiedBuffer("Hellf\n", UTF_8));
     }
 
+    @Ignore("TODO: Old style named group capture ")
     @Test(expected = MessageMismatchException.class)
     public void noMatchWithCaptureOK() throws Exception {
         NamedGroupPattern pattern = NamedGroupPattern.compile("/(H.*o)\\n/(:var)/");

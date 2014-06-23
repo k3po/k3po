@@ -14,6 +14,7 @@ import org.antlr.v4.runtime.Token;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.kaazing.robot.lang.parser.v2.RobotLexer;
 
@@ -50,7 +51,7 @@ public class RobotScriptLexerTest {
     }
 
     @Test
-    public void shouldScanLineComment() throws Exception {
+    public void shouldSkipLineComment() throws Exception {
 
         String text = "# tcp.test\n";
         FileWriter writer = new FileWriter(scriptFile);
@@ -62,12 +63,6 @@ public class RobotScriptLexerTest {
 
         lexer = new RobotLexer(ais);
         Token token = lexer.nextToken();
-        Assert.assertTrue(
-                String.format("Expected token type %d, got %d (%s)", RobotLexer.LineComment, token.getType(), token.getText()),
-                token.getType() == RobotLexer.LineComment);
-        Assert.assertTrue(String.format("Expected text '%s', got '%s'", text, token.getText()), token.getText().equals(text));
-
-        token = lexer.nextToken();
         Assert.assertTrue(String.format("Expected token type %d, got %d (%s)", Token.EOF, token.getType(), token.getText()),
                 token.getType() == Token.EOF);
     }
