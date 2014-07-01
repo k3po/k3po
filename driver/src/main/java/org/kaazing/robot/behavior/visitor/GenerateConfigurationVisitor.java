@@ -4,12 +4,12 @@
 
 package org.kaazing.robot.behavior.visitor;
 
+import static org.jboss.netty.channel.Channels.pipeline;
+import static org.jboss.netty.util.CharsetUtil.UTF_8;
 import static org.kaazing.robot.behavior.handler.codec.HttpUtils.HTTP_CODEC_NAME;
 import static org.kaazing.robot.behavior.handler.codec.HttpUtils.HTTP_MEESAGE_SPLITTING_CODEC_NAME;
 import static org.kaazing.robot.behavior.handler.codec.HttpUtils.HTTP_MESSAGE_AGGREGATING_CODEC_NAME;
 import static org.kaazing.robot.behavior.handler.codec.HttpUtils.isUriHttp;
-import static org.jboss.netty.channel.Channels.pipeline;
-import static org.jboss.netty.util.CharsetUtil.UTF_8;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -45,7 +45,6 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.netty.bootstrap.BootstrapFactory;
 import org.kaazing.netty.bootstrap.ClientBootstrap;
 import org.kaazing.netty.bootstrap.ServerBootstrap;
@@ -262,8 +261,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         public void setHttpURI(URI httpURI) {
             this.httpURI = httpURI;
         }
-
-        private PipelineFactory pipeLineFactory = new PipelineFactory();
 
         public class PipelineFactory {
             private Map<URI, List<ChannelPipeline>> pipelines = new HashMap<URI, List<ChannelPipeline>>();
@@ -831,19 +828,11 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         }
 
-        @SuppressWarnings("deprecation")
         @Override
         public MessageDecoder visit(AstRegexMatcher matcher, Configuration config) throws Exception {
             ExpressionContext environment = config.getExpressionContext();
-
-            // If we have a terminator it means we are using the scriptFormat V1 parser ... V2 has no terminator
-            String terminator = matcher.getTerminator();
             MessageDecoder result;
-            if (terminator == null) {
-                result = new ReadRegexDecoder(matcher.getValue(), UTF_8, environment);
-            } else {
-                result = new ReadRegexDecoder(matcher.getValue(), UTF_8, terminator, environment);
-            }
+            result = new ReadRegexDecoder(matcher.getValue(), UTF_8, environment);
             return result;
         }
 

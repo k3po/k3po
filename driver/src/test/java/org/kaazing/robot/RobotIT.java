@@ -31,7 +31,7 @@ import org.junit.rules.ExpectedException;
 import org.kaazing.robot.behavior.RobotCompletionFuture;
 import org.kaazing.robot.lang.parser.ScriptParseException;
 
-public class V2RobotIT {
+public class RobotIT {
 
     private static final long TEST_TIMEOUT = 2000;
 

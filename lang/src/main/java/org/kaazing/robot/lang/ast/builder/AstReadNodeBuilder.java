@@ -67,12 +67,6 @@ public class AstReadNodeBuilder extends AbstractAstStreamableNodeBuilder<AstRead
         return this;
     }
 
-    @Deprecated
-    public AstReadNodeBuilder setRegex(NamedGroupPattern pattern, String terminator) {
-        node.addMatcher(new AstRegexMatcher(pattern, terminator));
-        return this;
-    }
-
     public AstReadNodeBuilder addVariableLengthBytes(ValueExpression length) {
         node.addMatcher(new AstVariableLengthBytesMatcher(length));
         return this;
@@ -150,12 +144,6 @@ public class AstReadNodeBuilder extends AbstractAstStreamableNodeBuilder<AstRead
 
         public StreamNested<R> addRegex(NamedGroupPattern pattern) {
             node.addMatcher(new AstRegexMatcher(pattern));
-            return this;
-        }
-
-        @Deprecated
-        public StreamNested<R> setRegex(NamedGroupPattern pattern, String terminator) {
-            node.addMatcher(new AstRegexMatcher(pattern, terminator));
             return this;
         }
 

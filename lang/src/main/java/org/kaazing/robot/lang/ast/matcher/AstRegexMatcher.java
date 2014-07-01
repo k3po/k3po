@@ -11,7 +11,6 @@ import org.kaazing.robot.lang.regex.NamedGroupPattern;
 public class AstRegexMatcher extends AstValueMatcher {
 
     private final NamedGroupPattern pattern;
-    private String terminator;
 
     public AstRegexMatcher(NamedGroupPattern pattern) {
         if (pattern == null) {
@@ -20,22 +19,8 @@ public class AstRegexMatcher extends AstValueMatcher {
         this.pattern = pattern;
     }
 
-    @Deprecated
-    public AstRegexMatcher(NamedGroupPattern pattern, String terminator) {
-        if (pattern == null) {
-            throw new NullPointerException("pattern");
-        }
-        this.pattern = pattern;
-        this.terminator = terminator;
-    }
-
     public NamedGroupPattern getValue() {
         return pattern;
-    }
-
-    @Deprecated
-    public String getTerminator() {
-        return terminator;
     }
 
     @Override
