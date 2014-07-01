@@ -7,14 +7,10 @@ package org.kaazing.robot.behavior.handler.codec;
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.el.ExpressionFactory;
 import javax.el.PropertyNotFoundException;
@@ -27,7 +23,6 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -62,25 +57,16 @@ public class ReadRegexDecoderTest {
         MessageDecoder decoder = new ReadRegexDecoder(pattern, UTF_8, environment);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer("Hello\n", UTF_8));
-        assertNull(remainingBuffer);
 
-        remainingBuffer = decoder.decodeLast(copiedBuffer("", UTF_8));
-        assertNotNull(remainingBuffer);
         assertEquals(0, remainingBuffer.readableBytes());
     }
 
-    @Ignore("TODO: Old style named group capture ")
     @Test
     public void completeMatchWithCaptureOK() throws Exception {
-        NamedGroupPattern pattern = NamedGroupPattern.compile("/(H.*o)\\n/(:var)/");
+        NamedGroupPattern pattern = NamedGroupPattern.compile("/(?<var>H.*o)\\n/");
         MessageDecoder decoder = new ReadRegexDecoder(pattern, UTF_8, environment);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer("Hello\n", UTF_8));
-        assertNull(remainingBuffer);
-
-        remainingBuffer = decoder.decodeLast(copiedBuffer("", UTF_8));
-
-        assertNotNull(remainingBuffer);
         assertEquals(0, remainingBuffer.readableBytes());
 
         ValueExpression expression = expressionFactory.createValueExpression(environment, "${var}", byte[].class);
@@ -95,10 +81,9 @@ public class ReadRegexDecoderTest {
         decoder.decode(copiedBuffer("Hellf\n", UTF_8));
     }
 
-    @Ignore("TODO: Old style named group capture ")
     @Test(expected = MessageMismatchException.class)
     public void noMatchWithCaptureOK() throws Exception {
-        NamedGroupPattern pattern = NamedGroupPattern.compile("/(H.*o)\\n/(:var)/");
+        NamedGroupPattern pattern = NamedGroupPattern.compile("/(?<var>H.*o)\\n/");
         MessageDecoder decoder = new ReadRegexDecoder(pattern, UTF_8, environment);
 
         decoder.decode(copiedBuffer("Hellf\n", UTF_8));
@@ -113,23 +98,16 @@ public class ReadRegexDecoderTest {
         assertNull(remainingBuffer);
 
         remainingBuffer = decoder.decode(copiedBuffer("o\n", UTF_8));
-        assertNull(remainingBuffer);
-
-        remainingBuffer = decoder.decodeLast(copiedBuffer("", UTF_8));
-
-        assertNotNull(remainingBuffer);
         assertEquals(0, remainingBuffer.readableBytes());
     }
 
-    @Ignore("TODO: Old style named group capture ")
     @Test
     public void fragmentedMatchWithCaptureOK() throws Exception {
-        NamedGroupPattern pattern = NamedGroupPattern.compile("/(H.*o)\\n/(:var)/");
+        NamedGroupPattern pattern = NamedGroupPattern.compile("/(?<var>H.*o)\\n/");
         MessageDecoder decoder = new ReadRegexDecoder(pattern, UTF_8, environment);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer("Hel", UTF_8));
         assertNull(remainingBuffer);
-
         ValueExpression expression = expressionFactory.createValueExpression(environment, "${var}", byte[].class);
         try {
             expression.getValue(environment);
@@ -138,11 +116,6 @@ public class ReadRegexDecoderTest {
         }
 
         remainingBuffer = decoder.decode(copiedBuffer("o\n", UTF_8));
-        assertNull(remainingBuffer);
-
-        remainingBuffer = decoder.decodeLast(copiedBuffer("", UTF_8));
-
-        assertNotNull(remainingBuffer);
         assertEquals(0, remainingBuffer.readableBytes());
         assertArrayEquals("Helo".getBytes(UTF_8), (byte[]) expression.getValue(environment));
 
@@ -158,11 +131,10 @@ public class ReadRegexDecoderTest {
         assertEquals(copiedBuffer("World", UTF_8), remainingBuffer);
     }
 
-    @Ignore("TODO: Old style named group capture ")
     @Test
     public void completeMatchWithBytesLeftOverWithCapturerOK() throws Exception {
         
-        NamedGroupPattern pattern = NamedGroupPattern.compile("/(H.*o)\\n/(:var)/");
+        NamedGroupPattern pattern = NamedGroupPattern.compile("/(?<var>H.*o)\\n/");
         MessageDecoder decoder = new ReadRegexDecoder(pattern, UTF_8, environment);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer("Hello\nWorld", UTF_8));

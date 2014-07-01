@@ -81,7 +81,7 @@ public class ReadRegexDecoder extends MessageDecoder {
         boolean noMatchMayMatchLater = !prefixMatched && matcher.hitEnd();
 
         // We keep looking while we match or while we don't match but it is still possible to match
-        if ((allInputMatched && !isLast) || noMatchMayMatchLater) {
+        if ((allInputMatched || !isLast) && noMatchMayMatchLater) {
             if (isDebugEnabled) {
                 LOGGER.debug("Waiting for more data to match full regex");
             }

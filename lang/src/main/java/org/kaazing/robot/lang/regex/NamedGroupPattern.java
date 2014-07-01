@@ -19,16 +19,12 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStream;
 import org.kaazing.robot.lang.regex.RegexParser.GroupNContext;
 import org.kaazing.robot.lang.regex.RegexParser.LiteralContext;
 
 public class NamedGroupPattern {
-
-    @Deprecated
-    public static NamedGroupPattern compile(String regex, List<String> groupNames) {
-        return new NamedGroupPattern(Pattern.compile(regex), groupNames);
-    }
 
     public static NamedGroupPattern compile(String regexWithGroupNames) {
         try {
@@ -41,9 +37,13 @@ public class NamedGroupPattern {
             parser.addParseListener(new RegexBaseListener() {
                 @Override
                 public void exitGroupN(GroupNContext ctx) {
-                    String capture = ctx.capture.getText();
-                    String groupName = capture.substring(2, capture.length() - 1);
-                    groupNames.add(groupName);
+                    Token captureVar = ctx.capture;
+                    // Not every entry in groupN populates groupNames
+                    if (captureVar != null) {
+                        String capture = captureVar.getText();
+                        String groupName = capture.substring(2, capture.length() - 1);
+                        groupNames.add(groupName);
+                    }
                 }
             });
             LiteralContext literal = parser.literal();

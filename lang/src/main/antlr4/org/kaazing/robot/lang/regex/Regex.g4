@@ -26,9 +26,9 @@ group0
   ;
   
 groupN
-  : PatternNonCapturing expression
+  : expression
+  | PatternNonCapturing expression
   | capture=PatternCapturing expression
-  | expression
   ;
 
 ForwardSlash: '/';

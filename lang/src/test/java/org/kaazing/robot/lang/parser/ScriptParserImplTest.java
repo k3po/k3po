@@ -73,7 +73,6 @@ import org.kaazing.robot.lang.ast.value.AstLiteralBytesValue;
 import org.kaazing.robot.lang.ast.value.AstLiteralTextValue;
 import org.kaazing.robot.lang.ast.value.AstValue;
 import org.kaazing.robot.lang.el.ExpressionContext;
-import org.kaazing.robot.lang.regex.NamedGroupPattern;
 
 public class ScriptParserImplTest {
 
@@ -308,7 +307,7 @@ public class ScriptParserImplTest {
 		assertEquals(expected, actual);
 	}
 
-	@Ignore("not yet supported")
+//	@Ignore("not yet supported")
 	@Test
 	public void shouldParsePrefixedLengthBytesMatcher() throws Exception {
 

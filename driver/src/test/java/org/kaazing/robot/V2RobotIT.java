@@ -19,6 +19,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.After;
@@ -27,7 +28,6 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.kaazing.robot.behavior.RobotCompletionFuture;
 import org.kaazing.robot.lang.parser.ScriptParseException;
 
@@ -1248,7 +1248,6 @@ public class V2RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Ignore("DPW - Ignore until regex are fixed")
     @Test(timeout = TEST_TIMEOUT)
     public void shouldReadRegexGroupNoCapturesOK() throws Exception {
         // @formatter:off
@@ -1281,14 +1280,13 @@ public class V2RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Ignore("DPW - Ignore until regex are fixed")
     @Test(timeout = TEST_TIMEOUT)
     public void shouldReadRegexGroupCapturesOK() throws Exception {
         // @formatter:off
         String script =
             "connect tcp://localhost:62345\n" +
             "connected\n" +
-            "read  /Hello (.*)\\n/(:var)/\n" +
+            "read  /Hello (?<var>.*)\\n/\n" +
             "read \"Hello \"\n" +
             "read ${var}\n" +
             "read \"\\n\"\n" +
@@ -1318,14 +1316,13 @@ public class V2RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Ignore("DPW - Ignore until regex are fixed")
     @Test(timeout = TEST_TIMEOUT)
     public void shouldReadRegexGroupTwoCapturesOK() throws Exception {
         // @formatter:off
         String script =
             "connect tcp://localhost:62345\n" +
             "connected\n" +
-            "read  /(H\\w+)( W\\w+)\\n/(:var)(:cap)/\n" +
+            "read  /(?<var>H\\w+)(?<cap> W\\w+)\\n/\n" +
             "read ${var}\n" +
             "read ${cap}\n" +
             "read \"\\n\"\n" +
@@ -1355,14 +1352,18 @@ public class V2RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Ignore("DPW - Ignore until regex are fixed")
+    @Ignore("Can't get the nested matcher this test was created with to compile in java")
     @Test(timeout = TEST_TIMEOUT)
     public void shouldReadRegexWithBackRefAndCapturesOK() throws Exception {
+        Pattern pattern = Pattern.compile("/(?<all>Hello (?<subgroup>\\d+) Bye from \\g{2})\\n/");
+        Matcher matcher = pattern.matcher("Hello 123 Bye from 123\n");
         // @formatter:off
         String script =
             "connect tcp://localhost:62345\n" +
             "connected\n" +
-            "read  /(Hello (\\d\\d\\d) Bye from \\2)\\n/(:all(:subgroup))/\n" +
+                    //(:all(:subgroup))
+            "read  /(?<all>Hello (?<subgroup>\\d\\d\\d) Bye from \\2)\\n/\n" +
+//            "read  /(Hello (\\d\\d\\d) Bye from \\2)\\n/(:all(:subgroup))/\n" +
             "read ${all}\n" +
             "read \"\\n\"\n" +
             "read \"Hello \"\n" +
@@ -1397,14 +1398,13 @@ public class V2RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Ignore("DPW - Ignore until regex are fixed")
-    @Test(timeout = 10000000)
+    @Test(timeout = TEST_TIMEOUT)
     public void shouldReadRegexInnerGroupsOK() throws Exception {
         // @formatter:off
          String script =
               "connect tcp://localhost:62345\n" +
               "connected\n" +
-              "read  /(\\w+\\s(\\w+))\\n/(:all(:world))/\n" +
+              "read  /(?<all>\\w+\\s(?<world>\\w+))\\n/\n" +
               "read ${all}\n" +
               "read \"\\n\"\n" +
               "read ${world}\n" +
@@ -1435,7 +1435,6 @@ public class V2RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Ignore("DPW - Ignore until regex are fixed")
     @Test(timeout = TEST_TIMEOUT)
     public void shouldReadRegexOK() throws Exception {
         // @formatter:off
@@ -1468,7 +1467,6 @@ public class V2RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Ignore("DPW - Ignore until regex are fixed")
     @Test(timeout = TEST_TIMEOUT)
     public void shouldReadRegexDoubleNewLineTerminatorOK() throws Exception {
         // @formatter:off

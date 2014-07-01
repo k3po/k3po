@@ -19,7 +19,6 @@ import java.util.regex.PatternSyntaxException;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
 import org.kaazing.robot.lang.ast.builder.AstReadNodeBuilder;
@@ -40,7 +39,6 @@ import org.kaazing.robot.lang.regex.NamedGroupPattern;
 
 public class NamedGroupPatternTest {
 
-	@Ignore("KG-7535 not complete")
     @Test
     public void shouldCompileDotStar() {
         NamedGroupPattern.compile("/what(.*)/");
@@ -203,21 +201,18 @@ public class NamedGroupPatternTest {
         assertEquals("bar", matcher.group("right"));
     }
 
-	@Ignore("KG-7535 not complete")
     @Test(expected = PatternSyntaxException.class)
     public void shouldFailGroupNamesMismatch() throws Exception {
         String scriptText = format("/(?<left>.*)\\(:(.*)/");
         NamedGroupPattern.compile(scriptText);
     }
 
-	@Ignore("KG-7535 not complete")
     @Test
     public void shouldNotFailGroupsWithZeroNames() throws Exception {
         String scriptText = format("/(.*)/");
         NamedGroupPattern.compile(scriptText);
     }
 
-	@Ignore("KG-7535 not complete")
     @Test
     public void shouldNotFailNonCaptureGroup() throws Exception {
         String scriptText = format("/(?:.*)/");
@@ -246,7 +241,6 @@ public class NamedGroupPatternTest {
 		assertEquals(expected, actual);
 	}
 	
-	@Ignore("KG-7535 not complete")
 	@Test
 	public void shouldParseRegexMatcher() throws Exception {
 
@@ -263,10 +257,9 @@ public class NamedGroupPatternTest {
 		assertEquals(expected, actual);
 	}
 	
-	@Ignore("KG-7535 not complete")
 	@Test
 	public void shouldParseReadMult() throws Exception {
-		String scriptFragment = "read \"Hello\" [0x01 0x02 0x03] /.*\\n/ /(.*)\\n/(:cap1)/ ${var}  [0..64] ([0..64]:cap2)"
+		String scriptFragment = "read \"Hello\" [0x01 0x02 0x03] /.*\\n/ /(?<cap1>.*)\\n/ ${var}  [0..64] ([0..64]:cap2)"
 				+ "[0..${var}] [0..${var-1}] ([0..${var}]:cap3) ([0..${var-1}]:cap4) (byte:b) (short:s) (int:i) (long:l)";
 
 		ScriptParserImpl parser = new ScriptParserImpl();
@@ -282,7 +275,7 @@ public class NamedGroupPatternTest {
 				.addExactText("Hello")
 				.addExactBytes(new byte[] { 0x01, (byte) 0x02, (byte) 0x03 })
 				.addRegex(NamedGroupPattern.compile("/.*\\n/"))
-				.addRegex(NamedGroupPattern.compile("/(.*)\\n/(:cap1)/"))
+				.addRegex(NamedGroupPattern.compile("/(?<cap1>.*)\\n/"))
 				.addExpression(
 						factory.createValueExpression(context, "${var}",
 								byte[].class))
@@ -307,10 +300,9 @@ public class NamedGroupPatternTest {
 		assertEquals(expected, actual);
 	}
 	
-	@Ignore("KG-7535 not complete")
 	@Test
 	public void shouldParseMultAllMatcher() throws Exception {
-		String scriptFragment = "read \"Hello\" [0x01 0x02 0x03] /.*\\n/ /(.*)\\n/(:cap1)/ ${var}  [0..64] ([0..64]:cap2)"
+		String scriptFragment = "read \"Hello\" [0x01 0x02 0x03] /.*\\n/ /(?<cap1>.*)\\n/ ${var}  [0..64] ([0..64]:cap2)"
 				+ "[0..${var}] [0..${var-1}] ([0..${var}]:cap3) ([0..${var-1}]:cap4)"
 				+ "(byte:b) (short:s) (int:i) (long:l)";
 
@@ -338,7 +330,7 @@ public class NamedGroupPatternTest {
 						(byte) 0x03 }),
 				new AstRegexMatcher(NamedGroupPattern.compile("/.*\\n/")),
 				new AstRegexMatcher(NamedGroupPattern
-						.compile("/(.*)\\n/(:cap1)/")),
+						.compile("/(?<cap1>.*)\\n/")),
 				new AstExpressionMatcher(value),
 				new AstFixedLengthBytesMatcher(64),
 				new AstFixedLengthBytesMatcher(64, "cap2"),
@@ -350,6 +342,7 @@ public class NamedGroupPatternTest {
 				new AstShortLengthBytesMatcher("s"),
 				new AstIntLengthBytesMatcher("i"),
 				new AstLongLengthBytesMatcher("l")));
+		expected.setLocationInfo(1, 0);
 
 		assertEquals(expected, actual);
 	}

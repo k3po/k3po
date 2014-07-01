@@ -18,7 +18,7 @@ public abstract class MessageDecoder {
     }
 
     // Returns the ChannelBuffer that should be passed on to the next
-    // handler the pipeline, or null if more data are needed by the
+    // handler the pipeline, or null if more data is needed by the
     // decoder.
     public ChannelBuffer decode(ChannelBuffer buffer) throws Exception {
         return decode0(buffer, false);
