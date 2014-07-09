@@ -28,13 +28,17 @@ int containsDuplicate(char * msg){
 	char * msgB = malloc(sizeof(char) * (length/2 + 1));
 	if(msgB == NULL){
 		perror("malloc");
+		free(msgA);
 		return -1;
 	}
 	memcpy(msgA, msg, length/2);
 	*(msgA + length/2) = '\0';
 	memcpy(msgB, msg + sizeof(char) * length/2, length/2);
 	*(msgB + length/2) = '\0';
-	if(strcmp(msgA, msgB) == 0){
+	int diff = strcmp(msgA, msgB);
+	free(msgA);
+	free(msgB);
+	if(diff == 0){
 		return 0;
 	}
 	return -2;
@@ -411,7 +415,11 @@ void catch_alarm (int sig)
 {
 	printf("Test has timed out...stopping now\n");
 	// stop waiting for finish and send abort
-	writeAbort(my_sock, my_file_name);
+	int aborted = writeAbort(my_sock, my_file_name);
+	if(aborted == -1){
+		fprintf(stderr, "Error aborting script after timeout\n");
+		exit(EXIT_FAILURE);
+	}
 }
 
 // RET NULL on failure, ptr to file content string on success
