@@ -34,6 +34,7 @@ import org.kaazing.robot.lang.ast.AstDisconnectedNode;
 import org.kaazing.robot.lang.ast.AstEventNode;
 import org.kaazing.robot.lang.ast.AstNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
+import org.kaazing.robot.lang.ast.AstOptionNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadHttpHeaderNode;
 import org.kaazing.robot.lang.ast.AstReadHttpMethodNode;
@@ -41,6 +42,7 @@ import org.kaazing.robot.lang.ast.AstReadHttpParameterNode;
 import org.kaazing.robot.lang.ast.AstReadHttpStatusNode;
 import org.kaazing.robot.lang.ast.AstReadHttpVersionNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
+import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.AstStreamNode;
@@ -55,6 +57,7 @@ import org.kaazing.robot.lang.ast.AstWriteHttpParameterNode;
 import org.kaazing.robot.lang.ast.AstWriteHttpStatusNode;
 import org.kaazing.robot.lang.ast.AstWriteHttpVersionNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
+import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
 import org.kaazing.robot.lang.ast.matcher.AstByteLengthBytesMatcher;
 import org.kaazing.robot.lang.ast.matcher.AstExactBytesMatcher;
@@ -99,6 +102,7 @@ import org.kaazing.robot.lang.parser.v2.RobotParser.LiteralBytesContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.LiteralTextContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.MatcherContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.OpenedNodeContext;
+import org.kaazing.robot.lang.parser.v2.RobotParser.OptionNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadAwaitNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadHttpHeaderNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadHttpMethodNodeContext;
@@ -107,6 +111,7 @@ import org.kaazing.robot.lang.parser.v2.RobotParser.ReadHttpStatusNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadHttpVersionNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadNotifyNodeContext;
+import org.kaazing.robot.lang.parser.v2.RobotParser.ReadOptionNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.RegexMatcherContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ScriptNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ServerCommandNodeContext;
@@ -126,6 +131,7 @@ import org.kaazing.robot.lang.parser.v2.RobotParser.WriteHttpStatusNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.WriteHttpVersionNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.WriteNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.WriteNotifyNodeContext;
+import org.kaazing.robot.lang.parser.v2.RobotParser.WriteOptionNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.WriteValueContext;
 import org.kaazing.robot.lang.regex.NamedGroupPattern;
 
@@ -522,6 +528,22 @@ abstract class ScriptParseStrategy<T> {
                     return new AstExpressionValueVisitor(elFactory, elContext).visit(parser.expressionValue());
                 }
             };
+            
+    public static final ScriptParseStrategy<AstReadOptionNode> READ_OPTION = new ScriptParseStrategy<AstReadOptionNode>() {
+        @Override
+        public AstReadOptionNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                throws RecognitionException {
+            return (AstReadOptionNode) new AstOptionNodeVisitor(elFactory, elContext).visit(parser.readOptionNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstWriteOptionNode> WRITE_OPTION = new ScriptParseStrategy<AstWriteOptionNode>() {
+        @Override
+        public AstWriteOptionNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                throws RecognitionException {
+            return (AstWriteOptionNode) new AstOptionNodeVisitor(elFactory, elContext).visit(parser.writeOptionNode());
+        }
+    };
 
     public abstract T parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext) throws RecognitionException;
 
@@ -702,30 +724,48 @@ abstract class ScriptParseStrategy<T> {
             return new AstCommandNodeVisitor(elFactory, elContext).visitCommandNode(ctx);
         }
         
+        @Override
+        public AstOptionNode visitOptionNode(OptionNodeContext ctx) {
+            return new AstOptionNodeVisitor(elFactory, elContext).visitOptionNode(ctx);
+            
+        }
     }
     
-    private static class AstServerStreamableNodeVisitor extends AstNodeVisitor<AstStreamableNode> {
-        
-        public AstServerStreamableNodeVisitor(ExpressionFactory elFactory,
-                ExpressionContext elContext) {
+//    Not needed as of now as very similar to StreamableNodeVisitor except for unsupported features
+//    private static class AstServerStreamableNodeVisitor extends AstNodeVisitor<AstStreamableNode> {
+//        
+//        public AstServerStreamableNodeVisitor(ExpressionFactory elFactory,
+//                ExpressionContext elContext) {
+//            super(elFactory, elContext);
+//        }
+//        
+//    }
+    
+    private static class AstOptionNodeVisitor extends AstNodeVisitor<AstOptionNode> {
+
+        public AstOptionNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
             super(elFactory, elContext);
         }
 
         @Override
-        public AstBarrierNode visitBarrierNode(BarrierNodeContext ctx) {
-            return new AstBarrierNodeVisitor(elFactory, elContext).visitBarrierNode(ctx);
+        public AstOptionNode visitReadOptionNode(ReadOptionNodeContext ctx) {
+            node = new AstReadOptionNode();
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            node.setOptionName(ctx.name.getText());
+            AstValue value = new AstValueVisitor(elFactory, elContext).visit(ctx);
+            node.setOptionValue(value);
+            return node;
         }
-        
+
         @Override
-        public AstEventNode visitServerEventNode(ServerEventNodeContext ctx) {
-            return new AstEventNodeVisitor(elFactory, elContext).visitServerEventNode(ctx);
+        public AstOptionNode visitWriteOptionNode(WriteOptionNodeContext ctx) {
+            node = new AstWriteOptionNode();
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            node.setOptionName(ctx.name.getText());
+            AstValue value = new AstValueVisitor(elFactory, elContext).visit(ctx);
+            node.setOptionValue(value);
+            return node;
         }
-        
-        @Override
-        public AstCommandNode visitServerCommandNode(ServerCommandNodeContext ctx) {
-            return new AstCommandNodeVisitor(elFactory, elContext).visitServerCommandNode(ctx);
-        }
-        
     }
     
     private static class AstBarrierNodeVisitor extends AstNodeVisitor<AstBarrierNode> {

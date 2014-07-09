@@ -33,6 +33,7 @@ import org.kaazing.robot.lang.ast.AstReadHttpParameterNode;
 import org.kaazing.robot.lang.ast.AstReadHttpStatusNode;
 import org.kaazing.robot.lang.ast.AstReadHttpVersionNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
+import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.AstStreamNode;
@@ -47,6 +48,7 @@ import org.kaazing.robot.lang.ast.AstWriteHttpParameterNode;
 import org.kaazing.robot.lang.ast.AstWriteHttpStatusNode;
 import org.kaazing.robot.lang.ast.AstWriteHttpVersionNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
+import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
 
 public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State> {
@@ -533,6 +535,20 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
         }
         state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
+    }
+
+    @Override
+    public AstScriptNode visit(AstReadOptionNode node, State state) throws Exception {
+        state.lastLocationInfo = node.getLocationInfo();
+        state.streamables.add(node);
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstWriteOptionNode node, State state) throws Exception {
+        state.lastLocationInfo = node.getLocationInfo();
+        state.streamables.add(node);
+        return null;
     }
 
 }

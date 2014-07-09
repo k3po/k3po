@@ -38,7 +38,19 @@ serverStreamableNode
     : barrierNode 
     | serverEventNode
     | serverCommandNode
+    | optionNode
     ;
+    
+optionNode 
+	: readOptionNode
+	| writeOptionNode
+	;
+
+writeOptionNode: 
+	k=WriteKeyword OptionKeyword name=MaskKeyword value=writeValue;
+
+readOptionNode: 
+	k=ReadKeyword OptionKeyword name=MaskKeyword value=writeValue;
 
 serverCommandNode
     : unbindNode
@@ -58,6 +70,7 @@ streamableNode
     : barrierNode
     | eventNode
     | commandNode
+    | optionNode
     ;
 
 commandNode
@@ -288,6 +301,10 @@ SignedDecimalLiteral
     |  Minus DecimalLiteral
 //    |  DecimalLiteral
     ;
+
+OptionKeyword: 'option';
+
+MaskKeyword: 'mask';
 
 ShortKeyword
     : 'short'

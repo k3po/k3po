@@ -52,10 +52,10 @@ import org.jboss.netty.handler.timeout.IdleStateEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Ignore;
-
 import org.kaazing.netty.jmock.Expectations;
 import org.kaazing.netty.jmock.Mockery;
 import org.kaazing.robot.behavior.handler.TestChannelEvent;
+import org.kaazing.robot.behavior.handler.codec.MaskingDecoder;
 import org.kaazing.robot.behavior.handler.codec.MessageDecoder;
 import org.kaazing.robot.behavior.handler.codec.ReadByteArrayBytesDecoder;
 import org.kaazing.robot.behavior.handler.codec.ReadExactBytesDecoder;
@@ -103,7 +103,18 @@ public class ReadHandlerTest {
         decoders.add(new ReadVariableLengthBytesDecoder(expression, environment));
         decoders.add(new ReadExactTextDecoder("The last decoder", UTF_8));
 
-        handler = new ReadHandler(decoders);
+        handler = new ReadHandler(decoders, new MaskingDecoder() {
+            
+            @Override
+            public ChannelBuffer undoMask(ChannelBuffer buffer) throws Exception {
+                return buffer;
+            }
+            
+            @Override
+            public ChannelBuffer applyMask(ChannelBuffer buffer) throws Exception {
+                return buffer;
+            }
+        });
 
         pipeline = pipeline(new SimpleChannelHandler() {
             @Override

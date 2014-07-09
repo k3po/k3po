@@ -110,6 +110,16 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
     }
 
     @Override
+    public AstReadOptionNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addReadOption() {
+        return new AstReadOptionNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
+    }
+
+    @Override
+    public AstWriteOptionNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addWriteOption() {
+        return new AstWriteOptionNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
+    }
+
+    @Override
     public AstAcceptableNode done() {
         return result;
     }
@@ -387,6 +397,16 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         public AstEndOfHttpHeadersNodeBuilder.StreamNested<ScriptNested<R>> addEndOfHeadersCommand() {
             return new AstEndOfHttpHeadersNodeBuilder.StreamNested<ScriptNested<R>>(this);
         }
+
+        @Override
+        public AstReadOptionNodeBuilder.StreamNested<ScriptNested<R>> addReadOption() {
+            return new AstReadOptionNodeBuilder.StreamNested<ScriptNested<R>>(this);
+        }
+
+        @Override
+        public AstWriteOptionNodeBuilder.StreamNested<ScriptNested<R>> addWriteOption() {
+            return new AstWriteOptionNodeBuilder.StreamNested<ScriptNested<R>>(this);
+        }
     }
 
     public static final class AcceptNested<R extends AbstractAstNodeBuilder<? extends AstAcceptNode, ?>> extends
@@ -504,6 +524,16 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         @Override
         protected int line(int line) {
             return result.line(line);
+        }
+
+        @Override
+        public AstReadOptionNodeBuilder.StreamNested<AcceptNested<R>> addReadOption() {
+            return new AstReadOptionNodeBuilder.StreamNested<AcceptNested<R>>(this);
+        }
+
+        @Override
+        public AstWriteOptionNodeBuilder.StreamNested<AcceptNested<R>> addWriteOption() {
+            return new AstWriteOptionNodeBuilder.StreamNested<AcceptNested<R>>(this);
         }
 
         // Http

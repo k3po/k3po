@@ -93,5 +93,8 @@ public abstract class AstNode {
         R visit(AstCloseHttpRequestNode node, P parameter) throws Exception;
         R visit(AstCloseHttpResponseNode node, P parameter) throws Exception;
         R visit(AstEndOfHttpHeadersNode node, P parameter) throws Exception;
+        
+        R visit(AstReadOptionNode node, P parameter) throws Exception;
+        R visit(AstWriteOptionNode node, P parameter) throws Exception;
     }
 }

@@ -110,6 +110,16 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         return new AstWriteNotifyNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
     }
 
+    @Override
+    public AstReadOptionNodeBuilder.StreamNested<AstConnectNodeBuilder> addReadOption() {
+        return new AstReadOptionNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
+    }
+
+    @Override
+    public AstWriteOptionNodeBuilder.StreamNested<AstConnectNodeBuilder> addWriteOption() {
+        return new AstWriteOptionNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
+    }
+    
     // Http
     @Override
     public AstReadHttpHeaderNodeBuilder.StreamNested<AstConnectNodeBuilder> addReadHttpHeaderEvent() {
@@ -369,6 +379,16 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         @Override
         public AstEndOfHttpHeadersNodeBuilder.StreamNested<ScriptNested<R>> addEndOfHeadersCommand() {
             return new AstEndOfHttpHeadersNodeBuilder.StreamNested<ScriptNested<R>>(this);
+        }
+
+        @Override
+        public AstReadOptionNodeBuilder.StreamNested<ScriptNested<R>> addReadOption() {
+            return new AstReadOptionNodeBuilder.StreamNested<ScriptNested<R>>(this);
+        }
+
+        @Override
+        public AstWriteOptionNodeBuilder.StreamNested<ScriptNested<R>> addWriteOption() {
+            return new AstWriteOptionNodeBuilder.StreamNested<ScriptNested<R>>(this);
         }
 
         @Override

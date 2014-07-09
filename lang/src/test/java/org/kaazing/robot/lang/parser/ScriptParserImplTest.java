@@ -13,11 +13,13 @@ import static org.kaazing.robot.lang.parser.ScriptParseStrategy.EXPRESSION_MATCH
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.FIXED_LENGTH_BYTES_MATCHER;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.LITERAL_BYTES_VALUE;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.LITERAL_TEXT_VALUE;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_OPTION;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_AWAIT;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_NOTIFY;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.SCRIPT;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.VARIABLE_LENGTH_BYTES_MATCHER;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_OPTION;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_AWAIT;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_NOTIFY;
@@ -41,10 +43,12 @@ import org.kaazing.robot.lang.ast.AstClosedNode;
 import org.kaazing.robot.lang.ast.AstConnectedNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
+import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.AstWriteAwaitNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
+import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
 import org.kaazing.robot.lang.ast.builder.AstAcceptNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstCloseNodeBuilder;
@@ -53,10 +57,12 @@ import org.kaazing.robot.lang.ast.builder.AstConnectedNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstReadAwaitNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstReadNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstReadNotifyNodeBuilder;
+import org.kaazing.robot.lang.ast.builder.AstReadOptionNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstScriptNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstWriteAwaitNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstWriteNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstWriteNotifyNodeBuilder;
+import org.kaazing.robot.lang.ast.builder.AstWriteOptionNodeBuilder;
 import org.kaazing.robot.lang.ast.matcher.AstByteLengthBytesMatcher;
 import org.kaazing.robot.lang.ast.matcher.AstExactBytesMatcher;
 import org.kaazing.robot.lang.ast.matcher.AstExactTextMatcher;
@@ -1566,6 +1572,83 @@ public class ScriptParserImplTest {
 		parser.parseWithStrategy(script, SCRIPT);
 	}
 	
+	 @Test
+	    public void shouldParseReadOptionMask()
+	        throws Exception {
+
+	        String scriptFragment = "read option mask [0x01 0x02 0x03 0x04]";
+
+	        ScriptParserImpl parser = new ScriptParserImpl();
+	        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_OPTION);
+
+	        AstReadOptionNode expected = new AstReadOptionNodeBuilder()
+	            .setNextLineInfo(1, 0)
+	            .setOptionName("mask")
+	            .setOptionValue(new byte[] { 0x01, 0x02, 0x03, 0x04 })
+	            .done();
+
+	        assertEquals(expected, actual);
+	    }
+
+	    @Test
+	    public void shouldParseReadOptionMaskExpression()
+	        throws Exception {
+
+	        String scriptFragment = "read option mask ${maskingKey}";
+
+	        ScriptParserImpl parser = new ScriptParserImpl();
+	        ExpressionFactory factory = parser.getExpressionFactory();
+	        ExpressionContext context = parser.getExpressionContext();
+
+	        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_OPTION);
+
+	        AstReadOptionNode expected = new AstReadOptionNodeBuilder()
+	            .setNextLineInfo(1, 0)
+	            .setOptionName("mask")
+	            .setOptionValue(factory.createValueExpression(context, "${maskingKey}", byte[].class))
+	            .done();
+
+	        assertEquals(expected, actual);
+	    }
+
+	    @Test
+	    public void shouldParseWriteOptionMask()
+	        throws Exception {
+
+	        String scriptFragment = "write option mask [0x01 0x02 0x03 0x04]";
+
+	        ScriptParserImpl parser = new ScriptParserImpl();
+	        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_OPTION);
+
+	        AstWriteOptionNode expected = new AstWriteOptionNodeBuilder()
+	            .setNextLineInfo(1, 0)
+	            .setOptionName("mask")
+	            .setOptionValue(new byte[] { 0x01, 0x02, 0x03, 0x04 })
+	            .done();
+
+	        assertEquals(expected, actual);
+	    }
+
+	    @Test
+	    public void shouldParseWriteOptionMaskExpression()
+	        throws Exception {
+
+	        String scriptFragment = "write option mask ${maskingKey}";
+
+	        ScriptParserImpl parser = new ScriptParserImpl();
+	        ExpressionFactory factory = parser.getExpressionFactory();
+	        ExpressionContext context = parser.getExpressionContext();
+
+	        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_OPTION);
+
+	        AstWriteOptionNode expected = new AstWriteOptionNodeBuilder()
+	            .setNextLineInfo(1, 0)
+	            .setOptionName("mask")
+	            .setOptionValue(factory.createValueExpression(context, "${maskingKey}", byte[].class))
+	            .done();
+
+	        assertEquals(expected, actual);
+	    }
 
 	// @formatter:on
 }

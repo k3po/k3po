@@ -6,6 +6,7 @@ package org.kaazing.robot.behavior.visitor;
 
 import java.util.List;
 
+import org.kaazing.robot.behavior.visitor.InjectBarriersVisitor.State;
 import org.kaazing.robot.lang.ast.AstAcceptNode;
 import org.kaazing.robot.lang.ast.AstAcceptableNode;
 import org.kaazing.robot.lang.ast.AstBoundNode;
@@ -29,6 +30,7 @@ import org.kaazing.robot.lang.ast.AstReadHttpParameterNode;
 import org.kaazing.robot.lang.ast.AstReadHttpStatusNode;
 import org.kaazing.robot.lang.ast.AstReadHttpVersionNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
+import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.AstStreamNode;
@@ -43,8 +45,8 @@ import org.kaazing.robot.lang.ast.AstWriteHttpParameterNode;
 import org.kaazing.robot.lang.ast.AstWriteHttpStatusNode;
 import org.kaazing.robot.lang.ast.AstWriteHttpVersionNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
+import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
-import org.kaazing.robot.behavior.visitor.InjectBarriersVisitor.State;
 
 public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, State> {
 
@@ -375,6 +377,18 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
 
     @Override
     public AstScriptNode visit(AstEndOfHttpHeadersNode node, State state) throws Exception {
+        state.streamables.add(node);
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstReadOptionNode node, State state) throws Exception {
+        state.streamables.add(node);
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstWriteOptionNode node, State state) throws Exception {
         state.streamables.add(node);
         return null;
     }

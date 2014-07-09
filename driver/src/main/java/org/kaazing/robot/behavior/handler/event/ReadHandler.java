@@ -21,7 +21,7 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.UpstreamMessageEvent;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
+import org.kaazing.robot.behavior.handler.codec.MaskingDecoder;
 import org.kaazing.robot.behavior.handler.codec.MessageDecoder;
 
 public class ReadHandler extends AbstractEventHandler {
@@ -30,7 +30,9 @@ public class ReadHandler extends AbstractEventHandler {
 
     private final List<MessageDecoder> decoders;
 
-    public ReadHandler(List<MessageDecoder> decoders) {
+    private final MaskingDecoder unmasker;
+
+    public ReadHandler(List<MessageDecoder> decoders, MaskingDecoder unmasker) {
         super(of(ChannelEventKind.MESSAGE));
         if (decoders == null) {
             throw new NullPointerException("decoders");
@@ -38,6 +40,7 @@ public class ReadHandler extends AbstractEventHandler {
             throw new IllegalArgumentException("must have at least one decoder");
         }
         this.decoders = decoders;
+        this.unmasker = unmasker;
     }
 
     @Override
@@ -62,6 +65,9 @@ public class ReadHandler extends AbstractEventHandler {
 
         final boolean isDebugEnabled = LOGGER.isDebugEnabled();
         ChannelBuffer buf = (ChannelBuffer) e.getMessage();
+        // first unmask the bytes (if mask read option is specified)
+        buf = unmasker.applyMask(buf);
+
         ChannelFuture handlerFuture = getHandlerFuture();
         assert handlerFuture != null;
 
@@ -105,6 +111,7 @@ public class ReadHandler extends AbstractEventHandler {
         // Propagate remaining data for next handler(s)
         if (buf.readable()) {
             LOGGER.debug("More bytes are available for reading. Firing message received.");
+            buf = unmasker.undoMask(buf);
             fireMessageReceived(ctx, buf, ctx.getChannel().getRemoteAddress());
         }
     }

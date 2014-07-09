@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.el.ValueExpression;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -62,6 +63,7 @@ import org.kaazing.robot.behavior.handler.barrier.AwaitBarrierUpstreamHandler;
 import org.kaazing.robot.behavior.handler.barrier.NotifyBarrierHandler;
 import org.kaazing.robot.behavior.handler.codec.HttpMessageAggregatingCodec;
 import org.kaazing.robot.behavior.handler.codec.HttpMessageSplittingCodec;
+import org.kaazing.robot.behavior.handler.codec.MaskingDecoder;
 import org.kaazing.robot.behavior.handler.codec.MessageDecoder;
 import org.kaazing.robot.behavior.handler.codec.MessageEncoder;
 import org.kaazing.robot.behavior.handler.codec.ReadByteArrayBytesDecoder;
@@ -136,6 +138,7 @@ import org.kaazing.robot.lang.ast.AstReadHttpParameterNode;
 import org.kaazing.robot.lang.ast.AstReadHttpStatusNode;
 import org.kaazing.robot.lang.ast.AstReadHttpVersionNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
+import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.AstStreamNode;
@@ -150,6 +153,7 @@ import org.kaazing.robot.lang.ast.AstWriteHttpParameterNode;
 import org.kaazing.robot.lang.ast.AstWriteHttpStatusNode;
 import org.kaazing.robot.lang.ast.AstWriteHttpVersionNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
+import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
 import org.kaazing.robot.lang.ast.matcher.AstByteLengthBytesMatcher;
 import org.kaazing.robot.lang.ast.matcher.AstExactBytesMatcher;
@@ -176,6 +180,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(GenerateConfigurationVisitor.class);
 
+    private static final MaskingDecoder DEFAULT_READ_UNMASKER = new DefaultReadUnmasker();
+
     private final ChannelAddressFactory addressFactory = ChannelAddressFactory.newChannelAddressFactory();
     private final BootstrapFactory bootstrapFactory = SingletonBootstrapFactory.getInstance();
 
@@ -184,6 +190,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         private Configuration configuration;
         private LocationInfo streamStartLocation;
         private PROTOCOL protocol = PROTOCOL.TCP;
+        
+        // the read unmasker is reset per stream
+        private MaskingDecoder readUnmasker;
 
         /* The pipelineAsMap is built by each node that is visited. */
         private Map<String, ChannelHandler> pipelineAsMap;
@@ -276,6 +285,20 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         }
     }
 
+    private static final class DefaultReadUnmasker extends MaskingDecoder {
+
+        @Override
+        public ChannelBuffer applyMask(ChannelBuffer buffer) throws Exception {
+            return buffer;
+        }
+
+        @Override
+        public ChannelBuffer undoMask(ChannelBuffer buffer) throws Exception {
+            return buffer;
+        }
+
+    }
+
     public enum PROTOCOL {
         TCP, HTTP;
     }
@@ -298,6 +321,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
     @Override
     public Configuration visit(AstAcceptableNode acceptedNode, State state) throws Exception {
+
+        // masking is a no-op by default for each stream
+        state.readUnmasker = DEFAULT_READ_UNMASKER;
 
         switch (state.getProtocol()) {
         case HTTP:
@@ -338,6 +364,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstAcceptNode acceptNode, State state) throws Exception {
 
         Map<String, ChannelHandler> savedPipelineAsMap = state.pipelineAsMap;
+
+        // masking is a no-op by default for each stream
+        state.readUnmasker = DEFAULT_READ_UNMASKER;
 
         /*
          * Collection of Completion Futures. There should be one for each acceptable. We do this here instead of the
@@ -435,6 +464,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstConnectNode connectNode, State state) throws Exception {
 
         URI connectURI = connectNode.getLocation();
+        // masking is a no-op by default for each stream
+        state.readUnmasker = DEFAULT_READ_UNMASKER;
 
         boolean isHttp = isUriHttp(connectURI);
         if (isHttp) {
@@ -746,7 +777,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             messageDecoders.add(matcher.accept(new GenerateReadDecoderVisitor(), state.configuration));
         }
 
-        ReadHandler handler = new ReadHandler(messageDecoders);
+        ReadHandler handler = new ReadHandler(messageDecoders, state.readUnmasker);
         handler.setLocationInfo(node.getLocationInfo());
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("read#%d", pipelineAsMap.size() + 1);
@@ -1163,6 +1194,18 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         state.pipelineAsMap.put(handlerName, handler);
         handler.setLocationInfo(node.getLocationInfo());
         return state.configuration;
+    }
+
+    @Override
+    public Configuration visit(AstReadOptionNode node, State parameter) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Configuration visit(AstWriteOptionNode node, State parameter) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
