@@ -19,18 +19,18 @@
 
 	<parent>
 		<groupId>org.kaazing.robot</groupId>
-		<artifactId>org.kaazing.robot.parent</artifactId>
+        <artifactId>org.kaazing.robot.parent</artifactId>
 		<version>0.0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>robot-maven-plugin</artifactId>
+	<artifactId>org.kaazing.robot.driver</artifactId>
 	<version>0.0.0.1-SNAPSHOT</version>
-	<packaging>maven-plugin</packaging>
+	<packaging>jar</packaging>
 
-	<name>robot/robot-maven-plugin</name>
+	<name>robot/driver</name>
 	<url>https://github.com/kaazing/robot</url>
 	<description>
-        Robot Maven Plugin
+        Robot driver
     </description>
 
 	<properties>
@@ -40,23 +40,10 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>org.kaazing.robot.driver</artifactId>
+			<groupId>org.kaazing.robot</groupId>
+			<artifactId>org.kaazing.robot.lang</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-project</artifactId>
-			<version>2.0.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-plugin-api</artifactId>
-			<version>2.0.2</version>
-		</dependency>
-
-
 	</dependencies>
 
 	<build>
@@ -147,6 +134,30 @@
 					</execution>
 				</executions>
 			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 

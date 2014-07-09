@@ -23,14 +23,14 @@
 		<version>0.0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>robot-maven-plugin</artifactId>
+	<artifactId>org.kaazing.robot.lang</artifactId>
 	<version>0.0.0.1-SNAPSHOT</version>
-	<packaging>maven-plugin</packaging>
+	<packaging>jar</packaging>
 
-	<name>robot/robot-maven-plugin</name>
+	<name>robot/lang</name>
 	<url>https://github.com/kaazing/robot</url>
 	<description>
-        Robot Maven Plugin
+        Robot lang
     </description>
 
 	<properties>
@@ -38,25 +38,14 @@
 		<checkstyle.config.location>../config/checkstyle/checkstyle.xml</checkstyle.config.location>
 	</properties>
 
+	<!-- <dependencies> </dependencies> -->
+
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>org.kaazing.robot.driver</artifactId>
-			<version>${project.version}</version>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>[4.11,)</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-project</artifactId>
-			<version>2.0.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-plugin-api</artifactId>
-			<version>2.0.2</version>
-		</dependency>
-
-
 	</dependencies>
 
 	<build>
@@ -81,6 +70,23 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr4-maven-plugin</artifactId>
+				<version>4.2.2</version>
+				<configuration>
+				    <visitor>true</visitor>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>antlr4</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -89,19 +95,6 @@
 					<source>1.7</source>
 					<target>1.7</target>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.17</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
