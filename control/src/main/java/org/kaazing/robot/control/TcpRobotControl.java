@@ -167,6 +167,8 @@ public class TcpRobotControl implements RobotControl {
 
         textOut.append("PREPARE\n");
         textOut.append(format("name:%s\n", name));
+        // assume v2 script format by default
+        textOut.append("content-type:text/x-robot-2\n");
         textOut.append(format("content-length:%d\n", length));
         textOut.append("\n");
         textOut.append(script);

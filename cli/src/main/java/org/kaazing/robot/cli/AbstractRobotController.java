@@ -98,7 +98,7 @@ public abstract class AbstractRobotController implements RobotController {
                         throw new Exception("Unexpected event when expecting finished event: " + event);
                 }
             } catch (Exception e) {
-                interpreter.println("Script timed out");
+                interpreter.println("Failed to run script:" + e);
                 AbortCommand abort = new AbortCommand();
                 client.writeCommand(abort);
             }
