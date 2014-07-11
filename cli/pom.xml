@@ -14,115 +14,52 @@
  * limitations under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.kaazing.robot</groupId>
-    <artifactId>org.kaazing.robot.parent</artifactId>
-    <packaging>pom</packaging>
-    <version>0.0.0.1-SNAPSHOT</version>
+    <parent>
+        <groupId>org.kaazing.robot</groupId>
+        <artifactId>org.kaazing.robot.parent</artifactId>
+        <version>0.0.0.1-SNAPSHOT</version>
+    </parent>
 
-    <name>robot/parent</name>
+    <artifactId>org.kaazing.robot.cli</artifactId>
+    <version>0.0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>robot/cli</name>
     <url>https://github.com/kaazing/robot</url>
     <description>
-        Robot Protocols Testing Tool. Testing the "I" in IoT.
+        Robot cli
     </description>
-
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <inceptionYear>2014</inceptionYear>
-
-    <scm>
-        <url>https://github.com/kaazing/robot.git</url>
-        <connection>scm:git:https://github.com/kaazing/robot.git</connection>
-    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <checkstyle.config.location>config/checkstyle/checkstyle.xml</checkstyle.config.location>
+        <checkstyle.config.location>../config/checkstyle/checkstyle.xml</checkstyle.config.location>
     </properties>
-
-    <modules>
-        <module>lang</module>
-        <module>driver</module>
-        <module>robot-maven-plugin</module>
-        <module>control</module>
-        <module>junit</module>
-        <module>examples</module>
-        <module>all</module>
-        <module>cli</module>
-    </modules>
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>[4.11,)</version>
-            <scope>test</scope>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.kaazing.robot.control</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.jmock</groupId>
-            <artifactId>jmock</artifactId>
-            <version>2.6.0</version>
-            <scope>test</scope>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.kaazing.robot.driver</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.jmock</groupId>
-            <artifactId>jmock-junit4</artifactId>
-            <version>2.6.0</version>
-            <scope>test</scope>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.kaazing.robot.lang</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.jmock</groupId>
-            <artifactId>jmock-legacy</artifactId>
-            <version>2.6.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty</artifactId>
-            <version>3.9.0.Final</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4-runtime</artifactId>
-            <version>4.2.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>de.odysseus.juel</groupId>
-            <artifactId>juel</artifactId>
-            <version>2.1.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>jline</groupId>
-            <artifactId>jline</artifactId>
-            <version>2.11</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.kaazing</groupId>
-            <artifactId>kaaz-net-api</artifactId>
-            <version>0.0.0.1-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.kaazing</groupId>
-            <artifactId>kaaz-net-data</artifactId>
-            <version>0.0.0.1-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -179,7 +116,7 @@
                         <phase>validate</phase>
                         <configuration>
                             <encoding>UTF-8</encoding>
-                            <!-- checkstyle doesn't like lambdas and exceptions and bails-->
+                            <!-- checkstyle doesn't like lambdas and exceptions and bails -->
                             <consoleOutput>true</consoleOutput>
                             <failsOnError>false</failsOnError>
                             <failOnViolation>false</failOnViolation>
@@ -209,6 +146,58 @@
                         <phase>verify</phase>
                         <goals>
                             <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <finalName>robot</finalName>
+                    <artifactSet>
+                        <includes>
+                            <include>*</include>
+                        </includes>
+                    </artifactSet>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>org.kaazing.robot.cli.RobotCLI</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <finalName>robot-${project.version}</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptors>
+                        <descriptor>src/main/resources/assemble/distribution.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>

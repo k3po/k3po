@@ -1,0 +1,7 @@
+# Connect to a server running on port 8000
+# and then expect the connection to be 
+# closed by the server.
+connect tcp://127.0.0.1:8000
+connected
+
+closed

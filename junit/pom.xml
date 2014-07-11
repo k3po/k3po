@@ -19,18 +19,18 @@
 
 	<parent>
 		<groupId>org.kaazing.robot</groupId>
-		<artifactId>org.kaazing.robot.parent</artifactId>
+        <artifactId>org.kaazing.robot.parent</artifactId>
 		<version>0.0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>robot-maven-plugin</artifactId>
+	<artifactId>org.kaazing.robot.junit</artifactId>
 	<version>0.0.0.1-SNAPSHOT</version>
-	<packaging>maven-plugin</packaging>
+	<packaging>jar</packaging>
 
-	<name>robot/robot-maven-plugin</name>
+	<name>robot/junit</name>
 	<url>https://github.com/kaazing/robot</url>
 	<description>
-        Robot Maven Plugin
+        Robot junit
     </description>
 
 	<properties>
@@ -40,26 +40,49 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>org.kaazing.robot.driver</artifactId>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>[4.10,5.0)</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.kaazing.robot</groupId>
+			<artifactId>org.kaazing.robot.control</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-project</artifactId>
-			<version>2.0.2</version>
+			<groupId>commons-cli</groupId>
+			<artifactId>commons-cli</artifactId>
+			<version>1.2</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-plugin-api</artifactId>
-			<version>2.0.2</version>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
 		</dependency>
-
 
 	</dependencies>
 
 	<build>
+		<resources>
+			<!-- Copy .rpt files from the src/test/scripts/ directory into target/test-classes/META-INF/robot-scripts/ -->
+			<resource>
+				<directory>${basedir}/src/test/scripts</directory>
+				<includes>
+					<include>**/*.rpt</include>
+				</includes>
+				<targetPath>${project.build.testOutputDirectory}/META-INF/robot-scripts</targetPath>
+			</resource>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>${basedir}/src/test/resources</directory>
+			</resource>
+		</resources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -147,6 +170,24 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.kaazing.robot</groupId>
+				<artifactId>robot-maven-plugin</artifactId>
+				<version>${project.version}</version>
+				<!-- Uncomment if you want to use a different version of the robot <dependencies> 
+					<dependency> <groupId>org.kaazing.robot</groupId> <artifactId>org.kaazing.robot</artifactId>
+					<version>[2.0.0.0,2.1.0.0)</version> </dependency> </dependencies> -->
+				<executions>
+					<execution>
+						<id>robot</id>
+						<goals>
+							<goal>start</goal>
+							<goal>stop</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 
