@@ -9,10 +9,10 @@ test: $(OBJS)
 robot_control.o: robot_control.c robot_control.h
 	gcc $(CFLAGS) robot_control.c
 
-robot_control_helper.o: robot_control_helper.cpp robot_control_helper.h robot_control.c robot_control.h 
+robot_control_helper.o: robot_control_helper.cpp robot_control_helper.h robot_control.h 
 	$(CC) $(CFLAGS) robot_control_helper.cpp
 
-example_tests.o: example_tests.cpp robot_control_helper.cpp robot_control_helper.h robot_control.c robot_control.h
+example_tests.o: example_tests.cpp robot_control_helper.h robot_control.h
 	$(CC) $(CFLAGS) example_tests.cpp
 
 Test.o: Test.cpp

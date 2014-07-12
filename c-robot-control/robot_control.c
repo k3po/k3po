@@ -14,48 +14,6 @@
 int my_sock = -1;
 char * my_file_name;
 
-// RET 0 on success. -1 on error, -2 means no duplicate
-int containsDuplicate(char * msg){
-	int length = strlen(msg);
-	if(length % 2 != 0){
-		return -2;
-	}
-	char * msgA = malloc(sizeof(char) * (length/2 + 1));
-	if(msgA == NULL){
-		perror("malloc");
-		return -1;
-	}
-	char * msgB = malloc(sizeof(char) * (length/2 + 1));
-	if(msgB == NULL){
-		perror("malloc");
-		free(msgA);
-		return -1;
-	}
-	memcpy(msgA, msg, length/2);
-	*(msgA + length/2) = '\0';
-	memcpy(msgB, msg + sizeof(char) * length/2, length/2);
-	*(msgB + length/2) = '\0';
-	int diff = strcmp(msgA, msgB);
-	free(msgA);
-	free(msgB);
-	if(diff == 0){
-		return 0;
-	}
-	return -2;
-}
-
-// RET NULL on failure/error. if has duplicate, returns part of msg w/ dupl. removed, if no duplicate, returns orig msg
-char * getFirst(char * msg){
-	int dupl = containsDuplicate(msg);
-	if(dupl == 0){
-		*(msg + strlen(msg)/2 * sizeof(char)) = '\0';
-	}
-	else if(dupl == -1){
-		return NULL;
-	}
-	return msg;
-}
-
 // RET -1 if unrecognized header on msg, 0 on success. sets evt to appropriate event type: PREPARED, STARTED, FINISHED OR ERROR
 int classifyMessage(event * evt, char * msg){
 	int size = getHeaderSize(msg);
@@ -65,7 +23,6 @@ int classifyMessage(event * evt, char * msg){
 	char * header = malloc((size + 1) * sizeof(char));
 	memcpy(header, msg, size);
 	*(header + size * sizeof(char)) = '\0';
-	
 	if(strcmp(header, "PREPARED") == 0){
 		*evt = PREPARED;
 	}
@@ -269,7 +226,7 @@ char * readMessage(int sock){
 		perror("malloc");
 		return NULL;
 	}
-	ssize_t recvd;
+	int recvd;
 	do{
 		recvd = recv(sock, buf, sizeof(buf), 0);
 		if(recvd == -1){
@@ -294,7 +251,7 @@ char * readMessage(int sock){
 		copied += recvd;
 	}while(recvd >= 256);
 	*(big_buf + copied) = '\0';
-	return getFirst(big_buf);
+	return big_buf;
 }
 
 // RET -1 on failure, number of bytes in given file on success
@@ -323,17 +280,17 @@ long int countBytesInFile(char * file){
 	return size;
 }
 
-// RET -1 on failure, 0 on success. sets up robot in preparation for test (get to started state)
+// RET NULL on failure, file contents in string on success. sets up robot in preparation for test (get to started state)
 // note: my_sock will also be established on success
-int prepareRobot(char * file_name){
+char * prepareRobot(char * file_name){
 	int created = createAndConnectSocket(PORT);
 	if(created == -1){
-		return -1;
+		return NULL;
 	}
 
 	char * file_str = readFileIntoStringWrapper(file_name);
 	if(file_str == NULL){
-		return -1;
+		return NULL;
 	}
 
 	writePrepare(my_sock, file_name, file_str);
@@ -342,7 +299,7 @@ int prepareRobot(char * file_name){
 	if(last_event == NULL){
 		perror("malloc");
 		free(file_str);
-		return -1;
+		return NULL;
 	}
 	*last_event = INIT;
 	char * msg;
@@ -351,24 +308,23 @@ int prepareRobot(char * file_name){
 		if(msg == NULL){
 			free(file_str);
 			free(last_event);
-			return -1;
+			return NULL;
 		}
 		classifyMessage(last_event, msg);
 		if(*last_event == PREPARED){
 			writeStart(my_sock, file_name);
 		}
 		else if(*last_event == ERROR){
-			fprintf(stderr, "ERR: unexpected state error received from robot server\n%s\n", msg);
+			fprintf(stderr, "something went wrong unexpected state error received from robot server\n%s\n", msg);
 			free(file_str);
 			free(last_event);
 			free(msg);
-			return -1;
+			return NULL;
 		}
 		free(msg);
 	}
-	free(file_str);
 	free(last_event);
-	return 0;
+	return file_str;
 }
 
 // RET NULL on failure, test result ptr on success (mem allocated, will be error if error recv'd, else actual script)
@@ -414,7 +370,8 @@ char * handleControl(int * sock){
 void catch_alarm (int sig)
 {
 	printf("Test has timed out...stopping now\n");
-	// stop waiting for finish and send abort
+
+	// time is up... abort script
 	int aborted = writeAbort(my_sock, my_file_name);
 	if(aborted == -1){
 		fprintf(stderr, "Error aborting script after timeout\n");
@@ -425,13 +382,14 @@ void catch_alarm (int sig)
 // RET NULL on failure, ptr to file content string on success
 // memory is allocated
 char * readFileIntoStringWrapper(char * file_name){
-	int size = strlen(file_name) + strlen(FILE_EXT) + 1;
+	int size = strlen(SCRIPTS_LOCATION) + strlen(file_name) + strlen(FILE_EXT) + 1;
 	char * file = malloc(size * sizeof(char));
 	if(file == NULL){
 		perror("malloc");
 		return NULL;
 	}
-	strcpy(file, file_name);
+	strcpy(file, SCRIPTS_LOCATION);
+	strcat(file, file_name);
 	strcat(file, FILE_EXT);
 	long int num_bytes = countBytesInFile(file);
 	char * file_str = malloc(num_bytes + 1);
@@ -442,7 +400,7 @@ char * readFileIntoStringWrapper(char * file_name){
 	}
 	int read = readFileIntoString(file_str, file, num_bytes);
 	if(read == -1){
-		fprintf(stderr, "Failed to read file into string\n");
+		fprintf(stderr, "Failed to read file into string");
 		free(file);
 		free(file_str);
 		return NULL;
@@ -463,14 +421,10 @@ result * robotTest(char * file_name, void * func, int seconds){
 		alarm(seconds);
 	}
 
-	int prepared = prepareRobot(file_name);
-	if(prepared == -1){
-		fprintf(stderr, "Failed to prepare the robot\n");
-		return NULL;
-	}
-	char * file_str = readFileIntoStringWrapper(file_name);
+	char * file_str = prepareRobot(file_name);
 	if(file_str == NULL){
-		free(file_str);
+		fprintf(stderr, "Failed to prepare the robot\nIs the robot running?\n");
+		free(file_str);		
 		return NULL;
 	}
 
@@ -528,32 +482,31 @@ pthread_t * createThread(void * func, void * arg){
 // RET NULL on failure, ptr to results on success
 // execute control communication on 1 thread, client code on other
 char * doThreaded(void * func1, void * arg1, void * func2, void * arg2){
-	pthread_t * thread1 = createThread(func1, arg1);
-	if(thread1 == NULL){
-		free(thread1);
+	pthread_t * communication_thread = createThread(func1, arg1);
+	if(communication_thread == NULL){
+		free(communication_thread);
 		return NULL;
 	}
-	pthread_t * thread2 = createThread(func2, arg2);
-	if(thread2 == NULL){
-		free(thread2);
+	pthread_t * client_thread = createThread(func2, arg2);
+	if(client_thread == NULL){
+		free(client_thread);
 		return NULL;
 	}
 
-	char * thread1_val = malloc(sizeof(char));
-	char * tmp = thread1_val;
-	if(thread1_val == NULL){
+	char * communication_thread_val = malloc(sizeof(char));
+	char * tmp = communication_thread_val;
+	if(communication_thread_val == NULL){
 		perror("malloc");
-		free(thread1);
-		free(thread2);
+		free(communication_thread);
+		free(client_thread);
 		return NULL;
 	}
-
-	pthread_join(*thread1, (void **)&thread1_val);
-	pthread_join(*thread2, NULL);
-	free(thread1);
-	free(thread2);
+	pthread_join(*communication_thread, (void **)&communication_thread_val);
+	pthread_join(*client_thread, NULL);
+	free(communication_thread);
+	free(client_thread);
 	free(tmp);
-	return thread1_val;
+	return communication_thread_val;
 }
 
 // Frees the memory associated with the result struct at the end of the test

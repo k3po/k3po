@@ -5,6 +5,7 @@
 
 #define PORT 11642
 #define FILE_EXT ".rpt"
+#define SCRIPTS_LOCATION "./scripts/"
 
 typedef enum {INIT, PREPARED, STARTED, FINISHED, ERROR} event;
 typedef struct {
@@ -13,7 +14,7 @@ typedef struct {
 } result;
 
 result * robotTest(char * file_name, void * func, int seconds);
-int prepareRobot(char * file_name);
+char * prepareRobot(char * file_name);
 int createAndConnectSocket(in_port_t port);
 char * readFileIntoStringWrapper(char * file_name);
 int readFileIntoString(char * file_str, char * file_name, long int num_bytes);
@@ -23,8 +24,6 @@ int writeStart(int sock, char * script_name);
 int writeAbort(int sock, char * script_name);
 int sendMessage(int sock, char * msg);
 char * readMessage(int sock);
-int containsDuplicate(char * msg);
-char * getFirst(char * msg);
 int classifyMessage(event * evt, char * msg);
 int getHeaderSize(char * msg);
 char * readContent(char * msg);
@@ -34,5 +33,6 @@ char * doSequential(int * sock);
 char * handleControl(int * sock);
 void catch_alarm (int sig);
 void robotFree(result * result);
+
 
 #endif
