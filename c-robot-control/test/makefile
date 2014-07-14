@@ -3,8 +3,8 @@ CFLAGS = -Wall -c -g
 LFLAGS = -Wall -g -lpthread -lgtest -lc
 OBJS = robot_control.o robot_control_helper.o example_tests.o Test.o
 
-test: $(OBJS)
-	$(CC) $(OBJS) $(LFLAGS) -o test
+example-tests: $(OBJS)
+	$(CC) $(OBJS) $(LFLAGS) -o example-tests
 
 robot_control.o: robot_control.c robot_control.h
 	gcc $(CFLAGS) robot_control.c
@@ -19,4 +19,4 @@ Test.o: Test.cpp
 	$(CC) $(CFLAGS) Test.cpp
 
 clean:
-	rm -rf *.o *~ test
+	rm -rf *.o *~ example-tests
