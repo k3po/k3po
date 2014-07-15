@@ -1,3 +1,4 @@
+#!/bin/bash
 mkdir ./tmp
 cd ../../cli/target
 
