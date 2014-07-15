@@ -46,4 +46,8 @@ mvn clean install
 cd ../robot
 mvn clean install -DskipITs
 
+# install c-robot-control shared library
+cd c-robot-control
+make install
+
 echo Setup Complete
