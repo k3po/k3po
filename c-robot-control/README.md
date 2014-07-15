@@ -1,4 +1,4 @@
-Quick Start Guide::
+Quick Start Guide:
 
     Download and install VirtualBox: https://www.virtualbox.org/wiki/Downloads
     Download and install Vagrant: http://www.vagrantup.com/downloads.html
@@ -13,4 +13,10 @@ Quick Start Guide::
     Run the command vagrant ssh in the same window
     Navigate to ~/robot/c-robot-control/test
     Run sh run_tests.sh for some example tests
+    
+C-Robot-Control as a Shared Library:
+
+    Run "make install" from the c-robot-control directory
+    This will install c-robot-control as a shared library at /usr/local
+    To install at different directory, run "make install prefix=[path_to_install_directory]"
 
