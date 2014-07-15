@@ -1,6 +1,6 @@
 CC = g++
 CFLAGS = -Wall -g -fPIC
-LFLAGS = -Wall -g -lpthread -lgtest -lc -lkws_websocket
+LFLAGS = -Wall -g -lpthread -lgtest -lc
 OBJS = $(OBJDIR)/robot_control.o $(OBJDIR)/robot_control_helper.o 
 OBJDIR = lib
 LIB_SONAME = libc-robot-control.so
