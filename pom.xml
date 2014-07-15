@@ -22,9 +22,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.kaazing</groupId>
-			<artifactId>robot-driver</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<groupId>org.kaazing.robot</groupId>
+			<artifactId>org.kaazing.robot.driver</artifactId>
+			<version>0.0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
