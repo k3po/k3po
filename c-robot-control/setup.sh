@@ -49,7 +49,7 @@ mvn clean install -DskipITs
 # install c-robot-control shared library
 cd c-robot-control
 make install
-sed -i '1li /usr/local/lib' /etc/ld.so.conf
+sed -i '1i /usr/local/lib' /etc/ld.so.conf
 /sbin/ldconfig
 
 echo Setup Complete
