@@ -1,17 +1,15 @@
 #!/bin/bash
 mkdir ./tmp
-cd ../../cli/target
 
 # start robot
-nohup java -jar robot.jar start background &> /dev/null &
+nohup java -jar ../robot.jar start background &> /dev/null &
 sleep 1
 echo Robot Started
 
 # store robot pid
-echo $! >> ../../c-robot-control/test/tmp/robot_pid
+echo $! >> ./tmp/robot_pid
 
 # build tests and run
-cd ../../c-robot-control/test
 make
 ./example-tests
 
