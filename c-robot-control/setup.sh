@@ -33,23 +33,16 @@ cp -r ../include/gtest/ /usr/local/include/
 cd ../..
 rm -rf ./gtest-1.7.0
 
-# requires kaaz-net and c-robot-control be checked out and in the shared vagrant folder
-cd /home/vagrant
-cp -r /vagrant/kaaz-net .
-cp -r /vagrant/robot .
-chown -R vagrant *
-chgrp -R vagrant *
-tr -d '\15\32' < ./robot/c-robot-control/test/run_tests.sh > ./robot/c-robot-control/test/tmp.sh
-mv ./robot/c-robot-control/test/tmp.sh ./robot/c-robot-control/test/run_tests.sh
-cd kaaz-net
-mvn clean install
-cd ../robot
-mvn clean install -DskipITs
 
-# install c-robot-control shared library
-cd c-robot-control
+cd /vagrant/
+make clean
 make install
 sed -i '1i /usr/local/lib' /etc/ld.so.conf
 /sbin/ldconfig
+tr -d '\15\32' < /vagrant/test/run_tests.sh > /vagrant/test/tmp.sh
+mv /vagrant/test/tmp.sh /vagrant/test/run_tests.sh
+tr -d '\15\32' < /vagrant/wrap_run_tests.sh > /vagrant/tmp.sh
+mv /vagrant/tmp.sh /vagrant/wrap_run_tests.sh
+
 
 echo Setup Complete
