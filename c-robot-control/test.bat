@@ -52,4 +52,4 @@ EXIT /B 0
 
 :EXIT_FAIL_TESTS
 ECHO Tests failed...Failing Build
-EXIT /B 2
+EXIT /B 1
