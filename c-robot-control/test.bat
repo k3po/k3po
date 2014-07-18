@@ -29,7 +29,7 @@ IF %vagrant% == 0 (
 		vagrant up
 		ECHO Starting tests...
 		vagrant ssh -c "sh /vagrant/wrap_run_tests.sh"
-		REM vagrant destroy -f
+		vagrant destroy -f
 		ECHO =====TEST RESULTS=====
 		TYPE .\target\test_results.txt
 		ECHO Tests complete...
