@@ -83,7 +83,7 @@
 								<phase>compile</phase>
 								<configuration>
 									<tasks>
-										<exec dir="${project.basedir}/" executable="${project.basedir}./test.sh"
+										<exec dir="${project.basedir}/" executable="${project.basedir}/test.sh"
 											failonerror="true">
 											<arg line="" />
 										</exec>

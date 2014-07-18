@@ -2,27 +2,27 @@
 echo "Checking if Vagrant and VirtualBox are installed..."
 vagrant -v &> /dev/null
 vagrant=$?
-if [ ! $vagrant ]
+if [ $vagrant -eq 0 ]
 	then
-		echo vagrant -v
+		echo $(vagrant -v)
 else
 	echo "Vagrant is not installed"
 fi
 
 vboxmanage -v &> /dev/null
 virtualbox=$?
-if [ ! $virtualbox ]
+if [ $virtualbox -eq 0 ]
 	then
 		echo "VirtualBox "$(vboxmanage -v)
 else
 	echo "VirtualBox is not installed"
 fi
 
-if [ ! $vagrant ]
-	then if [ ! $virtualbox ]
+if [ $vagrant -eq 0 ]
+	then if [ $virtualbox -eq 0 ]
 		then
 			echo "Both are installed"
-			cp ../cli/target/robot.jar
+			cp ../cli/target/robot.jar .
 			vagrant up
 			echo "Starting tests..."
 			vagrant ssh -c "sh /vagrant/wrap_run_tests.sh"
@@ -30,11 +30,11 @@ if [ ! $vagrant ]
 			echo "=====TEST RESULTS====="
 			cat ./target/test_results.txt
 			echo "Tests complete..."
-			if grep --quiet FAILED .\target\test_results.txt
+			if grep --quiet FAILED ./target/test_results.txt
 				then echo "Tests failed...Failing Build"
 				exit 1
 			else
-				if grep --quiet PASSED /vagrant/target/test_results.txt
+				if grep --quiet PASSED ./target/test_results.txt
 					then 
 						echo Tests Passed
 				else
