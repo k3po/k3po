@@ -1,18 +1,21 @@
 <!--
- * Copyright 2014 Kaazing, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
--->
+  Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+
+  This file is part of Robot.
+
+  Robot is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+  -->
 
 <!-- A convenience project that packages the robot project into a runnable cli -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -20,12 +23,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.kaazing.robot</groupId>
-        <artifactId>org.kaazing.robot.parent</artifactId>
+        <groupId>org.kaazing</groupId>
+        <artifactId>robot.parent</artifactId>
         <version>0.0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.kaazing.robot.all</artifactId>
+    <artifactId>robot.all</artifactId>
     <version>0.0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -44,28 +47,28 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>org.kaazing.robot.control</artifactId>
+            <artifactId>robot.control</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>org.kaazing.robot.driver</artifactId>
+            <artifactId>robot.driver</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>org.kaazing.robot.junit</artifactId>
+            <artifactId>robot.junit</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>org.kaazing.robot.lang</artifactId>
+            <artifactId>robot.lang</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
