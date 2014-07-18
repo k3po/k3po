@@ -23,11 +23,11 @@ TEST(Example, Test){
 	**	functionPointer (function to any cleanup code you need to run after the clientCode, NULL if none) 
 	**	Timeout (in seconds, set <= 0 for no timeout) 
 	*/
-	ROBOT_TEST("exampleScript", echo_test, NULL, 3);
+	ROBOT_TEST("exampleScript", echo_test, NULL, 10);
 }
 
 TEST(Example, Test2){
-	ROBOT_TEST("exampleScript2", alt_echo_test, NULL, 2);
+	ROBOT_TEST("exampleScript2", alt_echo_test, NULL, 10);
 }
 
 void alt_echo_test(){

@@ -1,27 +1,25 @@
 @ECHO OFF
 ECHO Checking if Vagrant and VirtualBox are installed...
 vagrant -v > vagrant_version 2>&1
-set vagrant=%errorlevel%
+SET vagrant=%errorlevel%
 
 IF %vagrant% == 0 (
+ECHO Vagrant Version:
 TYPE vagrant_version
 ) ELSE (
 ECHO Vagrant is not installed
 )
-del vagrant_version
+DEL vagrant_version
 
 "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" -v > virtualbox_version 2>&1
-set virtualbox=%errorlevel%
-
+SET virtualbox=%errorlevel%
 IF %virtualbox% == 0 (
-	set vara=VirtualBox Version 
-	set /p varb= < virtualbox_version
-	set newvar=%vara%%varb%
-	ECHO %newvar%
+	ECHO VirtualBox Version:
+	TYPE virtualbox_version
 ) ELSE (
 	ECHO Virtualbox is not installed
 )
-del virtualbox_version 
+DEL virtualbox_version 
 
 IF %vagrant% == 0 (
 	IF %virtualbox% == 0 (
@@ -33,7 +31,7 @@ IF %vagrant% == 0 (
 		ECHO =====TEST RESULTS=====
 		TYPE .\target\test_results.txt
 		ECHO Tests complete...
-		goto :CHECK_TEST_RESULTS
+		GOTO :CHECK_TEST_RESULTS
 	) ELSE (
 		ECHO [WARNING]Tests cannot be run in this environment...nothing will be built
 	)
@@ -45,13 +43,23 @@ IF %vagrant% == 0 (
 EXIT /B 0
 
 :CHECK_TEST_RESULTS
-findstr FAILED .\target\test_results.txt
-set found=%errorlevel%
-IF %found% == 0 (
-	goto :EXIT_FAIL_TESTS
+FINDSTR FAILED .\target\test_results.txt
+SET failed=%errorlevel%
+IF %failed% == 0 (
+	GOTO :EXIT_FAIL_TESTS
 ) ELSE (
- 	echo Tests Passed
-	goto EXIT_SUCCESS
+	GOTO :CHECK_PASSED
+)
+
+:CHECK_PASSED
+FINDSTR PASSED .\target\test_results.txt
+SET passed=%errorlevel%
+IF %passed% == 0 (
+	ECHO Tests Passed
+	GOTO :EXIT_SUCCESS
+) ELSE (
+	ECHO Tests failed due to timeout. Consider re-running with a higher timeout in example_tests.cpp
+	GOTO :EXIT_FAIL_TESTS
 )
 
 :EXIT_FAIL_TESTS

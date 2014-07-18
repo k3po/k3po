@@ -26,7 +26,7 @@ if [ ! $vagrant ]
 			vagrant up
 			echo "Starting tests..."
 			vagrant ssh -c "sh /vagrant/wrap_run_tests.sh"
-			# vagrant destroy -f
+			vagrant destroy -f
 			echo "=====TEST RESULTS====="
 			cat ./target/test_results.txt
 			echo "Tests complete..."
@@ -34,7 +34,14 @@ if [ ! $vagrant ]
 				then echo "Tests failed...Failing Build"
 				exit 1
 			else
-				echo "Tests Passed"
+				if grep --quiet PASSED /vagrant/target/test_results.txt
+					then 
+						echo Tests Passed
+				else
+					echo "Tests failed due to timeout. Consider re-running with a higher timeout in example_tests.cpp"
+					echo "Tests failed...Failing Build"
+					exit 1
+				fi
 			fi
 	else
 		echo "[WARNING]Tests cannot be run in this environment...nothing will be built"
