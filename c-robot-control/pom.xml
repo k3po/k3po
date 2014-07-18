@@ -18,7 +18,7 @@
 
 	<artifactId>org.kaazing.robot.c-robot-control</artifactId>
 	<version>0.0.0.1-SNAPSHOT</version>
-	<!--packaging>jar</packaging-->
+	<!--packaging>jar</packaging -->
 
 	<name>robot/c-robot-control</name>
 	<url>https://github.com/kaazing/robot</url>
@@ -50,11 +50,9 @@
 								<phase>compile</phase>
 								<configuration>
 									<tasks>
-										<exec
-											dir="${project.basedir}/"
-											executable="${project.basedir}/test.bat"
+										<exec dir="${project.basedir}/" executable="${project.basedir}/test.bat"
 											failonerror="true">
-											<arg line=""/>
+											<arg line="" />
 										</exec>
 									</tasks>
 								</configuration>
@@ -85,11 +83,9 @@
 								<phase>compile</phase>
 								<configuration>
 									<tasks>
-										<exec
-											dir="${project.basedir}/"
-											executable="${project.basedir}./test.sh"
+										<exec dir="${project.basedir}/" executable="${project.basedir}./test.sh"
 											failonerror="true">
-											<arg line=""/>
+											<arg line="" />
 										</exec>
 									</tasks>
 								</configuration>

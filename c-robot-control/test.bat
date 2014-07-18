@@ -33,13 +33,7 @@ IF %vagrant% == 0 (
 		ECHO =====TEST RESULTS=====
 		TYPE .\target\test_results.txt
 		ECHO Tests complete...
-		findstr FAILED .\target\test_results.txt
-		set found=%errorlevel%
-		IF "%found%" == "0" (
-			ECHO Tests Passed
-		) ELSE (
-		 	goto :EXIT_FAIL_TESTS
-		)
+		goto :CHECK_TEST_RESULTS
 	) ELSE (
 		ECHO [WARNING]Tests cannot be run in this environment...nothing will be built
 	)
@@ -49,6 +43,16 @@ IF %vagrant% == 0 (
 
 :EXIT_SUCCESS
 EXIT /B 0
+
+:CHECK_TEST_RESULTS
+findstr FAILED .\target\test_results.txt
+set found=%errorlevel%
+IF %found% == 0 (
+	goto :EXIT_FAIL_TESTS
+) ELSE (
+ 	echo Tests Passed
+	goto EXIT_SUCCESS
+)
 
 :EXIT_FAIL_TESTS
 ECHO Tests failed...Failing Build
