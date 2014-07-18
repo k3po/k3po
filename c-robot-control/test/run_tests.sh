@@ -3,7 +3,7 @@ mkdir ./tmp
 
 # start robot
 nohup java -jar ../robot.jar start background &> /dev/null &
-sleep 1
+sleep 5
 echo Robot Started
 
 # store robot pid
