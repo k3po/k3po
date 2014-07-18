@@ -21,12 +21,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.kaazing.robot</groupId>
-        <artifactId>org.kaazing.robot.parent</artifactId>
+		<groupId>org.kaazing</groupId>
+        <artifactId>robot.parent</artifactId>
 		<version>0.0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.kaazing.robot.junit</artifactId>
+	<artifactId>robot.junit</artifactId>
 	<version>0.0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
@@ -50,8 +50,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.kaazing.robot</groupId>
-			<artifactId>org.kaazing.robot.control</artifactId>
+			<groupId>org.kaazing</groupId>
+			<artifactId>robot.control</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -174,11 +174,11 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.kaazing.robot</groupId>
+				<groupId>org.kaazing</groupId>
 				<artifactId>robot-maven-plugin</artifactId>
 				<version>${project.version}</version>
 				<!-- Uncomment if you want to use a different version of the robot <dependencies> 
-					<dependency> <groupId>org.kaazing.robot</groupId> <artifactId>org.kaazing.robot</artifactId>
+					<dependency> <groupId>org.kaazing</groupId> <artifactId>org.kaazing.robot</artifactId>
 					<version>[2.0.0.0,2.1.0.0)</version> </dependency> </dependencies> -->
 				<executions>
 					<execution>

@@ -23,12 +23,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.kaazing.robot</groupId>
-        <artifactId>org.kaazing.robot.parent</artifactId>
+        <groupId>org.kaazing</groupId>
+        <artifactId>robot.parent</artifactId>
         <version>0.0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.kaazing.robot.all</artifactId>
+    <artifactId>robot.all</artifactId>
     <version>0.0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -47,28 +47,28 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>org.kaazing.robot.control</artifactId>
+            <artifactId>robot.control</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>org.kaazing.robot.driver</artifactId>
+            <artifactId>robot.driver</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>org.kaazing.robot.junit</artifactId>
+            <artifactId>robot.junit</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>org.kaazing.robot.lang</artifactId>
+            <artifactId>robot.lang</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
