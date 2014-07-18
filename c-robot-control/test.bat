@@ -43,7 +43,7 @@ IF %vagrant% == 0 (
 EXIT /B 0
 
 :CHECK_TEST_RESULTS
-FINDSTR FAILED .\target\test_results.txt
+FINDSTR FAILED .\target\test_results.txt > NUL 2>&1
 SET failed=%errorlevel%
 IF %failed% == 0 (
 	GOTO :EXIT_FAIL_TESTS
@@ -52,7 +52,7 @@ IF %failed% == 0 (
 )
 
 :CHECK_PASSED
-FINDSTR PASSED .\target\test_results.txt
+FINDSTR PASSED .\target\test_results.txt > NUL 2>&1
 SET passed=%errorlevel%
 IF %passed% == 0 (
 	ECHO Tests Passed
