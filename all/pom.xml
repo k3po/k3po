@@ -14,123 +14,160 @@
   GNU Affero General Public License for more details.
 
   You should have received a copy of the GNU Affero General Public License
-  along with this program. If not, see <http://www.gnu.org/licenses/>.
+  along with this program. If not, see <http://www.gnu.org/licenses />.
   -->
 
-<!-- A convenience project that packages the robot project into a runnable cli -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<!-- A convenience project that packages the robot project into a runnable 
+	cli -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.kaazing</groupId>
-        <artifactId>robot.parent</artifactId>
-        <version>0.0.0.1-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>org.kaazing</groupId>
+		<artifactId>robot.parent</artifactId>
+		<version>0.0.0.1</version>
+	</parent>
 
-    <artifactId>robot.all</artifactId>
-    <version>0.0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+	<artifactId>robot.all</artifactId>
+	<version>0.0.0.1</version>
+	<packaging>jar</packaging>
 
-    <name>robot/all</name>
-    <url>https://github.com/kaazing/robot</url>
-    <description>
+	<name>robot/all</name>
+	<url>https://github.com/kaazing/robot</url>
+	<description>
         Robot lang
     </description>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <checkstyle.config.location>../config/checkstyle/checkstyle.xml</checkstyle.config.location>
-    </properties>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<checkstyle.config.location>../config/checkstyle/checkstyle.xml</checkstyle.config.location>
+		<generatedSourceDir>${project.build.directory}/src</generatedSourceDir>
+	</properties>
 
-    <dependencies>
+	<dependencies>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>robot.control</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>robot.control</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>robot.driver</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>robot.driver</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>robot.junit</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>robot.junit</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>robot.lang</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>robot.lang</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
 
-    </dependencies>
+	</dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <artifactSet>
-                        <includes>
-                            <include>org.kaazing:*</include>
-                        </includes>
-                    </artifactSet>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.kaazing.robot.cli.RobotCLI</mainClass>
-                                </transformer>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
-                <configuration>
-                    <doctitle><![CDATA[<h1>Robot Protocol Testing Tool</h1>]]></doctitle>
-                    <bottom><![CDATA[<i>Copyright &#169; 2014 Kaazing, Inc. All Rights Reserved.</i>]]></bottom>
-                </configuration>
-            </plugin>
+					<!-- Unpack all source files -->
+					<execution>
+						<id>unpack-sources</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<classifier>sources</classifier>
+							<includes>org/kaazing/**</includes>
+							<includeGroupIds>${project.groupId}</includeGroupIds>
+							<outputDirectory>${generatedSourceDir}</outputDirectory>
+						</configuration>
+					</execution>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+					<!-- Unpack all class files -->
+					<execution>
+						<id>unpack-jars</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeGroupIds>${project.groupId}</includeGroupIds>
+							<outputDirectory>${project.build.outputDirectory}</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Include the directory where the source files were unpacked -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${generatedSourceDir}</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Disable all plugin executions configured by jar packaging -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-resources</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>default-testResources</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-compile</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>default-testCompile</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-test</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
