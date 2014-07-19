@@ -38,7 +38,7 @@ import org.junit.rules.ExpectedException;
 import org.kaazing.robot.Robot;
 import org.kaazing.robot.behavior.RobotCompletionFuture;
 
-public class V2HttpRobotIT {
+public class HttpRobotIT {
 
     private static final long TEST_TIMEOUT = 2000;
     private static final String FORMAT_VERSION = "text/x-robot-2";
