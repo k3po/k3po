@@ -14,22 +14,23 @@
   GNU Affero General Public License for more details.
 
   You should have received a copy of the GNU Affero General Public License
-  along with this program. If not, see <http://www.gnu.org/licenses />.
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
 
 <!-- A convenience project that packages the robot project into a runnable 
 	cli -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.kaazing</groupId>
 		<artifactId>robot.parent</artifactId>
-		<version>0.0.0.1</version>
+		<version>0.0.0.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>robot.all</artifactId>
-	<version>0.0.0.1</version>
+	<version>0.0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>robot/all</name>
