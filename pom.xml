@@ -18,39 +18,39 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.kaazing</groupId>
-    <artifactId>robot.parent</artifactId>
-    <packaging>pom</packaging>
-    <version>0.0.0.1-SNAPSHOT</version>
+	<groupId>org.kaazing</groupId>
+	<artifactId>robot.parent</artifactId>
+	<packaging>pom</packaging>
+	<version>0.0.0.1-SNAPSHOT</version>
 
-    <name>robot/parent</name>
-    <url>https://github.com/kaazing/robot</url>
-    <description>
+	<name>robot/parent</name>
+	<url>https://github.com/kaazing/robot</url>
+	<description>
         Robot Protocols Testing Tool. Testing the "I" in IoT.
     </description>
 
-    <licenses>
-        <license>
-            <name>GNU AFFERO GENERAL PUBLIC LICENSE, Version 3</name>
-            <url>http://www.gnu.org/licenses/agpl.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <inceptionYear>2014</inceptionYear>
+	<licenses>
+		<license>
+			<name>GNU AFFERO GENERAL PUBLIC LICENSE, Version 3</name>
+			<url>http://www.gnu.org/licenses/agpl.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<inceptionYear>2014</inceptionYear>
 
-    <scm>
-        <url>https://github.com/kaazing/robot.git</url>
-        <connection>scm:git:https://github.com/kaazing/robot.git</connection>
-    </scm>
+	<scm>
+		<url>https://github.com/kaazing/robot.git</url>
+		<connection>scm:git:https://github.com/kaazing/robot.git</connection>
+	</scm>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <checkstyle.config.location>config/checkstyle/checkstyle.xml</checkstyle.config.location>
-    </properties>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<checkstyle.config.location>config/checkstyle/checkstyle.xml</checkstyle.config.location>
+	</properties>
 
     <modules>
         <module>lang</module>
@@ -61,171 +61,171 @@
         <module>examples</module>
         <module>all</module>
         <module>cli</module>
-	<module>c-robot-control</module>
+		<module>c-robot-control</module>
     </modules>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>[4.11,)</version>
-            <scope>test</scope>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>[4.11,)</version>
+			<scope>test</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>org.jmock</groupId>
-            <artifactId>jmock</artifactId>
-            <version>2.6.0</version>
-            <scope>test</scope>
-        </dependency>
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock</artifactId>
+			<version>2.6.0</version>
+			<scope>test</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>org.jmock</groupId>
-            <artifactId>jmock-junit4</artifactId>
-            <version>2.6.0</version>
-            <scope>test</scope>
-        </dependency>
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-junit4</artifactId>
+			<version>2.6.0</version>
+			<scope>test</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>org.jmock</groupId>
-            <artifactId>jmock-legacy</artifactId>
-            <version>2.6.0</version>
-            <scope>test</scope>
-        </dependency>
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-legacy</artifactId>
+			<version>2.6.0</version>
+			<scope>test</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty</artifactId>
-            <version>3.9.0.Final</version>
-        </dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty</artifactId>
+			<version>3.9.0.Final</version>
+		</dependency>
 
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4-runtime</artifactId>
-            <version>4.2.2</version>
-        </dependency>
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr4-runtime</artifactId>
+			<version>4.2.2</version>
+		</dependency>
 
-        <dependency>
-            <groupId>de.odysseus.juel</groupId>
-            <artifactId>juel</artifactId>
-            <version>2.1.3</version>
-        </dependency>
+		<dependency>
+			<groupId>de.odysseus.juel</groupId>
+			<artifactId>juel</artifactId>
+			<version>2.1.3</version>
+		</dependency>
 
-        <dependency>
-            <groupId>jline</groupId>
-            <artifactId>jline</artifactId>
-            <version>2.11</version>
-        </dependency>
+		<dependency>
+			<groupId>jline</groupId>
+			<artifactId>jline</artifactId>
+			<version>2.11</version>
+		</dependency>
 
-        <dependency>
-            <groupId>org.kaazing</groupId>
-            <artifactId>kaaz-net-api</artifactId>
-            <version>0.0.0.1-SNAPSHOT</version>
-        </dependency>
+		<dependency>
+			<groupId>org.kaazing</groupId>
+			<artifactId>kaaz-net-api</artifactId>
+			<version>0.0.0.1-SNAPSHOT</version>
+		</dependency>
 
-        <dependency>
-            <groupId>org.kaazing</groupId>
-            <artifactId>kaaz-net-data</artifactId>
-            <version>0.0.0.1-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.kaazing</groupId>
+			<artifactId>kaaz-net-data</artifactId>
+			<version>0.0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.3.1</version>
-                <executions>
-                    <execution>
-                        <id>enforce-versions</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireJavaVersion>
-                                    <version>1.7</version>
-                                </requireJavaVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.17</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.11</version>
-                <executions>
-                    <execution>
-                        <id>validate</id>
-                        <phase>validate</phase>
-                        <configuration>
-                            <encoding>UTF-8</encoding>
-                            <!-- checkstyle doesn't like lambdas and exceptions and bails-->
-                            <consoleOutput>true</consoleOutput>
-                            <failsOnError>false</failsOnError>
-                            <failOnViolation>false</failOnViolation>
-                        </configuration>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <doctitle><![CDATA[<h1>Robot Protocol Testing Tool</h1>]]></doctitle>
-                            <bottom><![CDATA[<i>Copyright &#169; 2014 Kaazing, Inc. All Rights Reserved.</i>]]></bottom>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>1.3.1</version>
+				<executions>
+					<execution>
+						<id>enforce-versions</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireJavaVersion>
+									<version>1.7</version>
+								</requireJavaVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.17</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.11</version>
+				<executions>
+					<execution>
+						<id>validate</id>
+						<phase>validate</phase>
+						<configuration>
+							<encoding>UTF-8</encoding>
+							<!-- checkstyle doesn't like lambdas and exceptions and bails -->
+							<consoleOutput>true</consoleOutput>
+							<failsOnError>false</failsOnError>
+							<failOnViolation>false</failOnViolation>
+						</configuration>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<doctitle><![CDATA[<h1>Robot Protocol Testing Tool</h1>]]></doctitle>
+							<bottom><![CDATA[<i>Copyright &#169; 2014 Kaazing, Inc. All Rights Reserved.</i>]]></bottom>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

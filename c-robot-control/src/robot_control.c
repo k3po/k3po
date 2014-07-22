@@ -1,3 +1,21 @@
+/*  Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+**
+**  This file is part of Robot.
+**
+**  Robot is free software: you can redistribute it and/or modify
+**  it under the terms of the GNU Affero General Public License as
+**  published by the Free Software Foundation, either version 3 of the
+**  License, or (at your option) any later version.
+**
+**  This program is distributed in the hope that it will be useful,
+**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**  GNU Affero General Public License for more details.
+**
+**  You should have received a copy of the GNU Affero General Public License
+**  along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -14,13 +32,24 @@
 int my_sock = -1;
 char * my_file_name;
 
-// RET -1 if unrecognized header on msg, 0 on success. sets evt to appropriate event type: PREPARED, STARTED, FINISHED OR ERROR
+/*
+** Classifies the header of the given message into an event
+** Returns -1 if the message header is not recognized or error occurs
+**
+** Arguments:
+** evt - event to be set to the classified header
+** msg - the message with the header to be classified
+*/
 int classifyMessage(event * evt, char * msg){
 	int size = getHeaderSize(msg);
 	if(size == -1){
 		return -1;
 	}
 	char * header = malloc((size + 1) * sizeof(char));
+	if(header == NULL){
+		perror("malloc");
+		return -1;
+	}
 	memcpy(header, msg, size);
 	*(header + size * sizeof(char)) = '\0';
 	if(strcmp(header, "PREPARED") == 0){
@@ -36,7 +65,7 @@ int classifyMessage(event * evt, char * msg){
 		*evt = ERROR;
 	}
 	else{
-		fprintf(stderr, "Unrecognized header in received message:\n Header: %s\nMessage: %s\n", header, msg);
+		fprintf(stderr, "Header in received message not recognized:\n Header: %s\nMessage: %s\n", header, msg);
 		free(header);
 		return -1;
 	}
@@ -44,7 +73,13 @@ int classifyMessage(event * evt, char * msg){
 	return 0;
 }
 
-// RET -1 if null or is of invalid header format, else count of number of chars (single-byte) in the msg header
+/*
+** Returns a count of the number of characters (single byte) in the message header
+** Returns -1 on failure
+**
+** Arguments:
+** msg - the message with the header to compute the length of
+*/
 int getHeaderSize(char * msg){
 	if(msg == NULL){
 		fprintf(stderr, "ERR: NULL msg received\n");
@@ -61,7 +96,15 @@ int getHeaderSize(char * msg){
 	return size;
 }
 
-// RET -1 on failure, 0 on success reads num_bytes bytes into file_str from file (you must allocate num_bytes + 1 bytes to file_str)
+/*
+** Reads num_bytes worth of content from the file, file_name into the buffer file_str
+** Returns -1 on failure and 0 on success
+** 
+** Arguments: 
+** file_str - the destination for the content being read from the file (will be NULL terminated)
+** file_name - the file whose content will be read
+** num_bytes - the number of bytes to read from the file
+*/
 int readFileIntoString(char * file_str, char * file, long int num_bytes){
 	FILE * fp = fopen(file, "r");
 	if(fp == NULL){
@@ -83,8 +126,14 @@ int readFileIntoString(char * file_str, char * file, long int num_bytes){
 	return 0;
 }
 
-// RET -1 on failure, 0 on success and value of my_sock is set
-// note: my_sock is set here if successful
+/*
+** Opens and connects a socket to the given port
+** Returns -1 on failure and 0 on success
+** NOTE: my_sock will be set on success
+** 
+** Arguments:
+** port - the port to connect the socket on 
+*/
 int createAndConnectSocket(in_port_t port){
 	int sock = socket(PF_INET, SOCK_STREAM, 0);
 	if(sock == -1){
@@ -105,7 +154,15 @@ int createAndConnectSocket(in_port_t port){
 	return 0;
 }
 
-// RET -1 on failure, 0 on success. sends PREPARE command to given socket with given script_name and script
+/*
+** Sends PREPARE command to robot using given socket file descriptor
+** Returns -1 on failure, 0 on success
+**
+** Arguments:
+** sock - the file descriptor for a socket for which to send the command
+** script_name - the name of the script being prepared
+** script - the contents of the script being prepared
+*/
 int writePrepare(int sock, char * script_name, char * script){
 	int length = strlen(script);
 	char content_length [10] = {'\0'};
@@ -128,15 +185,21 @@ int writePrepare(int sock, char * script_name, char * script){
 	strcat(prepare_str, script);
 
 	int sent = sendMessage(sock, prepare_str);
+	free(prepare_str);
 	if(sent == -1){
-		free(prepare_str);
 		return -1;
 	}
-	free(prepare_str);
 	return 0;
 }
 
-// RET -1 on failure, 0 on success. writes START command to given socket
+/*
+** Sends START command to robot using given socket file descriptor
+** Returns -1 on failure, 0 on success
+**
+** Arguments:
+** sock - the file descriptor for a socket for which to send the command
+** script_name - the name of the script being started
+*/
 int writeStart(int sock, char * script_name){
 	int size = strlen("START\n") + strlen("name:") + strlen(script_name) + strlen("\n\n") + 1;
 	char * start_str = malloc(sizeof(char) * size);
@@ -150,31 +213,42 @@ int writeStart(int sock, char * script_name){
 	strcat(start_str, "\n\n");
 
 	int sent = sendMessage(sock, start_str);
+	free(start_str);
 	if(sent == -1){
-		free(start_str);
 		return -1;
 	}
-	free(start_str);
 	return 0;
 }
 
-// RET -1 on failure, # bytes sent on success
+/*
+** Sends ABORT command to robot using given socket file descriptor
+** Returns -1 on failure, 0 on success
+**
+** Arguments:
+** sock - the file descriptor for a socket for which to send the command
+** script_name - the name of the script being aborted
+*/
 int sendMessage(int sock, char * msg){
 	int sent = send(sock, msg, strlen(msg), 0);
 	if(sent == -1){
 		perror("sent");
-		free(msg);
 		return -1;
 	}
 	else if(sent < strlen(msg)){
 		fprintf(stderr, "Error sending message: Expected to send %d bytes but only sent %d bytes", (int)strlen(msg), sent);
-		free(msg);
 		return -1;
 	}
 	return sent;
 }
 
-// RET -1 on failure, 0 on success. writes ABORT command to given socket
+/*
+** Sends ABORT command to robot using given socket file descriptor
+** Returns -1 on failure, 0 on success
+**
+** Arguments:
+** sock - the file descriptor for a socket for which to send the command
+** script_name - the name of the script being aborted
+*/
 int writeAbort(int sock, char * script_name){
 	int size = strlen("ABORT\n") + strlen("name:") + strlen(script_name) + strlen("\n\n") + 1;
 	char * abort_str = malloc(sizeof(char) * size);
@@ -188,15 +262,20 @@ int writeAbort(int sock, char * script_name){
 	strcat(abort_str, "\n\n");
 
 	int sent = sendMessage(sock, abort_str);
+	free(abort_str);
 	if(sent == -1){
-		free(abort_str);
 		return -1;
 	}
-	free(abort_str);
 	return 0;
 }
 
-// RET NULL on failure. allocates space for the message content and returns ptr to message content
+/*
+** Returns the content of the provided message
+** Returns NULL on failure
+** 
+** Arguments:
+** msg - the message with the content to extract
+*/
 char * readContent(char * msg){
 	int start_idx, len;
 	start_idx = len = 0;
@@ -216,7 +295,14 @@ char * readContent(char * msg){
 	return content;
 }
 
-// RET NULL on failure. Reads message of arbitrary size from given socket, allocates space for it and returns ptr to it
+/*
+** Reads message of unknown size using given socket file descriptor
+** Returns the message read
+** Returns NULL on failure
+**
+** Arguments:
+** sock - the file descriptor for a socket for which to read from
+*/
 char * readMessage(int sock){
 	char buf[256];
 	int size = 512;
@@ -238,12 +324,12 @@ char * readMessage(int sock){
 			// grow big buffer
 			size *= 2;
 			char * tmp = malloc(sizeof(char) * size);
-			memcpy(tmp, big_buf, size/2);
 			if(tmp == NULL){
 				perror("malloc");
 				free(big_buf);
 				return NULL;
 			}
+			memcpy(tmp, big_buf, size/2);
 			free(big_buf);
 			big_buf = tmp;
 		}
@@ -254,7 +340,13 @@ char * readMessage(int sock){
 	return big_buf;
 }
 
-// RET -1 on failure, number of bytes in given file on success
+/*
+** Counts the number of bytes worth of content are present in the given file 
+** Returns number of bytes in file on success, -1 on failure
+** 
+** Arguments:
+** file - the file for which the number of bytes of content will be counted
+*/
 long int countBytesInFile(char * file){
 	FILE * fp = fopen(file, "r");
 	if(fp == NULL){
@@ -280,98 +372,124 @@ long int countBytesInFile(char * file){
 	return size;
 }
 
-// RET NULL on failure, file contents in string on success. sets up robot in preparation for test (get to started state)
-// note: my_sock will also be established on success
+/*
+** Establishes communication with the robot and prepares it to run a test against the given script
+** Returns the contents of the given script on success
+** Returns NULL if error occurs
+** NOTE: my_sock will be set on success
+**
+** Arguments:
+** file_name - the name of the script (must be located in ./scripts/ .rpt extension assumed),
+*/
 char * prepareRobot(char * file_name){
 	int created = createAndConnectSocket(PORT);
 	if(created == -1){
 		return NULL;
 	}
-
+	
 	char * file_str = readFileIntoStringWrapper(file_name);
 	if(file_str == NULL){
+		int closed = close(my_sock);
+		if(closed == -1){
+			perror("close");
+		}
 		return NULL;
 	}
 
-	writePrepare(my_sock, file_name, file_str);
-
-	event * last_event = malloc(sizeof(event));
-	if(last_event == NULL){
-		perror("malloc");
+	int prepared = writePrepare(my_sock, file_name, file_str);
+	if(prepared == -1){
 		free(file_str);
+		int closed = close(my_sock);
+		if(closed == -1){
+			perror("close");
+		}
 		return NULL;
 	}
-	*last_event = INIT;
+	
+	event last_event = INIT;
 	char * msg;
-	while(*last_event != STARTED && *last_event != ERROR){
+	while(last_event != STARTED && last_event != ERROR){
 		msg = readMessage(my_sock);
 		if(msg == NULL){
 			free(file_str);
-			free(last_event);
+			int closed = close(my_sock);
+			if(closed == -1){
+				perror("close");
+			}
 			return NULL;
 		}
-		classifyMessage(last_event, msg);
-		if(*last_event == PREPARED){
-			writeStart(my_sock, file_name);
-		}
-		else if(*last_event == ERROR){
-			fprintf(stderr, "something went wrong unexpected state error received from robot server\n%s\n", msg);
-			free(file_str);
-			free(last_event);
-			free(msg);
-			return NULL;
-		}
+		int classified = classifyMessage(&last_event, msg);
 		free(msg);
+		if(classified == -1){
+			free(file_str);
+			int closed = close(my_sock);
+			if(closed == -1){
+				perror("close");
+			}
+			return NULL;
+		}
+		if(last_event == PREPARED){
+			int started = writeStart(my_sock, file_name);
+			if(started == -1){
+				free(file_str);
+				int closed = close(my_sock);
+				if(closed == -1){
+					perror("close");
+				}
+				return NULL;
+			}
+		}
+		else if(last_event == ERROR){
+			fprintf(stderr, "something went wrong during prepare robot: unexpected state error received from robot server\n%s\n", msg);
+			free(file_str);
+			int closed = close(my_sock);
+			if(closed == -1){
+				perror("close");
+			}
+			return NULL;
+		}
 	}
-	free(last_event);
 	return file_str;
 }
 
-// RET NULL on failure, test result ptr on success (mem allocated, will be error if error recv'd, else actual script)
+/*
+** Handles communication of robot during execution of script until
+** an ERROR is received or the FINISHED state is reached. Returns a
+** pointer to a result structure with the results of the robot test execution
+**
+** Arguments:
+** sock - socket file descriptor for communication with the robot
+*/
 char * handleControl(int * sock){
-	event * last_event = malloc(sizeof(event));
-	if(last_event == NULL){
-		perror("malloc");
-		return NULL;
-	}
-	*last_event = STARTED;
+	event last_event = STARTED;
 	char * msg;
-	while(*last_event != FINISHED && *last_event != ERROR){
+	while(last_event != FINISHED && last_event != ERROR){
 		msg = readMessage(*sock);
 		if(msg == NULL){
-			free(last_event);
 			return NULL;
 		}
-		int classified = classifyMessage(last_event, msg);
+		int classified = classifyMessage(&last_event, msg);
 		if(classified == -1){
-			free(last_event);
 			free(msg);
 			return NULL;
 		}
 	}
-	if(*last_event == FINISHED || *last_event == ERROR){
-		free(last_event);
-		char * content = readContent(msg);
-		free(msg);
-		if(content == NULL){
-			return NULL;
-		}
-		return content;
-	}
-	else{
-		fprintf(stderr, "Final state is invalid: \n");
-		free(last_event);
-		free(msg);
+	char * content = readContent(msg);
+	free(msg);
+	if(content == NULL){
 		return NULL;
 	}
+	return content;
 }
 
-// signal handler for timeout
+/*
+** Signal handler for timeout
+** Aborts the robot script execution and finishes up the test
+*/
 void catch_alarm (int sig)
 {
 	printf("Test has timed out...stopping now\n");
 
-	// time is up... abort script
 	int aborted = writeAbort(my_sock, my_file_name);
 	if(aborted == -1){
 		fprintf(stderr, "Error aborting script after timeout\n");
@@ -379,8 +497,14 @@ void catch_alarm (int sig)
 	}
 }
 
-// RET NULL on failure, ptr to file content string on success
-// memory is allocated
+/*
+** Reads the contents of script with the given file name (expected .rpt extension and located in ./scripts)
+** Returns the contents of the script in a string
+** Returns NULL if error occurs
+**
+** Arguments:
+** file_name - the name of the file whose contents will be read (expected .rpt extension and located in ./scripts)
+*/
 char * readFileIntoStringWrapper(char * file_name){
 	int size = strlen(SCRIPTS_LOCATION) + strlen(file_name) + strlen(FILE_EXT) + 1;
 	char * file = malloc(size * sizeof(char));
@@ -392,6 +516,10 @@ char * readFileIntoStringWrapper(char * file_name){
 	strcat(file, file_name);
 	strcat(file, FILE_EXT);
 	long int num_bytes = countBytesInFile(file);
+	if(num_bytes == -1){
+		free(file);
+		return NULL;
+	}
 	char * file_str = malloc(num_bytes + 1);
 	if(file_str == NULL){
 		perror("malloc");
@@ -409,10 +537,17 @@ char * readFileIntoStringWrapper(char * file_name){
 	return file_str;
 }
 
-// RETURN NULL on failure, struct with results on success (set seconds <= 0 if want no timeout)
-// func is a function ptr to test code to execute
-// note: result_t struct and its contents need to be free'd
-// note: my_file_name is set here
+/*
+** Executes the given client code against the provided robot script and
+** returns the expected script and actual script in a result structure.
+** Returns NULL if error occurs
+** NOTE: my_file_name is set here
+**
+** Arguments:
+** file_name - the name of the script (must be located in ./scripts/ .rpt extension assumed),
+** func - function pointer (function where your client code is, NULL if none), 
+** seconds - timeout (set <= 0 for no timeout)
+*/
 result * robotTest(char * file_name, void * func, int seconds){
 	my_file_name = file_name;
 
@@ -423,14 +558,18 @@ result * robotTest(char * file_name, void * func, int seconds){
 
 	char * file_str = prepareRobot(file_name);
 	if(file_str == NULL){
-		fprintf(stderr, "Failed to prepare the robot\nIs the robot running?\n");
-		free(file_str);		
+		fprintf(stderr, "Failed to prepare the robot: Is the robot running?\n");
+		free(file_str);
+		int closed = close(my_sock);
+		if(closed == -1){
+			perror("closed");
+		}		
 		return NULL;
 	}
 
 	char * actual;
 	if(func == NULL){
-		actual = doSequential(&my_sock);
+		actual = handleControl(&my_sock);
 	}
 	else{
 		actual = doThreaded((void *)&handleControl, &my_sock, func, NULL);
@@ -438,6 +577,10 @@ result * robotTest(char * file_name, void * func, int seconds){
 
 	if(actual == NULL){
 		free(file_str);
+		int closed = close(my_sock);
+		if(closed == -1){
+			perror("closed");
+		}
 		return NULL;
 	}
 
@@ -445,25 +588,30 @@ result * robotTest(char * file_name, void * func, int seconds){
 	if(res == NULL){
 		perror("malloc");
 		free(file_str);
+		int closed = close(my_sock);
+		if(closed == -1){
+			perror("closed");
+		}
 		return NULL;
 	}
 	int closed = close(my_sock);
 	if(closed == -1){
-		perror("close");
-		free(file_str);
-		return NULL;
+		perror("closed");
 	}
 	res->actual_script = actual;
 	res->expected_script = file_str;
 	return res;
 }
 
-// RET NULL on failure, test result ptr on success
-char * doSequential(int * sock){
-	return handleControl(sock);
-}
-
-// RET NULL on failure, pthread_t ptr on success (memory is allocated)
+/*
+** Returns a newly created pthread_t * with default attributes and the given 
+** start routine and argument
+** Returns NULL on failure
+**
+** Arguments:
+** func - the start routine of the thread
+** arg - the argument of the start routine of the thread
+*/
 pthread_t * createThread(void * func, void * arg){
 	pthread_t * thread = malloc(sizeof(pthread_t));
 	if(thread == NULL){
@@ -479,28 +627,38 @@ pthread_t * createThread(void * func, void * arg){
 	return thread;
 }
 
-// RET NULL on failure, ptr to results on success
-// execute control communication on 1 thread, client code on other
+/*
+** Creates two threads, each with the specified start routine and argument
+** as indicated by corresponding func and arg
+** Returns the return value of the first thread's start routine 
+** Returns NULL on failure
+** NOTE: join is called on both threads 
+**
+** Arguments:
+** func1 - the start routine of the first thread (communication thread)
+** arg1 - the argument of the start routine of the first thread
+** func2 - the start routine of the second thread (client thread)
+** arg2 - the argument of the start routine of the second thread
+*/
 char * doThreaded(void * func1, void * arg1, void * func2, void * arg2){
 	pthread_t * communication_thread = createThread(func1, arg1);
 	if(communication_thread == NULL){
-		free(communication_thread);
 		return NULL;
 	}
 	pthread_t * client_thread = createThread(func2, arg2);
 	if(client_thread == NULL){
-		free(client_thread);
+		free(communication_thread);
 		return NULL;
 	}
 
 	char * communication_thread_val = malloc(sizeof(char));
-	char * tmp = communication_thread_val;
 	if(communication_thread_val == NULL){
 		perror("malloc");
 		free(communication_thread);
 		free(client_thread);
 		return NULL;
 	}
+	char * tmp = communication_thread_val;
 	pthread_join(*communication_thread, (void **)&communication_thread_val);
 	pthread_join(*client_thread, NULL);
 	free(communication_thread);
@@ -509,12 +667,17 @@ char * doThreaded(void * func1, void * arg1, void * func2, void * arg2){
 	return communication_thread_val;
 }
 
-// Frees the memory associated with the result struct at the end of the test
+/*
+** Frees the memory associated with the given result struct pointer
+** Does nothing if result is NULL 
+**
+** Arguments:
+** result - the result struct * to be free'd 
+*/
 void robotFree(result * result){
-	if(result == NULL){
-		return;
+	if(result != NULL){
+		free(result->actual_script);
+		free(result->expected_script);
+		free(result);
 	}
-	free(result->actual_script);
-	free(result->expected_script);
-	free(result);
 }
