@@ -183,7 +183,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         } else {
             logger.error("Internal Error. Sending error to client", exception);
             error.setSummary("Internal Error");
-	        Channels.write(ctx, Channels.future(null), error);	
-		}
+	    Channels.write(ctx, Channels.future(null), error);	
+	}
     }
 }
