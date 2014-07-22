@@ -16,8 +16,13 @@
 **  along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ROBOT_CONTROL_HELPER_H_
-#define ROBOT_CONTROL_HELPER_H_
+#ifndef ROBOT_TEST_H_
+#define ROBOT_TEST_H_
+
+typedef struct {
+	char * actual_script;
+	char * expected_script;
+} result;
 
 /*	Arguments: 
 **	scriptName (must be located in ./scripts/ .rpt extension assumed), 
@@ -42,5 +47,16 @@
 */
 void robotTestWrapper(char * script, void * function, void * cleanup, int timeout);
 
-#endif
+/*
+** Executes the given client code against the provided robot script and
+** returns the expected script and actual script in a result structure.
+** Returns NULL if error occurs
+**
+** Arguments:
+** file_name - the name of the script (must be located in ./scripts/ .rpt extension assumed),
+** func - function pointer (function where your client code is, NULL if none), 
+** seconds - timeout (set <= 0 for no timeout)
+*/
+result * robotTest(char * file_name, void * func, int seconds);
 
+#endif
