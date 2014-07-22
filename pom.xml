@@ -14,18 +14,16 @@
   GNU Affero General Public License for more details.
 
   You should have received a copy of the GNU Affero General Public License
-  along with this program. If not, see <http://www.gnu.org/licenses/>.
+  along with this program. If not, see <http://www.gnu.org/licenses />.
   -->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.kaazing</groupId>
 	<artifactId>robot.parent</artifactId>
 	<packaging>pom</packaging>
-	<version>0.0.0.1-SNAPSHOT</version>
+	<version>0.0.0.3-SNAPSHOT</version>
 
 	<name>robot/parent</name>
 	<url>https://github.com/kaazing/robot</url>
@@ -52,17 +50,84 @@
 		<checkstyle.config.location>config/checkstyle/checkstyle.xml</checkstyle.config.location>
 	</properties>
 
-    <modules>
-        <module>lang</module>
-        <module>driver</module>
-        <module>robot-maven-plugin</module>
-        <module>control</module>
-        <module>junit</module>
-        <module>examples</module>
-        <module>all</module>
-        <module>cli</module>
+	<modules>
+		<module>lang</module>
+		<module>driver</module>
+		<module>robot-maven-plugin</module>
+		<module>control</module>
+		<module>junit</module>
+		<module>examples</module>
+		<module>all</module>
+		<module>cli</module>
 		<module>c-robot-control</module>
-    </modules>
+	</modules>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+	<developers>
+		<developer>
+			<name>Kaazing Corporation</name>
+			<email>developers@kaazing.com</email>
+			<url>https://github.com/kaazing</url>
+			<organization>Kaazing Corporation</organization>
+			<organizationUrl>http://kaazing.org</organizationUrl>
+		</developer>
+	</developers>
+
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6.2</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>ossrh</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6.2</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>ossrh</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<dependencies>
 		<dependency>
@@ -120,13 +185,13 @@
 		<dependency>
 			<groupId>org.kaazing</groupId>
 			<artifactId>kaaz-net-api</artifactId>
-			<version>0.0.0.1-SNAPSHOT</version>
+			<version>[0.0.0.0, 1.0.0.0)</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.kaazing</groupId>
 			<artifactId>kaaz-net-data</artifactId>
-			<version>0.0.0.1-SNAPSHOT</version>
+			<version>[0.0.0.0, 1.0.0.0)</version>
 		</dependency>
 	</dependencies>
 
