@@ -1,0 +1,113 @@
+<!--
+  Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+
+  This file is part of Robot.
+
+  Robot is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+  -->
+  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.kaazing</groupId>
+		<artifactId>robot.parent</artifactId>
+		<version>0.0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>robot.c-robot-control</artifactId>
+	<version>0.0.0.1-SNAPSHOT</version>
+	<!--packaging>jar</packaging -->
+
+	<name>robot/c-robot-control</name>
+	<url>https://github.com/kaazing/robot</url>
+	<description>
+        C Robot Control
+        </description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<checkstyle.config.location>../config/checkstyle/checkstyle.xml</checkstyle.config.location>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>windows id</id>
+			<activation>
+				<os>
+					<family>windows</family>
+				</os>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.7</version>
+						<executions>
+							<execution><!-- Run script -->
+								<phase>compile</phase>
+								<configuration>
+									<tasks>
+										<exec dir="${project.basedir}/" executable="${project.basedir}/test.bat"
+											failonerror="true">
+											<arg line="" />
+										</exec>
+									</tasks>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>unix id</id>
+			<activation>
+				<os>
+					<family>unix</family>
+				</os>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.7</version>
+						<executions>
+							<execution><!-- Run script -->
+								<phase>compile</phase>
+								<configuration>
+									<tasks>
+										<exec dir="${project.basedir}/" executable="${project.basedir}/test.sh"
+											failonerror="true">
+											<arg line="" />
+										</exec>
+									</tasks>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
