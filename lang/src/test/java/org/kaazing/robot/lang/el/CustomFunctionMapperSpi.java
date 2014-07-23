@@ -19,8 +19,7 @@
 
 package org.kaazing.robot.lang.el;
 
-import org.kaazing.el.Function;
-import org.kaazing.el.spi.FunctionMapperSpi;
+import org.kaazing.robot.lang.el.spi.FunctionMapperSpi;
 
 public class CustomFunctionMapperSpi extends FunctionMapperSpi.Reflective {
 

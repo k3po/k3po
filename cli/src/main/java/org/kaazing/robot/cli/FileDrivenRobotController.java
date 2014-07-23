@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 
-import org.kaazing.robot.RobotServer;
-import org.kaazing.robot.RobotServerFactory;
+import org.kaazing.robot.driver.RobotServer;
+import org.kaazing.robot.driver.RobotServerFactory;
 import org.kaazing.robot.control.RobotControl;
 import org.kaazing.robot.control.RobotControlFactory;
 

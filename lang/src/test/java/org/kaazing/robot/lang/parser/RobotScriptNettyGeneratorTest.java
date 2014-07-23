@@ -19,8 +19,8 @@
 
 package org.kaazing.robot.lang.parser;
 
-//import org.kaazing.robot.behavior.BehaviorContext;
-//import org.kaazing.robot.channel.BehaviorPipelineFactory;
+//import org.kaazing.robot.driver.behavior.BehaviorContext;
+//import org.kaazing.robot.driver.channel.BehaviorPipelineFactory;
 
 public class RobotScriptNettyGeneratorTest {
     // private File scriptFile = null;
