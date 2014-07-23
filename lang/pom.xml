@@ -22,11 +22,11 @@
 	<parent>
 		<groupId>org.kaazing</groupId>
 		<artifactId>robot.parent</artifactId>
-		<version>0.0.0.3-SNAPSHOT</version>
+		<version>0.0.0.3</version>
 	</parent>
 
 	<artifactId>robot.lang</artifactId>
-	<version>0.0.0.3-SNAPSHOT</version>
+	<version>0.0.0.3</version>
 	<packaging>jar</packaging>
 
 	<name>robot/lang</name>
