@@ -25,11 +25,11 @@
 	<parent>
 		<groupId>org.kaazing</groupId>
 		<artifactId>robot.parent</artifactId>
-		<version>0.0.0.3</version>
+		<version>0.0.0.4-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>robot.all</artifactId>
-	<version>0.0.0.3</version>
+	<version>0.0.0.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>robot/all</name>
