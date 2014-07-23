@@ -35,7 +35,7 @@
   </module>
   <!-- Copyright headers -->
   <module name="RegexpSingleline">
-    <property name="format" value="^(\s|\*)*Copyright \(c\) 2007\-[0-9]+, Kaazing Corporation\. All rights reserved\.\s*$"/>
+    <property name="format" value="^(\s|\*)*Copyright \(c\) 2014 &quot;Kaazing Corporation,&quot; \(www.kaazing.com\)\s*$"/>
     <property name="minimum" value="1"/>
     <property name="maximum" value="1"/>
   </module>
