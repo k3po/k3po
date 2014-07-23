@@ -34,8 +34,8 @@ public class ExpressionContext extends SimpleContext {
 
     public ExpressionContext() {
         super();
-        this.functionMapper = org.kaazing.el.FunctionMapper.newFunctionMapper();
-        this.variableMapper = new org.kaazing.el.VariableMapper();
+        this.functionMapper = org.kaazing.robot.lang.el.FunctionMapper.newFunctionMapper();
+        this.variableMapper = new org.kaazing.robot.lang.el.VariableMapper();
     }
 
     @Override

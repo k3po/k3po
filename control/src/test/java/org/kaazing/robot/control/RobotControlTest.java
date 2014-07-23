@@ -41,6 +41,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import org.kaazing.robot.control.RobotControl;
+import org.kaazing.robot.control.TcpRobotControl;
 import org.kaazing.robot.control.command.AbortCommand;
 import org.kaazing.robot.control.command.PrepareCommand;
 import org.kaazing.robot.control.command.StartCommand;

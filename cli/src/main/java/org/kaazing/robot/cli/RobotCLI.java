@@ -19,7 +19,7 @@
 
 package org.kaazing.robot.cli;
 
-import org.kaazing.robot.RobotServerFactories;
+import org.kaazing.robot.driver.RobotServerFactories;
 import org.kaazing.robot.control.RobotControlFactories;
 
 public final class RobotCLI {
