@@ -59,7 +59,6 @@
 		<module>examples</module>
 		<module>all</module>
 		<module>cli</module>
-		<module>c-robot-control</module>
 	</modules>
 
 	<distributionManagement>
