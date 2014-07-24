@@ -85,6 +85,8 @@ public class RobotScriptChannelRecorder implements ChannelDownstreamHandler, Cha
                     script.add("disconnected");
                 }
                 break;
+            default:
+                break;
             }
         } else if (e instanceof MessageEvent) {
             MessageEvent event = (MessageEvent) e;
@@ -125,6 +127,8 @@ public class RobotScriptChannelRecorder implements ChannelDownstreamHandler, Cha
                 } else {
                     script.add("disconnect");
                 }
+                break;
+            default:
                 break;
             }
         } else if (e instanceof MessageEvent) {
