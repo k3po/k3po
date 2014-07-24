@@ -108,6 +108,7 @@ public class FileDrivenRobotController extends AbstractRobotController {
         if (uri != null) {
             writer.println("uri," + uri);
         }
+        writer.close();
     }
 
     private void loadRobotStatus() throws IOException {

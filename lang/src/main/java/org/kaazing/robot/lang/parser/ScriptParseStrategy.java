@@ -129,8 +129,6 @@ import org.kaazing.robot.lang.parser.v2.RobotParser.ReadNotifyNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadOptionNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.RegexMatcherContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ScriptNodeContext;
-import org.kaazing.robot.lang.parser.v2.RobotParser.ServerCommandNodeContext;
-import org.kaazing.robot.lang.parser.v2.RobotParser.ServerEventNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ServerStreamableNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.StreamNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.StreamableNodeContext;

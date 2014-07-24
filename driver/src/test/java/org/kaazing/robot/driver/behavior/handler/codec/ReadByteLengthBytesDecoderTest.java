@@ -30,7 +30,6 @@ import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
@@ -38,7 +37,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.kaazing.robot.lang.el.ExpressionContext;
 import org.kaazing.robot.lang.el.ExpressionFactoryUtils;
 
@@ -47,8 +45,6 @@ public class ReadByteLengthBytesDecoderTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    // TODO: Can we just remove the context from the Decoder and thus not need this.
-    private ChannelHandlerContext context;
     private ExpressionContext environment;
     private ExpressionFactory expressionFactory;
 
@@ -58,7 +54,7 @@ public class ReadByteLengthBytesDecoderTest {
         ChannelPipeline pipeline = pipeline(new SimpleChannelHandler());
         ChannelFactory channelFactory = new DefaultLocalClientChannelFactory();
         channelFactory.newChannel(pipeline);
-        context = pipeline.getContext(SimpleChannelHandler.class);
+        pipeline.getContext(SimpleChannelHandler.class);
         environment = new ExpressionContext();
         expressionFactory = ExpressionFactoryUtils.newExpressionFactory();
     }

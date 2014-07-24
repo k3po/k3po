@@ -19,17 +19,14 @@
 
 package org.kaazing.robot.driver.netty.channel.tcp;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
-
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
 import org.kaazing.robot.driver.netty.channel.spi.ChannelAddressFactorySpi;
 
@@ -55,6 +52,6 @@ public class TcpChannelAddressFactorySpiTest {
         ChannelAddress channelAddress = channelAddressFactorySpi.newChannelAddress(URI.create("tcp://127.0.0.1:8000"),
                 options);
 
-        Assert.assertEquals(new ChannelAddress(URI.create("tcp://127.0.0.1:8000")), channelAddress);
+        assertEquals(new ChannelAddress(URI.create("tcp://127.0.0.1:8000")), channelAddress);
     }
 }

@@ -35,7 +35,7 @@ public class WriteHttpHeaderEncoder implements HttpMessageContributingEncoder {
 
     @Override
     public void encode(HttpMessage message) {
-        message.addHeader(nameEncoder.encodeToString(), valueEncoder.encodeToString());
+        message.headers().add(nameEncoder.encodeToString(), valueEncoder.encodeToString());
     }
 
     @Override
