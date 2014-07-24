@@ -322,6 +322,8 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
                 openedNode.setLocationInfo(state.lastLocationInfo);
                 openedNode.accept(this, state);
             break;
+        default:
+            break;
         }
 
         // The above switch might have changed the connectivity state, so
@@ -350,6 +352,8 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
                 boundNode.setLocationInfo(state.lastLocationInfo);
                 boundNode.accept(this, state);
                 break;
+        default:
+            break;
         }
 
         // The above switch might have changed the connectivity state, so
@@ -410,6 +414,8 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
                 disconnectedNode.setLocationInfo(state.lastLocationInfo);
                 disconnectedNode.accept(this, state);
             break;
+        default:
+            break;
         }
 
         switch (state.connectivityState) {
@@ -435,6 +441,8 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
                 AstUnboundNode unboundNode = new AstUnboundNode();
                 unboundNode.setLocationInfo(state.lastLocationInfo);
                 unboundNode.accept(this, state);
+            break;
+        default:
             break;
         }
 

@@ -28,7 +28,6 @@ import static org.junit.Assert.assertNull;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
@@ -37,15 +36,13 @@ import org.junit.Test;
 
 public class ReadExactTextDecoderTest {
 
-    // TODO: Can we just remove the context from the Decoder and thus not need this.
-    private ChannelHandlerContext context;
 
     @Before
     public void setUp() {
         ChannelPipeline pipeline = pipeline(new SimpleChannelHandler());
         ChannelFactory channelFactory = new DefaultLocalClientChannelFactory();
         channelFactory.newChannel(pipeline);
-        context = pipeline.getContext(SimpleChannelHandler.class);
+        pipeline.getContext(SimpleChannelHandler.class);
     }
 
     @Test

@@ -81,7 +81,6 @@
 			<plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
-
 					<!-- Unpack all source files -->
 					<execution>
 						<id>unpack-sources</id>

@@ -34,14 +34,12 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.kaazing.robot.driver.Robot;
 import org.kaazing.robot.driver.behavior.RobotCompletionFuture;
 
 public class HttpRobotIT {
 
     private static final long TEST_TIMEOUT = 2000;
-    private static final String FORMAT_VERSION = "text/x-robot-2";
     private static final Charset UTF_8 = Charset.forName("UTF-8");
 
     private Robot robot;

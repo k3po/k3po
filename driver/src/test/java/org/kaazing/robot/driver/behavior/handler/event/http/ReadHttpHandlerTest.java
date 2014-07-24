@@ -67,7 +67,6 @@ import org.kaazing.robot.driver.behavior.handler.prepare.PreparationEvent;
 public class ReadHttpHandlerTest {
     private Mockery context;
     private ChannelUpstreamHandler upstream;
-    private ChannelDownstreamHandler downstream;
     private ChannelPipeline pipeline;
     private ChannelFactory channelFactory;
     private ReadHttpHandler handler;
@@ -83,7 +82,7 @@ public class ReadHttpHandlerTest {
         };
 
         upstream = context.mock(ChannelUpstreamHandler.class);
-        downstream = context.mock(ChannelDownstreamHandler.class);
+        context.mock(ChannelDownstreamHandler.class);
         decoder = context.mock(HttpMessageContributingDecoder.class);
         handler = new ReadHttpHandler(decoder);
 

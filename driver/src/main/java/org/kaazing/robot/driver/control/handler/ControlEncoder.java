@@ -56,6 +56,8 @@ public class ControlEncoder extends OneToOneEncoder {
                 return encodeErrorMessage(ctx, channel, (ErrorMessage) controlMessage);
             case FINISHED:
                 return encodeFinishedMessage(ctx, channel, (FinishedMessage) controlMessage);
+            default:
+                break;
             }
         }
 

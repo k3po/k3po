@@ -25,10 +25,10 @@ import static org.jboss.netty.util.CharsetUtil.UTF_8;
 import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.driver.behavior.handler.codec.MessageDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageMismatchException;
 
@@ -49,13 +49,15 @@ public class ReadHttpHeaderDecoder implements HttpMessageContributingDecoder {
      */
     @Override
     public void decode(HttpMessage message) throws Exception {
-        List<String> headerValues = message.getHeaders(name);
-        if (headerValues.isEmpty()) {
+        HttpHeaders headers = message.headers();
+        if (headers.isEmpty()) {
             new MessageMismatchException("Could not match non-existent header", name, null);
         }
 
         int firstMatchingHeader = -1;
         MessageMismatchException lastException = null;
+
+        List<String> headerValues = headers.getAll(name);
 
         for (int i = 0; i < headerValues.size(); i++) {
             try {
@@ -76,21 +78,19 @@ public class ReadHttpHeaderDecoder implements HttpMessageContributingDecoder {
         }
 
         if (firstMatchingHeader == -1) {
-            assert lastException != null;
+            // Last Exception cannot be null because there is a non empty list of headers
             throw lastException;
         }
 
-        for (int i = 0; i < headerValues.size(); i++) {
-            message.removeHeader(name);
-        }
+        // remove all the headers
+        message.headers().remove(name);
 
+        // add all of them back in except the matching one
         for (int i = 0; i < headerValues.size(); i++) {
             if (i != firstMatchingHeader) {
-                message.addHeader(name, headerValues.get(i));
+                message.headers().add(name, headerValues.get(i));
             }
         }
-
-        message.removeHeader(name);
     }
 
     @Override

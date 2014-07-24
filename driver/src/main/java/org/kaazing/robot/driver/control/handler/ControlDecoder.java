@@ -206,9 +206,10 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
                 LOGGER.debug("Change state to READ_CONTENT");
                 // content for these message kinds
                 return State.READ_CONTENT;
+            default:
+                LOGGER.debug("Change state to READ_INITIAL. Message not recongized and endOfLineAt equals endOfLineSearchForm");
+                return State.READ_INITIAL;
             }
-            LOGGER.debug("Change state to READ_INITIAL. Message not recongized and endOfLineAt equals endOfLineSearchForm");
-            return State.READ_INITIAL;
         }
 
         // end-of-line found
@@ -265,6 +266,8 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
                     if ("content-type".equals(headerName)) {
                         prepareMessage.setScriptFormatOverride(headerValue);
                     }
+                default:
+                    break;
             }
         }
 

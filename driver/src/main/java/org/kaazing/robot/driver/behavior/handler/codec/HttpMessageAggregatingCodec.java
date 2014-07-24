@@ -31,6 +31,7 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.DefaultHttpChunk;
 import org.jboss.netty.handler.codec.http.DefaultHttpChunkTrailer;
 import org.jboss.netty.handler.codec.http.HttpChunk;
+import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
@@ -87,7 +88,7 @@ public class HttpMessageAggregatingCodec extends SimpleHttpChannelDownstreamHand
             HttpChunk chunk = new DefaultHttpChunkTrailer();
             write(ctx, e.getFuture(), chunk);
         } else {
-            if (aggregatedHttpMessage.getHeader("Content-Length") != null) {
+            if (HttpHeaders.isContentLengthSet(aggregatedHttpMessage)) {
                 ChannelBuffer content = aggregatedHttpMessage.getContent();
                 setContentLength(aggregatedHttpMessage, content.capacity());
             }
@@ -97,5 +98,4 @@ public class HttpMessageAggregatingCodec extends SimpleHttpChannelDownstreamHand
             }
         }
     }
-
 }

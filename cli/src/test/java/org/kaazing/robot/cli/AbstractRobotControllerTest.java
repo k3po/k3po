@@ -67,7 +67,7 @@ public abstract class AbstractRobotControllerTest {
 
         @Override
         public RobotControl newClient(URI controlURI) throws Exception {
-            this.controlURI = controlURI;
+            TestRobotControlFactory.controlURI = controlURI;
             return robotControl;
         }
 
@@ -79,7 +79,7 @@ public abstract class AbstractRobotControllerTest {
         static void setRobotControl(RobotControl robotControl) {
             TestRobotControlFactory.robotControl = robotControl;
         }
-
+        
         static URI getControlURI() {
             return controlURI;
         }
@@ -93,8 +93,8 @@ public abstract class AbstractRobotControllerTest {
 
         @Override
         public RobotServer createRobotServer(URI uri, boolean verbose) {
-            this.uri = uri;
-            this.verbose = verbose;
+            TestRobotServerFactory.uri = uri;
+            TestRobotServerFactory.verbose = verbose;
             return robotServer;
         }
 

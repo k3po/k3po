@@ -20,13 +20,18 @@
 package org.kaazing.robot.driver;
 
 import java.net.URI;
-import java.util.*;
+import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import static java.lang.String.format;
 
-public class RobotServerFactories {
+public final class RobotServerFactories {
+
+    private RobotServerFactories() {
+
+    }
 
     public static RobotServerFactory createRobotServerFactory() {
         return createRobotServerFactory(Thread.currentThread().getContextClassLoader());
@@ -61,7 +66,7 @@ public class RobotServerFactories {
             }
 
             RobotServerFactorySPI factory = factories.get(schemeName);
-            if(factory == null){
+            if (factory == null) {
                 throw new IllegalArgumentException(format("Unable to load scheme '%s': No appropriate Robot Server" +
                         " factory found", schemeName));
             }

@@ -1373,6 +1373,7 @@ public class RobotIT {
     public void shouldReadRegexWithBackRefAndCapturesOK() throws Exception {
         Pattern pattern = Pattern.compile("/(?<all>Hello (?<subgroup>\\d+) Bye from \\g{2})\\n/");
         Matcher matcher = pattern.matcher("Hello 123 Bye from 123\n");
+        assertTrue(matcher.matches());
         // @formatter:off
         String script =
             "connect tcp://localhost:62345\n" +

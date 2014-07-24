@@ -205,7 +205,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         private Configuration configuration;
         private LocationInfo streamStartLocation;
         private PROTOCOL protocol = PROTOCOL.TCP;
-        
+
         // the read unmasker is reset per stream
         private MaskingDecoder readUnmasker;
 

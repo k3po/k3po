@@ -46,6 +46,8 @@ public class ControlDecoderCompatibility extends ControlUpstreamHandler {
             fireMessageReceived(ctx, start);
 
             break;
+        default:
+            break;
         }
     }
 

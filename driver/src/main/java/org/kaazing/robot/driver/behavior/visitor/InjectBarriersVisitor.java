@@ -387,6 +387,8 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
             streamables.add(readNotify);
             streamables.add(writeAwait);
             break;
+        default:
+            break;
         }
     }
 

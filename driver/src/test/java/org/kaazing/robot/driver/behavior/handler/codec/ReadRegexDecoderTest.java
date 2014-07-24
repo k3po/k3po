@@ -33,7 +33,6 @@ import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
@@ -50,8 +49,6 @@ public class ReadRegexDecoderTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    // TODO: Can we just remove the context from the Decoder and thus not need this.
-    private ChannelHandlerContext context;
     private ExpressionContext environment;
     private ExpressionFactory expressionFactory;
 
@@ -61,7 +58,7 @@ public class ReadRegexDecoderTest {
         ChannelPipeline pipeline = pipeline(new SimpleChannelHandler());
         ChannelFactory channelFactory = new DefaultLocalClientChannelFactory();
         channelFactory.newChannel(pipeline);
-        context = pipeline.getContext(SimpleChannelHandler.class);
+        pipeline.getContext(SimpleChannelHandler.class);
         environment = new ExpressionContext();
         expressionFactory = ExpressionFactoryUtils.newExpressionFactory();
     }
