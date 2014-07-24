@@ -54,7 +54,7 @@
   </module> 
   <!-- No more than 129 characters per line. -->
   <module name="RegexpSingleline">
-    <property name="format" value="^.{130,}$"/>
+    <property name="format" value="^.{180,}$"/>
   </module> 
 
   <module name="TreeWalker">

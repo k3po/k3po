@@ -53,7 +53,12 @@ import java.util.ServiceLoader;
  * URL url = URLFactory.createURL("ws://<hostname>:<port>/<serviceName>");
  * }
  */
-public class URLFactory {
+public final class URLFactory {
+
+    private URLFactory() {
+
+    }
+
     private static final Map<String, URLStreamHandlerFactorySpi> _factories;
 
     static {

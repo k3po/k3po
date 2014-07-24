@@ -72,7 +72,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         logger.debug("Control channel closed");
-        if(robot != null){
+        if (robot != null) {
             robot.destroy();
         }
         channelClosedFuture.setSuccess();
@@ -174,8 +174,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         if (exception instanceof ScriptParseException) {
             if (logger.isDebugEnabled()) {
                 logger.error("Caught exception trying to parse script. Sending error to client", exception);
-            }
-            else {
+            } else {
                 logger.error("Caught exception trying to parse script. Sending error to client. Due to " + exception);
             }
             error.setSummary("Parse Error");
@@ -183,7 +182,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         } else {
             logger.error("Internal Error. Sending error to client", exception);
             error.setSummary("Internal Error");
-	    Channels.write(ctx, Channels.future(null), error);	
-	}
+            Channels.write(ctx, Channels.future(null), error);
+        }
     }
 }

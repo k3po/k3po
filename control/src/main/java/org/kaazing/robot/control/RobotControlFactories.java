@@ -29,6 +29,10 @@ import java.util.concurrent.ConcurrentMap;
 
 public final class RobotControlFactories {
 
+    private RobotControlFactories() {
+
+    }
+
     public static RobotControlFactory createRobotControlFactory() {
         return createRobotControlFactory(Thread.currentThread().getContextClassLoader());
     }
@@ -46,7 +50,7 @@ public final class RobotControlFactories {
     }
 
     private static class RobotServerFactoryImpl implements RobotControlFactory {
-        private final Map<String,RobotControlFactorySPI> factories;
+        private final Map<String, RobotControlFactorySPI> factories;
 
         public RobotServerFactoryImpl(Map<String, RobotControlFactorySPI> factories) {
             this.factories = factories;
@@ -60,7 +64,7 @@ public final class RobotControlFactories {
             }
 
             RobotControlFactorySPI factory = factories.get(schemeName);
-            if(factory == null){
+            if (factory == null) {
                 throw new IllegalArgumentException(format("Unable to load scheme '%s': No appropriate Robot Control " +
                         "factory found", schemeName));
             }

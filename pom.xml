@@ -252,8 +252,8 @@
 								<encoding>UTF-8</encoding>
 								<!-- checkstyle doesn't like lambdas and exceptions and bails -->
 								<consoleOutput>true</consoleOutput>
-								<failsOnError>false</failsOnError>
-								<failOnViolation>false</failOnViolation>
+								<failsOnError>true</failsOnError>
+								<failOnViolation>true</failOnViolation>
 							</configuration>
 							<goals>
 								<goal>check</goal>

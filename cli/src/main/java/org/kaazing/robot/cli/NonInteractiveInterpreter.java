@@ -75,57 +75,56 @@ public class NonInteractiveInterpreter extends AbstractInterpreter {
                     throw new BadCommandException();
                 }
                 switch (cmd) {
-                case HELP:
-                    printHelp();
-                    break;
-                case START:
-                    if (args.length == 2 && args[1].equalsIgnoreCase("background")) {
-                        // Added so you can run
-                        // " nohup java -jar robot.jar start background > /dev/null &"
-                        robotController.startRobotServer();
-                        while(true){
-                            // wait to be killed 
-                            ;
+                    case HELP:
+                        printHelp();
+                        break;
+                    case START:
+                        if (args.length == 2 && args[1].equalsIgnoreCase("background")) {
+                            // Added so you can run
+                            // " nohup java -jar robot.jar start background > /dev/null &"
+                            robotController.startRobotServer();
+                            while (true) {
+                                // wait to be killed
+                            }
+                        } else if (args.length == 2) {
+                            // TODO: Finish and combine with case above
+                            // final String uri = args[1];
+                            // URI uri = URI.create(uri)
+                            // robotController.startRobotServer();
+                            throw new Exception("As of now the non interactive cli does not support "
+                                    + "launching the robot on a specified url");
+                        } else if (args.length == 1) {
+                            robotController.startRobotServer();
+                            ConsoleReader reader = new ConsoleReader();
+                            reader.setPrompt("Hit enter to kill robot>");
+                            reader.readLine();
+                            robotController.stopRobotServer();
+                        } else {
+                            throw new BadCommandException();
                         }
-                    } else if (args.length == 2) {
-                        // TODO: Finish and combine with case above
-                        // final String uri = args[1];
-                        // URI uri = URI.create(uri)
-                        // robotController.startRobotServer();
-                        throw new Exception("As of now the non interactive cli does not support "
-                                + "launching the robot on a specified url");
-                    } else if (args.length == 1) {
-                        robotController.startRobotServer();
-                        ConsoleReader reader = new ConsoleReader();
-                        reader.setPrompt("Hit enter to kill robot>");
-                        reader.readLine();
-                        robotController.stopRobotServer();
-                    } else {
+                        break;
+                    // case STOP:
+                    // robotController.stopRobotServer();
+                    // break;
+                    case TEST:
+                        if (args.length == 3) {
+                            final File file = new File(args[1]);
+                            robotController.startRobotServer();
+                            robotController.test(file, Integer.valueOf(args[2]));
+                            robotController.stopRobotServer();
+                        } else {
+                            throw new BadCommandException();
+                        }
+                        break;
+                    // case SET_OUTPUT_DIR:
+                    // if (args.length == 2) {
+                    // setOutputDir(args[1]);
+                    // } else {
+                    // throw new BadCommandException();
+                    // }
+                    // break;
+                    default:
                         throw new BadCommandException();
-                    }
-                    break;
-                // case STOP:
-                // robotController.stopRobotServer();
-                // break;
-                case TEST:
-                    if (args.length == 3) {
-                        final File file = new File(args[1]);
-                        robotController.startRobotServer();
-                        robotController.test(file, Integer.valueOf(args[2]));
-                        robotController.stopRobotServer();
-                    } else {
-                        throw new BadCommandException();
-                    }
-                    break;
-                // case SET_OUTPUT_DIR:
-                // if (args.length == 2) {
-                // setOutputDir(args[1]);
-                // } else {
-                // throw new BadCommandException();
-                // }
-                // break;
-                default:
-                    throw new BadCommandException();
                 }
             }
         } catch (Exception e) {
@@ -151,9 +150,6 @@ public class NonInteractiveInterpreter extends AbstractInterpreter {
     }
 
     private class BadCommandException extends Exception {
-        /**
-         * 
-         */
         private static final long serialVersionUID = 1L;
 
         public String getMessage() {

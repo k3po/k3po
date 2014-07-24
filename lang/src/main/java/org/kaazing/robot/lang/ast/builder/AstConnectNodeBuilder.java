@@ -134,7 +134,7 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
     public AstWriteOptionNodeBuilder.StreamNested<AstConnectNodeBuilder> addWriteOption() {
         return new AstWriteOptionNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
     }
-    
+
     // Http
     @Override
     public AstReadHttpHeaderNodeBuilder.StreamNested<AstConnectNodeBuilder> addReadHttpHeaderEvent() {
