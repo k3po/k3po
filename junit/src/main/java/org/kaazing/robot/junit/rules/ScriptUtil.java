@@ -22,35 +22,12 @@ package org.kaazing.robot.junit.rules;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.CharBuffer;
 
 final class ScriptUtil {
 
     private static final String SCRIPT_BASE = "META-INF/robot-scripts";
-
-    static String readScriptFile(Class<?> c, String scriptName) throws IOException {
-
-        InputStream in = getScriptFile(c, scriptName);
-        Reader r = new InputStreamReader(in);
-
-        StringBuilder sb = new StringBuilder();
-        CharBuffer target = CharBuffer.allocate(8192);
-        while (r.ready()) {
-            int charsRead = r.read(target);
-            if (charsRead == -1) {
-                break;
-            }
-
-            sb.append(target.flip());
-            target.rewind();
-        }
-
-        return sb.toString();
-    }
 
     // Return the number of "levels" in the given package name. For example,
     // a package name of "org.kaazing.rupert.test" has 4 levels.
@@ -84,12 +61,8 @@ final class ScriptUtil {
         return levelCount;
     }
 
-    static InputStream getScriptFile(Class<?> c, String scriptName) throws IOException {
-        return getScriptURL(c, scriptName).openStream();
-    }
-
     static String getScriptPath(Class<?> c, String scriptName) throws IOException {
-        return getScriptURL(c, scriptName).getPath();
+        return getScriptURL(c, scriptName);
     }
 
     /*
@@ -102,7 +75,12 @@ final class ScriptUtil {
      *
      * Make sure that we handle "relative path" script names, such as "../../<i>script</i>.rpt"
      */
-    static URL getScriptURL(Class<?> c, String scriptName) {
+    /**
+     * @param c
+     * @param scriptName
+     * @return Absolute path to file
+     */
+    static String getScriptURL(Class<?> c, String scriptName) {
         ClassLoader loader = ScriptUtil.class.getClassLoader();
         String packageName = c.getPackage().getName();
 
@@ -124,11 +102,7 @@ final class ScriptUtil {
         File f = new File(resourceURL);
         if (f.exists() && f.isFile()) {
             System.err.println(String.format("Using script %s from '%s'", scriptName, resourceURL));
-            try {
-                return new URL(resourceURL);
-            } catch (MalformedURLException e) {
-                System.err.println(String.format("MalformedURLException caught Using script %s from '%s'", scriptName, resourceURL));
-            }
+            return f.getAbsolutePath();
         }
 
         // Next, check in the package-specific location
@@ -136,7 +110,7 @@ final class ScriptUtil {
         resource = loader.getResource(resourceURL);
         if (resource != null) {
             System.err.println(String.format("Using script %s from '%s'", scriptName, resourceURL));
-            return resource;
+            return resource.getPath();
         }
 
         // If the resource was not been found, try the default,
@@ -147,7 +121,7 @@ final class ScriptUtil {
         if (resource == null) {
             throw new RuntimeException(String.format("Unable to locate script '%s'", scriptName));
         }
-        return resource;
+        return resource.getPath();
     }
 
     private ScriptUtil() {
