@@ -25,11 +25,11 @@
 	<parent>
 		<groupId>org.kaazing</groupId>
 		<artifactId>robot.parent</artifactId>
-		<version>0.0.0.4-SNAPSHOT</version>
+		<version>0.0.0.5-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>robot.all</artifactId>
-	<version>0.0.0.4-SNAPSHOT</version>
+	<version>0.0.0.5-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>robot/all</name>
@@ -73,6 +73,31 @@
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>[4.10,5.0)</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kaazing</groupId>
+            <artifactId>robot.control</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
 
 	</dependencies>
 

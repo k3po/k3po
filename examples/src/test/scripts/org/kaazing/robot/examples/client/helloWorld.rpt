@@ -1,0 +1,4 @@
+accept tcp://localhost:8001
+read "hello world"
+write "hello client"
+closed
