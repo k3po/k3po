@@ -33,6 +33,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
 import java.nio.CharBuffer;
+import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -114,16 +115,18 @@ public class RobotServerIT {
     @Test(timeout = 2000)
     public void shouldFinishEmptyOK() throws Exception {
 
+        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/emptyScript.rpt";
+        int length = path.length();
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("START\n");
-        out.append("name:empty\n");
-        out.append("content-length:0\n");
-        out.append("\n");
+        out.append("name:emptyScript\n");
+        out.append("content-length:" + length + "\n");
+        out.append("\n" + path);
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
 
-        CharBuffer startedAndFinished = CharBuffer.allocate(58);
+        CharBuffer startedAndFinished = CharBuffer.allocate(88);
         while (startedAndFinished.hasRemaining()) {
             in.read(startedAndFinished);
         }
@@ -132,10 +135,12 @@ public class RobotServerIT {
         // @formatter:off
         CharBuffer expectedStartedAndFinished = CharBuffer.wrap(
                 "STARTED\n" +
-                "name:empty\n" +
+                "name:emptyScript\n" +
                 "\n" +
                 "FINISHED\n" +
-                "name:empty\n" +
+                "name:emptyScript\n" +
+                "content-length:0\n" +
+                "\n" +
                 "content-length:0\n" +
                 "\n");
         // @formatter:on
@@ -147,32 +152,30 @@ public class RobotServerIT {
     @Test(timeout = 2000)
     public void shouldPrepareThenStartOK() throws Exception {
 
+        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/accept-then-close.rpt";
+        int length = path.length();
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
-        out.append("name:connect-then-close\n");
-        out.append("content-length:61\n");
+        out.append("name:accept-then-close\n");
+        out.append("content-length:" + length + "\n");
         out.append("\n");
-        out.append("accept tcp://localhost:62345\n");
-        out.append("accepted\n");
-        out.append("connected\n");
-        out.append("close\n");
-        out.append("closed\n");
+        out.append(path);
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
 
-        CharBuffer prepared = CharBuffer.allocate(34);
+        CharBuffer prepared = CharBuffer.allocate(33);
         while (prepared.hasRemaining()) {
             in.read(prepared);
         }
         prepared.flip();
 
         out.append("START\n");
-        out.append("name:connect-then-close\n");
+        out.append("name:accept-then-close\n");
         out.append("\n");
         out.flush();
 
-        CharBuffer started = CharBuffer.allocate(33);
+        CharBuffer started = CharBuffer.allocate(32);
         while (started.hasRemaining()) {
             in.read(started);
         }
@@ -181,14 +184,14 @@ public class RobotServerIT {
         // @formatter:off
         CharBuffer expectedPrepared = CharBuffer.wrap(
                 "PREPARED\n" +
-                "name:connect-then-close\n" +
+                "name:accept-then-close\n" +
                 "\n");
         // @formatter:on
 
         // @formatter:off
         CharBuffer expectedStarted = CharBuffer.wrap(
                 "STARTED\n" +
-                "name:connect-then-close\n" +
+                "name:accept-then-close\n" +
                 "\n");
         // @formatter:on
 
@@ -199,21 +202,19 @@ public class RobotServerIT {
     @Test(timeout = 2000)
     public void shouldAcceptThenCloseWithPrepareOK() throws Exception {
 
+        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/accept-then-close.rpt";
+        int length = path.length();
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
-        out.append("name:connect-then-close\n");
-        out.append("content-length:61\n");
+        out.append("name:accept-then-close\n");
+        out.append("content-length:" + length + "\n");
         out.append("\n");
-        out.append("accept tcp://localhost:62345\n");
-        out.append("accepted\n");
-        out.append("connected\n");
-        out.append("close\n");
-        out.append("closed\n");
+        out.append(path);
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
 
-        CharBuffer prepared = CharBuffer.allocate(34);
+        CharBuffer prepared = CharBuffer.allocate(33);
         while (prepared.hasRemaining()) {
             in.read(prepared);
         }
@@ -222,7 +223,7 @@ public class RobotServerIT {
         // @formatter:off
         CharBuffer expectedPrepared = CharBuffer.wrap(
                 "PREPARED\n" +
-                "name:connect-then-close\n" +
+                "name:accept-then-close\n" +
                 "\n");
         // @formatter:on
 
@@ -232,11 +233,11 @@ public class RobotServerIT {
         client.connect(new InetSocketAddress("localhost", 62345));
 
         out.append("START\n");
-        out.append("name:connect-then-close\n");
+        out.append("name:accept-then-close\n");
         out.append("\n");
         out.flush();
 
-        CharBuffer started = CharBuffer.allocate(33);
+        CharBuffer started = CharBuffer.allocate(32);
         while (started.hasRemaining()) {
             in.read(started);
         }
@@ -245,12 +246,12 @@ public class RobotServerIT {
         // @formatter:off
         CharBuffer expectedStarted = CharBuffer.wrap(
                 "STARTED\n" +
-                "name:connect-then-close\n" +
+                "name:accept-then-close\n" +
                 "\n");
         // @formatter:on
         assertEquals(expectedStarted, started);
 
-        CharBuffer finished = CharBuffer.allocate(113);
+        CharBuffer finished = CharBuffer.allocate(192);
         while (finished.hasRemaining()) {
             in.read(finished);
         }
@@ -259,7 +260,14 @@ public class RobotServerIT {
         // @formatter:off
         CharBuffer expectedFinished = CharBuffer.wrap(
                 "FINISHED\n" +
-                "name:connect-then-close\n" +
+                "name:accept-then-close\n" +
+                "content-length:61\n" +
+                "\n" +
+                "accept tcp://localhost:62345\n" +
+                "accepted\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n" + 
                 "content-length:61\n" +
                 "\n" +
                 "accept tcp://localhost:62345\n" +
@@ -278,16 +286,14 @@ public class RobotServerIT {
     @Test(timeout = 2000)
     public void shouldAcceptThenCloseOK() throws Exception {
 
+        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/accept-then-close.rpt";
+        int length = path.length();
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("START\n");
         out.append("name:connect-then-close\n");
-        out.append("content-length:61\n");
+        out.append("content-length:" + length + "\n");
         out.append("\n");
-        out.append("accept tcp://localhost:62345\n");
-        out.append("accepted\n");
-        out.append("connected\n");
-        out.append("close\n");
-        out.append("closed\n");
+        out.append(path);
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
@@ -309,7 +315,7 @@ public class RobotServerIT {
 
         client.connect(new InetSocketAddress("localhost", 62345));
 
-        CharBuffer finished = CharBuffer.allocate(113);
+        CharBuffer finished = CharBuffer.allocate(193);
         while (finished.hasRemaining()) {
             in.read(finished);
         }
@@ -319,6 +325,13 @@ public class RobotServerIT {
         CharBuffer expectedFinished = CharBuffer.wrap(
                 "FINISHED\n" +
                 "name:connect-then-close\n" +
+                "content-length:61\n" +
+                "\n" +
+                "accept tcp://localhost:62345\n" +
+                "accepted\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n" + 
                 "content-length:61\n" +
                 "\n" +
                 "accept tcp://localhost:62345\n" +
@@ -339,15 +352,14 @@ public class RobotServerIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
+        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/connect-then-close.rpt";
+        int length = path.length();
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("START\n");
         out.append("name:connect-then-close\n");
-        out.append("content-length:53\n");
+        out.append("content-length:" + length + "\n");
         out.append("\n");
-        out.append("connect tcp://localhost:62345\n");
-        out.append("connected\n");
-        out.append("close\n");
-        out.append("closed\n");
+        out.append(path);
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
@@ -369,7 +381,7 @@ public class RobotServerIT {
 
         accepted = server.accept();
 
-        CharBuffer finished = CharBuffer.allocate(105);
+        CharBuffer finished = CharBuffer.allocate(177);
         while (finished.hasRemaining()) {
             in.read(finished);
         }
@@ -379,6 +391,12 @@ public class RobotServerIT {
         CharBuffer expectedFinished = CharBuffer.wrap(
                 "FINISHED\n" +
                 "name:connect-then-close\n" +
+                "content-length:53\n" +
+                "\n" +
+                "connect tcp://localhost:62345\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n" +
                 "content-length:53\n" +
                 "\n" +
                 "connect tcp://localhost:62345\n" +
@@ -398,15 +416,14 @@ public class RobotServerIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
+        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/connect-then-close.rpt";
+        int length = path.length();
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
         out.append("name:connect-then-close\n");
-        out.append("content-length:53\n");
+        out.append("content-length:" + length + "\n");
         out.append("\n");
-        out.append("connect tcp://localhost:62345\n");
-        out.append("connected\n");
-        out.append("close\n");
-        out.append("closed\n");
+        out.append(path);
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
@@ -448,7 +465,7 @@ public class RobotServerIT {
 
         accepted = server.accept();
 
-        CharBuffer finished = CharBuffer.allocate(105);
+        CharBuffer finished = CharBuffer.allocate(177);
         while (finished.hasRemaining()) {
             in.read(finished);
         }
@@ -458,6 +475,12 @@ public class RobotServerIT {
         CharBuffer expectedFinished = CharBuffer.wrap(
                 "FINISHED\n" +
                 "name:connect-then-close\n" +
+                "content-length:53\n" +
+                "\n" +
+                "connect tcp://localhost:62345\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n" +
                 "content-length:53\n" +
                 "\n" +
                 "connect tcp://localhost:62345\n" +
@@ -477,16 +500,14 @@ public class RobotServerIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
+        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/shouldAbortOK.rpt";
+        int length = path.length();
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("START\n");
         out.append("name:shouldAbortOK\n");
-        out.append("content-length:65\n");
+        out.append("content-length:" + length + "\n");
         out.append("\n");
-        out.append("connect tcp://localhost:62345\n");
-        out.append("connected\n");
-        out.append("read [0..4]\n");
-        out.append("close\n");
-        out.append("closed\n");
+        out.append(path);
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
@@ -519,6 +540,27 @@ public class RobotServerIT {
 
         input = in.readLine();
         assertEquals("name:shouldAbortOK", input);
+        
+        input = in.readLine();
+        assertEquals("content-length:65", input);
+        
+        input = in.readLine();
+        assertEquals("", input);
+        
+        input = in.readLine();
+        assertEquals("connect tcp://localhost:62345", input);
+        
+        input = in.readLine();
+        assertEquals("connected", input);
+        
+        input = in.readLine();
+        assertEquals("read [0..4]", input);
+        
+        input = in.readLine();
+        assertEquals("close", input);
+        
+        input = in.readLine();
+        assertEquals("closed", input);
 
         input = in.readLine();
         Pattern p = Pattern.compile("content-length:(\\d+)");
@@ -545,23 +587,21 @@ public class RobotServerIT {
     @Test(timeout = 2500)
     public void shouldDisconnectOK() throws Exception {
 
+        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/accept-then-close.rpt";
+        int length = path.length();
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
                 control.getOutputStream()));
         out.append("PREPARE\n");
-        out.append("name:connect-then-close\n");
-        out.append("content-length:61\n");
+        out.append("name:accept-then-close\n");
+        out.append("content-length:" + length + "\n");
         out.append("\n");
-        out.append("accept tcp://localhost:62345\n");
-        out.append("accepted\n");
-        out.append("connected\n");
-        out.append("close\n");
-        out.append("closed\n");
+        out.append(path);
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(
                 control.getInputStream()));
 
-        CharBuffer prepared = CharBuffer.allocate(34);
+        CharBuffer prepared = CharBuffer.allocate(33);
         while (prepared.hasRemaining()) {
             in.read(prepared);
         }
@@ -570,7 +610,7 @@ public class RobotServerIT {
         // @formatter:off
         CharBuffer expectedPrepared = CharBuffer.wrap(
                 "PREPARED\n" +
-                "name:connect-then-close\n" +
+                "name:accept-then-close\n" +
                 "\n"
         );
         // @formatter:on
@@ -594,12 +634,14 @@ public class RobotServerIT {
     @Test(timeout = 2000)
     public void shouldParseErrorOK() throws Exception {
 
+        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/invalidScript.rpt";
+        int length = path.length();
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
-        out.append("name:connect-then-close\n");
-        out.append("content-length:7\n");
+        out.append("name:invalidScript\n");
+        out.append("content-length:" + length + "\n");
         out.append("\n");
-        out.append("foobar\n");
+        out.append(path);
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
@@ -608,7 +650,7 @@ public class RobotServerIT {
         assertEquals("ERROR", msg);
 
         msg = in.readLine();
-        assertEquals("name:connect-then-close", msg);
+        assertEquals("name:invalidScript", msg);
 
         msg = in.readLine();
         Pattern p = Pattern.compile("summary:.+");

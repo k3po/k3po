@@ -17,36 +17,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.control.command;
+package org.kaazing.robot.junit;
 
-public final class PrepareCommand extends Command {
+public class ScriptPair {
 
-    private String scriptPath;
+    private String expectedScript;
+    private String observedScript;
 
-    public Kind getKind() {
-        return Kind.PREPARE;
+    public ScriptPair() {
+        expectedScript = "";
+        observedScript = "";
     }
 
-    public void setScriptPath(String scriptPath) {
-        this.scriptPath = scriptPath;
+    public ScriptPair(String expectedScript, String observedScript) {
+        this.expectedScript = expectedScript;
+        this.observedScript = observedScript;
     }
 
-    public String getScriptPath() {
-        return scriptPath;
+    public void setExpectedScript(String expectedScript) {
+        this.expectedScript = expectedScript;
     }
 
-    @Override
-    public int hashCode() {
-        return hashTo();
+    public String getExpectedScript() {
+        return expectedScript;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        return o == this || o instanceof PrepareCommand && equalTo((PrepareCommand) o);
+    public void setObservedScript(String observedScript) {
+        this.observedScript = observedScript;
     }
 
-    protected boolean equalTo(PrepareCommand that) {
-        return super.equalTo(that) &&
-                this.scriptPath == that.scriptPath || this.scriptPath != null && this.scriptPath.equals(that.scriptPath);
+    public String getObservedScript() {
+        return observedScript;
     }
 }

@@ -34,6 +34,7 @@ import org.kaazing.robot.driver.control.ErrorMessage;
 import org.kaazing.robot.driver.control.FinishedMessage;
 import org.kaazing.robot.driver.control.PrepareMessage;
 import org.kaazing.robot.driver.control.StartMessage;
+import org.kaazing.robot.driver.util.Utils;
 
 public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
 
@@ -66,7 +67,8 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
     private boolean hasReceivedPrepare;
 
     @Override
-    protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, State state) throws Exception {
+    protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, State state)
+            throws Exception {
 
         LOGGER.debug("decode: state=" + state);
 
@@ -119,8 +121,8 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
         int endOfLineAt = buffer.indexOf(readerIndex, Math.min(readableBytes, maxLineLength) + 1, (byte) 0x0a);
 
         if (readerIndex > 0) {
-            LOGGER.debug(String.format("readLine: endofLineAt=%d, readableBytes=%d, readerIndex=%d", endOfLineAt, readableBytes,
-                    readerIndex));
+            LOGGER.debug(String.format("readLine: endofLineAt=%d, readableBytes=%d, readerIndex=%d", endOfLineAt,
+                    readableBytes, readerIndex));
         }
 
         // end-of-line not found
@@ -244,30 +246,28 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
         // add common headers
         if ("name".equals(headerName)) {
             message.setScriptName(headerValue);
-        }
-        else if ("content-length".equals(headerName)) {
+        } else if ("content-length".equals(headerName)) {
             // determine content-length
             contentLength = Integer.parseInt(headerValue);
             if (contentLength > maxContentLength) {
                 throw new IllegalArgumentException("Content too long");
             }
-        }
-        else {
+        } else {
             // add kind-specific headers
             switch (message.getKind()) {
-                case ERROR:
-                    ErrorMessage errorMessage = (ErrorMessage) message;
-                    if ("summary".equals(headerName)) {
-                        errorMessage.setSummary(headerValue);
-                    }
-                    break;
-                case PREPARE:
-                    PrepareMessage prepareMessage = (PrepareMessage) message;
-                    if ("content-type".equals(headerName)) {
-                        prepareMessage.setScriptFormatOverride(headerValue);
-                    }
-                default:
-                    break;
+            case ERROR:
+                ErrorMessage errorMessage = (ErrorMessage) message;
+                if ("summary".equals(headerName)) {
+                    errorMessage.setSummary(headerValue);
+                }
+                break;
+            case PREPARE:
+                PrepareMessage prepareMessage = (PrepareMessage) message;
+                if ("content-type".equals(headerName)) {
+                    prepareMessage.setScriptFormatOverride(headerValue);
+                }
+            default:
+                break;
             }
         }
 
@@ -288,7 +288,8 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
         switch (message.getKind()) {
         case PREPARE:
             PrepareMessage prepareMessage = (PrepareMessage) message;
-            prepareMessage.setExpectedScript(content);
+            prepareMessage.setExpectedScriptPath(content);
+            prepareMessage.setExpectedScript(Utils.readFileIntoString(content));
             break;
         case FINISHED:
             FinishedMessage finishedMessage = (FinishedMessage) message;

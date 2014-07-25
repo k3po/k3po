@@ -144,6 +144,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         scriptDoneFuture.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(final ChannelFuture f) {
+                String expectedScript = scriptDoneFuture.getExpectedScript();
                 String observedScript = scriptDoneFuture.getObservedScript();
 
                 if (logger.isDebugEnabled()) {
@@ -151,6 +152,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 }
                 FinishedMessage finished = new FinishedMessage();
                 finished.setScriptName(scriptName);
+                finished.setExpectedScript(expectedScript);
                 finished.setObservedScript(observedScript);
                 Channels.write(ctx, Channels.future(null), finished);
             }

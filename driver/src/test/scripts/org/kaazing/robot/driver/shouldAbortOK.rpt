@@ -1,0 +1,5 @@
+connect tcp://localhost:62345
+connected
+read [0..4]
+close
+closed

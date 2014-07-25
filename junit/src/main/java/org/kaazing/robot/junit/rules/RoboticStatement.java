@@ -19,7 +19,6 @@
 
 package org.kaazing.robot.junit.rules;
 
-import static org.kaazing.robot.junit.rules.ScriptUtil.readScriptFile;
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
@@ -33,6 +32,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.kaazing.robot.junit.annotation.Robotic;
+import org.kaazing.robot.junit.ScriptPair;
 
 final class RoboticStatement extends Statement {
 
@@ -62,11 +62,10 @@ final class RoboticStatement extends Statement {
         // class' package name.
         Class<?> testClass = description.getTestClass();
 
-        // Discover the script associated with this behavior name
-        String expectedScript = readScriptFile(testClass, scriptName);
+        String scriptPath = ScriptUtil.getScriptPath(testClass, scriptName);
 
-        ScriptRunner scriptRunner = new ScriptRunner(scriptName, expectedScript, latch);
-        FutureTask<String> scriptFuture = new FutureTask<String>(scriptRunner);
+        ScriptRunner scriptRunner = new ScriptRunner(scriptName, scriptPath, latch);
+        FutureTask<ScriptPair> scriptFuture = new FutureTask<ScriptPair>(scriptRunner);
 
         try {
             // start the script execution
@@ -98,10 +97,10 @@ final class RoboticStatement extends Statement {
                     try {
                         // wait at most 5sec for the observed script (due to the abort case)
                         // should take less than a second for the Robot to complete
-                        String observedScript = scriptFuture.get(5, SECONDS);
+                        ScriptPair scripts = scriptFuture.get(5, SECONDS);
 
                         try {
-                            assertEquals("Robotic behavior did not match", expectedScript, observedScript);
+                            assertEquals("Robotic behavior did not match", scripts.getExpectedScript(), scripts.getObservedScript());
                             // Throw the original exception if we are equal
                             throw cause;
                         } catch (ComparisonFailure f) {
@@ -125,9 +124,9 @@ final class RoboticStatement extends Statement {
             // and to allow Robot script to make progress
             assertTrue(format("Did you call %s.join()?", RobotRule.class.getSimpleName()), latch.isStartable());
 
-            String observedScript = scriptFuture.get();
+            ScriptPair scripts = scriptFuture.get();
 
-            assertEquals("Robotic behavior did not match expected", expectedScript, observedScript);
+            assertEquals("Robotic behavior did not match expected", scripts.getExpectedScript(), scripts.getObservedScript());
         } finally {
             // clean up the task if it is still running
             scriptFuture.cancel(true);

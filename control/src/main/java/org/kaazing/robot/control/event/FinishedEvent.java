@@ -21,26 +21,35 @@ package org.kaazing.robot.control.event;
 
 public final class FinishedEvent extends CommandEvent {
 
-    private String script;
+    private String expectedScript;
+    private String observedScript;
 
     public Kind getKind() {
         return Kind.FINISHED;
     }
 
-    public void setScript(String script) {
-        this.script = script;
+    public void setExpectedScript(String expectedScript) {
+        this.expectedScript = expectedScript;
     }
 
-    public String getScript() {
-        return script;
+    public String getExpectedScript() {
+        return expectedScript;
+    }
+
+    public void setObservedScript(String observedScript) {
+        this.observedScript = observedScript;
+    }
+
+    public String getObservedScript() {
+        return observedScript;
     }
 
     @Override
     public int hashCode() {
         int hashCode = hashTo();
 
-        if (script != null) {
-            hashCode ^= script.hashCode();
+        if (expectedScript != null && observedScript != null) {
+            hashCode ^= (expectedScript + observedScript).hashCode();
         }
 
         return hashCode;
@@ -52,7 +61,8 @@ public final class FinishedEvent extends CommandEvent {
     }
 
     protected boolean equalTo(FinishedEvent that) {
-        return super.equalTo(that) &&
-                this.script == that.script || this.script != null && this.script.equals(that.script);
+        return super.equalTo(that) && this.expectedScript == that.expectedScript || this.expectedScript != null
+                && this.expectedScript.equals(that.expectedScript) && this.observedScript == that.observedScript
+                || this.observedScript != null && this.observedScript.equals(that.observedScript);
     }
 }

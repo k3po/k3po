@@ -29,7 +29,6 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
-
 import org.kaazing.robot.driver.control.ControlMessage;
 import org.kaazing.robot.driver.control.ControlMessage.Kind;
 import org.kaazing.robot.driver.control.ErrorMessage;
@@ -102,15 +101,24 @@ public class ControlEncoder extends OneToOneEncoder {
     }
 
     private Object encodeFinishedMessage(ChannelHandlerContext ctx, Channel channel, FinishedMessage finishedMessage) {
-
         Kind kind = finishedMessage.getKind();
         String scriptName = finishedMessage.getScriptName();
+        String expectedScript = finishedMessage.getExpectedScript();
         String observedScript = finishedMessage.getObservedScript();
 
         ChannelBuffer header = dynamicBuffer(channel.getConfig().getBufferFactory());
         encodeInitial(kind, header);
         encodeNameHeader(scriptName, header);
-        return encodeContent(observedScript, header);
+        Object encoded = encodeContent(expectedScript, header);
+
+        ChannelBuffer content = dynamicBuffer(channel.getConfig().getBufferFactory());
+        Object encodedEnd = encodeContent(observedScript, content);
+
+        if (encoded instanceof ChannelBuffer && encodedEnd instanceof ChannelBuffer) {
+            return wrappedBuffer((ChannelBuffer) encoded, (ChannelBuffer) encodedEnd);
+        } else {
+            throw new IllegalStateException("Expected Objects returned from encodeContent to be of type ChannelBuffer");
+        }
     }
 
     private static void encodeInitial(Kind kind, ChannelBuffer header) {
@@ -144,8 +152,7 @@ public class ControlEncoder extends OneToOneEncoder {
             header.writeByte(LF);
 
             return wrappedBuffer(header, content);
-        }
-        else {
+        } else {
             header.writeBytes(copiedBuffer("content-length:0", UTF_8));
             header.writeByte(LF);
             header.writeByte(LF);

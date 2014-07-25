@@ -41,9 +41,9 @@ public class ControlDownstreamHandler extends SimpleChannelDownstreamHandler {
         case FINISHED:
             writeFinishedRequested(ctx, e);
             break;
-            case ERROR:
-                writeErrorRequested(ctx, e);
-                break;
+        case ERROR:
+            writeErrorRequested(ctx, e);
+            break;
         default:
             throw new IllegalArgumentException(String.format("Unexpected control message: %s", message.getKind()));
         }

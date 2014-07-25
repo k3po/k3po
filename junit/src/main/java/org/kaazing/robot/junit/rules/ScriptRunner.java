@@ -37,26 +37,26 @@ import org.kaazing.robot.control.event.CommandEvent;
 import org.kaazing.robot.control.event.ErrorEvent;
 import org.kaazing.robot.control.event.FinishedEvent;
 import org.kaazing.robot.junit.RoboticException;
+import org.kaazing.robot.junit.ScriptPair;
 
-final class ScriptRunner implements Callable<String> {
-
+final class ScriptRunner implements Callable<ScriptPair> {
 
     private final RobotControlFactory controllerFactory;
     private final RobotControl controller;
     private final String name;
-    private final String expected;
+    private final String scriptPath;
     private final RoboticLatch latch;
 
     private volatile boolean abortScheduled;
 
-    ScriptRunner(String name, String expected, RoboticLatch latch) throws Exception {
+    ScriptRunner(String name, String scriptPath, RoboticLatch latch) throws Exception {
 
         if (name == null) {
             throw new NullPointerException("name");
         }
 
-        if (expected == null) {
-            throw new NullPointerException("expected");
+        if (scriptPath == null) {
+            throw new NullPointerException("scriptPath");
         }
 
         if (latch == null) {
@@ -69,7 +69,7 @@ final class ScriptRunner implements Callable<String> {
         this.controllerFactory = RobotControlFactories.createRobotControlFactory();
         this.controller = controllerFactory.newClient(controlURI);
         this.name = name;
-        this.expected = expected;
+        this.scriptPath = scriptPath;
         this.latch = latch;
     }
 
@@ -79,12 +79,12 @@ final class ScriptRunner implements Callable<String> {
     }
 
     @Override
-    public String call() throws Exception {
+    public ScriptPair call() throws Exception {
 
         try {
             // We are already done if abort before we start
             if (abortScheduled) {
-                return "";
+                return new ScriptPair();
             }
 
             controller.connect();
@@ -92,7 +92,7 @@ final class ScriptRunner implements Callable<String> {
             // send PREPARE command
             PrepareCommand prepare = new PrepareCommand();
             prepare.setName(name);
-            prepare.setScript(expected);
+            prepare.setScriptPath(scriptPath);
 
             controller.writeCommand(prepare);
 
@@ -133,13 +133,12 @@ final class ScriptRunner implements Callable<String> {
                         throw new RoboticException(format("%s:%s", error.getSummary(), error.getDescription()));
                     case FINISHED:
                         FinishedEvent finished = (FinishedEvent) event;
-                        // observed script (possibly incomplete)
-                        return finished.getScript();
+                        // note: observed script is possibly incomplete
+                        return new ScriptPair(finished.getExpectedScript(), finished.getObservedScript());
                     default:
                         throw new IllegalArgumentException("Unrecognized event kind: " + event.getKind());
                     }
-                }
-                catch (SocketTimeoutException e) {
+                } catch (SocketTimeoutException e) {
                     if (abortScheduled && !abortWritten) {
                         sendAbortCommand();
                         abortWritten = true;
@@ -151,8 +150,7 @@ final class ScriptRunner implements Callable<String> {
                     }
                 }
             }
-        }
-        catch (ConnectException e) {
+        } catch (ConnectException e) {
             Exception exception = new Exception("Failed to connect. Is the Robot running?", e);
             exception.fillInStackTrace();
             latch.notifyException(exception);
@@ -161,8 +159,7 @@ final class ScriptRunner implements Callable<String> {
             latch.notifyException(e);
             throw e;
 
-        }
-        finally {
+        } finally {
             latch.notifyFinished();
             controller.disconnect();
         }

@@ -309,9 +309,10 @@ public class Robot {
                 }
 
                 if (finishedFuture.isDone()) {
+                    finishedFuture.setExpectedScript(expectedScript);
                     finishedFuture.setObservedScript(observedScript);
                 } else {
-                    finishedFuture.setSuccess(observedScript);
+                    finishedFuture.setSuccess(observedScript, expectedScript);
                 }
             }
 

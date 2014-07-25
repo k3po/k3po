@@ -77,24 +77,20 @@ public class TcpRobotControl implements RobotControl {
             try {
                 if (connection instanceof Closeable) {
                     ((Closeable) connection).close();
-                }
-                else {
+                } else {
                     try {
                         connection.getInputStream().close();
-                    }
-                    catch (IOException e) {
+                    } catch (IOException e) {
                         // ignore
                     }
 
                     try {
                         connection.getOutputStream().close();
-                    }
-                    catch (IOException e) {
+                    } catch (IOException e) {
                         // ignore
                     }
                 }
-            }
-            finally {
+            } finally {
                 connection = null;
             }
         }
@@ -176,9 +172,9 @@ public class TcpRobotControl implements RobotControl {
         Writer textOut = new OutputStreamWriter(bytesOut, encoder);
 
         String name = prepare.getName();
-        String script = prepare.getScript();
+        String scriptPath = prepare.getScriptPath();
         // note: this assumes bytes-length == string-length (ASCII)
-        int length = script.length();
+        int length = scriptPath.length();
 
         textOut.append("PREPARE\n");
         textOut.append(format("name:%s\n", name));
@@ -186,7 +182,7 @@ public class TcpRobotControl implements RobotControl {
         textOut.append("content-type:text/x-robot-2\n");
         textOut.append(format("content-length:%d\n", length));
         textOut.append("\n");
-        textOut.append(script);
+        textOut.append(scriptPath);
         textOut.flush();
     }
 
@@ -263,6 +259,7 @@ public class TcpRobotControl implements RobotControl {
         return started;
     }
 
+    // TODO: fix
     private FinishedEvent readFinishedEvent(BufferedReader textIn) throws IOException {
         FinishedEvent finished = new FinishedEvent();
         String line;
@@ -293,7 +290,31 @@ public class TcpRobotControl implements RobotControl {
         // note: this assumes bytes-length == string-length (ASCII)
         // note: zero-length script should be non-null
         if (length >= 0) {
-            finished.setScript(readContent(textIn, length));
+            finished.setExpectedScript(readContent(textIn, length));
+        }
+
+        do {
+            line = textIn.readLine();
+            Matcher matcher = HEADER_PATTERN.matcher(line);
+            if (matcher.matches()) {
+                String headerName = matcher.group(1);
+                String headerValue = matcher.group(2);
+                switch (headerName.charAt(0)) {
+                case 'c':
+                    if ("content-length".equals(headerName)) {
+                        length = parseInt(headerValue);
+                    }
+                    break;
+                default:
+                    throw new IllegalStateException("Unrecognized event header: " + headerName);
+                }
+            }
+        } while (!line.isEmpty());
+
+        // note: this assumes bytes-length == string-length (ASCII)
+        // note: zero-length script should be non-null
+        if (length >= 0) {
+            finished.setObservedScript(readContent(textIn, length));
         }
 
         return finished;

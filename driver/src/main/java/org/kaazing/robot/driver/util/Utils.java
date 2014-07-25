@@ -19,6 +19,9 @@
 
 package org.kaazing.robot.driver.util;
 
+import java.nio.file.Paths;
+import java.nio.file.Files;
+
 public final class Utils {
 
     public static String byteArrayToString(byte[] bytes) {
@@ -32,6 +35,14 @@ public final class Utils {
         }
 
         return sb.toString();
+    }
+
+    public static String readFileIntoString(String path) {
+        try {
+            return new String(Files.readAllBytes(Paths.get(path)), "UTF-8");
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error reading from file:" + path);
+        }
     }
 
     private Utils() {
