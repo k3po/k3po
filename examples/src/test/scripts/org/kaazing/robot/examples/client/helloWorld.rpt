@@ -1,0 +1,6 @@
+accept tcp://localhost:8001
+accepted
+connected
+read "hello world"
+write "hello client"
+closed

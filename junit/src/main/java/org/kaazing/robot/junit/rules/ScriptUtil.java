@@ -20,37 +20,14 @@
 package org.kaazing.robot.junit.rules;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.CharBuffer;
 
 final class ScriptUtil {
 
     private static final String SCRIPT_BASE = "META-INF/robot-scripts";
-
-    static String readScriptFile(Class<?> c, String scriptName) throws IOException {
-
-        InputStream in = getScriptFile(c, scriptName);
-        Reader r = new InputStreamReader(in);
-
-        StringBuilder sb = new StringBuilder();
-        CharBuffer target = CharBuffer.allocate(8192);
-        while (r.ready()) {
-            int charsRead = r.read(target);
-            if (charsRead == -1) {
-                break;
-            }
-
-            sb.append(target.flip());
-            target.rewind();
-        }
-
-        return sb.toString();
-    }
 
     // Return the number of "levels" in the given package name. For example,
     // a package name of "org.kaazing.rupert.test" has 4 levels.
@@ -84,22 +61,26 @@ final class ScriptUtil {
         return levelCount;
     }
 
-    /*
-     * First, look for a <b>file</b> in
-     * "src/test/scripts/<i>package</>/<i>script</i>.rpt", for the cases where
-     * we are running in a unit/integration test.
-     *
-     * If not found there, look for a <b>resource</b> with
-     * "META-INF/robot-scripts/<i>package</i>/<i>script</i>.rpt".
-     *
-     * If not found there, look in the default/base location of
-     * "META-INF/robot-scripts/<i>script</i>.rpt".
-     *
-     * Make sure that we handle "relative path" script names, such as
-     * "../../<i>script</i>.rpt"
-     */
-    static InputStream getScriptFile(Class<?> c, String scriptName) throws IOException {
+    static String getScriptPath(Class<?> c, String scriptName) throws IOException {
+        return getScriptURL(c, scriptName);
+    }
 
+    /*
+     * First, look for a <b>file</b> in "src/test/scripts/<i>package</>/<i>script</i>.rpt", for the cases where we are
+     * running in a unit/integration test.
+     *
+     * If not found there, look for a <b>resource</b> with "META-INF/robot-scripts/<i>package</i>/<i>script</i>.rpt".
+     *
+     * If not found there, look in the default/base location of "META-INF/robot-scripts/<i>script</i>.rpt".
+     *
+     * Make sure that we handle "relative path" script names, such as "../../<i>script</i>.rpt"
+     */
+    /**
+     * @param c
+     * @param scriptName
+     * @return Absolute path to file
+     */
+    static String getScriptURL(Class<?> c, String scriptName) {
         ClassLoader loader = ScriptUtil.class.getClassLoader();
         String packageName = c.getPackage().getName();
 
@@ -108,8 +89,8 @@ final class ScriptUtil {
 
         if (scriptLevelCount > packageLevelCount) {
             System.err.println(String.format(
-                    "Relative path script name '%s' tries to refer above package '%s', rejecting script name", scriptName,
-                    packageName));
+                    "Relative path script name '%s' tries to refer above package '%s', rejecting script name",
+                    scriptName, packageName));
             throw new RuntimeException(String.format("Illegal relative path to script '%s'", scriptName));
         }
 
@@ -121,7 +102,7 @@ final class ScriptUtil {
         File f = new File(resourceURL);
         if (f.exists() && f.isFile()) {
             System.err.println(String.format("Using script %s from '%s'", scriptName, resourceURL));
-            return new FileInputStream(f);
+            return f.getAbsolutePath();
         }
 
         // Next, check in the package-specific location
@@ -129,7 +110,7 @@ final class ScriptUtil {
         resource = loader.getResource(resourceURL);
         if (resource != null) {
             System.err.println(String.format("Using script %s from '%s'", scriptName, resourceURL));
-            return resource.openStream();
+            return resource.getPath();
         }
 
         // If the resource was not been found, try the default,
@@ -140,8 +121,7 @@ final class ScriptUtil {
         if (resource == null) {
             throw new RuntimeException(String.format("Unable to locate script '%s'", scriptName));
         }
-
-        return resource.openStream();
+        return resource.getPath();
     }
 
     private ScriptUtil() {

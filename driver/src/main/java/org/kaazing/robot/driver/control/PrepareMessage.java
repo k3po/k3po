@@ -24,6 +24,15 @@ public class PrepareMessage extends ControlMessage {
     private Kind compatibilityKind = Kind.PREPARE;
     private String expectedScript = "";
     private String scriptFormatOverride;
+    private String expectedScriptPath;
+
+    public void setExpectedScriptPath(String expectedScriptPath) {
+        this.expectedScriptPath = expectedScriptPath;
+    }
+
+    public String getExpectedScriptPath() {
+        return expectedScriptPath;
+    }
 
     public boolean hasFormatOverride() {
         return scriptFormatOverride != null;
@@ -69,6 +78,8 @@ public class PrepareMessage extends ControlMessage {
         // @formatter:off
         return super.equalTo(that)
                 && (this.compatibilityKind == that.compatibilityKind)
+                && (this.expectedScriptPath == that.expectedScriptPath
+                    || (this.expectedScriptPath != null && this.expectedScriptPath.equals(that.expectedScriptPath)))
                 && (this.expectedScript == that.expectedScript
                     || (this.expectedScript != null && this.expectedScript.equals(that.expectedScript))
                 && (this.scriptFormatOverride == that.scriptFormatOverride));

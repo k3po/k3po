@@ -176,6 +176,12 @@ public class ControlEncoderTest {
                                                     "connect tcp://localhost:8000\n" +
                                                     "connected\n" +
                                                     "close\n" +
+                                                    "closed\n" +
+                                                    "content-length:52\n" +
+                                                    "\n" +
+                                                    "connect tcp://localhost:8000\n" +
+                                                    "connected\n" +
+                                                    "close\n" +
                                                     "closed\n", UTF_8);
         // @formatter:on
 
@@ -187,6 +193,7 @@ public class ControlEncoderTest {
 
         FinishedMessage finishedMessage = new FinishedMessage();
         finishedMessage.setScriptName("test");
+        finishedMessage.setExpectedScript("connect tcp://localhost:8000\n" + "connected\n" + "close\n" + "closed\n");
         finishedMessage.setObservedScript("connect tcp://localhost:8000\n" + "connected\n" + "close\n" + "closed\n");
 
         ChannelFuture future = client.connect(new LocalAddress("test")).sync();

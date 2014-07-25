@@ -23,4 +23,5 @@ import org.jboss.netty.channel.ChannelFuture;
 
 public interface RobotCompletionFuture extends ChannelFuture {
     String getObservedScript();
+    String getExpectedScript();
 }

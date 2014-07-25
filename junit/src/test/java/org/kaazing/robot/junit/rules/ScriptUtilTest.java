@@ -22,11 +22,20 @@ package org.kaazing.robot.junit.rules;
 import static java.lang.String.format;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.junit.Test;
 
 public class ScriptUtilTest {
+
+    private InputStream getScriptInputStream(Class<?> c, String scriptName) throws IOException{
+        String path = ScriptUtil.getScriptPath(c, scriptName);
+        File file = new File(path);
+        return new FileInputStream(file);
+    }
 
     @Test
     public void getPackageNameLevelCount() throws Exception {
@@ -64,22 +73,22 @@ public class ScriptUtilTest {
         // XXX Need to add tests/smarts here
 
         String behaviorName = "tcp-client";
-        InputStream is = ScriptUtil.getScriptFile(getClass(), behaviorName);
+        InputStream is = getScriptInputStream(getClass(), behaviorName);
         assertTrue(format("Expected InputStream for '%s', found null", behaviorName), is != null);
         is.close();
 
         behaviorName = "tcp-server";
-        is = ScriptUtil.getScriptFile(getClass(), behaviorName);
+        is = getScriptInputStream(getClass(), behaviorName);
         assertTrue(format("Expected InputStream for '%s', found null", behaviorName), is != null);
         is.close();
 
         behaviorName = "my-tcp-server";
-        is = ScriptUtil.getScriptFile(getClass(), behaviorName);
+        is = getScriptInputStream(getClass(), behaviorName);
         assertTrue(format("Expected InputStream for '%s', found null", behaviorName), is != null);
         is.close();
 
         behaviorName = "../../my-tcp-client";
-        is = ScriptUtil.getScriptFile(getClass(), behaviorName);
+        is = getScriptInputStream(getClass(), behaviorName);
         assertTrue(format("Expected InputStream for '%s', found null", behaviorName), is != null);
         is.close();
 
@@ -87,7 +96,7 @@ public class ScriptUtilTest {
 
         try {
             behaviorName = "this-script-does-not-exist";
-            is = ScriptUtil.getScriptFile(getClass(), behaviorName);
+            is = getScriptInputStream(getClass(), behaviorName);
 
         }
         catch (Exception e) {
@@ -106,7 +115,7 @@ public class ScriptUtilTest {
 
         try {
             behaviorName = "../../../../../../my-tcp-client";
-            is = ScriptUtil.getScriptFile(getClass(), behaviorName);
+            is = getScriptInputStream(getClass(), behaviorName);
 
         }
         catch (Exception e) {
@@ -121,4 +130,5 @@ public class ScriptUtilTest {
                 format("Did not see expected 'Illegal relative path to script' RuntimeException for script '%s'", behaviorName),
                 sawExpectedEx);
     }
+
 }

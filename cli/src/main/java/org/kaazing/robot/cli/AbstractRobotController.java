@@ -21,8 +21,6 @@ package org.kaazing.robot.cli;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
@@ -55,9 +53,7 @@ public abstract class AbstractRobotController implements RobotController {
             // prepare
             PrepareCommand prepareCommand = new PrepareCommand();
 
-            byte[] encoded = Files.readAllBytes(Paths.get(scriptFile.getAbsolutePath()));
-            String originalScript = new String(encoded, StandardCharsets.UTF_8);
-            prepareCommand.setScript(originalScript);
+            prepareCommand.setScriptPath(Paths.get(scriptFile.getAbsolutePath()).toString());
             final String testName = scriptFile.getName();
             prepareCommand.setName(testName);
             client.writeCommand(prepareCommand);
@@ -90,7 +86,8 @@ public abstract class AbstractRobotController implements RobotController {
                 switch (event.getKind()) {
                     case FINISHED:
                         FinishedEvent finishedEvent = (FinishedEvent) event;
-                        String actualScript = finishedEvent.getScript();
+                        String originalScript = finishedEvent.getExpectedScript();
+                        String actualScript = finishedEvent.getObservedScript();
                         if (actualScript.equals(originalScript)) {
                             writePassedResultToFile(testName);
                             interpreter.println("Test passed!");
@@ -122,7 +119,8 @@ public abstract class AbstractRobotController implements RobotController {
             switch (event.getKind()) {
                 case FINISHED:
                     FinishedEvent finishedEvent = (FinishedEvent) event;
-                    String actualScript = finishedEvent.getScript();
+                    String originalScript = finishedEvent.getExpectedScript();
+                    String actualScript = finishedEvent.getObservedScript();
                     if (actualScript.equals(originalScript)) {
                         writeFailedResultToFile(testName, originalScript, actualScript, "Script timed out");
                         interpreter.println("Test Failed: Scripts are the same but failed because of Timeout");

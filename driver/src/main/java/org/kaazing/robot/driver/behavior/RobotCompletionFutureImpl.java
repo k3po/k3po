@@ -25,6 +25,7 @@ import org.jboss.netty.channel.DefaultChannelFuture;
 public class RobotCompletionFutureImpl extends DefaultChannelFuture implements RobotCompletionFuture {
 
     private String observedScript;
+    private String expectedScript;
 
     public RobotCompletionFutureImpl(Channel channel, boolean cancellable) {
         super(channel, cancellable);
@@ -36,10 +37,11 @@ public class RobotCompletionFutureImpl extends DefaultChannelFuture implements R
     // super.setSuccess();
     // }
 
-    public boolean setSuccess(String observed) {
+    public boolean setSuccess(String observed, String expected) {
         boolean alreadyDone = isDone();
         if (!alreadyDone) {
             observedScript = observed;
+            expectedScript = expected;
         }
         return super.setSuccess();
     }
@@ -47,6 +49,15 @@ public class RobotCompletionFutureImpl extends DefaultChannelFuture implements R
     @Override
     public String getObservedScript() {
         return observedScript;
+    }
+
+    @Override
+    public String getExpectedScript() {
+        return expectedScript;
+    }
+
+    public void setExpectedScript(String expectedScript) {
+        this.expectedScript = expectedScript;
     }
 
     public void setObservedScript(String observedScript) {

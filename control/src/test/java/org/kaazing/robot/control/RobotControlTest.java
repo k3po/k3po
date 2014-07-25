@@ -28,6 +28,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -40,9 +41,6 @@ import org.jmock.lib.legacy.ClassImposteriser;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import org.kaazing.robot.control.RobotControl;
-import org.kaazing.robot.control.TcpRobotControl;
 import org.kaazing.robot.control.command.AbortCommand;
 import org.kaazing.robot.control.command.PrepareCommand;
 import org.kaazing.robot.control.command.StartCommand;
@@ -130,13 +128,16 @@ public class RobotControlTest {
 
     @Test
     public void shouldWritePrepareCommand() throws Exception {
+        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/control/myscript.rpt";
+        int length = path.length();
+        
         final byte[] expectedPrepare =
                 ("PREPARE\n" +
-                 "name:my.script\n" +
+                 "name:myscript\n" +
                  "content-type:text/x-robot-2\n" +
-                 "content-length:9\n" +
+                 "content-length:" + length + "\n" +
                  "\n" +
-                 "# comment").getBytes(UTF_8);
+                 path).getBytes(UTF_8);
 
         mockery.checking(new Expectations() {
             {
@@ -146,8 +147,8 @@ public class RobotControlTest {
         });
 
         PrepareCommand start = new PrepareCommand();
-        start.setName("my.script");
-        start.setScript("# comment");
+        start.setName("myscript");
+        start.setScriptPath(path);
 
         control.connect();
         control.writeCommand(start);
@@ -226,13 +227,17 @@ public class RobotControlTest {
 
         FinishedEvent expectedFinished = new FinishedEvent();
         expectedFinished.setName("my.script");
-        expectedFinished.setScript("# comment");
+        expectedFinished.setExpectedScript("# comment");
+        expectedFinished.setObservedScript("# comment");
 
         mockery.checking(new Expectations() {
             {
                 oneOf(input).read(with(any(byte[].class)), with(equal(0)), with(any(int.class)));
                 will(readInitialBytes(0, ("FINISHED\n" +
                                           "name:my.script\n" +
+                                          "content-length:9\n" +
+                                          "\n" +
+                                          "# comment" + 
                                           "content-length:9\n" +
                                           "\n" +
                                           "# comment").getBytes(UTF_8)));
