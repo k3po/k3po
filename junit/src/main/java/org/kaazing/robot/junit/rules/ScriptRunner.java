@@ -92,7 +92,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
             boolean abortWritten = false;
             while (true) {
                 try {
-                    // validate name path matches command name
+                    // validate event name matches command name
                     CommandEvent event = controller.readEvent(200, MILLISECONDS);
                     if (!name.equals(event.getName())) {
                         throw new IllegalStateException(format(
