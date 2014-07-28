@@ -53,9 +53,9 @@ public abstract class AbstractRobotController implements RobotController {
             // prepare
             PrepareCommand prepareCommand = new PrepareCommand();
 
-            prepareCommand.setScriptPath(Paths.get(scriptFile.getAbsolutePath()).toString());
+            String scriptPath = Paths.get(scriptFile.getAbsolutePath()).toString();
             final String testName = scriptFile.getName();
-            prepareCommand.setName(testName);
+            prepareCommand.setName(scriptPath);
             client.writeCommand(prepareCommand);
             CommandEvent event = client.readEvent(10, TimeUnit.SECONDS);
             if (!(event instanceof PreparedEvent)) {
@@ -64,7 +64,7 @@ public abstract class AbstractRobotController implements RobotController {
 
             // startRobotServer
             StartCommand startCommand = new StartCommand();
-            startCommand.setName(testName);
+            startCommand.setName(scriptPath);
             client.writeCommand(startCommand);
 
             event = client.readEvent(5, TimeUnit.SECONDS);

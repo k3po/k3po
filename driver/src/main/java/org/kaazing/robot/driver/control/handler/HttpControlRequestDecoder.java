@@ -21,22 +21,17 @@ package org.kaazing.robot.driver.control.handler;
 
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.handler.codec.http.HttpRequest;
 
-import org.kaazing.robot.driver.control.PreparedMessage;
-
-public class ControlEncoderCompatibility extends ControlDownstreamHandler {
+public class HttpControlRequestDecoder extends SimpleChannelUpstreamHandler {
 
     @Override
-    public void writePreparedRequested(ChannelHandlerContext ctx, MessageEvent e)
-            throws Exception {
-        PreparedMessage prepared = (PreparedMessage) e.getMessage();
-        switch (prepared.getCompatibilityKind()) {
-        case PREPARE:
-            super.writePreparedRequested(ctx, e);
-            break;
-        default:
-            // skip (implicit)
-            break;
+    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+        if (e.getMessage() instanceof HttpRequest) {
+            //TODO
         }
+        ctx.sendUpstream(e);
     }
+
 }

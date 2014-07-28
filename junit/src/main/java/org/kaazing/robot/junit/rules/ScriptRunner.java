@@ -44,18 +44,13 @@ final class ScriptRunner implements Callable<ScriptPair> {
     private final RobotControlFactory controllerFactory;
     private final RobotControl controller;
     private final String name;
-    private final String scriptPath;
     private final RoboticLatch latch;
 
     private volatile boolean abortScheduled;
 
-    ScriptRunner(String name, String scriptPath, RoboticLatch latch) throws Exception {
+    ScriptRunner(String name, RoboticLatch latch) throws Exception {
 
         if (name == null) {
-            throw new NullPointerException("name");
-        }
-
-        if (scriptPath == null) {
             throw new NullPointerException("scriptPath");
         }
 
@@ -69,7 +64,6 @@ final class ScriptRunner implements Callable<ScriptPair> {
         this.controllerFactory = RobotControlFactories.createRobotControlFactory();
         this.controller = controllerFactory.newClient(controlURI);
         this.name = name;
-        this.scriptPath = scriptPath;
         this.latch = latch;
     }
 
@@ -92,7 +86,6 @@ final class ScriptRunner implements Callable<ScriptPair> {
             // send PREPARE command
             PrepareCommand prepare = new PrepareCommand();
             prepare.setName(name);
-            prepare.setScriptPath(scriptPath);
 
             controller.writeCommand(prepare);
 

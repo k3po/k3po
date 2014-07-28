@@ -67,48 +67,48 @@ public class ControlEncoder extends OneToOneEncoder {
     private Object encodePreparedMessage(ChannelHandlerContext ctx, Channel channel, PreparedMessage preparedMessage) {
 
         Kind kind = preparedMessage.getKind();
-        String scriptName = preparedMessage.getScriptName();
+        String name = preparedMessage.getName();
 
         ChannelBuffer header = dynamicBuffer(channel.getConfig().getBufferFactory());
         encodeInitial(kind, header);
-        encodeNameHeader(scriptName, header);
+        encodeNameHeader(name, header);
         return encodeNoContent(header);
     }
 
     private Object encodeStartedMessage(ChannelHandlerContext ctx, Channel channel, StartedMessage startedMessage) {
 
         Kind kind = startedMessage.getKind();
-        String scriptName = startedMessage.getScriptName();
+        String name = startedMessage.getName();
 
         ChannelBuffer header = dynamicBuffer(channel.getConfig().getBufferFactory());
         encodeInitial(kind, header);
-        encodeNameHeader(scriptName, header);
+        encodeNameHeader(name, header);
         return encodeNoContent(header);
     }
 
     private Object encodeErrorMessage(ChannelHandlerContext ctx, Channel channel, ErrorMessage errorMessage) {
 
         Kind kind = errorMessage.getKind();
-        String scriptName = errorMessage.getScriptName();
+        String name = errorMessage.getName();
         String summary = errorMessage.getSummary();
         String description = errorMessage.getDescription();
 
         ChannelBuffer header = dynamicBuffer(channel.getConfig().getBufferFactory());
         encodeInitial(kind, header);
-        encodeNameHeader(scriptName, header);
+        encodeNameHeader(name, header);
         encodeHeader("summary", summary, header);
         return encodeContent(description, header);
     }
 
     private Object encodeFinishedMessage(ChannelHandlerContext ctx, Channel channel, FinishedMessage finishedMessage) {
         Kind kind = finishedMessage.getKind();
-        String scriptName = finishedMessage.getScriptName();
+        String name = finishedMessage.getName();
         String expectedScript = finishedMessage.getExpectedScript();
         String observedScript = finishedMessage.getObservedScript();
 
         ChannelBuffer header = dynamicBuffer(channel.getConfig().getBufferFactory());
         encodeInitial(kind, header);
-        encodeNameHeader(scriptName, header);
+        encodeNameHeader(name, header);
         Object encoded = encodeContent(expectedScript, header);
 
         ChannelBuffer content = dynamicBuffer(channel.getConfig().getBufferFactory());
@@ -126,9 +126,9 @@ public class ControlEncoder extends OneToOneEncoder {
         header.writeByte(LF);
     }
 
-    private static void encodeNameHeader(String scriptName, ChannelBuffer header) {
-        if (scriptName != null) {
-            header.writeBytes(copiedBuffer(format("name:%s", scriptName), UTF_8));
+    private static void encodeNameHeader(String scriptPath, ChannelBuffer header) {
+        if (scriptPath != null) {
+            header.writeBytes(copiedBuffer(format("name:%s", scriptPath), UTF_8));
             header.writeByte(LF);
         }
     }

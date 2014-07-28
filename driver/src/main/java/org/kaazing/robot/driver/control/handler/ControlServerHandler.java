@@ -19,6 +19,10 @@
 
 package org.kaazing.robot.driver.control.handler;
 
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -27,7 +31,6 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.driver.Robot;
 import org.kaazing.robot.driver.behavior.RobotCompletionFuture;
 import org.kaazing.robot.driver.control.AbortMessage;
@@ -42,6 +45,7 @@ import org.kaazing.robot.lang.parser.ScriptParseException;
 public class ControlServerHandler extends ControlUpstreamHandler {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(ControlServerHandler.class);
+    private static final Charset UTF_8 = Charset.forName("UTF-8");
 
     private Robot                       robot;
     private RobotCompletionFuture       scriptDoneFuture;
@@ -85,7 +89,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         final PrepareMessage prepare = (PrepareMessage) evt.getMessage();
 
         if (logger.isDebugEnabled()) {
-            logger.debug("preparing robot execution for script " + prepare.getScriptName());
+            logger.debug("preparing robot execution for script " + prepare.getName());
         }
 
         robot = new Robot();
@@ -93,11 +97,13 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         ChannelFuture prepareFuture;
         try {
             // @formatter:off
-            prepareFuture = robot.prepare(prepare.getExpectedScript());
+            byte[] encoded = Files.readAllBytes(Paths.get(prepare.getName()));
+            new String(encoded, UTF_8);
+            prepareFuture = robot.prepare(new String(encoded, UTF_8));
             // @formatter:on
         }
         catch (Exception e) {
-            sendErrorMessage(ctx, e, prepare.getScriptName());
+            sendErrorMessage(ctx, e, prepare.getName());
             return;
         }
 
@@ -105,8 +111,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             @Override
             public void operationComplete(final ChannelFuture f) {
                 PreparedMessage prepared = new PreparedMessage();
-                prepared.setCompatibilityKind(prepare.getCompatibilityKind());
-                prepared.setScriptName(prepare.getScriptName());
+                prepared.setName(prepare.getName());
                 Channels.write(ctx, Channels.future(null), prepared);
             }
         });
@@ -117,10 +122,10 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
         final boolean infoDebugEnabled = logger.isDebugEnabled();
         final StartMessage start = (StartMessage) evt.getMessage();
-        final String scriptName = start.getScriptName();
+        final String name = start.getName();
 
         if (infoDebugEnabled) {
-            logger.debug("starting robot execution for script " + scriptName);
+            logger.debug("starting robot execution for script " + name);
         }
 
         try {
@@ -129,13 +134,13 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 @Override
                 public void operationComplete(final ChannelFuture f) {
                     final StartedMessage started = new StartedMessage();
-                    started.setScriptName(scriptName);
+                    started.setName(name);
                     Channels.write(ctx, Channels.future(null), started);
                 }
             });
         }
         catch (Exception e) {
-            sendErrorMessage(ctx, e, scriptName);
+            sendErrorMessage(ctx, e, name);
             return;
         }
 
@@ -148,10 +153,10 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 String observedScript = scriptDoneFuture.getObservedScript();
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Script " + scriptName + " completed");
+                    logger.debug("Script " + name + " completed");
                 }
                 FinishedMessage finished = new FinishedMessage();
-                finished.setScriptName(scriptName);
+                finished.setName(name);
                 finished.setExpectedScript(expectedScript);
                 finished.setObservedScript(observedScript);
                 Channels.write(ctx, Channels.future(null), finished);
@@ -163,15 +168,15 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     public void abortReceived(ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
         AbortMessage abort = (AbortMessage) evt.getMessage();
         if (logger.isInfoEnabled()) {
-            logger.debug("Aborting script " + abort.getScriptName());
+            logger.debug("Aborting script " + abort.getName());
         }
         robot.abort();
     }
 
-    private void sendErrorMessage(ChannelHandlerContext ctx, Exception exception, String scriptName) {
+    private void sendErrorMessage(ChannelHandlerContext ctx, Exception exception, String name) {
         ErrorMessage error = new ErrorMessage();
         error.setDescription(exception.getMessage());
-        error.setScriptName(scriptName);
+        error.setName(name);
 
         if (exception instanceof ScriptParseException) {
             if (logger.isDebugEnabled()) {

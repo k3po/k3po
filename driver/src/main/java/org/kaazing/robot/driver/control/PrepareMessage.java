@@ -21,52 +21,9 @@ package org.kaazing.robot.driver.control;
 
 public class PrepareMessage extends ControlMessage {
 
-    private Kind compatibilityKind = Kind.PREPARE;
-    private String expectedScript = "";
-    private String scriptFormatOverride;
-    private String expectedScriptPath;
-
-    public void setExpectedScriptPath(String expectedScriptPath) {
-        this.expectedScriptPath = expectedScriptPath;
-    }
-
-    public String getExpectedScriptPath() {
-        return expectedScriptPath;
-    }
-
-    public boolean hasFormatOverride() {
-        return scriptFormatOverride != null;
-    }
-
-    public String getScriptFormatOverride() {
-        if (!hasFormatOverride()) {
-            throw new IllegalStateException("There is no script format override");
-        }
-        return scriptFormatOverride;
-    }
-
-    public void setScriptFormatOverride(String scriptFormat) {
-        this.scriptFormatOverride = scriptFormat;
-    }
-
-    public String getExpectedScript() {
-        return expectedScript;
-    }
-
-    public void setExpectedScript(String expectedScript) {
-        this.expectedScript = expectedScript;
-    }
-
     @Override
     public int hashCode() {
-        int hashCode = super.hashTo();
-
-        hashCode <<= 4;
-        hashCode ^= (expectedScript != null) ? expectedScript.hashCode() : 0;
-
-        hashCode <<= 4;
-        hashCode += (scriptFormatOverride != null) ? scriptFormatOverride.hashCode() : 0;
-        return hashCode;
+        return super.hashTo();
     }
 
     @Override
@@ -75,28 +32,12 @@ public class PrepareMessage extends ControlMessage {
     }
 
     protected final boolean equals(PrepareMessage that) {
-        // @formatter:off
-        return super.equalTo(that)
-                && (this.compatibilityKind == that.compatibilityKind)
-                && (this.expectedScriptPath == that.expectedScriptPath
-                    || (this.expectedScriptPath != null && this.expectedScriptPath.equals(that.expectedScriptPath)))
-                && (this.expectedScript == that.expectedScript
-                    || (this.expectedScript != null && this.expectedScript.equals(that.expectedScript))
-                && (this.scriptFormatOverride == that.scriptFormatOverride));
-        // @formatter:on
+        return super.equalTo(that);
     }
 
     @Override
     public Kind getKind() {
         return Kind.PREPARE;
-    }
-
-    public Kind getCompatibilityKind() {
-        return compatibilityKind;
-    }
-
-    public void setCompatibilityKind(Kind compatibilityKind) {
-        this.compatibilityKind = compatibilityKind;
     }
 
 }

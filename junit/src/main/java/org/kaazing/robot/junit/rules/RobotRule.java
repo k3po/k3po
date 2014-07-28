@@ -43,7 +43,11 @@ public final class RobotRule extends Verifier {
         String[] versionTokens = version.split("\\.");
         Integer[] versionsInt = new Integer[versionTokens.length];
         for (int i = 0; i < versionTokens.length; i++) {
-            versionsInt[i] = Integer.parseInt(versionTokens[i]);
+            String versionToken = versionTokens[i];
+            if (versionToken.contains("-")) {
+                versionToken = versionToken.substring(0, versionToken.indexOf("-"));
+            }
+            versionsInt[i] = Integer.parseInt(versionToken);
         }
         if (versionsInt[0] < 5) {
             if (versionsInt.length == 1 || versionsInt[0] < 4 || versionsInt[1] < 10) {

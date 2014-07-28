@@ -39,33 +39,32 @@ import org.jboss.netty.channel.ChildChannelStateEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
-import org.jboss.netty.handler.logging.LoggingHandler;
+import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
+import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
+import org.kaazing.robot.driver.control.handler.ControlServerHandler;
+import org.kaazing.robot.driver.control.handler.HttpControlRequestDecoder;
+import org.kaazing.robot.driver.control.handler.HttpControlResponseEncoder;
 import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
 import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
+import org.kaazing.robot.driver.netty.bootstrap.SingletonBootstrapFactory;
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
 import org.kaazing.robot.driver.netty.channel.ChannelAddressFactory;
-import org.kaazing.robot.driver.control.handler.ControlDecoder;
-import org.kaazing.robot.driver.control.handler.ControlEncoder;
-import org.kaazing.robot.driver.control.handler.ControlServerHandler;
-import org.kaazing.robot.driver.netty.bootstrap.SingletonBootstrapFactory;
 
-public class TcpControlledRobotServer implements RobotServer {
+public class HttpControlledRobotServer implements RobotServer {
 
     private final ChannelGroup channelGroup;
     private final List<ControlServerHandler> controlHandlers;
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(TcpControlledRobotServer.class);
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(HttpControlledRobotServer.class);
 
     private ServerBootstrap server;
     private final URI acceptURI;
     private Channel serverChannel;
-    private final boolean verbose;
 
-    protected TcpControlledRobotServer(URI acceptURI, boolean verbose) {
+    protected HttpControlledRobotServer(URI acceptURI) {
         this.acceptURI = acceptURI;
-        this.verbose = verbose;
-        channelGroup = new DefaultChannelGroup("robot-server");
+        channelGroup = new DefaultChannelGroup("http-robot-server");
         controlHandlers = new CopyOnWriteArrayList<ControlServerHandler>();
     }
 
@@ -76,9 +75,8 @@ public class TcpControlledRobotServer implements RobotServer {
         }
 
         Map<String, Object> options = new HashMap<String, Object>();
-        // TODO: options.put("tcp.transport", "socks://...");
-
         ChannelAddressFactory addressFactory = ChannelAddressFactory.newChannelAddressFactory();
+        // Use tcp and layer http on top until nuklei is ready
         ChannelAddress localAddress = addressFactory.newChannelAddress(acceptURI, options);
 
         BootstrapFactory factory = SingletonBootstrapFactory.getInstance();
@@ -87,19 +85,19 @@ public class TcpControlledRobotServer implements RobotServer {
         server.setPipelineFactory(new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() throws Exception {
-
                 ChannelPipeline pipeline = pipeline();
 
-                ChannelHandler decoder = new ControlDecoder();
-                pipeline.addLast("control.decoder", decoder);
+                ChannelHandler httpRequestDecoder = new HttpRequestDecoder();
+                pipeline.addLast("http.request.decoder", httpRequestDecoder);
 
-                ChannelHandler encoder = new ControlEncoder();
-                pipeline.addLast("control.encoder", encoder);
+                ChannelHandler httpResponseEncoder = new HttpResponseEncoder();
+                pipeline.addLast("http.response.encoder", httpResponseEncoder);
 
-                if (verbose) {
-                    ChannelHandler logging = new LoggingHandler("robot.server", false);
-                    pipeline.addLast("control.logging", logging);
-                }
+                ChannelHandler encoder = new HttpControlResponseEncoder();
+                pipeline.addLast("http.control.response.encoder", encoder);
+
+                ChannelHandler decoder = new HttpControlRequestDecoder();
+                pipeline.addLast("http.control.request.decoder", decoder);
 
                 ChannelHandler controller = new ControlServerHandler();
                 pipeline.addLast("control.handler", controller);
@@ -116,13 +114,12 @@ public class TcpControlledRobotServer implements RobotServer {
                 LOGGER.debug("Control Channel Opened");
                 Channel childChannel = e.getChildChannel();
                 channelGroup.add(childChannel);
-                final ControlServerHandler controller =
-                        (ControlServerHandler) childChannel.getPipeline().getContext("control.handler").getHandler();
+                final ControlServerHandler controller = (ControlServerHandler) childChannel.getPipeline()
+                        .getContext("control.handler").getHandler();
                 // Add the controller to our list
                 controlHandlers.add(controller);
 
-
-                 // And remove it when the channel is closed.
+                // And remove it when the channel is closed.
                 controller.getChannelClosedFuture().addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {
@@ -161,7 +158,6 @@ public class TcpControlledRobotServer implements RobotServer {
             // controller.completeShutDown(2000);
         }
 
-
         if (server != null) {
             LOGGER.debug("Releasing external resources");
             server.releaseExternalResources();
@@ -177,4 +173,5 @@ public class TcpControlledRobotServer implements RobotServer {
             serverChannel.getCloseFuture().await();
         }
     }
+
 }

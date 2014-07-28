@@ -37,7 +37,7 @@ import org.junit.rules.ExpectedException;
 import org.kaazing.robot.driver.Robot;
 import org.kaazing.robot.driver.behavior.RobotCompletionFuture;
 
-public class HttpRobotIT {
+public class HttpRobotBehaviorIT {
 
     private static final long TEST_TIMEOUT = 2000;
     private static final Charset UTF_8 = Charset.forName("UTF-8");

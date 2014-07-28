@@ -23,6 +23,8 @@ import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 
+import java.nio.file.Paths;
+
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -39,7 +41,6 @@ import org.jmock.Mockery;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.kaazing.robot.driver.jmock.Expectations;
 import org.kaazing.robot.driver.control.ErrorMessage;
 import org.kaazing.robot.driver.control.FinishedMessage;
@@ -85,9 +86,11 @@ public class ControlEncoderTest {
     @Test
     public void shouldEncodePreparedMessage() throws Exception {
 
+        String path = Paths.get("").toAbsolutePath().toString()
+                + "/src/test/scripts/org/kaazing/robot/driver/control/handler/testScript.rpt";
         // @formatter:off
         final ChannelBuffer expected = copiedBuffer("PREPARED\n" +
-                                                    "name:test\n" +
+                                                    "name:" + path + "\n" +
                                                     "\n", UTF_8);
         // @formatter:on
 
@@ -98,7 +101,7 @@ public class ControlEncoderTest {
         });
 
         PreparedMessage preparedMessage = new PreparedMessage();
-        preparedMessage.setScriptName("test");
+        preparedMessage.setName(path);
 
         ChannelFuture future = client.connect(new LocalAddress("test")).sync();
         Channel channel = future.getChannel();
@@ -112,8 +115,10 @@ public class ControlEncoderTest {
     public void shouldEncodeStartedMessage() throws Exception {
 
         // @formatter:off
+        String path = Paths.get("").toAbsolutePath().toString()
+                + "/src/test/scripts/org/kaazing/robot/driver/control/handler/testScript.rpt";
         final ChannelBuffer expected = copiedBuffer("STARTED\n" +
-                                                    "name:test\n" +
+                                                    "name:" + path + "\n" +
                                                     "\n", UTF_8);
         // @formatter:on
 
@@ -124,7 +129,7 @@ public class ControlEncoderTest {
         });
 
         StartedMessage startedMessage = new StartedMessage();
-        startedMessage.setScriptName("test");
+        startedMessage.setName(path);
 
         ChannelFuture future = client.connect(new LocalAddress("test")).sync();
         Channel channel = future.getChannel();
@@ -138,8 +143,10 @@ public class ControlEncoderTest {
     public void shouldEncodeErrorMessage() throws Exception {
 
         // @formatter:off
+        String path = Paths.get("").toAbsolutePath().toString()
+                + "/src/test/scripts/org/kaazing/robot/driver/control/handler/testScript.rpt";
         final ChannelBuffer expected = copiedBuffer("ERROR\n" +
-                                                    "name:test\n" +
+                                                    "name:" + path + "\n" +
                                                     "summary:unexpected\n" +
                                                     "content-length:29\n" +
                                                     "\n" +
@@ -153,7 +160,7 @@ public class ControlEncoderTest {
         });
 
         ErrorMessage errorMessage = new ErrorMessage();
-        errorMessage.setScriptName("test");
+        errorMessage.setName(path);
         errorMessage.setSummary("unexpected");
         errorMessage.setDescription("This was an unexpected error.");
 
@@ -169,8 +176,10 @@ public class ControlEncoderTest {
     public void shouldEncodeFinishedMessage() throws Exception {
 
         // @formatter:off
+        String path = Paths.get("").toAbsolutePath().toString()
+                + "/src/test/scripts/org/kaazing/robot/driver/control/handler/testScript.rpt";
         final ChannelBuffer expected = copiedBuffer("FINISHED\n" +
-                                                    "name:test\n" +
+                                                    "name:" + path + "\n" +
                                                     "content-length:52\n" +
                                                     "\n" +
                                                     "connect tcp://localhost:8000\n" +
@@ -192,7 +201,7 @@ public class ControlEncoderTest {
         });
 
         FinishedMessage finishedMessage = new FinishedMessage();
-        finishedMessage.setScriptName("test");
+        finishedMessage.setName(path);
         finishedMessage.setExpectedScript("connect tcp://localhost:8000\n" + "connected\n" + "close\n" + "closed\n");
         finishedMessage.setObservedScript("connect tcp://localhost:8000\n" + "connected\n" + "close\n" + "closed\n");
 

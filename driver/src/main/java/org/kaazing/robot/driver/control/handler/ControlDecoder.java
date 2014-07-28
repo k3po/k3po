@@ -34,7 +34,6 @@ import org.kaazing.robot.driver.control.ErrorMessage;
 import org.kaazing.robot.driver.control.FinishedMessage;
 import org.kaazing.robot.driver.control.PrepareMessage;
 import org.kaazing.robot.driver.control.StartMessage;
-import org.kaazing.robot.driver.util.Utils;
 
 public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
 
@@ -63,8 +62,6 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
 
         setState(State.READ_INITIAL);
     }
-
-    private boolean hasReceivedPrepare;
 
     @Override
     protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, State state)
@@ -151,19 +148,10 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
         ControlMessage.Kind messageKind = ControlMessage.Kind.valueOf(initialLine);
         switch (messageKind) {
         case PREPARE:
-            hasReceivedPrepare = true;
             return new PrepareMessage();
         case START:
-            // backwards compatibility
-            if (!hasReceivedPrepare) {
-                PrepareMessage newMessage = new PrepareMessage();
-                newMessage.setCompatibilityKind(messageKind);
-                return newMessage;
-            }
-            hasReceivedPrepare = false;
             return new StartMessage();
         case ABORT:
-            hasReceivedPrepare = false;
             return new AbortMessage();
         default:
             throw new IllegalArgumentException(String.format("Unrecognized message kind: %s", messageKind));
@@ -245,7 +233,7 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
 
         // add common headers
         if ("name".equals(headerName)) {
-            message.setScriptName(headerValue);
+            message.setName(headerValue);
         } else if ("content-length".equals(headerName)) {
             // determine content-length
             contentLength = Integer.parseInt(headerValue);
@@ -261,11 +249,6 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
                     errorMessage.setSummary(headerValue);
                 }
                 break;
-            case PREPARE:
-                PrepareMessage prepareMessage = (PrepareMessage) message;
-                if ("content-type".equals(headerName)) {
-                    prepareMessage.setScriptFormatOverride(headerValue);
-                }
             default:
                 break;
             }
@@ -288,8 +271,7 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
         switch (message.getKind()) {
         case PREPARE:
             PrepareMessage prepareMessage = (PrepareMessage) message;
-            prepareMessage.setExpectedScriptPath(content);
-            prepareMessage.setExpectedScript(Utils.readFileIntoString(content));
+            prepareMessage.setName(content);
             break;
         case FINISHED:
             FinishedMessage finishedMessage = (FinishedMessage) message;
