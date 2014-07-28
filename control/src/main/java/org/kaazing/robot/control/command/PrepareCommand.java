@@ -21,18 +21,8 @@ package org.kaazing.robot.control.command;
 
 public final class PrepareCommand extends Command {
 
-    private String scriptPath;
-
     public Kind getKind() {
         return Kind.PREPARE;
-    }
-
-    public void setScriptPath(String scriptPath) {
-        this.scriptPath = scriptPath;
-    }
-
-    public String getScriptPath() {
-        return scriptPath;
     }
 
     @Override
@@ -46,7 +36,6 @@ public final class PrepareCommand extends Command {
     }
 
     protected boolean equalTo(PrepareCommand that) {
-        return super.equalTo(that) &&
-                this.scriptPath == that.scriptPath || this.scriptPath != null && this.scriptPath.equals(that.scriptPath);
+        return super.equalTo(that);
     }
 }

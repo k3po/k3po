@@ -21,8 +21,6 @@ package org.kaazing.robot.driver.control;
 
 public class PreparedMessage extends ControlMessage {
 
-    private Kind compatibilityKind;
-
     @Override
     public int hashCode() {
         return hashTo();
@@ -36,14 +34,6 @@ public class PreparedMessage extends ControlMessage {
     @Override
     public Kind getKind() {
         return Kind.PREPARED;
-    }
-
-    public Kind getCompatibilityKind() {
-        return compatibilityKind;
-    }
-
-    public void setCompatibilityKind(Kind compatibilityKind) {
-        this.compatibilityKind = compatibilityKind;
     }
 
 }

@@ -47,9 +47,7 @@ import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
 import org.kaazing.robot.driver.netty.channel.ChannelAddressFactory;
 import org.kaazing.robot.driver.control.handler.ControlDecoder;
-import org.kaazing.robot.driver.control.handler.ControlDecoderCompatibility;
 import org.kaazing.robot.driver.control.handler.ControlEncoder;
-import org.kaazing.robot.driver.control.handler.ControlEncoderCompatibility;
 import org.kaazing.robot.driver.control.handler.ControlServerHandler;
 import org.kaazing.robot.driver.netty.bootstrap.SingletonBootstrapFactory;
 
@@ -95,14 +93,8 @@ public class TcpControlledRobotServer implements RobotServer {
                 ChannelHandler decoder = new ControlDecoder();
                 pipeline.addLast("control.decoder", decoder);
 
-                ChannelHandler decoderCompatibility = new ControlDecoderCompatibility();
-                pipeline.addLast("control.decoder.compatibility", decoderCompatibility);
-
                 ChannelHandler encoder = new ControlEncoder();
                 pipeline.addLast("control.encoder", encoder);
-
-                ChannelHandler encoderCompatibility = new ControlEncoderCompatibility();
-                pipeline.addLast("control.encoder.compatibility", encoderCompatibility);
 
                 if (verbose) {
                     ChannelHandler logging = new LoggingHandler("robot.server", false);

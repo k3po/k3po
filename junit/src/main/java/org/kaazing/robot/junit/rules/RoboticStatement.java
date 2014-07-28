@@ -64,7 +64,7 @@ final class RoboticStatement extends Statement {
 
         String scriptPath = ScriptUtil.getScriptPath(testClass, scriptName);
 
-        ScriptRunner scriptRunner = new ScriptRunner(scriptName, scriptPath, latch);
+        ScriptRunner scriptRunner = new ScriptRunner(scriptPath, latch);
         FutureTask<ScriptPair> scriptFuture = new FutureTask<ScriptPair>(scriptRunner);
 
         try {

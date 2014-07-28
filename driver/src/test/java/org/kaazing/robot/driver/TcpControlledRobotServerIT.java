@@ -88,34 +88,47 @@ public class TcpControlledRobotServerIT {
     public void shouldFinishEmptyOK() throws Exception {
 
         String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/emptyScript.rpt";
-        int length = path.length();
+        // @formatter:off
+        String strPrepared = "PREPARED\n" +
+                             "name:" + path + "\n" + 
+                             "\n"; 
+        String strExpected = "STARTED\n" +
+                             "name:" + path + "\n" +
+                             "\n" +
+                             "FINISHED\n" +
+                             "name:" + path + "\n" +
+                             "content-length:0\n" +
+                             "\n" +
+                             "content-length:0\n" +
+                             "\n";
+        // @formatter:on
+        CharBuffer expectedPrepared = CharBuffer.wrap(strPrepared);
+        CharBuffer expectedStartedAndFinished = CharBuffer.wrap(strExpected);      
+        
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
+        out.append("PREPARE\n");
+        out.append("name:" + path + "\n" + "\n");
+        out.flush();
+        
+        BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
+        
+        CharBuffer prepared = CharBuffer.allocate(strPrepared.length());
+        while (prepared.hasRemaining()) {
+            in.read(prepared);
+        }
+        prepared.flip();
+        
+        assertEquals(expectedPrepared, prepared);
+        
         out.append("START\n");
-        out.append("name:emptyScript\n");
-        out.append("content-length:" + length + "\n");
-        out.append("\n" + path);
+        out.append("name:" + path + "\n" + "\n");
         out.flush();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
-
-        CharBuffer startedAndFinished = CharBuffer.allocate(88);
+        CharBuffer startedAndFinished = CharBuffer.allocate(strExpected.length());
         while (startedAndFinished.hasRemaining()) {
             in.read(startedAndFinished);
         }
         startedAndFinished.flip();
-
-        // @formatter:off
-        CharBuffer expectedStartedAndFinished = CharBuffer.wrap(
-                "STARTED\n" +
-                "name:emptyScript\n" +
-                "\n" +
-                "FINISHED\n" +
-                "name:emptyScript\n" +
-                "content-length:0\n" +
-                "\n" +
-                "content-length:0\n" +
-                "\n");
-        // @formatter:on
 
         assertEquals(expectedStartedAndFinished, startedAndFinished);
         assertFalse(in.ready());
@@ -125,47 +138,40 @@ public class TcpControlledRobotServerIT {
     public void shouldPrepareThenStartOK() throws Exception {
 
         String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/accept-then-close.rpt";
-        int length = path.length();
+        // @formatter:off
+        String strExpectedPrepared = "PREPARED\n" +
+                                    "name:" + path + "\n" +
+                                    "\n";
+        String strExpectedStarted = "STARTED\n" +
+                                   "name:" + path + "\n" +
+                                   "\n";    
+        // @formatter:on
+        CharBuffer expectedPrepared = CharBuffer.wrap(strExpectedPrepared);
+        CharBuffer expectedStarted = CharBuffer.wrap(strExpectedStarted);
+        
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
-        out.append("name:accept-then-close\n");
-        out.append("content-length:" + length + "\n");
-        out.append("\n");
-        out.append(path);
+        out.append("name:" + path + "\n" + "\n");
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
 
-        CharBuffer prepared = CharBuffer.allocate(33);
+        CharBuffer prepared = CharBuffer.allocate(strExpectedPrepared.length());
         while (prepared.hasRemaining()) {
             in.read(prepared);
         }
         prepared.flip();
 
         out.append("START\n");
-        out.append("name:accept-then-close\n");
+        out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();
 
-        CharBuffer started = CharBuffer.allocate(32);
+        CharBuffer started = CharBuffer.allocate(strExpectedStarted.length());
         while (started.hasRemaining()) {
             in.read(started);
         }
         started.flip();
-
-        // @formatter:off
-        CharBuffer expectedPrepared = CharBuffer.wrap(
-                "PREPARED\n" +
-                "name:accept-then-close\n" +
-                "\n");
-        // @formatter:on
-
-        // @formatter:off
-        CharBuffer expectedStarted = CharBuffer.wrap(
-                "STARTED\n" +
-                "name:accept-then-close\n" +
-                "\n");
-        // @formatter:on
 
         assertEquals(expectedPrepared, prepared);
         assertEquals(expectedStarted, started);
@@ -175,29 +181,47 @@ public class TcpControlledRobotServerIT {
     public void shouldAcceptThenCloseWithPrepareOK() throws Exception {
 
         String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/accept-then-close.rpt";
-        int length = path.length();
+        // @formatter:off
+        String strExpectedPrepared = "PREPARED\n" +
+                                     "name:" + path + "\n" +
+                                     "\n";
+        String strExpectedStarted = "STARTED\n" +
+                                    "name:" + path + "\n" +
+                                    "\n";
+        String strExpectedFinished = "FINISHED\n" +
+                                     "name:" + path + "\n" +
+                                     "content-length:61\n" +
+                                     "\n" +
+                                     "accept tcp://localhost:62345\n" +
+                                     "accepted\n" +
+                                     "connected\n" +
+                                     "close\n" +
+                                     "closed\n" + 
+                                     "content-length:61\n" +
+                                     "\n" +
+                                     "accept tcp://localhost:62345\n" +
+                                     "accepted\n" +
+                                     "connected\n" +
+                                     "close\n" +
+                                     "closed\n";
+        // @formatter:on
+        CharBuffer expectedPrepared = CharBuffer.wrap(strExpectedPrepared);
+        CharBuffer expectedStarted = CharBuffer.wrap(strExpectedStarted);
+        CharBuffer expectedFinished = CharBuffer.wrap(strExpectedFinished);
+        
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
-        out.append("name:accept-then-close\n");
-        out.append("content-length:" + length + "\n");
+        out.append("name:" + path + "\n");
         out.append("\n");
-        out.append(path);
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
 
-        CharBuffer prepared = CharBuffer.allocate(33);
+        CharBuffer prepared = CharBuffer.allocate(strExpectedPrepared.length());
         while (prepared.hasRemaining()) {
             in.read(prepared);
         }
         prepared.flip();
-
-        // @formatter:off
-        CharBuffer expectedPrepared = CharBuffer.wrap(
-                "PREPARED\n" +
-                "name:accept-then-close\n" +
-                "\n");
-        // @formatter:on
 
         assertEquals(expectedPrepared, prepared);
 
@@ -205,49 +229,23 @@ public class TcpControlledRobotServerIT {
         client.connect(new InetSocketAddress("localhost", 62345));
 
         out.append("START\n");
-        out.append("name:accept-then-close\n");
+        out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();
 
-        CharBuffer started = CharBuffer.allocate(32);
+        CharBuffer started = CharBuffer.allocate(strExpectedStarted.length());
         while (started.hasRemaining()) {
             in.read(started);
         }
         started.flip();
-
-        // @formatter:off
-        CharBuffer expectedStarted = CharBuffer.wrap(
-                "STARTED\n" +
-                "name:accept-then-close\n" +
-                "\n");
-        // @formatter:on
+        
         assertEquals(expectedStarted, started);
 
-        CharBuffer finished = CharBuffer.allocate(192);
+        CharBuffer finished = CharBuffer.allocate(strExpectedFinished.length());
         while (finished.hasRemaining()) {
             in.read(finished);
         }
         finished.flip();
-
-        // @formatter:off
-        CharBuffer expectedFinished = CharBuffer.wrap(
-                "FINISHED\n" +
-                "name:accept-then-close\n" +
-                "content-length:61\n" +
-                "\n" +
-                "accept tcp://localhost:62345\n" +
-                "accepted\n" +
-                "connected\n" +
-                "close\n" +
-                "closed\n" + 
-                "content-length:61\n" +
-                "\n" +
-                "accept tcp://localhost:62345\n" +
-                "accepted\n" +
-                "connected\n" +
-                "close\n" +
-                "closed\n");
-        // @formatter:on
 
         assertEquals(expectedFinished, finished);
         assertFalse(in.ready());
@@ -259,59 +257,70 @@ public class TcpControlledRobotServerIT {
     public void shouldAcceptThenCloseOK() throws Exception {
 
         String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/accept-then-close.rpt";
-        int length = path.length();
+        // @formatter:off
+        String strExpectedPrepared = "PREPARED\n" +
+                                     "name:" + path + "\n" + 
+                                     "\n";
+        String strExpectedStarted = "STARTED\n" +
+                                    "name:" + path + "\n" +
+                                    "\n";
+        String strExpectedFinished = "FINISHED\n" +
+                                     "name:" + path + "\n" +
+                                     "content-length:61\n" +
+                                     "\n" +
+                                     "accept tcp://localhost:62345\n" +
+                                     "accepted\n" +
+                                     "connected\n" +
+                                     "close\n" +
+                                     "closed\n" + 
+                                     "content-length:61\n" +
+                                     "\n" +
+                                     "accept tcp://localhost:62345\n" +
+                                     "accepted\n" +
+                                     "connected\n" +
+                                     "close\n" +
+                                     "closed\n";
+        // @formatter:on
+        CharBuffer expectedPrepared = CharBuffer.wrap(strExpectedPrepared);
+        CharBuffer expectedStarted = CharBuffer.wrap(strExpectedStarted);
+        CharBuffer expectedFinished = CharBuffer.wrap(strExpectedFinished);
+        
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
-        out.append("START\n");
-        out.append("name:connect-then-close\n");
-        out.append("content-length:" + length + "\n");
+        out.append("PREPARE\n");
+        out.append("name:" + path + "\n");
         out.append("\n");
-        out.append(path);
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
+        
+        CharBuffer prepared = CharBuffer.allocate(strExpectedPrepared.length());
+        while(prepared.hasRemaining()) {
+            in.read(prepared);
+        }
+        prepared.flip();
+        
+        assertEquals(expectedPrepared, prepared);
+        
+        client.connect(new InetSocketAddress("localhost", 62345));
+        
+        out.append("START\n");
+        out.append("name:" + path + "\n");
+        out.append("\n");
+        out.flush();
 
-        CharBuffer started = CharBuffer.allocate(33);
+        CharBuffer started = CharBuffer.allocate(strExpectedStarted.length());
         while (started.hasRemaining()) {
             in.read(started);
         }
         started.flip();
 
-        // @formatter:off
-        CharBuffer expectedStarted = CharBuffer.wrap(
-                "STARTED\n" +
-                "name:connect-then-close\n" +
-                "\n");
-        // @formatter:on
-
         assertEquals(expectedStarted, started);
 
-        client.connect(new InetSocketAddress("localhost", 62345));
-
-        CharBuffer finished = CharBuffer.allocate(193);
+        CharBuffer finished = CharBuffer.allocate(strExpectedFinished.length());
         while (finished.hasRemaining()) {
             in.read(finished);
         }
         finished.flip();
-
-        // @formatter:off
-        CharBuffer expectedFinished = CharBuffer.wrap(
-                "FINISHED\n" +
-                "name:connect-then-close\n" +
-                "content-length:61\n" +
-                "\n" +
-                "accept tcp://localhost:62345\n" +
-                "accepted\n" +
-                "connected\n" +
-                "close\n" +
-                "closed\n" + 
-                "content-length:61\n" +
-                "\n" +
-                "accept tcp://localhost:62345\n" +
-                "accepted\n" +
-                "connected\n" +
-                "close\n" +
-                "closed\n");
-        // @formatter:on
 
         assertEquals(expectedFinished, finished);
         assertFalse(in.ready());
@@ -325,57 +334,69 @@ public class TcpControlledRobotServerIT {
         server.bind(new InetSocketAddress("localhost", 62345));
 
         String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/connect-then-close.rpt";
-        int length = path.length();
+        // @formatter:off
+        String strExpectedPrepared = "PREPARED\n" +
+                                     "name:" + path + "\n" +
+                                     "\n";
+        String strExpectedStarted = "STARTED\n" +
+                                    "name:" + path + "\n" +
+                                    "\n";
+        String strExpectedFinished = "FINISHED\n" +
+                                     "name:" + path + "\n" +
+                                     "content-length:53\n" +
+                                     "\n" +
+                                     "connect tcp://localhost:62345\n" +
+                                     "connected\n" +
+                                     "close\n" +
+                                     "closed\n" +
+                                     "content-length:53\n" +
+                                     "\n" +
+                                     "connect tcp://localhost:62345\n" +
+                                     "connected\n" +
+                                     "close\n" +
+                                     "closed\n";
+        // @formatter:on
+        CharBuffer expectedPrepared = CharBuffer.wrap(strExpectedPrepared);
+        CharBuffer expectedStarted = CharBuffer.wrap(strExpectedStarted);
+        CharBuffer expectedFinished = CharBuffer.wrap(strExpectedFinished);
+        
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
-        out.append("START\n");
-        out.append("name:connect-then-close\n");
-        out.append("content-length:" + length + "\n");
+        
+        BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
+        out.append("PREPARE\n");
+        out.append("name:" + path + "\n");
         out.append("\n");
-        out.append(path);
+        out.flush();
+        
+        CharBuffer prepared = CharBuffer.allocate(strExpectedPrepared.length());
+        while(prepared.hasRemaining()) {
+            in.read(prepared);
+        }
+        prepared.flip();
+        
+        assertEquals(expectedPrepared, prepared);
+        
+        
+        out.append("START\n");
+        out.append("name:" + path + "\n");
+        out.append("\n");
         out.flush();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
-
-        CharBuffer started = CharBuffer.allocate(33);
+        CharBuffer started = CharBuffer.allocate(strExpectedStarted.length());
         while (started.hasRemaining()) {
             in.read(started);
         }
         started.flip();
 
-        // @formatter:off
-        CharBuffer expectedStarted = CharBuffer.wrap(
-                "STARTED\n" +
-                "name:connect-then-close\n" +
-                "\n");
-        // @formatter:on
-
         assertEquals(expectedStarted, started);
 
         accepted = server.accept();
 
-        CharBuffer finished = CharBuffer.allocate(177);
+        CharBuffer finished = CharBuffer.allocate(strExpectedFinished.length());
         while (finished.hasRemaining()) {
             in.read(finished);
         }
         finished.flip();
-
-        // @formatter:off
-        CharBuffer expectedFinished = CharBuffer.wrap(
-                "FINISHED\n" +
-                "name:connect-then-close\n" +
-                "content-length:53\n" +
-                "\n" +
-                "connect tcp://localhost:62345\n" +
-                "connected\n" +
-                "close\n" +
-                "closed\n" +
-                "content-length:53\n" +
-                "\n" +
-                "connect tcp://localhost:62345\n" +
-                "connected\n" +
-                "close\n" +
-                "closed\n");
-        // @formatter:on
 
         assertEquals(expectedFinished, finished);
         assertFalse(in.ready());
@@ -389,77 +410,68 @@ public class TcpControlledRobotServerIT {
         server.bind(new InetSocketAddress("localhost", 62345));
 
         String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/connect-then-close.rpt";
-        int length = path.length();
+        // @formatter:off
+        String strExpectedPrepared = "PREPARED\n" +
+                                      "name:" + path + "\n" +
+                                      "\n";
+        String strExpectedStarted = "STARTED\n" +
+                                    "name:" + path + "\n" +
+                                    "\n";
+        String strExpectedFinished = "FINISHED\n" +
+                                     "name:" + path + "\n" +
+                                     "content-length:53\n" +
+                                     "\n" +
+                                     "connect tcp://localhost:62345\n" +
+                                     "connected\n" +
+                                     "close\n" +
+                                     "closed\n" +
+                                     "content-length:53\n" +
+                                     "\n" +
+                                     "connect tcp://localhost:62345\n" +
+                                     "connected\n" +
+                                     "close\n" +
+                                     "closed\n";
+        // @formatter:on
+        CharBuffer expectedPrepared = CharBuffer.wrap(strExpectedPrepared);
+        CharBuffer expectedStarted = CharBuffer.wrap(strExpectedStarted);
+        CharBuffer expectedFinished = CharBuffer.wrap(strExpectedFinished);
+        
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
-        out.append("name:connect-then-close\n");
-        out.append("content-length:" + length + "\n");
+        out.append("name:" + path + "\n");
         out.append("\n");
-        out.append(path);
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
 
-        CharBuffer prepared = CharBuffer.allocate(34);
+        CharBuffer prepared = CharBuffer.allocate(strExpectedPrepared.length());
         while (prepared.hasRemaining()) {
             in.read(prepared);
         }
         prepared.flip();
 
-        // @formatter:off
-        CharBuffer expectedPrepared = CharBuffer.wrap(
-                "PREPARED\n" +
-                "name:connect-then-close\n" +
-                "\n");
-        // @formatter:on
-
         assertEquals(expectedPrepared, prepared);
 
         out.append("START\n");
-        out.append("name:connect-then-close\n");
+        out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();
 
-        CharBuffer started = CharBuffer.allocate(33);
+        CharBuffer started = CharBuffer.allocate(strExpectedStarted.length());
         while (started.hasRemaining()) {
             in.read(started);
         }
         started.flip();
 
-        // @formatter:off
-        CharBuffer expectedStarted = CharBuffer.wrap(
-                "STARTED\n" +
-                "name:connect-then-close\n" +
-                "\n");
-        // @formatter:on
-
         assertEquals(expectedStarted, started);
 
         accepted = server.accept();
 
-        CharBuffer finished = CharBuffer.allocate(177);
+        CharBuffer finished = CharBuffer.allocate(strExpectedFinished.length());
         while (finished.hasRemaining()) {
             in.read(finished);
         }
         finished.flip();
-
-        // @formatter:off
-        CharBuffer expectedFinished = CharBuffer.wrap(
-                "FINISHED\n" +
-                "name:connect-then-close\n" +
-                "content-length:53\n" +
-                "\n" +
-                "connect tcp://localhost:62345\n" +
-                "connected\n" +
-                "close\n" +
-                "closed\n" +
-                "content-length:53\n" +
-                "\n" +
-                "connect tcp://localhost:62345\n" +
-                "connected\n" +
-                "close\n" +
-                "closed\n");
-        // @formatter:on
 
         assertEquals(expectedFinished, finished);
         assertFalse(in.ready());
@@ -473,29 +485,46 @@ public class TcpControlledRobotServerIT {
         server.bind(new InetSocketAddress("localhost", 62345));
 
         String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/shouldAbortOK.rpt";
-        int length = path.length();
+        // @formatter:off
+        String strExpectedPrepared = "PREPARED\n" +
+                                     "name:" + path + "\n" +
+                                     "\n";
+        String strExpectedStarted = "STARTED\n" +
+                                    "name:" + path + "\n" +
+                                    "\n";
+        // @formatter:on
+        CharBuffer expectedPrepared = CharBuffer.wrap(strExpectedPrepared);
+        CharBuffer expectedStarted = CharBuffer.wrap(strExpectedStarted);
+        
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
-        out.append("START\n");
-        out.append("name:shouldAbortOK\n");
-        out.append("content-length:" + length + "\n");
+        out.append("PREPARE\n");
+        out.append("name:" + path + "\n");
         out.append("\n");
-        out.append(path);
+        out.flush();
+        
+        BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
+        
+        CharBuffer prepared = CharBuffer.allocate(strExpectedPrepared.length());
+        while(prepared.hasRemaining()) {
+            in.read(prepared);
+        }
+        prepared.flip();
+        
+        assertEquals(expectedPrepared, prepared);
+        
+        out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
+        out.append("START\n");
+        out.append("name:" + path + "\n");
+        out.append("\n");
         out.flush();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
 
-        CharBuffer started = CharBuffer.allocate(28);
+
+        CharBuffer started = CharBuffer.allocate(strExpectedStarted.length());
         while (started.hasRemaining()) {
             in.read(started);
         }
         started.flip();
-
-        // @formatter:off
-        CharBuffer expectedStarted = CharBuffer.wrap(
-                "STARTED\n" +
-                "name:shouldAbortOK\n" +
-                "\n");
-        // @formatter:on
 
         assertEquals(expectedStarted, started);
 
@@ -503,7 +532,7 @@ public class TcpControlledRobotServerIT {
 
         out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("ABORT\n");
-        out.append("name:shopuldAbortOK\n");
+        out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();
 
@@ -511,7 +540,7 @@ public class TcpControlledRobotServerIT {
         assertEquals("FINISHED", input);
 
         input = in.readLine();
-        assertEquals("name:shouldAbortOK", input);
+        assertEquals("name:" + path, input);
         
         input = in.readLine();
         assertEquals("content-length:65", input);
@@ -560,32 +589,28 @@ public class TcpControlledRobotServerIT {
     public void shouldDisconnectOK() throws Exception {
 
         String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/accept-then-close.rpt";
-        int length = path.length();
+        // @formatter:off
+        String strExpectedPrepared = "PREPARED\n" +
+                                     "name:" + path + "\n" +
+                                     "\n";
+        // @formatter:on
+        CharBuffer expectedPrepared = CharBuffer.wrap(strExpectedPrepared);
+        
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
                 control.getOutputStream()));
         out.append("PREPARE\n");
-        out.append("name:accept-then-close\n");
-        out.append("content-length:" + length + "\n");
+        out.append("name:" + path + "\n");
         out.append("\n");
-        out.append(path);
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(
                 control.getInputStream()));
 
-        CharBuffer prepared = CharBuffer.allocate(33);
+        CharBuffer prepared = CharBuffer.allocate(strExpectedPrepared.length());
         while (prepared.hasRemaining()) {
             in.read(prepared);
         }
         prepared.flip();
-
-        // @formatter:off
-        CharBuffer expectedPrepared = CharBuffer.wrap(
-                "PREPARED\n" +
-                "name:accept-then-close\n" +
-                "\n"
-        );
-        // @formatter:on
 
         assertEquals(expectedPrepared, prepared);
 
@@ -607,13 +632,10 @@ public class TcpControlledRobotServerIT {
     public void shouldParseErrorOK() throws Exception {
 
         String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/invalidScript.rpt";
-        int length = path.length();
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
-        out.append("name:invalidScript\n");
-        out.append("content-length:" + length + "\n");
+        out.append("name:" + path + "\n");
         out.append("\n");
-        out.append(path);
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
@@ -622,7 +644,7 @@ public class TcpControlledRobotServerIT {
         assertEquals("ERROR", msg);
 
         msg = in.readLine();
-        assertEquals("name:invalidScript", msg);
+        assertEquals("name:" + path, msg);
 
         msg = in.readLine();
         Pattern p = Pattern.compile("summary:.+");

@@ -25,14 +25,14 @@ public abstract class ControlMessage {
         PREPARE, PREPARED, START, STARTED, ERROR, ABORT, FINISHED
     };
 
-    private String scriptName;
+    private String name;
 
-    public String getScriptName() {
-        return scriptName;
+    public String getName() {
+        return name;
     }
 
-    public void setScriptName(String scriptName) {
-        this.scriptName = scriptName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public abstract Kind getKind();
@@ -42,17 +42,17 @@ public abstract class ControlMessage {
     public abstract boolean equals(Object obj);
 
     protected int hashTo() {
-        return (scriptName != null) ? scriptName.hashCode() : 0;
+        return (name != null) ? name.hashCode() : 0;
     }
 
     protected final boolean equalTo(ControlMessage that) {
         return this.getKind() == that.getKind() &&
-                (this.scriptName == that.scriptName ||
-                (this.scriptName != null && this.scriptName.equals(that.scriptName)));
+                (this.name == that.name ||
+                (this.name != null && this.name.equals(that.name)));
     }
 
     @Override
     public String toString() {
-        return String.format("%s %s", getKind(), getScriptName());
+        return String.format("%s %s", getKind(), getName());
     }
 }

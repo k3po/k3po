@@ -103,7 +103,7 @@ public class TcpRobotControl implements RobotControl {
 
         switch (command.getKind()) {
         case PREPARE:
-            writecommand((PrepareCommand) command);
+            writeCommand((PrepareCommand) command);
             break;
         case START:
             writeCommand((StartCommand) command);
@@ -166,23 +166,16 @@ public class TcpRobotControl implements RobotControl {
         }
     }
 
-    private void writecommand(PrepareCommand prepare) throws Exception {
+    private void writeCommand(PrepareCommand prepare) throws Exception {
         OutputStream bytesOut = connection.getOutputStream();
         CharsetEncoder encoder = UTF_8.newEncoder();
         Writer textOut = new OutputStreamWriter(bytesOut, encoder);
 
         String name = prepare.getName();
-        String scriptPath = prepare.getScriptPath();
-        // note: this assumes bytes-length == string-length (ASCII)
-        int length = scriptPath.length();
 
         textOut.append("PREPARE\n");
         textOut.append(format("name:%s\n", name));
-        // assume v2 script format by default
-        textOut.append("content-type:text/x-robot-2\n");
-        textOut.append(format("content-length:%d\n", length));
         textOut.append("\n");
-        textOut.append(scriptPath);
         textOut.flush();
     }
 

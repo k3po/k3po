@@ -45,7 +45,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.kaazing.robot.driver.jmock.Expectations;
 import org.kaazing.robot.driver.control.AbortMessage;
-import org.kaazing.robot.driver.control.ControlMessage.Kind;
 import org.kaazing.robot.driver.control.PrepareMessage;
 import org.kaazing.robot.driver.control.StartMessage;
 
@@ -90,15 +89,10 @@ public class ControlDecoderTest {
     @Test
     public void shouldDecodePrepareMessage() throws Exception {
 
-        String path = Paths.get("").toAbsolutePath().toString()
-                + "/src/test/scripts/org/kaazing/robot/driver/control/handler/testScript.rpt";
-        int length = path.length();
+        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/control/handler/testScript.rpt";
 
         final PrepareMessage expected = new PrepareMessage();
-        expected.setScriptName("testScript");
-        // @formatter:off
-        expected.setExpectedScriptPath(path);
-        // @formatter:on
+        expected.setName(path);
 
         context.checking(new Expectations() {
             {
@@ -108,45 +102,8 @@ public class ControlDecoderTest {
 
         // @formatter:off
         ChannelBuffer buffer = copiedBuffer("PREPARE\n" +
-                                            "name:testScript\n" +
-                                            "content-length:" + length + "\n" +
-                                            "\n" +
-                                            path, UTF_8);
-        // @formatter:on
-
-        ChannelFuture future = client.connect(new LocalAddress("test")).sync();
-        Channel channel = future.getChannel();
-        channel.write(buffer).sync();
-        channel.close().sync();
-
-        assertEquals(0, buffer.readableBytes());
-        context.assertIsSatisfied();
-    }
-
-    @Test
-    public void shouldDecodeStartAsPrepareMessageWithStartCompatibility() throws Exception {
-
-        String path = Paths.get("").toAbsolutePath().toString()
-                + "/src/test/scripts/org/kaazing/robot/driver/control/handler/testScript.rpt";
-        int length = path.length();
-
-        final PrepareMessage expected = new PrepareMessage();
-        expected.setCompatibilityKind(Kind.START);
-        expected.setScriptName("testScript");
-        expected.setExpectedScriptPath(path);
-
-        context.checking(new Expectations() {
-            {
-                oneOf(handler).handleUpstream(with(any(ChannelHandlerContext.class)), with(message(expected)));
-            }
-        });
-
-        // @formatter:off
-        ChannelBuffer buffer = copiedBuffer("START\n" +
-                                            "name:testScript\n" +
-                                            "content-length:" + length + "\n" +
-                                            "\n" +
-                                            path, UTF_8);
+                                            "name:" + path 
+                                            + "\n" + "\n", UTF_8);
         // @formatter:on
 
         ChannelFuture future = client.connect(new LocalAddress("test")).sync();
@@ -162,7 +119,9 @@ public class ControlDecoderTest {
     public void shouldDecodeAbortMessage() throws Exception {
 
         final AbortMessage expected = new AbortMessage();
-        expected.setScriptName("test");
+        String path = Paths.get("").toAbsolutePath().toString()
+                + "/src/test/scripts/org/kaazing/robot/driver/control/handler/testScript.rpt";
+        expected.setName(path);
 
         context.checking(new Expectations() {
             {
@@ -172,7 +131,7 @@ public class ControlDecoderTest {
 
         // @formatter:off
         ChannelBuffer buffer = copiedBuffer("ABORT\n" +
-                                            "name:test\n" +
+                                            "name:" + path + "\n" +
                                             "\n", UTF_8);
         // @formatter:on
 
@@ -190,17 +149,14 @@ public class ControlDecoderTest {
 
         // @formatter:off
     	String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/control/handler/emptyScript.rpt";
-    	int length = path.length();
         ChannelBuffer buffer1 = copiedBuffer("PREPARE\n" +
-                                             "name:emptyScript\n" +
-                                             "content-length:" + length + "\n" +
-                                             "\n" + 
-                                             path, UTF_8);
+                                             "name:" + path + 
+                                             "\n" + "\n", UTF_8);
         // @formatter:on
 
         // @formatter:off
         ChannelBuffer buffer2 = copiedBuffer("START\n" +
-                                             "name:emptyScript\n" +
+                                             "name:" + path + "\n" +
                                              "\n", UTF_8);
         // @formatter:on
 
@@ -208,8 +164,7 @@ public class ControlDecoderTest {
         Channel channel = future.getChannel();
 
         final PrepareMessage expectedPrepare = new PrepareMessage();
-        expectedPrepare.setScriptName("emptyScript");
-        expectedPrepare.setExpectedScriptPath(path);
+        expectedPrepare.setName(path);
 
         context.checking(new Expectations() {
             {
@@ -220,7 +175,7 @@ public class ControlDecoderTest {
         channel.write(buffer1).sync();
 
         final StartMessage expectedStart = new StartMessage();
-        expectedStart.setScriptName("emptyScript");
+        expectedStart.setName(path);
 
         context.checking(new Expectations() {
             {
