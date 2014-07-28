@@ -22,7 +22,6 @@ package org.kaazing.robot.driver.control;
 public class PrepareMessage extends ControlMessage {
 
     private Kind compatibilityKind = Kind.PREPARE;
-    private String expectedScript = "";
     private String scriptFormatOverride;
     private String expectedScriptPath;
 
@@ -49,20 +48,12 @@ public class PrepareMessage extends ControlMessage {
         this.scriptFormatOverride = scriptFormat;
     }
 
-    public String getExpectedScript() {
-        return expectedScript;
-    }
-
-    public void setExpectedScript(String expectedScript) {
-        this.expectedScript = expectedScript;
-    }
-
     @Override
     public int hashCode() {
         int hashCode = super.hashTo();
 
         hashCode <<= 4;
-        hashCode ^= (expectedScript != null) ? expectedScript.hashCode() : 0;
+        hashCode ^= (expectedScriptPath != null) ? expectedScriptPath.hashCode() : 0;
 
         hashCode <<= 4;
         hashCode += (scriptFormatOverride != null) ? scriptFormatOverride.hashCode() : 0;
@@ -80,9 +71,7 @@ public class PrepareMessage extends ControlMessage {
                 && (this.compatibilityKind == that.compatibilityKind)
                 && (this.expectedScriptPath == that.expectedScriptPath
                     || (this.expectedScriptPath != null && this.expectedScriptPath.equals(that.expectedScriptPath)))
-                && (this.expectedScript == that.expectedScript
-                    || (this.expectedScript != null && this.expectedScript.equals(that.expectedScript))
-                && (this.scriptFormatOverride == that.scriptFormatOverride));
+                && (this.scriptFormatOverride == that.scriptFormatOverride);
         // @formatter:on
     }
 

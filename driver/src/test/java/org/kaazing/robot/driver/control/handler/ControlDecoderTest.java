@@ -98,10 +98,6 @@ public class ControlDecoderTest {
         expected.setScriptName("testScript");
         // @formatter:off
         expected.setExpectedScriptPath(path);
-        expected.setExpectedScript("connect tcp://localhost:8000\n" +
-                                   "connected\n" +
-                                   "close\n" +
-                                   "closed\n");
         // @formatter:on
 
         context.checking(new Expectations() {
@@ -137,13 +133,7 @@ public class ControlDecoderTest {
         final PrepareMessage expected = new PrepareMessage();
         expected.setCompatibilityKind(Kind.START);
         expected.setScriptName("testScript");
-        // @formatter:off
-        expected.setExpectedScript("connect tcp://localhost:8000\n" +
-                                   "connected\n" +
-                                   "close\n" +
-                                   "closed\n");
         expected.setExpectedScriptPath(path);
-        // @formatter:on
 
         context.checking(new Expectations() {
             {

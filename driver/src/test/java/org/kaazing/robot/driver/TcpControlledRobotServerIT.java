@@ -37,29 +37,13 @@ import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
-import org.kaazing.robot.driver.RobotServer;
-import org.kaazing.robot.driver.TcpControlledRobotServer;
 
-public class RobotServerIT {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(RobotServerIT.class);
-
-//    @Rule
-    public TestWatcher watcher = new TestWatcher() {
-        @Override
-        protected void failed(Throwable e, Description description) {
-            LOGGER.info("Failed test: " + description.getMethodName() + " Cause: " + e);
-        }
-    };
+public class TcpControlledRobotServerIT {
 
     private RobotServer robot;
     private Socket control;
@@ -69,18 +53,6 @@ public class RobotServerIT {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-
-    // @BeforeClass
-    // public static void startRobot() throws Exception {
-    // robot = new RobotServer();
-    // robot.setAccept(URI.create("tcp://localhost:61234"));
-    // robot.start();
-    // }
-    //
-    // @AfterClass
-    // public static void stopRobot() throws Exception {
-    // robot.stop();
-    // }
 
     @Before
     public void setupRobot() throws Exception {

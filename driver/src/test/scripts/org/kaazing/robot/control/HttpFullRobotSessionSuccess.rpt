@@ -1,0 +1,13 @@
+connect tcp://localhost:61234
+connected
+
+write "GET /scriptName/prepare HTTP/1.1\r\n"
+write "Content-Length: " #TODO
+write "\r\n"
+# Script to run goes here
+write "accept tcp://localhost:8000\n"
+write "accepted
+
+
+close
+closed

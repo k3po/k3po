@@ -289,7 +289,6 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
         case PREPARE:
             PrepareMessage prepareMessage = (PrepareMessage) message;
             prepareMessage.setExpectedScriptPath(content);
-            prepareMessage.setExpectedScript(Utils.readFileIntoString(content));
             break;
         case FINISHED:
             FinishedMessage finishedMessage = (FinishedMessage) message;

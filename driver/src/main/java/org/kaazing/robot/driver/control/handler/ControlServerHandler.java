@@ -19,6 +19,10 @@
 
 package org.kaazing.robot.driver.control.handler;
 
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -27,7 +31,6 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.driver.Robot;
 import org.kaazing.robot.driver.behavior.RobotCompletionFuture;
 import org.kaazing.robot.driver.control.AbortMessage;
@@ -42,6 +45,7 @@ import org.kaazing.robot.lang.parser.ScriptParseException;
 public class ControlServerHandler extends ControlUpstreamHandler {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(ControlServerHandler.class);
+    private static final Charset UTF_8 = Charset.forName("UTF-8");
 
     private Robot                       robot;
     private RobotCompletionFuture       scriptDoneFuture;
@@ -93,7 +97,9 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         ChannelFuture prepareFuture;
         try {
             // @formatter:off
-            prepareFuture = robot.prepare(prepare.getExpectedScript());
+            byte[] encoded = Files.readAllBytes(Paths.get(prepare.getExpectedScriptPath()));
+            new String(encoded, UTF_8);
+            prepareFuture = robot.prepare(new String(encoded, UTF_8));
             // @formatter:on
         }
         catch (Exception e) {
