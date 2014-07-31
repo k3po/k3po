@@ -26,7 +26,6 @@
 	</parent>
 
 	<artifactId>robot.driver</artifactId>
-	<version>0.0.0.7-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>robot/driver</name>
@@ -45,6 +44,51 @@
 			<groupId>org.kaazing</groupId>
 			<artifactId>robot.lang</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-junit4</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-legacy</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty</artifactId>
+		</dependency>
+
+
+		<dependency>
+			<groupId>de.odysseus.juel</groupId>
+			<artifactId>juel</artifactId>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.kaazing</groupId>
+			<artifactId>kaaz-net-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.kaazing</groupId>
+			<artifactId>kaaz-net-data</artifactId>
 		</dependency>
 	</dependencies>
 

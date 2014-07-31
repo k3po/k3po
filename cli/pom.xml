@@ -26,7 +26,6 @@
     </parent>
 
     <artifactId>robot.cli</artifactId>
-    <version>0.0.0.7-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>robot/cli</name>
@@ -62,6 +61,28 @@
             <scope>compile</scope>
         </dependency>
 
+		<dependency>
+			<groupId>jline</groupId>
+			<artifactId>jline</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-junit4</artifactId>
+			<scope>test</scope>
+		</dependency>
     </dependencies>
 
     <build>
