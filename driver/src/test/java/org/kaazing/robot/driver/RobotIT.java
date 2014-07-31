@@ -1722,6 +1722,41 @@ public class RobotIT {
     }
 
     @Test(timeout = TEST_TIMEOUT)
+    public void shouldReadEscapedQuote() throws Exception {
+        // @formatter:off
+        String script =
+            "connect tcp://localhost:62345\n" +
+            "connected\n" +
+            "read \"whatever\\\"\" \n" +
+            "close\n" +
+            "closed\n";
+        // @formatter:on
+
+        server.bind(new InetSocketAddress("localhost", 62345));
+
+        robot.prepareAndStart(script).await();
+
+        accepted = server.accept();
+
+        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        OutputStream outputStream = accepted.getOutputStream();
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+        System.out.println("got before");
+        while (!accepted.isConnected()) {
+            Thread.sleep(1);
+        }
+        System.out.println("got here");
+        writer.write("whatever\"");
+        writer.flush();
+
+        doneFuture.await();
+
+        assertEquals(script, doneFuture.getObservedScript());
+
+        assertEquals(-1, accepted.getInputStream().read());
+    }
+
+    @Test(timeout = TEST_TIMEOUT)
     public void noBindOk() throws Exception {
         // @formatter:off
         String script =

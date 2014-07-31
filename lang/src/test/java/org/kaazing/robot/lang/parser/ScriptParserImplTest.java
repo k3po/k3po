@@ -28,16 +28,16 @@ import static org.kaazing.robot.lang.parser.ScriptParseStrategy.EXPRESSION_MATCH
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.FIXED_LENGTH_BYTES_MATCHER;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.LITERAL_BYTES_VALUE;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.LITERAL_TEXT_VALUE;
-import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_OPTION;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_AWAIT;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_NOTIFY;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_OPTION;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.SCRIPT;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.VARIABLE_LENGTH_BYTES_MATCHER;
-import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_OPTION;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_AWAIT;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_NOTIFY;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_OPTION;
 import static org.kaazing.robot.lang.regex.NamedGroupPattern.compile;
 import static org.kaazing.robot.lang.test.junit.Assert.assertEquals;
 
@@ -124,9 +124,9 @@ public class ScriptParserImplTest {
         AstLiteralTextValue actual = parser.parseWithStrategy(scriptFragment, LITERAL_TEXT_VALUE);
 
         AstLiteralTextValue expected = new AstLiteralTextValue(
-                "GET / HTTP/1.1\\r\\nHost: localhost:8000\\r\\nUser-Agent: Mozilla/5.0 "
-                + "(Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\\r\\nAccept: text/html,"
-                + "application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\\r\\n\\r\\n");
+                "GET / HTTP/1.1\r\nHost: localhost:8000\r\nUser-Agent: Mozilla/5.0 "
+                + "(Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\r\nAccept: text/html,"
+                + "application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\r\n\r\n");
 
         assertEquals(expected, actual);
     }
@@ -143,11 +143,11 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstLiteralTextValue actual = parser.parseWithStrategy(scriptFragment, LITERAL_TEXT_VALUE);
 
-        AstLiteralTextValue expected = new AstLiteralTextValue("POST /index.html HTTP/1.1\\r\\nHost: "
-                + "localhost:8000\\r\\nUser-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) "
-                + "Gecko/20100101 Firefox/8.0\\r\\nAccept: text/html, application/xhtml+xml, "
-                + "application/xml;q=0.9,*/*;q=0.8\\r\\nContent-Length: 43\\r\\n\\r\\nfirst_name=John"
-                + "&last_name=Doe&action=Submit\\r\\n\\r\\n");
+        AstLiteralTextValue expected = new AstLiteralTextValue("POST /index.html HTTP/1.1\r\nHost: "
+                + "localhost:8000\r\nUser-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) "
+                + "Gecko/20100101 Firefox/8.0\r\nAccept: text/html, application/xhtml+xml, "
+                + "application/xml;q=0.9,*/*;q=0.8\r\nContent-Length: 43\r\n\r\nfirst_name=John"
+                + "&last_name=Doe&action=Submit\r\n\r\n");
 
         assertEquals(expected, actual);
     }
@@ -466,12 +466,27 @@ public class ScriptParserImplTest {
 		AstLiteralTextValue actual = parser.parseWithStrategy(scriptFragment,
 				LITERAL_TEXT_VALUE);
 
-		// TODO: Implement escaping special characters. We have no way of
-		// printing " as a literal. Have to use bytes
-		AstLiteralTextValue expected = new AstLiteralTextValue("He\\\"llo");
+		AstLiteralTextValue expected = new AstLiteralTextValue("He\"llo");
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+    public void shouldParseEscapedQuoteAndNewline() throws Exception {
+
+        String scriptFragment = "read \"say \\\"hello\\n\\\"\"";
+        String expectedValue = "say \"hello\n\"";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser
+                .parseWithStrategy(scriptFragment, READ);
+
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher> asList(
+                new AstExactTextMatcher(expectedValue)));
+        expected.setLocationInfo(new LocationInfo(1, 0));
+        assertEquals(expected, actual);
+    }
 
 	@Test
 	public void shouldParseMultiCapturingByteLengthMatcher() throws Exception {
@@ -971,8 +986,8 @@ public class ScriptParserImplTest {
 		AstReadValueNode expected = new AstReadNodeBuilder()
 				.setNextLineInfo(1, 0)
 				.addExactText(
-						"HTTP/1.1 404 Not Found\\r\\nServer: Kaazing Gateway\\r\\n"
-								+ "Date: Thu, 03 May 2012 20:41:24 GMT\\r\\n\\r\\nContent-Type: text/html\\r\\n"
+						"HTTP/1.1 404 Not Found\r\nServer: Kaazing Gateway\r\n"
+								+ "Date: Thu, 03 May 2012 20:41:24 GMT\r\n\r\nContent-Type: text/html\r\n"
 								+ "Content-length: 61 <html><head></head><body><h1>404 Not Found</h1></body></html>")
 				.done();
 
@@ -1081,9 +1096,9 @@ public class ScriptParserImplTest {
 		AstWriteValueNode expected = new AstWriteNodeBuilder()
 				.setNextLineInfo(1, 0)
 				.addExactText(
-						"GET / HTTP/1.1\\r\\nHost: localhost:8000\\r\\n"
-								+ "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\\r\\n"
-								+ "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\\r\\n\\r\\n")
+						"GET / HTTP/1.1\r\nHost: localhost:8000\r\n"
+								+ "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\r\n"
+								+ "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\r\n\r\n")
 				.done();
 
 		assertEquals(expected, actual);
@@ -1106,7 +1121,6 @@ public class ScriptParserImplTest {
 	}
 
 	@Test
-	// see http://jira.kaazing.wan/NR-37
 	public void shouldParseWriteLongLiteralText() throws Exception {
 
 		StringBuilder longLiteralTextBuilder = new StringBuilder();
@@ -1126,6 +1140,17 @@ public class ScriptParserImplTest {
 		AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment,
 				WRITE);
 
+		longLiteralTextBuilder = new StringBuilder();
+        longLiteralTextBuilder
+                .append("POST /index.html HTTP/1.1\r\nHost: localhost:8000\r\n"
+                + "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\r\n"
+                + "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\r\n"
+                + "Content-Length: 99860\r\n\r\nfirst_name=Johnlast_nameDoeactionSubmitLoremipsumdolorsitametconsectetur");
+        for (int i = 0; i < 3030; i++) {
+            longLiteralTextBuilder.append("Loremipsumdolorsitametconsectetur");
+        }
+        longLiteralText = longLiteralTextBuilder.toString();
+		
 		AstWriteValueNode expected = new AstWriteNodeBuilder()
 				.setNextLineInfo(1, 0).addExactText(longLiteralText).done();
 
