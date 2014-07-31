@@ -29,7 +29,6 @@
 	</parent>
 
 	<artifactId>robot.all</artifactId>
-	<version>0.0.0.7-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>robot/all</name>
