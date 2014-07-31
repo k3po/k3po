@@ -98,7 +98,6 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         try {
             // @formatter:off
             byte[] encoded = Files.readAllBytes(Paths.get(prepare.getName()));
-            new String(encoded, UTF_8);
             prepareFuture = robot.prepare(new String(encoded, UTF_8));
             // @formatter:on
         }

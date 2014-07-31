@@ -77,10 +77,11 @@ public class HttpControlledRobotServer implements RobotServer {
         Map<String, Object> options = new HashMap<String, Object>();
         ChannelAddressFactory addressFactory = ChannelAddressFactory.newChannelAddressFactory();
         // Use tcp and layer http on top until nuklei is ready
-        ChannelAddress localAddress = addressFactory.newChannelAddress(acceptURI, options);
+        URI tcpURI = new URI(acceptURI.toString().replace("http://", "tcp://"));
+        ChannelAddress localAddress = addressFactory.newChannelAddress(tcpURI, options);
 
         BootstrapFactory factory = SingletonBootstrapFactory.getInstance();
-        server = factory.newServerBootstrap(acceptURI.getScheme());
+        server = factory.newServerBootstrap(tcpURI.getScheme());
 
         server.setPipelineFactory(new ChannelPipelineFactory() {
             @Override
@@ -99,6 +100,8 @@ public class HttpControlledRobotServer implements RobotServer {
                 ChannelHandler decoder = new HttpControlRequestDecoder();
                 pipeline.addLast("http.control.request.decoder", decoder);
 
+                
+                
                 ChannelHandler controller = new ControlServerHandler();
                 pipeline.addLast("control.handler", controller);
 
