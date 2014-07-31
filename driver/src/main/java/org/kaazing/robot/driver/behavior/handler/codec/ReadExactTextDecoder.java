@@ -40,7 +40,6 @@ public class ReadExactTextDecoder extends MessageDecoder {
 
     @Override
     protected Object decodeBuffer(ChannelBuffer buffer) throws Exception {
-
         if (buffer.readableBytes() < expected.readableBytes()) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("not enough bytes are ready to read. Expecting " + expected.readableBytes()

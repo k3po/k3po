@@ -1306,7 +1306,9 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstExactTextMatcher visitExactTextMatcher(ExactTextMatcherContext ctx) {
             String text = ctx.text.getText();
-            return new AstExactTextMatcher(text.substring(1, text.length() - 1));
+            String textWithoutQuote = text.substring(1, text.length() - 1);
+            String escapedText = escapeString(textWithoutQuote);
+            return new AstExactTextMatcher(escapedText);
         }
 
     }
@@ -1459,7 +1461,9 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstLiteralTextValue visitLiteralText(LiteralTextContext ctx) {
             String text = ctx.text.getText();
-            return new AstLiteralTextValue(text.substring(1, text.length() - 1));
+            String textWithoutQuotes = text.substring(1, text.length() - 1);
+            String escapedText = escapeString(textWithoutQuotes);
+            return new AstLiteralTextValue(escapedText);
         }
 
     }
@@ -1704,6 +1708,51 @@ abstract class ScriptParseStrategy<T> {
             return node;
         }
 
+    }
+
+    private static String escapeString(String toEscape) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < toEscape.length(); i++) {
+            char current = toEscape.charAt(i);
+            if (current == '\\') {
+                char next = toEscape.charAt(i + 1);
+                switch (next) {
+                case 'b':
+                    sb.append('\b');
+                    break;
+                case 'f':
+                    sb.append('\f');
+                    break;
+                case 'r':
+                    sb.append('\r');
+                    break;
+                case 'n':
+                    sb.append('\n');
+                    break;
+                case 't':
+                    sb.append('\t');
+                    break;
+                case '"':
+                    sb.append('"');
+                    break;
+                case '\'':
+                    sb.append('\'');
+                    break;
+                case '\\':
+                    sb.append('\\');
+                    break;
+                default:
+                    // parser will handle out of bounds errors here so we don't need to check
+                    // throw new Exception("escaping unescapable character"); will ruin the method signature
+                    // of the visitor
+                    assert false;
+                }
+                i++;
+            } else {
+                sb.append(current);
+            }
+        }
+        return sb.toString();
     }
 
 }
