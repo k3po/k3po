@@ -1,0 +1,55 @@
+connect tcp://localhost:61234
+connected
+
+# Send PREPARE request
+write "POST /PREPARE HTTP/1.1\r\n"
+write "Content-Length: 103\r\n"
+write "\r\n"
+write "name:C:/Users/jeffrey.foster/Desktop/robot/driver/src/test/scripts/org/kaazing/robot/control/temp.rpt\n\n\r\n"
+
+# Read PREPARED response
+read "HTTP/1.1 200 OK\r\n"
+read "Content-Type: text/html\r\n"
+read "Content-Length: 138\r\n"
+read "\r\n"
+read "{\n"
+read "    \"kind\": \"PREPARED\",\n"
+read "    \"name\": \"C:/Users/jeffrey.foster/Desktop/robot/driver/src/test/scripts/org/kaazing/robot/control/temp.rpt\"\n"
+read "}"
+
+# Send START request
+write "POST /START HTTP/1.1\r\n"
+write "Content-Length: 103\r\n"
+write "\r\n"
+write "name:C:/Users/jeffrey.foster/Desktop/robot/driver/src/test/scripts/org/kaazing/robot/control/temp.rpt\n\n\r\n"
+
+# Read STARTED response
+read "HTTP/1.1 200 OK\r\n"
+read "Content-Type: text/html\r\n"
+read "Content-Length: 137\r\n"
+read "\r\n"
+read "{\n"
+read "    \"kind\": \"STARTED\",\n"
+read "    \"name\": \"C:/Users/jeffrey.foster/Desktop/robot/driver/src/test/scripts/org/kaazing/robot/control/temp.rpt\"\n"
+read "}"
+
+# Send FINISH request
+write "POST /FINISH HTTP/1.1\r\n"
+write "Content-Length: 103\r\n"
+write "\r\n"
+write "name:C:/Users/jeffrey.foster/Desktop/robot/driver/src/test/scripts/org/kaazing/robot/control/temp.rpt\n\n\r\n"
+
+# Read FINISHED response
+read "HTTP/1.1 200 OK\r\n"
+read "Content-Type: text/html\r\n"
+read "Content-Length: 636\r\n"
+read "\r\n"
+read "{\n"
+read "    \"kind\": \"FINISHED\",\n"
+read "    \"name\": \"C:/Users/jeffrey.foster/Desktop/robot/driver/src/test/scripts/org/kaazing/robot/control/temp.rpt\",\n"
+read "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
+read "    \"observed_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\"\n"
+read "}"
+
+close
+closed

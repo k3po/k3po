@@ -1,0 +1,16 @@
+accept tcp://localhost:61111
+accepted
+connected
+
+write "Hello, World!"
+read "Hello, World!"
+
+closed
+connect tcp://localhost:61111
+connected
+
+read "Hello, World!"
+write "Hello, World!"
+
+close
+closed

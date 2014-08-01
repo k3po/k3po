@@ -24,9 +24,10 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,7 +41,6 @@ import org.kaazing.robot.driver.behavior.RobotCompletionFuture;
 public class HttpRobotBehaviorIT {
 
     private static final long TEST_TIMEOUT = 2000;
-    private static final Charset UTF_8 = Charset.forName("UTF-8");
 
     private Robot robot;
     private Socket client;
@@ -322,8 +322,12 @@ public class HttpRobotBehaviorIT {
             sb.append("#");
             sb.append(scriptName);
             sb.append("\n");
-            byte[] encoded = Files.readAllBytes(Paths.get(String.format("%s%s", SCRIPT_PATH, scriptName)));
-            sb.append(new String(encoded, UTF_8));
+            List<String> lines = Files.readAllLines(Paths.get(String.format("%s%s%s", Paths.get("").toAbsolutePath()
+                    .toString(), SCRIPT_PATH, scriptName)), StandardCharsets.UTF_8);
+            for (String line : lines) {
+                sb.append(line);
+                sb.append("\n");
+            }
         }
         return sb.toString();
     }

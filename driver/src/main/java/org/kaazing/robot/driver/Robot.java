@@ -97,6 +97,14 @@ public class Robot {
     public RobotCompletionFuture getScriptCompleteFuture() {
         return finishedFuture;
     }
+    
+    public ChannelFuture getPreparedFuture() {
+        return preparedFuture;
+    }
+    
+    public ChannelFuture getStartedFuture() {
+        return startedFuture;
+    }
 
     public ChannelFuture prepare(String script) throws Exception {
 

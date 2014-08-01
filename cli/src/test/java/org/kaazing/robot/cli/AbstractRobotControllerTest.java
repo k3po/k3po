@@ -34,6 +34,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -346,9 +347,13 @@ public abstract class AbstractRobotControllerTest {
         assertTrue("Saw expected exception", sawExpectedException);
     }
 
-    static String readFile(String path)
-            throws IOException {
-        byte[] encoded = Files.readAllBytes(Paths.get(path));
-        return new String(encoded, StandardCharsets.UTF_8);
+    static String readFile(String path) throws IOException {
+        List<String> lines = Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8);
+        StringBuilder sb = new StringBuilder();
+        for(String line: lines) {
+            sb.append(line);
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 }

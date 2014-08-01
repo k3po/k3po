@@ -24,9 +24,11 @@ import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.buffer.ChannelBuffers.dynamicBuffer;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 
-import java.util.regex.Matcher;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
@@ -36,6 +38,7 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 import org.kaazing.robot.driver.control.ControlMessage;
 import org.kaazing.robot.driver.control.ErrorMessage;
+import org.kaazing.robot.driver.control.FinishMessage;
 import org.kaazing.robot.driver.control.FinishedMessage;
 import org.kaazing.robot.driver.control.ControlMessage.Kind;
 
@@ -46,25 +49,28 @@ public class HttpControlResponseEncoder extends OneToOneEncoder {
     private static final byte RIGHT_CURLY_BRACKET = (byte) 0x7d;
     private static final byte COMMA = (byte) 0x2c;
 
+    private Map<String, Object> cache = new HashMap<String, Object>();
+
     @Override
     protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
         if (msg instanceof ControlMessage) {
             ControlMessage controlMessage = (ControlMessage) msg;
-            ChannelBuffer header;
 
             switch (controlMessage.getKind()) {
             case PREPARED:
-                header = (ChannelBuffer) encodeMessageWithoutContent(ctx, channel, controlMessage);
-                return createHttpResponse(header);
+                return createHttpResponse((ChannelBuffer) encodeMessageWithoutContent(ctx, channel, controlMessage));
             case STARTED:
-                header = (ChannelBuffer) encodeMessageWithoutContent(ctx, channel, controlMessage);
-                return createHttpResponse(header);
+                return createHttpResponse((ChannelBuffer) encodeMessageWithoutContent(ctx, channel, controlMessage));
             case ERROR:
-                header = (ChannelBuffer) encodeErrorMessage(ctx, channel, (ErrorMessage) controlMessage);
-                return createHttpResponse(header);
+                return createHttpResponse((ChannelBuffer) encodeErrorMessage(ctx, channel,
+                        (ErrorMessage) controlMessage));
             case FINISHED:
-                header = (ChannelBuffer) encodeFinishedMessage(ctx, channel, (FinishedMessage) controlMessage);
-                return createHttpResponse(header);
+                ChannelBuffer header = (ChannelBuffer) encodeFinishedMessage(ctx, channel,
+                        (FinishedMessage) controlMessage);
+                cache.put(controlMessage.getName(), createHttpResponse(header));
+                return ChannelBuffers.EMPTY_BUFFER;
+            case FINISH:
+                return encodeFinishMessage(ctx, channel, (FinishMessage) controlMessage);
             default:
                 break;
             }
@@ -74,11 +80,29 @@ public class HttpControlResponseEncoder extends OneToOneEncoder {
         return msg;
     }
 
+    private Object encodeFinishMessage(ChannelHandlerContext ctx, Channel channel, FinishMessage finishMessage)
+            throws Exception {
+        if (cache.containsKey(finishMessage.getName())) {
+            Object response = cache.get(finishMessage.getName());
+            cache.remove(finishMessage.getName());
+            return response;
+        } else {
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.setName(finishMessage.getName());
+            errorMessage.setDescription("Script execution is not complete. Try again later");
+            errorMessage.setSummary("Invalid Request");
+            ChannelBuffer header = (ChannelBuffer) encodeErrorMessage(ctx, channel, errorMessage);
+            return createHttpResponse(header);
+        }
+    }
+
     private Object createHttpResponse(ChannelBuffer header) throws Exception {
         DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         response.headers().add(HttpHeaders.Names.CONTENT_TYPE, "text/html");
         response.headers().add(HttpHeaders.Names.CONTENT_LENGTH, String.format("%d", header.readableBytes()));
         response.setContent(header);
+        System.out.println(response);
+        System.out.println(new String(header.array(), "UTF-8"));
         return response;
     }
 
@@ -116,8 +140,8 @@ public class HttpControlResponseEncoder extends OneToOneEncoder {
     }
 
     private Object encodeFinishedMessage(ChannelHandlerContext ctx, Channel channel, FinishedMessage finishedMessage) {
-        String expectedScript = finishedMessage.getExpectedScript().replaceAll("\n", Matcher.quoteReplacement("\\n"));
-        String observedScript = finishedMessage.getObservedScript().replaceAll("\n", Matcher.quoteReplacement("\\n"));
+        String expectedScript = escapeJSONSpecialCharacters(finishedMessage.getExpectedScript());
+        String observedScript = escapeJSONSpecialCharacters(finishedMessage.getObservedScript());
 
         ChannelBuffer header = (ChannelBuffer) encodeMessageBeginning(channel, finishedMessage);
         encodeContent("expected_script", expectedScript, header, true);
@@ -125,6 +149,44 @@ public class HttpControlResponseEncoder extends OneToOneEncoder {
         header.writeByte(RIGHT_CURLY_BRACKET);
 
         return header;
+    }
+
+    private static String escapeJSONSpecialCharacters(String toEscape) {
+        if (toEscape == null || toEscape.length() == 0) {
+            return "\"\"";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < toEscape.length(); i++) {
+            char current = toEscape.charAt(i);
+            switch (current) {
+            case '\"':
+                sb.append("\\\"");
+                break;
+            case '\\':
+                sb.append("\\\\");
+                break;
+            case '\b':
+                sb.append("\\b");
+                break;
+            case '\f':
+                sb.append("\\f");
+                break;
+            case '\n':
+                sb.append("\\n");
+                break;
+            case '\r':
+                sb.append("\\r");
+                break;
+            case '\t':
+                sb.append("\\t");
+                break;
+            default:
+                sb.append(current);
+                break;
+            }
+        }
+        return sb.toString();
     }
 
     private static void encodeInitial(Kind kind, ChannelBuffer header) {
@@ -151,7 +213,10 @@ public class HttpControlResponseEncoder extends OneToOneEncoder {
         return header;
     }
 
-    private static void encodeContent(String contentDescription, String contentAsString, ChannelBuffer header, boolean comma) {
+    private static void encodeContent(String contentDescription,
+                                      String contentAsString,
+                                      ChannelBuffer header,
+                                      boolean comma) {
         if (contentAsString != null) {
             header.writeBytes(copiedBuffer(format("    \"%s\": \"%s\"", contentDescription, contentAsString), UTF_8));
         } else {

@@ -44,7 +44,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kaazing.robot.driver.control.ErrorMessage;
-import org.kaazing.robot.driver.control.FinishedMessage;
 import org.kaazing.robot.driver.control.PreparedMessage;
 import org.kaazing.robot.driver.control.StartedMessage;
 import org.kaazing.robot.driver.jmock.Expectations;
@@ -177,49 +176,6 @@ public class HttpControlResponseEncoderTest {
         ChannelFuture future = client.connect(new LocalAddress("test")).sync();
         Channel channel = future.getChannel();
         channel.write(errorMessage).sync();
-        channel.close().sync();
-
-        context.assertIsSatisfied();
-    }
-
-    @Test
-    public void shouldEncodeFinishedMessage() throws Exception {
-
-        // @formatter:off
-        final ChannelBuffer content = copiedBuffer("{" + "\n" +
-                                                    "    \"kind\": \"FINISHED\"," + "\n" +
-                                                    "    \"name\": \"test\"," + "\n" +
-                                                    "    \"expected_script\": \"" + 
-                                                    "connect tcp://localhost:8000\\n" +
-                                                    "connected\\n" +
-                                                    "close\\n" +
-                                                    "closed\\n" + "\"," + "\n" +
-                                                    "    \"observed_script\": \"" +  
-                                                    "connect tcp://localhost:8000\\n" +
-                                                    "connected\\n" +
-                                                    "close\\n" +
-                                                    "closed\\n" + 
-                                                    "\"\n" + "}", UTF_8);
-        // @formatter:on
-        final DefaultHttpResponse expected = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        expected.headers().add(HttpHeaders.Names.CONTENT_TYPE, "text/html");
-        expected.headers().add(HttpHeaders.Names.CONTENT_LENGTH, String.format("%d", content.readableBytes()));
-        expected.setContent(content);
-
-        context.checking(new Expectations() {
-            {
-                oneOf(handler).handleDownstream(with(any(ChannelHandlerContext.class)), with(response(expected)));
-            }
-        });
-
-        FinishedMessage finishedMessage = new FinishedMessage();
-        finishedMessage.setName("test");
-        finishedMessage.setExpectedScript("connect tcp://localhost:8000\n" + "connected\n" + "close\n" + "closed\n");
-        finishedMessage.setObservedScript("connect tcp://localhost:8000\n" + "connected\n" + "close\n" + "closed\n");
-
-        ChannelFuture future = client.connect(new LocalAddress("test")).sync();
-        Channel channel = future.getChannel();
-        channel.write(finishedMessage).sync();
         channel.close().sync();
 
         context.assertIsSatisfied();

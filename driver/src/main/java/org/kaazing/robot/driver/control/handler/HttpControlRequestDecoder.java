@@ -37,6 +37,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.kaazing.robot.driver.control.AbortMessage;
 import org.kaazing.robot.driver.control.ControlMessage;
+import org.kaazing.robot.driver.control.FinishMessage;
 import org.kaazing.robot.driver.control.PrepareMessage;
 import org.kaazing.robot.driver.control.StartMessage;
 
@@ -50,18 +51,28 @@ public class HttpControlRequestDecoder extends SimpleChannelUpstreamHandler {
             System.out.println(new String(request.getContent().array(), "UTF-8"));
             String URI = request.getUri();
             if (URI == null || URI.length() < 2 || URI.charAt(0) != '/') {
-                sendInvalidRequestResponse(ctx, e, copiedBuffer(format("Malformed HTTP POST request. Was expecting '/{PREPARE, START, ABORT}' but received '%s'", URI), UTF_8));
+                sendInvalidRequestResponse(
+                        ctx,
+                        e,
+                        copiedBuffer(
+                                format("Malformed HTTP POST request. Was expecting '/{PREPARE, START, FINISH, ABORT}' but received '%s'",
+                                        URI), UTF_8));
                 return;
             }
 
             HttpMethod method = request.getMethod();
             if (method != HttpMethod.POST) {
-                sendInvalidRequestResponse(ctx, e, copiedBuffer(format("Malformed HTTP request. Was expecting 'POST' but received '%s'", method.toString()), UTF_8));
+                sendInvalidRequestResponse(
+                        ctx,
+                        e,
+                        copiedBuffer(
+                                format("Malformed HTTP request. Was expecting 'POST' but received '%s'",
+                                        method.toString()), UTF_8));
                 return;
             }
 
             // safe, checked above
-            String messageType = URI.substring(1);
+            String messageType = URI.substring(1).toUpperCase();
             ControlMessage msg = null;
             char type = messageType.charAt(0);
             switch (type) {
@@ -80,26 +91,41 @@ public class HttpControlRequestDecoder extends SimpleChannelUpstreamHandler {
                     msg = new AbortMessage();
                 }
                 break;
+            case 'F':
+                if (messageType.equals("FINISH")) {
+                    msg = new FinishMessage();
+                }
+                break;
             default:
-                sendInvalidRequestResponse(ctx, e, copiedBuffer(format("Malformed HTTP POST request. Was expecting '/{PREPARE, START, ABORT}' but received '%s'", URI), UTF_8));
+                sendInvalidRequestResponse(
+                        ctx,
+                        e,
+                        copiedBuffer(
+                                format("Malformed HTTP POST request. Was expecting '/{PREPARE, START, FINISH, ABORT}' but received '%s'",
+                                        URI), UTF_8));
                 return;
             }
 
             String content = new String(request.getContent().array(), "UTF-8");
 
-            // PREPARE, START AND ABORT are all of format: 'name:scriptName\n\n'
+            // PREPARE, START, FINISH and ABORT are all of format: 'name:scriptName\n\n'
             int startIndex = content.indexOf("name:");
             int beginIndex = startIndex + "name:".length();
             int endIndex = content.lastIndexOf("\n\n");
 
             if (startIndex == -1 || endIndex == -1 || beginIndex == endIndex) {
-                sendInvalidRequestResponse(ctx, e, copiedBuffer(format("Malformed HTTP POST request content. Was expecting 'name:scriptName\n\n' but received '%s'", content), UTF_8));
+                sendInvalidRequestResponse(
+                        ctx,
+                        e,
+                        copiedBuffer(
+                                format("Malformed HTTP POST request content. Was expecting 'name:scriptName\n\n' but received '%s'",
+                                        content), UTF_8));
                 return;
             }
             String name = content.substring(beginIndex, endIndex);
 
             msg.setName(name);
-            
+
             System.out.println(msg.getKind());
             System.out.println(msg.getName());
             ctx.sendUpstream(new UpstreamMessageEvent(e.getChannel(), msg, e.getRemoteAddress()));
@@ -107,13 +133,13 @@ public class HttpControlRequestDecoder extends SimpleChannelUpstreamHandler {
             ctx.sendUpstream(e);
         }
     }
-    
-    private void sendInvalidRequestResponse(ChannelHandlerContext ctx, MessageEvent e, ChannelBuffer content){
+
+    private void sendInvalidRequestResponse(ChannelHandlerContext ctx, MessageEvent e, ChannelBuffer content) {
         DefaultHttpResponse msg = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST);
         msg.headers().add(HttpHeaders.Names.CONTENT_TYPE, "text/html");
         msg.headers().add(HttpHeaders.Names.CONTENT_LENGTH, String.format("%d", content.readableBytes()));
-        msg.setContent(content);  
-        
+        msg.setContent(content);
+
         ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), e.getFuture(), msg, e.getRemoteAddress()));
     }
 }

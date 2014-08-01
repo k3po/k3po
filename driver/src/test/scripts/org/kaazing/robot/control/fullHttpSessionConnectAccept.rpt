@@ -4,16 +4,6 @@ connected
 write "POST /PREPARE HTTP/1.1\r\n"
 write "Content-Length: 34\r\n"
 write "\r\n"
-write "name:some_absolute_filepath_here\n\n\r\n"
-read "HTTP/1.1 200 OK\r\n"
-read "Content-Type: text/html\r\n"
-read "Content-Length: 145\r\n"
-read "\r\n{"
-read "\n    \"kind\": \"ERROR\","
-read "}"
-read "\n"
-read "bill"
-
 # TODO
 
 close
