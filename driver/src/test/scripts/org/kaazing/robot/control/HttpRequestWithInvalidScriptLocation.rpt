@@ -3,20 +3,20 @@ connected
 
 # Send PREPARE request with invalid script path
 write "POST /PREPARE HTTP/1.1\r\n"
-write "Content-Length: 34\r\n"
+write "Content-Length: 23\r\n"
 write "\r\n"
-write "name:some_absolute_filepath_here\n\n\r\n"
+write "name:NONEXISTANT_PATH\n\n\r\n"
 
 # Receive ERROR response
 read "HTTP/1.1 200 OK\r\n"
 read "Content-Type: text/html\r\n"
-read "Content-Length: 145\r\n"
+read "Content-Length: 123\r\n"
 read "\r\n"
 read "{\n"
 read "    \"kind\": \"ERROR\",\n"
-read "    \"name\": \"some_absolute_filepath_here\",\n"
+read "    \"name\": \"NONEXISTANT_PATH\",\n"
 read "    \"summary\": \"Internal Error\",\n"
-read "    \"content\": \"some_absolute_filepath_here\"\n"
+read "    \"content\": \"NONEXISTANT_PATH\"\n"
 read "}"
 
 close

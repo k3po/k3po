@@ -90,7 +90,7 @@ public class HttpControlResponseEncoder extends OneToOneEncoder {
             ErrorMessage errorMessage = new ErrorMessage();
             errorMessage.setName(finishMessage.getName());
             errorMessage.setDescription("Script execution is not complete. Try again later");
-            errorMessage.setSummary("Invalid Request");
+            errorMessage.setSummary("Early Request");
             ChannelBuffer header = (ChannelBuffer) encodeErrorMessage(ctx, channel, errorMessage);
             return createHttpResponse(header);
         }

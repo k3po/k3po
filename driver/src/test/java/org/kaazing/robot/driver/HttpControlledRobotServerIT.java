@@ -1,7 +1,14 @@
 package org.kaazing.robot.driver;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URI;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -32,6 +39,7 @@ public class HttpControlledRobotServerIT {
 
     }
 
+    // TODO:
     @Ignore("script not completed")
     @Test
     public void testFullSessionClientHelloWorldPass() throws Exception {
@@ -56,28 +64,210 @@ public class HttpControlledRobotServerIT {
 
     @Test
     public void testFullSessionServerHelloWorldFail() {
+        
+    }
+    
+    
+    // TODO: look into abort (should send back finished message?)
+    @Ignore("")
+    @Test
+    public void testSessionWithAbort() throws Exception {
+        String path = Paths.get(
+                String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "basicScript.rpt")).toString();
 
+        Socket client = new Socket();
+
+        client.connect(new InetSocketAddress("localhost", 61234));
+
+        OutputStream outputStream = client.getOutputStream();
+
+        InputStream inputStream = client.getInputStream();
+
+        byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
+                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                .getBytes("UTF-8");
+
+        outputStream.write(prepare);
+        outputStream.flush();
+
+        String preparedContent = "{\n    \"kind\": \"PREPARED\",\n    \"name\": \"" + path + "\"\n}";
+        ByteBuffer preparedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
+                + "Content-Length: " + preparedContent.length() + "\r\n" + "\r\n" + preparedContent).getBytes("UTF-8"));
+
+        ByteBuffer prepared = ByteBuffer.allocate(preparedExpected.capacity());
+        while (prepared.hasRemaining()) {
+            prepared.put((byte) inputStream.read());
+        }
+        prepared.flip();
+
+        assertEquals(preparedExpected, prepared);
+        
+
+        byte[] start = ("POST /START HTTP/1.1\r\n" + "Content-Length: "
+                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                .getBytes("UTF-8");
+
+        outputStream.write(start);
+        outputStream.flush();
+
+        String startedContent = "{\n" + "    \"kind\": \"STARTED\",\n" + "    \"name\": \"" + path + "\"\n}";
+        ByteBuffer startedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
+                + "Content-Length: " + startedContent.length() + "\r\n" + "\r\n" + startedContent).getBytes("UTF-8"));
+
+        ByteBuffer started = ByteBuffer.allocate(startedExpected.capacity());
+        while (started.hasRemaining()) {
+            started.put((byte) inputStream.read());
+        }
+        started.flip();
+
+        assertEquals(startedExpected, started);
+        
+        byte[] abort = ("POST /ABORT HTTP/1.1\r\n" + "Content-Length: "
+                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                .getBytes("UTF-8");
+        
+        outputStream.write(abort);
+        outputStream.flush();
+        
+        String finishedContent = "{\n"
+                + "    \"kind\": \"FINISHED\",\n"
+                + "    \"name\": \""
+                + path
+                + "\",\n"
+                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
+                + "    \"observed_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\"\n"
+                + "}";
+        ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
+                + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));
+        
+        ByteBuffer finished = ByteBuffer.allocate(finishedExpected.capacity());
+        while (finished.hasRemaining()) {
+            finished.put((byte) inputStream.read());
+        }
+        finished.flip();
+        
+        client.close();
+        
+        assertEquals(finishedExpected, finished); 
+        
     }
 
-    // TODO: paths in script need to be generated dynamically to work across machines
     @Test
-    public void testFullPipeline() throws Exception {
-        String script = loadScript("test.rpt");
+    public void testFullSession() throws Exception {
 
-        robot.prepareAndStart(script).await();
+        String path = Paths.get(
+                String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "basicScript.rpt")).toString();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        Socket client = new Socket();
 
-        doneFuture.await();
+        client.connect(new InetSocketAddress("localhost", 61234));
+
+        OutputStream outputStream = client.getOutputStream();
+
+        InputStream inputStream = client.getInputStream();
+
+        byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
+                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                .getBytes("UTF-8");
+
+        outputStream.write(prepare);
+        outputStream.flush();
+
+        String preparedContent = "{\n    \"kind\": \"PREPARED\",\n    \"name\": \"" + path + "\"\n}";
+        ByteBuffer preparedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
+                + "Content-Length: " + preparedContent.length() + "\r\n" + "\r\n" + preparedContent).getBytes("UTF-8"));
+
+        ByteBuffer prepared = ByteBuffer.allocate(preparedExpected.capacity());
+        while (prepared.hasRemaining()) {
+            prepared.put((byte) inputStream.read());
+        }
+        prepared.flip();
+
+        assertEquals(preparedExpected, prepared);
+
+        byte[] start = ("POST /START HTTP/1.1\r\n" + "Content-Length: "
+                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                .getBytes("UTF-8");
+
+        outputStream.write(start);
+        outputStream.flush();
+
+        String startedContent = "{\n" + "    \"kind\": \"STARTED\",\n" + "    \"name\": \"" + path + "\"\n}";
+        ByteBuffer startedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
+                + "Content-Length: " + startedContent.length() + "\r\n" + "\r\n" + startedContent).getBytes("UTF-8"));
+
+        ByteBuffer started = ByteBuffer.allocate(startedExpected.capacity());
+        while (started.hasRemaining()) {
+            started.put((byte) inputStream.read());
+        }
+        started.flip();
+
+        assertEquals(startedExpected, started);
+
+        byte[] finish = ("POST /FINISH HTTP/1.1\r\n" + "Content-Length: "
+                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                .getBytes("UTF-8");
+        outputStream.write(finish);
+        outputStream.flush();
+
+        String finishedContent = "{\n"
+                + "    \"kind\": \"FINISHED\",\n"
+                + "    \"name\": \""
+                + path
+                + "\",\n"
+                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
+                + "    \"observed_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\"\n"
+                + "}";
+        ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
+                + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));
+        
+        String errorContent = "{\n"
+                + "    \"kind\": \"ERROR\",\n"
+                + "    \"name\": \"" 
+                + path
+                + "\",\n"
+                + "    \"summary\": \"Early Request\",\n"
+                + "    \"content\": \"Script execution is not complete. Try again later\"\n"
+                + "}";
+        
+        ByteBuffer errorExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
+                + "Content-Length: " + errorContent.length() + "\r\n" + "\r\n" + errorContent).getBytes("UTF-8"));
+
+        ByteBuffer finished = ByteBuffer.allocate(errorExpected.capacity());
+        while (finished.hasRemaining()) {
+            finished.put((byte) inputStream.read());
+            if (!finished.hasRemaining() && finished.capacity() == errorExpected.capacity()) {
+                // only allocated space for error message, but receiving finished message
+                if (inputStream.available() > 0) {
+                    System.out.println("Receiving finished");
+                    ByteBuffer temp = ByteBuffer.allocate(finishedExpected.capacity());
+                    finished.flip();
+                    temp.put(finished);
+                    finished = temp;
+                } else {
+                // received an error message because request for finish was too soon, wait a bit and retry
+                    System.out.println("\n\nERROR RECEIVED\n=========================");
+                    System.out.println(new String(finished.array(), "UTF-8") + "\n=========================\n\n");
+                    finished.flip();
+                    assertEquals(errorExpected, finished);
+                    Thread.sleep(200);
+                    System.out.println("RETRYING NOW...");
+                    finished = ByteBuffer.allocate(errorExpected.capacity());
+                    outputStream.write(finish);
+                    outputStream.flush();
+                }
+            }
+        }
+        finished.flip();
+        
+        client.close();
+        
+        assertEquals(finishedExpected, finished); 
     }
 
     @Test
     public void testInvalidScriptLocation() throws Exception {
-        String scriptName = "HttpRequestWithInvalidScriptLocation.rpt";
-        String script = loadScript(scriptName);
-        
-        script = script.replaceAll("name:PATH_PLACEHOLDER", "name:" + Paths.get(String.format("%s%s%s", Paths.get("").toAbsolutePath()
-                    .toString(), SCRIPT_PATH, scriptName).toString()));
+        String script = loadScript("HttpRequestWithInvalidScriptLocation.rpt");
 
         robot.prepareAndStart(script).await();
 
