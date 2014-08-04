@@ -36,6 +36,7 @@ import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+import org.kaazing.robot.driver.control.BadRequestMessage;
 import org.kaazing.robot.driver.control.ControlMessage;
 import org.kaazing.robot.driver.control.ErrorMessage;
 import org.kaazing.robot.driver.control.FinishMessage;
@@ -71,6 +72,8 @@ public class HttpControlResponseEncoder extends OneToOneEncoder {
                 return ChannelBuffers.EMPTY_BUFFER;
             case FINISH:
                 return encodeFinishMessage(ctx, channel, (FinishMessage) controlMessage);
+            case BAD_REQUEST:
+                return encodeBadRequestMessage(ctx, channel, (BadRequestMessage) controlMessage);
             default:
                 break;
             }
@@ -78,6 +81,23 @@ public class HttpControlResponseEncoder extends OneToOneEncoder {
 
         // unknown message
         return msg;
+    }
+
+    private Object encodeBadRequestMessage(ChannelHandlerContext ctx,
+                                           Channel channel,
+                                           BadRequestMessage badRequestMessage) {
+        String contentString = badRequestMessage.getContent();
+
+        ChannelBuffer header = (ChannelBuffer) encodeMessageBeginning(channel, badRequestMessage);
+        encodeContent("content", contentString, header, false);
+        header.writeByte(RIGHT_CURLY_BRACKET);
+
+        DefaultHttpResponse badRequest = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST);
+        badRequest.headers().add(HttpHeaders.Names.CONTENT_TYPE, "text/html");
+        badRequest.headers().add(HttpHeaders.Names.CONTENT_LENGTH, String.format("%d", header.readableBytes()));
+        badRequest.setContent(header);
+
+        return badRequest;
     }
 
     private Object encodeFinishMessage(ChannelHandlerContext ctx, Channel channel, FinishMessage finishMessage)

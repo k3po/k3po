@@ -22,7 +22,7 @@ package org.kaazing.robot.driver.control;
 public abstract class ControlMessage {
 
     public static enum Kind {
-        PREPARE, PREPARED, START, STARTED, ERROR, ABORT, FINISH, FINISHED
+        PREPARE, PREPARED, START, STARTED, ERROR, ABORT, FINISH, FINISHED, BAD_REQUEST
     };
 
     private String name;

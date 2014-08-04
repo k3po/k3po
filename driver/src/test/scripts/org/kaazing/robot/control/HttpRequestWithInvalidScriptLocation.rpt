@@ -5,7 +5,7 @@ connected
 write "POST /PREPARE HTTP/1.1\r\n"
 write "Content-Length: 23\r\n"
 write "\r\n"
-write "name:NONEXISTANT_PATH\n\n\r\n"
+write "name:NONEXISTENT_PATH\n\n\r\n"
 
 # Receive ERROR response
 read "HTTP/1.1 200 OK\r\n"
@@ -14,9 +14,9 @@ read "Content-Length: 123\r\n"
 read "\r\n"
 read "{\n"
 read "    \"kind\": \"ERROR\",\n"
-read "    \"name\": \"NONEXISTANT_PATH\",\n"
+read "    \"name\": \"NONEXISTENT_PATH\",\n"
 read "    \"summary\": \"Internal Error\",\n"
-read "    \"content\": \"NONEXISTANT_PATH\"\n"
+read "    \"content\": \"NONEXISTENT_PATH\"\n"
 read "}"
 
 close
