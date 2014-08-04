@@ -314,7 +314,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    private String SCRIPT_PATH = "src/test/scripts/org/kaazing/robot/driver/http/";
+    private String SCRIPT_PATH = "/src/test/scripts/org/kaazing/robot/driver/http/";
 
     private String combineScripts(String... scriptNames) throws IOException {
         StringBuilder sb = new StringBuilder();

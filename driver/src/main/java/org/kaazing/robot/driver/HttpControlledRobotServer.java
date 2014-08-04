@@ -100,8 +100,6 @@ public class HttpControlledRobotServer implements RobotServer {
                 ChannelHandler decoder = new HttpControlRequestDecoder();
                 pipeline.addLast("http.control.request.decoder", decoder);
 
-                
-                
                 ChannelHandler controller = new ControlServerHandler();
                 pipeline.addLast("control.handler", controller);
 

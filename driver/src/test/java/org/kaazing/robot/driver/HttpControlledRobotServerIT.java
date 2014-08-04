@@ -358,7 +358,7 @@ public class HttpControlledRobotServerIT {
     public void testStartedThenAbort() throws Exception {
         String path = Paths
                 .get(String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH,
-                        "clientHelloWorld.rpt")).toString();
+                        "serverHelloWorld.rpt")).toString();
 
         Socket client = new Socket();
 
@@ -418,8 +418,8 @@ public class HttpControlledRobotServerIT {
                 + "    \"name\": \""
                 + path
                 + "\",\n"
-                + "    \"expected_script\": \"connect tcp://localhost:61111\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
-                + "    \"observed_script\": \"connect tcp://localhost:61111\\n\"\n" + "}";
+                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\n\\nclosed\\n\",\n"
+                + "    \"observed_script\": \"accept tcp://localhost:61111\\n\"\n" + "}";
         ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));
 
@@ -430,6 +430,8 @@ public class HttpControlledRobotServerIT {
         finished.flip();
 
         client.close();
+        System.out.println(new String(finishedExpected.array(), "UTF-8"));
+        System.out.println(new String(finished.array(), "UTF-8"));
 
         assertEquals(finishedExpected, finished);
     }
@@ -437,7 +439,7 @@ public class HttpControlledRobotServerIT {
     @Test
     public void testPreparedThenAbort() throws Exception {
         String path = Paths.get(
-                String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "basicScript.rpt"))
+                String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "serverHelloWorld.rpt"))
                 .toString();
 
         Socket client = new Socket();
@@ -479,7 +481,7 @@ public class HttpControlledRobotServerIT {
                 + "    \"name\": \""
                 + path
                 + "\",\n"
-                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
+                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\n\\nclosed\\n\",\n"
                 + "    \"observed_script\": \"accept tcp://localhost:61111\\n\"\n" + "}";
         ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));

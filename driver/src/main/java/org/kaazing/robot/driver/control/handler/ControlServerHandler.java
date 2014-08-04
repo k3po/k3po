@@ -108,7 +108,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             // @formatter:off
             List<String> lines = Files.readAllLines(Paths.get(prepare.getName()), StandardCharsets.UTF_8);
             StringBuilder sb = new StringBuilder();
-            for(String line: lines) {
+            for (String line: lines) {
                 sb.append(line);
                 sb.append("\n");
             }
