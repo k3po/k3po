@@ -24,8 +24,12 @@ import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.buffer.ChannelBuffers.dynamicBuffer;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -39,7 +43,6 @@ import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 import org.kaazing.robot.driver.control.BadRequestMessage;
 import org.kaazing.robot.driver.control.ControlMessage;
 import org.kaazing.robot.driver.control.ErrorMessage;
-import org.kaazing.robot.driver.control.FinishMessage;
 import org.kaazing.robot.driver.control.FinishedMessage;
 import org.kaazing.robot.driver.control.ControlMessage.Kind;
 
@@ -50,7 +53,17 @@ public class HttpControlResponseEncoder extends OneToOneEncoder {
     private static final byte RIGHT_CURLY_BRACKET = (byte) 0x7d;
     private static final byte COMMA = (byte) 0x2c;
 
-    private Map<String, Object> cache = new HashMap<String, Object>();
+    private Map<String, Object> scriptResultCache = new HashMap<String, Object>();
+    private Date lastResultRequestTime;
+    private String lastResultRequestName;
+    private final Runnable clearLastRequestEntry = new Runnable() {
+        public void run() {
+            if (lastResultRequestName != null) {
+                scriptResultCache.remove(lastResultRequestName);
+            }
+        }
+    };
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     @Override
     protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
@@ -68,12 +81,35 @@ public class HttpControlResponseEncoder extends OneToOneEncoder {
             case FINISHED:
                 ChannelBuffer header = (ChannelBuffer) encodeFinishedMessage(ctx, channel,
                         (FinishedMessage) controlMessage);
-                cache.put(controlMessage.getName(), createHttpResponse(header));
+                scriptResultCache.put(controlMessage.getName(), createHttpResponse(header));
                 return ChannelBuffers.EMPTY_BUFFER;
-            case FINISH:
-                return encodeFinishMessage(ctx, channel, (FinishMessage) controlMessage);
+            case RESULT_REQUEST:
+                if (scriptResultCache.containsKey(controlMessage.getName())
+                        && (lastResultRequestName == null || System.currentTimeMillis()
+                                - lastResultRequestTime.getTime() <= 500)) {
+                    lastResultRequestName = controlMessage.getName();
+                    lastResultRequestTime = new Date();
+                    scheduler.schedule(clearLastRequestEntry, 500, TimeUnit.MILLISECONDS);
+                    return scriptResultCache.get(controlMessage.getName());
+                } else if (lastResultRequestName != null && lastResultRequestName.equals(controlMessage.getName())) {
+                    BadRequestMessage badRequest = new BadRequestMessage();
+                    badRequest.setName(controlMessage.getName());
+                    badRequest.setContent("Invalid Request. No results for requested script.");
+                    return encodeBadRequestMessage(ctx, channel, badRequest);
+                } else {
+                    ErrorMessage errorMessage = new ErrorMessage();
+                    errorMessage.setName(controlMessage.getName());
+                    errorMessage.setDescription("Script execution is not complete. Try again later");
+                    errorMessage.setSummary("Early Request");
+                    return createHttpResponse((ChannelBuffer) encodeErrorMessage(ctx, channel, errorMessage));
+                }
             case BAD_REQUEST:
                 return encodeBadRequestMessage(ctx, channel, (BadRequestMessage) controlMessage);
+            case CLEAR_CACHE:
+                scriptResultCache.clear();
+                lastResultRequestTime = null;
+                lastResultRequestName = null;
+                return ChannelBuffers.EMPTY_BUFFER;
             default:
                 break;
             }
@@ -100,29 +136,12 @@ public class HttpControlResponseEncoder extends OneToOneEncoder {
         return badRequest;
     }
 
-    private Object encodeFinishMessage(ChannelHandlerContext ctx, Channel channel, FinishMessage finishMessage)
-            throws Exception {
-        if (cache.containsKey(finishMessage.getName())) {
-            Object response = cache.get(finishMessage.getName());
-            cache.remove(finishMessage.getName());
-            return response;
-        } else {
-            ErrorMessage errorMessage = new ErrorMessage();
-            errorMessage.setName(finishMessage.getName());
-            errorMessage.setDescription("Script execution is not complete. Try again later");
-            errorMessage.setSummary("Early Request");
-            ChannelBuffer header = (ChannelBuffer) encodeErrorMessage(ctx, channel, errorMessage);
-            return createHttpResponse(header);
-        }
-    }
-
     private Object createHttpResponse(ChannelBuffer header) throws Exception {
         DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         response.headers().add(HttpHeaders.Names.CONTENT_TYPE, "text/html");
         response.headers().add(HttpHeaders.Names.CONTENT_LENGTH, String.format("%d", header.readableBytes()));
         response.setContent(header);
-        System.out.println(response);
-        System.out.println(new String(header.array(), "UTF-8"));
+
         return response;
     }
 

@@ -22,10 +22,7 @@ package org.kaazing.robot.driver.control.handler;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
@@ -38,9 +35,7 @@ import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.robot.driver.Robot;
 import org.kaazing.robot.driver.behavior.RobotCompletionFuture;
 import org.kaazing.robot.driver.control.AbortMessage;
-import org.kaazing.robot.driver.control.BadRequestMessage;
 import org.kaazing.robot.driver.control.ErrorMessage;
-import org.kaazing.robot.driver.control.FinishMessage;
 import org.kaazing.robot.driver.control.FinishedMessage;
 import org.kaazing.robot.driver.control.PrepareMessage;
 import org.kaazing.robot.driver.control.PreparedMessage;
@@ -56,8 +51,6 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     private RobotCompletionFuture scriptDoneFuture;
 
     private final ChannelFuture channelClosedFuture = Channels.future(null);
-
-    private Map<String, Object> time = new HashMap<String, Object>();
 
     // Note that this is more than just the channel close future. It's a future that means not only
     // that this channel has closed but it is a future that tells us when this obj has processed the closed event.
@@ -94,8 +87,6 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     public void prepareReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
 
         final PrepareMessage prepare = (PrepareMessage) evt.getMessage();
-
-        time.remove(prepare.getName());
 
         if (logger.isDebugEnabled()) {
             logger.debug("preparing robot execution for script " + prepare.getName());
@@ -176,55 +167,19 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     }
 
     @Override
-    public void finishReceived(ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
-        FinishMessage finish = (FinishMessage) evt.getMessage();
-        if (logger.isInfoEnabled()) {
-            logger.debug("Requesting results for " + finish.getName());
-        }
-        if (robot == null || robot.getPreparedFuture() == null || !robot.getPreparedFuture().isDone()) {
-            sendBadRequestMessage(ctx, "Script has not been prepared or is still preparing", finish.getName());
-        } else if (robot.getStartedFuture() == null || !robot.getStartedFuture().isDone()) {
-            sendBadRequestMessage(ctx, "Script has not been started or is still starting", finish.getName());
-        } else {
-            if (!time.containsKey(finish.getName())) {
-                time.put(finish.getName(), new Date());
-            }
-            Channels.write(ctx, Channels.future(null), finish);
-        }
-    }
-
-    @Override
     public void abortReceived(ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
         AbortMessage abort = (AbortMessage) evt.getMessage();
         if (logger.isInfoEnabled()) {
             logger.debug("Aborting script " + abort.getName());
         }
-        // allow 500 ms window to send abort and get results after sending finish and getting results
-        if (robot == null
-                || (robot.getScriptCompleteFuture().isDone() && time.containsKey(abort.getName()) && (System
-                        .currentTimeMillis() - ((Date) time.get(abort.getName())).getTime()) > 500)) {
-            time.remove(abort.getName());
-            sendBadRequestMessage(ctx, "The script cannot be aborted from the current state", abort.getName());
-        } else {
-            robot.abort();
-
+        robot.abort();
+        if (robot != null && robot.getScriptCompleteFuture().isDone()) {
             FinishedMessage finished = new FinishedMessage();
             finished.setName(abort.getName());
             finished.setExpectedScript(robot.getScriptCompleteFuture().getExpectedScript());
             finished.setObservedScript(robot.getScriptCompleteFuture().getObservedScript());
             Channels.write(ctx, Channels.future(null), finished);
-
-            FinishMessage finish = new FinishMessage();
-            finish.setName(abort.getName());
-            Channels.write(ctx, Channels.future(null), finish);
         }
-    }
-
-    private void sendBadRequestMessage(ChannelHandlerContext ctx, String content, String name) {
-        BadRequestMessage badRequest = new BadRequestMessage();
-        badRequest.setContent(content);
-        badRequest.setName(name);
-        Channels.write(ctx, Channels.future(null), badRequest);
     }
 
     private void sendErrorMessage(ChannelHandlerContext ctx, Exception exception, String name) {

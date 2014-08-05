@@ -19,7 +19,7 @@
 
 package org.kaazing.robot.driver.control;
 
-public class FinishMessage extends ControlMessage {
+public class ResultRequestMessage extends ControlMessage {
 
     @Override
     public int hashCode() {
@@ -28,15 +28,15 @@ public class FinishMessage extends ControlMessage {
 
     @Override
     public boolean equals(Object obj) {
-        return (this == obj) || (obj instanceof FinishMessage) && equals((FinishMessage) obj);
+        return (this == obj) || (obj instanceof ResultRequestMessage) && equals((ResultRequestMessage) obj);
     }
 
-    protected final boolean equals(FinishMessage that) {
+    protected final boolean equals(ResultRequestMessage that) {
         return super.equalTo(that);
     }
 
     @Override
     public Kind getKind() {
-        return Kind.FINISH;
+        return Kind.RESULT_REQUEST;
     }
 }

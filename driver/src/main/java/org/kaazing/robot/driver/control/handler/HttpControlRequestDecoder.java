@@ -27,7 +27,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.DownstreamMessageEvent;
 import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.UpstreamMessageEvent;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
@@ -36,26 +36,65 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.kaazing.robot.driver.control.AbortMessage;
+import org.kaazing.robot.driver.control.BadRequestMessage;
+import org.kaazing.robot.driver.control.ClearCacheMessage;
 import org.kaazing.robot.driver.control.ControlMessage;
-import org.kaazing.robot.driver.control.FinishMessage;
 import org.kaazing.robot.driver.control.PrepareMessage;
+import org.kaazing.robot.driver.control.ResultRequestMessage;
 import org.kaazing.robot.driver.control.StartMessage;
 
-public class HttpControlRequestDecoder extends SimpleChannelUpstreamHandler {
+public class HttpControlRequestDecoder extends SimpleChannelHandler {
+
+    private static enum State {
+        INITIAL, PREPARED, STARTED, FINISHED, ERROR, ABORTED;
+    };
+
+    private State currentState = State.INITIAL;
+
+    @Override
+    public void writeRequested(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+        ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), e.getFuture(), e.getMessage(), e
+                .getRemoteAddress()));
+        Object msg = e.getMessage();
+        if (msg instanceof ControlMessage) {
+            ControlMessage controlMessage = (ControlMessage) msg;
+            synchronized (this) {
+                switch (controlMessage.getKind()) {
+                case PREPARED:
+                    currentState = State.PREPARED;
+                    break;
+                case STARTED:
+                    currentState = State.STARTED;
+                    break;
+                case FINISHED:
+                    if (currentState == State.ABORTED) {
+                        ResultRequestMessage resultRequest = new ResultRequestMessage();
+                        resultRequest.setName(controlMessage.getName());
+                        ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), e.getFuture(), resultRequest, e.getRemoteAddress()));
+                    }
+                    currentState = State.FINISHED;
+                    break;
+                case ERROR:
+                    currentState = State.ERROR;
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+    }
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         if (e.getMessage() instanceof HttpRequest) {
             HttpRequest request = (HttpRequest) e.getMessage();
-            System.out.println(request);
-            System.out.println(new String(request.getContent().array(), "UTF-8"));
             String URI = request.getUri();
             if (URI == null || URI.length() < 2 || URI.charAt(0) != '/') {
                 sendInvalidRequestResponse(
                         ctx,
                         e,
                         copiedBuffer(
-                                format("Malformed HTTP POST request. Was expecting '/{PREPARE, START, FINISH, ABORT}' but received '%s'",
+                                format("Malformed HTTP POST request. Was expecting '/{PREPARE, START, RESULT_REQUEST, ABORT}' but received '%s'",
                                         URI), UTF_8));
                 return;
             }
@@ -91,9 +130,9 @@ public class HttpControlRequestDecoder extends SimpleChannelUpstreamHandler {
                     msg = new AbortMessage();
                 }
                 break;
-            case 'F':
-                if (messageType.equals("FINISH")) {
-                    msg = new FinishMessage();
+            case 'R':
+                if (messageType.equals("RESULT_REQUEST")) {
+                    msg = new ResultRequestMessage();
                 }
                 break;
             default:
@@ -101,14 +140,14 @@ public class HttpControlRequestDecoder extends SimpleChannelUpstreamHandler {
                         ctx,
                         e,
                         copiedBuffer(
-                                format("Malformed HTTP POST request. Was expecting '/{PREPARE, START, FINISH, ABORT}' but received '%s'",
+                                format("Malformed HTTP POST request. Was expecting '/{PREPARE, START, RESULT_REQUEST, ABORT}' but received '%s'",
                                         URI), UTF_8));
                 return;
             }
 
             String content = new String(request.getContent().array(), "UTF-8");
 
-            // PREPARE, START, FINISH and ABORT are all of format: 'name:scriptName\n\n'
+            // PREPARE, START, RESULT_REQUEST and ABORT are all of format: 'name:scriptName\n\n'
             int startIndex = content.indexOf("name:");
             int beginIndex = startIndex + "name:".length();
             int endIndex = content.lastIndexOf("\n\n");
@@ -126,12 +165,71 @@ public class HttpControlRequestDecoder extends SimpleChannelUpstreamHandler {
 
             msg.setName(name);
 
-            System.out.println(msg.getKind());
-            System.out.println(msg.getName());
-            ctx.sendUpstream(new UpstreamMessageEvent(e.getChannel(), msg, e.getRemoteAddress()));
+            // check if request is valid from given state and respond with bad request if invalid
+            if (msg instanceof PrepareMessage) {
+                synchronized (this) {
+                    if (currentState != State.INITIAL && currentState != State.FINISHED && currentState != State.ERROR) {
+                        sendBadRequestMessage(ctx, e, "PREPARE", msg.getName());
+                    } else {
+                        ClearCacheMessage clearCachedEntry = new ClearCacheMessage();
+                        clearCachedEntry.setName(msg.getName());
+                        ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), e.getFuture(), clearCachedEntry, e.getRemoteAddress()));
+                        ctx.sendUpstream(new UpstreamMessageEvent(e.getChannel(), msg, e.getRemoteAddress()));
+                    }
+                }
+            } else if (msg instanceof StartMessage) {
+                synchronized (this) {
+                    if (currentState != State.PREPARED) {
+                        sendBadRequestMessage(ctx, e, "START", msg.getName());
+                    } else {
+                        ctx.sendUpstream(new UpstreamMessageEvent(e.getChannel(), msg, e.getRemoteAddress()));
+                    }
+                }
+            } else if (msg instanceof ResultRequestMessage) {
+                synchronized (this) {
+                    if (currentState != State.FINISHED && currentState != State.ERROR && currentState != State.STARTED) {
+                        sendBadRequestMessage(ctx, e, "RESULT", msg.getName());
+                    } else {
+                        ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), e.getFuture(), msg, e
+                                .getRemoteAddress()));
+                    }
+                }
+            } else if (msg instanceof AbortMessage) {
+                synchronized (this) {
+                    switch (currentState) {
+                    case INITIAL:
+                        sendBadRequestMessage(ctx, e, "INITIAL", msg.getName());
+                        break;
+                    case ERROR:
+                        sendBadRequestMessage(ctx, e, "ERROR", msg.getName());
+                        break;
+                    case ABORTED:
+                        sendBadRequestMessage(ctx, e, "ABORTED", msg.getName());
+                        break;
+                    case FINISHED:
+                    case PREPARED:
+                    case STARTED:
+                    default:
+                        currentState = State.ABORTED;
+                        ctx.sendUpstream(new UpstreamMessageEvent(e.getChannel(), msg, e.getRemoteAddress()));
+                        break;
+                    }
+                }
+            } else {
+                ctx.sendUpstream(new UpstreamMessageEvent(e.getChannel(), msg, e.getRemoteAddress()));
+            }
         } else {
+            // unknown msg
             ctx.sendUpstream(e);
         }
+    }
+
+    private void sendBadRequestMessage(ChannelHandlerContext ctx, MessageEvent e, String content, String name) {
+        BadRequestMessage badRequest = new BadRequestMessage();
+        badRequest.setName(name);
+        badRequest.setContent(content);
+
+        ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), e.getFuture(), badRequest, e.getRemoteAddress()));
     }
 
     private void sendInvalidRequestResponse(ChannelHandlerContext ctx, MessageEvent e, ChannelBuffer content) {

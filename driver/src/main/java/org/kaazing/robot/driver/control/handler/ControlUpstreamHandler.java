@@ -42,9 +42,6 @@ public class ControlUpstreamHandler extends SimpleChannelUpstreamHandler {
         case START:
             startReceived(ctx, e);
             break;
-        case FINISH:
-            finishReceived(ctx, e);
-            break;
         case ABORT:
             abortReceived(ctx, e);
             break;
@@ -59,10 +56,6 @@ public class ControlUpstreamHandler extends SimpleChannelUpstreamHandler {
     }
 
     public void startReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        super.messageReceived(ctx, e);
-    }
-
-    public void finishReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         super.messageReceived(ctx, e);
     }
 
