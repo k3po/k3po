@@ -167,7 +167,7 @@ public class HttpControlledRobotServerIT {
         outputStream.flush();
 
         String badRequestContent = "{\n" + "    \"kind\": \"BAD_REQUEST\",\n" + "    \"name\": \"" + path + "\",\n"
-                + "    \"content\": \"INITIAL\"\n" + "}";
+                + "    \"content\": \"Abort cannot be requested for the given script in the current state\"\n" + "}";
         ByteBuffer badRequestExpected = ByteBuffer.wrap(("HTTP/1.1 400 Bad Request\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + badRequestContent.length() + "\r\n" + "\r\n" + badRequestContent)
                 .getBytes("UTF-8"));

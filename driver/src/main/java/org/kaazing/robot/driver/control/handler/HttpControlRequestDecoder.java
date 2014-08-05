@@ -169,7 +169,7 @@ public class HttpControlRequestDecoder extends SimpleChannelHandler {
             if (msg instanceof PrepareMessage) {
                 synchronized (this) {
                     if (currentState != State.INITIAL && currentState != State.FINISHED && currentState != State.ERROR) {
-                        sendBadRequestMessage(ctx, e, "PREPARE", msg.getName());
+                        sendBadRequestMessage(ctx, e, "Cannot prepare for the given script in the current state", msg.getName());
                     } else {
                         ClearCacheMessage clearCachedEntry = new ClearCacheMessage();
                         clearCachedEntry.setName(msg.getName());
@@ -180,7 +180,7 @@ public class HttpControlRequestDecoder extends SimpleChannelHandler {
             } else if (msg instanceof StartMessage) {
                 synchronized (this) {
                     if (currentState != State.PREPARED) {
-                        sendBadRequestMessage(ctx, e, "START", msg.getName());
+                        sendBadRequestMessage(ctx, e, "Cannot start the given script in the current state", msg.getName());
                     } else {
                         ctx.sendUpstream(new UpstreamMessageEvent(e.getChannel(), msg, e.getRemoteAddress()));
                     }
@@ -188,7 +188,7 @@ public class HttpControlRequestDecoder extends SimpleChannelHandler {
             } else if (msg instanceof ResultRequestMessage) {
                 synchronized (this) {
                     if (currentState != State.FINISHED && currentState != State.ERROR && currentState != State.STARTED) {
-                        sendBadRequestMessage(ctx, e, "RESULT", msg.getName());
+                        sendBadRequestMessage(ctx, e, "Results cannot be requested for the given script in the current state", msg.getName());
                     } else {
                         ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), e.getFuture(), msg, e
                                 .getRemoteAddress()));
@@ -198,13 +198,9 @@ public class HttpControlRequestDecoder extends SimpleChannelHandler {
                 synchronized (this) {
                     switch (currentState) {
                     case INITIAL:
-                        sendBadRequestMessage(ctx, e, "INITIAL", msg.getName());
-                        break;
                     case ERROR:
-                        sendBadRequestMessage(ctx, e, "ERROR", msg.getName());
-                        break;
                     case ABORTED:
-                        sendBadRequestMessage(ctx, e, "ABORTED", msg.getName());
+                        sendBadRequestMessage(ctx, e, "Abort cannot be requested for the given script in the current state", msg.getName());
                         break;
                     case FINISHED:
                     case PREPARED:
