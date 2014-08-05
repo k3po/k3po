@@ -19,9 +19,10 @@
 
 package org.kaazing.robot.driver.control.handler;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
@@ -45,10 +46,9 @@ import org.kaazing.robot.lang.parser.ScriptParseException;
 public class ControlServerHandler extends ControlUpstreamHandler {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(ControlServerHandler.class);
-    private static final Charset UTF_8 = Charset.forName("UTF-8");
 
-    private Robot                       robot;
-    private RobotCompletionFuture       scriptDoneFuture;
+    private Robot robot;
+    private RobotCompletionFuture scriptDoneFuture;
 
     private final ChannelFuture channelClosedFuture = Channels.future(null);
 
@@ -97,12 +97,15 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         ChannelFuture prepareFuture;
         try {
             // @formatter:off
-            byte[] encoded = Files.readAllBytes(Paths.get(prepare.getName()));
-            new String(encoded, UTF_8);
-            prepareFuture = robot.prepare(new String(encoded, UTF_8));
+            List<String> lines = Files.readAllLines(Paths.get(prepare.getName()), StandardCharsets.UTF_8);
+            StringBuilder sb = new StringBuilder();
+            for (String line: lines) {
+                sb.append(line);
+                sb.append("\n");
+            }
+            prepareFuture = robot.prepare(sb.toString());
             // @formatter:on
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             sendErrorMessage(ctx, e, prepare.getName());
             return;
         }
@@ -138,8 +141,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                     Channels.write(ctx, Channels.future(null), started);
                 }
             });
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             sendErrorMessage(ctx, e, name);
             return;
         }
@@ -171,6 +173,13 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             logger.debug("Aborting script " + abort.getName());
         }
         robot.abort();
+        if (robot != null && robot.getScriptCompleteFuture().isDone()) {
+            FinishedMessage finished = new FinishedMessage();
+            finished.setName(abort.getName());
+            finished.setExpectedScript(robot.getScriptCompleteFuture().getExpectedScript());
+            finished.setObservedScript(robot.getScriptCompleteFuture().getObservedScript());
+            Channels.write(ctx, Channels.future(null), finished);
+        }
     }
 
     private void sendErrorMessage(ChannelHandlerContext ctx, Exception exception, String name) {

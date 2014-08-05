@@ -19,39 +19,34 @@
 
 package org.kaazing.robot.driver.control;
 
-public abstract class ControlMessage {
+public class BadRequestMessage extends ControlMessage {
 
-    public static enum Kind {
-        PREPARE, PREPARED, START, STARTED, ERROR, ABORT, RESULT_REQUEST, FINISHED, BAD_REQUEST, CLEAR_CACHE
-    };
+    private String content;
 
-    private String name;
-
-    public String getName() {
-        return name;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public abstract Kind getKind();
-
-    public abstract int hashCode();
-
-    public abstract boolean equals(Object obj);
-
-    protected int hashTo() {
-        return (name != null) ? name.hashCode() : 0;
-    }
-
-    protected final boolean equalTo(ControlMessage that) {
-        return this.getKind() == that.getKind()
-                && (this.name == that.name || (this.name != null && this.name.equals(that.name)));
+    public String getContent() {
+        return content;
     }
 
     @Override
-    public String toString() {
-        return String.format("%s %s", getKind(), getName());
+    public Kind getKind() {
+        return Kind.BAD_REQUEST;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashTo();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (this == obj) || (obj instanceof BadRequestMessage) && equals((BadRequestMessage) obj);
+    }
+
+    protected final boolean equals(BadRequestMessage that) {
+        return super.equalTo(that);
     }
 }
