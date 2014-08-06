@@ -52,6 +52,7 @@ public class HttpControlResponseEncoder extends OneToOneEncoder {
     private static final byte LEFT_CURLY_BRACKET = (byte) 0x7b;
     private static final byte RIGHT_CURLY_BRACKET = (byte) 0x7d;
     private static final byte COMMA = (byte) 0x2c;
+    private static final long TIME_LIMIT_MILLIS = 500;
 
     private Map<String, Object> scriptResultCache = new HashMap<String, Object>();
     private Date lastResultRequestTime;
@@ -86,10 +87,10 @@ public class HttpControlResponseEncoder extends OneToOneEncoder {
             case RESULT_REQUEST:
                 if (scriptResultCache.containsKey(controlMessage.getName())
                         && (lastResultRequestName == null || System.currentTimeMillis()
-                                - lastResultRequestTime.getTime() <= 500)) {
+                                - lastResultRequestTime.getTime() <= TIME_LIMIT_MILLIS)) {
                     lastResultRequestName = controlMessage.getName();
                     lastResultRequestTime = new Date();
-                    scheduler.schedule(clearLastRequestEntry, 500, TimeUnit.MILLISECONDS);
+                    scheduler.schedule(clearLastRequestEntry, TIME_LIMIT_MILLIS, TimeUnit.MILLISECONDS);
                     return scriptResultCache.get(controlMessage.getName());
                 } else if (lastResultRequestName != null && lastResultRequestName.equals(controlMessage.getName())) {
                     BadRequestMessage badRequest = new BadRequestMessage();
