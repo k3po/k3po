@@ -27,6 +27,8 @@
 	<version>0.0.0.2-SNAPSHOT</version>
 
 	<name>Kaazing Robot Websocket Functions</name>
+    <url>https://github.com/kaazing/robot-websocket-functions</url>
+    <description>A collection of robot functions that are useful for writing tests against websocket clients and servers</description>
 	<packaging>jar</packaging>
 
 	<licenses>
