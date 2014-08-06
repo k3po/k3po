@@ -69,45 +69,44 @@ public abstract class AbstractRobotController implements RobotController {
 
             event = client.readEvent(5, TimeUnit.SECONDS);
             switch (event.getKind()) {
-                case STARTED:
-                    interpreter.println("Script Started");
-                    break;
-                case ERROR:
-                    ErrorEvent errorEvent = (ErrorEvent) event;
-                    interpreter.println(errorEvent.getSummary());
-                    writeErrorResultToFile(testName, "Failed to start test");
-                    throw new Exception("Test Error: Failed to start test");
-                default:
-                    throw new Exception("Failed to startRobotServer script, Unexpected event: " + event);
+            case STARTED:
+                interpreter.println("Script Started");
+                break;
+            case ERROR:
+                ErrorEvent errorEvent = (ErrorEvent) event;
+                interpreter.println(errorEvent.getSummary());
+                writeErrorResultToFile(testName, "Failed to start test");
+                throw new Exception("Test Error: Failed to start test");
+            default:
+                throw new Exception("Failed to startRobotServer script, Unexpected event: " + event);
             }
 
             try {
                 event = client.readEvent(timeout, TimeUnit.SECONDS);
                 switch (event.getKind()) {
-                    case FINISHED:
-                        FinishedEvent finishedEvent = (FinishedEvent) event;
-                        String originalScript = finishedEvent.getExpectedScript();
-                        String actualScript = finishedEvent.getObservedScript();
-                        if (actualScript.equals(originalScript)) {
-                            writePassedResultToFile(testName);
-                            interpreter.println("Test passed!");
-                            return;
-                        } else {
-                            writeFailedResultToFile(testName, "Actual did not match expected", originalScript,
-                                    actualScript);
-                            interpreter.println("Test failed!");
-                            interpreter.println("Expected:");
-                            interpreter.println("-----------------------");
-                            interpreter.println(originalScript);
-                            interpreter.println("----------------------");
-                            interpreter.println("Actual:");
-                            interpreter.println("-----------------------");
-                            interpreter.println(actualScript);
-                            interpreter.println("-----------------------");
-                            return;
-                        }
-                    default:
-                        throw new Exception("Unexpected event when expecting finished event: " + event);
+                case FINISHED:
+                    FinishedEvent finishedEvent = (FinishedEvent) event;
+                    String originalScript = finishedEvent.getExpectedScript();
+                    String actualScript = finishedEvent.getObservedScript();
+                    if (actualScript.equals(originalScript)) {
+                        writePassedResultToFile(testName);
+                        interpreter.println("Test passed!");
+                        return;
+                    } else {
+                        writeFailedResultToFile(testName, "Actual did not match expected", originalScript, actualScript);
+                        interpreter.println("Test failed!");
+                        interpreter.println("Expected:");
+                        interpreter.println("-----------------------");
+                        interpreter.println(originalScript);
+                        interpreter.println("----------------------");
+                        interpreter.println("Actual:");
+                        interpreter.println("-----------------------");
+                        interpreter.println(actualScript);
+                        interpreter.println("-----------------------");
+                        return;
+                    }
+                default:
+                    throw new Exception("Unexpected event when expecting finished event: " + event);
                 }
             } catch (Exception e) {
                 interpreter.println("Failed to run script:" + e);
@@ -117,29 +116,28 @@ public abstract class AbstractRobotController implements RobotController {
 
             event = client.readEvent(5, TimeUnit.SECONDS);
             switch (event.getKind()) {
-                case FINISHED:
-                    FinishedEvent finishedEvent = (FinishedEvent) event;
-                    String originalScript = finishedEvent.getExpectedScript();
-                    String actualScript = finishedEvent.getObservedScript();
-                    if (actualScript.equals(originalScript)) {
-                        writeFailedResultToFile(testName, originalScript, actualScript, "Script timed out");
-                        interpreter.println("Test Failed: Scripts are the same but failed because of Timeout");
-                        interpreter.println("Actual matches expected");
-                    } else {
-                        writeFailedResultToFile(testName, "Test Failed: Script timed out",
-                                originalScript, actualScript);
-                        interpreter.println("Expected:");
-                        interpreter.println("-----------------------");
-                        interpreter.println(originalScript);
-                        interpreter.println("----------------------");
-                        interpreter.println("Actual:");
-                        interpreter.println("-----------------------");
-                        interpreter.println(actualScript);
-                        interpreter.println("-----------------------");
-                    }
-                    return;
-                default:
-                    throw new Exception("Unexpected event when expecting finished event: " + event);
+            case FINISHED:
+                FinishedEvent finishedEvent = (FinishedEvent) event;
+                String originalScript = finishedEvent.getExpectedScript();
+                String actualScript = finishedEvent.getObservedScript();
+                if (actualScript.equals(originalScript)) {
+                    writeFailedResultToFile(testName, originalScript, actualScript, "Script timed out");
+                    interpreter.println("Test Failed: Scripts are the same but failed because of Timeout");
+                    interpreter.println("Actual matches expected");
+                } else {
+                    writeFailedResultToFile(testName, "Test Failed: Script timed out", originalScript, actualScript);
+                    interpreter.println("Expected:");
+                    interpreter.println("-----------------------");
+                    interpreter.println(originalScript);
+                    interpreter.println("----------------------");
+                    interpreter.println("Actual:");
+                    interpreter.println("-----------------------");
+                    interpreter.println(actualScript);
+                    interpreter.println("-----------------------");
+                }
+                return;
+            default:
+                throw new Exception("Unexpected event when expecting finished event: " + event);
             }
         } finally {
             if (client != null) {

@@ -25,7 +25,6 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.driver.control.ControlMessage;
 
 public class ControlUpstreamHandler extends SimpleChannelUpstreamHandler {

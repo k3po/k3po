@@ -19,8 +19,10 @@
 
 package org.kaazing.robot.driver.util;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.nio.file.Files;
+import java.util.List;
 
 public final class Utils {
 
@@ -39,7 +41,13 @@ public final class Utils {
 
     public static String readFileIntoString(String path) {
         try {
-            return new String(Files.readAllBytes(Paths.get(path)), "UTF-8");
+            List<String> lines = Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8);
+            StringBuilder sb = new StringBuilder();
+            for (String line : lines) {
+                sb.append(line);
+                sb.append("\n");
+            }
+            return sb.toString();
         } catch (Exception e) {
             throw new IllegalArgumentException("Error reading from file:" + path);
         }
