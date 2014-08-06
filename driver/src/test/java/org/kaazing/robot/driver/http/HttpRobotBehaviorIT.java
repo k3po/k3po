@@ -76,8 +76,6 @@ public class HttpRobotBehaviorIT {
                 "tcp.connect.get.request.with.no.content.on.response.rpt");
 
         String expected = script;
-        
-        System.out.println(expected);
 
         robot.prepareAndStart(script).await();
 
