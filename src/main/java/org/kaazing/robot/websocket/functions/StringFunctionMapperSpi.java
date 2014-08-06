@@ -6,8 +6,8 @@ package org.kaazing.robot.websocket.functions;
 
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 
-import org.kaazing.el.Function;
-import org.kaazing.el.spi.FunctionMapperSpi;
+import org.kaazing.robot.lang.el.Function;
+import org.kaazing.robot.lang.el.spi.FunctionMapperSpi;
 
 
 public class StringFunctionMapperSpi extends FunctionMapperSpi.Reflective {

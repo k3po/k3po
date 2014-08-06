@@ -9,8 +9,8 @@ import static org.jboss.netty.util.CharsetUtil.UTF_8;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.kaazing.el.Function;
-import org.kaazing.el.spi.FunctionMapperSpi;
+import org.kaazing.robot.lang.el.Function;
+import org.kaazing.robot.lang.el.spi.FunctionMapperSpi;
 
 
 public class WsFunctionMapperSpi extends FunctionMapperSpi.Reflective {
