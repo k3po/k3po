@@ -24,7 +24,7 @@
 
 	<groupId>org.kaazing</groupId>
 	<artifactId>robot.websocket.functions</artifactId>
-	<version>0.0.0.2</version>
+	<version>0.0.0.3-SNAPSHOT</version>
 
 	<name>Kaazing Robot Websocket Functions</name>
     <url>https://github.com/kaazing/robot-websocket-functions</url>
