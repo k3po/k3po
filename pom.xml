@@ -40,8 +40,8 @@
 	<inceptionYear>2014</inceptionYear>
 
 	<scm>
-		<url>https://github.com/kaazing/robot-websocket-functions</url>
-		<connection>scm:svn:git:https://github.com/kaazing/robot-websocket-functions</connection>
+		<url>https://github.com/kaazing/robot-websocket-functions.git</url>
+		<connection>scm:git:https://github.com/kaazing/robot-websocket-functions.git</connection>
 	</scm>
 
 	<properties>
