@@ -579,10 +579,59 @@ public class TcpControlledRobotServerIT {
         while (finished.hasRemaining()) {
             in.read(finished);
         }
-
+        
         assertFalse(in.ready());
 
         assertEquals(-1, accepted.getInputStream().read());
+    }
+    
+    @Test(timeout = 2000)
+    public void shouldAbortOK2() throws Exception {
+        server.bind(new InetSocketAddress("localhost", 62345));
+
+        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/shouldAbortOK.rpt";
+        // @formatter:off
+        String strExpectedPrepared = "PREPARED\n" +
+                                     "name:" + path + "\n" +
+                                     "\n";
+        
+        String strExpectedFinished = "FINISHED\n" + "name:" + path + "\n" + "content-length:65\n\n" +
+                                    "connect tcp://localhost:62345\n" + "connected\n" + "read [0..4]\n" + "close\n" +
+                                    "closed\n" + "content-length:0\n\n";
+        // @formatter:on
+        CharBuffer expectedPrepared = CharBuffer.wrap(strExpectedPrepared);
+        CharBuffer expectedFinished = CharBuffer.wrap(strExpectedFinished);
+        
+        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
+        out.append("PREPARE\n");
+        out.append("name:" + path + "\n");
+        out.append("\n");
+        out.flush();
+        
+        BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
+        
+        CharBuffer prepared = CharBuffer.allocate(strExpectedPrepared.length());
+        while(prepared.hasRemaining()) {
+            in.read(prepared);
+        }
+        prepared.flip();
+        
+        assertEquals(expectedPrepared, prepared);
+
+        out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
+        out.append("ABORT\n");
+        out.append("name:" + path + "\n");
+        out.append("\n");
+        out.flush();
+        
+        CharBuffer finished = CharBuffer.allocate(strExpectedFinished.length());
+        while(finished.hasRemaining()) {
+            in.read(finished);
+        }
+        finished.flip();
+
+        assertEquals(expectedFinished, finished);
+        assertFalse(in.ready());
     }
 
     @Test(timeout = 2500)

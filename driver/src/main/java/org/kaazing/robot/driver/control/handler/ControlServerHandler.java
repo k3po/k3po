@@ -151,17 +151,11 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         scriptDoneFuture.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(final ChannelFuture f) {
-                String expectedScript = scriptDoneFuture.getExpectedScript();
-                String observedScript = scriptDoneFuture.getObservedScript();
-
                 if (logger.isDebugEnabled()) {
                     logger.debug("Script " + name + " completed");
                 }
-                FinishedMessage finished = new FinishedMessage();
-                finished.setName(name);
-                finished.setExpectedScript(expectedScript);
-                finished.setObservedScript(observedScript);
-                Channels.write(ctx, Channels.future(null), finished);
+
+                sendFinishedMessage(ctx, name, scriptDoneFuture);
             }
         });
     }
@@ -173,13 +167,24 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             logger.debug("Aborting script " + abort.getName());
         }
         robot.abort();
-        if (robot != null && robot.getScriptCompleteFuture().isDone()) {
-            FinishedMessage finished = new FinishedMessage();
-            finished.setName(abort.getName());
-            finished.setExpectedScript(robot.getScriptCompleteFuture().getExpectedScript());
-            finished.setObservedScript(robot.getScriptCompleteFuture().getObservedScript());
-            Channels.write(ctx, Channels.future(null), finished);
+        if (ctx.getPipeline().get("http.control.request.decoder") != null && robot != null && robot.getScriptCompleteFuture().isDone()) {
+            // is HTTP
+            sendFinishedMessage(ctx, abort.getName(), robot.getScriptCompleteFuture());
+        } else if (robot != null && !robot.getStartedFuture().isDone()) {
+            // is TCP. handle case where abort before started
+            sendFinishedMessage(ctx, abort.getName(), robot.getScriptCompleteFuture());
         }
+    }
+
+    private void sendFinishedMessage(ChannelHandlerContext ctx, String name, RobotCompletionFuture scriptDoneFuture) {
+        String expectedScript = scriptDoneFuture.getExpectedScript();
+        String observedScript = scriptDoneFuture.getObservedScript();
+
+        FinishedMessage finished = new FinishedMessage();
+        finished.setName(name);
+        finished.setExpectedScript(expectedScript);
+        finished.setObservedScript(observedScript);
+        Channels.write(ctx, Channels.future(null), finished);
     }
 
     private void sendErrorMessage(ChannelHandlerContext ctx, Exception exception, String name) {
