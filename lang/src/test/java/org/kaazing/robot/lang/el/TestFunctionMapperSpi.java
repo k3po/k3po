@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.lang.el.util;
+package org.kaazing.robot.lang.el;
 
 import org.kaazing.robot.lang.el.Function;
 import org.kaazing.robot.lang.el.spi.FunctionMapperSpi;

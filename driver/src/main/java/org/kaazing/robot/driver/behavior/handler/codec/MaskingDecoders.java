@@ -22,7 +22,7 @@ package org.kaazing.robot.driver.behavior.handler.codec;
 import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.kaazing.robot.lang.el.util.ExpressionContext;
+import org.kaazing.robot.lang.el.ExpressionContext;
 
 public final class MaskingDecoders {
 

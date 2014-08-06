@@ -1689,6 +1689,21 @@ public class ScriptParserImplTest {
 
 	        assertEquals(expected, actual);
 	    }
+	    
+	    @Test
+	    public void shouldParseCapturingFixedLengthBytesMatcher2() throws Exception {
+	        
+	        String scriptFragment = "[(:capture){5}]";
+
+	        ScriptParserImpl parser = new ScriptParserImpl();
+	        AstFixedLengthBytesMatcher actual = parser.parseWithStrategy(
+	                scriptFragment, FIXED_LENGTH_BYTES_MATCHER);
+
+	        AstFixedLengthBytesMatcher expected = new AstFixedLengthBytesMatcher(5,
+	                "capture");
+
+	        assertEquals(expected, actual);
+	    }
 
 	// @formatter:on
 }

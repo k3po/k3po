@@ -62,4 +62,15 @@ public class ELExpressionTest {
 
         assertTrue(format("Expected '%s' to result in 14, got %d", expr.getExpressionString(), value), value.equals(14));
     }
+    
+    @Test
+    public void shouldUseTestFunctionMapper()
+        throws Exception {
+
+        String script = "${test:add(7, 3)}";
+        ValueExpression expr = factory.createValueExpression(ctx, script, int.class);
+        Integer value = (Integer) expr.getValue(ctx);
+
+        assertTrue(format("Expected '%s' to result in 10, got %d", expr.getExpressionString(), value), value.equals(10));
+    }
 }

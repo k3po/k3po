@@ -1834,6 +1834,42 @@ public class RobotIT {
         Pattern p = Pattern.compile(expected);
         assertTrue(p.matcher(observed).matches());
     }
+    
+    @Test(timeout = TEST_TIMEOUT)
+    public void shouldReadOptionMask() throws Exception {
+        // @formatter:off
+        String script =
+            "connect tcp://localhost:62345\n" +
+            "connected\n" +
+            "read  [(:maskingKey){4}]\n" +
+            "read  option mask ${maskingKey}\n" +
+            "read \"HELLO\"\n" +
+            "read option mask [0x00]\n" +
+            "close\n" +
+            "closed\n";
+        // @formatter:on
+
+        server.bind(new InetSocketAddress("localhost", 62345));
+
+        robot.prepareAndStart(script).await();
+
+        accepted = server.accept();
+
+        OutputStreamWriter writer = new OutputStreamWriter(accepted.getOutputStream());
+        // masking key
+        writer.write("3201");
+        // "HELLO" masked
+        writer.write("{w|}|");
+        writer.flush();
+
+        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+
+        doneFuture.await();
+
+        assertEquals(script, doneFuture.getObservedScript());
+
+        assertEquals(-1, accepted.getInputStream().read());
+    }
 
     @Ignore("KG-7385 needed ... but ok since clients can ABORT")
     @Test(timeout = TEST_TIMEOUT)
