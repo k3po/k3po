@@ -260,6 +260,7 @@ expressionMatcher
 fixedLengthBytesMatcher
     : '[0..' lastIndex=DecimalLiteral ']'
     | '([0..' lastIndex=DecimalLiteral ']' capture=CaptureLiteral ')'
+    | '[(' capture=CaptureLiteral '){' lastIndex=DecimalLiteral '}]'
     /*
      * TODO: If I use lexer rules here for example:
      *

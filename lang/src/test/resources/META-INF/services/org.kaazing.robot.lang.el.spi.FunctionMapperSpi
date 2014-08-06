@@ -36,5 +36,5 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-org.kaazing.robot.lang.el.util.TestFunctionMapperSpi
+org.kaazing.robot.lang.el.TestFunctionMapperSpi
 org.kaazing.robot.lang.el.CustomFunctionMapperSpi

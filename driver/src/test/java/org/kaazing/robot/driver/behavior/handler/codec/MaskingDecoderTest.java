@@ -28,7 +28,7 @@ import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.junit.Test;
-import org.kaazing.robot.lang.el.util.ExpressionContext;
+import org.kaazing.robot.lang.el.ExpressionContext;
 
 
 public class MaskingDecoderTest {

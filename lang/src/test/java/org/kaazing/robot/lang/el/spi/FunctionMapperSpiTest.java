@@ -28,7 +28,6 @@ import java.lang.reflect.Method;
 import javax.el.ELException;
 
 import org.junit.Test;
-
 import org.kaazing.robot.lang.el.Function;
 
 public class FunctionMapperSpiTest {
@@ -101,5 +100,12 @@ public class FunctionMapperSpiTest {
         };
 
         fail();
+    }
+    
+    @Test
+    public void shouldRetainProperPackageName() throws Exception {
+        String packageName = "package org.kaazing.robot.lang.el.spi";
+        assertEquals("You may have broken the function mapper spi. This may also affect robot-websocket-functions",
+                packageName, this.getClass().getPackage().toString());
     }
 }

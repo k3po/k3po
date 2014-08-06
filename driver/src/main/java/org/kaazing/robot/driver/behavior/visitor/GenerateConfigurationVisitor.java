@@ -79,6 +79,7 @@ import org.kaazing.robot.driver.behavior.handler.barrier.NotifyBarrierHandler;
 import org.kaazing.robot.driver.behavior.handler.codec.HttpMessageAggregatingCodec;
 import org.kaazing.robot.driver.behavior.handler.codec.HttpMessageSplittingCodec;
 import org.kaazing.robot.driver.behavior.handler.codec.MaskingDecoder;
+import org.kaazing.robot.driver.behavior.handler.codec.MaskingDecoders;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageEncoder;
 import org.kaazing.robot.driver.behavior.handler.codec.ReadByteArrayBytesDecoder;
@@ -1212,10 +1213,62 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     }
 
     @Override
-    public Configuration visit(AstReadOptionNode node, State parameter) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+    public Configuration visit(AstReadOptionNode node, State state)
+            throws Exception {
+
+        String optionName = node.getOptionName();
+        AstValue optionValue = node.getOptionValue();
+
+        assert "mask".equals(optionName);
+        state.readUnmasker = optionValue.accept(new GenerateReadMaskOptionValueVisitor(), state);
+
+        return state.configuration;
     }
+
+    private static final class GenerateReadMaskOptionValueVisitor implements AstValue.Visitor<MaskingDecoder, State> {
+
+        @Override
+        public MaskingDecoder visit(AstExpressionValue value, State state) throws Exception {
+
+            ValueExpression expression = value.getValue();
+            ExpressionContext environment = state.configuration.getExpressionContext();
+
+            return MaskingDecoders.newMaskingDecoder(expression, environment);
+        }
+
+        @Override
+        public MaskingDecoder visit(AstLiteralTextValue value, State state) throws Exception {
+
+            String literalText = value.getValue();
+            byte[] literalTextAsBytes = literalText.getBytes(UTF_8);
+
+            for (int i = 0; i < literalTextAsBytes.length; i++) {
+                if (literalTextAsBytes[i] != 0x00) {
+                    return MaskingDecoders.newMaskingDecoder(literalTextAsBytes);
+                }
+            }
+
+            // no need to unmask for all-zeros masking key
+            return GenerateConfigurationVisitor.DEFAULT_READ_UNMASKER;
+        }
+
+        @Override
+        public MaskingDecoder visit(AstLiteralBytesValue value, State state) throws Exception {
+
+            byte[] literalBytes = value.getValue();
+
+            for (int i = 0; i < literalBytes.length; i++) {
+                if (literalBytes[i] != 0x00) {
+                    return MaskingDecoders.newMaskingDecoder(literalBytes);
+                }
+            }
+
+            // no need to unmask for all-zeros masking key
+            return GenerateConfigurationVisitor.DEFAULT_READ_UNMASKER;
+        }
+
+    }
+
 
     @Override
     public Configuration visit(AstWriteOptionNode node, State parameter) throws Exception {
