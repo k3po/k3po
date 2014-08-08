@@ -489,6 +489,22 @@ public class ScriptParserImplTest {
     }
 
 	@Test
+	public void shouldParseEscapedBrackets() throws Exception {
+	    String scriptFragment = "read \"say [HAHA]\"";
+	    String expectedValue = "say [HAHA]";
+
+	    ScriptParserImpl parser = new ScriptParserImpl();
+	    AstReadValueNode actual = parser
+	            .parseWithStrategy(scriptFragment, READ);
+	    
+	    AstReadValueNode expected = new AstReadValueNode();
+	    expected.setMatchers(Arrays.<AstValueMatcher> asList(
+	            new AstExactTextMatcher(expectedValue)));
+	    expected.setLocationInfo(new LocationInfo(1, 0));
+	    assertEquals(expected, actual);
+	}
+
+	@Test
 	public void shouldParseMultiCapturingByteLengthMatcher() throws Exception {
 
 		String scriptFragment = "read (byte:capture) (byte:capture2)";
