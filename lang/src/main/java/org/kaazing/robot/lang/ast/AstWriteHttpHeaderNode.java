@@ -21,12 +21,30 @@ package org.kaazing.robot.lang.ast;
 
 import static org.kaazing.robot.lang.ast.util.AstUtil.equivalent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kaazing.robot.lang.ast.value.AstValue;
 
 public class AstWriteHttpHeaderNode extends AstCommandNode {
 
     private AstValue name;
-    private AstValue value;
+    private List<AstValue> values;
+
+    public List<AstValue> getValues() {
+        return values;
+    }
+
+    public void setValues(List<AstValue> values) {
+        this.values = values;
+    }
+
+    public void addValue(AstValue value) {
+        if (values == null) {
+            values = new ArrayList<AstValue>();
+        }
+        values.add(value);
+    }
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
@@ -41,9 +59,9 @@ public class AstWriteHttpHeaderNode extends AstCommandNode {
             hashCode <<= 4;
             hashCode ^= name.hashCode();
         }
-        if (value != null) {
+        if (values != null) {
             hashCode <<= 4;
-            hashCode ^= value.hashCode();
+            hashCode ^= values.hashCode();
         }
 
         return hashCode;
@@ -55,14 +73,17 @@ public class AstWriteHttpHeaderNode extends AstCommandNode {
     }
 
     protected boolean equals(AstWriteHttpHeaderNode that) {
-        return super.equalTo(that) && equivalent(this.name, that.name)
-                && equivalent(this.value, that.value);
+        return super.equalTo(that) && equivalent(this.name, that.name) && equivalent(this.values, that.values);
     }
 
     @Override
     protected void formatNode(StringBuilder sb) {
         super.formatNode(sb);
-        sb.append(String.format("write header %s %s\n", name, value));
+        sb.append(String.format("write header %s", name));
+        for (AstValue val : values) {
+            sb.append(" " + val);
+        }
+        sb.append("\n");
     }
 
     public AstValue getName() {
@@ -71,14 +92,6 @@ public class AstWriteHttpHeaderNode extends AstCommandNode {
 
     public void setName(AstValue name) {
         this.name = name;
-    }
-
-    public AstValue getValue() {
-        return value;
-    }
-
-    public void setValue(AstValue value) {
-        this.value = value;
     }
 
 }

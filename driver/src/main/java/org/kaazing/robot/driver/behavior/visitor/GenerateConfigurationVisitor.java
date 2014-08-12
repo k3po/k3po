@@ -969,17 +969,19 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstReadHttpHeaderNode node, State state) throws Exception {
 
         AstLiteralTextValue name = node.getName();
-        AstValueMatcher value = node.getValue();
 
-        MessageDecoder valueDecoder = value.accept(new GenerateReadDecoderVisitor(), state.configuration);
-        HttpMessageContributingDecoder headerDecoder = new ReadHttpHeaderDecoder(name.getValue(), valueDecoder);
+        for (AstValueMatcher matcher : node.getMatchers()) {
+            MessageDecoder valueDecoder = matcher.accept(new GenerateReadDecoderVisitor(), state.configuration);
+            HttpMessageContributingDecoder headerDecoder = new ReadHttpHeaderDecoder(name.getValue(), valueDecoder);
 
-        ReadHttpHandler handler = new ReadHttpHandler(headerDecoder);
+            ReadHttpHandler handler = new ReadHttpHandler(headerDecoder);
 
-        handler.setLocationInfo(node.getLocationInfo());
-        Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
-        String handlerName = String.format("readHttpHeader#%d", pipelineAsMap.size() + 1);
-        pipelineAsMap.put(handlerName, handler);
+            handler.setLocationInfo(node.getLocationInfo());
+            Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+            String handlerName = String.format("readHttpHeader#%d", pipelineAsMap.size() + 1);
+            pipelineAsMap.put(handlerName, handler);
+        }
+
         return state.configuration;
     }
 
@@ -987,17 +989,20 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstWriteHttpHeaderNode node, State state) throws Exception {
 
         AstValue name = node.getName();
-        AstValue value = node.getValue();
 
-        MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
-        MessageEncoder valueEncoder = value.accept(new GenerateWriteEncoderVisitor(), state.configuration);
-        HttpMessageContributingEncoder httpEncoder = new WriteHttpHeaderEncoder(nameEncoder, valueEncoder);
+        for (AstValue val : node.getValues()) {
 
-        WriteHttpHandler handler = new WriteHttpHandler(state.getHttpMessage(), httpEncoder);
+            MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+            MessageEncoder valueEncoder = val.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+            HttpMessageContributingEncoder httpEncoder = new WriteHttpHeaderEncoder(nameEncoder, valueEncoder);
 
-        handler.setLocationInfo(node.getLocationInfo());
-        String handlerName = String.format("writeHttpHeader#%d", state.pipelineAsMap.size() + 1);
-        state.pipelineAsMap.put(handlerName, handler);
+            WriteHttpHandler handler = new WriteHttpHandler(state.getHttpMessage(), httpEncoder);
+
+            handler.setLocationInfo(node.getLocationInfo());
+            String handlerName = String.format("writeHttpHeader#%d", state.pipelineAsMap.size() + 1);
+            state.pipelineAsMap.put(handlerName, handler);
+        }
+
         return state.configuration;
     }
 
@@ -1046,17 +1051,20 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstReadHttpParameterNode node, State state) throws Exception {
 
         AstLiteralTextValue key = node.getKey();
-        AstValueMatcher value = node.getValue();
 
-        MessageDecoder valueDecoder = value.accept(new GenerateReadDecoderVisitor(), state.configuration);
-        HttpMessageContributingDecoder paramDecoder = new ReadHttpParameterDecoder(key.getValue(), valueDecoder);
+        for (AstValueMatcher matcher : node.getMatchers()) {
 
-        ReadHttpHandler handler = new ReadHttpHandler(paramDecoder);
+            MessageDecoder valueDecoder = matcher.accept(new GenerateReadDecoderVisitor(), state.configuration);
+            HttpMessageContributingDecoder paramDecoder = new ReadHttpParameterDecoder(key.getValue(), valueDecoder);
 
-        handler.setLocationInfo(node.getLocationInfo());
-        Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
-        String handlerName = String.format("readHttpParameter#%d", pipelineAsMap.size() + 1);
-        pipelineAsMap.put(handlerName, handler);
+            ReadHttpHandler handler = new ReadHttpHandler(paramDecoder);
+
+            handler.setLocationInfo(node.getLocationInfo());
+            Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+            String handlerName = String.format("readHttpParameter#%d", pipelineAsMap.size() + 1);
+            pipelineAsMap.put(handlerName, handler);
+        }
+
         return state.configuration;
     }
 
@@ -1064,17 +1072,20 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstWriteHttpParameterNode node, State state) throws Exception {
 
         AstValue key = node.getKey();
-        AstValue value = node.getValue();
 
-        MessageEncoder keyEncoder = key.accept(new GenerateWriteEncoderVisitor(), state.configuration);
-        MessageEncoder valueEncoder = value.accept(new GenerateWriteEncoderVisitor(), state.configuration);
-        HttpMessageContributingEncoder httpEncoder = new WriteHttpParameterEncoder(keyEncoder, valueEncoder);
+        for (AstValue val : node.getValues()) {
 
-        WriteHttpHandler handler = new WriteHttpHandler(state.getHttpMessage(), httpEncoder);
+            MessageEncoder keyEncoder = key.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+            MessageEncoder valueEncoder = val.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+            HttpMessageContributingEncoder httpEncoder = new WriteHttpParameterEncoder(keyEncoder, valueEncoder);
 
-        handler.setLocationInfo(node.getLocationInfo());
-        String handlerName = String.format("writeHttpParameter#%d", state.pipelineAsMap.size() + 1);
-        state.pipelineAsMap.put(handlerName, handler);
+            WriteHttpHandler handler = new WriteHttpHandler(state.getHttpMessage(), httpEncoder);
+
+            handler.setLocationInfo(node.getLocationInfo());
+            String handlerName = String.format("writeHttpParameter#%d", state.pipelineAsMap.size() + 1);
+            state.pipelineAsMap.put(handlerName, handler);
+        }
+
         return state.configuration;
     }
 

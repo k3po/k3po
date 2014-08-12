@@ -64,6 +64,7 @@ import org.kaazing.robot.lang.ast.AstWriteHttpVersionNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
+import org.kaazing.robot.lang.ast.value.AstValue;
 
 public class InjectHttpEventsVisitor implements AstNode.Visitor<AstScriptNode, State> {
 
@@ -208,44 +209,49 @@ public class InjectHttpEventsVisitor implements AstNode.Visitor<AstScriptNode, S
     @Override
     public AstScriptNode visit(AstWriteHttpHeaderNode node, State state) throws Exception {
 
-        switch (state.httpState) {
-        case WRITE_REQUEST_HEADERS:
-        case WRITE_RESPONSE_HEADERS:
-            break;
-        default:
-            throw new IllegalStateException(String.format("Unexpected http command (%s) while in http state %s", node
-                    .toString().trim(), state.httpState));
-        }
-
-        if ("\"Content-Length\"".equalsIgnoreCase(node.getName().toString())) {
-            throw new IllegalStateException(String.format(
-                    "Explicitly setting the content length via: %s, is not allowed,"
-                            + "use \"write header content-length\" to dynamically calculate content length instead",
-                    node));
-        }
-        if ("\"transfer-encoding\"".equalsIgnoreCase(node.getName().toString())
-                && "\"chunked\"".equalsIgnoreCase(node.getValue().toString())) {
-            switch (state.contentType) {
-            case NONE:
-                state.contentType = HttpContentType.CHUNKED;
+        for (AstValue val : node.getValues()) {
+            String name = node.getName().toString();
+            String value = val.toString();
+            switch (state.httpState) {
+            case WRITE_REQUEST_HEADERS:
+            case WRITE_RESPONSE_HEADERS:
                 break;
             default:
+                throw new IllegalStateException(String.format("Unexpected http command (%s) while in http state %s", node
+                        .toString().trim(), state.httpState));
+            }
+
+            if ("\"Content-Length\"".equalsIgnoreCase(name)) {
                 throw new IllegalStateException(String.format(
-                        "Can not set transfer-encoding: chunked when %s has already been set", state.contentType));
+                        "Explicitly setting the content length via: %s, is not allowed,"
+                                + "use \"write header content-length\" to dynamically calculate content length instead",
+                        node));
+            }
+            if ("\"transfer-encoding\"".equalsIgnoreCase(name)
+                    && "\"chunked\"".equalsIgnoreCase(value)) {
+                switch (state.contentType) {
+                case NONE:
+                    state.contentType = HttpContentType.CHUNKED;
+                    break;
+                default:
+                    throw new IllegalStateException(String.format(
+                            "Can not set transfer-encoding: chunked when %s has already been set", state.contentType));
+                }
+            }
+
+            if ("\"connection\"".equalsIgnoreCase(name)
+                    && "\"close\"".equalsIgnoreCase(value)) {
+                switch (state.contentType) {
+                case NONE:
+                    state.contentType = HttpContentType.CONNECTION_CLOSE;
+                    break;
+                default:
+                    throw new IllegalStateException(String.format(
+                            "Can not set connection: close when %s has already been set", state.contentType));
+                }
             }
         }
 
-        if ("\"connection\"".equalsIgnoreCase(node.getName().toString())
-                && "\"close\"".equalsIgnoreCase(node.getValue().toString())) {
-            switch (state.contentType) {
-            case NONE:
-                state.contentType = HttpContentType.CONNECTION_CLOSE;
-                break;
-            default:
-                throw new IllegalStateException(String.format(
-                        "Can not set connection: close when %s has already been set", state.contentType));
-            }
-        }
         state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;

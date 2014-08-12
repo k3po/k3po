@@ -94,7 +94,8 @@ public class ReadHttpParameterDecoder implements HttpMessageContributingDecoder 
         // Remove the matched query parameter
         URI uri = URI.create(request.getUri());
         String query = uri.getQuery();
-        List<String> parameters = Arrays.asList(query.split("&"));
+
+        List<String> parameters = toList(query.split("&"));
         String parameterToMatch = String.format("%s=%s", key, parameterValues.get(firstMatchingParameter));
         for (String parameter : parameters) {
             if (parameterToMatch.equals(parameter)) {
@@ -111,7 +112,17 @@ public class ReadHttpParameterDecoder implements HttpMessageContributingDecoder 
             }
         }
 
-        request.setUri(uri.toString().replace(query, result));
+        if (result != null) {
+            request.setUri(uri.toString().replace(query, result));
+        }
+    }
+
+    private static List<String> toList(String [] arr) {
+        List<String> list = new ArrayList<String>(arr.length);
+        for (int i = 0; i < arr.length; i++) {
+            list.add(arr[i]);
+        }
+        return list;
     }
 
     /**

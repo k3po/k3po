@@ -54,8 +54,8 @@ public class AstWriteHttpHeaderNodeBuilder extends
         return this;
     }
 
-    public AstWriteHttpHeaderNodeBuilder setValueExactBytes(byte[] headerValueExactBytes) {
-        node.setValue(new AstLiteralBytesValue(headerValueExactBytes));
+    public AstWriteHttpHeaderNodeBuilder addValueExactBytes(byte[] headerValueExactBytes) {
+        node.addValue(new AstLiteralBytesValue(headerValueExactBytes));
         return this;
     }
 
@@ -64,8 +64,8 @@ public class AstWriteHttpHeaderNodeBuilder extends
         return this;
     }
 
-    public AstWriteHttpHeaderNodeBuilder setValueExactText(String headerValueExactText) {
-        node.setValue(new AstLiteralTextValue(headerValueExactText));
+    public AstWriteHttpHeaderNodeBuilder addValueExactText(String headerValueExactText) {
+        node.addValue(new AstLiteralTextValue(headerValueExactText));
         return this;
     }
 
@@ -74,8 +74,8 @@ public class AstWriteHttpHeaderNodeBuilder extends
         return this;
     }
 
-    public AstWriteHttpHeaderNodeBuilder setValueExpression(ValueExpression headerValueValueExpression) {
-        node.setValue(new AstExpressionValue(headerValueValueExpression));
+    public AstWriteHttpHeaderNodeBuilder addValueExpression(ValueExpression headerValueValueExpression) {
+        node.addValue(new AstExpressionValue(headerValueValueExpression));
         return this;
     }
 
@@ -124,8 +124,8 @@ public class AstWriteHttpHeaderNodeBuilder extends
             return this;
         }
 
-        public StreamNested<R> setValueExactBytes(byte[] headerValueExactBytes) {
-            node.setValue(new AstLiteralBytesValue(headerValueExactBytes));
+        public StreamNested<R> addValueExactBytes(byte[] headerValueExactBytes) {
+            node.addValue(new AstLiteralBytesValue(headerValueExactBytes));
             return this;
         }
 
@@ -134,8 +134,8 @@ public class AstWriteHttpHeaderNodeBuilder extends
             return this;
         }
 
-        public StreamNested<R> setValueExactText(String headerValueExactText) {
-            node.setValue(new AstLiteralTextValue(headerValueExactText));
+        public StreamNested<R> addValueExactText(String headerValueExactText) {
+            node.addValue(new AstLiteralTextValue(headerValueExactText));
             return this;
         }
 
@@ -144,8 +144,8 @@ public class AstWriteHttpHeaderNodeBuilder extends
             return this;
         }
 
-        public StreamNested<R> setValueValueExpression(ValueExpression headerValueValueExpression) {
-            node.setValue(new AstExpressionValue(headerValueValueExpression));
+        public StreamNested<R> addValueValueExpression(ValueExpression headerValueValueExpression) {
+            node.addValue(new AstExpressionValue(headerValueValueExpression));
             return this;
         }
 

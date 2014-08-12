@@ -54,8 +54,8 @@ public class AstWriteHttpParameterNodeBuilder extends
         return this;
     }
 
-    public AstWriteHttpParameterNodeBuilder setValueExactBytes(byte[] valueExactBytes) {
-        node.setValue(new AstLiteralBytesValue(valueExactBytes));
+    public AstWriteHttpParameterNodeBuilder addValueExactBytes(byte[] valueExactBytes) {
+        node.addValue(new AstLiteralBytesValue(valueExactBytes));
         return this;
     }
 
@@ -64,8 +64,8 @@ public class AstWriteHttpParameterNodeBuilder extends
         return this;
     }
 
-    public AstWriteHttpParameterNodeBuilder setValueExactText(String valueExactText) {
-        node.setValue(new AstLiteralTextValue(valueExactText));
+    public AstWriteHttpParameterNodeBuilder addValueExactText(String valueExactText) {
+        node.addValue(new AstLiteralTextValue(valueExactText));
         return this;
     }
 
@@ -74,8 +74,8 @@ public class AstWriteHttpParameterNodeBuilder extends
         return this;
     }
 
-    public AstWriteHttpParameterNodeBuilder setValueExpression(ValueExpression valueExpression) {
-        node.setValue(new AstExpressionValue(valueExpression));
+    public AstWriteHttpParameterNodeBuilder addValueExpression(ValueExpression valueExpression) {
+        node.addValue(new AstExpressionValue(valueExpression));
         return this;
     }
 
@@ -124,8 +124,8 @@ public class AstWriteHttpParameterNodeBuilder extends
             return this;
         }
 
-        public StreamNested<R> setValueExactBytes(byte[] valueExactBytes) {
-            node.setValue(new AstLiteralBytesValue(valueExactBytes));
+        public StreamNested<R> addValueExactBytes(byte[] valueExactBytes) {
+            node.addValue(new AstLiteralBytesValue(valueExactBytes));
             return this;
         }
 
@@ -134,8 +134,8 @@ public class AstWriteHttpParameterNodeBuilder extends
             return this;
         }
 
-        public StreamNested<R> setValueExactText(String valueExactText) {
-            node.setValue(new AstLiteralTextValue(valueExactText));
+        public StreamNested<R> addValueExactText(String valueExactText) {
+            node.addValue(new AstLiteralTextValue(valueExactText));
             return this;
         }
 
@@ -144,8 +144,8 @@ public class AstWriteHttpParameterNodeBuilder extends
             return this;
         }
 
-        public StreamNested<R> setValueExpression(ValueExpression valueExpression) {
-            node.setValue(new AstExpressionValue(valueExpression));
+        public StreamNested<R> addValueExpression(ValueExpression valueExpression) {
+            node.addValue(new AstExpressionValue(valueExpression));
             return this;
         }
 

@@ -70,6 +70,57 @@ public class HttpRobotBehaviorIT {
     }
 
     @Test(timeout = TEST_TIMEOUT)
+    public void shouldAcceptHeaderWithMultipleTokens() throws Exception {
+        
+        String script = combineScripts("http.accept.header.with.multiple.tokens.rpt",
+                "tcp.connect.header.with.multiple.tokens.rpt");
+
+        String expected = script;
+
+        robot.prepareAndStart(script).await();
+
+        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+
+        doneFuture.await();
+
+        assertEquals(expected, doneFuture.getObservedScript());
+    }
+    
+    @Test(timeout = TEST_TIMEOUT)
+    public void shouldAcceptReadParameterWithMultipleTokens() throws Exception {
+        
+        String script = combineScripts("http.accept.read.parameter.with.multiple.tokens.rpt",
+                "tcp.connect.write.parameter.with.multiple.tokens.rpt");
+
+        String expected = script;
+
+        robot.prepareAndStart(script).await();
+
+        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+
+        doneFuture.await();
+
+        assertEquals(expected, doneFuture.getObservedScript());
+    }
+    
+    @Test(timeout = TEST_TIMEOUT)
+    public void shouldAcceptWriteParameterWithMultipleTokens() throws Exception {
+        
+        String script = combineScripts("http.connect.write.parameter.with.multiple.tokens.rpt",
+                "tcp.accept.read.parameter.with.multiple.tokens.rpt");
+
+        String expected = script;
+
+        robot.prepareAndStart(script).await();
+
+        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+
+        doneFuture.await();
+
+        assertEquals(expected, doneFuture.getObservedScript());
+    }
+    
+    @Test(timeout = TEST_TIMEOUT)
     public void shouldRecieveGetRequestAndProvideResponse() throws Exception {
 
         String script = combineScripts("http.accept.get.request.with.no.content.on.response.rpt",
