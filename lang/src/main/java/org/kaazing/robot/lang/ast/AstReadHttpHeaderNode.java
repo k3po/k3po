@@ -21,13 +21,31 @@ package org.kaazing.robot.lang.ast;
 
 import static org.kaazing.robot.lang.ast.util.AstUtil.equivalent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kaazing.robot.lang.ast.matcher.AstValueMatcher;
 import org.kaazing.robot.lang.ast.value.AstLiteralTextValue;
 
 public class AstReadHttpHeaderNode extends AstEventNode {
 
     private AstLiteralTextValue name;
-    private AstValueMatcher value;
+    private List<AstValueMatcher> matchers;
+
+    public List<AstValueMatcher> getMatchers() {
+        return matchers;
+    }
+
+    public void setMatchers(List<AstValueMatcher> matchers) {
+        this.matchers = matchers;
+    }
+
+    public void addMatcher(AstValueMatcher matcher) {
+        if (matchers == null) {
+            matchers = new ArrayList<AstValueMatcher>();
+        }
+        matchers.add(matcher);
+    }
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
@@ -42,9 +60,9 @@ public class AstReadHttpHeaderNode extends AstEventNode {
             hashCode <<= 4;
             hashCode ^= name.hashCode();
         }
-        if (value != null) {
+        if (matchers != null) {
             hashCode <<= 4;
-            hashCode ^= value.hashCode();
+            hashCode ^= matchers.hashCode();
         }
 
         return hashCode;
@@ -56,21 +74,17 @@ public class AstReadHttpHeaderNode extends AstEventNode {
     }
 
     protected boolean equals(AstReadHttpHeaderNode that) {
-        return super.equalTo(that) && equivalent(this.name, that.name) && equivalent(this.value, that.value);
+        return super.equalTo(that) && equivalent(this.name, that.name) && equivalent(this.matchers, that.matchers);
     }
 
     @Override
     protected void formatNode(StringBuilder sb) {
         super.formatNode(sb);
-        sb.append(String.format("read header %s %s\n", name, value));
-    }
-
-    public AstValueMatcher getValue() {
-        return value;
-    }
-
-    public void setValue(AstValueMatcher value) {
-        this.value = value;
+        sb.append(String.format("read header %s", name));
+        for (AstValueMatcher matcher : matchers) {
+            sb.append(" " + matcher);
+        }
+        sb.append("\n");
     }
 
     public AstLiteralTextValue getName() {

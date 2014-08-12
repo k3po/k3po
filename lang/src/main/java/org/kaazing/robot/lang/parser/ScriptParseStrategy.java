@@ -1501,6 +1501,8 @@ abstract class ScriptParseStrategy<T> {
 
     private static class AstReadHttpHeaderNodeVisitor extends AstNodeVisitor<AstReadHttpHeaderNode> {
 
+        private List<AstValueMatcher> matchers;
+
         public AstReadHttpHeaderNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
             super(elFactory, elContext);
         }
@@ -1510,13 +1512,24 @@ abstract class ScriptParseStrategy<T> {
             node = new AstReadHttpHeaderNode();
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setName(new AstLiteralTextValueVisitor(elFactory, elContext).visit(ctx.name));
-            node.setValue(new AstValueMatcherVisitor(elFactory, elContext).visit(ctx.value));
+            matchers = new LinkedList<>();
+            AstReadHttpHeaderNode result = super.visitReadHttpHeaderNode(ctx);
+            node.setMatchers(matchers);
+            return result;
+        }
+
+        @Override
+        public AstReadHttpHeaderNode visitMatcher(MatcherContext ctx) {
+            AstValueMatcher matcher = new AstValueMatcherVisitor(elFactory, elContext).visit(ctx);
+            matchers.add(matcher);
             return node;
         }
 
     }
 
     private static class AstWriteHttpHeaderNodeVisitor extends AstNodeVisitor<AstWriteHttpHeaderNode> {
+
+        private List<AstValue> values;
 
         public AstWriteHttpHeaderNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
             super(elFactory, elContext);
@@ -1527,7 +1540,16 @@ abstract class ScriptParseStrategy<T> {
             node = new AstWriteHttpHeaderNode();
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setName(new AstValueVisitor(elFactory, elContext).visit(ctx.name));
-            node.setValue(new AstValueVisitor(elFactory, elContext).visit(ctx.value));
+            values = new LinkedList<>();
+            AstWriteHttpHeaderNode result = super.visitWriteHttpHeaderNode(ctx);
+            node.setValues(values);
+            return result;
+        }
+
+        @Override
+        public AstWriteHttpHeaderNode visitWriteValue(WriteValueContext ctx) {
+            AstValue value = new AstValueVisitor(elFactory, elContext).visit(ctx);
+            values.add(value);
             return node;
         }
 
@@ -1582,6 +1604,8 @@ abstract class ScriptParseStrategy<T> {
 
     private static class AstReadHttpParameterNodeVisitor extends AstNodeVisitor<AstReadHttpParameterNode> {
 
+        private List<AstValueMatcher> matchers;
+
         public AstReadHttpParameterNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
             super(elFactory, elContext);
         }
@@ -1591,13 +1615,24 @@ abstract class ScriptParseStrategy<T> {
             node = new AstReadHttpParameterNode();
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setKey(new AstLiteralTextValueVisitor(elFactory, elContext).visit(ctx.name));
-            node.setValue(new AstValueMatcherVisitor(elFactory, elContext).visit(ctx.value));
+            matchers = new LinkedList<>();
+            AstReadHttpParameterNode result = super.visitReadHttpParameterNode(ctx);
+            node.setMatchers(matchers);
+            return result;
+        }
+
+        @Override
+        public AstReadHttpParameterNode visitMatcher(MatcherContext ctx) {
+            AstValueMatcher matcher = new AstValueMatcherVisitor(elFactory, elContext).visit(ctx);
+            matchers.add(matcher);
             return node;
         }
 
     }
 
     private static class AstWriteHttpParameterNodeVisitor extends AstNodeVisitor<AstWriteHttpParameterNode> {
+
+        private List<AstValue> values;
 
         public AstWriteHttpParameterNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
             super(elFactory, elContext);
@@ -1608,7 +1643,16 @@ abstract class ScriptParseStrategy<T> {
             node = new AstWriteHttpParameterNode();
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setKey(new AstValueVisitor(elFactory, elContext).visit(ctx.name));
-            node.setValue(new AstValueVisitor(elFactory, elContext).visit(ctx.value));
+            values = new LinkedList<>();
+            AstWriteHttpParameterNode result = super.visitWriteHttpParameterNode(ctx);
+            node.setValues(values);
+            return result;
+        }
+
+        @Override
+        public AstWriteHttpParameterNode visitWriteValue(WriteValueContext ctx) {
+            AstValue value = new AstValueVisitor(elFactory, elContext).visit(ctx);
+            values.add(value);
             return node;
         }
 
