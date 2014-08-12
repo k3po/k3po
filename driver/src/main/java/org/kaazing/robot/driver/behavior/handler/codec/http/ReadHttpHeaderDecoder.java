@@ -22,7 +22,6 @@ package org.kaazing.robot.driver.behavior.handler.codec.http;
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 
-import java.nio.charset.Charset;
 import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -61,7 +60,7 @@ public class ReadHttpHeaderDecoder implements HttpMessageContributingDecoder {
         MessageMismatchException lastException = null;
 
         List<String> headerValues = headers.getAll(name);
-        
+
         for (int i = 0; i < headerValues.size(); i++) {
             String currentHeaderValue = headerValues.get(i);
             if (currentHeaderValue.equals(value)) {
@@ -75,29 +74,6 @@ public class ReadHttpHeaderDecoder implements HttpMessageContributingDecoder {
                 break;
             }
         }
-
-        /*for (int i = 0; i < headerValues.size(); i++) {
-            try {
-                String currentHeaderValue = headerValues.get(i);
-                ChannelBuffer copiedBuffer = copiedBuffer(currentHeaderValue, UTF_8);
-                valueDecoder.decode(copiedBuffer);
-                //copiedBuffer.resetReaderIndex();
-                if (currentHeaderValue.equals(value)) {
-                    firstMatchingHeader = i;
-                    break;
-                }
-                /*if (firstMatchingHeader > -1) {
-                    LOGGER.warn(String.format(
-                            "Multiple matching headers for read header %s, will remove first matching header", name));
-                    // no need to throw this exception multiple times
-                    break;
-                } else {
-                    firstMatchingHeader = i;
-                }
-            } catch (MessageMismatchException mme) {
-                lastException = mme;
-            }
-        }*/
 
         if (firstMatchingHeader == -1) {
             // Last Exception cannot be null because there is a non empty list of headers

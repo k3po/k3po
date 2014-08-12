@@ -972,7 +972,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         for (AstValueMatcher matcher : node.getMatchers()) {
             MessageDecoder valueDecoder = matcher.accept(new GenerateReadDecoderVisitor(), state.configuration);
-            
+
             String value = matcher.toString();
             // remove surrounding quotes
             value = value.substring(1, value.length() - 1);

@@ -85,7 +85,7 @@ public class HttpRobotBehaviorIT {
 
         assertEquals(expected, doneFuture.getObservedScript());
     }
-    
+
     @Test(timeout = TEST_TIMEOUT)
     public void shouldAcceptReadParameterWithMultipleTokens() throws Exception {
         
