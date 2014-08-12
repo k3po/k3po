@@ -39,10 +39,12 @@ public class ReadHttpParameterDecoder implements HttpMessageContributingDecoder 
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ReadHttpParameterDecoder.class);
     private String key;
+    private String value;
     private MessageDecoder valueDecoder;
 
-    public ReadHttpParameterDecoder(String key, MessageDecoder valueDecoder) {
+    public ReadHttpParameterDecoder(String key, String value, MessageDecoder valueDecoder) {
         this.key = key;
+        this.value = value;
         this.valueDecoder = valueDecoder;
     }
 
@@ -113,6 +115,8 @@ public class ReadHttpParameterDecoder implements HttpMessageContributingDecoder 
 
         if (result != null) {
             request.setUri(uri.toString().replace(query, result));
+        } else {
+            request.setUri(uri.toString().replace(query, ""));
         }
     }
 
@@ -137,7 +141,8 @@ public class ReadHttpParameterDecoder implements HttpMessageContributingDecoder 
         for (int i = 0; i < parameters.length; i++) {
             String[] aParameter = parameters[i].split("=");
             String parameterKey = aParameter[0];
-            if (key.equals(parameterKey)) {
+            String parameterValue = aParameter[1];
+            if (key.equals(parameterKey) && value.equals(parameterValue)) {
                 matchingParameters.add(aParameter[1]);
                 break;
             }

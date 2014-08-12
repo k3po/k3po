@@ -5,7 +5,8 @@
 accept http://localhost:8000
 accepted
 read method "GET"
-read header "some" "header" "header2" "header3"
+read header "some" "header3" "header2" 
+read header "some" "header" "header5" "header4"
 close request
 write header "some" "header" "header2" "header3"
 write content-length
