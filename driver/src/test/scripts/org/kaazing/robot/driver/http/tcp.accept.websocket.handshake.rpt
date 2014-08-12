@@ -4,7 +4,6 @@
 
 accept tcp://127.0.0.1:8001
 accepted
-connected
 
 #Connection request
 read "GET /echo HTTP/1.1\r\n"

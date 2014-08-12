@@ -1,6 +1,5 @@
 # fail-binding
 accept tcp://www.google.com:8080
 accepted
-connected
 close
 closed

@@ -69,7 +69,7 @@ public class HttpRobotBehaviorIT {
         robot.destroy();
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test//(timeout = TEST_TIMEOUT)
     public void shouldAcceptHeaderWithMultipleTokens() throws Exception {
         
         String script = combineScripts("http.accept.header.with.multiple.tokens.rpt",

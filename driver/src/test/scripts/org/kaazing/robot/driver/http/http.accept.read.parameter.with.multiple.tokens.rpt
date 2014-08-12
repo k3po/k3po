@@ -4,9 +4,8 @@
 
 accept http://localhost:8000
 accepted
-connected
 read method "GET"
-read parameter "field" "value" "value2" "value3"
+read parameter "field" "value1" "value2" "value3"
 close request
 write header "some" "header"
 write content-length

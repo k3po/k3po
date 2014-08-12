@@ -4,7 +4,6 @@
 
 accept tcp://localhost:8000
 accepted
-connected
 read "GET /?field=value&field=value2&field=value3 HTTP/1.1\r\n"
 read "\r\n"
 write "HTTP/1.1 200 OK\r\n"

@@ -3,6 +3,6 @@
 #
 
 accept tcp://127.0.0.1:62020
-connected
+accepted
 close
 closed

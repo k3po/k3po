@@ -24,6 +24,7 @@ public class HttpControlledRobotServerIT {
     private RobotServer httpRobot;
     private String httpUrl = "http://localhost:61234";
     Robot robot;
+    private static final int TEST_TIMEOUT = 2500;
 
     @Before
     public void setupRobot() throws Exception {
@@ -38,7 +39,7 @@ public class HttpControlledRobotServerIT {
 
     }
     
-    @Test
+    @Test(timeout = TEST_TIMEOUT)
     public void testMultipleRuns() throws Exception {
         for (int i = 0; i < 3; i++) {
             String path = Paths.get(
@@ -103,8 +104,8 @@ public class HttpControlledRobotServerIT {
                     + "    \"name\": \""
                     + path
                     + "\",\n"
-                    + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
-                    + "    \"observed_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\"\n"
+                    + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
+                    + "    \"observed_script\": \"accept tcp://localhost:61111\\naccepted\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\"\n"
                     + "}";
             ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                     + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));
@@ -145,7 +146,7 @@ public class HttpControlledRobotServerIT {
         }
     }
 
-    @Test
+    @Test(timeout = TEST_TIMEOUT)
     public void testAbortBeforePrepare() throws Exception {
         String path = Paths
                 .get(String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH,
@@ -183,7 +184,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(badRequestExpected, badRequest);
     }
 
-    @Test
+    @Test(timeout = TEST_TIMEOUT)
     public void testAbortAfterFinished() throws Exception {
         String path = Paths.get(
                 String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "basicScript.rpt"))
@@ -247,8 +248,8 @@ public class HttpControlledRobotServerIT {
                 + "    \"name\": \""
                 + path
                 + "\",\n"
-                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
-                + "    \"observed_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\"\n"
+                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
+                + "    \"observed_script\": \"accept tcp://localhost:61111\\naccepted\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\"\n"
                 + "}";
         ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));
@@ -303,7 +304,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(finishedExpected, finishedRecv);
     }
 
-    @Test
+    @Test(timeout = TEST_TIMEOUT)
     public void testWaitThenAbortAfterFinished() throws Exception {
 
         String path = Paths.get(
@@ -368,8 +369,8 @@ public class HttpControlledRobotServerIT {
                 + "    \"name\": \""
                 + path
                 + "\",\n"
-                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
-                + "    \"observed_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\"\n"
+                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
+                + "    \"observed_script\": \"accept tcp://localhost:61111\\naccepted\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\"\n"
                 + "}";
         ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));
@@ -433,7 +434,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(badRequestExpected, badRequest);
     }
 
-    @Test
+    @Test(timeout = TEST_TIMEOUT)
     public void testStartedThenAbort() throws Exception {
         String path = Paths
                 .get(String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH,
@@ -497,7 +498,7 @@ public class HttpControlledRobotServerIT {
                 + "    \"name\": \""
                 + path
                 + "\",\n"
-                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\n\\nclosed\\n\",\n"
+                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\n\\nwrite \\\"Hello, World!\\\"\\n\\nclosed\\n\",\n"
                 + "    \"observed_script\": \"accept tcp://localhost:61111\\n\"\n" + "}";
         ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));
@@ -513,7 +514,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(finishedExpected, finished);
     }
 
-    @Test
+    @Test(timeout = TEST_TIMEOUT)
     public void testPreparedThenAbort() throws Exception {
         String path = Paths.get(
                 String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "serverHelloWorld.rpt"))
@@ -558,7 +559,7 @@ public class HttpControlledRobotServerIT {
                 + "    \"name\": \""
                 + path
                 + "\",\n"
-                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\n\\nclosed\\n\",\n"
+                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\n\\nwrite \\\"Hello, World!\\\"\\n\\nclosed\\n\",\n"
                 + "    \"observed_script\": \"accept tcp://localhost:61111\\n\"\n" + "}";
         ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));
@@ -575,7 +576,7 @@ public class HttpControlledRobotServerIT {
 
     }
 
-    @Test
+    @Test(timeout = TEST_TIMEOUT)
     public void testFullSession() throws Exception {
 
         String path = Paths.get(
@@ -640,8 +641,8 @@ public class HttpControlledRobotServerIT {
                 + "    \"name\": \""
                 + path
                 + "\",\n"
-                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
-                + "    \"observed_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\"\n"
+                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
+                + "    \"observed_script\": \"accept tcp://localhost:61111\\naccepted\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\"\n"
                 + "}";
         ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));
@@ -681,7 +682,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(finishedExpected, finished);
     }
 
-    @Test
+    @Test(timeout = TEST_TIMEOUT)
     public void testInvalidScriptLocation() throws Exception {
         String script = loadScript("HttpRequestWithInvalidScriptLocation.rpt");
 

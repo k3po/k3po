@@ -24,7 +24,6 @@ import static org.jboss.netty.util.CharsetUtil.UTF_8;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;

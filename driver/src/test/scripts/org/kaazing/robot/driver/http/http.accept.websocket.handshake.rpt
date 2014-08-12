@@ -4,7 +4,6 @@
 
 accept http://localhost:8001/echo
 accepted
-connected
 read method "GET"
 read header "Upgrade" "websocket" 
 read header "Connection" "Upgrade" 

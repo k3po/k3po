@@ -149,7 +149,37 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
         state.lastLocationInfo = acceptableNode.getLocationInfo();
 
         state.streamables = newAcceptableNode.getStreamables();
+
+        switch (state.connectivityState) {
+        case NONE:
+        case OPENED:
+            AstBoundNode boundNode = new AstBoundNode();
+            boundNode.setLocationInfo(state.lastLocationInfo);
+            boundNode.accept(this, state);
+            break;
+        default:
+            break;
+        }
+
+        // The above switch might have changed the connectivity state, so
+        // we switch on it again
+        switch (state.connectivityState) {
+        case BOUND:
+            state.lastLocationInfo = acceptableNode.getLocationInfo();
+            AstConnectedNode connectedNode = new AstConnectedNode();
+            connectedNode.setLocationInfo(state.lastLocationInfo.line + 1, 0);
+            state.streamables.add(connectedNode);
+            state.connectivityState = ConnectivityState.CONNECTED;
+            break;
+
+        default:
+            throw new IllegalStateException("Unexpected event: connected");
+        }
+
         for (AstStreamableNode streamable : acceptableNode.getStreamables()) {
+            if (streamable instanceof AstConnectedNode) {
+                throw new IllegalStateException("Unexpected connected after accepted");
+            }
             streamable.accept(this, state);
         }
         state.lastLocationInfo = acceptableNode.getLocationInfo();
