@@ -1,5 +1,4 @@
 # Robot
-=====
 
 Robot is a Network Protocol Testing Tool
 
