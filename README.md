@@ -6,8 +6,6 @@ Robot provides a network scripting language that allows authoring of network pro
 
 In a Robot script, you define the exact sequence of events that a network connection goes through in its lifetime.  If this exact sequence of events does not happen, the script is considered to have “failed”.  A Robot script thus defines a “behavior”.  Testing, then, is comprised of defining the expected behaviors, and then running the script against your code to see if those expectations are met.
 
-=====
-
 ## Links
 
 
