@@ -55,9 +55,9 @@ A Rupert script is considered a “session”.  Within a script, you will define
 ##### comment
 ```
 # This is a comment
-```
+# Comments start with a #
 
-Comments start with a #
+```
 
 ##### accept
 ```
