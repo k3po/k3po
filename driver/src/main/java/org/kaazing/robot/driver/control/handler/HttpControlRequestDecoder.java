@@ -76,7 +76,7 @@ public class HttpControlRequestDecoder extends SimpleChannelHandler {
             }
         }
     }
-    
+
     // return unknown if name can't be found in this format, else the name
     private String getName(String content) {
         // PREPARE, START, RESULT_REQUEST and ABORT are all of format: 'name:scriptName'
@@ -137,13 +137,13 @@ public class HttpControlRequestDecoder extends SimpleChannelHandler {
             default:
                 break;
             }
-            
+
             if (msg == null) {
                 sendBadRequestMessage(ctx, e, format("Malformed HTTP POST request. Was expecting '/{PREPARE, START, RESULT_REQUEST, ABORT}' but received '%s'",
                                         URI), getName(content));
                 return;
             }
-            
+
             if (name.equals("unknown")) {
                 sendBadRequestMessage(ctx, e, format("Malformed HTTP POST request content. Was expecting 'name:scriptName\n\n' but received '%s'",
                         content), name);
