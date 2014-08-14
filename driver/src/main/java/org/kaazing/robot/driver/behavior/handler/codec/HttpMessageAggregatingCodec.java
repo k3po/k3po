@@ -44,9 +44,8 @@ public class HttpMessageAggregatingCodec extends SimpleHttpChannelDownstreamHand
     public void writeHttpRequest(ChannelHandlerContext ctx, MessageEvent e, HttpRequest httpRequest) throws Exception {
         if (httpRequest.isChunked()) {
             write(ctx, e.getFuture(), httpRequest);
-        } else {
-            aggregatedHttpMessage = httpRequest;
         }
+        aggregatedHttpMessage = httpRequest;
     }
 
     @Override
@@ -54,10 +53,8 @@ public class HttpMessageAggregatingCodec extends SimpleHttpChannelDownstreamHand
             throws Exception {
         if (httpResponse.isChunked()) {
             write(ctx, e.getFuture(), httpResponse);
-            removeHttpFiltersFromPipeline(ctx.getPipeline());
-        } else {
-            aggregatedHttpMessage = httpResponse;
         }
+        aggregatedHttpMessage = httpResponse;
     }
 
     @Override

@@ -973,10 +973,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         for (AstValueMatcher matcher : node.getMatchers()) {
             MessageDecoder valueDecoder = matcher.accept(new GenerateReadDecoderVisitor(), state.configuration);
 
-            String value = matcher.toString();
-            // remove surrounding quotes
-            value = value.substring(1, value.length() - 1);
-            HttpMessageContributingDecoder headerDecoder = new ReadHttpHeaderDecoder(name.getValue(), value, valueDecoder);
+            HttpMessageContributingDecoder headerDecoder = new ReadHttpHeaderDecoder(name.getValue(), matcher, valueDecoder);
 
             ReadHttpHandler handler = new ReadHttpHandler(headerDecoder);
 
@@ -1059,10 +1056,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         for (AstValueMatcher matcher : node.getMatchers()) {
 
             MessageDecoder valueDecoder = matcher.accept(new GenerateReadDecoderVisitor(), state.configuration);
-            String value = matcher.toString();
-            // remove quotes surrounding value
-            value = value.substring(1, value.length() - 1);
-            HttpMessageContributingDecoder paramDecoder = new ReadHttpParameterDecoder(key.getValue(), value, valueDecoder);
+            HttpMessageContributingDecoder paramDecoder = new ReadHttpParameterDecoder(key.getValue(), matcher, valueDecoder);
 
             ReadHttpHandler handler = new ReadHttpHandler(paramDecoder);
 

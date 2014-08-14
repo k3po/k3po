@@ -176,10 +176,12 @@ writeNotifyNode
     : k=WriteKeyword NotifyKeyword barrier=Name
 	;
 	
+// TODO: #27 should probably only allow it to write text based content
 readHttpHeaderNode
 	: k=ReadKeyword HttpHeaderKeyword name=literalText matcher+
 	;
 
+// TODO: #27 should probably only allow it to read text based content
 writeHttpHeaderNode
 	: k=WriteKeyword HttpHeaderKeyword name=literalText writeValue+
 	;

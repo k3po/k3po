@@ -31,20 +31,24 @@ import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.driver.behavior.handler.codec.MessageDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageMismatchException;
+import org.kaazing.robot.lang.ast.matcher.AstExactTextMatcher;
+import org.kaazing.robot.lang.ast.matcher.AstRegexMatcher;
+import org.kaazing.robot.lang.ast.matcher.AstValueMatcher;
+import org.kaazing.robot.lang.regex.NamedGroupMatcher;
+import org.kaazing.robot.lang.regex.NamedGroupPattern;
 
 public class ReadHttpParameterDecoder implements HttpMessageContributingDecoder {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ReadHttpParameterDecoder.class);
     private String key;
-    private String value;
+    private AstValueMatcher valueMatcher;
     private MessageDecoder valueDecoder;
 
-    public ReadHttpParameterDecoder(String key, String value, MessageDecoder valueDecoder) {
+    public ReadHttpParameterDecoder(String key, AstValueMatcher valueMatcher, MessageDecoder valueDecoder) {
         this.key = key;
-        this.value = value;
+        this.valueMatcher = valueMatcher;
         this.valueDecoder = valueDecoder;
     }
 
@@ -142,9 +146,22 @@ public class ReadHttpParameterDecoder implements HttpMessageContributingDecoder 
             String[] aParameter = parameters[i].split("=");
             String parameterKey = aParameter[0];
             String parameterValue = aParameter[1];
-            if (key.equals(parameterKey) && value.equals(parameterValue)) {
-                matchingParameters.add(aParameter[1]);
-                break;
+            if (key.equals(parameterKey)) {
+                if (valueMatcher instanceof AstExactTextMatcher) {
+                    if (((AstExactTextMatcher) valueMatcher).equals(new AstExactTextMatcher(parameterValue))) {
+                        matchingParameters.add(parameterValue);
+                        break;
+                    }
+                } else if (valueMatcher instanceof AstRegexMatcher) {
+                    NamedGroupPattern pattern = ((AstRegexMatcher) valueMatcher).getValue();
+                    NamedGroupMatcher matcher = pattern.matcher(parameterValue);
+                    if (matcher.matches()) {
+                        matchingParameters.add(parameterValue);
+                        break;
+                    }
+                } else {
+                    throw new IllegalStateException(String.format("Unexpected matcher type on valueMatcher: %s", valueMatcher));
+                }
             }
         }
         return matchingParameters;

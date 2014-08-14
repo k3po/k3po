@@ -31,17 +31,22 @@ import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageMismatchException;
+import org.kaazing.robot.lang.ast.matcher.AstExactTextMatcher;
+import org.kaazing.robot.lang.ast.matcher.AstRegexMatcher;
+import org.kaazing.robot.lang.ast.matcher.AstValueMatcher;
+import org.kaazing.robot.lang.regex.NamedGroupMatcher;
+import org.kaazing.robot.lang.regex.NamedGroupPattern;
 
 public class ReadHttpHeaderDecoder implements HttpMessageContributingDecoder {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ReadHttpHeaderDecoder.class);
     private String name;
-    private String value;
+    private AstValueMatcher valueMatcher;
     private MessageDecoder valueDecoder;
 
-    public ReadHttpHeaderDecoder(String name, String value, MessageDecoder valueDecoder) {
+    public ReadHttpHeaderDecoder(String name, AstValueMatcher valueMatcher, MessageDecoder valueDecoder) {
         this.name = name;
-        this.value = value;
+        this.valueMatcher = valueMatcher;
         this.valueDecoder = valueDecoder;
     }
 
@@ -63,15 +68,32 @@ public class ReadHttpHeaderDecoder implements HttpMessageContributingDecoder {
 
         for (int i = 0; i < headerValues.size(); i++) {
             String currentHeaderValue = headerValues.get(i);
-            if (currentHeaderValue.equals(value)) {
-                try {
-                    ChannelBuffer copiedBuffer = copiedBuffer(currentHeaderValue, UTF_8);
-                    valueDecoder.decode(copiedBuffer);
-                } catch (MessageMismatchException mme) {
-                    lastException = mme;
+            if (valueMatcher instanceof AstExactTextMatcher) {
+                if (((AstExactTextMatcher) valueMatcher).equals(new AstExactTextMatcher(currentHeaderValue))) {
+                    try {
+                        ChannelBuffer copiedBuffer = copiedBuffer(currentHeaderValue, UTF_8);
+                        valueDecoder.decode(copiedBuffer);
+                    } catch (MessageMismatchException mme) {
+                        lastException = mme;
+                    }
+                    firstMatchingHeader = i;
+                    break;
                 }
-                firstMatchingHeader = i;
-                break;
+            } else if (valueMatcher instanceof AstRegexMatcher) {
+                NamedGroupPattern pattern = ((AstRegexMatcher) valueMatcher).getValue();
+                NamedGroupMatcher matcher = pattern.matcher(currentHeaderValue);
+                if (matcher.matches()) {
+                    try {
+                        ChannelBuffer copiedBuffer = copiedBuffer(currentHeaderValue, UTF_8);
+                        valueDecoder.decode(copiedBuffer);
+                    } catch (MessageMismatchException mme) {
+                        lastException = mme;
+                    }
+                    firstMatchingHeader = i;
+                    break;
+                }
+            } else {
+                throw new IllegalStateException(String.format("Unexpected matcher type on valueMatcher: %s", valueMatcher));
             }
         }
 

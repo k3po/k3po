@@ -225,7 +225,6 @@ public class HttpRobotBehaviorIT {
     }
 
     @Test(timeout = TEST_TIMEOUT)
-    @Ignore("not yet implemented")
     public void shouldAcceptPostMessageWithChunking() throws Exception {
 
         String script = combineScripts("http.accept.post.with.chunking.rpt", "tcp.connect.post.with.chunking.rpt");
@@ -242,7 +241,6 @@ public class HttpRobotBehaviorIT {
     }
 
     @Test(timeout = TEST_TIMEOUT)
-    @Ignore("not yet implemented")
     public void shouldConnectPostMessageWithChunking() throws Exception {
 
         String script = combineScripts("http.connect.post.with.chunking.rpt", "tcp.accept.post.with.chunking.rpt");
@@ -259,7 +257,6 @@ public class HttpRobotBehaviorIT {
     }
 
     @Test(timeout = TEST_TIMEOUT)
-    @Ignore("not yet implemented")
     public void shouldAcceptResponseWithChunking() throws Exception {
 
         String script = combineScripts("http.accept.response.with.chunking.rpt",
@@ -277,7 +274,6 @@ public class HttpRobotBehaviorIT {
     }
 
     @Test(timeout = TEST_TIMEOUT)
-    @Ignore("not yet implemented")
     public void shouldConnectResponseWithChunking() throws Exception {
 
         String script = combineScripts("http.connect.response.with.chunking.rpt",
@@ -294,6 +290,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
+    // TODO:
     @Test(timeout = TEST_TIMEOUT)
     @Ignore("not yet implemented")
     public void shouldConnectConnectionCloseResponse() throws Exception {
@@ -312,6 +309,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
+    // TODO:
     @Test(timeout = TEST_TIMEOUT)
     @Ignore("not yet implemented")
     public void shouldAcceptConnectionCloseResponse() throws Exception {
@@ -330,9 +328,10 @@ public class HttpRobotBehaviorIT {
 
     }
 
+    // TODO:
     @Ignore
     @Test(timeout = TEST_TIMEOUT)
-    public void shouldAcceptMutlipleHttpOnDifferentTcp() throws Exception {
+    public void shouldAcceptMultipleHttpOnDifferentTcp() throws Exception {
 
         String script = combineScripts("http.accept.two.http.200.rpt",
                 "tcp.connect.two.http.200.on.different.streams.rpt");
@@ -348,9 +347,10 @@ public class HttpRobotBehaviorIT {
 
     }
 
+    // TODO:
     @Ignore
     @Test(timeout = TEST_TIMEOUT)
-    public void shouldAcceptMutlipleHttpOnSameTcp() throws Exception {
+    public void shouldAcceptMultipleHttpOnSameTcp() throws Exception {
 
         String script = combineScripts("http.accept.two.http.200.rpt", "tcp.connect.two.http.200.on.same.streams.rpt");
 
