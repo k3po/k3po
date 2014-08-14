@@ -227,7 +227,7 @@ read (long:var)
 
 ```
 
-##### Varaibles
+##### Variables
 
 ```
 # Once you have captured the result of a variable you may later use this 
