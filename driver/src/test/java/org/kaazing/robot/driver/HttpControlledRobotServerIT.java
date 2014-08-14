@@ -24,6 +24,7 @@ public class HttpControlledRobotServerIT {
     private RobotServer httpRobot;
     private String httpUrl = "http://localhost:61234";
     Robot robot;
+    private static final int TEST_TIMEOUT = 2500;
 
     @Before
     public void setupRobot() throws Exception {
@@ -38,7 +39,7 @@ public class HttpControlledRobotServerIT {
 
     }
     
-    @Test
+    @Test(timeout = TEST_TIMEOUT)
     public void testMultipleRuns() throws Exception {
         for (int i = 0; i < 3; i++) {
             String path = Paths.get(
@@ -54,7 +55,7 @@ public class HttpControlledRobotServerIT {
             InputStream inputStream = client.getInputStream();
     
             byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
-                    + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                    + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                     .getBytes("UTF-8");
     
             outputStream.write(prepare);
@@ -73,7 +74,7 @@ public class HttpControlledRobotServerIT {
             assertEquals(preparedExpected, prepared);
     
             byte[] start = ("POST /START HTTP/1.1\r\n" + "Content-Length: "
-                    + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                    + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                     .getBytes("UTF-8");
     
             outputStream.write(start);
@@ -92,7 +93,7 @@ public class HttpControlledRobotServerIT {
             assertEquals(startedExpected, started);
     
             byte[] resultRequest = ("POST /RESULT_REQUEST HTTP/1.1\r\n" + "Content-Length: "
-                    + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                    + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                     .getBytes("UTF-8");
     
             outputStream.write(resultRequest);
@@ -145,7 +146,7 @@ public class HttpControlledRobotServerIT {
         }
     }
 
-    @Test
+    @Test(timeout = TEST_TIMEOUT)
     public void testAbortBeforePrepare() throws Exception {
         String path = Paths
                 .get(String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH,
@@ -160,7 +161,7 @@ public class HttpControlledRobotServerIT {
         InputStream inputStream = client.getInputStream();
 
         byte[] abort = ("POST /ABORT HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(abort);
@@ -183,7 +184,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(badRequestExpected, badRequest);
     }
 
-    @Test
+    @Test(timeout = TEST_TIMEOUT)
     public void testAbortAfterFinished() throws Exception {
         String path = Paths.get(
                 String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "basicScript.rpt"))
@@ -198,7 +199,7 @@ public class HttpControlledRobotServerIT {
         InputStream inputStream = client.getInputStream();
 
         byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(prepare);
@@ -217,7 +218,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(preparedExpected, prepared);
 
         byte[] start = ("POST /START HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(start);
@@ -236,7 +237,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(startedExpected, started);
 
         byte[] resultRequest = ("POST /RESULT_REQUEST HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(resultRequest);
@@ -286,7 +287,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(finishedExpected, finished);
 
         byte[] abort = ("POST /ABORT HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(abort);
@@ -303,7 +304,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(finishedExpected, finishedRecv);
     }
 
-    @Test
+    @Test(timeout = TEST_TIMEOUT)
     public void testWaitThenAbortAfterFinished() throws Exception {
 
         String path = Paths.get(
@@ -319,7 +320,7 @@ public class HttpControlledRobotServerIT {
         InputStream inputStream = client.getInputStream();
 
         byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(prepare);
@@ -338,7 +339,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(preparedExpected, prepared);
 
         byte[] start = ("POST /START HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(start);
@@ -357,7 +358,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(startedExpected, started);
 
         byte[] resultRequest = ("POST /RESULT_REQUEST HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(resultRequest);
@@ -410,7 +411,7 @@ public class HttpControlledRobotServerIT {
         Thread.sleep(1000);
 
         byte[] abort = ("POST /ABORT HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(abort);
@@ -433,7 +434,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(badRequestExpected, badRequest);
     }
 
-    @Test
+    @Test(timeout = TEST_TIMEOUT)
     public void testStartedThenAbort() throws Exception {
         String path = Paths
                 .get(String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH,
@@ -448,7 +449,7 @@ public class HttpControlledRobotServerIT {
         InputStream inputStream = client.getInputStream();
 
         byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(prepare);
@@ -467,7 +468,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(preparedExpected, prepared);
 
         byte[] start = ("POST /START HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(start);
@@ -486,7 +487,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(startedExpected, started);
 
         byte[] abort = ("POST /ABORT HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(abort);
@@ -513,7 +514,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(finishedExpected, finished);
     }
 
-    @Test
+    @Test(timeout = TEST_TIMEOUT)
     public void testPreparedThenAbort() throws Exception {
         String path = Paths.get(
                 String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "serverHelloWorld.rpt"))
@@ -528,7 +529,7 @@ public class HttpControlledRobotServerIT {
         InputStream inputStream = client.getInputStream();
 
         byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(prepare);
@@ -547,7 +548,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(preparedExpected, prepared);
 
         byte[] abort = ("POST /ABORT HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(abort);
@@ -575,7 +576,7 @@ public class HttpControlledRobotServerIT {
 
     }
 
-    @Test
+    @Test(timeout = TEST_TIMEOUT)
     public void testFullSession() throws Exception {
 
         String path = Paths.get(
@@ -591,7 +592,7 @@ public class HttpControlledRobotServerIT {
         InputStream inputStream = client.getInputStream();
 
         byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(prepare);
@@ -610,7 +611,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(preparedExpected, prepared);
 
         byte[] start = ("POST /START HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(start);
@@ -629,7 +630,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(startedExpected, started);
 
         byte[] resultRequest = ("POST /RESULT_REQUEST HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length() + "\n\n".length()) + "\r\n" + "\r\n" + "name:" + path + "\n\n\r\n")
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(resultRequest);
@@ -681,7 +682,7 @@ public class HttpControlledRobotServerIT {
         assertEquals(finishedExpected, finished);
     }
 
-    @Test
+    @Test(timeout = TEST_TIMEOUT)
     public void testInvalidScriptLocation() throws Exception {
         String script = loadScript("HttpRequestWithInvalidScriptLocation.rpt");
 

@@ -5,7 +5,7 @@ connected
 write "POST /PREPARE HTTP/1.1\r\n"
 write "Content-Length: 23\r\n"
 write "\r\n"
-write "name:NONEXISTENT_PATH\n\n\r\n"
+write "name:NONEXISTENT_PATH\r\n"
 
 # Receive ERROR response
 read "HTTP/1.1 200 OK\r\n"
