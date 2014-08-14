@@ -165,7 +165,7 @@ write notify <barrier>
 
 Robot allows reading/writing of messages as well as reading messages into variables to be written out latter
 
-##### test
+##### Text
 
 ```
 # Any String with ""
@@ -174,7 +174,7 @@ write "Any text goes here"
 read "Any text goes here"
 ```
 
-##### literal bytes
+##### Literal Bytes
 
 ```
 # Any literal bytes as Hex [0xaa ...]
@@ -220,10 +220,10 @@ read long
   read long  2 
 
 # Read a value into a variable 
-read (byte:variable)
-read (short:variable)
-read (int:variable)
-read (long:variable)
+read (byte:var)
+read (short:var)
+read (int:var)
+read (long:var)
 
 ```
 
@@ -242,7 +242,8 @@ write ${var}
 # will fail (it must have been captured through a read 
 # byte/short/int/long directive).
 
-read [(...){${var}]
+read ([...]:var)
+read ([0..$var]:capture)
 
 # El expressions
 
@@ -257,7 +258,7 @@ ${var-1}
 # that these expressions will be coerced to type long. For 
 # example, consider this script fragment:
 
-read short (:var)
+read (short:var)
 write ${var}
 write ${var-1}
 
