@@ -18,12 +18,25 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kaazing.robot.driver.behavior.RobotCompletionFuture;
+import org.kaazing.robot.driver.control.BadRequestMessage;
+import org.kaazing.robot.driver.control.ErrorMessage;
+import org.kaazing.robot.driver.control.FinishedMessage;
+import org.kaazing.robot.driver.control.PreparedMessage;
+import org.kaazing.robot.driver.control.StartedMessage;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class HttpControlledRobotServerIT {
 
     private RobotServer httpRobot;
     private String httpUrl = "http://localhost:61234";
-    Robot robot;
+    private Socket client;
+    private OutputStream outputStream;
+    private InputStream inputStream;
+    private ObjectMapper mapper;
+    private Robot robot;
+    
+    
     private static final int TEST_TIMEOUT = 2500;
 
     @Before
@@ -31,20 +44,81 @@ public class HttpControlledRobotServerIT {
         httpRobot = new HttpControlledRobotServer(URI.create(httpUrl));
         httpRobot.start();
         robot = new Robot();
+        
+        client = new Socket();
+        client.connect(new InetSocketAddress("localhost", 61234));
+        outputStream = client.getOutputStream();
+        inputStream = client.getInputStream();    
+        mapper = new ObjectMapper();
     }
 
     @After
     public void shutdownRobot() throws Exception {
         httpRobot.stop();
-
+        client.close();
     }
     
     @Test(timeout = TEST_TIMEOUT)
     public void testMultipleRuns() throws Exception {
+        String path = Paths.get(
+                String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "basicScript.rpt"))
+                .toString();
+        
+        byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
+                .getBytes("UTF-8");
+        
+        PreparedMessage preparedMessage = new PreparedMessage();
+        preparedMessage.setName(path);
+        
+        String preparedContent = mapper.writeValueAsString(preparedMessage);
+        ByteBuffer preparedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
+                + "Content-Length: " + preparedContent.length() + "\r\n" + "\r\n" + preparedContent).getBytes("UTF-8"));
+        
+        
+        byte[] start = ("POST /START HTTP/1.1\r\n" + "Content-Length: "
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
+                .getBytes("UTF-8");
+        
+        StartedMessage startedMessage = new StartedMessage();
+        startedMessage.setName(path);
+
+        String startedContent = mapper.writeValueAsString(startedMessage);
+        ByteBuffer startedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
+                + "Content-Length: " + startedContent.length() + "\r\n" + "\r\n" + startedContent).getBytes("UTF-8"));
+        
+        
+        FinishedMessage finishedMessage = new FinishedMessage();
+        finishedMessage.setName(path);
+        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n"
+                + "write \"Hello, World!\"\n" + "read \"Hello, World!\"\n\n" + "closed\n"
+                + "connect tcp://localhost:61111\n" + "connected\n\n" + "read \"Hello, World!\"\n"
+                + "write \"Hello, World!\"\n\n" + "close\n" + "closed\n");
+        finishedMessage.setObservedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n"
+                + "write \"Hello, World!\"\n" + "read \"Hello, World!\"\n\n" + "closed\n"
+                + "connect tcp://localhost:61111\n" + "connected\n\n" + "read \"Hello, World!\"\n"
+                + "write \"Hello, World!\"\n\n" + "close\n" + "closed\n");
+
+        String finishedContent = mapper.writeValueAsString(finishedMessage);
+        ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
+                + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));
+
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setName(path);
+        errorMessage.setDescription("Script execution is not complete. Try again later");
+        errorMessage.setSummary("Early Request");
+        
+        String errorContent = mapper.writeValueAsString(errorMessage);
+        ByteBuffer errorExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
+                + "Content-Length: " + errorContent.length() + "\r\n" + "\r\n" + errorContent).getBytes("UTF-8"));
+        
+        
+        byte[] resultRequest = ("POST /RESULT_REQUEST HTTP/1.1\r\n" + "Content-Length: "
+                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
+                .getBytes("UTF-8");
+        
         for (int i = 0; i < 3; i++) {
-            String path = Paths.get(
-                    String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "basicScript.rpt"))
-                    .toString();
+
     
             Socket client = new Socket();
     
@@ -53,17 +127,12 @@ public class HttpControlledRobotServerIT {
             OutputStream outputStream = client.getOutputStream();
     
             InputStream inputStream = client.getInputStream();
-    
-            byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
-                    + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
-                    .getBytes("UTF-8");
+
     
             outputStream.write(prepare);
             outputStream.flush();
     
-            String preparedContent = "{\n    \"kind\": \"PREPARED\",\n    \"name\": \"" + path + "\"\n}";
-            ByteBuffer preparedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
-                    + "Content-Length: " + preparedContent.length() + "\r\n" + "\r\n" + preparedContent).getBytes("UTF-8"));
+
     
             ByteBuffer prepared = ByteBuffer.allocate(preparedExpected.capacity());
             while (prepared.hasRemaining()) {
@@ -72,17 +141,11 @@ public class HttpControlledRobotServerIT {
             prepared.flip();
     
             assertEquals(preparedExpected, prepared);
-    
-            byte[] start = ("POST /START HTTP/1.1\r\n" + "Content-Length: "
-                    + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
-                    .getBytes("UTF-8");
+
     
             outputStream.write(start);
             outputStream.flush();
-    
-            String startedContent = "{\n" + "    \"kind\": \"STARTED\",\n" + "    \"name\": \"" + path + "\"\n}";
-            ByteBuffer startedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
-                    + "Content-Length: " + startedContent.length() + "\r\n" + "\r\n" + startedContent).getBytes("UTF-8"));
+
     
             ByteBuffer started = ByteBuffer.allocate(startedExpected.capacity());
             while (started.hasRemaining()) {
@@ -91,31 +154,11 @@ public class HttpControlledRobotServerIT {
             started.flip();
     
             assertEquals(startedExpected, started);
-    
-            byte[] resultRequest = ("POST /RESULT_REQUEST HTTP/1.1\r\n" + "Content-Length: "
-                    + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
-                    .getBytes("UTF-8");
+
     
             outputStream.write(resultRequest);
             outputStream.flush();
-    
-            String finishedContent = "{\n"
-                    + "    \"kind\": \"FINISHED\",\n"
-                    + "    \"name\": \""
-                    + path
-                    + "\",\n"
-                    + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
-                    + "    \"observed_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\"\n"
-                    + "}";
-            ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
-                    + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));
-    
-            String errorContent = "{\n" + "    \"kind\": \"ERROR\",\n" + "    \"name\": \"" + path + "\",\n"
-                    + "    \"summary\": \"Early Request\",\n"
-                    + "    \"content\": \"Script execution is not complete. Try again later\"\n" + "}";
-    
-            ByteBuffer errorExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
-                    + "Content-Length: " + errorContent.length() + "\r\n" + "\r\n" + errorContent).getBytes("UTF-8"));
+
     
             ByteBuffer finished = ByteBuffer.allocate(errorExpected.capacity());
             while (finished.hasRemaining()) {
@@ -152,23 +195,18 @@ public class HttpControlledRobotServerIT {
                 .get(String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH,
                         "clientHelloWorld.rpt")).toString();
 
-        Socket client = new Socket();
-
-        client.connect(new InetSocketAddress("localhost", 61234));
-
-        OutputStream outputStream = client.getOutputStream();
-
-        InputStream inputStream = client.getInputStream();
-
         byte[] abort = ("POST /ABORT HTTP/1.1\r\n" + "Content-Length: "
                 + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(abort);
         outputStream.flush();
+        
+        BadRequestMessage badRequestMessage = new BadRequestMessage();
+        badRequestMessage.setName(path);
+        badRequestMessage.setContent("Abort cannot be requested for the given script in the current state");
 
-        String badRequestContent = "{\n" + "    \"kind\": \"BAD_REQUEST\",\n" + "    \"name\": \"" + path + "\",\n"
-                + "    \"content\": \"Abort cannot be requested for the given script in the current state\"\n" + "}";
+        String badRequestContent = mapper.writeValueAsString(badRequestMessage);
         ByteBuffer badRequestExpected = ByteBuffer.wrap(("HTTP/1.1 400 Bad Request\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + badRequestContent.length() + "\r\n" + "\r\n" + badRequestContent)
                 .getBytes("UTF-8"));
@@ -179,8 +217,6 @@ public class HttpControlledRobotServerIT {
         }
         badRequest.flip();
 
-        client.close();
-
         assertEquals(badRequestExpected, badRequest);
     }
 
@@ -190,14 +226,6 @@ public class HttpControlledRobotServerIT {
                 String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "basicScript.rpt"))
                 .toString();
 
-        Socket client = new Socket();
-
-        client.connect(new InetSocketAddress("localhost", 61234));
-
-        OutputStream outputStream = client.getOutputStream();
-
-        InputStream inputStream = client.getInputStream();
-
         byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
                 + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
@@ -205,7 +233,11 @@ public class HttpControlledRobotServerIT {
         outputStream.write(prepare);
         outputStream.flush();
 
-        String preparedContent = "{\n    \"kind\": \"PREPARED\",\n    \"name\": \"" + path + "\"\n}";
+        PreparedMessage preparedMessage = new PreparedMessage();
+        preparedMessage.setName(path);
+        
+        String preparedContent = mapper.writeValueAsString(preparedMessage);
+        
         ByteBuffer preparedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + preparedContent.length() + "\r\n" + "\r\n" + preparedContent).getBytes("UTF-8"));
 
@@ -224,7 +256,10 @@ public class HttpControlledRobotServerIT {
         outputStream.write(start);
         outputStream.flush();
 
-        String startedContent = "{\n" + "    \"kind\": \"STARTED\",\n" + "    \"name\": \"" + path + "\"\n}";
+        StartedMessage startedMessage = new StartedMessage();
+        startedMessage.setName(path);
+
+        String startedContent = mapper.writeValueAsString(startedMessage);
         ByteBuffer startedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + startedContent.length() + "\r\n" + "\r\n" + startedContent).getBytes("UTF-8"));
 
@@ -243,20 +278,27 @@ public class HttpControlledRobotServerIT {
         outputStream.write(resultRequest);
         outputStream.flush();
 
-        String finishedContent = "{\n"
-                + "    \"kind\": \"FINISHED\",\n"
-                + "    \"name\": \""
-                + path
-                + "\",\n"
-                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
-                + "    \"observed_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\"\n"
-                + "}";
+        FinishedMessage finishedMessage = new FinishedMessage();
+        finishedMessage.setName(path);
+        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n"
+                + "write \"Hello, World!\"\n" + "read \"Hello, World!\"\n\n" + "closed\n"
+                + "connect tcp://localhost:61111\n" + "connected\n\n" + "read \"Hello, World!\"\n"
+                + "write \"Hello, World!\"\n\n" + "close\n" + "closed\n");
+        finishedMessage.setObservedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n"
+                + "write \"Hello, World!\"\n" + "read \"Hello, World!\"\n\n" + "closed\n"
+                + "connect tcp://localhost:61111\n" + "connected\n\n" + "read \"Hello, World!\"\n"
+                + "write \"Hello, World!\"\n\n" + "close\n" + "closed\n");
+
+        String finishedContent = mapper.writeValueAsString(finishedMessage);
         ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));
 
-        String errorContent = "{\n" + "    \"kind\": \"ERROR\",\n" + "    \"name\": \"" + path + "\",\n"
-                + "    \"summary\": \"Early Request\",\n"
-                + "    \"content\": \"Script execution is not complete. Try again later\"\n" + "}";
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setName(path);
+        errorMessage.setDescription("Script execution is not complete. Try again later");
+        errorMessage.setSummary("Early Request");
+        
+        String errorContent = mapper.writeValueAsString(errorMessage);
 
         ByteBuffer errorExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + errorContent.length() + "\r\n" + "\r\n" + errorContent).getBytes("UTF-8"));
@@ -299,8 +341,6 @@ public class HttpControlledRobotServerIT {
         }
         finishedRecv.flip();
 
-        client.close();
-
         assertEquals(finishedExpected, finishedRecv);
     }
 
@@ -311,14 +351,6 @@ public class HttpControlledRobotServerIT {
                 String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "basicScript.rpt"))
                 .toString();
 
-        Socket client = new Socket();
-
-        client.connect(new InetSocketAddress("localhost", 61234));
-
-        OutputStream outputStream = client.getOutputStream();
-
-        InputStream inputStream = client.getInputStream();
-
         byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
                 + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
@@ -326,7 +358,10 @@ public class HttpControlledRobotServerIT {
         outputStream.write(prepare);
         outputStream.flush();
 
-        String preparedContent = "{\n    \"kind\": \"PREPARED\",\n    \"name\": \"" + path + "\"\n}";
+        PreparedMessage preparedMessage = new PreparedMessage();
+        preparedMessage.setName(path);
+        
+        String preparedContent = mapper.writeValueAsString(preparedMessage);
         ByteBuffer preparedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + preparedContent.length() + "\r\n" + "\r\n" + preparedContent).getBytes("UTF-8"));
 
@@ -345,7 +380,10 @@ public class HttpControlledRobotServerIT {
         outputStream.write(start);
         outputStream.flush();
 
-        String startedContent = "{\n" + "    \"kind\": \"STARTED\",\n" + "    \"name\": \"" + path + "\"\n}";
+        StartedMessage startedMessage = new StartedMessage();
+        startedMessage.setName(path);
+
+        String startedContent = mapper.writeValueAsString(startedMessage);
         ByteBuffer startedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + startedContent.length() + "\r\n" + "\r\n" + startedContent).getBytes("UTF-8"));
 
@@ -364,20 +402,27 @@ public class HttpControlledRobotServerIT {
         outputStream.write(resultRequest);
         outputStream.flush();
 
-        String finishedContent = "{\n"
-                + "    \"kind\": \"FINISHED\",\n"
-                + "    \"name\": \""
-                + path
-                + "\",\n"
-                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
-                + "    \"observed_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\"\n"
-                + "}";
+        FinishedMessage finishedMessage = new FinishedMessage();
+        finishedMessage.setName(path);
+        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n"
+                + "write \"Hello, World!\"\n" + "read \"Hello, World!\"\n\n" + "closed\n"
+                + "connect tcp://localhost:61111\n" + "connected\n\n" + "read \"Hello, World!\"\n"
+                + "write \"Hello, World!\"\n\n" + "close\n" + "closed\n");
+        finishedMessage.setObservedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n"
+                + "write \"Hello, World!\"\n" + "read \"Hello, World!\"\n\n" + "closed\n"
+                + "connect tcp://localhost:61111\n" + "connected\n\n" + "read \"Hello, World!\"\n"
+                + "write \"Hello, World!\"\n\n" + "close\n" + "closed\n");
+
+        String finishedContent = mapper.writeValueAsString(finishedMessage);
         ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));
 
-        String errorContent = "{\n" + "    \"kind\": \"ERROR\",\n" + "    \"name\": \"" + path + "\",\n"
-                + "    \"summary\": \"Early Request\",\n"
-                + "    \"content\": \"Script execution is not complete. Try again later\"\n" + "}";
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setName(path);
+        errorMessage.setDescription("Script execution is not complete. Try again later");
+        errorMessage.setSummary("Early Request");
+        
+        String errorContent = mapper.writeValueAsString(errorMessage);
 
         ByteBuffer errorExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + errorContent.length() + "\r\n" + "\r\n" + errorContent).getBytes("UTF-8"));
@@ -417,8 +462,12 @@ public class HttpControlledRobotServerIT {
         outputStream.write(abort);
         outputStream.flush();
 
-        String badRequestContent = "{\n" + "    \"kind\": \"BAD_REQUEST\",\n" + "    \"name\": \"" + path + "\",\n"
-                + "    \"content\": \"Invalid Request. No results for requested script.\"\n" + "}";
+        
+        BadRequestMessage badRequestMessage = new BadRequestMessage();
+        badRequestMessage.setName(path);
+        badRequestMessage.setContent("Invalid Request. No results for requested script.");
+
+        String badRequestContent = mapper.writeValueAsString(badRequestMessage);
         ByteBuffer badRequestExpected = ByteBuffer.wrap(("HTTP/1.1 400 Bad Request\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + badRequestContent.length() + "\r\n" + "\r\n" + badRequestContent)
                 .getBytes("UTF-8"));
@@ -429,8 +478,6 @@ public class HttpControlledRobotServerIT {
         }
         badRequest.flip();
 
-        client.close();
-
         assertEquals(badRequestExpected, badRequest);
     }
 
@@ -439,23 +486,18 @@ public class HttpControlledRobotServerIT {
         String path = Paths
                 .get(String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH,
                         "serverHelloWorld.rpt")).toString();
-
-        Socket client = new Socket();
-
-        client.connect(new InetSocketAddress("localhost", 61234));
-
-        OutputStream outputStream = client.getOutputStream();
-
-        InputStream inputStream = client.getInputStream();
-
+        
         byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
                 + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(prepare);
         outputStream.flush();
-
-        String preparedContent = "{\n    \"kind\": \"PREPARED\",\n    \"name\": \"" + path + "\"\n}";
+        
+        PreparedMessage preparedMessage = new PreparedMessage();
+        preparedMessage.setName(path);
+        
+        String preparedContent = mapper.writeValueAsString(preparedMessage);
         ByteBuffer preparedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + preparedContent.length() + "\r\n" + "\r\n" + preparedContent).getBytes("UTF-8"));
 
@@ -473,8 +515,11 @@ public class HttpControlledRobotServerIT {
 
         outputStream.write(start);
         outputStream.flush();
+        
+        StartedMessage startedMessage = new StartedMessage();
+        startedMessage.setName(path);
 
-        String startedContent = "{\n" + "    \"kind\": \"STARTED\",\n" + "    \"name\": \"" + path + "\"\n}";
+        String startedContent = mapper.writeValueAsString(startedMessage);
         ByteBuffer startedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + startedContent.length() + "\r\n" + "\r\n" + startedContent).getBytes("UTF-8"));
 
@@ -492,14 +537,13 @@ public class HttpControlledRobotServerIT {
 
         outputStream.write(abort);
         outputStream.flush();
+        
+        FinishedMessage finishedMessage = new FinishedMessage();
+        finishedMessage.setName(path);
+        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n" + "write \"Hello, World!\"\n\n" + "closed\n");
+        finishedMessage.setObservedScript("accept tcp://localhost:61111\n");
 
-        String finishedContent = "{\n"
-                + "    \"kind\": \"FINISHED\",\n"
-                + "    \"name\": \""
-                + path
-                + "\",\n"
-                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\n\\nclosed\\n\",\n"
-                + "    \"observed_script\": \"accept tcp://localhost:61111\\n\"\n" + "}";
+        String finishedContent = mapper.writeValueAsString(finishedMessage);
         ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));
 
@@ -508,8 +552,6 @@ public class HttpControlledRobotServerIT {
             finished.put((byte) inputStream.read());
         }
         finished.flip();
-
-        client.close();
 
         assertEquals(finishedExpected, finished);
     }
@@ -520,22 +562,18 @@ public class HttpControlledRobotServerIT {
                 String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "serverHelloWorld.rpt"))
                 .toString();
 
-        Socket client = new Socket();
-
-        client.connect(new InetSocketAddress("localhost", 61234));
-
-        OutputStream outputStream = client.getOutputStream();
-
-        InputStream inputStream = client.getInputStream();
-
-        byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
-                + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
+        byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Host: localhost:11642\r\n" + "Content-Length: " 
+                + ("name:".length() + path.length()) + "\r\n" + "Connection: keep-alive\r\n" + 
+                "Origin: null\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
 
         outputStream.write(prepare);
         outputStream.flush();
 
-        String preparedContent = "{\n    \"kind\": \"PREPARED\",\n    \"name\": \"" + path + "\"\n}";
+        PreparedMessage preparedMessage = new PreparedMessage();
+        preparedMessage.setName(path);
+        
+        String preparedContent = mapper.writeValueAsString(preparedMessage);
         ByteBuffer preparedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + preparedContent.length() + "\r\n" + "\r\n" + preparedContent).getBytes("UTF-8"));
 
@@ -554,13 +592,12 @@ public class HttpControlledRobotServerIT {
         outputStream.write(abort);
         outputStream.flush();
 
-        String finishedContent = "{\n"
-                + "    \"kind\": \"FINISHED\",\n"
-                + "    \"name\": \""
-                + path
-                + "\",\n"
-                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\n\\nclosed\\n\",\n"
-                + "    \"observed_script\": \"accept tcp://localhost:61111\\n\"\n" + "}";
+        FinishedMessage finishedMessage = new FinishedMessage();
+        finishedMessage.setName(path);
+        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n" + "write \"Hello, World!\"\n\n" + "closed\n");
+        finishedMessage.setObservedScript("accept tcp://localhost:61111\n");
+
+        String finishedContent = mapper.writeValueAsString(finishedMessage);
         ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));
 
@@ -569,8 +606,6 @@ public class HttpControlledRobotServerIT {
             finished.put((byte) inputStream.read());
         }
         finished.flip();
-
-        client.close();
 
         assertEquals(finishedExpected, finished);
 
@@ -583,14 +618,6 @@ public class HttpControlledRobotServerIT {
                 String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "basicScript.rpt"))
                 .toString();
 
-        Socket client = new Socket();
-
-        client.connect(new InetSocketAddress("localhost", 61234));
-
-        OutputStream outputStream = client.getOutputStream();
-
-        InputStream inputStream = client.getInputStream();
-
         byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
                 + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
                 .getBytes("UTF-8");
@@ -598,7 +625,10 @@ public class HttpControlledRobotServerIT {
         outputStream.write(prepare);
         outputStream.flush();
 
-        String preparedContent = "{\n    \"kind\": \"PREPARED\",\n    \"name\": \"" + path + "\"\n}";
+        PreparedMessage preparedMessage = new PreparedMessage();
+        preparedMessage.setName(path);
+        
+        String preparedContent = mapper.writeValueAsString(preparedMessage);
         ByteBuffer preparedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + preparedContent.length() + "\r\n" + "\r\n" + preparedContent).getBytes("UTF-8"));
 
@@ -617,7 +647,10 @@ public class HttpControlledRobotServerIT {
         outputStream.write(start);
         outputStream.flush();
 
-        String startedContent = "{\n" + "    \"kind\": \"STARTED\",\n" + "    \"name\": \"" + path + "\"\n}";
+        StartedMessage startedMessage = new StartedMessage();
+        startedMessage.setName(path);
+
+        String startedContent = mapper.writeValueAsString(startedMessage);
         ByteBuffer startedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + startedContent.length() + "\r\n" + "\r\n" + startedContent).getBytes("UTF-8"));
 
@@ -636,20 +669,27 @@ public class HttpControlledRobotServerIT {
         outputStream.write(resultRequest);
         outputStream.flush();
 
-        String finishedContent = "{\n"
-                + "    \"kind\": \"FINISHED\",\n"
-                + "    \"name\": \""
-                + path
-                + "\",\n"
-                + "    \"expected_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\",\n"
-                + "    \"observed_script\": \"accept tcp://localhost:61111\\naccepted\\nconnected\\n\\nwrite \\\"Hello, World!\\\"\\nread \\\"Hello, World!\\\"\\n\\nclosed\\nconnect tcp://localhost:61111\\nconnected\\n\\nread \\\"Hello, World!\\\"\\nwrite \\\"Hello, World!\\\"\\n\\nclose\\nclosed\\n\"\n"
-                + "}";
+        FinishedMessage finishedMessage = new FinishedMessage();
+        finishedMessage.setName(path);
+        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n"
+                + "write \"Hello, World!\"\n" + "read \"Hello, World!\"\n\n" + "closed\n"
+                + "connect tcp://localhost:61111\n" + "connected\n\n" + "read \"Hello, World!\"\n"
+                + "write \"Hello, World!\"\n\n" + "close\n" + "closed\n");
+        finishedMessage.setObservedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n"
+                + "write \"Hello, World!\"\n" + "read \"Hello, World!\"\n\n" + "closed\n"
+                + "connect tcp://localhost:61111\n" + "connected\n\n" + "read \"Hello, World!\"\n"
+                + "write \"Hello, World!\"\n\n" + "close\n" + "closed\n");
+
+        String finishedContent = mapper.writeValueAsString(finishedMessage);
         ByteBuffer finishedExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + finishedContent.length() + "\r\n" + "\r\n" + finishedContent).getBytes("UTF-8"));
 
-        String errorContent = "{\n" + "    \"kind\": \"ERROR\",\n" + "    \"name\": \"" + path + "\",\n"
-                + "    \"summary\": \"Early Request\",\n"
-                + "    \"content\": \"Script execution is not complete. Try again later\"\n" + "}";
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setName(path);
+        errorMessage.setDescription("Script execution is not complete. Try again later");
+        errorMessage.setSummary("Early Request");
+        
+        String errorContent = mapper.writeValueAsString(errorMessage);
 
         ByteBuffer errorExpected = ByteBuffer.wrap(("HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n"
                 + "Content-Length: " + errorContent.length() + "\r\n" + "\r\n" + errorContent).getBytes("UTF-8"));
@@ -676,8 +716,6 @@ public class HttpControlledRobotServerIT {
             }
         }
         finished.flip();
-
-        client.close();
 
         assertEquals(finishedExpected, finished);
     }
