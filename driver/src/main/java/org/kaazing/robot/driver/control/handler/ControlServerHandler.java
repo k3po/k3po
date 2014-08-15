@@ -19,8 +19,12 @@
 
 package org.kaazing.robot.driver.control.handler;
 
+import static java.lang.Thread.currentThread;
+
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -88,8 +92,9 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
         final PrepareMessage prepare = (PrepareMessage) evt.getMessage();
 
+        String scriptName = prepare.getName();
         if (logger.isDebugEnabled()) {
-            logger.debug("preparing robot execution for script " + prepare.getName());
+            logger.debug("preparing robot execution for script " + scriptName);
         }
 
         robot = new Robot();
@@ -97,7 +102,17 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         ChannelFuture prepareFuture;
         try {
             // @formatter:off
-            List<String> lines = Files.readAllLines(Paths.get(prepare.getName()), StandardCharsets.UTF_8);
+            Path scriptPath = Paths.get(scriptName);
+
+            // load relative script paths via class loader to support
+            // separated specification projects that include Robot scripts only
+            if (!scriptPath.isAbsolute()) {
+                ClassLoader loader = currentThread().getContextClassLoader();
+                URL resource = loader.getResource(scriptName);
+                scriptPath = Paths.get(resource.toURI());
+            }
+
+            List<String> lines = Files.readAllLines(scriptPath, StandardCharsets.UTF_8);
             StringBuilder sb = new StringBuilder();
             for (String line: lines) {
                 sb.append(line);
@@ -106,7 +121,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             prepareFuture = robot.prepare(sb.toString());
             // @formatter:on
         } catch (Exception e) {
-            sendErrorMessage(ctx, e, prepare.getName());
+            sendErrorMessage(ctx, e, scriptName);
             return;
         }
 
