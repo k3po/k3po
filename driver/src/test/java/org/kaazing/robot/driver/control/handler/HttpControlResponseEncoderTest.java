@@ -48,16 +48,21 @@ import org.kaazing.robot.driver.control.PreparedMessage;
 import org.kaazing.robot.driver.control.StartedMessage;
 import org.kaazing.robot.driver.jmock.Expectations;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class HttpControlResponseEncoderTest {
     
     private Mockery context;
     private ChannelDownstreamHandler handler;
     private ServerBootstrap server;
     private ClientBootstrap client;
+    private ObjectMapper mapper;
 
     @Before
     public void setUp() throws Exception {
 
+        mapper = new ObjectMapper();
+        
         context = new Mockery();
 
         handler = context.mock(ChannelDownstreamHandler.class);
@@ -88,10 +93,12 @@ public class HttpControlResponseEncoderTest {
     public void shouldEncodePreparedMessage() throws Exception {
 
         // @formatter:off
-        ChannelBuffer content = copiedBuffer("{" + "\n" +
-                                             "    \"kind\": \"PREPARED\"," + "\n" +
-                                             "    \"name\": \"test\"" + "\n" + 
-                                             "}", UTF_8);
+        PreparedMessage preparedMessage = new PreparedMessage();
+        preparedMessage.setName("test");
+        
+        String contentString = mapper.writeValueAsString(preparedMessage);
+        
+        ChannelBuffer content = copiedBuffer(contentString, UTF_8);
         // @formatter:on
         final DefaultHttpResponse expected = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         expected.headers().add(HttpHeaders.Names.CONTENT_TYPE, "text/html");
@@ -103,9 +110,6 @@ public class HttpControlResponseEncoderTest {
                 oneOf(handler).handleDownstream(with(any(ChannelHandlerContext.class)), with(response(expected)));
             }
         });
-
-        PreparedMessage preparedMessage = new PreparedMessage();
-        preparedMessage.setName("test");
 
         ChannelFuture future = client.connect(new LocalAddress("test")).sync();
         Channel channel = future.getChannel();
@@ -119,10 +123,12 @@ public class HttpControlResponseEncoderTest {
     public void shouldEncodeStartedMessage() throws Exception {
 
         // @formatter:off
-        final ChannelBuffer content = copiedBuffer("{" + "\n" + 
-                                                    "    \"kind\": \"STARTED\"," + "\n" +
-                                                    "    \"name\": \"test\"" + "\n" +
-                                                    "}", UTF_8);
+
+        StartedMessage startedMessage = new StartedMessage();
+        startedMessage.setName("test");
+        
+        String contentString = mapper.writeValueAsString(startedMessage);
+        final ChannelBuffer content = copiedBuffer(contentString, UTF_8);
         // @formatter:on
         final DefaultHttpResponse expected = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         expected.headers().add(HttpHeaders.Names.CONTENT_TYPE, "text/html");
@@ -134,9 +140,6 @@ public class HttpControlResponseEncoderTest {
                 oneOf(handler).handleDownstream(with(any(ChannelHandlerContext.class)), with(response(expected)));
             }
         });
-
-        StartedMessage startedMessage = new StartedMessage();
-        startedMessage.setName("test");
 
         ChannelFuture future = client.connect(new LocalAddress("test")).sync();
         Channel channel = future.getChannel();
@@ -150,12 +153,14 @@ public class HttpControlResponseEncoderTest {
     public void shouldEncodeErrorMessage() throws Exception {
 
         // @formatter:off
-        final ChannelBuffer content = copiedBuffer("{" + "\n" +
-                                                    "    \"kind\": \"ERROR\"," + "\n" +
-                                                    "    \"name\": \"test\"," + "\n" +
-                                                    "    \"summary\": \"unexpected\"," + "\n" +
-                                                    "    \"content\": \"This was an unexpected error.\"" + "\n" +
-                                                    "}", UTF_8);
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setName("test");
+        errorMessage.setSummary("unexpected");
+        errorMessage.setDescription("This was an unexpected error.");
+        
+        String contentString = mapper.writeValueAsString(errorMessage);
+        
+        final ChannelBuffer content = copiedBuffer(contentString, UTF_8);
         // @formatter:on
         final DefaultHttpResponse expected = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         expected.headers().add(HttpHeaders.Names.CONTENT_TYPE, "text/html");
@@ -167,11 +172,6 @@ public class HttpControlResponseEncoderTest {
                 oneOf(handler).handleDownstream(with(any(ChannelHandlerContext.class)), with(response(expected)));
             }
         });
-
-        ErrorMessage errorMessage = new ErrorMessage();
-        errorMessage.setName("test");
-        errorMessage.setSummary("unexpected");
-        errorMessage.setDescription("This was an unexpected error.");
 
         ChannelFuture future = client.connect(new LocalAddress("test")).sync();
         Channel channel = future.getChannel();
