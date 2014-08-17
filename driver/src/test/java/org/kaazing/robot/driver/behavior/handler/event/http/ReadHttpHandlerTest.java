@@ -45,6 +45,7 @@ import org.jboss.netty.channel.ChannelUpstreamHandler;
 import org.jboss.netty.channel.ChildChannelStateEvent;
 import org.jboss.netty.channel.DefaultChildChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.channel.WriteCompletionEvent;
@@ -55,14 +56,12 @@ import org.jboss.netty.handler.timeout.DefaultIdleStateEvent;
 import org.jboss.netty.handler.timeout.IdleStateEvent;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
-
-import org.kaazing.robot.driver.jmock.Expectations;
-import org.kaazing.robot.driver.jmock.Mockery;
-import org.kaazing.robot.driver.behavior.handler.TestChannelEvent;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageMismatchException;
 import org.kaazing.robot.driver.behavior.handler.codec.http.HttpMessageContributingDecoder;
+import org.kaazing.robot.driver.behavior.handler.event.TestChannelEvent;
 import org.kaazing.robot.driver.behavior.handler.prepare.PreparationEvent;
+import org.kaazing.robot.driver.jmock.Expectations;
+import org.kaazing.robot.driver.jmock.Mockery;
 
 public class ReadHttpHandlerTest {
     private Mockery context;
@@ -342,7 +341,6 @@ public class ReadHttpHandlerTest {
         context.assertIsSatisfied();
     }
 
-    @Ignore("DPW to fix")
     @Test
     public void shouldConsumeAndFailUpstreamHttpEventThatDoesNotMatch() throws Exception {
         final HttpMessage message = context.mock(HttpMessage.class);
@@ -353,8 +351,8 @@ public class ReadHttpHandlerTest {
                         with(any(PreparationEvent.class)));
                 oneOf(decoder).decode(with(any(HttpMessage.class)));
                 will(throwException(new MessageMismatchException("Message does not match", "expected", "observed")));
-                oneOf(upstream).handleUpstream(with(any(ChannelHandlerContext.class)),
-                        with(any(PreparationEvent.class)));
+                allowing(upstream).handleUpstream(with(any(ChannelHandlerContext.class)),
+                        with(any(MessageEvent.class)));
             }
         });
 

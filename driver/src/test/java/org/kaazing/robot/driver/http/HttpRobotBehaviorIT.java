@@ -19,13 +19,14 @@
 
 package org.kaazing.robot.driver.http;
 
+import static java.lang.String.format;
+import static java.nio.file.Files.readAllLines;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -373,7 +374,7 @@ public class HttpRobotBehaviorIT {
             sb.append("#");
             sb.append(scriptName);
             sb.append("\n");
-            List<String> lines = Files.readAllLines(Paths.get(String.format("%s%s%s", Paths.get("").toAbsolutePath()
+            List<String> lines = readAllLines(Paths.get(format("%s%s%s", Paths.get("").toAbsolutePath()
                     .toString(), SCRIPT_PATH, scriptName)), StandardCharsets.UTF_8);
             for (String line : lines) {
                 sb.append(line);

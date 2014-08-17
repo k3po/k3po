@@ -58,10 +58,8 @@ import org.jboss.netty.handler.timeout.DefaultIdleStateEvent;
 import org.jboss.netty.handler.timeout.IdleStateEvent;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.kaazing.robot.driver.jmock.Expectations;
 import org.kaazing.robot.driver.jmock.Mockery;
-import org.kaazing.robot.driver.behavior.handler.TestChannelEvent;
 import org.kaazing.robot.driver.behavior.handler.prepare.PreparationEvent;
 
 public class OpenedHandlerTest {
