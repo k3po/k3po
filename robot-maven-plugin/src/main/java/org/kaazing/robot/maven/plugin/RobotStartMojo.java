@@ -24,13 +24,13 @@ import static java.lang.System.currentTimeMillis;
 import static java.lang.System.identityHashCode;
 import static org.jboss.netty.logging.InternalLoggerFactory.setDefaultFactory;
 
+import java.io.File;
 import java.net.URI;
 
 import org.apache.maven.plugin.MojoExecutionException;
-
-import org.kaazing.robot.maven.plugin.logging.MavenLoggerFactory;
 import org.kaazing.robot.driver.RobotServer;
 import org.kaazing.robot.driver.RobotServerFactories;
+import org.kaazing.robot.maven.plugin.logging.MavenLoggerFactory;
 
 /**
  * Start the Robot
@@ -53,6 +53,11 @@ public class RobotStartMojo extends AbstractRobotMojo {
     private URI connectURI;
 
     /**
+     * @parameter default-value="src/test/scripts"
+     */
+    private File scriptDir;
+
+    /**
      * @parameter default-value="false" expression="${maven.robot.verbose}"
      */
     private boolean verbose;
@@ -61,7 +66,7 @@ public class RobotStartMojo extends AbstractRobotMojo {
     protected void executeImpl() throws MojoExecutionException {
 
         try {
-            RobotServer server = RobotServerFactories.createRobotServerFactory().createRobotServer(connectURI, verbose);
+            RobotServer server = RobotServerFactories.createRobotServerFactory().createRobotServer(connectURI, verbose, scriptDir);
 
             // TODO: detect Maven version to determine logger factory
             //         3.0 -> MavenLoggerFactory

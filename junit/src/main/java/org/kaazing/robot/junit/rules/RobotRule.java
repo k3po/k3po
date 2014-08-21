@@ -19,16 +19,18 @@
 
 package org.kaazing.robot.junit.rules;
 
+import static java.lang.String.format;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.rules.Verifier;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runners.model.Statement;
-
 import org.kaazing.robot.junit.annotation.Robotic;
 
 public final class RobotRule extends Verifier {
+
+    private static final String SCRIPT_EXTENSION = ".rpt";
 
     /*
      * For some reason earlier versions of Junit will cause tests to either hang
@@ -57,18 +59,37 @@ public final class RobotRule extends Verifier {
     }
 
     private final RoboticLatch latch;
+    private String scriptRoot;
 
     public RobotRule() {
         latch = new RoboticLatch();
     }
 
+    public RobotRule setScriptRoot(String scriptRoot) {
+        this.scriptRoot = scriptRoot;
+        return this;
+    }
+
     @Override
-    public Statement apply(Statement statement, Description description) {
+    public Statement apply(Statement statement, final Description description) {
 
         Robotic note = description.getAnnotation(Robotic.class);
         if (note != null) {
             // decorate with Robotic behavior only if @Robotic annotation is present
-            statement = new RoboticStatement(description, statement, latch);
+            String packagePath = this.scriptRoot;
+            if (packagePath == null) {
+                Class<?> testClass = description.getTestClass();
+                String packageName = testClass.getPackage().getName();
+                packagePath = packageName.replaceAll("\\.", "/");
+            }
+            // script is a required attribute on @Robotic
+            String scriptName = format("%s/%s", packagePath, note.script());
+            System.out.println("1." + scriptName);
+            if (scriptName.endsWith(SCRIPT_EXTENSION)) {
+                scriptName = scriptName.substring(0, scriptName.length() - SCRIPT_EXTENSION.length());
+            }
+            System.out.println("2." + scriptName);
+            statement = new RoboticStatement(statement, scriptName, latch);
         }
 
         return super.apply(statement, description);

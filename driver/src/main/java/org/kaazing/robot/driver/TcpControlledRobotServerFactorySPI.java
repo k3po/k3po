@@ -19,13 +19,14 @@
 
 package org.kaazing.robot.driver;
 
+import java.io.File;
 import java.net.URI;
 
 public class TcpControlledRobotServerFactorySPI extends RobotServerFactorySPI {
 
     @Override
-    public RobotServer createRobotServer(URI uri, boolean verbose) {
-        return new TcpControlledRobotServer(uri, verbose);
+    public RobotServer createRobotServer(URI uri, boolean verbose, File scriptDir) {
+        return new TcpControlledRobotServer(uri, verbose, scriptDir);
     }
 
     @Override

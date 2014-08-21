@@ -19,13 +19,14 @@
 
 package org.kaazing.robot.driver;
 
+import static java.lang.String.format;
+
+import java.io.File;
 import java.net.URI;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import static java.lang.String.format;
 
 public final class RobotServerFactories {
 
@@ -59,7 +60,7 @@ public final class RobotServerFactories {
         }
 
         @Override
-        public RobotServer createRobotServer(URI uri, boolean verbose) {
+        public RobotServer createRobotServer(URI uri, boolean verbose, File scriptDir) {
             final String schemeName = uri.getScheme();
             if (schemeName == null) {
                 throw new NullPointerException("scheme");
@@ -70,7 +71,7 @@ public final class RobotServerFactories {
                 throw new IllegalArgumentException(format("Unable to load scheme '%s': No appropriate Robot Server" +
                         " factory found", schemeName));
             }
-            return factory.createRobotServer(uri, verbose);
+            return factory.createRobotServer(uri, verbose, scriptDir);
         }
     }
 }
