@@ -20,15 +20,18 @@
 package org.kaazing.robot.driver.control.handler;
 
 import static java.lang.String.format;
-import static java.lang.Thread.currentThread;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.FileSystems.newFileSystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 
 import org.jboss.netty.channel.ChannelFuture;
@@ -128,10 +131,14 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 // resolve relative scripts from class loader to support
                 // separated specification projects that include Robot scripts only
                 if (script == null) {
-                    ClassLoader loader = currentThread().getContextClassLoader();
+                    ClassLoader loader = getClass().getClassLoader();
                     URL resource = loader.getResource(scriptNameWithExtension);
                     if (resource != null) {
-                        script = readScript(Paths.get(resource.toURI()));
+                        URI resourceURI = resource.toURI();
+                        try (FileSystem fileSystem = newFileSystem(resourceURI, Collections.<String, Object>emptyMap())) {
+                            Path resourcePath = Paths.get(resourceURI);
+                            script = readScript(resourcePath);
+                        }
                     }
                 }
             }
