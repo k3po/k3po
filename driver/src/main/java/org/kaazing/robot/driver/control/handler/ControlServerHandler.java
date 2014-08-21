@@ -19,10 +19,13 @@
 
 package org.kaazing.robot.driver.control.handler;
 
+import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -55,6 +58,12 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     private RobotCompletionFuture scriptDoneFuture;
 
     private final ChannelFuture channelClosedFuture = Channels.future(null);
+
+    private File scriptDir;
+
+    public void setScriptDir(File scriptDir) {
+        this.scriptDir = scriptDir;
+    }
 
     // Note that this is more than just the channel close future. It's a future that means not only
     // that this channel has closed but it is a future that tells us when this obj has processed the closed event.
@@ -97,28 +106,45 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             logger.debug("preparing robot execution for script " + scriptName);
         }
 
+        String scriptNameWithExtension = format("%s.rpt", scriptName);
+
         robot = new Robot();
 
         ChannelFuture prepareFuture;
         try {
             // @formatter:off
-            Path scriptPath = Paths.get(scriptName);
+            Path scriptPath = Paths.get(scriptNameWithExtension);
+            String script = null;
 
-            // load relative script paths via class loader to support
-            // separated specification projects that include Robot scripts only
             if (!scriptPath.isAbsolute()) {
-                ClassLoader loader = currentThread().getContextClassLoader();
-                URL resource = loader.getResource(scriptName);
-                scriptPath = Paths.get(resource.toURI());
+                // resolve relative scripts in local file system
+                if (scriptDir != null) {
+                    File scriptFile = new File(scriptDir, scriptPath.toString());
+                    if (scriptFile.exists()) {
+                        script = readScript(scriptFile.toPath());
+                    }
+                }
+
+                // resolve relative scripts from class loader to support
+                // separated specification projects that include Robot scripts only
+                if (script == null) {
+                    ClassLoader loader = currentThread().getContextClassLoader();
+                    URL resource = loader.getResource(scriptNameWithExtension);
+                    if (resource != null) {
+                        script = readScript(Paths.get(resource.toURI()));
+                    }
+                }
+            }
+            else {
+                // backwards compatibility
+                script = readScript(Paths.get(scriptName));
             }
 
-            List<String> lines = Files.readAllLines(scriptPath, StandardCharsets.UTF_8);
-            StringBuilder sb = new StringBuilder();
-            for (String line: lines) {
-                sb.append(line);
-                sb.append("\n");
+            if (script == null) {
+                throw new RuntimeException("Script not found: " + scriptPath);
             }
-            prepareFuture = robot.prepare(sb.toString());
+
+            prepareFuture = robot.prepare(script);
             // @formatter:on
         } catch (Exception e) {
             sendErrorMessage(ctx, e, scriptName);
@@ -133,6 +159,17 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 Channels.write(ctx, Channels.future(null), prepared);
             }
         });
+    }
+
+    private String readScript(Path scriptPath) throws IOException {
+        List<String> lines = Files.readAllLines(scriptPath, UTF_8);
+        StringBuilder sb = new StringBuilder();
+        for (String line: lines) {
+            sb.append(line);
+            sb.append("\n");
+        }
+        String script = sb.toString();
+        return script;
     }
 
     @Override

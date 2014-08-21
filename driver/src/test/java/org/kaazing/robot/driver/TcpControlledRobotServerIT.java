@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ConnectException;
@@ -33,7 +34,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
 import java.nio.CharBuffer;
-import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,7 +56,7 @@ public class TcpControlledRobotServerIT {
 
     @Before
     public void setupRobot() throws Exception {
-        robot = new TcpControlledRobotServer(URI.create("tcp://localhost:61234"), false);
+        robot = new TcpControlledRobotServer(URI.create("tcp://localhost:61234"), false, new File("src/test/scripts"));
         robot.start();
         control = new Socket();
         control.connect(new InetSocketAddress("localhost", 61234));
@@ -87,7 +87,7 @@ public class TcpControlledRobotServerIT {
     @Test(timeout = 2000)
     public void shouldFinishEmptyOK() throws Exception {
 
-        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/emptyScript.rpt";
+        String path = "org/kaazing/robot/driver/emptyScript";
         // @formatter:off
         String strPrepared = "PREPARED\n" +
                              "name:" + path + "\n" + 
@@ -137,7 +137,7 @@ public class TcpControlledRobotServerIT {
     @Test(timeout = 2000)
     public void shouldPrepareThenStartOK() throws Exception {
 
-        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/accept-then-close.rpt";
+        String path = "org/kaazing/robot/driver/accept-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
                                     "name:" + path + "\n" +
@@ -180,7 +180,7 @@ public class TcpControlledRobotServerIT {
     @Test(timeout = 2000)
     public void shouldAcceptThenCloseWithPrepareOK() throws Exception {
 
-        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/accept-then-close.rpt";
+        String path = "org/kaazing/robot/driver/accept-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
                                      "name:" + path + "\n" +
@@ -256,7 +256,7 @@ public class TcpControlledRobotServerIT {
     @Test(timeout = 2000)
     public void shouldAcceptThenCloseOK() throws Exception {
 
-        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/accept-then-close.rpt";
+        String path = "org/kaazing/robot/driver/accept-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
                                      "name:" + path + "\n" + 
@@ -333,7 +333,7 @@ public class TcpControlledRobotServerIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/connect-then-close.rpt";
+        String path = "org/kaazing/robot/driver/connect-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
                                      "name:" + path + "\n" +
@@ -409,7 +409,7 @@ public class TcpControlledRobotServerIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/connect-then-close.rpt";
+        String path = "org/kaazing/robot/driver/connect-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
                                       "name:" + path + "\n" +
@@ -484,7 +484,7 @@ public class TcpControlledRobotServerIT {
 
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/shouldAbortOK.rpt";
+        String path = "org/kaazing/robot/driver/shouldAbortOK";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
                                      "name:" + path + "\n" +
@@ -589,7 +589,7 @@ public class TcpControlledRobotServerIT {
     public void shouldAbortOK2() throws Exception {
         server.bind(new InetSocketAddress("localhost", 62345));
 
-        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/shouldAbortOK.rpt";
+        String path = "org/kaazing/robot/driver/shouldAbortOK";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
                                      "name:" + path + "\n" +
@@ -637,7 +637,7 @@ public class TcpControlledRobotServerIT {
     @Test(timeout = 2500)
     public void shouldDisconnectOK() throws Exception {
 
-        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/accept-then-close.rpt";
+        String path = "org/kaazing/robot/driver/accept-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
                                      "name:" + path + "\n" +
@@ -680,7 +680,7 @@ public class TcpControlledRobotServerIT {
     @Test(timeout = 2000)
     public void shouldParseErrorOK() throws Exception {
 
-        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/invalidScript.rpt";
+        String path = "org/kaazing/robot/driver/invalidScript";
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
         out.append("name:" + path + "\n");

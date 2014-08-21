@@ -43,6 +43,12 @@ public class FileDrivenRobotController extends AbstractRobotController {
     private URI uri = URI.create("tcp://localhost:11642");
     private File robotInfoFile;
     private Boolean running = false;
+    private File scriptDir;
+
+    public void setScriptDir(File scriptDir) {
+        this.scriptDir = scriptDir;
+    }
+
     public FileDrivenRobotController(Interpreter interpreter, RobotControlFactory robotControlFactory,
                                      RobotServerFactory robotServerFactory) {
         super(interpreter);
@@ -56,7 +62,7 @@ public class FileDrivenRobotController extends AbstractRobotController {
         if (running) {
             throw new Exception("Robot is already running according to " + robotInfoFile + ", will not override file");
         }
-        RobotServer server = robotServerFactory.createRobotServer(uri, false);
+        RobotServer server = robotServerFactory.createRobotServer(uri, false, scriptDir);
         try {
             interpreter.println("Starting robot");
             server.start();

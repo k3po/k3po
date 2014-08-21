@@ -1,7 +1,10 @@
 package org.kaazing.robot.driver;
 
+import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -9,7 +12,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -41,7 +43,7 @@ public class HttpControlledRobotServerIT {
 
     @Before
     public void setupRobot() throws Exception {
-        httpRobot = new HttpControlledRobotServer(URI.create(httpUrl));
+        httpRobot = new HttpControlledRobotServer(URI.create(httpUrl), new File("src/test/scripts"));
         httpRobot.start();
         robot = new Robot();
         
@@ -61,7 +63,7 @@ public class HttpControlledRobotServerIT {
     @Test(timeout = TEST_TIMEOUT)
     public void testMultipleRuns() throws Exception {
         String path = Paths.get(
-                String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "basicScript.rpt"))
+                String.format("%s%s", SCRIPT_PATH, "basicScript"))
                 .toString();
         
         byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
@@ -191,9 +193,7 @@ public class HttpControlledRobotServerIT {
 
     @Test(timeout = TEST_TIMEOUT)
     public void testAbortBeforePrepare() throws Exception {
-        String path = Paths
-                .get(String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH,
-                        "clientHelloWorld.rpt")).toString();
+        String path = format("%s%s", SCRIPT_PATH, "clientHelloWorld");
 
         byte[] abort = ("POST /ABORT HTTP/1.1\r\n" + "Content-Length: "
                 + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
@@ -222,9 +222,7 @@ public class HttpControlledRobotServerIT {
 
     @Test(timeout = TEST_TIMEOUT)
     public void testAbortAfterFinished() throws Exception {
-        String path = Paths.get(
-                String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "basicScript.rpt"))
-                .toString();
+        String path = format("%s%s", SCRIPT_PATH, "basicScript");
 
         byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
                 + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
@@ -347,9 +345,7 @@ public class HttpControlledRobotServerIT {
     @Test(timeout = TEST_TIMEOUT)
     public void testWaitThenAbortAfterFinished() throws Exception {
 
-        String path = Paths.get(
-                String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "basicScript.rpt"))
-                .toString();
+        String path = format("%s%s", SCRIPT_PATH, "basicScript");
 
         byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
                 + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
@@ -483,9 +479,7 @@ public class HttpControlledRobotServerIT {
 
     @Test(timeout = TEST_TIMEOUT)
     public void testStartedThenAbort() throws Exception {
-        String path = Paths
-                .get(String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH,
-                        "serverHelloWorld.rpt")).toString();
+        String path = format("%s%s", SCRIPT_PATH, "serverHelloWorld");
         
         byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
                 + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
@@ -558,9 +552,7 @@ public class HttpControlledRobotServerIT {
 
     @Test(timeout = TEST_TIMEOUT)
     public void testPreparedThenAbort() throws Exception {
-        String path = Paths.get(
-                String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "serverHelloWorld.rpt"))
-                .toString();
+        String path = format("%s%s", SCRIPT_PATH, "serverHelloWorld");
 
         byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Host: localhost:11642\r\n" + "Content-Length: " 
                 + ("name:".length() + path.length()) + "\r\n" + "Connection: keep-alive\r\n" + 
@@ -614,9 +606,7 @@ public class HttpControlledRobotServerIT {
     @Test(timeout = TEST_TIMEOUT)
     public void testFullSession() throws Exception {
 
-        String path = Paths.get(
-                String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH, "basicScript.rpt"))
-                .toString();
+        String path = format("%s%s", SCRIPT_PATH, "basicScript");
 
         byte[] prepare = ("POST /PREPARE HTTP/1.1\r\n" + "Content-Length: "
                 + ("name:".length() + path.length()) + "\r\n" + "\r\n" + "name:" + path + "\r\n")
@@ -722,7 +712,7 @@ public class HttpControlledRobotServerIT {
 
     @Test(timeout = TEST_TIMEOUT)
     public void testInvalidScriptLocation() throws Exception {
-        String script = loadScript("HttpRequestWithInvalidScriptLocation.rpt");
+        String script = loadScript("HttpRequestWithInvalidScriptLocation");
 
         robot.prepareAndStart(script).await();
 
@@ -731,7 +721,7 @@ public class HttpControlledRobotServerIT {
         doneFuture.await();
     }
 
-    private String SCRIPT_PATH = "/src/test/scripts/org/kaazing/robot/control/";
+    private String SCRIPT_PATH = "org/kaazing/robot/control/";
 
     private String loadScript(String... scriptNames) throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -739,8 +729,7 @@ public class HttpControlledRobotServerIT {
             sb.append("#");
             sb.append(scriptName);
             sb.append("\n");
-            List<String> lines = Files.readAllLines(Paths.get(String.format("%s%s%s", Paths.get("").toAbsolutePath()
-                    .toString(), SCRIPT_PATH, scriptName)), StandardCharsets.UTF_8);
+            List<String> lines = Files.readAllLines(Paths.get(format("src/test/scripts/%s%s.rpt", SCRIPT_PATH, scriptName)), UTF_8);
             for (String line : lines) {
                 sb.append(line);
                 sb.append("\n");
