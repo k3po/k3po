@@ -84,11 +84,11 @@ public final class RobotRule extends Verifier {
             }
             // script is a required attribute on @Robotic
             String scriptName = format("%s/%s", packagePath, note.script());
-            System.out.println("1." + scriptName);
+
             if (scriptName.endsWith(SCRIPT_EXTENSION)) {
                 scriptName = scriptName.substring(0, scriptName.length() - SCRIPT_EXTENSION.length());
             }
-            System.out.println("2." + scriptName);
+
             statement = new RoboticStatement(statement, scriptName, latch);
         }
 
