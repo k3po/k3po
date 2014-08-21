@@ -19,11 +19,13 @@
 
 package org.kaazing.robot.driver.control;
 
+import java.util.Objects;
+
 public abstract class ControlMessage {
 
     public static enum Kind {
         PREPARE, PREPARED, START, STARTED, ERROR, ABORT, RESULT_REQUEST, FINISHED, BAD_REQUEST, CLEAR_CACHE
-    };
+    }
 
     private String name;
 
@@ -46,8 +48,7 @@ public abstract class ControlMessage {
     }
 
     protected final boolean equalTo(ControlMessage that) {
-        return this.getKind() == that.getKind()
-                && (this.name == that.name || (this.name != null && this.name.equals(that.name)));
+        return this.getKind() == that.getKind() && Objects.equals(this.name, that.name);
     }
 
     @Override
