@@ -19,6 +19,8 @@
 
 package org.kaazing.robot.driver.control;
 
+import java.util.Objects;
+
 public class ErrorMessage extends ControlMessage {
 
     private String summary;
@@ -59,10 +61,8 @@ public class ErrorMessage extends ControlMessage {
     }
 
     protected final boolean equals(ErrorMessage that) {
-        return super.equalTo(that)
-                && (this.summary == that.summary || (this.summary != null && this.summary.equals(that.summary)))
-                && (this.description == that.description || (this.description != null && this.description
-                        .equals(that.description)));
+        return super.equalTo(that) && Objects.equals(this.summary, that.summary)
+                && Objects.equals(this.description, that.description);
     }
 
     @Override
