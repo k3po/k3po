@@ -70,7 +70,7 @@ public class RobotStartMojo extends AbstractRobotMojo {
     private boolean verbose;
 
     @Override
-    protected void executeImpl() throws MojoExecutionException {  
+    protected void executeImpl() throws MojoExecutionException {
 
         try {
             ClassLoader scriptLoader = createScriptLoader();
