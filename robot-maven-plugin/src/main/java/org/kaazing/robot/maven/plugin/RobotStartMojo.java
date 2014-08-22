@@ -25,11 +25,18 @@ import static java.lang.System.identityHashCode;
 import static org.jboss.netty.logging.InternalLoggerFactory.setDefaultFactory;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.kaazing.robot.driver.RobotServer;
 import org.kaazing.robot.driver.RobotServerFactories;
+import org.kaazing.robot.driver.RobotServerFactory;
 import org.kaazing.robot.maven.plugin.logging.MavenLoggerFactory;
 
 /**
@@ -66,7 +73,10 @@ public class RobotStartMojo extends AbstractRobotMojo {
     protected void executeImpl() throws MojoExecutionException {
 
         try {
-            RobotServer server = RobotServerFactories.createRobotServerFactory().createRobotServer(connectURI, verbose, scriptDir);
+            ClassLoader scriptLoader = createScriptLoader();
+
+            RobotServerFactory robotServerFactory = RobotServerFactories.createRobotServerFactory();
+            RobotServer server = robotServerFactory.createRobotServer(connectURI, verbose, scriptLoader);
 
             // TODO: detect Maven version to determine logger factory
             //         3.0 -> MavenLoggerFactory
@@ -93,5 +103,18 @@ public class RobotStartMojo extends AbstractRobotMojo {
         catch (Exception e) {
             throw new MojoExecutionException("Robot failed to start", e);
         }
+    }
+
+    private ClassLoader createScriptLoader()
+            throws DependencyResolutionRequiredException, MalformedURLException {
+        List<URL> scriptPath = new LinkedList<URL>();
+        if (scriptDir != null) {
+            scriptPath.add(scriptDir.getAbsoluteFile().toURI().toURL());
+        }
+        for (Object scriptPathEntry : project.getTestClasspathElements()) {
+            URI scriptPathURI = new File(scriptPathEntry.toString()).getAbsoluteFile().toURI();
+            scriptPath.add(scriptPathURI.toURL());
+        }
+        return new URLClassLoader(scriptPath.toArray(new URL[scriptPath.size()]));
     }
 }

@@ -19,9 +19,8 @@
 
 package org.kaazing.robot.driver;
 
-import java.io.File;
 import java.net.URI;
 
 public interface RobotServerFactory {
-    RobotServer createRobotServer(URI uri, boolean verbose, File scriptDir);
+    RobotServer createRobotServer(URI uri, boolean verbose, ClassLoader scriptLoader);
 }

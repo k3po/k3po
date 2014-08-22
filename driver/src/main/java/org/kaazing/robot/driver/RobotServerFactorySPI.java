@@ -19,12 +19,11 @@
 
 package org.kaazing.robot.driver;
 
-import java.io.File;
 import java.net.URI;
 
 public abstract class RobotServerFactorySPI implements RobotServerFactory {
     @Override
-    public abstract RobotServer createRobotServer(URI uri, boolean verbose, File scriptDir);
+    public abstract RobotServer createRobotServer(URI uri, boolean verbose, ClassLoader scriptLoader);
 
     /**
      * Returns the name of the scheme provided by factories using this

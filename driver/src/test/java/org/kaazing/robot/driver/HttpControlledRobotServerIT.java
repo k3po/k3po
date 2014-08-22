@@ -11,6 +11,8 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -43,7 +45,7 @@ public class HttpControlledRobotServerIT {
 
     @Before
     public void setupRobot() throws Exception {
-        httpRobot = new HttpControlledRobotServer(URI.create(httpUrl), new File("src/test/scripts"));
+        httpRobot = new HttpControlledRobotServer(URI.create(httpUrl), new URLClassLoader(new URL[] { new File("src/test/scripts").toURI().toURL() }));
         httpRobot.start();
         robot = new Robot();
         
