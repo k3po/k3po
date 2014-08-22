@@ -33,10 +33,10 @@ public class InProcessRobotController extends AbstractRobotController {
     private RobotServer server;
     private final RobotControlFactory robotControlFactory;
     private URI uri = URI.create("tcp://localhost:11642");
-    private File scriptDir;
+    private ClassLoader scriptLoader;
 
-    public void setScriptDir(File scriptDir) {
-        this.scriptDir = scriptDir;
+    public void setScriptLoader(ClassLoader scriptLoader) {
+        this.scriptLoader = scriptLoader;
     }
 
     public InProcessRobotController(Interpreter interpreter, RobotControlFactory robotControlFactory,
@@ -49,7 +49,7 @@ public class InProcessRobotController extends AbstractRobotController {
     @Override
     public void startRobotServer() throws Exception {
         if (server == null) {
-            server = robotServerFactory.createRobotServer(uri, false, scriptDir);
+            server = robotServerFactory.createRobotServer(uri, false, scriptLoader);
             try {
                 interpreter.println("Starting robot");
                 server.start();

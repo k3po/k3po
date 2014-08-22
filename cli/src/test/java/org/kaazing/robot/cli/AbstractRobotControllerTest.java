@@ -91,13 +91,13 @@ public abstract class AbstractRobotControllerTest {
         static RobotServer robotServer;
         static boolean verbose;
         static URI uri;
-        static File scriptDir;
+        static ClassLoader scriptLoader;
 
         @Override
-        public RobotServer createRobotServer(URI uri, boolean verbose, File scriptDir) {
+        public RobotServer createRobotServer(URI uri, boolean verbose, ClassLoader scriptLoader) {
             TestRobotServerFactory.uri = uri;
             TestRobotServerFactory.verbose = verbose;
-            TestRobotServerFactory.scriptDir = scriptDir;
+            TestRobotServerFactory.scriptLoader = scriptLoader;
             return robotServer;
         }
 

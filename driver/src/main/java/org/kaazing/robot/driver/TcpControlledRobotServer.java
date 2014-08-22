@@ -21,7 +21,6 @@ package org.kaazing.robot.driver;
 
 import static org.jboss.netty.channel.Channels.pipeline;
 
-import java.io.File;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -62,12 +61,12 @@ public class TcpControlledRobotServer implements RobotServer {
     private final URI acceptURI;
     private Channel serverChannel;
     private final boolean verbose;
-    private final File scriptDir;
+    private final ClassLoader scriptLoader;
 
-    protected TcpControlledRobotServer(URI acceptURI, boolean verbose, File scriptDir) {
+    protected TcpControlledRobotServer(URI acceptURI, boolean verbose, ClassLoader scriptLoader) {
         this.acceptURI = acceptURI;
         this.verbose = verbose;
-        this.scriptDir = scriptDir;
+        this.scriptLoader = scriptLoader;
         channelGroup = new DefaultChannelGroup("robot-server");
         controlHandlers = new CopyOnWriteArrayList<ControlServerHandler>();
     }
@@ -105,7 +104,7 @@ public class TcpControlledRobotServer implements RobotServer {
                 }
 
                 ControlServerHandler controller = new ControlServerHandler();
-                controller.setScriptDir(scriptDir);
+                controller.setScriptLoader(scriptLoader);
                 pipeline.addLast("control.handler", controller);
 
                 return pipeline;

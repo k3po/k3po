@@ -33,6 +33,8 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.CharBuffer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,7 +58,7 @@ public class TcpControlledRobotServerIT {
 
     @Before
     public void setupRobot() throws Exception {
-        robot = new TcpControlledRobotServer(URI.create("tcp://localhost:61234"), false, new File("src/test/scripts"));
+        robot = new TcpControlledRobotServer(URI.create("tcp://localhost:61234"), false, new URLClassLoader(new URL[] { new File("src/test/scripts").toURI().toURL() }));
         robot.start();
         control = new Socket();
         control.connect(new InetSocketAddress("localhost", 61234));

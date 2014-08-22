@@ -23,7 +23,6 @@ import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.FileSystems.newFileSystem;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -62,10 +61,10 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     private final ChannelFuture channelClosedFuture = Channels.future(null);
 
-    private File scriptDir;
+    private ClassLoader scriptLoader;
 
-    public void setScriptDir(File scriptDir) {
-        this.scriptDir = scriptDir;
+    public void setScriptLoader(ClassLoader scriptLoader) {
+        this.scriptLoader = scriptLoader;
     }
 
     // Note that this is more than just the channel close future. It's a future that means not only
@@ -121,23 +120,21 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
             if (!scriptPath.isAbsolute()) {
                 // resolve relative scripts in local file system
-                if (scriptDir != null) {
-                    File scriptFile = new File(scriptDir, scriptPath.toString());
-                    if (scriptFile.exists()) {
-                        script = readScript(scriptFile.toPath());
-                    }
-                }
-
-                // resolve relative scripts from class loader to support
-                // separated specification projects that include Robot scripts only
-                if (script == null) {
-                    ClassLoader loader = getClass().getClassLoader();
-                    URL resource = loader.getResource(scriptNameWithExtension);
+                if (scriptLoader != null) {
+                    // resolve relative scripts from class loader to support
+                    // separated specification projects that include Robot scripts only
+                    URL resource = scriptLoader.getResource(scriptNameWithExtension);
                     if (resource != null) {
                         URI resourceURI = resource.toURI();
-                        try (FileSystem fileSystem = newFileSystem(resourceURI, Collections.<String, Object>emptyMap())) {
+                        if ("file".equals(resourceURI.getScheme())) {
                             Path resourcePath = Paths.get(resourceURI);
                             script = readScript(resourcePath);
+                        }
+                        else {
+                            try (FileSystem fileSystem = newFileSystem(resourceURI, Collections.<String, Object>emptyMap())) {
+                                Path resourcePath = Paths.get(resourceURI);
+                                script = readScript(resourcePath);
+                            }
                         }
                     }
                 }
