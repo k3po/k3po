@@ -19,11 +19,10 @@
 
 package org.kaazing.robot.driver.netty.bootstrap;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.kaazing.robot.driver.executor.ExecutorServiceFactory;
 import org.kaazing.robot.driver.netty.bootstrap.spi.BootstrapFactorySpi;
@@ -32,11 +31,11 @@ public final class BootstrapFactory {
     private final Map<String, BootstrapFactorySpi> bootstrapFactories;
 
     private BootstrapFactory(Map<String, BootstrapFactorySpi> bootstrapFactories) {
-        this.bootstrapFactories = bootstrapFactories;
+        this.bootstrapFactories = Collections.unmodifiableMap(bootstrapFactories);
     }
 
     public static BootstrapFactory newBootstrapFactory() {
-        Map<Class<?>, Object> injectables = new HashMap<Class<?>, Object>();
+        Map<Class<?>, Object> injectables = new HashMap<>();
         injectables.put(ExecutorServiceFactory.class, ExecutorServiceFactory.newInstance());
         return newBootstrapFactory(injectables);
     }
@@ -45,10 +44,10 @@ public final class BootstrapFactory {
         ServiceLoader<BootstrapFactorySpi> loader = loadBootstrapFactorySpi();
 
         // load BootstrapFactorySpi instances
-        ConcurrentMap<String, BootstrapFactorySpi> bootstrapFactories = new ConcurrentHashMap<String, BootstrapFactorySpi>();
+        Map<String, BootstrapFactorySpi> bootstrapFactories = new HashMap<>();
         for (BootstrapFactorySpi bootstrapFactorySpi : loader) {
             String transportName = bootstrapFactorySpi.getTransportName();
-            BootstrapFactorySpi oldBootstrapFactorySpi = bootstrapFactories.putIfAbsent(transportName,
+            BootstrapFactorySpi oldBootstrapFactorySpi = bootstrapFactories.put(transportName,
                     bootstrapFactorySpi);
             if (oldBootstrapFactorySpi != null) {
                 throw new BootstrapException(String.format("Duplicate transport bootstrap factory: %s", transportName));
@@ -78,9 +77,7 @@ public final class BootstrapFactory {
     }
 
     private static ServiceLoader<BootstrapFactorySpi> loadBootstrapFactorySpi() {
-        Class<BootstrapFactorySpi> service = BootstrapFactorySpi.class;
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        return (classLoader != null) ? ServiceLoader.load(service, classLoader) : ServiceLoader.load(service);
+        return ServiceLoader.load(BootstrapFactorySpi.class);
     }
 
     private BootstrapFactorySpi findBootstrapFactory(String transportName) throws BootstrapException {
