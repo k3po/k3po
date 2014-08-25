@@ -71,18 +71,18 @@ public class Robot {
      * A list of completion futures that will indicate that the script is completed. Each stream except for a AcceptNode has
      * a completion handler. The completion handler's handlerFuture is the complete future
      */
-    private final List<ChannelFuture> completionFutures = new ArrayList<ChannelFuture>();
-    private final List<LocationInfo> progressInfos = new ArrayList<LocationInfo>();
-    private final Map<LocationInfo, Object> serverLocations = new HashMap<LocationInfo, Object>();
-    private final List<ChannelFuture> bindFutures = new ArrayList<ChannelFuture>();
-    private final List<ChannelFuture> connectFutures = new ArrayList<ChannelFuture>();
+    private final List<ChannelFuture> completionFutures = new ArrayList<>();
+    private final List<LocationInfo> progressInfos = new ArrayList<>();
+    private final Map<LocationInfo, Object> serverLocations = new HashMap<>();
+    private final List<ChannelFuture> bindFutures = new ArrayList<>();
+    private final List<ChannelFuture> connectFutures = new ArrayList<>();
 
     private final Channel channel = new DefaultLocalClientChannelFactory().newChannel(pipeline(new SimpleChannelHandler()));
     private final ChannelFuture startedFuture = Channels.future(channel);
     private final RobotCompletionFutureImpl finishedFuture = new RobotCompletionFutureImpl(channel, true);
     private final DefaultChannelGroup serverChannels = new DefaultChannelGroup();
     private final DefaultChannelGroup clientChannels = new DefaultChannelGroup();
-    private final Map<LocationInfo, Throwable> failedCauses = new HashMap<LocationInfo, Throwable>();
+    private final Map<LocationInfo, Throwable> failedCauses = new HashMap<>();
 
     private String expectedScript;
     private Configuration configuration;
@@ -266,7 +266,7 @@ public class Robot {
          * OK. Now listen for the set of all completion futures so that we can
          * tell the client when we are done
          */
-        ChannelFuture executionFuture = new CompositeChannelFuture<ChannelFuture>(channel, completionFutures);
+        ChannelFuture executionFuture = new CompositeChannelFuture<>(channel, completionFutures);
 
         executionFuture.addListener(new ChannelFutureListener() {
 
@@ -281,7 +281,7 @@ public class Robot {
                 if (debugLogEnabled) {
                     StringBuilder sb = new StringBuilder();
                     for (LocationInfo progressInfo : progressInfos) {
-                        sb.append(progressInfo + ",");
+                        sb.append(progressInfo).append(",");
                     }
                     LOGGER.debug("ProgressInfos at script completion: " + sb);
                 }
