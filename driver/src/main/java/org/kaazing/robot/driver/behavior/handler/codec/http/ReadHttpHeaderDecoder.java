@@ -58,7 +58,7 @@ public class ReadHttpHeaderDecoder implements HttpMessageContributingDecoder {
     public void decode(HttpMessage message) throws Exception {
         HttpHeaders headers = message.headers();
         if (headers.isEmpty()) {
-            new MessageMismatchException("Could not match non-existent header", name, null);
+            throw new MessageMismatchException("Could not match non-existent header", name, null);
         }
 
         int firstMatchingHeader = -1;

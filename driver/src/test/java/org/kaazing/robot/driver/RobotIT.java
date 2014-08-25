@@ -1362,9 +1362,9 @@ public class RobotIT {
     @Ignore("Can't get the nested matcher this test was created with to compile in java")
     @Test(timeout = TEST_TIMEOUT)
     public void shouldReadRegexWithBackRefAndCapturesOK() throws Exception {
-        Pattern pattern = Pattern.compile("/(?<all>Hello (?<subgroup>\\d+) Bye from \\g{2})\\n/");
-        Matcher matcher = pattern.matcher("Hello 123 Bye from 123\n");
-        assertTrue(matcher.matches());
+//        Pattern pattern = Pattern.compile("/(?<all>Hello (?<subgroup>\\d+) Bye from \\g{2})\\n/");
+//        Matcher matcher = pattern.matcher("Hello 123 Bye from 123\n");
+//        assertTrue(matcher.matches());
         // @formatter:off
         String script =
             "connect tcp://localhost:62345\n" +

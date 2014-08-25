@@ -66,7 +66,7 @@ public class ReadHttpParameterDecoder implements HttpMessageContributingDecoder 
         }
         List<String> parameterValues = getParameters(request);
         if (parameterValues.isEmpty()) {
-            new MessageMismatchException("Could not match non-existent parameter", key, null);
+            throw new MessageMismatchException("Could not match non-existent parameter", key, null);
         }
 
         int firstMatchingParameter = -1;
