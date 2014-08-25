@@ -19,6 +19,8 @@
 
 package org.kaazing.robot.driver.control;
 
+import java.util.Objects;
+
 public class FinishedMessage extends ControlMessage {
 
     private String observedScript = "";
@@ -56,11 +58,8 @@ public class FinishedMessage extends ControlMessage {
     }
 
     protected final boolean equals(FinishedMessage that) {
-        return super.equalTo(that)
-                && (this.observedScript == that.observedScript || (this.observedScript != null && this.observedScript
-                        .equals(that.observedScript)))
-                && (this.expectedScript == that.expectedScript || (this.expectedScript != null && this.expectedScript
-                        .equals(that.expectedScript)));
+        return super.equalTo(that) && Objects.equals(this.observedScript, that.observedScript)
+                && Objects.equals(this.expectedScript, that.expectedScript);
     }
 
     @Override

@@ -135,6 +135,7 @@ PatternCharacter
   : Letter
   | Digit
   | ':'
+  | '-'
   | ' '
   | '\\/'
   | '\\0' Digit ( Digit ( Digit )? )?

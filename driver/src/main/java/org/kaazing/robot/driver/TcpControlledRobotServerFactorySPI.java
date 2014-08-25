@@ -24,8 +24,8 @@ import java.net.URI;
 public class TcpControlledRobotServerFactorySPI extends RobotServerFactorySPI {
 
     @Override
-    public RobotServer createRobotServer(URI uri, boolean verbose) {
-        return new TcpControlledRobotServer(uri, verbose);
+    public RobotServer createRobotServer(URI uri, boolean verbose, ClassLoader scriptLoader) {
+        return new TcpControlledRobotServer(uri, verbose, scriptLoader);
     }
 
     @Override

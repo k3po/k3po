@@ -23,7 +23,7 @@ import java.net.URI;
 
 public abstract class RobotServerFactorySPI implements RobotServerFactory {
     @Override
-    public abstract RobotServer createRobotServer(URI uri, boolean verbose);
+    public abstract RobotServer createRobotServer(URI uri, boolean verbose, ClassLoader scriptLoader);
 
     /**
      * Returns the name of the scheme provided by factories using this

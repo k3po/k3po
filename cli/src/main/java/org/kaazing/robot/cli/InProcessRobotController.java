@@ -24,6 +24,7 @@ import org.kaazing.robot.driver.RobotServerFactory;
 import org.kaazing.robot.control.RobotControl;
 import org.kaazing.robot.control.RobotControlFactory;
 
+import java.io.File;
 import java.net.URI;
 
 public class InProcessRobotController extends AbstractRobotController {
@@ -32,6 +33,11 @@ public class InProcessRobotController extends AbstractRobotController {
     private RobotServer server;
     private final RobotControlFactory robotControlFactory;
     private URI uri = URI.create("tcp://localhost:11642");
+    private ClassLoader scriptLoader;
+
+    public void setScriptLoader(ClassLoader scriptLoader) {
+        this.scriptLoader = scriptLoader;
+    }
 
     public InProcessRobotController(Interpreter interpreter, RobotControlFactory robotControlFactory,
                                     RobotServerFactory robotServerFactory) {
@@ -43,7 +49,7 @@ public class InProcessRobotController extends AbstractRobotController {
     @Override
     public void startRobotServer() throws Exception {
         if (server == null) {
-            server = robotServerFactory.createRobotServer(uri, false);
+            server = robotServerFactory.createRobotServer(uri, false, scriptLoader);
             try {
                 interpreter.println("Starting robot");
                 server.start();

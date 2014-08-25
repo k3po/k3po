@@ -21,8 +21,8 @@
 
 	<parent>
 		<groupId>org.kaazing</groupId>
-        <artifactId>robot.parent</artifactId>
-		<version>0.0.0.9-SNAPSHOT</version>
+                <artifactId>robot.parent</artifactId>
+		<version>0.0.0.13-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>robot.junit</artifactId>
@@ -55,23 +55,6 @@
 	</dependencies>
 
 	<build>
-		<resources>
-			<!-- Copy .rpt files from the src/test/scripts/ directory into target/test-classes/META-INF/robot-scripts/ -->
-			<resource>
-				<directory>${basedir}/src/test/scripts</directory>
-				<includes>
-					<include>**/*.rpt</include>
-				</includes>
-				<targetPath>${project.build.testOutputDirectory}/META-INF/robot-scripts</targetPath>
-			</resource>
-			<resource>
-				<directory>${basedir}/src/main/resources</directory>
-			</resource>
-			<resource>
-				<directory>${basedir}/src/test/resources</directory>
-			</resource>
-		</resources>
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

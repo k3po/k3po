@@ -21,8 +21,8 @@
 
 	<parent>
 		<groupId>org.kaazing</groupId>
-        <artifactId>robot.parent</artifactId>
-		<version>0.0.0.9-SNAPSHOT</version>
+		<artifactId>robot.parent</artifactId>
+		<version>0.0.0.13-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>robot.driver</artifactId>
@@ -90,6 +90,15 @@
 			<groupId>org.kaazing</groupId>
 			<artifactId>kaaz-net-data</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -118,14 +127,14 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
 			</plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
 		</plugins>
 	</build>
 

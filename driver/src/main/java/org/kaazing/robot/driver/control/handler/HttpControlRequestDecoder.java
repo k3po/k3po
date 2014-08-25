@@ -20,21 +20,14 @@
 package org.kaazing.robot.driver.control.handler;
 
 import static java.lang.String.format;
-import static org.jboss.netty.util.CharsetUtil.UTF_8;
-import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.DownstreamMessageEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.UpstreamMessageEvent;
-import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
-import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.kaazing.robot.driver.control.AbortMessage;
 import org.kaazing.robot.driver.control.BadRequestMessage;
 import org.kaazing.robot.driver.control.ClearCacheMessage;
@@ -84,29 +77,35 @@ public class HttpControlRequestDecoder extends SimpleChannelHandler {
         }
     }
 
+    // return unknown if name can't be found in this format, else the name
+    private String getName(String content) {
+        // PREPARE, START, RESULT_REQUEST and ABORT are all of format: 'name:scriptName'
+        int startIndex = content.indexOf("name:");
+        int beginIndex = startIndex + "name:".length();
+
+        if (startIndex == -1 || beginIndex >= content.length()) {
+            return "unknown";
+        }
+        return content.substring(beginIndex);
+    }
+
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         if (e.getMessage() instanceof HttpRequest) {
             HttpRequest request = (HttpRequest) e.getMessage();
+            String content = new String(request.getContent().array(), "UTF-8");
+            String name = getName(content);
             String URI = request.getUri();
             if (URI == null || URI.length() < 2 || URI.charAt(0) != '/') {
-                sendInvalidRequestResponse(
-                        ctx,
-                        e,
-                        copiedBuffer(
-                                format("Malformed HTTP POST request. Was expecting '/{PREPARE, START, RESULT_REQUEST, ABORT}' but received '%s'",
-                                        URI), UTF_8));
+                sendBadRequestMessage(ctx, e, format("Malformed HTTP POST request. Was expecting '/{PREPARE, START, RESULT_REQUEST, ABORT}' but received '%s'",
+                        URI), name);
                 return;
             }
 
             HttpMethod method = request.getMethod();
             if (method != HttpMethod.POST) {
-                sendInvalidRequestResponse(
-                        ctx,
-                        e,
-                        copiedBuffer(
-                                format("Malformed HTTP request. Was expecting 'POST' but received '%s'",
-                                        method.toString()), UTF_8));
+                sendBadRequestMessage(ctx, e, format("Malformed HTTP request. Was expecting 'POST' but received '%s'",
+                        method.toString()), name);
                 return;
             }
 
@@ -136,32 +135,20 @@ public class HttpControlRequestDecoder extends SimpleChannelHandler {
                 }
                 break;
             default:
-                sendInvalidRequestResponse(
-                        ctx,
-                        e,
-                        copiedBuffer(
-                                format("Malformed HTTP POST request. Was expecting '/{PREPARE, START, RESULT_REQUEST, ABORT}' but received '%s'",
-                                        URI), UTF_8));
+                break;
+            }
+
+            if (msg == null) {
+                sendBadRequestMessage(ctx, e, format("Malformed HTTP POST request. Was expecting '/{PREPARE, START, RESULT_REQUEST, ABORT}' but received '%s'",
+                                        URI), getName(content));
                 return;
             }
 
-            String content = new String(request.getContent().array(), "UTF-8");
-
-            // PREPARE, START, RESULT_REQUEST and ABORT are all of format: 'name:scriptName\n\n'
-            int startIndex = content.indexOf("name:");
-            int beginIndex = startIndex + "name:".length();
-            int endIndex = content.lastIndexOf("\n\n");
-
-            if (startIndex == -1 || endIndex == -1 || beginIndex == endIndex) {
-                sendInvalidRequestResponse(
-                        ctx,
-                        e,
-                        copiedBuffer(
-                                format("Malformed HTTP POST request content. Was expecting 'name:scriptName\n\n' but received '%s'",
-                                        content), UTF_8));
+            if (name.equals("unknown")) {
+                sendBadRequestMessage(ctx, e, format("Malformed HTTP POST request content. Was expecting 'name:scriptName\n\n' but received '%s'",
+                        content), name);
                 return;
             }
-            String name = content.substring(beginIndex, endIndex);
 
             msg.setName(name);
 
@@ -226,14 +213,5 @@ public class HttpControlRequestDecoder extends SimpleChannelHandler {
         badRequest.setContent(content);
 
         ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), e.getFuture(), badRequest, e.getRemoteAddress()));
-    }
-
-    private void sendInvalidRequestResponse(ChannelHandlerContext ctx, MessageEvent e, ChannelBuffer content) {
-        DefaultHttpResponse msg = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST);
-        msg.headers().add(HttpHeaders.Names.CONTENT_TYPE, "text/html");
-        msg.headers().add(HttpHeaders.Names.CONTENT_LENGTH, String.format("%d", content.readableBytes()));
-        msg.setContent(content);
-
-        ctx.sendDownstream(new DownstreamMessageEvent(e.getChannel(), e.getFuture(), msg, e.getRemoteAddress()));
     }
 }

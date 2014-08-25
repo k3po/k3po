@@ -86,6 +86,22 @@ public class NamedGroupPatternTest {
     }
 
     @Test
+    public void shouldParseNestedGroups() {
+        String scriptText = "/(?<name>[a-f\\d]{8}(?:-[a-f\\d]{4}){3}-[a-f\\d]{12})/";
+        String inputText = "f1b77305-8980-4d1c-b3d4-bb71256e11e9";
+
+        Pattern jPattern = Pattern.compile(scriptText.substring(1, scriptText.length() - 1));
+        Matcher jMatcher = jPattern.matcher(inputText);
+        assertTrue(jMatcher.matches());
+
+        NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
+        NamedGroupMatcher matcher = pattern.matcher(inputText);
+
+        assertTrue(matcher.matches());
+        assertEquals("f1b77305-8980-4d1c-b3d4-bb71256e11e9", matcher.group("name"));
+    }
+
+    @Test
     public void shouldParseRegex2() throws Exception {
 
         String scriptText = format("/(?<hello>\\p{javaWhitespace}{1,6})hello/");

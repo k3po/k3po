@@ -19,9 +19,18 @@
 
 package org.kaazing.robot.driver.control.handler;
 
-import java.nio.charset.StandardCharsets;
+import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.FileSystems.newFileSystem;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 
 import org.jboss.netty.channel.ChannelFuture;
@@ -51,6 +60,12 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     private RobotCompletionFuture scriptDoneFuture;
 
     private final ChannelFuture channelClosedFuture = Channels.future(null);
+
+    private ClassLoader scriptLoader;
+
+    public void setScriptLoader(ClassLoader scriptLoader) {
+        this.scriptLoader = scriptLoader;
+    }
 
     // Note that this is more than just the channel close future. It's a future that means not only
     // that this channel has closed but it is a future that tells us when this obj has processed the closed event.
@@ -88,25 +103,55 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
         final PrepareMessage prepare = (PrepareMessage) evt.getMessage();
 
+        String scriptName = prepare.getName();
         if (logger.isDebugEnabled()) {
-            logger.debug("preparing robot execution for script " + prepare.getName());
+            logger.debug("preparing robot execution for script " + scriptName);
         }
+
+        String scriptNameWithExtension = format("%s.rpt", scriptName);
 
         robot = new Robot();
 
         ChannelFuture prepareFuture;
         try {
             // @formatter:off
-            List<String> lines = Files.readAllLines(Paths.get(prepare.getName()), StandardCharsets.UTF_8);
-            StringBuilder sb = new StringBuilder();
-            for (String line: lines) {
-                sb.append(line);
-                sb.append("\n");
+            Path scriptPath = Paths.get(scriptNameWithExtension);
+            String script = null;
+
+            if (!scriptPath.isAbsolute()) {
+                // resolve relative scripts in local file system
+                if (scriptLoader != null) {
+                    // resolve relative scripts from class loader to support
+                    // separated specification projects that include Robot scripts only
+                    URL resource = scriptLoader.getResource(scriptNameWithExtension);
+                    if (resource != null) {
+                        URI resourceURI = resource.toURI();
+                        if ("file".equals(resourceURI.getScheme())) {
+                            Path resourcePath = Paths.get(resourceURI);
+                            script = readScript(resourcePath);
+                        }
+                        else {
+                            try (FileSystem fileSystem = newFileSystem(resourceURI, Collections.<String, Object>emptyMap())) {
+                                Path resourcePath = Paths.get(resourceURI);
+                                script = readScript(resourcePath);
+                            }
+                        }
+                    }
+                }
             }
-            prepareFuture = robot.prepare(sb.toString());
+            else {
+                // backwards compatibility
+                script = readScript(Paths.get(scriptName));
+            }
+
+            if (script == null) {
+                throw new RuntimeException("Script not found: " + scriptPath);
+            }
+
+            prepareFuture = robot.prepare(script);
             // @formatter:on
         } catch (Exception e) {
-            sendErrorMessage(ctx, e, prepare.getName());
+            sendErrorMessage(ctx, e, scriptName);
             return;
         }
 
@@ -118,6 +163,17 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 Channels.write(ctx, Channels.future(null), prepared);
             }
         });
+    }
+
+    private String readScript(Path scriptPath) throws IOException {
+        List<String> lines = Files.readAllLines(scriptPath, UTF_8);
+        StringBuilder sb = new StringBuilder();
+        for (String line: lines) {
+            sb.append(line);
+            sb.append("\n");
+        }
+        String script = sb.toString();
+        return script;
     }
 
     @Override

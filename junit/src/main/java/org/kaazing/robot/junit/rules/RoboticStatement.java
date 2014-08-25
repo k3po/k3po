@@ -28,43 +28,29 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 import org.junit.ComparisonFailure;
-import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-
-import org.kaazing.robot.junit.annotation.Robotic;
 import org.kaazing.robot.junit.ScriptPair;
 
 final class RoboticStatement extends Statement {
 
-    private final Description description;
     private final Statement statement;
+    private final String scriptName;
     private final RoboticLatch latch;
 
-    RoboticStatement(Description description, Statement statement, RoboticLatch latch) {
-        this.description = description;
+    RoboticStatement(Statement statement, String scriptName, RoboticLatch latch) {
         this.statement = statement;
+        this.scriptName = scriptName;
         this.latch = latch;
     }
 
     @Override
     public void evaluate() throws Throwable {
 
-        // wrapped statement only executes if Robotic annotation is
-        // present
-        Robotic robotic = description.getAnnotation(Robotic.class);
-        assert robotic != null;
+        // TODO: remove resolution from JUnit integration
+        //       instead add "testScriptDir" (plugin default: src/test/scripts) to Robot for server-size resolution
+        //       only relative script path hits the network, never absolute path, never with extension
 
-        // script is a required attribute on @Robotic
-        String scriptName = robotic.script();
-
-        // Get the class which provides the annotated method;
-        // we want to look for behavior scripts based on that
-        // class' package name.
-        Class<?> testClass = description.getTestClass();
-
-        String scriptPath = ScriptUtil.getScriptPath(testClass, scriptName);
-
-        ScriptRunner scriptRunner = new ScriptRunner(scriptPath, latch);
+        ScriptRunner scriptRunner = new ScriptRunner(scriptName, latch);
         FutureTask<ScriptPair> scriptFuture = new FutureTask<ScriptPair>(scriptRunner);
 
         try {

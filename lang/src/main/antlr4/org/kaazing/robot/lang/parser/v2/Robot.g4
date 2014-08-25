@@ -513,14 +513,14 @@ Digit
     ;
 
 TextLiteral
-    : '"' (EscapeSequence | ~('\\' | '[' | ']' | '\r' | '\n' | '"'))+ '"'
+    : '"' (EscapeSequence | ~('\\' | '\r' | '\n' | '"'))+ '"'
     ;
     
 // Any additions to the escaping need to be accounted for in
 // org.kaazing.robot.lang.parserScriptParseStrategy.escapeString(String toEscape);
 fragment
 EscapeSequence
-    : '\\' ('b' | 'f' | 'r' | 'n' | 't' | '\"' | '\'' | '\\')
+    : '\\' ('b' | 'f' | 'r' | 'n' | 't' | '\"' | '\'' | '\\' )
     ;
 
 Name

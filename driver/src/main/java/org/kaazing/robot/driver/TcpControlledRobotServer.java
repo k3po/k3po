@@ -42,14 +42,14 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
-import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
-import org.kaazing.robot.driver.netty.channel.ChannelAddress;
-import org.kaazing.robot.driver.netty.channel.ChannelAddressFactory;
 import org.kaazing.robot.driver.control.handler.ControlDecoder;
 import org.kaazing.robot.driver.control.handler.ControlEncoder;
 import org.kaazing.robot.driver.control.handler.ControlServerHandler;
+import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
+import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
 import org.kaazing.robot.driver.netty.bootstrap.SingletonBootstrapFactory;
+import org.kaazing.robot.driver.netty.channel.ChannelAddress;
+import org.kaazing.robot.driver.netty.channel.ChannelAddressFactory;
 
 public class TcpControlledRobotServer implements RobotServer {
 
@@ -61,10 +61,12 @@ public class TcpControlledRobotServer implements RobotServer {
     private final URI acceptURI;
     private Channel serverChannel;
     private final boolean verbose;
+    private final ClassLoader scriptLoader;
 
-    protected TcpControlledRobotServer(URI acceptURI, boolean verbose) {
+    protected TcpControlledRobotServer(URI acceptURI, boolean verbose, ClassLoader scriptLoader) {
         this.acceptURI = acceptURI;
         this.verbose = verbose;
+        this.scriptLoader = scriptLoader;
         channelGroup = new DefaultChannelGroup("robot-server");
         controlHandlers = new CopyOnWriteArrayList<ControlServerHandler>();
     }
@@ -101,7 +103,8 @@ public class TcpControlledRobotServer implements RobotServer {
                     pipeline.addLast("control.logging", logging);
                 }
 
-                ChannelHandler controller = new ControlServerHandler();
+                ControlServerHandler controller = new ControlServerHandler();
+                controller.setScriptLoader(scriptLoader);
                 pipeline.addLast("control.handler", controller);
 
                 return pipeline;

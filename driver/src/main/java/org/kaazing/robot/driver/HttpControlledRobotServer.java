@@ -60,10 +60,12 @@ public class HttpControlledRobotServer implements RobotServer {
 
     private ServerBootstrap server;
     private final URI acceptURI;
+    private final ClassLoader scriptLoader;
     private Channel serverChannel;
 
-    protected HttpControlledRobotServer(URI acceptURI) {
+    protected HttpControlledRobotServer(URI acceptURI, ClassLoader scriptLoader) {
         this.acceptURI = acceptURI;
+        this.scriptLoader = scriptLoader;
         channelGroup = new DefaultChannelGroup("http-robot-server");
         controlHandlers = new CopyOnWriteArrayList<ControlServerHandler>();
     }
@@ -100,7 +102,8 @@ public class HttpControlledRobotServer implements RobotServer {
                 ChannelHandler decoder = new HttpControlRequestDecoder();
                 pipeline.addLast("http.control.request.decoder", decoder);
 
-                ChannelHandler controller = new ControlServerHandler();
+                ControlServerHandler controller = new ControlServerHandler();
+                controller.setScriptLoader(scriptLoader);
                 pipeline.addLast("control.handler", controller);
 
                 return pipeline;
