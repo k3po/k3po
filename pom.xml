@@ -2,12 +2,6 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.kaazing</groupId>
-		<artifactId>com.kaazing</artifactId>
-		<version>24</version>
-	</parent>
-
 	<groupId>org.kaazing</groupId>
 	<artifactId>robot.scripts.amqp_1_0.jms</artifactId>
 	<name>AMQP 1.0 JMS Robot Scripts</name>
@@ -26,7 +20,7 @@
 			<plugin>
 				<groupId>org.kaazing</groupId>
 				<artifactId>robot-maven-plugin</artifactId>
-				<version>0.0.0.10</version>
+				<version>0.0.0.12</version>
 			</plugin>
 		</plugins>
 	</build>
