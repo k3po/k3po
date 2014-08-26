@@ -129,8 +129,8 @@ read [0x00]                                      # type: AMQP (0)
 read [0x00 0x00]                                 # channel: 0
 read [0x00 0x53 0x16]                            # performative: detach
 read [0xc0 0x03 0x02]                            # arguments: size, count
-read [0x43]                                         #   handle: 0
-read [0x41]                                         #   closed: true
+read [0x43]                                      #   handle: 0
+read [0x41]                                      #   closed: true
 
                                                  # detach
 write [0x00 0x00 0x00 0x10]                      # length: 16
@@ -139,8 +139,8 @@ write [0x00]                                     # type: AMQP (0)
 write [0x00 0x00]                                # channel: 0
 write [0x00 0x53 0x16]                           # performative: detach
 write [0xc0 0x03 0x02]                           # arguments: size, count
-write [0x43]                                        #   handle: 0
-write [0x41]                                        #   closed: true
+write [0x43]                                     #   handle: 0
+write [0x41]                                     #   closed: true
 
                                                  # end
 read [0x00 0x00 0x00 0x0e]                       # length: 14
