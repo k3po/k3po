@@ -1,0 +1,142 @@
+accept tcp://localhost:5672
+accepted
+connected
+
+                                                 # Protocol-Header 1-0-0
+read "AMQP" [0x00 0x01 0x00 0x00]                # version: 1.0.0
+
+                                                 # Protocol-Header 1-0-0
+write "AMQP" [0x00 0x01 0x00 0x00]               # version: 1.0.0
+
+                                                 # open
+read [0x00 0x00 0x00 0x21]                       # length: 33
+read [0x02]                                      # data offset: 2
+read [0x00]                                      # type: AMQP (0)
+read [0x00 0x00]                                 # channel: 0
+read [0x00 0x53 0x10]                            # performative: open
+read [0xc0 0x14 0x04]                            # arguments: size, count
+read [0xa1 0x08] "clientID"                      #   container-id type, length, "clientID"
+read [0x40]                                      #   hostname: null
+read [0x70 0x00 0x01 0x00 0x00]                  #   max-frame-size: 65536
+read [0x60 0x00 0xff]                            #   channel-max: unknown (255)
+
+                                                 # open
+write [0x00 0x00 0x00 0x17]                      # length: 23
+write [0x02]                                     # data offset: 2
+write [0x00]                                     # type: AMQP (0)
+write [0x00 0x00]                                # channel: 0
+write [0x00 0x53 0x10]                           # performative: open
+write [0xc0 0x0a 0x03]                           # arguments: size, count
+write [0xa1 0x00]                                #   container-id type, length, ""
+write [0xa1 0x00]                                #   hostname: ""
+write [0x70 0x00 0x10 0x00 0x00]                 #   max-frame-size: 1048576
+
+                                                 # begin
+read [0x00 0x00 0x00 0x1f]                       # length: 31
+read [0x02]                                      # data offset: 2
+read [0x00]                                      # type: AMQP (0)
+read [0x00 0x00]                                 # channel: 0
+read [0x00 0x53 0x11]                            # performative: begin
+read [0xc0 0x12 0x05]                            # arguments: size, count
+read [0x40]                                      #   remote channel: null
+read [0x43]                                      #   next-outgoing-id: 0
+read [0x70 0x00 0x00 0x08 0x00]                  #   incoming-window: 2048
+read [0x70 0x00 0x00 0x08 0x00]                  #   outgoing-window: 2048
+read [0x70 0xff 0xff 0xff 0xff]                  #   handle-max: 4294967295
+
+                                                 # begin
+write [0x00 0x00 0x00 0x1a]                      # length: 26
+write [0x02]                                     # data offset: 2
+write [0x00]                                     # type: AMQP (0)
+write [0x00 0x00]                                # channel: 0
+write [0x00 0x53 0x11]                           # performative: begin
+write [0xc0 0x0d 0x05]                           # arguments: size, count
+write [0x60 0x00 0x00]                           #   remote channel: 0
+write [0x52 0x01]                                #   next-outgoing-id: 1
+write [0x43]                                     #   incoming-window: 0
+write [0x43]                                     #   outgoing-window: 0
+write [0x70 0x00 0x00 0x04 0x00]                 #   handle-max: 1024
+
+                                                 # attach
+read [0x00 0x00 0x00 0xb6]                       # length: 182
+read [0x02]                                      # data offset: 2
+read [0x00]                                      # type: AMQP (0)
+read [0x00 0x00]                                 # channel: 0
+read [0x00 0x53 0x12]                            # performative: attach
+read [0xc0 0xa9 0x0a]                            # arguments: size, count
+read [0xa1 0x2d] "topic-A<-"                     #   name
+read /(?<address>[a-f\d]{8}(?:-[a-f\d]{4}){3}-[a-f\d]{12})/
+read [0x43]                                      #   handle: 0
+read [0x42]                                      #   role: sender (66)
+read [0x50 0x00]                                 #   send-settle-mode: unsettled (0)
+read [0x50 0x00]                                 #   receive-settle-mode: first (0)
+read [0x00 0x53 0x28]                            #   ???
+read [0xc0 0x5c 0x0a]                            #   source: size, count
+read [0xa1 0x24] ${address}                      #     address 
+read [0x40]                                      #     terminus-durable: null
+read [0x40]                                      #     expiry-policy: null
+read [0x40]                                      #     timeout: null
+read [0x40]                                      #     dynamic: null
+read [0x40]                                      #     dynamic-node-properties
+read [0x40]                                      #     distribution-node: null
+read [0x40]                                      #     filter
+read [0x00 0x53 0x24]                            #   ???
+read [0x45]                                      #     accepted
+read [0xe0 0x28 0x02]                            #   outcomes: size, count
+read [0xa3]
+read [0x12] "amqp:accepted:list"                 #   outcomes (sym8)
+read [0x12] "amqp:rejected:list"                 #   outcomes (sym8)
+read [0x00 0x53 0x29]                            #   
+read [0xc0 0x0a 0x01]                            #   target: size, count
+read [0xa1 0x07] "topic-A"                       #   address
+
+                                                 # attach
+write [0x00 0x00 0x00 0xbf]                      # length: 191
+write [0x02]                                     # data offset: 2
+write [0x00]                                     # type: AMQP (0)
+write [0x00 0x00]                                # channel: 0
+write [0x00 0x53 0x12]                           # performative: attach
+write [0xc0 0xb2 0x07]                           # arguments: size, count
+write [0xa1 0x2d] "topic-A<-" ${address}         #   name
+write [0x43]                                     #   handle: 0
+write [0x41]                                     #   role: receiver (65)
+write [0x50 0x02]                                #   send-settle-mode: mixed (2)
+write [0x50 0x00]                                #   receive-settle-mode: first (0)
+write [0x00 0x53 0x28]                           #   ???
+write [0xc0 0x68 0x0a]                           #   source: size, count
+write [0xa1 0x24] ${address}                     #     address 
+write [0x43]                                     #     terminus-durable: 0
+write [0xa3 0x0b] "session-end"                  #     expiry-policy: session-end
+write [0x43]                                     #     timeout: 0
+write [0x42]                                     #     dynamic: false
+write [0x40]                                     #     dynamic-node-properties
+write [0x40]                                     #     distribution-node: null
+write [0x40]                                     #     filter
+write [0x00 0x53 0x24]                           #   ???
+write [0x45]                                     #     accepted
+write [0xe0 0x28 0x02]                           #   outcomes: size, count
+write [0xa3]
+write [0x12] "amqp:accepted:list"                #   outcomes (sym8)
+write [0x12] "amqp:rejected:list"                #   outcomes (sym8)
+write [0x00 0x53 0x29]                           #   
+write [0xc0 0x0a 0x01]                           #   target: size, count
+write [0xa1 0x07] "topic-A"                      #   address
+
+                                                 # flow
+write [0x00 0x00 0x00 0x1b]                      # length: 27
+write [0x02]                                     # data offset: 2
+write [0x00]                                     # type: AMQP (0)
+write [0x00 0x00]                                # channel: 0
+write [0x00 0x53 0x13]                           # performative: flow
+write [0xc0 0x0e 0x07]                           # arguments: size, count
+write [0x43]                                     #   next-incoming-id: 0
+write [0x70 0x00 0x00 0x07 0xff]                 #   incoming-window: 2047
+write [0x50 0x01]                                #   next-outgoing-id: 1
+write [0x43]                                     #   outgoing-window: 0
+write [0x43]                                     #   handle: 0
+write [0x43]                                     #   delivery-count: 0
+write [0x52 0x64]                                #   link-credit: 100
+
+
+close
+closed

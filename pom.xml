@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.kaazing</groupId>
+		<artifactId>com.kaazing</artifactId>
+		<version>24</version>
+	</parent>
+
+	<groupId>org.kaazing</groupId>
+	<artifactId>robot.scripts.amqp_1_0.jms</artifactId>
+	<name>AMQP 1.0 JMS Robot Scripts</name>
+	<packaging>jar</packaging>
+	<version>0.0.0.1-SNAPSHOT</version>
+
+	<!-- TODO <scm> </scm> -->
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/scripts</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.kaazing</groupId>
+				<artifactId>robot-maven-plugin</artifactId>
+				<version>0.0.0.10</version>
+			</plugin>
+		</plugins>
+	</build>
+
+	<properties>
+		<project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
+	</properties>
+</project>
