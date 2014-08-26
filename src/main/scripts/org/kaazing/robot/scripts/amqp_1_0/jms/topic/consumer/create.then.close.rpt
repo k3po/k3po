@@ -58,47 +58,61 @@ write [0x43]                                     #   outgoing-window: 0
 write [0x70 0x00 0x00 0x04 0x00]                 #   handle-max: 1024
 
                                                  # attach
-read [0x00 0x00 0x00 0x8f]                       # length: 143
+read [0x00 0x00 0x00 0xe8]                       # length: 232
 read [0x02]                                      # data offset: 2
 read [0x00]                                      # type: AMQP (0)
 read [0x00 0x00]                                 # channel: 0
 read [0x00 0x53 0x12]                            # performative: attach
-read [0xc0 0x82 0x07]                            # arguments: size, count
-read [0xa1 0x30] "topic-A-> "                    #   name
+read [0xc0 0xdb 0x07]                            # arguments: size, count
+read [0xa1 0x38] "topic://topic-A-> "            #   name
 read "(" /(?<source>[a-f\d]{8}(?:-[a-f\d]{4}){3}-[a-f\d]{12})/ ")"
 read [0x43]                                      #   handle: 0
 read [0x41]                                      #   role: receiver (65)
 read [0x50 0x00]                                 #   send-settle-mode: unsettled (0)
 read [0x50 0x00]                                 #   receive-settle-mode: first (0)
-read [0x00 0x53 0x28]                            #   ???
-read [0xc0 0x18 0x03]                            #   source: size, count
-read [0xa1 0x07] "topic-A"                       #     address
+read [0x00 0x53 0x28]                            #   source
+read [0xc0 0x69 0x08]                            #     size, count
+read [0xa1 0x0f] "topic://topic-A"               #     address
 read [0x43]                                      #     terminus-durable: 0
 read [0xa3 0x0b] "link-detach"                   #     expiry-policy: link-detach
-read [0x00 0x53 0x29]                            #   ???
-read [0xc0 0x27 0x01]                            #   target: size, count
+read [0x40]                                      #     timeout: null
+read [0x40]                                      #     dynamic: null
+read [0x40]                                      #     dynamic-node-properties
+read [0x40]                                      #     distribution-mode: null
+read [0xc1 0x43 0x04]                            #     filter
+read [0xa3 0x0c] "jms-selector"                  #       jms-selector
+read [0x00 0x80] 								 #       uint64
+read [0x00 0x00 0x46 0x8c 0x00 0x00 0x00 0x04]   #       filter code (jms-selector)
+read [0xa1 0x13] "NewsType = 'Sports'"           #       NewsType = 'Sports'
+read [0xa3 0x08] "no-local"                      #       no-local
+read [0x00 0x80] 								 #       uint64
+read [0x00 0x00 0x46 0x8c 0x00 0x00 0x00 0x03]   #       filter code (no-local)
+read [0x45]                                      #       empty
+read [0x00 0x53 0x29]                            #   target
+read [0xc0 0x27 0x01]                            #     size, count
 read [0xa1 0x24]                                 #     address 
 read /(?<target>[a-f\d]{8}(?:-[a-f\d]{4}){3}-[a-f\d]{12})/
 
                                                  # attach
-write [0x00 0x00 0x00 0x92]                      # length: 146
+write [0x00 0x00 0x00 0xa2]                      # length: 162
 write [0x02]                                     # data offset: 2
 write [0x00]                                     # type: AMQP (0)
 write [0x00 0x00]                                # channel: 0
 write [0x00 0x53 0x12]                           # performative: attach
-write [0xc0 0x85 0x0a]                           # arguments: size, count
-write [0xa1 0x30] "topic-A-> (" ${source} ")"    #   name
+write [0xc0 0x95 0x0a]                           # arguments: size, count
+write [0xa1 0x38] "topic://topic-A-> "           #   name
+write "(" ${source} ")"                          #
 write [0x43]                                     #   handle: 0
 write [0x42]                                     #   role: sender
 write [0x50 0x02]                                #   send-settle-mode: mixed (2)
 write [0x50 0x00]                                #   receive-settle-mode: first (0)
-write [0x00 0x53 0x28]                           # ???
-write [0xc0 0x18 0x03]                           #   source: size, count
-write [0xa1 0x07] "topic-A"                      #     address
+write [0x00 0x53 0x28]                           #   source
+write [0xc0 0x18 0x03]                           #     size, count
+write [0xa1 0x0f] "topic://topic-A"              #     address
 write [0x43]                                     #     terminus-durable: 0
 write [0xa3 0x0b] "link-detach"                  #     expiry-policy: link-detach
-write [0x00 0x53 0x29]                           # ???
-write [0xc0 0x27 0x01]                           #   target: size, count
+write [0x00 0x53 0x29]                           #   target
+write [0xc0 0x27 0x01]                           #     size, count
 write [0xa1 0x24] ${target}                      #     address 
 write [0x40]                                     #   unsettled
 write [0x42]                                     #   incomplete-unsettled: false
