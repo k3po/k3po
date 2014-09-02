@@ -73,9 +73,9 @@ read [0x00 0x53 0x28]                            #   ???
 read [0xc0 0x01 0x00]                            #   source: size, count
 read [0x00 0x53 0x30]                            #   ???
 read [0xc0 0x35 0x01]                            #   coordinator: size, count
-read [0xe0 0x32 0x02 0xa3]                       #   capabilities
-read [0x17] "amqp:local-transactions"            #     capability (sym8)
-read [0x17] "amqp:multi-txns-per-ssn"            #     capability (sym8)
+read [0xe0 0x32 0x02 0xa3]                       #   capabilities (array sym8)
+read [0x17] "amqp:local-transactions"            #     capability
+read [0x17] "amqp:multi-txns-per-ssn"            #     capability
 read [0x40]                                      #   unsettled
 read [0x40]                                      #   incomplete-unsettled: null
 read [0x43]                                      #   initial-delivery-count: 0
