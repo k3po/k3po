@@ -8,7 +8,23 @@
 	<packaging>jar</packaging>
 	<version>0.1-SNAPSHOT</version>
 
-	<!-- TODO <scm> </scm> -->
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <inceptionYear>2014</inceptionYear>
+
+    <scm>
+        <url>https://github.com/kaazing/robot.scripts.amqp_1_0.jms.git</url>
+        <connection>scm:git:https://github.com/kaazing/robot.scripts.amqp_1_0.jms.git</connection>
+    </scm>
+
+    <properties>
+        <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
+    </properties>
 
 	<build>
 		<resources>
@@ -25,7 +41,4 @@
 		</plugins>
 	</build>
 
-	<properties>
-		<project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
-	</properties>
 </project>
