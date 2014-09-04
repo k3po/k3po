@@ -4,9 +4,12 @@
     <groupId>org.kaazing</groupId>
     <artifactId>robot.scripts.amqp_1_0.jms</artifactId>
     <name>AMQP 1.0 JMS Robot Scripts</name>
+    <description>
+        Robot Protocol Testing Scripts to prove AMQP 1.0 JMS Compatibility
+    </description>
     <url>https://github.com/kaazing/robot.scripts.amqp_1_0.jms</url>
     <packaging>jar</packaging>
-    <version>0.0.0.2-SNAPSHOT</version>
+    <version>0.0.0.1-SNAPSHOT</version>
 
     <licenses>
         <license>
