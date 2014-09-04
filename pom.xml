@@ -6,7 +6,7 @@
 	<artifactId>robot.scripts.amqp_1_0.jms</artifactId>
 	<name>AMQP 1.0 JMS Robot Scripts</name>
 	<packaging>jar</packaging>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.0.0.1-SNAPSHOT</version>
 
     <licenses>
         <license>
