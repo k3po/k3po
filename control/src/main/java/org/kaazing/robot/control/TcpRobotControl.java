@@ -59,8 +59,9 @@ public class TcpRobotControl implements RobotControl {
 
     private final URL location;
     private URLConnection connection;
+    BufferedReader textIn;
 
-    public TcpRobotControl(URL location) {
+    public TcpRobotControl(URL location) throws Exception {
         this.location = location;
     }
 
@@ -68,6 +69,9 @@ public class TcpRobotControl implements RobotControl {
     public void connect() throws Exception {
         connection = location.openConnection();
         connection.connect();
+        InputStream bytesIn = connection.getInputStream();
+        CharsetDecoder decoder = UTF_8.newDecoder();
+        textIn = new BufferedReader(new InputStreamReader(bytesIn, decoder));
     }
 
     @Override
@@ -129,30 +133,26 @@ public class TcpRobotControl implements RobotControl {
 
         connection.setReadTimeout((int) unit.toMillis(timeout));
 
-        InputStream bytesIn = connection.getInputStream();
-        CharsetDecoder decoder = UTF_8.newDecoder();
-        BufferedReader textIn = new BufferedReader(new InputStreamReader(bytesIn, decoder));
-
         String eventType = textIn.readLine();
         switch (eventType.charAt(0)) {
         case 'P':
             if ("PREPARED".equals(eventType)) {
-                return readPreparedEvent(textIn);
+                return readPreparedEvent();
             }
             break;
         case 'S':
             if ("STARTED".equals(eventType)) {
-                return readStartedEvent(textIn);
+                return readStartedEvent();
             }
             break;
         case 'E':
             if ("ERROR".equals(eventType)) {
-                return readErrorEvent(textIn);
+                return readErrorEvent();
             }
             break;
         case 'F':
             if ("FINISHED".equals(eventType)) {
-                return readFinishedEvent(textIn);
+                return readFinishedEvent();
             }
             break;
         }
@@ -206,7 +206,7 @@ public class TcpRobotControl implements RobotControl {
         textOut.flush();
     }
 
-    private PreparedEvent readPreparedEvent(BufferedReader textIn) throws IOException {
+    private PreparedEvent readPreparedEvent() throws IOException {
         PreparedEvent prepared = new PreparedEvent();
         String line;
         do {
@@ -229,7 +229,7 @@ public class TcpRobotControl implements RobotControl {
         return prepared;
     }
 
-    private StartedEvent readStartedEvent(BufferedReader textIn) throws IOException {
+    private StartedEvent readStartedEvent() throws IOException {
         StartedEvent started = new StartedEvent();
         String line;
         do {
@@ -252,8 +252,7 @@ public class TcpRobotControl implements RobotControl {
         return started;
     }
 
-    // TODO: fix
-    private FinishedEvent readFinishedEvent(BufferedReader textIn) throws IOException {
+    private FinishedEvent readFinishedEvent() throws IOException {
         FinishedEvent finished = new FinishedEvent();
         String line;
         int length = -1;
@@ -283,7 +282,7 @@ public class TcpRobotControl implements RobotControl {
         // note: this assumes bytes-length == string-length (ASCII)
         // note: zero-length script should be non-null
         if (length >= 0) {
-            finished.setExpectedScript(readContent(textIn, length));
+            finished.setExpectedScript(readContent(length));
         }
 
         do {
@@ -307,13 +306,13 @@ public class TcpRobotControl implements RobotControl {
         // note: this assumes bytes-length == string-length (ASCII)
         // note: zero-length script should be non-null
         if (length >= 0) {
-            finished.setObservedScript(readContent(textIn, length));
+            finished.setObservedScript(readContent(length));
         }
 
         return finished;
     }
 
-    private ErrorEvent readErrorEvent(BufferedReader textIn) throws IOException {
+    private ErrorEvent readErrorEvent() throws IOException {
         ErrorEvent error = new ErrorEvent();
         String line;
         int length = 0;
@@ -347,13 +346,13 @@ public class TcpRobotControl implements RobotControl {
 
         // note: this assumes bytes-length == string-length (ASCII)
         if (length > 0) {
-            error.setDescription(readContent(textIn, length));
+            error.setDescription(readContent(length));
         }
 
         return error;
     }
 
-    private String readContent(final BufferedReader textIn, final int length) throws IOException {
+    private String readContent(final int length) throws IOException {
         final char[] content = new char[length];
         int bytesRead = 0;
         do {
