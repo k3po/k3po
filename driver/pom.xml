@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.kaazing</groupId>
         <artifactId>robot.parent</artifactId>
-        <version>1.3.0.2-SNAPSHOT</version>
+        <version>1.3.0.2</version>
     </parent>
 
     <artifactId>robot.driver</artifactId>
@@ -83,12 +83,12 @@
 
         <dependency>
             <groupId>org.kaazing</groupId>
-            <artifactId>kaaz-net-api</artifactId>
+            <artifactId>net.api</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.kaazing</groupId>
-            <artifactId>kaaz-net-data</artifactId>
+            <artifactId>net.data</artifactId>
         </dependency>
 
         <dependency>
