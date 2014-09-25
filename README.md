@@ -8,9 +8,6 @@ In a Robot script, you define the exact sequence of events that a network connec
 
 ## Links
 
-
-[Javascript Client Test Framework](https://github.com/kaazing/robot.js)
-
 [C Client Test Framework](https://github.com/kaazing/robot.c)
 
 [C# Client Test Framework](https://github.com/kaazing/robot.cs)
