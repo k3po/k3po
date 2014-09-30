@@ -220,7 +220,7 @@ public class InjectHttpEventsVisitor implements AstNode.Visitor<AstScriptNode, S
         if ("\"Content-Length\"".equalsIgnoreCase(node.getName().toString())) {
             throw new IllegalStateException(String.format(
                     "Explicitly setting the content length via: %s, is not allowed,"
-                            + "use \"write header content-length\" to dynamically calculate content length instead",
+                            + "use \"write content-length\" to dynamically calculate content length instead",
                     node));
         }
         if ("\"transfer-encoding\"".equalsIgnoreCase(node.getName().toString())
