@@ -3,8 +3,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.kaazing</groupId>
-	<artifactId>robot.scripts.mqtt_3_1_1</artifactId>
-	<name>MQTT 3.1.1 Robot Scripts</name>
+	<artifactId>robotic.mqtt_3_1_1</artifactId>
+	<name>MQTT 3.1.1 Robotic Scripts</name>
 	<packaging>jar</packaging>
 	<version>0.1-SNAPSHOT</version>
 
@@ -18,8 +18,8 @@
     <inceptionYear>2014</inceptionYear>
 
     <scm>
-        <url>https://github.com/kaazing/robot.scripts.mqtt_3_1_1.git</url>
-        <connection>scm:git:https://github.com/kaazing/robot.scripts.mqtt_3_1_1.jms.git</connection>
+        <url>https://github.com/kaazing/robotic.mqtt_3_1_1.git</url>
+        <connection>scm:git:https://github.com/kaazing/robotic.mqtt_3_1_1.jms.git</connection>
     </scm>
 
     <properties>
