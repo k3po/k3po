@@ -2,12 +2,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.kaazing</groupId>
-    <artifactId>robot.scripts.amqp_1_0.jms</artifactId>
-    <name>AMQP 1.0 JMS Robot Scripts</name>
+    <artifactId>robotic.amqp_1_0.jms</artifactId>
+    <name>AMQP 1.0 JMS Robotic Scripts</name>
     <description>
-        Robot Protocol Testing Scripts to prove AMQP 1.0 JMS Compatibility
+        Robotic Scripts to prove AMQP 1.0 JMS Compatibility
     </description>
-    <url>https://github.com/kaazing/robot.scripts.amqp_1_0.jms</url>
+    <url>https://github.com/kaazing/robotic.amqp_1_0.jms</url>
     <packaging>jar</packaging>
     <version>0.0.0.2-SNAPSHOT</version>
 
@@ -21,8 +21,8 @@
     <inceptionYear>2014</inceptionYear>
 
     <scm>
-        <url>https://github.com/kaazing/robot.scripts.amqp_1_0.jms.git</url>
-        <connection>scm:git:https://github.com/kaazing/robot.scripts.amqp_1_0.jms.git</connection>
+        <url>https://github.com/kaazing/robotic.amqp_1_0.jms.git</url>
+        <connection>scm:git:https://github.com/kaazing/robotic.amqp_1_0.jms.git</connection>
     </scm>
 
     <properties>
