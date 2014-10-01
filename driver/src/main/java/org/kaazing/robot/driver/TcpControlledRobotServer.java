@@ -68,7 +68,7 @@ public class TcpControlledRobotServer implements RobotServer {
         this.verbose = verbose;
         this.scriptLoader = scriptLoader;
         channelGroup = new DefaultChannelGroup("robot-server");
-        controlHandlers = new CopyOnWriteArrayList<ControlServerHandler>();
+        controlHandlers = new CopyOnWriteArrayList<>();
     }
 
     @Override
@@ -77,7 +77,7 @@ public class TcpControlledRobotServer implements RobotServer {
             throw new NullPointerException("acceptURI");
         }
 
-        Map<String, Object> options = new HashMap<String, Object>();
+        Map<String, Object> options = new HashMap<>();
         // TODO: options.put("tcp.transport", "socks://...");
 
         ChannelAddressFactory addressFactory = ChannelAddressFactory.newChannelAddressFactory();

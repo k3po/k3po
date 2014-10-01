@@ -1,15 +1,12 @@
-# Robot
+# Robot a.k.a. K3PO
 
-Robot is a Network Protocol Testing Tool
+The K3PO Robot is a Network Protocol Testing Tool
 
-Robot provides a network scripting language that allows authoring of network protocol tests.  These test are programming language agnostic.  Test Frameworks are then provided to run these tests for different programming languages.
+The Robot provides a network scripting language that allows authoring of network protocol tests.  These test are programming language agnostic.  Test Frameworks are then provided to run these tests for different programming languages.
 
 In a Robot script, you define the exact sequence of events that a network connection goes through in its lifetime.  If this exact sequence of events does not happen, the script is considered to have “failed”.  A Robot script thus defines a “behavior”.  Testing, then, is comprised of defining the expected behaviors, and then running the script against your code to see if those expectations are met.
 
 ## Links
-
-
-[Javascript Client Test Framework](https://github.com/kaazing/robot.js)
 
 [C Client Test Framework](https://github.com/kaazing/robot.c)
 

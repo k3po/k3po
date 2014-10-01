@@ -61,7 +61,7 @@ public class TcpRobotControl implements RobotControl {
     private URLConnection connection;
     private BufferedReader textIn;
 
-    public TcpRobotControl(URL location) {
+    public TcpRobotControl(URL location) throws Exception {
         this.location = location;
     }
 
@@ -252,7 +252,6 @@ public class TcpRobotControl implements RobotControl {
         return started;
     }
 
-    // TODO: fix
     private FinishedEvent readFinishedEvent() throws IOException {
         FinishedEvent finished = new FinishedEvent();
         String line;

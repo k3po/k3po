@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.kaazing</groupId>
         <artifactId>robot.parent</artifactId>
-        <version>0.0.0.13-SNAPSHOT</version>
+        <version>1.3.0.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>robot.cli</artifactId>
@@ -61,28 +61,28 @@
             <scope>compile</scope>
         </dependency>
 
-		<dependency>
-			<groupId>jline</groupId>
-			<artifactId>jline</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>jline</groupId>
+            <artifactId>jline</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jmock</groupId>
-			<artifactId>jmock</artifactId>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.jmock</groupId>
+            <artifactId>jmock</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jmock</groupId>
-			<artifactId>jmock-junit4</artifactId>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.jmock</groupId>
+            <artifactId>jmock-junit4</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
