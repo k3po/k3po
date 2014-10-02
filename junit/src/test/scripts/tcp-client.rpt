@@ -1,5 +1,0 @@
-# tcp.client.connect-then-close
-connect tcp://localhost:7788
-connected
-close
-closed
