@@ -1,5 +1,5 @@
 # tcp.server.accept-then-close
 accept tcp://localhost:7788
-connected
+accepted
 close
 closed

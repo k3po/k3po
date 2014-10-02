@@ -42,10 +42,10 @@ public class ShareableServerBossPoolTest {
 
     @After
     public void afterTest() {
-        if (instance1 == null) {
+        if (instance1 != null) {
             instance1.shutdown();
         }
-        if (instance2 == null) {
+        if (instance2 != null) {
             instance2.shutdown();
         }
     }

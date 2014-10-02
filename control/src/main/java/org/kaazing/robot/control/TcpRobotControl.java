@@ -59,7 +59,7 @@ public class TcpRobotControl implements RobotControl {
 
     private final URL location;
     private URLConnection connection;
-    BufferedReader textIn;
+    private BufferedReader textIn;
 
     public TcpRobotControl(URL location) throws Exception {
         this.location = location;

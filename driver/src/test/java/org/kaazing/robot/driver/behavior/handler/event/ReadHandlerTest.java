@@ -69,7 +69,6 @@ import org.junit.Test;
 import org.junit.Ignore;
 import org.kaazing.robot.driver.jmock.Expectations;
 import org.kaazing.robot.driver.jmock.Mockery;
-import org.kaazing.robot.driver.behavior.handler.TestChannelEvent;
 import org.kaazing.robot.driver.behavior.handler.codec.MaskingDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.ReadByteArrayBytesDecoder;

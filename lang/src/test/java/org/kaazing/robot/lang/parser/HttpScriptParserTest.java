@@ -82,7 +82,28 @@ public class HttpScriptParserTest {
         // @formatter:off
         AstReadHttpHeaderNode expected = new AstReadHttpHeaderNodeBuilder()
             .setNameExactText("Host")
-            .setValueExactText("localhost:8000")
+            .addValueExactText("localhost:8000")
+            .setNextLineInfo(1, 0)
+        .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+    }
+    
+    @Test
+    public void shouldParseReadHttpHeadersExactText() throws Exception {
+        
+        String scriptFragment = "read header \"Host\" \"localhost:8000\" \"localhost:8001\" \"localhost:8002\"";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadHttpHeaderNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_HEADER);
+
+        // @formatter:off
+        AstReadHttpHeaderNode expected = new AstReadHttpHeaderNodeBuilder()
+            .setNameExactText("Host")
+            .addValueExactText("localhost:8000")
+            .addValueExactText("localhost:8001")
+            .addValueExactText("localhost:8002")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -101,7 +122,7 @@ public class HttpScriptParserTest {
         // @formatter:off
         AstWriteHttpHeaderNode expected = new AstWriteHttpHeaderNodeBuilder()
             .setNameExactText("Host")
-            .setValueExactText("localhost:8000")
+            .addValueExactText("localhost:8000")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -109,6 +130,27 @@ public class HttpScriptParserTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void shouldParseWriteHttpHeadersExactText() throws Exception {
+
+        String scriptFragment = "write header \"Host\" \"localhost:8000\" \"localhost:8001\" \"localhost:8002\"";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteHttpHeaderNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_HEADER);
+
+        // @formatter:off
+        AstWriteHttpHeaderNode expected = new AstWriteHttpHeaderNodeBuilder()
+            .setNameExactText("Host")
+            .addValueExactText("localhost:8000")
+            .addValueExactText("localhost:8001")
+            .addValueExactText("localhost:8002")
+            .setNextLineInfo(1, 0)
+        .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+    }
+    
     @Test
     public void shouldParseWriteHttpContentLength() throws Exception {
 
@@ -173,7 +215,27 @@ public class HttpScriptParserTest {
         // @formatter:off
         AstReadHttpParameterNode expected = new AstReadHttpParameterNodeBuilder()
             .setKeyExactText(".kl")
-            .setValueExactText("y")
+            .addValueExactText("y")
+            .setNextLineInfo(1, 0)
+        .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+    }
+    
+    @Test
+    public void shouldParseReadHttpParametersExactText() throws Exception {
+        String scriptFragment = "read parameter \".kl\" \"y\" \"n\" \"m\"";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadHttpParameterNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_PARAMETER);
+
+        // @formatter:off
+        AstReadHttpParameterNode expected = new AstReadHttpParameterNodeBuilder()
+            .setKeyExactText(".kl")
+            .addValueExactText("y")
+            .addValueExactText("n")
+            .addValueExactText("m")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -192,7 +254,27 @@ public class HttpScriptParserTest {
         // @formatter:off
         AstWriteHttpParameterNode expected = new AstWriteHttpParameterNodeBuilder()
             .setKeyExactText(".kl")
-            .setValueExactText("y")
+            .addValueExactText("y")
+            .setNextLineInfo(1, 0)
+        .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+    }
+    
+    @Test
+    public void shouldParseWriteHttpParametersExactText() throws Exception {
+        String scriptFragment = "write parameter \".kl\" \"y\" \"n\" \"m\"";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteHttpParameterNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_PARAMETER);
+
+        // @formatter:off
+        AstWriteHttpParameterNode expected = new AstWriteHttpParameterNodeBuilder()
+            .setKeyExactText(".kl")
+            .addValueExactText("y")
+            .addValueExactText("n")
+            .addValueExactText("m")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -343,12 +425,12 @@ public class HttpScriptParserTest {
                  .done()
                  .addReadHttpParameterEvent()
                      .setKeyExactText(".kl")
-                     .setValueExactText("y")
+                     .addValueExactText("y")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addReadHttpHeaderEvent()
                      .setNameExactText("Upgrade")
-                     .setValueExactText("websocket")
+                     .addValueExactText("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addCloseHttpRequestCommand()
@@ -361,7 +443,7 @@ public class HttpScriptParserTest {
                  .done()
                  .addWriteHttpHeaderCommand()
                      .setNameExactText("upgrade")
-                     .setValueExactText("websocket")
+                     .addValueExactText("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addCloseHttpResponseCommand()
@@ -418,12 +500,12 @@ public class HttpScriptParserTest {
                  .done()
                  .addWriteHttpParameterCommand()
                      .setKeyExactText(".kl")
-                     .setValueExactText("y")
+                     .addValueExactText("y")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addWriteHttpHeaderCommand()
                      .setNameExactText("Upgrade")
-                     .setValueExactText("websocket")
+                     .addValueExactText("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addCloseHttpRequestCommand()
@@ -436,7 +518,7 @@ public class HttpScriptParserTest {
                  .done()
                  .addReadHttpHeaderEvent()
                      .setNameExactText("upgrade")
-                     .setValueExactText("websocket")
+                     .addValueExactText("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addCloseHttpResponseCommand()
@@ -507,6 +589,164 @@ public class HttpScriptParserTest {
                  .done()
              .done()
          .done();
+         // @formatter:on
+         assertEquals(expected, actual);
+     }
+     
+     @Test
+     public void shouldParseHttpReadRequestWriteResponseScriptMultipleTokens() throws Exception {
+         // @formatter:off
+         String script =
+             "accept http://somehost:8000/path\n" +
+             "accepted\n" +
+             "read method \"get\"\n" +
+             "read parameter \".kl\" \"y\" \"n\" \"m\"\n" +
+             "read header \"Upgrade\" \"websocket\" \"other\"\n" +
+             "close request\n" +
+             "write status \"101\" \"Switching Protocols\"\n" +
+             "write header \"upgrade\" \"websocket\" \"other\"\n" +
+             "close response \n" +
+             "read [0x82]\n" +
+             "close\n" +
+             "closed\n";
+         // @formatter:on
+
+         ScriptParserImpl parser = new ScriptParserImpl();
+         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+
+         // @formatter:off
+         AstScriptNode expected = new AstScriptNodeBuilder()
+             .addAcceptStream()
+                 .setNextLineInfo(1, 0)
+                 .setLocation(URI.create("http://somehost:8000/path"))
+             .done()
+             .addAcceptedStream()
+                 .setNextLineInfo(1, 0)
+                 .addReadHttpMethodEvent()
+                     .setExactText("get")
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addReadHttpParameterEvent()
+                     .setKeyExactText(".kl")
+                     .addValueExactText("y")
+                     .addValueExactText("n")
+                     .addValueExactText("m")
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addReadHttpHeaderEvent()
+                     .setNameExactText("Upgrade")
+                     .addValueExactText("websocket")
+                     .addValueExactText("other")
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addCloseHttpRequestCommand()
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addWriteHttpStatusCommand()
+                     .setCodeExactText("101")
+                     .setReasonExactText("Switching Protocols")
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addWriteHttpHeaderCommand()
+                     .setNameExactText("upgrade")
+                     .addValueExactText("websocket")
+                     .addValueExactText("other")
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addCloseHttpResponseCommand()
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addReadEvent()
+                     .addExactBytes(new byte[] {(byte) 0x82})
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addCloseCommand()
+                     .setNextLineInfo(1, 0)
+                     .done()
+                 .addClosedEvent()
+                     .setNextLineInfo(1, 0)
+                     .done()
+                 .done()
+             .done();
+         // @formatter:on
+         assertEquals(expected, actual);
+     }
+
+     @Test
+     public void shouldParseHttpWriteRequestReadResponseScriptMultipleTokens() throws Exception {
+         // @formatter:off
+         String script =
+             "connect http://somehost:8000/path\n" +
+             "connected\n" +
+             "write method \"get\"\n" +
+             "write parameter \".kl\" \"y\" \"n\" \"m\"\n" +
+             "write header \"Upgrade\" \"websocket\" \"other\"\n" +
+             "close request\n" +
+             "read status \"101\" \"Switching Protocols\"\n" +
+             "read header \"upgrade\" \"websocket\" \"other\"\n" +
+             "close response \n" +
+             "write [0x82]\n" +
+             "close\n" +
+             "closed\n";
+         // @formatter:on
+
+         ScriptParserImpl parser = new ScriptParserImpl();
+         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+
+         // @formatter:off
+         AstScriptNode expected = new AstScriptNodeBuilder()
+             .addConnectStream()
+                 .setNextLineInfo(1, 0)
+                 .setLocation(URI.create("http://somehost:8000/path"))
+                 .addConnectedEvent()
+                    .setNextLineInfo(1, 0)
+                 .done()
+                 .addWriteHttpMethodCommand()
+                     .setExactText("get")
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addWriteHttpParameterCommand()
+                     .setKeyExactText(".kl")
+                     .addValueExactText("y")
+                     .addValueExactText("n")
+                     .addValueExactText("m")
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addWriteHttpHeaderCommand()
+                     .setNameExactText("Upgrade")
+                     .addValueExactText("websocket")
+                     .addValueExactText("other")
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addCloseHttpRequestCommand()
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addReadHttpStatusEvent()
+                     .setCodeExactText("101")
+                     .setReasonExactText("Switching Protocols")
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addReadHttpHeaderEvent()
+                     .setNameExactText("upgrade")
+                     .addValueExactText("websocket")
+                     .addValueExactText("other")
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addCloseHttpResponseCommand()
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addWriteCommand()
+                     .addExactBytes(new byte[] {(byte) 0x82})
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addCloseCommand()
+                     .setNextLineInfo(1, 0)
+                     .done()
+                 .addClosedEvent()
+                     .setNextLineInfo(1, 0)
+                     .done()
+                 .done()
+             .done();
          // @formatter:on
          assertEquals(expected, actual);
      }

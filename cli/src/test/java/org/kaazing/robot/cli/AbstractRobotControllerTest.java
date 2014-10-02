@@ -240,7 +240,6 @@ public abstract class AbstractRobotControllerTest {
         BufferedWriter out = new BufferedWriter(new FileWriter(temp));
         out.write("accept tcp://localhost:8010\n" +
                 "accepted\n" +
-                "connected\n" +
                 "closed\n" +
                 "connect tcp://localhost:8010\n" +
                 "connected\n" +
@@ -279,7 +278,6 @@ public abstract class AbstractRobotControllerTest {
         BufferedWriter out = new BufferedWriter(new FileWriter(temp));
         out.write("accept tcp://localhost:8010\n" +
                 "accepted\n" +
-                "connected\n" +
                 "read \"hello\"\n" +
                 "closed\n" +
                 "connect tcp://localhost:8010\n" +

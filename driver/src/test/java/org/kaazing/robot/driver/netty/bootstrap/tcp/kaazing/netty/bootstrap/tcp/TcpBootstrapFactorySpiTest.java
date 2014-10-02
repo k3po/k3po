@@ -19,27 +19,27 @@
 
 package org.kaazing.robot.driver.netty.bootstrap.tcp.kaazing.netty.bootstrap.tcp;
 
-//import org.junit.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
 import org.kaazing.robot.driver.netty.bootstrap.ClientBootstrap;
 import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
-//import org.kaazing.robot.driver.netty.bootstrap.spi.BootstrapFactorySpi;
-//import org.kaazing.robot.driver.netty.bootstrap.tcp.TcpBootstrapFactorySpi;
+import org.kaazing.robot.driver.netty.bootstrap.spi.BootstrapFactorySpi;
+import org.kaazing.robot.driver.netty.bootstrap.tcp.TcpBootstrapFactorySpi;
 
 public class TcpBootstrapFactorySpiTest {
 
-//    @Test
-//    public void transportNameOK() throws Exception {
-//
-//        BootstrapFactorySpi provider = new TcpBootstrapFactorySpi();
-//
-//        String transportName = provider.getTransportName();
-//        String expected = "tcp";
-//        Assert.assertTrue(String.format("Expected transport name '%s', got '%s'", expected, transportName),
-//                expected.equals(transportName));
-//    }
+    @Test
+    public void transportNameOK() throws Exception {
+
+        BootstrapFactorySpi provider = new TcpBootstrapFactorySpi();
+
+        String transportName = provider.getTransportName();
+        String expected = "tcp";
+        Assert.assertTrue(String.format("Expected transport name '%s', got '%s'", expected, transportName),
+                expected.equals(transportName));
+    }
 
     @Test
     public void shouldCreateNewClientBootstrap() throws Exception {

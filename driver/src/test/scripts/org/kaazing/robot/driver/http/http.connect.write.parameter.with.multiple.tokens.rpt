@@ -4,17 +4,11 @@
 
 connect http://localhost:8000
 connected
-
-write method "POST"
-write header "Date" "Fri, 31 Dec 1999 23:59:59 GMT"
-write header "Content-Type" "text/plain"
-write header "Transfer-Encoding" "chunked"
-write "Chunk A"
-write "Chunk B"
-write "Chunk C"
+write method "GET"
+write parameter "field" "value" "value2" "value3"
 close request
-
 read status "200" "OK"
+read header "some" "header"
 read header "Content-Length" "7"
 read "content"
 close response

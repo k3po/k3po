@@ -124,7 +124,6 @@ public class RobotIT {
         String script =
             "accept tcp://localhost:62345\n" +
             "accepted\n" +
-            "connected\n" +
             "close\n" +
             "closed\n";
 
@@ -222,7 +221,6 @@ public class RobotIT {
         String script =
             "accept tcp://localhost:60002\n" +
             "accepted\n" +
-            "connected\n" +
             "write \"Hello\\n\"\n" +
             "read [0..4]\n" +
             "close\n" +
@@ -231,7 +229,6 @@ public class RobotIT {
         String expected = "(?s)" +
                 "accept tcp://localhost:60002\n" +
                 "accepted\n" +
-                "connected\n" +
                 ".*";
         // @formatter:on
 
@@ -269,7 +266,6 @@ public class RobotIT {
         String script =
             "accept tcp://localhost:62345\n" +
             "accepted\n" +
-            "connected\n" +
             "close\n" +
             "closed\n";
 
@@ -295,7 +291,6 @@ public class RobotIT {
         String script =
             "accept tcp://localhost:62345\n" +
             "accepted\n" +
-            "connected\n" +
             "close\n" +
             "closed\n";
 
@@ -487,7 +482,6 @@ public class RobotIT {
         String script =
             "accept tcp://localhost:62345\n" +
             "accepted\n" +
-            "connected\n" +
             "read \"Hello\"\n" +
             "closed\n" +
             "\n" +
@@ -516,7 +510,6 @@ public class RobotIT {
         String script =
             "accept tcp://localhost:62345\n" +
             "accepted\n" +
-            "connected\n" +
             "read \"ello\"\n" +
             "closed\n" +
             "\n" +
@@ -530,7 +523,6 @@ public class RobotIT {
         String expected = "(?s)" +
                 "accept tcp://localhost:62345\n" +
                 "accepted\n" +
-                "connected\n" +
                 ".+" +
                 "\n" +
                 "#Connect channel\n" +
@@ -540,7 +532,6 @@ public class RobotIT {
                 "close\n" +
                 "closed\n";
         // @formatter:on
-
         robot.prepareAndStart(script).await();
 
         RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
@@ -1371,9 +1362,9 @@ public class RobotIT {
     @Ignore("Can't get the nested matcher this test was created with to compile in java")
     @Test(timeout = TEST_TIMEOUT)
     public void shouldReadRegexWithBackRefAndCapturesOK() throws Exception {
-        Pattern pattern = Pattern.compile("/(?<all>Hello (?<subgroup>\\d+) Bye from \\g{2})\\n/");
-        Matcher matcher = pattern.matcher("Hello 123 Bye from 123\n");
-        assertTrue(matcher.matches());
+//        Pattern pattern = Pattern.compile("/(?<all>Hello (?<subgroup>\\d+) Bye from \\g{2})\\n/");
+//        Matcher matcher = pattern.matcher("Hello 123 Bye from 123\n");
+//        assertTrue(matcher.matches());
         // @formatter:off
         String script =
             "connect tcp://localhost:62345\n" +
@@ -1762,7 +1753,6 @@ public class RobotIT {
         String script =
             "accept tcp://www.google.com:8080\n" +
             "accepted\n" +
-            "connected\n" +
             "close\n" +
             "closed\n";
         // @formatter:on
@@ -1783,7 +1773,6 @@ public class RobotIT {
         String script =
             "accept tcp://localhost:62345\n" +
             "accepted\n" +
-            "connected\n" +
             "read \"ello\"\n" +
             "read notify BARRIER\n" +
             "close\n" +
@@ -1799,7 +1788,6 @@ public class RobotIT {
         String expected = "(?s)" +
                 "accept tcp://localhost:62345\n" +
                 "accepted\n" +
-                "connected\n" +
                 ".+" +
                 "\n" +
                 "#Connect channel\n" +

@@ -4,14 +4,13 @@
 
 accept tcp://localhost:8000
 accepted
-read "get / HTTP/1.1\r\n"
-read "some: header\r\n"
+read "GET /?field=value&field=value2&field=value3 HTTP/1.1\r\n"
 read "\r\n"
 write "HTTP/1.1 200 OK\r\n"
-write "Content-Type: text/xml; charset=utf-8\r\n" 
 write "some: header\r\n"
-write "some2: header2\r\n"
-write "Content-Length: 7\r\n\r\n"
+write "Content-Length: 7\r\n"
+write "\r\n"
 write "content"
+
 close
 closed

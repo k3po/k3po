@@ -2,4 +2,18 @@
 # Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
 #
 
-// TODO
+connect http://localhost:8000
+connected
+
+write method "GET"
+write header "Date" "Fri, 31 Dec 1999 23:59:59 GMT"
+write header "Content-Type" "text/plain"
+write header "Connection" "close"
+write content-length
+write "content" 
+close request
+
+read status "200" "OK"
+read header "Content-Length" "7"
+read "content"
+close response

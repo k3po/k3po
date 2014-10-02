@@ -19,13 +19,14 @@
 
 package org.kaazing.robot.driver.http;
 
+import static java.lang.String.format;
+import static java.nio.file.Files.readAllLines;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -69,6 +70,57 @@ public class HttpRobotBehaviorIT {
         robot.destroy();
     }
 
+    @Test(timeout = TEST_TIMEOUT)
+    public void shouldAcceptHeaderWithMultipleTokens() throws Exception {
+        
+        String script = combineScripts("http.accept.header.with.multiple.tokens.rpt",
+                "tcp.connect.header.with.multiple.tokens.rpt");
+
+        String expected = script;
+
+        robot.prepareAndStart(script).await();
+
+        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+
+        doneFuture.await();
+
+        assertEquals(expected, doneFuture.getObservedScript());
+    }
+
+    @Test(timeout = TEST_TIMEOUT)
+    public void shouldAcceptReadParameterWithMultipleTokens() throws Exception {
+        
+        String script = combineScripts("http.accept.read.parameter.with.multiple.tokens.rpt",
+                "tcp.connect.write.parameter.with.multiple.tokens.rpt");
+
+        String expected = script;
+
+        robot.prepareAndStart(script).await();
+
+        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+
+        doneFuture.await();
+
+        assertEquals(expected, doneFuture.getObservedScript());
+    }
+    
+    @Test(timeout = TEST_TIMEOUT)
+    public void shouldAcceptWriteParameterWithMultipleTokens() throws Exception {
+        
+        String script = combineScripts("http.connect.write.parameter.with.multiple.tokens.rpt",
+                "tcp.accept.read.parameter.with.multiple.tokens.rpt");
+
+        String expected = script;
+
+        robot.prepareAndStart(script).await();
+
+        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+
+        doneFuture.await();
+
+        assertEquals(expected, doneFuture.getObservedScript());
+    }
+    
     @Test(timeout = TEST_TIMEOUT)
     public void shouldRecieveGetRequestAndProvideResponse() throws Exception {
 
@@ -174,7 +226,6 @@ public class HttpRobotBehaviorIT {
     }
 
     @Test(timeout = TEST_TIMEOUT)
-    @Ignore("not yet implemented")
     public void shouldAcceptPostMessageWithChunking() throws Exception {
 
         String script = combineScripts("http.accept.post.with.chunking.rpt", "tcp.connect.post.with.chunking.rpt");
@@ -191,7 +242,6 @@ public class HttpRobotBehaviorIT {
     }
 
     @Test(timeout = TEST_TIMEOUT)
-    @Ignore("not yet implemented")
     public void shouldConnectPostMessageWithChunking() throws Exception {
 
         String script = combineScripts("http.connect.post.with.chunking.rpt", "tcp.accept.post.with.chunking.rpt");
@@ -208,7 +258,6 @@ public class HttpRobotBehaviorIT {
     }
 
     @Test(timeout = TEST_TIMEOUT)
-    @Ignore("not yet implemented")
     public void shouldAcceptResponseWithChunking() throws Exception {
 
         String script = combineScripts("http.accept.response.with.chunking.rpt",
@@ -226,7 +275,6 @@ public class HttpRobotBehaviorIT {
     }
 
     @Test(timeout = TEST_TIMEOUT)
-    @Ignore("not yet implemented")
     public void shouldConnectResponseWithChunking() throws Exception {
 
         String script = combineScripts("http.connect.response.with.chunking.rpt",
@@ -243,6 +291,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
+    // TODO:
     @Test(timeout = TEST_TIMEOUT)
     @Ignore("not yet implemented")
     public void shouldConnectConnectionCloseResponse() throws Exception {
@@ -261,6 +310,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
+    // TODO:
     @Test(timeout = TEST_TIMEOUT)
     @Ignore("not yet implemented")
     public void shouldAcceptConnectionCloseResponse() throws Exception {
@@ -279,9 +329,10 @@ public class HttpRobotBehaviorIT {
 
     }
 
+    // TODO:
     @Ignore
     @Test(timeout = TEST_TIMEOUT)
-    public void shouldAcceptMutlipleHttpOnDifferentTcp() throws Exception {
+    public void shouldAcceptMultipleHttpOnDifferentTcp() throws Exception {
 
         String script = combineScripts("http.accept.two.http.200.rpt",
                 "tcp.connect.two.http.200.on.different.streams.rpt");
@@ -297,9 +348,10 @@ public class HttpRobotBehaviorIT {
 
     }
 
+    // TODO:
     @Ignore
     @Test(timeout = TEST_TIMEOUT)
-    public void shouldAcceptMutlipleHttpOnSameTcp() throws Exception {
+    public void shouldAcceptMultipleHttpOnSameTcp() throws Exception {
 
         String script = combineScripts("http.accept.two.http.200.rpt", "tcp.connect.two.http.200.on.same.streams.rpt");
 
@@ -322,7 +374,7 @@ public class HttpRobotBehaviorIT {
             sb.append("#");
             sb.append(scriptName);
             sb.append("\n");
-            List<String> lines = Files.readAllLines(Paths.get(String.format("%s%s%s", Paths.get("").toAbsolutePath()
+            List<String> lines = readAllLines(Paths.get(format("%s%s%s", Paths.get("").toAbsolutePath()
                     .toString(), SCRIPT_PATH, scriptName)), StandardCharsets.UTF_8);
             for (String line : lines) {
                 sb.append(line);

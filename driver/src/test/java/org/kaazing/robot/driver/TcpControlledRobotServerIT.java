@@ -192,18 +192,16 @@ public class TcpControlledRobotServerIT {
                                     "\n";
         String strExpectedFinished = "FINISHED\n" +
                                      "name:" + path + "\n" +
-                                     "content-length:61\n" +
+                                     "content-length:51\n" +
                                      "\n" +
                                      "accept tcp://localhost:62345\n" +
                                      "accepted\n" +
-                                     "connected\n" +
                                      "close\n" +
                                      "closed\n" + 
-                                     "content-length:61\n" +
+                                     "content-length:51\n" +
                                      "\n" +
                                      "accept tcp://localhost:62345\n" +
                                      "accepted\n" +
-                                     "connected\n" +
                                      "close\n" +
                                      "closed\n";
         // @formatter:on
@@ -268,18 +266,16 @@ public class TcpControlledRobotServerIT {
                                     "\n";
         String strExpectedFinished = "FINISHED\n" +
                                      "name:" + path + "\n" +
-                                     "content-length:61\n" +
+                                     "content-length:51\n" +
                                      "\n" +
                                      "accept tcp://localhost:62345\n" +
                                      "accepted\n" +
-                                     "connected\n" +
                                      "close\n" +
                                      "closed\n" + 
-                                     "content-length:61\n" +
+                                     "content-length:51\n" +
                                      "\n" +
                                      "accept tcp://localhost:62345\n" +
                                      "accepted\n" +
-                                     "connected\n" +
                                      "close\n" +
                                      "closed\n";
         // @formatter:on

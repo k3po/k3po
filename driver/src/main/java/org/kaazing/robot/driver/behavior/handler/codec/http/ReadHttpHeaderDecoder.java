@@ -31,15 +31,22 @@ import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageMismatchException;
+import org.kaazing.robot.lang.ast.matcher.AstExactTextMatcher;
+import org.kaazing.robot.lang.ast.matcher.AstRegexMatcher;
+import org.kaazing.robot.lang.ast.matcher.AstValueMatcher;
+import org.kaazing.robot.lang.regex.NamedGroupMatcher;
+import org.kaazing.robot.lang.regex.NamedGroupPattern;
 
 public class ReadHttpHeaderDecoder implements HttpMessageContributingDecoder {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ReadHttpHeaderDecoder.class);
     private String name;
+    private AstValueMatcher valueMatcher;
     private MessageDecoder valueDecoder;
 
-    public ReadHttpHeaderDecoder(String name, MessageDecoder valueDecoder) {
+    public ReadHttpHeaderDecoder(String name, AstValueMatcher valueMatcher, MessageDecoder valueDecoder) {
         this.name = name;
+        this.valueMatcher = valueMatcher;
         this.valueDecoder = valueDecoder;
     }
 
@@ -51,7 +58,7 @@ public class ReadHttpHeaderDecoder implements HttpMessageContributingDecoder {
     public void decode(HttpMessage message) throws Exception {
         HttpHeaders headers = message.headers();
         if (headers.isEmpty()) {
-            new MessageMismatchException("Could not match non-existent header", name, null);
+            throw new MessageMismatchException("Could not match non-existent header", name, null);
         }
 
         int firstMatchingHeader = -1;
@@ -60,20 +67,33 @@ public class ReadHttpHeaderDecoder implements HttpMessageContributingDecoder {
         List<String> headerValues = headers.getAll(name);
 
         for (int i = 0; i < headerValues.size(); i++) {
-            try {
-                String currentHeaderValue = headerValues.get(i);
-                ChannelBuffer copiedBuffer = copiedBuffer(currentHeaderValue, UTF_8);
-                valueDecoder.decode(copiedBuffer);
-                if (firstMatchingHeader > -1) {
-                    LOGGER.warn(String.format(
-                            "Multiple matching headers for read header %s, will remove first matching header", name));
-                    // no need to throw this exception multiple times
-                    break;
-                } else {
+            String currentHeaderValue = headerValues.get(i);
+            if (valueMatcher instanceof AstExactTextMatcher) {
+                if (((AstExactTextMatcher) valueMatcher).equals(new AstExactTextMatcher(currentHeaderValue))) {
+                    try {
+                        ChannelBuffer copiedBuffer = copiedBuffer(currentHeaderValue, UTF_8);
+                        valueDecoder.decode(copiedBuffer);
+                    } catch (MessageMismatchException mme) {
+                        lastException = mme;
+                    }
                     firstMatchingHeader = i;
+                    break;
                 }
-            } catch (MessageMismatchException mme) {
-                lastException = mme;
+            } else if (valueMatcher instanceof AstRegexMatcher) {
+                NamedGroupPattern pattern = ((AstRegexMatcher) valueMatcher).getValue();
+                NamedGroupMatcher matcher = pattern.matcher(currentHeaderValue);
+                if (matcher.matches()) {
+                    try {
+                        ChannelBuffer copiedBuffer = copiedBuffer(currentHeaderValue, UTF_8);
+                        valueDecoder.decode(copiedBuffer);
+                    } catch (MessageMismatchException mme) {
+                        lastException = mme;
+                    }
+                    firstMatchingHeader = i;
+                    break;
+                }
+            } else {
+                throw new IllegalStateException(String.format("Unexpected matcher type on valueMatcher: %s", valueMatcher));
             }
         }
 

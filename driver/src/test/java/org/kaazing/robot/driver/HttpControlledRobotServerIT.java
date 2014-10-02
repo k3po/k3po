@@ -40,7 +40,6 @@ public class HttpControlledRobotServerIT {
     private ObjectMapper mapper;
     private Robot robot;
     
-    
     private static final int TEST_TIMEOUT = 2500;
 
     @Before
@@ -94,11 +93,11 @@ public class HttpControlledRobotServerIT {
         
         FinishedMessage finishedMessage = new FinishedMessage();
         finishedMessage.setName(path);
-        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n"
+        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n"
                 + "write \"Hello, World!\"\n" + "read \"Hello, World!\"\n\n" + "closed\n"
                 + "connect tcp://localhost:61111\n" + "connected\n\n" + "read \"Hello, World!\"\n"
                 + "write \"Hello, World!\"\n\n" + "close\n" + "closed\n");
-        finishedMessage.setObservedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n"
+        finishedMessage.setObservedScript("accept tcp://localhost:61111\n" + "accepted\n"
                 + "write \"Hello, World!\"\n" + "read \"Hello, World!\"\n\n" + "closed\n"
                 + "connect tcp://localhost:61111\n" + "connected\n\n" + "read \"Hello, World!\"\n"
                 + "write \"Hello, World!\"\n\n" + "close\n" + "closed\n");
@@ -162,7 +161,6 @@ public class HttpControlledRobotServerIT {
     
             outputStream.write(resultRequest);
             outputStream.flush();
-
     
             ByteBuffer finished = ByteBuffer.allocate(errorExpected.capacity());
             while (finished.hasRemaining()) {
@@ -280,11 +278,11 @@ public class HttpControlledRobotServerIT {
 
         FinishedMessage finishedMessage = new FinishedMessage();
         finishedMessage.setName(path);
-        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n"
+        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n"
                 + "write \"Hello, World!\"\n" + "read \"Hello, World!\"\n\n" + "closed\n"
                 + "connect tcp://localhost:61111\n" + "connected\n\n" + "read \"Hello, World!\"\n"
                 + "write \"Hello, World!\"\n\n" + "close\n" + "closed\n");
-        finishedMessage.setObservedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n"
+        finishedMessage.setObservedScript("accept tcp://localhost:61111\n" + "accepted\n"
                 + "write \"Hello, World!\"\n" + "read \"Hello, World!\"\n\n" + "closed\n"
                 + "connect tcp://localhost:61111\n" + "connected\n\n" + "read \"Hello, World!\"\n"
                 + "write \"Hello, World!\"\n\n" + "close\n" + "closed\n");
@@ -402,11 +400,11 @@ public class HttpControlledRobotServerIT {
 
         FinishedMessage finishedMessage = new FinishedMessage();
         finishedMessage.setName(path);
-        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n"
+        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n"
                 + "write \"Hello, World!\"\n" + "read \"Hello, World!\"\n\n" + "closed\n"
                 + "connect tcp://localhost:61111\n" + "connected\n\n" + "read \"Hello, World!\"\n"
                 + "write \"Hello, World!\"\n\n" + "close\n" + "closed\n");
-        finishedMessage.setObservedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n"
+        finishedMessage.setObservedScript("accept tcp://localhost:61111\n" + "accepted\n"
                 + "write \"Hello, World!\"\n" + "read \"Hello, World!\"\n\n" + "closed\n"
                 + "connect tcp://localhost:61111\n" + "connected\n\n" + "read \"Hello, World!\"\n"
                 + "write \"Hello, World!\"\n\n" + "close\n" + "closed\n");
@@ -536,7 +534,7 @@ public class HttpControlledRobotServerIT {
         
         FinishedMessage finishedMessage = new FinishedMessage();
         finishedMessage.setName(path);
-        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n" + "write \"Hello, World!\"\n\n" + "closed\n");
+        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n" + "write \"Hello, World!\"\n\n" + "closed\n");
         finishedMessage.setObservedScript("accept tcp://localhost:61111\n");
 
         String finishedContent = mapper.writeValueAsString(finishedMessage);
@@ -588,7 +586,7 @@ public class HttpControlledRobotServerIT {
 
         FinishedMessage finishedMessage = new FinishedMessage();
         finishedMessage.setName(path);
-        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n" + "write \"Hello, World!\"\n\n" + "closed\n");
+        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n" + "write \"Hello, World!\"\n\n" + "closed\n");
         finishedMessage.setObservedScript("accept tcp://localhost:61111\n");
 
         String finishedContent = mapper.writeValueAsString(finishedMessage);
@@ -663,11 +661,11 @@ public class HttpControlledRobotServerIT {
 
         FinishedMessage finishedMessage = new FinishedMessage();
         finishedMessage.setName(path);
-        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n"
+        finishedMessage.setExpectedScript("accept tcp://localhost:61111\n" + "accepted\n"
                 + "write \"Hello, World!\"\n" + "read \"Hello, World!\"\n\n" + "closed\n"
                 + "connect tcp://localhost:61111\n" + "connected\n\n" + "read \"Hello, World!\"\n"
                 + "write \"Hello, World!\"\n\n" + "close\n" + "closed\n");
-        finishedMessage.setObservedScript("accept tcp://localhost:61111\n" + "accepted\n" + "connected\n\n"
+        finishedMessage.setObservedScript("accept tcp://localhost:61111\n" + "accepted\n"
                 + "write \"Hello, World!\"\n" + "read \"Hello, World!\"\n\n" + "closed\n"
                 + "connect tcp://localhost:61111\n" + "connected\n\n" + "read \"Hello, World!\"\n"
                 + "write \"Hello, World!\"\n\n" + "close\n" + "closed\n");

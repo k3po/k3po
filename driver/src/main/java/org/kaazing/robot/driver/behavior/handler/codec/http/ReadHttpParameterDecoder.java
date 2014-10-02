@@ -24,7 +24,6 @@ import static org.jboss.netty.util.CharsetUtil.UTF_8;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -32,18 +31,24 @@ import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.driver.behavior.handler.codec.MessageDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageMismatchException;
+import org.kaazing.robot.lang.ast.matcher.AstExactTextMatcher;
+import org.kaazing.robot.lang.ast.matcher.AstRegexMatcher;
+import org.kaazing.robot.lang.ast.matcher.AstValueMatcher;
+import org.kaazing.robot.lang.regex.NamedGroupMatcher;
+import org.kaazing.robot.lang.regex.NamedGroupPattern;
 
 public class ReadHttpParameterDecoder implements HttpMessageContributingDecoder {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ReadHttpParameterDecoder.class);
     private String key;
+    private AstValueMatcher valueMatcher;
     private MessageDecoder valueDecoder;
 
-    public ReadHttpParameterDecoder(String key, MessageDecoder valueDecoder) {
+    public ReadHttpParameterDecoder(String key, AstValueMatcher valueMatcher, MessageDecoder valueDecoder) {
         this.key = key;
+        this.valueMatcher = valueMatcher;
         this.valueDecoder = valueDecoder;
     }
 
@@ -61,7 +66,7 @@ public class ReadHttpParameterDecoder implements HttpMessageContributingDecoder 
         }
         List<String> parameterValues = getParameters(request);
         if (parameterValues.isEmpty()) {
-            new MessageMismatchException("Could not match non-existent parameter", key, null);
+            throw new MessageMismatchException("Could not match non-existent parameter", key, null);
         }
 
         int firstMatchingParameter = -1;
@@ -94,7 +99,8 @@ public class ReadHttpParameterDecoder implements HttpMessageContributingDecoder 
         // Remove the matched query parameter
         URI uri = URI.create(request.getUri());
         String query = uri.getQuery();
-        List<String> parameters = Arrays.asList(query.split("&"));
+
+        List<String> parameters = toList(query.split("&"));
         String parameterToMatch = String.format("%s=%s", key, parameterValues.get(firstMatchingParameter));
         for (String parameter : parameters) {
             if (parameterToMatch.equals(parameter)) {
@@ -111,7 +117,19 @@ public class ReadHttpParameterDecoder implements HttpMessageContributingDecoder 
             }
         }
 
-        request.setUri(uri.toString().replace(query, result));
+        if (result != null) {
+            request.setUri(uri.toString().replace(query, result));
+        } else {
+            request.setUri(uri.toString().replace(query, ""));
+        }
+    }
+
+    private static List<String> toList(String [] arr) {
+        List<String> list = new ArrayList<String>(arr.length);
+        for (int i = 0; i < arr.length; i++) {
+            list.add(arr[i]);
+        }
+        return list;
     }
 
     /**
@@ -127,9 +145,23 @@ public class ReadHttpParameterDecoder implements HttpMessageContributingDecoder 
         for (int i = 0; i < parameters.length; i++) {
             String[] aParameter = parameters[i].split("=");
             String parameterKey = aParameter[0];
+            String parameterValue = aParameter[1];
             if (key.equals(parameterKey)) {
-                matchingParameters.add(aParameter[1]);
-                break;
+                if (valueMatcher instanceof AstExactTextMatcher) {
+                    if (((AstExactTextMatcher) valueMatcher).equals(new AstExactTextMatcher(parameterValue))) {
+                        matchingParameters.add(parameterValue);
+                        break;
+                    }
+                } else if (valueMatcher instanceof AstRegexMatcher) {
+                    NamedGroupPattern pattern = ((AstRegexMatcher) valueMatcher).getValue();
+                    NamedGroupMatcher matcher = pattern.matcher(parameterValue);
+                    if (matcher.matches()) {
+                        matchingParameters.add(parameterValue);
+                        break;
+                    }
+                } else {
+                    throw new IllegalStateException(String.format("Unexpected matcher type on valueMatcher: %s", valueMatcher));
+                }
             }
         }
         return matchingParameters;
