@@ -27,6 +27,8 @@
 
     <properties>
         <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
     </properties>
 
     <distributionManagement>
