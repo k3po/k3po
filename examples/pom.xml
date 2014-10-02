@@ -20,16 +20,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.kaazing</groupId>
-        <artifactId>robot.parent</artifactId>
-        <version>1.3.0.3-SNAPSHOT</version>
+        <artifactId>robot.java</artifactId>
+        <version>1.0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>robot.examples</artifactId>
     <packaging>jar</packaging>
 
-    <name>robot/examples</name>
-    <url>https://github.com/kaazing/robot</url>
+    <name>robot.java/examples</name>
+    <url>https://github.com/kaazing/robot.java</url>
     <description>
         Robot Examples
     </description>
@@ -50,21 +50,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>robot.driver</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>robot.junit</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>robot.lang</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
@@ -76,7 +62,7 @@
             <plugin>
                 <groupId>org.kaazing</groupId>
                 <artifactId>robot-maven-plugin</artifactId>
-                <version>${project.version}</version>
+                <version>1.3.0.2</version>
                 <configuration>
                     <skipTests>${skipITs}</skipTests>
                 </configuration>

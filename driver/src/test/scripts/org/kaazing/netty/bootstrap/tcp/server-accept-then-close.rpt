@@ -1,8 +1,0 @@
-#
-# Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
-#
-
-accept tcp://127.0.0.1:62020
-connected
-close
-closed

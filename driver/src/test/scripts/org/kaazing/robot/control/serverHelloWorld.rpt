@@ -1,7 +1,0 @@
-accept tcp://localhost:61111
-accepted
-connected
-
-write "Hello, World!"
-
-closed

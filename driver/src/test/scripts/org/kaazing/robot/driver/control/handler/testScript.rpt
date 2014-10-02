@@ -1,4 +1,0 @@
-connect tcp://localhost:8000
-connected
-close
-closed

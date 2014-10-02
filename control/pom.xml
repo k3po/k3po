@@ -21,15 +21,15 @@
 
     <parent>
         <groupId>org.kaazing</groupId>
-        <artifactId>robot.parent</artifactId>
-        <version>1.3.0.3-SNAPSHOT</version>
+        <artifactId>robot.java</artifactId>
+        <version>1.0.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>robot.control</artifactId>
     <packaging>jar</packaging>
 
-    <name>robot/control</name>
-    <url>https://github.com/kaazing/robot</url>
+    <name>robot.java/control</name>
+    <url>https://github.com/kaazing/robot.java</url>
     <description>
         Robot control
     </description>

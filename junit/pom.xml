@@ -21,15 +21,15 @@
 
     <parent>
         <groupId>org.kaazing</groupId>
-        <artifactId>robot.parent</artifactId>
-        <version>1.3.0.3-SNAPSHOT</version>
+        <artifactId>robot.java</artifactId>
+        <version>1.0.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>robot.junit</artifactId>
     <packaging>jar</packaging>
 
-    <name>robot/junit</name>
-    <url>https://github.com/kaazing/robot</url>
+    <name>robot.java/junit</name>
+    <url>https://github.com/kaazing/robot.java</url>
     <description>
         Robot junit
     </description>
@@ -84,7 +84,7 @@
             <plugin>
                 <groupId>org.kaazing</groupId>
                 <artifactId>robot-maven-plugin</artifactId>
-                <version>${project.version}</version>
+                <version>1.3.0.2</version>
                 <executions>
                     <execution>
                         <id>robot</id>

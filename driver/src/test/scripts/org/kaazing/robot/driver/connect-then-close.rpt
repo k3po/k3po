@@ -1,4 +1,0 @@
-connect tcp://localhost:62345
-connected
-close
-closed
