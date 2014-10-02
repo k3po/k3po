@@ -24,46 +24,39 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
-import java.net.URI;
+import java.net.URL;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.kaazing.robot.control.RobotControl;
-import org.kaazing.robot.control.RobotControlFactories;
-import org.kaazing.robot.control.RobotControlFactory;
 import org.kaazing.robot.control.command.AbortCommand;
 import org.kaazing.robot.control.command.PrepareCommand;
 import org.kaazing.robot.control.command.StartCommand;
 import org.kaazing.robot.control.event.CommandEvent;
 import org.kaazing.robot.control.event.ErrorEvent;
 import org.kaazing.robot.control.event.FinishedEvent;
-import org.kaazing.robot.junit.RoboticException;
-import org.kaazing.robot.junit.ScriptPair;
+import org.kaazing.robot.control.event.PreparedEvent;
 
 final class ScriptRunner implements Callable<ScriptPair> {
 
-    private final RobotControlFactory controllerFactory;
     private final RobotControl controller;
-    private final String name;
+    private final List<String> names;
     private final RoboticLatch latch;
 
     private volatile boolean abortScheduled;
 
-    ScriptRunner(String name, RoboticLatch latch) throws Exception {
+    ScriptRunner(URL controlURL, List<String> names, RoboticLatch latch) throws Exception {
 
-        if (name == null) {
-            throw new NullPointerException("scriptPath");
+        if (names == null) {
+            throw new NullPointerException("names");
         }
 
         if (latch == null) {
             throw new NullPointerException("latch");
         }
 
-        // TODO: make this port number a constant? Configurable?
-        URI controlURI = URI.create("tcp://localhost:11642");
-
-        this.controllerFactory = RobotControlFactories.createRobotControlFactory();
-        this.controller = controllerFactory.newClient(controlURI);
-        this.name = name;
+        this.controller = new RobotControl(controlURL);
+        this.names = names;
         this.latch = latch;
     }
 
@@ -85,24 +78,23 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
             // send PREPARE command
             PrepareCommand prepare = new PrepareCommand();
-            prepare.setName(name);
+            prepare.setNames(names);
 
             controller.writeCommand(prepare);
 
             boolean abortWritten = false;
+            String expectedScript = null;
             while (true) {
                 try {
                     // validate event name matches command name
                     CommandEvent event = controller.readEvent(200, MILLISECONDS);
-                    if (!name.equals(event.getName())) {
-                        throw new IllegalStateException(format(
-                                "Unexpected %s event with script name '%s' while awaiting completion", event.getKind(),
-                                event.getName()));
-                    }
 
                     // process event
                     switch (event.getKind()) {
                     case PREPARED:
+                        PreparedEvent prepared = (PreparedEvent) event;
+                        expectedScript = prepared.getScript();
+
                         // notify script is prepared
                         latch.notifyPrepared();
 
@@ -115,7 +107,6 @@ final class ScriptRunner implements Callable<ScriptPair> {
                         } else {
                             // send START command
                             StartCommand start = new StartCommand();
-                            start.setName(name);
                             controller.writeCommand(start);
                         }
                         break;
@@ -127,7 +118,8 @@ final class ScriptRunner implements Callable<ScriptPair> {
                     case FINISHED:
                         FinishedEvent finished = (FinishedEvent) event;
                         // note: observed script is possibly incomplete
-                        return new ScriptPair(finished.getExpectedScript(), finished.getObservedScript());
+                        String observedScript = finished.getScript();
+                        return new ScriptPair(expectedScript, observedScript);
                     default:
                         throw new IllegalArgumentException("Unrecognized event kind: " + event.getKind());
                     }
@@ -160,7 +152,6 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
     private void sendAbortCommand() throws Exception {
         AbortCommand abort = new AbortCommand();
-        abort.setName(name);
         controller.writeCommand(abort);
     }
 }

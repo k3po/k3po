@@ -22,15 +22,20 @@ package org.kaazing.robot.junit.rules;
 import static java.lang.String.format;
 import static org.junit.Assert.assertTrue;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.junit.rules.Verifier;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runners.model.Statement;
+import org.kaazing.net.URLFactory;
 import org.kaazing.robot.junit.annotation.Robotic;
 
 public final class RobotRule extends Verifier {
-
-    private static final String SCRIPT_EXTENSION = ".rpt";
 
     /*
      * For some reason earlier versions of Junit will cause tests to either hang
@@ -60,6 +65,7 @@ public final class RobotRule extends Verifier {
 
     private final RoboticLatch latch;
     private String scriptRoot;
+    private URL controlURL;
 
     public RobotRule() {
         latch = new RoboticLatch();
@@ -67,6 +73,11 @@ public final class RobotRule extends Verifier {
 
     public RobotRule setScriptRoot(String scriptRoot) {
         this.scriptRoot = scriptRoot;
+        return this;
+    }
+
+    public RobotRule setControlURI(URI controlURI) {
+        this.controlURL = createURL(controlURI.toString());
         return this;
     }
 
@@ -82,14 +93,27 @@ public final class RobotRule extends Verifier {
                 String packageName = testClass.getPackage().getName();
                 packagePath = packageName.replaceAll("\\.", "/");
             }
-            // script is a required attribute on @Robotic
-            String scriptName = format("%s/%s", packagePath, note.script());
 
-            if (scriptName.endsWith(SCRIPT_EXTENSION)) {
-                scriptName = scriptName.substring(0, scriptName.length() - SCRIPT_EXTENSION.length());
+            // script is a required attribute on @Robotic
+            String[] scripts = note.script();
+            List<String> scriptNames = new LinkedList<>();
+            for (int i = 0; i < scripts.length; i++) {
+                // strict compatibility (relax to support fully qualified paths later)
+                if (scripts[i].startsWith("/")) {
+                    throw new IllegalArgumentException("Script path must be relative");
+                }
+
+                String scriptName = format("%s/%s", packagePath, scripts[i]);
+                scriptNames.add(scriptName);
             }
 
-            statement = new RoboticStatement(statement, scriptName, latch);
+            URL controlURL = this.controlURL;
+            if (controlURL == null) {
+                // lazy dependency on TCP scheme
+                controlURL = createURL("tcp://localhost:11642");
+            }
+
+            statement = new RoboticStatement(statement, controlURL, scriptNames, latch);
         }
 
         return super.apply(statement, description);
@@ -104,5 +128,14 @@ public final class RobotRule extends Verifier {
 
         // wait for script to finish
         latch.awaitFinished();
+    }
+
+    private static URL createURL(String location) {
+        try {
+            return URLFactory.createURL("tcp://localhost:11642");
+        }
+        catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

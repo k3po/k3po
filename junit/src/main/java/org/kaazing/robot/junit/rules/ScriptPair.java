@@ -17,28 +17,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.control;
+package org.kaazing.robot.junit.rules;
 
-import java.net.URI;
-import java.net.URL;
+public class ScriptPair {
 
-public class TcpRobotControlFactory extends RobotControlFactorySPI {
+    private String expectedScript;
+    private String observedScript;
 
-    @Override
-    public RobotControl newClient(URI controlURI) throws Exception {
-
-        String scheme = controlURI.getScheme();
-        if (!"tcp".equals(scheme)) {
-            throw new IllegalArgumentException("Unrecognized scheme: " + scheme);
-        }
-
-        URL location = new URL(null, controlURI.toASCIIString(), new TcpURLStreamHandler());
-
-        return new TcpRobotControl(location);
+    public ScriptPair() {
+        expectedScript = "";
+        observedScript = "";
     }
 
-    @Override
-    public String getSchemeName() {
-        return "tcp";
+    public ScriptPair(String expectedScript, String observedScript) {
+        this.expectedScript = expectedScript;
+        this.observedScript = observedScript;
+    }
+
+    public void setExpectedScript(String expectedScript) {
+        this.expectedScript = expectedScript;
+    }
+
+    public String getExpectedScript() {
+        return expectedScript;
+    }
+
+    public void setObservedScript(String observedScript) {
+        this.observedScript = observedScript;
+    }
+
+    public String getObservedScript() {
+        return observedScript;
     }
 }

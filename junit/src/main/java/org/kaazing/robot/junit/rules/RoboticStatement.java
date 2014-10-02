@@ -24,33 +24,32 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URL;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 import org.junit.ComparisonFailure;
 import org.junit.runners.model.Statement;
-import org.kaazing.robot.junit.ScriptPair;
 
 final class RoboticStatement extends Statement {
 
     private final Statement statement;
-    private final String scriptName;
+    private final URL controlURL;
+    private final List<String> scriptNames;
     private final RoboticLatch latch;
 
-    RoboticStatement(Statement statement, String scriptName, RoboticLatch latch) {
+    RoboticStatement(Statement statement, URL controlURL, List<String> scriptNames, RoboticLatch latch) {
         this.statement = statement;
-        this.scriptName = scriptName;
+        this.controlURL = controlURL;
+        this.scriptNames = scriptNames;
         this.latch = latch;
     }
 
     @Override
     public void evaluate() throws Throwable {
 
-        // TODO: remove resolution from JUnit integration
-        //       instead add "testScriptDir" (plugin default: src/test/scripts) to Robot for server-size resolution
-        //       only relative script path hits the network, never absolute path, never with extension
-
-        ScriptRunner scriptRunner = new ScriptRunner(scriptName, latch);
+        ScriptRunner scriptRunner = new ScriptRunner(controlURL, scriptNames, latch);
         FutureTask<ScriptPair> scriptFuture = new FutureTask<ScriptPair>(scriptRunner);
 
         try {

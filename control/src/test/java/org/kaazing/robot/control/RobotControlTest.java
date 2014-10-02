@@ -28,7 +28,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.nio.charset.Charset;
-import java.nio.file.Paths;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -47,8 +46,10 @@ import org.kaazing.robot.control.command.StartCommand;
 import org.kaazing.robot.control.event.CommandEvent;
 import org.kaazing.robot.control.event.ErrorEvent;
 import org.kaazing.robot.control.event.FinishedEvent;
+import org.kaazing.robot.control.event.PreparedEvent;
 import org.kaazing.robot.control.event.StartedEvent;
 
+// TODO: convert to RobotControlIT using RobotRule (shaded, specific version) with robotic.control scripts
 public class RobotControlTest {
 
     private static final Charset UTF_8 = Charset.forName("UTF-8");
@@ -70,8 +71,7 @@ public class RobotControlTest {
     public void setupControl() throws Exception {
         input = mockery.mock(InputStream.class);
         output = mockery.mock(OutputStream.class);
-
-        control = new TcpRobotControl(new URL(null, "test://internal", new URLStreamHandler() {
+        control = new RobotControl(new URL(null, "test://internal", new URLStreamHandler() {
             @Override
             protected URLConnection openConnection(URL location) throws IOException {
                 return new URLConnection(location) {
@@ -98,9 +98,7 @@ public class RobotControlTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldNotWriteCommand() throws Exception {
-        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/control/myscript.rpt";
         StartCommand start = new StartCommand();
-        start.setName(path);
         control.writeCommand(start);
     }
 
@@ -129,10 +127,11 @@ public class RobotControlTest {
 
     @Test
     public void shouldWritePrepareCommand() throws Exception {
-        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/control/myscript.rpt";
-        
+        String path = "org/kaazing/robot/control/myscript";
+
         final byte[] expectedPrepare =
                 ("PREPARE\n" +
+                 "version:2.0\n" +
                  "name:" + path + "\n" +
                  "\n").getBytes(UTF_8);
 
@@ -143,20 +142,18 @@ public class RobotControlTest {
             }
         });
 
-        PrepareCommand start = new PrepareCommand();
-        start.setName(path);
+        PrepareCommand prepare = new PrepareCommand();
+        prepare.setName(path);
 
         control.connect();
-        control.writeCommand(start);
+        control.writeCommand(prepare);
 
     }
 
     @Test
     public void shouldWriteStartCommand() throws Exception {
-        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/control/myscript.rpt";
         final byte[] expectedStart =
                 ("START\n" +
-                 "name:" + path + "\n" +
                  "\n").getBytes(UTF_8);
 
         mockery.checking(new Expectations() {
@@ -167,7 +164,6 @@ public class RobotControlTest {
         });
 
         StartCommand start = new StartCommand();
-        start.setName(path);
 
         control.connect();
         control.writeCommand(start);
@@ -176,10 +172,8 @@ public class RobotControlTest {
 
     @Test
     public void shouldWriteAbortCommand() throws Exception {
-        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/control/myscript.rpt";
         final byte[] expectedStart =
                 ("ABORT\n" +
-                 "name:" + path + "\n" +
                  "\n").getBytes(UTF_8);
 
         mockery.checking(new Expectations() {
@@ -190,7 +184,6 @@ public class RobotControlTest {
         });
 
         AbortCommand abort = new AbortCommand();
-        abort.setName(path);
 
         control.connect();
         control.writeCommand(abort);
@@ -198,17 +191,36 @@ public class RobotControlTest {
     }
 
     @Test
-    public void shouldReadStartedEvent() throws Exception {
-        final String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/control/myscript.rpt";
+    public void shouldReadPreparedEvent() throws Exception {
+        PreparedEvent expectedPrepared = new PreparedEvent();
+        expectedPrepared.setScript("# comment");
 
+        mockery.checking(new Expectations() {
+            {
+                oneOf(input).read(with(any(byte[].class)), with(equal(0)), with(any(int.class)));
+                will(readInitialBytes(0, ("PREPARED\n" +
+                                          "content-length:9\n" +
+                                          "\n" +
+                                          "# comment").getBytes(UTF_8)));
+                allowing(input).available();
+                will(returnValue(0));
+            }
+        });
+
+        control.connect();
+        CommandEvent finished = control.readEvent();
+
+        assertEquals(expectedPrepared, finished);
+    }
+
+    @Test
+    public void shouldReadStartedEvent() throws Exception {
         StartedEvent expectedStarted = new StartedEvent();
-        expectedStarted.setName(path);
 
         mockery.checking(new Expectations() {
             {
                 oneOf(input).read(with(any(byte[].class)), with(equal(0)), with(any(int.class)));
                 will(readInitialBytes(0, ("STARTED\n" +
-                                          "name:" + path + "\n" +
                                           "\n").getBytes(UTF_8)));
                 allowing(input).available();
                 will(returnValue(0));
@@ -223,21 +235,13 @@ public class RobotControlTest {
 
     @Test
     public void shouldReadFinishedEvent() throws Exception {
-        final String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/control/myscript.rpt";
-
         FinishedEvent expectedFinished = new FinishedEvent();
-        expectedFinished.setName(path);
-        expectedFinished.setExpectedScript("# comment");
-        expectedFinished.setObservedScript("# comment");
+        expectedFinished.setScript("# comment");
 
         mockery.checking(new Expectations() {
             {
                 oneOf(input).read(with(any(byte[].class)), with(equal(0)), with(any(int.class)));
                 will(readInitialBytes(0, ("FINISHED\n" +
-                                          "name:" + path + "\n" +
-                                          "content-length:9\n" +
-                                          "\n" +
-                                          "# comment" + 
                                           "content-length:9\n" +
                                           "\n" +
                                           "# comment").getBytes(UTF_8)));
@@ -254,10 +258,7 @@ public class RobotControlTest {
 
     @Test
     public void shouldReadErrorEvent() throws Exception {
-        final String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/control/myscript.rpt";
-        
         ErrorEvent expectedError = new ErrorEvent();
-        expectedError.setName(path);
         expectedError.setSummary("summary text");
         expectedError.setDescription("description text");
 
@@ -265,7 +266,6 @@ public class RobotControlTest {
             {
                 oneOf(input).read(with(any(byte[].class)), with(equal(0)), with(any(int.class)));
                 will(readInitialBytes(0, ("ERROR\n" +
-                                          "name:" + path + "\n" +
                                           "summary:summary text\n" +
                                           "content-length:16\n" +
                                           "\n" +

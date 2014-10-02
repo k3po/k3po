@@ -19,6 +19,8 @@
 
 package org.kaazing.robot.control.command;
 
+import java.util.Objects;
+
 public final class AbortCommand extends Command {
 
     public Kind getKind() {
@@ -27,7 +29,7 @@ public final class AbortCommand extends Command {
 
     @Override
     public int hashCode() {
-        return hashTo();
+        return Objects.hash(getKind());
     }
 
     @Override

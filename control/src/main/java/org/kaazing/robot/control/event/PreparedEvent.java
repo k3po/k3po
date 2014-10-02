@@ -19,19 +19,35 @@
 
 package org.kaazing.robot.control.event;
 
+import java.util.Objects;
+
 public final class PreparedEvent extends CommandEvent {
+
+    private String script;
 
     public Kind getKind() {
         return Kind.PREPARED;
     }
 
+    public void setScript(String script) {
+        this.script = script;
+    }
+
+    public String getScript() {
+        return script;
+    }
+
     @Override
     public int hashCode() {
-        return hashTo();
+        return Objects.hash(getKind(), script);
     }
 
     @Override
     public boolean equals(Object o) {
         return o == this || o instanceof PreparedEvent && equalTo((PreparedEvent) o);
+    }
+
+    protected boolean equalTo(PreparedEvent that) {
+        return super.equalTo(that) && Objects.equals(this.script, that.script);
     }
 }
