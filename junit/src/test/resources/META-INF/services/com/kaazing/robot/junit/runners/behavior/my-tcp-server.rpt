@@ -1,5 +1,0 @@
-# my-tcp-server
-accept tcp://localhost:7788
-accepted
-connected
-closed

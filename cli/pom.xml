@@ -43,7 +43,8 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>robot.control</artifactId>
-            <version>${project.version}</version>
+            <!-- Note: CLI will be replaced by executable Robot JAR going forward -->
+            <version>1.3.0.2</version>
             <scope>compile</scope>
         </dependency>
 
