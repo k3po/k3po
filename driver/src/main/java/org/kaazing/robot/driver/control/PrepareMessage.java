@@ -19,11 +19,30 @@
 
 package org.kaazing.robot.driver.control;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 public class PrepareMessage extends ControlMessage {
+
+    private List<String> names;
+
+    public PrepareMessage() {
+        this.names = new ArrayList<String>(5);
+    }
+
+    public List<String> getNames() {
+        return names;
+    }
+
+    public void setNames(List<String> names) {
+        this.names.clear();
+        this.names.addAll(names);
+    }
 
     @Override
     public int hashCode() {
-        return super.hashTo();
+        return Objects.hash(getKind(), names);
     }
 
     @Override
@@ -31,13 +50,12 @@ public class PrepareMessage extends ControlMessage {
         return (this == obj) || (obj instanceof PrepareMessage) && equals((PrepareMessage) obj);
     }
 
-    protected final boolean equals(PrepareMessage that) {
-        return super.equalTo(that);
-    }
-
     @Override
     public Kind getKind() {
         return Kind.PREPARE;
     }
 
+    protected final boolean equals(PrepareMessage that) {
+        return super.equalTo(that) && Objects.equals(this.names, that.names);
+    }
 }

@@ -23,33 +23,19 @@ import java.util.Objects;
 
 public class FinishedMessage extends ControlMessage {
 
-    private String observedScript = "";
-    private String expectedScript = "";
+    private String script = "";
 
-    public String getExpectedScript() {
-        return expectedScript;
+    public String getScript() {
+        return script;
     }
 
-    public void setExpectedScript(String expectedScript) {
-        this.expectedScript = expectedScript;
-    }
-
-    public String getObservedScript() {
-        return observedScript;
-    }
-
-    public void setObservedScript(String observedScript) {
-        this.observedScript = observedScript;
+    public void setScript(String script) {
+        this.script = script;
     }
 
     @Override
     public int hashCode() {
-        int hashCode = super.hashTo();
-
-        hashCode <<= 8;
-        hashCode ^= (observedScript != null) ? observedScript.hashCode() : 0;
-
-        return hashCode;
+        return Objects.hash(getKind(), script);
     }
 
     @Override
@@ -57,14 +43,13 @@ public class FinishedMessage extends ControlMessage {
         return (this == obj) || (obj instanceof FinishedMessage) && equals((FinishedMessage) obj);
     }
 
-    protected final boolean equals(FinishedMessage that) {
-        return super.equalTo(that) && Objects.equals(this.observedScript, that.observedScript)
-                && Objects.equals(this.expectedScript, that.expectedScript);
-    }
-
     @Override
     public Kind getKind() {
         return Kind.FINISHED;
+    }
+
+    protected final boolean equals(FinishedMessage that) {
+        return super.equalTo(that) && Objects.equals(this.script, that.script);
     }
 
 }

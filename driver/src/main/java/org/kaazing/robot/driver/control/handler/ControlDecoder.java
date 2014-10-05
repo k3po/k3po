@@ -27,12 +27,12 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.driver.control.AbortMessage;
 import org.kaazing.robot.driver.control.ControlMessage;
 import org.kaazing.robot.driver.control.ErrorMessage;
 import org.kaazing.robot.driver.control.FinishedMessage;
 import org.kaazing.robot.driver.control.PrepareMessage;
+import org.kaazing.robot.driver.control.PreparedMessage;
 import org.kaazing.robot.driver.control.StartMessage;
 
 public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
@@ -231,27 +231,29 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
         }
         String headerValue = headerValueBuilder.toString();
 
-        // add common headers
-        if ("name".equals(headerName)) {
-            message.setName(headerValue);
-        } else if ("content-length".equals(headerName)) {
-            // determine content-length
-            contentLength = Integer.parseInt(headerValue);
-            if (contentLength > maxContentLength) {
-                throw new IllegalArgumentException("Content too long");
+        // add kind-specific headers
+        switch (message.getKind()) {
+        case PREPARE:
+            PrepareMessage prepareMessage = (PrepareMessage) message;
+            switch (headerName) {
+            case "name":
+                prepareMessage.getNames().add(headerValue);
+                break;
             }
-        } else {
-            // add kind-specific headers
-            switch (message.getKind()) {
-            case ERROR:
-                ErrorMessage errorMessage = (ErrorMessage) message;
-                if ("summary".equals(headerName)) {
-                    errorMessage.setSummary(headerValue);
+            break;
+        case PREPARED:
+        case ERROR:
+        case FINISHED:
+            switch (headerName) {
+            case "content-length":
+                contentLength = Integer.parseInt(headerValue);
+                if (contentLength > maxContentLength) {
+                    throw new IllegalArgumentException("Content too long");
                 }
                 break;
-            default:
-                break;
             }
+        default:
+            break;
         }
 
         byte endOfLine = buffer.readByte();
@@ -269,13 +271,13 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
 
         String content = buffer.readBytes(contentLength).toString(UTF_8);
         switch (message.getKind()) {
-        case PREPARE:
-            PrepareMessage prepareMessage = (PrepareMessage) message;
-            prepareMessage.setName(content);
+        case PREPARED:
+            PreparedMessage preparedMessage = (PreparedMessage) message;
+            preparedMessage.setScript(content);
             break;
         case FINISHED:
             FinishedMessage finishedMessage = (FinishedMessage) message;
-            finishedMessage.setObservedScript(content);
+            finishedMessage.setScript(content);
             break;
         case ERROR:
             ErrorMessage errorMessage = (ErrorMessage) message;

@@ -22,6 +22,7 @@ package org.kaazing.robot.driver;
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.jboss.netty.channel.Channels.pipelineFactory;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
+import static org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory.newBootstrapFactory;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
+import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
 import org.kaazing.robot.driver.netty.bootstrap.ClientBootstrap;
 import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
 import org.kaazing.robot.driver.behavior.Configuration;
@@ -90,7 +91,15 @@ public class Robot {
     private ChannelFuture preparedFuture;
     private volatile boolean destroyed;
 
+    private BootstrapFactory bootstrapFactory;
+
+    // tests
     public Robot() {
+        this(newBootstrapFactory());
+    }
+
+    public Robot(BootstrapFactory bootstrapFactory) {
+        this.bootstrapFactory = bootstrapFactory;
         listenForFinishedFuture();
     }
 
@@ -123,7 +132,7 @@ public class Robot {
             LOGGER.debug("script parsed");
         }
 
-        final GenerateConfigurationVisitor visitor = new GenerateConfigurationVisitor();
+        final GenerateConfigurationVisitor visitor = new GenerateConfigurationVisitor(bootstrapFactory);
         configuration = scriptAST.accept(visitor, new GenerateConfigurationVisitor.State());
 
         if (debugLogEnabled) {

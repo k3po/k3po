@@ -19,6 +19,8 @@
 
 package org.kaazing.robot.driver.control;
 
+import java.util.Objects;
+
 public class StartMessage extends ControlMessage {
 
     @Override
@@ -28,16 +30,12 @@ public class StartMessage extends ControlMessage {
 
     @Override
     public int hashCode() {
-        return super.hashTo();
+        return Objects.hashCode(getKind());
     }
 
     @Override
     public boolean equals(Object obj) {
-        return (this == obj) || (obj instanceof StartMessage) && equals((StartMessage) obj);
-    }
-
-    protected final boolean equals(StartMessage that) {
-        return super.equalTo(that);
+        return (this == obj) || (obj instanceof StartMessage) && equalTo((StartMessage) obj);
     }
 
 }

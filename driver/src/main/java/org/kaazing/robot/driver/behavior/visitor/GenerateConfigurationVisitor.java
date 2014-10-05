@@ -61,11 +61,6 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
-import org.kaazing.robot.driver.netty.bootstrap.ClientBootstrap;
-import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
-import org.kaazing.robot.driver.netty.channel.ChannelAddress;
-import org.kaazing.robot.driver.netty.channel.ChannelAddressFactory;
 import org.kaazing.robot.driver.RobotException;
 import org.kaazing.robot.driver.behavior.Barrier;
 import org.kaazing.robot.driver.behavior.Configuration;
@@ -130,6 +125,11 @@ import org.kaazing.robot.driver.behavior.handler.event.http.CloseReadHttpRespons
 import org.kaazing.robot.driver.behavior.handler.event.http.EndOfReadHttpHeadersHandler;
 import org.kaazing.robot.driver.behavior.handler.event.http.ReadHttpHandler;
 import org.kaazing.robot.driver.behavior.visitor.GenerateConfigurationVisitor.State;
+import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
+import org.kaazing.robot.driver.netty.bootstrap.ClientBootstrap;
+import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
+import org.kaazing.robot.driver.netty.channel.ChannelAddress;
+import org.kaazing.robot.driver.netty.channel.ChannelAddressFactory;
 import org.kaazing.robot.lang.LocationInfo;
 import org.kaazing.robot.lang.ast.AstAcceptNode;
 import org.kaazing.robot.lang.ast.AstAcceptableNode;
@@ -187,7 +187,6 @@ import org.kaazing.robot.lang.ast.value.AstLiteralBytesValue;
 import org.kaazing.robot.lang.ast.value.AstLiteralTextValue;
 import org.kaazing.robot.lang.ast.value.AstValue;
 import org.kaazing.robot.lang.el.ExpressionContext;
-import org.kaazing.robot.driver.netty.bootstrap.SingletonBootstrapFactory;
 
 /**
  * Builds the pipeline of handlers that are used to "execute" the Robot script.
@@ -199,7 +198,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     private static final MaskingDecoder DEFAULT_READ_UNMASKER = new DefaultReadUnmasker();
 
     private final ChannelAddressFactory addressFactory = ChannelAddressFactory.newChannelAddressFactory();
-    private final BootstrapFactory bootstrapFactory = SingletonBootstrapFactory.getInstance();
+    private final BootstrapFactory bootstrapFactory;
 
     public static final class State {
         private final ConcurrentMap<String, Barrier> barriersByName;
@@ -333,6 +332,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         }
 
         return state.configuration;
+    }
+
+    public GenerateConfigurationVisitor(BootstrapFactory bootstrapFactory) {
+        this.bootstrapFactory = bootstrapFactory;
     }
 
     @Override

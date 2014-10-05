@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.kaazing</groupId>
         <artifactId>robot.parent</artifactId>
-        <version>1.4.0.2-SNAPSHOT</version>
+        <version>2.0.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>robot.driver</artifactId>
@@ -50,47 +50,42 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.jmock</groupId>
             <artifactId>jmock</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.jmock</groupId>
             <artifactId>jmock-junit4</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.jmock</groupId>
             <artifactId>jmock-legacy</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty</artifactId>
         </dependency>
-
-
         <dependency>
             <groupId>de.odysseus.juel</groupId>
             <artifactId>juel</artifactId>
         </dependency>
-
-
         <dependency>
             <groupId>org.kaazing</groupId>
             <artifactId>net.api</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.kaazing</groupId>
-            <artifactId>net.data</artifactId>
+            <artifactId>net.tcp</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>

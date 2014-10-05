@@ -19,15 +19,12 @@
 
 package org.kaazing.robot.driver.netty.channel.tcp;
 
-import java.net.InetAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.util.Map;
 
 import org.jboss.netty.channel.ChannelException;
-
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
-import org.kaazing.robot.driver.netty.channel.spi.ChannelAddressFactorySpi;
+import org.kaazing.robot.driver.netty.channel.ChannelAddressFactorySpi;
 
 public class TcpChannelAddressFactorySpi extends ChannelAddressFactorySpi {
 
@@ -37,7 +34,7 @@ public class TcpChannelAddressFactorySpi extends ChannelAddressFactorySpi {
     }
 
     @Override
-    protected ChannelAddress newChannelAddress0(URI location, Map<String, Object> options) {
+    protected ChannelAddress newChannelAddress0(URI location, ChannelAddress transport, Map<String, Object> options) {
 
         String host = location.getHost();
         int port = location.getPort();
@@ -55,24 +52,6 @@ public class TcpChannelAddressFactorySpi extends ChannelAddressFactorySpi {
             throw new ChannelException(String.format("%s path \"%s\" unexpected", getSchemeName(), path));
         }
 
-        return super.newChannelAddress0(location, options);
+        return super.newChannelAddress0(location, transport, options);
     }
-
-    public abstract static class TcpTransportable extends Transportable {
-
-        @Override
-        protected URI createTransportURI(URI location) {
-            try {
-                InetAddress inetAddress = InetAddress.getByName(location.getHost());
-                String ipAddress = inetAddress.getHostAddress();
-                int port = location.getPort();
-
-                return URI.create(String.format("tcp://%s:%d", ipAddress, port));
-            } catch (UnknownHostException e) {
-                throw new ChannelException(e);
-            }
-        }
-
-    }
-
 }

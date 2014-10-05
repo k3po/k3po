@@ -35,8 +35,6 @@ import java.util.List;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.kaazing.robot.driver.RobotServer;
-import org.kaazing.robot.driver.RobotServerFactories;
-import org.kaazing.robot.driver.RobotServerFactory;
 import org.kaazing.robot.maven.plugin.logging.MavenLoggerFactory;
 
 /**
@@ -75,8 +73,7 @@ public class RobotStartMojo extends AbstractRobotMojo {
         try {
             ClassLoader scriptLoader = createScriptLoader();
 
-            RobotServerFactory robotServerFactory = RobotServerFactories.createRobotServerFactory();
-            RobotServer server = robotServerFactory.createRobotServer(connectURI, verbose, scriptLoader);
+            RobotServer server = new RobotServer(connectURI, verbose, scriptLoader);
 
             // TODO: detect Maven version to determine logger factory
             //         3.0 -> MavenLoggerFactory
