@@ -28,15 +28,22 @@ import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
 
 public class HttpBootstrapFactorySpi extends BootstrapFactorySpi {
 
-    private final HttpServerChannelSink channelSink;
+    private final HttpServerChannelSink serverChannelSink;
+    private final HttpServerChannelFactory serverChannelFactory;
+    private final HttpClientChannelSinkFactory clientChannelSinkFactory;
+    private final HttpClientChannelFactory clientChannelFactory;
 
     public HttpBootstrapFactorySpi() {
-        this.channelSink = new HttpServerChannelSink();
+        this.serverChannelSink = new HttpServerChannelSink();
+        this.serverChannelFactory = new HttpServerChannelFactory(serverChannelSink);
+        this.clientChannelSinkFactory = new HttpClientChannelSinkFactory();
+        this.clientChannelFactory = new HttpClientChannelFactory(clientChannelSinkFactory);
     }
 
     @Resource
     public void setBootstrapFactory(BootstrapFactory bootstrapFactory) {
-        channelSink.setBootstrapFactory(bootstrapFactory);
+        serverChannelSink.setBootstrapFactory(bootstrapFactory);
+        clientChannelSinkFactory.setBootstrapFactory(bootstrapFactory);
     }
 
     /**
@@ -53,7 +60,7 @@ public class HttpBootstrapFactorySpi extends BootstrapFactorySpi {
      */
     @Override
     public synchronized ClientBootstrap newClientBootstrap() throws Exception {
-        throw new UnsupportedOperationException();
+        return new ClientBootstrap(clientChannelFactory);
     }
 
     /**
@@ -61,10 +68,7 @@ public class HttpBootstrapFactorySpi extends BootstrapFactorySpi {
      */
     @Override
     public synchronized ServerBootstrap newServerBootstrap() throws Exception {
-
-        HttpServerChannelFactory channelFactory = new HttpServerChannelFactory(channelSink);
-
-        return new ServerBootstrap(channelFactory);
+        return new ServerBootstrap(serverChannelFactory);
     }
 
     @Override

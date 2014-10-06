@@ -44,6 +44,7 @@ import java.net.URLConnection;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -134,8 +135,8 @@ public class TcpServerBootstrapTest {
 
         assertEquals("Hello, world", new String(buf, UTF_8));
 
-        verify(parentSpy, times(6)).handleUpstream(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
-        verify(parentSpy, times(2)).handleDownstream(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
+        verify(parentSpy, times(6)).handleUpstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
+        verify(parentSpy, times(2)).handleDownstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
 
         InOrder parentBind = inOrder(parentSpy);
         parentBind.verify(parentSpy).channelOpen(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));

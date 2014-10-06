@@ -43,6 +43,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
@@ -84,7 +85,23 @@ public class TcpClientBootstrapTest {
     @Test
     public void shouldConnectEchoThenClose() throws Exception {
 
-        SimpleChannelHandler client = new SimpleChannelHandler();
+        SimpleChannelHandler client = new SimpleChannelHandler() {
+
+            @Override
+            public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e)
+                    throws Exception {
+                System.out.println(e);
+                super.handleUpstream(ctx, e);
+            }
+
+            @Override
+            public void handleDownstream(ChannelHandlerContext ctx,
+                    ChannelEvent e) throws Exception {
+                System.out.println(e);
+                super.handleDownstream(ctx, e);
+            }
+            
+        };
         SimpleChannelHandler clientSpy = spy(client);
 
         bootstrap.setPipeline(pipeline(clientSpy));
@@ -115,17 +132,16 @@ public class TcpClientBootstrapTest {
             }
         });
 
-        Channel connection = bootstrap.connect(channelAddress).syncUninterruptibly().getChannel();
-        connection.write(copiedBuffer("Hello, world", UTF_8));
-        connection.getCloseFuture().syncUninterruptibly();
+        Channel channel = bootstrap.connect(channelAddress).syncUninterruptibly().getChannel();
+        channel.write(copiedBuffer("Hello, world", UTF_8));
+        channel.getCloseFuture().syncUninterruptibly();
 
         String message = readFuture.get();
 
-
         assertEquals("Hello, world", message);
 
-        verify(clientSpy, times(8)).handleUpstream(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
-        verify(clientSpy, times(2)).handleDownstream(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
+        verify(clientSpy, times(8)).handleUpstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
+        verify(clientSpy, times(2)).handleDownstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
 
         InOrder childConnect = inOrder(clientSpy);
         childConnect.verify(clientSpy).channelOpen(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));

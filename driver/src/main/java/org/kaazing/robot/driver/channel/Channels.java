@@ -29,6 +29,7 @@ import java.net.URI;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.socket.nio.NioDatagramChannel;
 import org.kaazing.robot.driver.behavior.handler.prepare.UpstreamPreparationEvent;
@@ -74,7 +75,7 @@ public final class Channels {
         // utility class, no instances
     }
 
-    public static void chainFutures(ChannelFuture sourceFuture, ChannelFuture targetFuture) {
+    public static void chainFutures(ChannelFuture sourceFuture, final ChannelFuture targetFuture) {
         if (sourceFuture.isDone()) {
             if (sourceFuture.isSuccess()) {
                 targetFuture.setSuccess();
@@ -83,9 +84,27 @@ public final class Channels {
                 targetFuture.setFailure(sourceFuture.getCause());
             }
         }
+        else {
+            sourceFuture.addListener(new ChannelFutureListener() {
+
+                @Override
+                public void operationComplete(ChannelFuture sourceFuture) throws Exception {
+                    if (sourceFuture.isSuccess()) {
+                        targetFuture.setSuccess();
+                    }
+                    else {
+                        targetFuture.setFailure(sourceFuture.getCause());
+                    }
+                }
+            });
+        }
     }
 
-    public static void chainWriteCompletes(ChannelFuture sourceFuture, ChannelFuture targetFuture, long amountWritten) {
+    public static void chainWriteCompletes(
+            ChannelFuture sourceFuture,
+            final ChannelFuture targetFuture,
+            final long amountWritten) {
+
         if (sourceFuture.isDone()) {
             if (sourceFuture.isSuccess()) {
                 fireWriteComplete(targetFuture.getChannel(), amountWritten);
@@ -94,6 +113,21 @@ public final class Channels {
             else {
                 targetFuture.setFailure(sourceFuture.getCause());
             }
+        }
+        else {
+            sourceFuture.addListener(new ChannelFutureListener() {
+
+                @Override
+                public void operationComplete(ChannelFuture sourceFuture) throws Exception {
+                    if (sourceFuture.isSuccess()) {
+                        fireWriteComplete(targetFuture.getChannel(), amountWritten);
+                        targetFuture.setSuccess();
+                    }
+                    else {
+                        targetFuture.setFailure(sourceFuture.getCause());
+                    }
+                }
+            });
         }
     }
 }

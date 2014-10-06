@@ -215,6 +215,7 @@ public class HttpChildChannelSink extends AbstractHttpChannelSink {
             int httpReadableBytes = httpBufferedContent.readableBytes();
             setContentLength(httpBufferedResponse, httpReadableBytes);
             ChannelFuture future = transport.write(httpBufferedResponse);
+            httpChildChannel.state(CONTENT_COMPLETE);
             chainWriteCompletes(future, httpBufferedFuture, httpReadableBytes);
             break;
         }
