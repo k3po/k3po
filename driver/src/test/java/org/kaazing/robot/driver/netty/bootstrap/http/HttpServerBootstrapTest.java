@@ -68,6 +68,8 @@ import org.junit.runner.RunWith;
 import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrapRule;
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
 import org.kaazing.robot.driver.netty.channel.ChannelAddressFactory;
+import org.kaazing.robot.driver.netty.channel.http.HttpContentCompleteEvent;
+import org.kaazing.robot.driver.netty.channel.http.SimpleHttpChannelHandler;
 import org.mockito.InOrder;
 
 @RunWith(Theories.class)
@@ -119,7 +121,7 @@ public class HttpServerBootstrapTest {
         };
 
         final ChannelGroup childChannels = new DefaultChannelGroup();
-        SimpleChannelHandler parent = new SimpleChannelHandler() {
+        SimpleHttpChannelHandler parent = new SimpleHttpChannelHandler() {
 
             @Override
             public void childChannelOpen(ChannelHandlerContext ctx,
@@ -129,10 +131,10 @@ public class HttpServerBootstrapTest {
             }
 
         };
-        SimpleChannelHandler parentSpy = spy(parent);
+        SimpleHttpChannelHandler parentSpy = spy(parent);
 
-        SimpleChannelHandler child = new SimpleChannelHandler();
-        SimpleChannelHandler childSpy = spy(child);
+        SimpleHttpChannelHandler child = new SimpleHttpChannelHandler();
+        SimpleHttpChannelHandler childSpy = spy(child);
 
         server.setParentHandler(parentSpy);
         server.setPipeline(pipeline(childSpy, echoHandler));
@@ -181,7 +183,7 @@ public class HttpServerBootstrapTest {
         parentClose.verify(parentSpy).channelUnbound(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
         parentClose.verify(parentSpy).channelClosed(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
 
-        verify(childSpy, times(8)).handleUpstream(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
+        verify(childSpy, times(9)).handleUpstream(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
         verify(childSpy, times(2)).handleDownstream(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
 
         InOrder childConnect = inOrder(childSpy);
@@ -189,10 +191,13 @@ public class HttpServerBootstrapTest {
         childConnect.verify(childSpy).channelBound(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
         childConnect.verify(childSpy).channelConnected(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
 
-        InOrder childReadWrite = inOrder(childSpy);
-        childReadWrite.verify(childSpy).messageReceived(any(ChannelHandlerContext.class), any(MessageEvent.class));
-        childReadWrite.verify(childSpy).writeRequested(any(ChannelHandlerContext.class), any(MessageEvent.class));
-        childReadWrite.verify(childSpy).writeComplete(any(ChannelHandlerContext.class), any(WriteCompletionEvent.class));
+        InOrder childRead = inOrder(childSpy);
+        childRead.verify(childSpy).messageReceived(any(ChannelHandlerContext.class), any(MessageEvent.class));
+        childRead.verify(childSpy).contentComplete(any(ChannelHandlerContext.class), any(HttpContentCompleteEvent.class));
+
+        InOrder childWrite = inOrder(childSpy);
+        childWrite.verify(childSpy).writeRequested(any(ChannelHandlerContext.class), any(MessageEvent.class));
+        childWrite.verify(childSpy).writeComplete(any(ChannelHandlerContext.class), any(WriteCompletionEvent.class));
 
         InOrder childClose = inOrder(childSpy);
         childClose.verify(childSpy).closeRequested(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));

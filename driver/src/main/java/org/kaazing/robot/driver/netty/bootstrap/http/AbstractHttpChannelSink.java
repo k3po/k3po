@@ -19,33 +19,22 @@
 
 package org.kaazing.robot.driver.netty.bootstrap.http;
 
-import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelSink;
-import org.jboss.netty.channel.ServerChannel;
-import org.kaazing.robot.driver.netty.bootstrap.channel.AbstractChannel;
+import org.kaazing.robot.driver.netty.bootstrap.channel.AbstractChannelSink;
+import org.kaazing.robot.driver.netty.channel.http.HttpContentCompleteEvent;
 
-public class HttpChildChannel extends AbstractChannel<HttpChannelConfig> {
-
-    public enum HttpState { RESPONSE, CONTENT_CHUNKED, CONTENT_CLOSE, CONTENT_LENGTH, CONTENT_COMPLETE, UPGRADED }
-
-    private HttpState state;
-
-    HttpChildChannel(ServerChannel parent, ChannelFactory factory, ChannelPipeline pipeline, ChannelSink sink) {
-        super(parent, factory, pipeline, sink, new DefaultHttpChannelConfig());
-        this.state = HttpState.RESPONSE;
-    }
-
-    public HttpState state() {
-        return state;
-    }
-
-    public void state(HttpState state) {
-        this.state = state;
-    }
+public class AbstractHttpChannelSink extends AbstractChannelSink {
 
     @Override
-    protected boolean setClosed() {
-        return super.setClosed();
+    protected void eventSunk0(ChannelPipeline pipeline, ChannelEvent e) throws Exception {
+
+        if (e instanceof HttpContentCompleteEvent) {
+            contentCompleteRequested(pipeline, (HttpContentCompleteEvent) e);
+        }
     }
+
+    protected void contentCompleteRequested(ChannelPipeline pipeline, HttpContentCompleteEvent e) throws Exception {
+    }
+
 }

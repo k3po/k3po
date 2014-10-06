@@ -29,7 +29,9 @@ import static org.jboss.netty.channel.Channels.future;
 import static org.jboss.netty.channel.Channels.write;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.getHost;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
+import static org.jboss.netty.handler.codec.http.HttpResponseStatus.SWITCHING_PROTOCOLS;
 import static org.kaazing.robot.driver.channel.Channels.remoteAddress;
+import static org.kaazing.robot.driver.netty.channel.http.HttpChannels.fireHttpContentComplete;
 
 import java.net.URI;
 import java.util.Map.Entry;
@@ -49,6 +51,8 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
+import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
@@ -101,7 +105,7 @@ public class HttpChildChannelSource extends HttpChannelHandler {
         ChannelAddress remoteAddress = remoteAddress(transport);
         ChannelAddress httpRemoteAddress = new ChannelAddress(httpLocation, remoteAddress, true);
 
-        HttpChildChannelSink sink = new HttpChildChannelSink(ctx);
+        HttpChildChannelSink sink = new HttpChildChannelSink(transport);
         HttpChildChannel httpChildChannel = new HttpChildChannel(parent, factory, pipeline, sink);
         HttpChannelConfig httpChildConfig = httpChildChannel.getConfig();
         httpChildConfig.setMethod(httpRequest.getMethod());
@@ -123,7 +127,7 @@ public class HttpChildChannelSource extends HttpChannelHandler {
         }
 
         if (!httpRequest.isChunked()) {
-            // TODO: fire channel event for end-of-content?
+            fireHttpContentComplete(httpChildChannel);
         }
     }
 
@@ -136,8 +140,30 @@ public class HttpChildChannelSource extends HttpChannelHandler {
 
         boolean last = httpMessage.isLast();
         if (last) {
-            // TODO: fire channel event for end-of-content?
+            HttpChildChannel httpChildChannel = this.httpChildChannel;
             this.httpChildChannel = null;
+            fireHttpContentComplete(httpChildChannel);
+        }
+    }
+
+    @Override
+    protected void httpMessageReceived(ChannelHandlerContext ctx, MessageEvent e, ChannelBuffer message) throws Exception {
+        if (message.readable()) {
+            // after 101 switching protocols
+            fireMessageReceived(httpChildChannel, message);
+        }
+    }
+
+    @Override
+    protected void httpWriteRequested(ChannelHandlerContext ctx, MessageEvent e, HttpResponse message) throws Exception {
+        if (message.getStatus() == SWITCHING_PROTOCOLS) {
+            ChannelPipeline httpPipeline = ctx.getPipeline();
+            httpPipeline.remove(HttpRequestDecoder.class);
+            super.httpWriteRequested(ctx, e, message);
+            httpPipeline.remove(HttpRequestEncoder.class);
+        }
+        else {
+            super.httpWriteRequested(ctx, e, message);
         }
     }
 

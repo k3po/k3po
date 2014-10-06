@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.netty.bootstrap.http;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
@@ -40,6 +41,9 @@ public class HttpChannelHandler extends SimpleChannelHandler {
         else if (message instanceof HttpChunk) {
             httpMessageReceived(ctx, e, (HttpChunk) message);
         }
+        else if (message instanceof ChannelBuffer) {
+            httpMessageReceived(ctx, e, (ChannelBuffer) message);
+        }
         else {
             throw new IllegalArgumentException();
         }
@@ -58,6 +62,9 @@ public class HttpChannelHandler extends SimpleChannelHandler {
         else if (message instanceof HttpChunk) {
             httpWriteRequested(ctx, e, (HttpChunk) message);
         }
+        else if (message instanceof ChannelBuffer) {
+            httpWriteRequested(ctx, e, (ChannelBuffer) message);
+        }
         else {
             throw new IllegalArgumentException();
         }
@@ -75,6 +82,10 @@ public class HttpChannelHandler extends SimpleChannelHandler {
         super.messageReceived(ctx, e);
     }
 
+    protected void httpMessageReceived(ChannelHandlerContext ctx, MessageEvent e, ChannelBuffer message) throws Exception {
+        super.messageReceived(ctx, e);
+    }
+
     protected void httpWriteRequested(ChannelHandlerContext ctx, MessageEvent e, HttpRequest message) throws Exception {
         super.writeRequested(ctx, e);
     }
@@ -84,6 +95,10 @@ public class HttpChannelHandler extends SimpleChannelHandler {
     }
 
     protected void httpWriteRequested(ChannelHandlerContext ctx, MessageEvent e, HttpChunk message) throws Exception {
+        super.writeRequested(ctx, e);
+    }
+
+    protected void httpWriteRequested(ChannelHandlerContext ctx, MessageEvent e, ChannelBuffer message) throws Exception {
         super.writeRequested(ctx, e);
     }
 
