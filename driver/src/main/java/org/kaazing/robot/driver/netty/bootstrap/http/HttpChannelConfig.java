@@ -24,6 +24,8 @@ import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
+import org.jboss.netty.handler.codec.http.QueryStringDecoder;
+import org.jboss.netty.handler.codec.http.QueryStringEncoder;
 
 public interface HttpChannelConfig extends ChannelConfig {
 
@@ -39,15 +41,23 @@ public interface HttpChannelConfig extends ChannelConfig {
 
     HttpResponseStatus getStatus();
 
-    void setReadHeaders(HttpHeaders readHeaders);
+    boolean hasReadHeaders();
 
     HttpHeaders getReadHeaders();
 
-    void setWriteHeaders(HttpHeaders writeHeaders);
+    boolean hasWriteHeaders();
 
     HttpHeaders getWriteHeaders();
 
     void setMaximumBufferedContentLength(int maxValue);
 
     int getMaximumBufferedContentLength();
+
+    void setReadQuery(QueryStringDecoder readQuery);
+
+    QueryStringDecoder getReadQuery();
+
+    void setWriteQuery(QueryStringEncoder writeQuery);
+
+    QueryStringEncoder getWriteQuery();
 }

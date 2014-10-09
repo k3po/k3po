@@ -25,29 +25,26 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.kaazing.robot.driver.behavior.visitor.GatherStreamsLocationVisitor.State;
 import org.kaazing.robot.lang.LocationInfo;
 import org.kaazing.robot.lang.ast.AstAcceptNode;
 import org.kaazing.robot.lang.ast.AstAcceptableNode;
 import org.kaazing.robot.lang.ast.AstBoundNode;
 import org.kaazing.robot.lang.ast.AstChildClosedNode;
 import org.kaazing.robot.lang.ast.AstChildOpenedNode;
-import org.kaazing.robot.lang.ast.AstCloseHttpRequestNode;
-import org.kaazing.robot.lang.ast.AstCloseHttpResponseNode;
+import org.kaazing.robot.lang.ast.AstFlushNode;
+import org.kaazing.robot.lang.ast.AstReadClosedNode;
+import org.kaazing.robot.lang.ast.AstReadResumedNode;
+import org.kaazing.robot.lang.ast.AstWriteCloseNode;
 import org.kaazing.robot.lang.ast.AstCloseNode;
 import org.kaazing.robot.lang.ast.AstClosedNode;
 import org.kaazing.robot.lang.ast.AstConnectNode;
 import org.kaazing.robot.lang.ast.AstConnectedNode;
 import org.kaazing.robot.lang.ast.AstDisconnectNode;
 import org.kaazing.robot.lang.ast.AstDisconnectedNode;
-import org.kaazing.robot.lang.ast.AstEndOfHttpHeadersNode;
 import org.kaazing.robot.lang.ast.AstNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
-import org.kaazing.robot.lang.ast.AstReadHttpHeaderNode;
-import org.kaazing.robot.lang.ast.AstReadHttpMethodNode;
-import org.kaazing.robot.lang.ast.AstReadHttpParameterNode;
-import org.kaazing.robot.lang.ast.AstReadHttpStatusNode;
-import org.kaazing.robot.lang.ast.AstReadHttpVersionNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
@@ -57,16 +54,20 @@ import org.kaazing.robot.lang.ast.AstStreamableNode;
 import org.kaazing.robot.lang.ast.AstUnbindNode;
 import org.kaazing.robot.lang.ast.AstUnboundNode;
 import org.kaazing.robot.lang.ast.AstWriteAwaitNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpContentLengthNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpHeaderNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpMethodNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpParameterNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpStatusNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpVersionNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
-import org.kaazing.robot.driver.behavior.visitor.GatherStreamsLocationVisitor.State;
+import org.kaazing.robot.lang.http.ast.AstReadHttpHeaderNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpMethodNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpParameterNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpStatusNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpVersionNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpContentLengthNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpHeaderNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpMethodNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpParameterNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpStatusNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpVersionNode;
 
 public class GatherStreamsLocationVisitor implements AstNode.Visitor<AstScriptNode, State> {
 
@@ -348,17 +349,22 @@ public class GatherStreamsLocationVisitor implements AstNode.Visitor<AstScriptNo
     }
 
     @Override
-    public AstScriptNode visit(AstCloseHttpRequestNode node, State parameter) throws Exception {
+    public AstScriptNode visit(AstReadResumedNode node, State state) throws Exception {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstCloseHttpResponseNode node, State parameter) throws Exception {
+    public AstScriptNode visit(AstReadClosedNode node, State parameter) throws Exception {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstEndOfHttpHeadersNode node, State parameter) throws Exception {
+    public AstScriptNode visit(AstWriteCloseNode node, State parameter) throws Exception {
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstFlushNode node, State state) throws Exception {
         return null;
     }
 

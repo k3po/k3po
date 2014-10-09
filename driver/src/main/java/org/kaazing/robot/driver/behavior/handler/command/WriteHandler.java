@@ -20,15 +20,14 @@
 package org.kaazing.robot.driver.behavior.handler.command;
 
 import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
+import static org.jboss.netty.channel.Channels.write;
 
 import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.Channels;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.driver.behavior.handler.codec.MessageEncoder;
 
 public class WriteHandler extends AbstractCommandHandler {
@@ -55,7 +54,7 @@ public class WriteHandler extends AbstractCommandHandler {
             idx++;
         }
         LOGGER.debug("Invoking write command");
-        Channels.write(ctx, getHandlerFuture(), wrappedBuffer(buffers));
+        write(ctx, getHandlerFuture(), wrappedBuffer(buffers));
     }
 
 }

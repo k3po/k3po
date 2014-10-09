@@ -25,7 +25,7 @@ import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.junit.Assert.assertEquals;
 import static org.kaazing.robot.driver.netty.channel.ChannelAddressFactory.newChannelAddressFactory;
-import static org.kaazing.robot.driver.netty.channel.http.HttpChannels.completeContent;
+import static org.kaazing.robot.driver.netty.channel.Channels.shutdownOutput;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.spy;
@@ -48,7 +48,6 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.WriteCompletionEvent;
-import org.jboss.netty.handler.codec.http.DefaultHttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Values;
@@ -65,8 +64,9 @@ import org.junit.runner.RunWith;
 import org.kaazing.robot.driver.netty.bootstrap.ClientBootstrapRule;
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
 import org.kaazing.robot.driver.netty.channel.ChannelAddressFactory;
-import org.kaazing.robot.driver.netty.channel.http.HttpContentCompleteEvent;
-import org.kaazing.robot.driver.netty.channel.http.SimpleHttpChannelHandler;
+import org.kaazing.robot.driver.netty.channel.ShutdownInputEvent;
+import org.kaazing.robot.driver.netty.channel.ShutdownOutputEvent;
+import org.kaazing.robot.driver.netty.channel.SimpleChannelHandler;
 import org.mockito.InOrder;
 
 import com.sun.net.httpserver.HttpContext;
@@ -105,25 +105,9 @@ public class HttpClientBootstrapTest {
 
     @Theory
     public void shouldConnectEchoThenClose(final ContentStrategy strategy) throws Exception {
-System.out.println(strategy);
-        SimpleHttpChannelHandler client = new SimpleHttpChannelHandler() {
 
-            @Override
-            public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e)
-                    throws Exception {
-                System.out.println(e);
-                super.handleUpstream(ctx, e);
-            }
-
-            @Override
-            public void handleDownstream(ChannelHandlerContext ctx,
-                    ChannelEvent e) throws Exception {
-                System.out.println(e);
-                super.handleDownstream(ctx, e);
-            }
-
-        };
-        SimpleHttpChannelHandler clientSpy = spy(client);
+        SimpleChannelHandler client = new SimpleChannelHandler();
+        SimpleChannelHandler clientSpy = spy(client);
 
         bootstrap.setPipeline(pipeline(clientSpy));
 
@@ -151,27 +135,25 @@ System.out.println(strategy);
         });
 
         Channel channel = bootstrap.connect(channelAddress).syncUninterruptibly().getChannel();
-        HttpChannelConfig channelConfig = (HttpChannelConfig) channel.getConfig();
+        HttpChannelConfig config = (HttpChannelConfig) channel.getConfig();
         switch (strategy) {
         case BUFFERED: {
-            channelConfig.setMaximumBufferedContentLength(8192);
+            config.setMaximumBufferedContentLength(8192);
             break;
         }
         case CHUNKED: {
-            HttpHeaders writeHeaders = new DefaultHttpHeaders();
+            HttpHeaders writeHeaders = config.getWriteHeaders();
             writeHeaders.set(Names.TRANSFER_ENCODING, Values.CHUNKED);
-            channelConfig.setWriteHeaders(writeHeaders);
             break;
         }
         case EXPLICIT: {
-            HttpHeaders writeHeaders = new DefaultHttpHeaders();
+            HttpHeaders writeHeaders = config.getWriteHeaders();
             writeHeaders.set(Names.CONTENT_LENGTH, 12);
-            channelConfig.setWriteHeaders(writeHeaders);
             break;
         }
         }
         channel.write(copiedBuffer("Hello, world", UTF_8));
-        completeContent(channel);
+        shutdownOutput(channel);
 
         channel.getCloseFuture().syncUninterruptibly();
 
@@ -182,24 +164,27 @@ System.out.println(strategy);
 
         assertEquals("Hello, world", message);
 
-        verify(clientSpy, times(9)).handleUpstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
-        verify(clientSpy, times(3)).handleDownstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
+        verify(clientSpy, times(10)).handleUpstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
+        verify(clientSpy, times(5)).handleDownstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
 
         InOrder childConnect = inOrder(clientSpy);
         childConnect.verify(clientSpy).channelOpen(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
+        childConnect.verify(clientSpy).setInterestOpsRequested(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
         childConnect.verify(clientSpy).connectRequested(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
         childConnect.verify(clientSpy).channelBound(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
         childConnect.verify(clientSpy).channelConnected(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
 
-        InOrder childRead = inOrder(clientSpy);
-        childRead.verify(clientSpy).messageReceived(any(ChannelHandlerContext.class), any(MessageEvent.class));
-        childRead.verify(clientSpy).contentComplete(any(ChannelHandlerContext.class), any(HttpContentCompleteEvent.class));
-
         InOrder childWrite = inOrder(clientSpy);
         childWrite.verify(clientSpy).writeRequested(any(ChannelHandlerContext.class), any(MessageEvent.class));
-        childWrite.verify(clientSpy).completeContentRequested(any(ChannelHandlerContext.class), any(HttpContentCompleteEvent.class));
+        childWrite.verify(clientSpy).shutdownOutputRequested(any(ChannelHandlerContext.class), any(ShutdownOutputEvent.class));
+        childWrite.verify(clientSpy).setInterestOpsRequested(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
         // asynchronous
         verify(clientSpy).writeComplete(any(ChannelHandlerContext.class), any(WriteCompletionEvent.class));
+
+        InOrder childRead = inOrder(clientSpy);
+        childRead.verify(clientSpy).channelInterestChanged(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
+        childRead.verify(clientSpy).messageReceived(any(ChannelHandlerContext.class), any(MessageEvent.class));
+        childRead.verify(clientSpy).inputShutdown(any(ChannelHandlerContext.class), any(ShutdownInputEvent.class));
 
         InOrder childClose = inOrder(clientSpy);
         childClose.verify(clientSpy).channelDisconnected(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));

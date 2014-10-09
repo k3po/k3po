@@ -33,10 +33,10 @@ import static org.jboss.netty.handler.codec.http.HttpResponseStatus.OK;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.SWITCHING_PROTOCOLS;
 import static org.kaazing.robot.driver.channel.Channels.chainFutures;
 import static org.kaazing.robot.driver.channel.Channels.chainWriteCompletes;
+import static org.kaazing.robot.driver.netty.bootstrap.http.HttpChildChannel.HttpState.CONTENT_BUFFERED;
 import static org.kaazing.robot.driver.netty.bootstrap.http.HttpChildChannel.HttpState.CONTENT_CHUNKED;
 import static org.kaazing.robot.driver.netty.bootstrap.http.HttpChildChannel.HttpState.CONTENT_CLOSE;
 import static org.kaazing.robot.driver.netty.bootstrap.http.HttpChildChannel.HttpState.CONTENT_COMPLETE;
-import static org.kaazing.robot.driver.netty.bootstrap.http.HttpChildChannel.HttpState.CONTENT_LENGTH;
 import static org.kaazing.robot.driver.netty.bootstrap.http.HttpChildChannel.HttpState.UPGRADED;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -51,16 +51,19 @@ import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Values;
+import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.kaazing.robot.driver.netty.channel.http.HttpContentCompleteEvent;
+import org.kaazing.robot.driver.netty.bootstrap.channel.AbstractChannelSink;
+import org.kaazing.robot.driver.netty.channel.FlushEvent;
+import org.kaazing.robot.driver.netty.channel.ShutdownOutputEvent;
 
-public class HttpChildChannelSink extends AbstractHttpChannelSink {
+public class HttpChildChannelSink extends AbstractChannelSink {
 
     private final Channel transport;
     private HttpResponse httpBufferedResponse;
-    private ChannelFuture httpBufferedFuture;
 
     public HttpChildChannelSink(Channel transport) {
         this.transport = transport;
@@ -71,9 +74,9 @@ public class HttpChildChannelSink extends AbstractHttpChannelSink {
     }
 
     @Override
-    protected void writeRequested(ChannelPipeline pipeline, MessageEvent e) throws Exception {
+    protected void writeRequested(ChannelPipeline httpPipeline, MessageEvent e) throws Exception {
 
-        HttpChildChannel httpChildChannel = (HttpChildChannel) pipeline.getChannel();
+        HttpChildChannel httpChildChannel = (HttpChildChannel) httpPipeline.getChannel();
         HttpChannelConfig httpChildConfig = httpChildChannel.getConfig();
         ChannelFuture httpFuture = e.getFuture();
         ChannelBuffer httpContent = (ChannelBuffer) e.getMessage();
@@ -90,9 +93,12 @@ public class HttpChildChannelSink extends AbstractHttpChannelSink {
                 httpResponse.headers().add(headers);
             }
 
-            if (httpResponse.getStatus() == SWITCHING_PROTOCOLS) {
+            if (httpResponse.getStatus().getCode() == SWITCHING_PROTOCOLS.getCode()) {
                 httpResponse.setContent(EMPTY_BUFFER);
+                ChannelPipeline pipeline = transport.getPipeline();
+                pipeline.remove(HttpRequestDecoder.class);
                 transport.write(httpResponse);
+                pipeline.remove(HttpResponseEncoder.class);
                 ChannelFuture future = transport.write(httpContent);
                 httpChildChannel.state(UPGRADED);
                 chainWriteCompletes(future, httpFuture, httpReadableBytes);
@@ -122,19 +128,19 @@ public class HttpChildChannelSink extends AbstractHttpChannelSink {
                 // automatically calculate content-length
                 httpResponse.setContent(httpContent);
                 httpBufferedResponse = httpResponse;
-                httpBufferedFuture = httpFuture;
-                httpChildChannel.state(CONTENT_LENGTH);
+                httpChildChannel.state(CONTENT_BUFFERED);
+                httpFuture.setSuccess();
             }
             else {
                 throw new IllegalStateException("Missing Content-Length, Transfer-Encoding: chunked, or Connection: close");
             }
             break;
-        case CONTENT_LENGTH:
+        case CONTENT_BUFFERED:
             ChannelBuffer httpBufferedContent = httpBufferedResponse.getContent();
             int httpBufferedBytes = httpBufferedContent.readableBytes();
             if (httpChildConfig.getMaximumBufferedContentLength() >= httpBufferedBytes + httpReadableBytes) {
                 httpBufferedResponse.setContent(copiedBuffer(httpBufferedContent, httpContent));
-                chainFutures(httpBufferedFuture, httpFuture);
+                httpFuture.setSuccess();
             }
             else {
                 throw new IllegalStateException("Exceeded maximum buffered content to calculate content length");
@@ -158,13 +164,54 @@ public class HttpChildChannelSink extends AbstractHttpChannelSink {
     }
 
     @Override
-    protected void contentCompleteRequested(ChannelPipeline pipeline, HttpContentCompleteEvent e) throws Exception {
-        // TODO: similar semantics to close
+    protected void flushRequested(ChannelPipeline pipeline, FlushEvent evt) throws Exception {
+        HttpChildChannel httpChildChannel = (HttpChildChannel) pipeline.getChannel();
+        ChannelFuture httpFuture = evt.getFuture();
+        flushRequested(httpChildChannel, httpFuture);
+    }
+
+    @Override
+    protected void shutdownOutputRequested(ChannelPipeline pipeline, ShutdownOutputEvent evt) throws Exception {
+        HttpChildChannel httpChildChannel = (HttpChildChannel) pipeline.getChannel();
+        ChannelFuture httpFuture = evt.getFuture();
+        // TODO: shutdown response output is identical to close semantics (if request fully read already)
+        closeRequested(httpChildChannel, httpFuture);
     }
 
     @Override
     protected void closeRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
         HttpChildChannel httpChildChannel = (HttpChildChannel) pipeline.getChannel();
+        ChannelFuture httpFuture = evt.getFuture();
+        closeRequested(httpChildChannel, httpFuture);
+    }
+
+    private void closeRequested(HttpChildChannel httpChildChannel, ChannelFuture httpFuture) {
+        if (!httpChildChannel.isOpen()) {
+            httpFuture.setSuccess();
+            return;
+        }
+
+        flushRequested(httpChildChannel, httpFuture);
+
+        switch (httpChildChannel.state()) {
+        case CONTENT_CLOSE:
+        case UPGRADED:
+            // setClosed() chained asynchronously after transport.close() completes
+            transport.close();
+            break;
+        case CONTENT_COMPLETE:
+            if (httpChildChannel.setClosed()) {
+                fireChannelDisconnected(httpChildChannel);
+                fireChannelUnbound(httpChildChannel);
+                fireChannelClosed(httpChildChannel);
+            }
+            break;
+        default:
+            throw new IllegalStateException("Unexpected state after flushRequested: " + httpChildChannel.state());
+        }
+    }
+
+    private void flushRequested(HttpChildChannel httpChildChannel, ChannelFuture httpFuture) {
         switch (httpChildChannel.state()) {
         case RESPONSE: {
             HttpChannelConfig httpChildConfig = httpChildChannel.getConfig();
@@ -177,18 +224,17 @@ public class HttpChildChannelSink extends AbstractHttpChannelSink {
                 httpResponse.headers().add(headers);
             }
 
-            httpResponse.setContent(EMPTY_BUFFER);
-            ChannelFuture httpFuture = evt.getFuture();
             ChannelFuture future = transport.write(httpResponse);
 
-            if (httpResponse.getStatus() == SWITCHING_PROTOCOLS) {
+            if (httpResponse.getStatus().getCode() == SWITCHING_PROTOCOLS.getCode()) {
                 httpChildChannel.state(UPGRADED);
-                future = transport.close();
+                ChannelPipeline pipeline = transport.getPipeline();
+                pipeline.remove(HttpRequestDecoder.class);
+                pipeline.remove(HttpResponseEncoder.class);
                 chainFutures(future, httpFuture);
             }
             else if (httpResponse.headers().getAll(Names.CONNECTION).contains(Values.CLOSE)) {
                 httpChildChannel.state(CONTENT_CLOSE);
-                future = transport.close();
                 chainFutures(future, httpFuture);
             }
             else if (httpResponse.getStatus() == OK) {
@@ -202,25 +248,19 @@ public class HttpChildChannelSink extends AbstractHttpChannelSink {
             }
             break;
         }
-        case CONTENT_LENGTH: {
+        case CONTENT_BUFFERED: {
             HttpResponse httpBufferedResponse = this.httpBufferedResponse;
-            ChannelFuture httpBufferedFuture = this.httpBufferedFuture;
             this.httpBufferedResponse = null;
-            this.httpBufferedFuture = null;
-
-            ChannelFuture httpFuture = evt.getFuture();
-            chainFutures(httpBufferedFuture, httpFuture);
 
             ChannelBuffer httpBufferedContent = httpBufferedResponse.getContent();
             int httpReadableBytes = httpBufferedContent.readableBytes();
             setContentLength(httpBufferedResponse, httpReadableBytes);
             ChannelFuture future = transport.write(httpBufferedResponse);
             httpChildChannel.state(CONTENT_COMPLETE);
-            chainWriteCompletes(future, httpBufferedFuture, httpReadableBytes);
+            chainWriteCompletes(future, httpFuture, httpReadableBytes);
             break;
         }
         case CONTENT_CHUNKED: {
-            ChannelFuture httpFuture = evt.getFuture();
             HttpChunk httpChunk = DefaultHttpChunk.LAST_CHUNK;
             ChannelFuture future = transport.write(httpChunk);
             httpChildChannel.state(CONTENT_COMPLETE);
@@ -228,21 +268,17 @@ public class HttpChildChannelSink extends AbstractHttpChannelSink {
             break;
         }
         case CONTENT_CLOSE: {
-            ChannelFuture httpFuture = evt.getFuture();
             ChannelFuture future = transport.close();
             httpChildChannel.state(CONTENT_COMPLETE);
             chainFutures(future, httpFuture);
             break;
         }
+        case UPGRADED:
         case CONTENT_COMPLETE:
+            httpFuture.setSuccess();
+            break;
         default:
             break;
-        }
-
-        if (httpChildChannel.setClosed()) {
-            fireChannelDisconnected(httpChildChannel);
-            fireChannelUnbound(httpChildChannel);
-            fireChannelClosed(httpChildChannel);
         }
     }
 }

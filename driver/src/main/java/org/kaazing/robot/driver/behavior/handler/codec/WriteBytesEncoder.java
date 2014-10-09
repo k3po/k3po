@@ -45,8 +45,4 @@ public class WriteBytesEncoder implements MessageEncoder {
         return wrappedBuffer(bytes);
     }
 
-    @Override
-    public String encodeToString() {
-        return new String(bytes);
-    }
 }

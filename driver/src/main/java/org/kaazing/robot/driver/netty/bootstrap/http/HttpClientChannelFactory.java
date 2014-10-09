@@ -36,9 +36,15 @@ public class HttpClientChannelFactory implements ChannelFactory {
     @Override
     public HttpClientChannel newChannel(ChannelPipeline pipeline) {
         HttpClientChannel httpChannel = new HttpClientChannel(this, pipeline, channelSinkFactory.newChannelSink());
+
+        // default configuration
         HttpChannelConfig httpChannelConfig = httpChannel.getConfig();
         httpChannelConfig.setMethod(POST);
         httpChannelConfig.setVersion(HTTP_1_1);
+
+        // see HttpClientChannelSource for httpChannel.setReadable(true)
+        httpChannel.setReadable(false);
+
         return httpChannel;
     }
 

@@ -28,10 +28,10 @@ import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.DefaultChannelFuture;
 import org.jboss.netty.channel.LifeCycleAwareChannelHandler;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.driver.behavior.handler.barrier.AwaitBarrierDownstreamHandler;
 import org.kaazing.robot.driver.behavior.handler.prepare.PreparationEvent;
 import org.kaazing.robot.driver.behavior.handler.prepare.SimplePrepareUpstreamHandler;
@@ -110,9 +110,15 @@ public class ExecutionHandler extends SimplePrepareUpstreamHandler implements Li
     }
 
     @Override
-    public void beforeAdd(ChannelHandlerContext ctx) throws Exception {
+    public void beforeAdd(final ChannelHandlerContext ctx) throws Exception {
         assert handlerFuture == null;
-        handlerFuture = Channels.future(ctx.getChannel());
+        // note: the context channel is null if handler added to pipeline before channel has been created
+        handlerFuture = new DefaultChannelFuture(null, false) {
+            @Override
+            public Channel getChannel() {
+                return ctx.getChannel();
+            }
+        };
     }
 
     @Override

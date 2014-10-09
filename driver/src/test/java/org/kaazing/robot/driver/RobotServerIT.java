@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -43,7 +44,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.DisableOnDebug;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TestRule;
+import org.junit.rules.Timeout;
 
 public class RobotServerIT {
 
@@ -52,6 +56,9 @@ public class RobotServerIT {
     private Socket client;
     private ServerSocket server;
     private Socket accepted;
+
+    @Rule
+    public TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -86,7 +93,7 @@ public class RobotServerIT {
 
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void shouldFinishEmptyOK() throws Exception {
 
         String path = "org/kaazing/robot/driver/emptyScript";
@@ -133,7 +140,7 @@ public class RobotServerIT {
         assertFalse(in.ready());
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void shouldPrepareThenStartOK() throws Exception {
 
         String path = "org/kaazing/robot/driver/accept-then-close";
@@ -180,7 +187,7 @@ public class RobotServerIT {
         assertEquals(expectedStarted, started);
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void shouldAcceptThenCloseWithPrepareOK() throws Exception {
 
         String path = "org/kaazing/robot/driver/accept-then-close";
@@ -251,7 +258,7 @@ public class RobotServerIT {
         assertEquals(-1, client.getInputStream().read());
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void shouldAcceptThenCloseOK() throws Exception {
 
         String path = "org/kaazing/robot/driver/accept-then-close";
@@ -321,7 +328,7 @@ public class RobotServerIT {
         assertEquals(-1, client.getInputStream().read());
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void shouldConnectThenCloseOK() throws Exception {
 
         server.bind(new InetSocketAddress("localhost", 62345));
@@ -392,7 +399,7 @@ public class RobotServerIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void shouldConnectThenCloseWithPrepareOK() throws Exception {
 
         server.bind(new InetSocketAddress("localhost", 62345));
@@ -462,7 +469,7 @@ public class RobotServerIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void shouldPrepareStartThenAbortOK() throws Exception {
 
         server.bind(new InetSocketAddress("localhost", 62345));
@@ -536,7 +543,7 @@ public class RobotServerIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void shouldPrepareThenAbortOK() throws Exception {
 
         String path = "org/kaazing/robot/driver/shouldAbortOK";
@@ -587,7 +594,7 @@ public class RobotServerIT {
         assertEquals(expectedFinished, finished);
     }
 
-    @Test(timeout = 2500)
+    @Test
     public void shouldDisconnectOK() throws Exception {
 
         String path = "org/kaazing/robot/driver/accept-then-close";
@@ -635,7 +642,7 @@ public class RobotServerIT {
         client.connect(new InetSocketAddress("localhost", 62345));
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void shouldParseErrorOK() throws Exception {
 
         String path = "org/kaazing/robot/driver/invalidScript";

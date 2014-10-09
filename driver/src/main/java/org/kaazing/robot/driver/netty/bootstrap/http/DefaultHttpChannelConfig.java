@@ -20,10 +20,13 @@
 package org.kaazing.robot.driver.netty.bootstrap.http;
 
 import org.jboss.netty.channel.DefaultChannelConfig;
+import org.jboss.netty.handler.codec.http.DefaultHttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
+import org.jboss.netty.handler.codec.http.QueryStringDecoder;
+import org.jboss.netty.handler.codec.http.QueryStringEncoder;
 
 public class DefaultHttpChannelConfig extends DefaultChannelConfig implements HttpChannelConfig {
 
@@ -33,6 +36,8 @@ public class DefaultHttpChannelConfig extends DefaultChannelConfig implements Ht
     private HttpHeaders readHeaders;
     private HttpHeaders writeHeaders;
     private int maximumBufferedContentLength;
+    private QueryStringDecoder readQuery;
+    private QueryStringEncoder writeQuery;
 
     @Override
     public void setMethod(HttpMethod method) {
@@ -65,22 +70,28 @@ public class DefaultHttpChannelConfig extends DefaultChannelConfig implements Ht
     }
 
     @Override
-    public void setReadHeaders(HttpHeaders readHeaders) {
-        this.readHeaders = readHeaders;
+    public boolean hasReadHeaders() {
+        return readHeaders != null;
     }
 
     @Override
     public HttpHeaders getReadHeaders() {
+        if (readHeaders == null) {
+            readHeaders = new DefaultHttpHeaders();
+        }
         return readHeaders;
     }
 
     @Override
-    public void setWriteHeaders(HttpHeaders writeHeaders) {
-        this.writeHeaders = writeHeaders;
+    public boolean hasWriteHeaders() {
+        return writeHeaders != null;
     }
 
     @Override
     public HttpHeaders getWriteHeaders() {
+        if (writeHeaders == null) {
+            writeHeaders = new DefaultHttpHeaders();
+        }
         return writeHeaders;
     }
 
@@ -93,4 +104,25 @@ public class DefaultHttpChannelConfig extends DefaultChannelConfig implements Ht
     public int getMaximumBufferedContentLength() {
         return maximumBufferedContentLength;
     }
+
+    @Override
+    public void setReadQuery(QueryStringDecoder readQuery) {
+        this.readQuery = readQuery;
+    }
+
+    @Override
+    public QueryStringDecoder getReadQuery() {
+        return readQuery;
+    }
+
+    @Override
+    public void setWriteQuery(QueryStringEncoder writeQuery) {
+        this.writeQuery = writeQuery;
+    }
+
+    @Override
+    public QueryStringEncoder getWriteQuery() {
+        return writeQuery;
+    }
+
 }

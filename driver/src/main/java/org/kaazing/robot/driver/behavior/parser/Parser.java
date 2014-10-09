@@ -26,7 +26,7 @@ import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.robot.driver.behavior.visitor.AssociateStreamsVisitor;
 import org.kaazing.robot.driver.behavior.visitor.InjectBarriersVisitor;
 import org.kaazing.robot.driver.behavior.visitor.InjectEventsVisitor;
-import org.kaazing.robot.driver.behavior.visitor.InjectHttpEventsVisitor;
+import org.kaazing.robot.driver.behavior.visitor.InjectHttpStreamsVisitor;
 import org.kaazing.robot.driver.behavior.visitor.ValidateBarriersVisitor;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.parser.ScriptParseException;
@@ -58,19 +58,9 @@ public class Parser implements ScriptParser {
                 LOGGER.debug("done parsing script. Result: " + script);
             }
 
-            InjectHttpEventsVisitor injectHttpEvents = new InjectHttpEventsVisitor();
-            InjectHttpEventsVisitor.State injectHttpEventsState = new InjectHttpEventsVisitor.State();
-            script = script.accept(injectHttpEvents, injectHttpEventsState);
-            injectHttpEventsState.finish();
-
-            if (isDebugEnabled) {
-                LOGGER.debug("inject http events visitor done. Result: " + script);
-            }
-
             InjectEventsVisitor injectEvents = new InjectEventsVisitor();
             InjectEventsVisitor.State injectEventsState = new InjectEventsVisitor.State();
             script = script.accept(injectEvents, injectEventsState);
-            injectEventsState.finish();
 
             if (isDebugEnabled) {
                 LOGGER.debug("inject events visitor done. Result: " + script);
@@ -95,6 +85,14 @@ public class Parser implements ScriptParser {
 
             if (isDebugEnabled) {
                 LOGGER.debug("validate barrier visitor done. Result: " + script);
+            }
+
+            InjectHttpStreamsVisitor injectHttpEvents = new InjectHttpStreamsVisitor();
+            InjectHttpStreamsVisitor.State injectHttpEventsState = new InjectHttpStreamsVisitor.State();
+            script = script.accept(injectHttpEvents, injectHttpEventsState);
+
+            if (isDebugEnabled) {
+                LOGGER.debug("validate http events visitor done. Result: " + script);
             }
 
             return script;

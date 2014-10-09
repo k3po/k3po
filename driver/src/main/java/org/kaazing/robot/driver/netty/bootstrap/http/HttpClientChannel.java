@@ -29,7 +29,7 @@ import org.kaazing.robot.driver.netty.channel.ChannelAddress;
 
 public class HttpClientChannel extends AbstractChannel<HttpChannelConfig> {
 
-    public enum HttpState { REQUEST, CONTENT_CHUNKED, CONTENT_LENGTH, CONTENT_COMPLETE, UPGRADED }
+    public enum HttpState { REQUEST, CONTENT_CHUNKED, CONTENT_BUFFERED, CONTENT_STREAMED, CONTENT_COMPLETE, UPGRADEABLE }
 
     private HttpState state;
 
@@ -72,4 +72,10 @@ public class HttpClientChannel extends AbstractChannel<HttpChannelConfig> {
     protected boolean setClosed() {
         return super.setClosed();
     }
+
+    @Override
+    protected void setInterestOpsNow(int interestOps) {
+        super.setInterestOpsNow(interestOps);
+    }
+
 }

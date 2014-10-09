@@ -23,6 +23,9 @@ import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
+import org.kaazing.robot.driver.netty.channel.FlushEvent;
+import org.kaazing.robot.driver.netty.channel.ShutdownInputEvent;
+import org.kaazing.robot.driver.netty.channel.ShutdownOutputEvent;
 
 public abstract class AbstractChannelSink extends org.jboss.netty.channel.AbstractChannelSink {
 
@@ -60,6 +63,12 @@ public abstract class AbstractChannelSink extends org.jboss.netty.channel.Abstra
                 eventSunk0(pipeline, evt);
                 break;
             }
+        } else if (e instanceof ShutdownInputEvent) {
+            shutdownInputRequested(pipeline, (ShutdownInputEvent) e);
+        } else if (e instanceof ShutdownOutputEvent) {
+            shutdownOutputRequested(pipeline, (ShutdownOutputEvent) e);
+        } else if (e instanceof FlushEvent) {
+            flushRequested(pipeline, (FlushEvent) e);
         } else {
             eventSunk0(pipeline, e);
         }
@@ -87,5 +96,14 @@ public abstract class AbstractChannelSink extends org.jboss.netty.channel.Abstra
     }
 
     protected void eventSunk0(ChannelPipeline pipeline, ChannelEvent e) throws Exception {
+    }
+
+    protected void flushRequested(ChannelPipeline pipeline, FlushEvent evt) throws Exception {
+    }
+
+    protected void shutdownInputRequested(ChannelPipeline pipeline, ShutdownInputEvent evt) throws Exception {
+    }
+
+    protected void shutdownOutputRequested(ChannelPipeline pipeline, ShutdownOutputEvent evt) throws Exception {
     }
 }

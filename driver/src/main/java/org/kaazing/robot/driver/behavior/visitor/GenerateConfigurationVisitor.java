@@ -21,10 +21,6 @@ package org.kaazing.robot.driver.behavior.visitor;
 
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
-import static org.kaazing.robot.driver.behavior.handler.codec.HttpUtils.HTTP_CODEC_NAME;
-import static org.kaazing.robot.driver.behavior.handler.codec.HttpUtils.HTTP_MEESAGE_SPLITTING_CODEC_NAME;
-import static org.kaazing.robot.driver.behavior.handler.codec.HttpUtils.HTTP_MESSAGE_AGGREGATING_CODEC_NAME;
-import static org.kaazing.robot.driver.behavior.handler.codec.HttpUtils.isUriHttp;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -48,16 +44,6 @@ import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
-import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
-import org.jboss.netty.handler.codec.http.HttpClientCodec;
-import org.jboss.netty.handler.codec.http.HttpMessage;
-import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.jboss.netty.handler.codec.http.HttpServerCodec;
-import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
@@ -71,8 +57,6 @@ import org.kaazing.robot.driver.behavior.handler.LogLastEventHandler;
 import org.kaazing.robot.driver.behavior.handler.barrier.AwaitBarrierDownstreamHandler;
 import org.kaazing.robot.driver.behavior.handler.barrier.AwaitBarrierUpstreamHandler;
 import org.kaazing.robot.driver.behavior.handler.barrier.NotifyBarrierHandler;
-import org.kaazing.robot.driver.behavior.handler.codec.HttpMessageAggregatingCodec;
-import org.kaazing.robot.driver.behavior.handler.codec.HttpMessageSplittingCodec;
 import org.kaazing.robot.driver.behavior.handler.codec.MaskingDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MaskingDecoders;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageDecoder;
@@ -90,40 +74,34 @@ import org.kaazing.robot.driver.behavior.handler.codec.ReadVariableLengthBytesDe
 import org.kaazing.robot.driver.behavior.handler.codec.WriteBytesEncoder;
 import org.kaazing.robot.driver.behavior.handler.codec.WriteExpressionEncoder;
 import org.kaazing.robot.driver.behavior.handler.codec.WriteTextEncoder;
-import org.kaazing.robot.driver.behavior.handler.codec.http.HttpMessageContributingDecoder;
-import org.kaazing.robot.driver.behavior.handler.codec.http.HttpMessageContributingEncoder;
-import org.kaazing.robot.driver.behavior.handler.codec.http.ReadHttpHeaderDecoder;
-import org.kaazing.robot.driver.behavior.handler.codec.http.ReadHttpMethodDecoder;
-import org.kaazing.robot.driver.behavior.handler.codec.http.ReadHttpParameterDecoder;
-import org.kaazing.robot.driver.behavior.handler.codec.http.ReadHttpStatusDecoder;
-import org.kaazing.robot.driver.behavior.handler.codec.http.ReadHttpVersionDecoder;
-import org.kaazing.robot.driver.behavior.handler.codec.http.WriteHttpHeaderEncoder;
-import org.kaazing.robot.driver.behavior.handler.codec.http.WriteHttpMethodEncoder;
-import org.kaazing.robot.driver.behavior.handler.codec.http.WriteHttpParameterEncoder;
-import org.kaazing.robot.driver.behavior.handler.codec.http.WriteHttpStatusEncoder;
-import org.kaazing.robot.driver.behavior.handler.codec.http.WriteHttpVersionEncoder;
 import org.kaazing.robot.driver.behavior.handler.command.CloseHandler;
 import org.kaazing.robot.driver.behavior.handler.command.DisconnectHandler;
+import org.kaazing.robot.driver.behavior.handler.command.FlushHandler;
+import org.kaazing.robot.driver.behavior.handler.command.ShutdownOutputHandler;
 import org.kaazing.robot.driver.behavior.handler.command.UnbindHandler;
 import org.kaazing.robot.driver.behavior.handler.command.WriteHandler;
-import org.kaazing.robot.driver.behavior.handler.command.http.CloseWriteHttpRequestHandler;
-import org.kaazing.robot.driver.behavior.handler.command.http.CloseWriteHttpResponseHandler;
-import org.kaazing.robot.driver.behavior.handler.command.http.EndOfWriteHttpHeadersHandler;
 import org.kaazing.robot.driver.behavior.handler.command.http.WriteHttpContentLengthHandler;
-import org.kaazing.robot.driver.behavior.handler.command.http.WriteHttpHandler;
+import org.kaazing.robot.driver.behavior.handler.command.http.WriteHttpHeaderHandler;
+import org.kaazing.robot.driver.behavior.handler.command.http.WriteHttpMethodHandler;
+import org.kaazing.robot.driver.behavior.handler.command.http.WriteHttpParameterHandler;
+import org.kaazing.robot.driver.behavior.handler.command.http.WriteHttpStatusHandler;
+import org.kaazing.robot.driver.behavior.handler.command.http.WriteHttpVersionHandler;
 import org.kaazing.robot.driver.behavior.handler.event.BoundHandler;
 import org.kaazing.robot.driver.behavior.handler.event.ChildClosedHandler;
 import org.kaazing.robot.driver.behavior.handler.event.ChildOpenedHandler;
 import org.kaazing.robot.driver.behavior.handler.event.ClosedHandler;
 import org.kaazing.robot.driver.behavior.handler.event.ConnectedHandler;
 import org.kaazing.robot.driver.behavior.handler.event.DisconnectedHandler;
+import org.kaazing.robot.driver.behavior.handler.event.InputShutdownHandler;
 import org.kaazing.robot.driver.behavior.handler.event.OpenedHandler;
 import org.kaazing.robot.driver.behavior.handler.event.ReadHandler;
+import org.kaazing.robot.driver.behavior.handler.event.ReadResumedHandler;
 import org.kaazing.robot.driver.behavior.handler.event.UnboundHandler;
-import org.kaazing.robot.driver.behavior.handler.event.http.CloseReadHttpRequestHandler;
-import org.kaazing.robot.driver.behavior.handler.event.http.CloseReadHttpResponseHandler;
-import org.kaazing.robot.driver.behavior.handler.event.http.EndOfReadHttpHeadersHandler;
-import org.kaazing.robot.driver.behavior.handler.event.http.ReadHttpHandler;
+import org.kaazing.robot.driver.behavior.handler.event.http.ReadHttpHeaderHandler;
+import org.kaazing.robot.driver.behavior.handler.event.http.ReadHttpMethodHandler;
+import org.kaazing.robot.driver.behavior.handler.event.http.ReadHttpParameterHandler;
+import org.kaazing.robot.driver.behavior.handler.event.http.ReadHttpStatusHandler;
+import org.kaazing.robot.driver.behavior.handler.event.http.ReadHttpVersionHandler;
 import org.kaazing.robot.driver.behavior.visitor.GenerateConfigurationVisitor.State;
 import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
 import org.kaazing.robot.driver.netty.bootstrap.ClientBootstrap;
@@ -136,25 +114,20 @@ import org.kaazing.robot.lang.ast.AstAcceptableNode;
 import org.kaazing.robot.lang.ast.AstBoundNode;
 import org.kaazing.robot.lang.ast.AstChildClosedNode;
 import org.kaazing.robot.lang.ast.AstChildOpenedNode;
-import org.kaazing.robot.lang.ast.AstCloseHttpRequestNode;
-import org.kaazing.robot.lang.ast.AstCloseHttpResponseNode;
 import org.kaazing.robot.lang.ast.AstCloseNode;
 import org.kaazing.robot.lang.ast.AstClosedNode;
 import org.kaazing.robot.lang.ast.AstConnectNode;
 import org.kaazing.robot.lang.ast.AstConnectedNode;
 import org.kaazing.robot.lang.ast.AstDisconnectNode;
 import org.kaazing.robot.lang.ast.AstDisconnectedNode;
-import org.kaazing.robot.lang.ast.AstEndOfHttpHeadersNode;
+import org.kaazing.robot.lang.ast.AstFlushNode;
 import org.kaazing.robot.lang.ast.AstNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
-import org.kaazing.robot.lang.ast.AstReadHttpHeaderNode;
-import org.kaazing.robot.lang.ast.AstReadHttpMethodNode;
-import org.kaazing.robot.lang.ast.AstReadHttpParameterNode;
-import org.kaazing.robot.lang.ast.AstReadHttpStatusNode;
-import org.kaazing.robot.lang.ast.AstReadHttpVersionNode;
+import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
+import org.kaazing.robot.lang.ast.AstReadResumedNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.AstStreamNode;
@@ -162,12 +135,7 @@ import org.kaazing.robot.lang.ast.AstStreamableNode;
 import org.kaazing.robot.lang.ast.AstUnbindNode;
 import org.kaazing.robot.lang.ast.AstUnboundNode;
 import org.kaazing.robot.lang.ast.AstWriteAwaitNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpContentLengthNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpHeaderNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpMethodNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpParameterNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpStatusNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpVersionNode;
+import org.kaazing.robot.lang.ast.AstWriteCloseNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
@@ -187,6 +155,17 @@ import org.kaazing.robot.lang.ast.value.AstLiteralBytesValue;
 import org.kaazing.robot.lang.ast.value.AstLiteralTextValue;
 import org.kaazing.robot.lang.ast.value.AstValue;
 import org.kaazing.robot.lang.el.ExpressionContext;
+import org.kaazing.robot.lang.http.ast.AstReadHttpHeaderNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpMethodNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpParameterNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpStatusNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpVersionNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpContentLengthNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpHeaderNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpMethodNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpParameterNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpStatusNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpVersionNode;
 
 /**
  * Builds the pipeline of handlers that are used to "execute" the Robot script.
@@ -204,7 +183,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         private final ConcurrentMap<String, Barrier> barriersByName;
         private Configuration configuration;
         private LocationInfo streamStartLocation;
-        private PROTOCOL protocol = PROTOCOL.TCP;
 
         // the read unmasker is reset per stream
         private MaskingDecoder readUnmasker;
@@ -227,63 +205,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             }
 
             return barrier;
-        }
-
-        public PROTOCOL getProtocol() {
-            return protocol;
-        }
-
-        public void setProtocol(PROTOCOL protocol) {
-            this.protocol = protocol;
-        }
-
-        // Http State
-        private HTTP_DIRECTION httpDirection;
-        private HttpMessage httpMessage;
-        private URI httpURI;
-
-        public HttpMessage getHttpMessage() {
-            return httpMessage;
-        }
-
-        public void setHttpMessage(HttpMessage httpMessage, URI httpURI) {
-            if (httpMessage instanceof HttpRequest) {
-                httpDirection = HTTP_DIRECTION.WRITE;
-                String path = httpURI.getPath();
-                if (path.length() == 0) {
-                    path = "/";
-                }
-                ((HttpRequest) httpMessage).setUri(path);
-            } else if (httpMessage instanceof HttpResponse) {
-                httpDirection = HTTP_DIRECTION.READ;
-            }
-            this.httpMessage = httpMessage;
-            this.setHttpURI(httpURI);
-        }
-
-        public HTTP_DIRECTION getHttpDirection() {
-            return httpDirection;
-        }
-
-        public HTTP_DIRECTION getAndSwapDirection() {
-            HTTP_DIRECTION currentDirection = httpDirection;
-            switch (httpDirection) {
-            case READ:
-                httpDirection = HTTP_DIRECTION.WRITE;
-                break;
-            case WRITE:
-                httpDirection = HTTP_DIRECTION.READ;
-                break;
-            }
-            return currentDirection;
-        }
-
-        public URI getHttpURI() {
-            return httpURI;
-        }
-
-        public void setHttpURI(URI httpURI) {
-            this.httpURI = httpURI;
         }
 
         public class PipelineFactory {
@@ -314,14 +235,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
     }
 
-    public enum PROTOCOL {
-        TCP, HTTP;
-    }
-
-    public enum HTTP_DIRECTION {
-        READ, WRITE;
-    }
-
     @Override
     public Configuration visit(AstScriptNode script, State state) throws Exception {
 
@@ -343,27 +256,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         // masking is a no-op by default for each stream
         state.readUnmasker = DEFAULT_READ_UNMASKER;
-
-        switch (state.getProtocol()) {
-        case HTTP:
-             state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
-             state.pipelineAsMap.put("loghandler", new LoggingHandler(true));
-             state.pipelineAsMap.put("lastevent", new LogLastEventHandler(acceptedNode.getLocationInfo()));
-             state.streamStartLocation = acceptedNode.getLocationInfo();
-             HttpServerCodec httpServerCodec = new HttpServerCodec();
-             HttpMessageAggregatingCodec httpMessageAggregatingCodec = new HttpMessageAggregatingCodec();
-             HttpMessageSplittingCodec httpMessageSplittingCodec = new HttpMessageSplittingCodec();
-             state.pipelineAsMap.put(HTTP_CODEC_NAME, httpServerCodec);
-             state.pipelineAsMap.put(HTTP_MESSAGE_AGGREGATING_CODEC_NAME, httpMessageAggregatingCodec);
-             state.pipelineAsMap.put(HTTP_MEESAGE_SPLITTING_CODEC_NAME, httpMessageSplittingCodec);
-            break;
-        case TCP:
-            state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
-            state.pipelineAsMap.put("loghandler", new LoggingHandler(true));
-            state.pipelineAsMap.put("lastevent", new LogLastEventHandler(acceptedNode.getLocationInfo()));
-            state.streamStartLocation = acceptedNode.getLocationInfo();
-            break;
-        }
+        state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
+        state.pipelineAsMap.put("loghandler", new LoggingHandler(true));
+        state.pipelineAsMap.put("lastevent", new LogLastEventHandler(acceptedNode.getLocationInfo()));
+        state.streamStartLocation = acceptedNode.getLocationInfo();
 
         for (AstStreamableNode streamable : acceptedNode.getStreamables()) {
             streamable.accept(this, state);
@@ -394,39 +290,12 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         Collection<ChannelFuture> completionFutures = new HashSet<ChannelFuture>();
 
         URI acceptURI = acceptNode.getLocation();
-        URI tcpURI = acceptURI;
-        if (isUriHttp(acceptURI)) {
-            state.setProtocol(PROTOCOL.HTTP);
-            HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-            state.setHttpMessage(httpResponse, acceptURI);
-            tcpURI = tcpBindURIFromHttpURI(acceptURI);
-        }
 
         /* Create a list of pipelines, for each acceptable */
         final List<ChannelPipeline> pipelines = new ArrayList<ChannelPipeline>();
-
-//        switch (state.getProtocol()) {
-//        case HTTP:
-//            state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
-//            state.pipelineAsMap.put("loghandler", new LoggingHandler(true));
-//            state.pipelineAsMap.put("lastevent", new LogLastEventHandler(acceptNode.getLocationInfo()));
-//            state.streamStartLocation = acceptNode.getLocationInfo();
-//            HttpServerCodec httpServerCodec = new HttpServerCodec();
-//            HttpMessageAggregatingCodec httpMessageAggregatingCodec = new HttpMessageAggregatingCodec();
-//            HttpMessageSplittingCodec httpMessageSplittingCodec = new HttpMessageSplittingCodec();
-//            state.pipelineAsMap.put(HTTP_CODEC_NAME, httpServerCodec);
-//            state.pipelineAsMap.put(HTTP_MESSAGE_AGGREGATING_CODEC_NAME, httpMessageAggregatingCodec);
-//            state.pipelineAsMap.put(HTTP_MEESAGE_SPLITTING_CODEC_NAME, httpMessageSplittingCodec);
+        state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
 
         for (AstAcceptableNode acceptableNode : acceptNode.getAcceptables()) {
-            switch (state.getProtocol()) {
-            case HTTP:
-                state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
-                break;
-            case TCP:
-                state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
-                break;
-            }
 
             acceptableNode.accept(this, state);
 
@@ -441,7 +310,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             pipelines.add(pipeline);
         }
         state.pipelineAsMap = savedPipelineAsMap;
-        acceptURI = tcpURI;
 
         /*
          * As new connections are accepted we grab a pipeline line off the list. Note the pipelines map is ordered. Note
@@ -486,29 +354,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // masking is a no-op by default for each stream
         state.readUnmasker = DEFAULT_READ_UNMASKER;
 
-        boolean isHttp = isUriHttp(connectURI);
-        if (isHttp) {
-            state.setProtocol(PROTOCOL.HTTP);
-            HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET,
-                    connectURI.toString());
-            state.setHttpMessage(httpRequest, connectURI);
-            connectURI = tcpBindURIFromHttpURI(connectURI);
-        }
-
         Map<String, Object> connectOptions = connectNode.getOptions();
 
         state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
         state.pipelineAsMap.put("loghandler", new LoggingHandler(true));
-
-        if (isHttp) {
-            HttpClientCodec httpClientCodec = new HttpClientCodec();
-            HttpMessageAggregatingCodec httpMessageAggregatingCodec = new HttpMessageAggregatingCodec();
-            HttpMessageSplittingCodec httpMessageSplittingCodec = new HttpMessageSplittingCodec();
-            state.pipelineAsMap.put(HTTP_CODEC_NAME, httpClientCodec);
-            state.pipelineAsMap.put(HTTP_MESSAGE_AGGREGATING_CODEC_NAME, httpMessageAggregatingCodec);
-            state.pipelineAsMap.put(HTTP_MEESAGE_SPLITTING_CODEC_NAME, httpMessageSplittingCodec);
-        }
-
         state.pipelineAsMap.put("lastevent", new LogLastEventHandler(connectNode.getLocationInfo()));
 
         state.streamStartLocation = connectNode.getLocationInfo();
@@ -975,9 +824,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         AstValueMatcher value = node.getValue();
 
         MessageDecoder valueDecoder = value.accept(new GenerateReadDecoderVisitor(), state.configuration);
-        HttpMessageContributingDecoder headerDecoder = new ReadHttpHeaderDecoder(name.getValue(), valueDecoder);
 
-        ReadHttpHandler handler = new ReadHttpHandler(headerDecoder);
+        ReadHttpHeaderHandler handler = new ReadHttpHeaderHandler(name.getValue(), valueDecoder);
 
         handler.setLocationInfo(node.getLocationInfo());
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
@@ -994,9 +842,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
         MessageEncoder valueEncoder = value.accept(new GenerateWriteEncoderVisitor(), state.configuration);
-        HttpMessageContributingEncoder httpEncoder = new WriteHttpHeaderEncoder(nameEncoder, valueEncoder);
 
-        WriteHttpHandler handler = new WriteHttpHandler(state.getHttpMessage(), httpEncoder);
+        WriteHttpHeaderHandler handler = new WriteHttpHeaderHandler(nameEncoder, valueEncoder);
 
         handler.setLocationInfo(node.getLocationInfo());
         String handlerName = String.format("writeHttpHeader#%d", state.pipelineAsMap.size() + 1);
@@ -1006,7 +853,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
     @Override
     public Configuration visit(AstWriteHttpContentLengthNode node, State state) throws Exception {
-        WriteHttpContentLengthHandler handler = new WriteHttpContentLengthHandler(state.getHttpMessage());
+        WriteHttpContentLengthHandler handler = new WriteHttpContentLengthHandler();
         handler.setLocationInfo(node.getLocationInfo());
         String handlerName = String.format("writeHttpContentLength#%d", state.pipelineAsMap.size() + 1);
         state.pipelineAsMap.put(handlerName, handler);
@@ -1019,9 +866,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         AstValueMatcher method = node.getMethod();
 
         MessageDecoder methodValueDecoder = method.accept(new GenerateReadDecoderVisitor(), state.configuration);
-        HttpMessageContributingDecoder httpDecoder = new ReadHttpMethodDecoder(methodValueDecoder);
 
-        ReadHttpHandler handler = new ReadHttpHandler(httpDecoder);
+        // TODO: compareEqualsIgnoreCase
+        ReadHttpMethodHandler handler = new ReadHttpMethodHandler(methodValueDecoder);
 
         handler.setLocationInfo(node.getLocationInfo());
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
@@ -1036,9 +883,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         AstValue method = node.getMethod();
 
         MessageEncoder methodEncoder = method.accept(new GenerateWriteEncoderVisitor(), state.configuration);
-        HttpMessageContributingEncoder httpEncoder = new WriteHttpMethodEncoder(methodEncoder);
 
-        WriteHttpHandler handler = new WriteHttpHandler(state.getHttpMessage(), httpEncoder);
+        WriteHttpMethodHandler handler = new WriteHttpMethodHandler(methodEncoder);
         handler.setLocationInfo(node.getLocationInfo());
         String handlerName = String.format("writeHttpMethod#%d", state.pipelineAsMap.size() + 1);
         state.pipelineAsMap.put(handlerName, handler);
@@ -1048,13 +894,12 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstReadHttpParameterNode node, State state) throws Exception {
 
-        AstLiteralTextValue key = node.getKey();
+        AstLiteralTextValue name = node.getName();
         AstValueMatcher value = node.getValue();
 
         MessageDecoder valueDecoder = value.accept(new GenerateReadDecoderVisitor(), state.configuration);
-        HttpMessageContributingDecoder paramDecoder = new ReadHttpParameterDecoder(key.getValue(), valueDecoder);
 
-        ReadHttpHandler handler = new ReadHttpHandler(paramDecoder);
+        ReadHttpParameterHandler handler = new ReadHttpParameterHandler(name.getValue(), valueDecoder);
 
         handler.setLocationInfo(node.getLocationInfo());
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
@@ -1066,14 +911,13 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstWriteHttpParameterNode node, State state) throws Exception {
 
-        AstValue key = node.getKey();
+        AstValue name = node.getName();
         AstValue value = node.getValue();
 
-        MessageEncoder keyEncoder = key.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+        MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
         MessageEncoder valueEncoder = value.accept(new GenerateWriteEncoderVisitor(), state.configuration);
-        HttpMessageContributingEncoder httpEncoder = new WriteHttpParameterEncoder(keyEncoder, valueEncoder);
 
-        WriteHttpHandler handler = new WriteHttpHandler(state.getHttpMessage(), httpEncoder);
+        WriteHttpParameterHandler handler = new WriteHttpParameterHandler(nameEncoder, valueEncoder);
 
         handler.setLocationInfo(node.getLocationInfo());
         String handlerName = String.format("writeHttpParameter#%d", state.pipelineAsMap.size() + 1);
@@ -1086,9 +930,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         AstValueMatcher version = node.getVersion();
 
         MessageDecoder versionDecoder = version.accept(new GenerateReadDecoderVisitor(), state.configuration);
-        HttpMessageContributingDecoder httpVersionDecoder = new ReadHttpVersionDecoder(versionDecoder);
 
-        ReadHttpHandler handler = new ReadHttpHandler(httpVersionDecoder);
+        ReadHttpVersionHandler handler = new ReadHttpVersionHandler(versionDecoder);
 
         handler.setLocationInfo(node.getLocationInfo());
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
@@ -1103,8 +946,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         MessageEncoder versionEncoder = version.accept(new GenerateWriteEncoderVisitor(), state.configuration);
 
-        HttpMessageContributingEncoder httpEncoder = new WriteHttpVersionEncoder(versionEncoder);
-        WriteHttpHandler handler = new WriteHttpHandler(state.getHttpMessage(), httpEncoder);
+        WriteHttpVersionHandler handler = new WriteHttpVersionHandler(versionEncoder);
 
         handler.setLocationInfo(node.getLocationInfo());
         String handlerName = String.format("writeHttpVersion#%d", state.pipelineAsMap.size() + 1);
@@ -1119,9 +961,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         MessageDecoder codeDecoder = code.accept(new GenerateReadDecoderVisitor(), state.configuration);
         MessageDecoder reasonDecoder = reason.accept(new GenerateReadDecoderVisitor(), state.configuration);
-        HttpMessageContributingDecoder statusDecoder = new ReadHttpStatusDecoder(codeDecoder, reasonDecoder);
 
-        ReadHttpHandler handler = new ReadHttpHandler(statusDecoder);
+        ReadHttpStatusHandler handler = new ReadHttpStatusHandler(codeDecoder, reasonDecoder);
 
         handler.setLocationInfo(node.getLocationInfo());
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
@@ -1137,9 +978,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         MessageEncoder codeEncoder = code.accept(new GenerateWriteEncoderVisitor(), state.configuration);
         MessageEncoder reasonEncoder = reason.accept(new GenerateWriteEncoderVisitor(), state.configuration);
-        HttpMessageContributingEncoder httpEncoder = new WriteHttpStatusEncoder(codeEncoder, reasonEncoder);
 
-        WriteHttpHandler handler = new WriteHttpHandler(state.getHttpMessage(), httpEncoder);
+        WriteHttpStatusHandler handler = new WriteHttpStatusHandler(codeEncoder, reasonEncoder);
 
         handler.setLocationInfo(node.getLocationInfo());
         String handlerName = String.format("writeHttpStatus#%d", state.pipelineAsMap.size() + 1);
@@ -1147,71 +987,43 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         return state.configuration;
     }
 
-    private URI tcpBindURIFromHttpURI(URI httpURI) {
-        URI resultingURI;
-        if (httpURI.getPort() == -1) {
-            resultingURI = URI.create(String.format("tcp://%s:80", httpURI.getAuthority()));
-        } else {
-            resultingURI = URI.create(String.format("tcp://%s", httpURI.getAuthority()));
-        }
-        return resultingURI;
-    }
-
     @Override
-    public Configuration visit(AstCloseHttpRequestNode node, State state) throws Exception {
-        HTTP_DIRECTION direction = state.getAndSwapDirection();
-        String handlerName = String.format("closeHttpRequest#%d", state.pipelineAsMap.size() + 1);
-        ExecutionHandler handler = null;
-        switch (direction) {
-        case READ:
-            handler = new CloseReadHttpRequestHandler();
-            break;
-        case WRITE:
-            handler = new CloseWriteHttpRequestHandler();
-            break;
-        }
-        assert handler != null;
-        state.protocol = PROTOCOL.TCP;
-        state.pipelineAsMap.put(handlerName, handler);
+    public Configuration visit(AstReadResumedNode node, State state) throws Exception {
+        ReadResumedHandler handler = new ReadResumedHandler();
+
         handler.setLocationInfo(node.getLocationInfo());
+        String handlerName = String.format("readResumed#%d", state.pipelineAsMap.size() + 1);
+        state.pipelineAsMap.put(handlerName, handler);
         return state.configuration;
     }
 
     @Override
-    public Configuration visit(AstCloseHttpResponseNode node, State state) throws Exception {
-        HTTP_DIRECTION direction = state.getHttpDirection();
-        String handlerName = String.format("closeHttpResponse#%d", state.pipelineAsMap.size() + 1);
-        ExecutionHandler handler = null;
-        switch (direction) {
-        case READ:
-            handler = new CloseReadHttpResponseHandler();
-            break;
-        case WRITE:
-            handler = new CloseWriteHttpResponseHandler();
-            break;
-        }
-        assert handler != null;
-        state.pipelineAsMap.put(handlerName, handler);
+    public Configuration visit(AstReadClosedNode node, State state) throws Exception {
+        InputShutdownHandler handler = new InputShutdownHandler();
+
         handler.setLocationInfo(node.getLocationInfo());
+        String handlerName = String.format("readClosed#%d", state.pipelineAsMap.size() + 1);
+        state.pipelineAsMap.put(handlerName, handler);
         return state.configuration;
     }
 
     @Override
-    public Configuration visit(AstEndOfHttpHeadersNode node, State state) throws Exception {
-        HTTP_DIRECTION direction = state.getHttpDirection();
-        String handlerName = String.format("endOfHttpHeaders#%d", state.pipelineAsMap.size() + 1);
-        ExecutionHandler handler = null;
-        switch (direction) {
-        case READ:
-            handler = new EndOfReadHttpHeadersHandler();
-            break;
-        case WRITE:
-            handler = new EndOfWriteHttpHeadersHandler(state.getHttpMessage());
-            break;
-        }
-        assert handler != null;
-        state.pipelineAsMap.put(handlerName, handler);
+    public Configuration visit(AstWriteCloseNode node, State state) throws Exception {
+        ShutdownOutputHandler handler = new ShutdownOutputHandler();
+
         handler.setLocationInfo(node.getLocationInfo());
+        String handlerName = String.format("writeClose#%d", state.pipelineAsMap.size() + 1);
+        state.pipelineAsMap.put(handlerName, handler);
+        return state.configuration;
+    }
+
+    @Override
+    public Configuration visit(AstFlushNode node, State state) throws Exception {
+        FlushHandler handler = new FlushHandler();
+
+        handler.setLocationInfo(node.getLocationInfo());
+        String handlerName = String.format("flush#%d", state.pipelineAsMap.size() + 1);
+        state.pipelineAsMap.put(handlerName, handler);
         return state.configuration;
     }
 

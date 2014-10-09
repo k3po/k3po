@@ -48,4 +48,16 @@ public abstract class AbstractAstNodeBuilder<N extends AstNode, R> {
     protected void internalSetNextLineInfo(int linesToSkip, int column) {
         setLocationInfo(line() + linesToSkip, column);
     }
+
+    protected final int line(AbstractAstNodeBuilder<?, ?> builder) {
+        return builder.line();
+    }
+
+    protected final int line(AbstractAstNodeBuilder<?, ?> builder, int line) {
+        return builder.line(line);
+    }
+
+    protected <T extends AstNode, B extends AbstractAstNodeBuilder<? extends T, ?>> T node(B builder) {
+        return builder.node;
+    }
 }

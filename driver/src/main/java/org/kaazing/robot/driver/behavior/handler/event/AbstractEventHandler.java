@@ -19,6 +19,9 @@
 
 package org.kaazing.robot.driver.behavior.handler.event;
 
+import static java.lang.Boolean.TRUE;
+import static java.util.EnumSet.complementOf;
+import static java.util.EnumSet.of;
 import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.BOUND;
 import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.CHILD_CLOSED;
 import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.CHILD_OPEN;
@@ -26,17 +29,18 @@ import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandl
 import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.CONNECTED;
 import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.DISCONNECTED;
 import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.EXCEPTION;
+import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.FLUSHED;
 import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.IDLE_STATE;
+import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.INPUT_SHUTDOWN;
 import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.INTEREST_OPS;
 import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.MESSAGE;
 import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.OPEN;
+import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.OUTPUT_SHUTDOWN;
 import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.UNBOUND;
 import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.UNKNOWN;
 import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.WRITE_COMPLETED;
-import static java.lang.Boolean.TRUE;
-import static java.util.EnumSet.complementOf;
-import static java.util.EnumSet.of;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.jboss.netty.channel.Channel;
@@ -52,23 +56,29 @@ import org.jboss.netty.channel.WriteCompletionEvent;
 import org.jboss.netty.handler.timeout.IdleStateEvent;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.driver.behavior.handler.ExecutionHandler;
+import org.kaazing.robot.driver.netty.channel.FlushEvent;
+import org.kaazing.robot.driver.netty.channel.ShutdownInputEvent;
+import org.kaazing.robot.driver.netty.channel.ShutdownOutputEvent;
 
 public abstract class AbstractEventHandler extends ExecutionHandler {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(AbstractEventHandler.class);
 
+    protected static final EnumSet<ChannelEventKind> DEFAULT_INTERESTED_EVENTS =
+            complementOf(of(CHILD_OPEN, CHILD_CLOSED, WRITE_COMPLETED, INTEREST_OPS, EXCEPTION, IDLE_STATE, FLUSHED,
+                            OUTPUT_SHUTDOWN, UNKNOWN));
+
     public static enum ChannelEventKind {
         CHILD_OPEN, CHILD_CLOSED, OPEN, BOUND, CONNECTED, MESSAGE, WRITE_COMPLETED, DISCONNECTED, UNBOUND, CLOSED, EXCEPTION,
-        INTEREST_OPS, IDLE_STATE, UNKNOWN
+        INTEREST_OPS, IDLE_STATE, INPUT_SHUTDOWN, OUTPUT_SHUTDOWN, FLUSHED, UNKNOWN
     };
 
     private final Set<ChannelEventKind> interestEvents;
     private final Set<ChannelEventKind> expectedEvents;
 
     protected AbstractEventHandler(Set<ChannelEventKind> expectedEvents) {
-        this(complementOf(of(CHILD_OPEN, CHILD_CLOSED, WRITE_COMPLETED, INTEREST_OPS, EXCEPTION, IDLE_STATE, UNKNOWN)),
+        this(DEFAULT_INTERESTED_EVENTS,
                 expectedEvents);
     }
 
@@ -140,6 +150,18 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
     }
 
     private static ChannelEventKind asEventKind(ChannelEvent evt) {
+        if (evt instanceof ShutdownInputEvent) {
+            return INPUT_SHUTDOWN;
+        }
+
+        if (evt instanceof ShutdownOutputEvent) {
+            return OUTPUT_SHUTDOWN;
+        }
+
+        if (evt instanceof FlushEvent) {
+            return FLUSHED;
+        }
+
         if (evt instanceof MessageEvent) {
             return MESSAGE;
         }

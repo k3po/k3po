@@ -1,11 +1,12 @@
 #
 # Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
 #
-connect http://localhost:8000
+connect http://localhost:8000/
 connected
 write method "get"
 write header "some" "header" 
 close request
+read resumed
 read header "some" "header"
 read "content"
 close response

@@ -52,11 +52,9 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ChildChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.WriteCompletionEvent;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
-import org.jboss.netty.handler.codec.http.DefaultHttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.junit.Rule;
 import org.junit.experimental.theories.DataPoints;
@@ -69,8 +67,8 @@ import org.junit.runner.RunWith;
 import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrapRule;
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
 import org.kaazing.robot.driver.netty.channel.ChannelAddressFactory;
-import org.kaazing.robot.driver.netty.channel.http.HttpContentCompleteEvent;
-import org.kaazing.robot.driver.netty.channel.http.SimpleHttpChannelHandler;
+import org.kaazing.robot.driver.netty.channel.ShutdownInputEvent;
+import org.kaazing.robot.driver.netty.channel.SimpleChannelHandler;
 import org.mockito.InOrder;
 
 @RunWith(Theories.class)
@@ -97,22 +95,19 @@ public class HttpServerBootstrapTest {
                 ChannelBuffer message = (ChannelBuffer) e.getMessage();
 
                 HttpChannelConfig config = (HttpChannelConfig) channel.getConfig();
-                HttpHeaders writeHeaders = new DefaultHttpHeaders();
+                HttpHeaders writeHeaders = config.getWriteHeaders();
                 switch (strategy) {
                 case BUFFERED:
                     config.setMaximumBufferedContentLength(8192);
                     break;
                 case CLOSE:
                     writeHeaders.set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.CLOSE);
-                    config.setWriteHeaders(writeHeaders);
                     break;
                 case CHUNKED:
                     writeHeaders.set(HttpHeaders.Names.TRANSFER_ENCODING, HttpHeaders.Values.CHUNKED);
-                    config.setWriteHeaders(writeHeaders);
                     break;
                 case EXPLICIT:
                     writeHeaders.set(HttpHeaders.Names.CONTENT_LENGTH, 12);
-                    config.setWriteHeaders(writeHeaders);
                     break;
                 }
 
@@ -122,7 +117,7 @@ public class HttpServerBootstrapTest {
         };
 
         final ChannelGroup childChannels = new DefaultChannelGroup();
-        SimpleHttpChannelHandler parent = new SimpleHttpChannelHandler() {
+        SimpleChannelHandler parent = new SimpleChannelHandler() {
 
             @Override
             public void childChannelOpen(ChannelHandlerContext ctx,
@@ -132,10 +127,10 @@ public class HttpServerBootstrapTest {
             }
 
         };
-        SimpleHttpChannelHandler parentSpy = spy(parent);
+        SimpleChannelHandler parentSpy = spy(parent);
 
-        SimpleHttpChannelHandler child = new SimpleHttpChannelHandler();
-        SimpleHttpChannelHandler childSpy = spy(child);
+        SimpleChannelHandler child = new SimpleChannelHandler();
+        SimpleChannelHandler childSpy = spy(child);
 
         server.setParentHandler(parentSpy);
         server.setPipeline(pipeline(childSpy, echoHandler));
@@ -194,7 +189,7 @@ public class HttpServerBootstrapTest {
 
         InOrder childRead = inOrder(childSpy);
         childRead.verify(childSpy).messageReceived(any(ChannelHandlerContext.class), any(MessageEvent.class));
-        childRead.verify(childSpy).contentComplete(any(ChannelHandlerContext.class), any(HttpContentCompleteEvent.class));
+        childRead.verify(childSpy).inputShutdown(any(ChannelHandlerContext.class), any(ShutdownInputEvent.class));
 
         InOrder childWrite = inOrder(childSpy);
         childWrite.verify(childSpy).writeRequested(any(ChannelHandlerContext.class), any(MessageEvent.class));

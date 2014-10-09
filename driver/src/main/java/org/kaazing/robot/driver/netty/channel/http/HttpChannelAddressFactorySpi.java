@@ -58,7 +58,7 @@ public class HttpChannelAddressFactorySpi extends ChannelAddressFactorySpi {
             throw new ChannelException(String.format("%s port missing", getSchemeName()));
         }
 
-        if (path == null) {
+        if (path == null || path.isEmpty()) {
             throw new ChannelException(String.format("%s path missing", getSchemeName()));
         }
 

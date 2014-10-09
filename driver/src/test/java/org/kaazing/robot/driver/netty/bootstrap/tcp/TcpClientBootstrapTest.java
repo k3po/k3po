@@ -85,23 +85,7 @@ public class TcpClientBootstrapTest {
     @Test
     public void shouldConnectEchoThenClose() throws Exception {
 
-        SimpleChannelHandler client = new SimpleChannelHandler() {
-
-            @Override
-            public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e)
-                    throws Exception {
-                System.out.println(e);
-                super.handleUpstream(ctx, e);
-            }
-
-            @Override
-            public void handleDownstream(ChannelHandlerContext ctx,
-                    ChannelEvent e) throws Exception {
-                System.out.println(e);
-                super.handleDownstream(ctx, e);
-            }
-            
-        };
+        SimpleChannelHandler client = new SimpleChannelHandler();
         SimpleChannelHandler clientSpy = spy(client);
 
         bootstrap.setPipeline(pipeline(clientSpy));
@@ -136,7 +120,10 @@ public class TcpClientBootstrapTest {
         channel.write(copiedBuffer("Hello, world", UTF_8));
         channel.getCloseFuture().syncUninterruptibly();
 
-        String message = readFuture.get();
+        String message;
+        do {
+            Thread.sleep(1L);
+        } while ((message = readFuture.get()) == null);
 
         assertEquals("Hello, world", message);
 

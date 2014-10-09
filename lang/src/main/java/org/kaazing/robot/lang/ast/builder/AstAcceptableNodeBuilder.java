@@ -22,6 +22,17 @@ package org.kaazing.robot.lang.ast.builder;
 import org.kaazing.robot.lang.ast.AstAcceptNode;
 import org.kaazing.robot.lang.ast.AstAcceptableNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
+import org.kaazing.robot.lang.http.ast.builder.AstReadHttpHeaderNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstReadHttpMethodNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstReadHttpParameterNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstReadHttpStatusNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstReadHttpVersionNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpContentLengthNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpHeaderNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpMethodNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpParameterNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpStatusNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpVersionNodeBuilder;
 
 public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBuilder<AstAcceptableNode> {
 
@@ -211,18 +222,13 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
     }
 
     @Override
-    public AstCloseHttpRequestNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addCloseHttpRequestCommand() {
-        return new AstCloseHttpRequestNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
+    public AstReadClosedNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addReadCloseCommand() {
+        return new AstReadClosedNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
     }
 
     @Override
-    public AstCloseHttpResponseNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addCloseHttpResponseCommand() {
-        return new AstCloseHttpResponseNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
-    }
-
-    @Override
-    public AstEndOfHttpHeadersNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addEndOfHeadersCommand() {
-        return new AstEndOfHttpHeadersNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
+    public AstWriteCloseNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addWriteCloseCommand() {
+        return new AstWriteCloseNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
     }
 
     public static final class ScriptNested<R extends AbstractAstNodeBuilder<? extends AstScriptNode, ?>> extends
@@ -399,18 +405,13 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         }
 
         @Override
-        public AstCloseHttpRequestNodeBuilder.StreamNested<ScriptNested<R>> addCloseHttpRequestCommand() {
-            return new AstCloseHttpRequestNodeBuilder.StreamNested<ScriptNested<R>>(this);
+        public AstReadClosedNodeBuilder.StreamNested<ScriptNested<R>> addReadCloseCommand() {
+            return new AstReadClosedNodeBuilder.StreamNested<ScriptNested<R>>(this);
         }
 
         @Override
-        public AstCloseHttpResponseNodeBuilder.StreamNested<ScriptNested<R>> addCloseHttpResponseCommand() {
-            return new AstCloseHttpResponseNodeBuilder.StreamNested<ScriptNested<R>>(this);
-        }
-
-        @Override
-        public AstEndOfHttpHeadersNodeBuilder.StreamNested<ScriptNested<R>> addEndOfHeadersCommand() {
-            return new AstEndOfHttpHeadersNodeBuilder.StreamNested<ScriptNested<R>>(this);
+        public AstWriteCloseNodeBuilder.StreamNested<ScriptNested<R>> addWriteCloseCommand() {
+            return new AstWriteCloseNodeBuilder.StreamNested<ScriptNested<R>>(this);
         }
 
         @Override
@@ -608,18 +609,13 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         }
 
         @Override
-        public AstCloseHttpRequestNodeBuilder.StreamNested<AcceptNested<R>> addCloseHttpRequestCommand() {
-            return new AstCloseHttpRequestNodeBuilder.StreamNested<AcceptNested<R>>(this);
+        public AstReadClosedNodeBuilder.StreamNested<AcceptNested<R>> addReadCloseCommand() {
+            return new AstReadClosedNodeBuilder.StreamNested<AcceptNested<R>>(this);
         }
 
         @Override
-        public AstCloseHttpResponseNodeBuilder.StreamNested<AcceptNested<R>> addCloseHttpResponseCommand() {
-            return new AstCloseHttpResponseNodeBuilder.StreamNested<AcceptNested<R>>(this);
-        }
-
-        @Override
-        public AstEndOfHttpHeadersNodeBuilder.StreamNested<AcceptNested<R>> addEndOfHeadersCommand() {
-            return new AstEndOfHttpHeadersNodeBuilder.StreamNested<AcceptNested<R>>(this);
+        public AstWriteCloseNodeBuilder.StreamNested<AcceptNested<R>> addWriteCloseCommand() {
+            return new AstWriteCloseNodeBuilder.StreamNested<AcceptNested<R>>(this);
         }
     }
 }

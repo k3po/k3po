@@ -19,16 +19,15 @@
 
 package org.kaazing.robot.driver.behavior.handler.codec;
 
-import static org.kaazing.robot.driver.util.Utils.byteArrayToString;
 import static org.jboss.netty.buffer.ChannelBuffers.buffer;
 import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
+import static org.kaazing.robot.driver.util.Utils.byteArrayToString;
 
 import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.lang.el.ExpressionContext;
 
 public class WriteExpressionEncoder implements MessageEncoder {
@@ -61,26 +60,6 @@ public class WriteExpressionEncoder implements MessageEncoder {
                 LOGGER.debug("Value of expression is null. Encoding as a 0 length buffer");
             }
             result = buffer(0);
-        }
-        return result;
-    }
-
-    @Override
-    public String encodeToString() {
-        final boolean isDebugEnabled = LOGGER.isDebugEnabled();
-        byte[] value = (byte[]) expression.getValue(context);
-        String result;
-        if (value == null) {
-            if (isDebugEnabled) {
-                LOGGER.debug("Value of expression is null. Encoding as a 0 length String");
-            }
-            result = new String();
-        } else {
-            result = new String(value);
-            if (isDebugEnabled) {
-                LOGGER.debug("Encoding expression results. " + value.length + " bytes. String: "
-                        + result);
-            }
         }
         return result;
     }

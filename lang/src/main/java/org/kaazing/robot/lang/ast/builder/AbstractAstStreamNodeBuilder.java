@@ -20,21 +20,14 @@
 package org.kaazing.robot.lang.ast.builder;
 
 import org.kaazing.robot.lang.ast.AstBoundNode;
-import org.kaazing.robot.lang.ast.AstCloseHttpRequestNode;
-import org.kaazing.robot.lang.ast.AstCloseHttpResponseNode;
 import org.kaazing.robot.lang.ast.AstCloseNode;
 import org.kaazing.robot.lang.ast.AstClosedNode;
 import org.kaazing.robot.lang.ast.AstConnectedNode;
 import org.kaazing.robot.lang.ast.AstDisconnectNode;
 import org.kaazing.robot.lang.ast.AstDisconnectedNode;
-import org.kaazing.robot.lang.ast.AstEndOfHttpHeadersNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
-import org.kaazing.robot.lang.ast.AstReadHttpHeaderNode;
-import org.kaazing.robot.lang.ast.AstReadHttpMethodNode;
-import org.kaazing.robot.lang.ast.AstReadHttpParameterNode;
-import org.kaazing.robot.lang.ast.AstReadHttpStatusNode;
-import org.kaazing.robot.lang.ast.AstReadHttpVersionNode;
+import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
@@ -42,15 +35,21 @@ import org.kaazing.robot.lang.ast.AstStreamNode;
 import org.kaazing.robot.lang.ast.AstUnbindNode;
 import org.kaazing.robot.lang.ast.AstUnboundNode;
 import org.kaazing.robot.lang.ast.AstWriteAwaitNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpContentLengthNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpHeaderNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpMethodNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpParameterNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpStatusNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpVersionNode;
+import org.kaazing.robot.lang.ast.AstWriteCloseNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpHeaderNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpMethodNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpParameterNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpStatusNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpVersionNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpContentLengthNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpHeaderNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpMethodNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpParameterNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpStatusNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpVersionNode;
 
 public abstract class AbstractAstStreamNodeBuilder<T extends AstStreamNode, R> extends AbstractAstNodeBuilder<T, R> {
 
@@ -136,14 +135,11 @@ public abstract class AbstractAstStreamNodeBuilder<T extends AstStreamNode, R> e
     public abstract AbstractAstStreamableNodeBuilder<AstWriteHttpStatusNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
         addWriteHttpStatusCommand();
 
-    public abstract AbstractAstStreamableNodeBuilder<AstCloseHttpRequestNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
-        addCloseHttpRequestCommand();
+    public abstract AbstractAstStreamableNodeBuilder<AstReadClosedNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
+        addReadCloseCommand();
 
-    public abstract AbstractAstStreamableNodeBuilder<AstCloseHttpResponseNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
-        addCloseHttpResponseCommand();
-
-    public abstract AbstractAstStreamableNodeBuilder<AstEndOfHttpHeadersNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
-        addEndOfHeadersCommand();
+    public abstract AbstractAstStreamableNodeBuilder<AstWriteCloseNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
+        addWriteCloseCommand();
 
     public abstract AbstractAstStreamableNodeBuilder<AstReadOptionNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
         addReadOption();

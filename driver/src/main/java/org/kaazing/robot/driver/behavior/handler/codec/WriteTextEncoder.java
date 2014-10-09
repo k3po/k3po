@@ -46,9 +46,4 @@ public class WriteTextEncoder implements MessageEncoder {
         }
         return copiedBuffer(text, charset);
     }
-
-    @Override
-    public String encodeToString() {
-        return text;
-    }
 }

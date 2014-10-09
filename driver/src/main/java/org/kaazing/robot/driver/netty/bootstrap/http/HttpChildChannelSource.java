@@ -21,8 +21,11 @@ package org.kaazing.robot.driver.netty.bootstrap.http;
 
 import static java.lang.String.format;
 import static org.jboss.netty.channel.Channels.fireChannelBound;
+import static org.jboss.netty.channel.Channels.fireChannelClosed;
 import static org.jboss.netty.channel.Channels.fireChannelConnected;
+import static org.jboss.netty.channel.Channels.fireChannelDisconnected;
 import static org.jboss.netty.channel.Channels.fireChannelOpen;
+import static org.jboss.netty.channel.Channels.fireChannelUnbound;
 import static org.jboss.netty.channel.Channels.fireExceptionCaught;
 import static org.jboss.netty.channel.Channels.fireMessageReceived;
 import static org.jboss.netty.channel.Channels.future;
@@ -31,7 +34,7 @@ import static org.jboss.netty.handler.codec.http.HttpHeaders.getHost;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.SWITCHING_PROTOCOLS;
 import static org.kaazing.robot.driver.channel.Channels.remoteAddress;
-import static org.kaazing.robot.driver.netty.channel.http.HttpChannels.fireHttpContentComplete;
+import static org.kaazing.robot.driver.netty.channel.Channels.fireInputShutdown;
 
 import java.net.URI;
 import java.util.Map.Entry;
@@ -51,10 +54,10 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
-import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.jboss.netty.handler.codec.http.QueryStringDecoder;
+import org.jboss.netty.handler.codec.http.QueryStringEncoder;
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
 
 public class HttpChildChannelSource extends HttpChannelHandler {
@@ -72,10 +75,24 @@ public class HttpChildChannelSource extends HttpChannelHandler {
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         HttpChildChannel httpChildChannel = this.httpChildChannel;
         if (httpChildChannel != null) {
-            ChannelException exception = new ChannelException("Channel closed unexpectedly");
-            exception.fillInStackTrace();
-            this.httpChildChannel = null;
-            fireExceptionCaught(httpChildChannel, exception);
+            switch (httpChildChannel.state()) {
+            case UPGRADED:
+            case CONTENT_CLOSE:
+                if (httpChildChannel.setClosed()) {
+                    fireChannelDisconnected(httpChildChannel);
+                    fireChannelUnbound(httpChildChannel);
+                    fireChannelClosed(httpChildChannel);
+                }
+                break;
+            case CONTENT_COMPLETE:
+                break;
+            default:
+                ChannelException exception = new ChannelException("Channel closed unexpectedly");
+                exception.fillInStackTrace();
+                this.httpChildChannel = null;
+                fireExceptionCaught(httpChildChannel, exception);
+                break;
+            }
         }
     }
 
@@ -110,12 +127,12 @@ public class HttpChildChannelSource extends HttpChannelHandler {
         HttpChannelConfig httpChildConfig = httpChildChannel.getConfig();
         httpChildConfig.setMethod(httpRequest.getMethod());
         httpChildConfig.setVersion(httpRequest.getProtocolVersion());
-        httpChildConfig.setReadHeaders(httpRequest.headers());
+        httpChildConfig.getReadHeaders().set(httpRequest.headers());
+        httpChildConfig.setReadQuery(new QueryStringDecoder(httpRequest.getUri()));
+        httpChildConfig.setWriteQuery(new QueryStringEncoder(httpRequest.getUri()));
         httpChildConfig.setStatus(HttpResponseStatus.OK);
 
-        if (httpRequest.isChunked()) {
-            this.httpChildChannel = httpChildChannel;
-        }
+        this.httpChildChannel = httpChildChannel;
 
         fireChannelOpen(httpChildChannel);
         fireChannelBound(httpChildChannel, httpLocalAddress);
@@ -126,8 +143,14 @@ public class HttpChildChannelSource extends HttpChannelHandler {
             fireMessageReceived(httpChildChannel, content);
         }
 
-        if (!httpRequest.isChunked()) {
-            fireHttpContentComplete(httpChildChannel);
+        // note: status may be set in reaction to one of the above events, such as CONNECTED
+        //       so defer status code check until this point
+        boolean hasMoreContent = httpRequest.isChunked() ||
+                httpChildConfig.getStatus().getCode() == SWITCHING_PROTOCOLS.getCode();
+
+        if (!hasMoreContent) {
+            fireInputShutdown(httpChildChannel);
+            this.httpChildChannel = null;
         }
     }
 
@@ -142,7 +165,7 @@ public class HttpChildChannelSource extends HttpChannelHandler {
         if (last) {
             HttpChildChannel httpChildChannel = this.httpChildChannel;
             this.httpChildChannel = null;
-            fireHttpContentComplete(httpChildChannel);
+            fireInputShutdown(httpChildChannel);
         }
     }
 
@@ -151,19 +174,6 @@ public class HttpChildChannelSource extends HttpChannelHandler {
         if (message.readable()) {
             // after 101 switching protocols
             fireMessageReceived(httpChildChannel, message);
-        }
-    }
-
-    @Override
-    protected void httpWriteRequested(ChannelHandlerContext ctx, MessageEvent e, HttpResponse message) throws Exception {
-        if (message.getStatus() == SWITCHING_PROTOCOLS) {
-            ChannelPipeline httpPipeline = ctx.getPipeline();
-            httpPipeline.remove(HttpRequestDecoder.class);
-            super.httpWriteRequested(ctx, e, message);
-            httpPipeline.remove(HttpRequestEncoder.class);
-        }
-        else {
-            super.httpWriteRequested(ctx, e, message);
         }
     }
 

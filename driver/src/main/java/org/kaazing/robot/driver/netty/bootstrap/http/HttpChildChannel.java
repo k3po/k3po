@@ -27,7 +27,7 @@ import org.kaazing.robot.driver.netty.bootstrap.channel.AbstractChannel;
 
 public class HttpChildChannel extends AbstractChannel<HttpChannelConfig> {
 
-    public enum HttpState { RESPONSE, CONTENT_CHUNKED, CONTENT_CLOSE, CONTENT_LENGTH, CONTENT_COMPLETE, UPGRADED }
+    public enum HttpState { RESPONSE, CONTENT_CHUNKED, CONTENT_CLOSE, CONTENT_BUFFERED, CONTENT_COMPLETE, UPGRADED }
 
     private HttpState state;
 

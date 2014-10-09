@@ -37,8 +37,6 @@ import org.kaazing.robot.lang.ast.AstBarrierNode;
 import org.kaazing.robot.lang.ast.AstBoundNode;
 import org.kaazing.robot.lang.ast.AstChildClosedNode;
 import org.kaazing.robot.lang.ast.AstChildOpenedNode;
-import org.kaazing.robot.lang.ast.AstCloseHttpRequestNode;
-import org.kaazing.robot.lang.ast.AstCloseHttpResponseNode;
 import org.kaazing.robot.lang.ast.AstCloseNode;
 import org.kaazing.robot.lang.ast.AstClosedNode;
 import org.kaazing.robot.lang.ast.AstCommandNode;
@@ -47,17 +45,15 @@ import org.kaazing.robot.lang.ast.AstConnectedNode;
 import org.kaazing.robot.lang.ast.AstDisconnectNode;
 import org.kaazing.robot.lang.ast.AstDisconnectedNode;
 import org.kaazing.robot.lang.ast.AstEventNode;
+import org.kaazing.robot.lang.ast.AstFlushNode;
 import org.kaazing.robot.lang.ast.AstNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
 import org.kaazing.robot.lang.ast.AstOptionNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
-import org.kaazing.robot.lang.ast.AstReadHttpHeaderNode;
-import org.kaazing.robot.lang.ast.AstReadHttpMethodNode;
-import org.kaazing.robot.lang.ast.AstReadHttpParameterNode;
-import org.kaazing.robot.lang.ast.AstReadHttpStatusNode;
-import org.kaazing.robot.lang.ast.AstReadHttpVersionNode;
+import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
+import org.kaazing.robot.lang.ast.AstReadResumedNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.AstStreamNode;
@@ -65,12 +61,7 @@ import org.kaazing.robot.lang.ast.AstStreamableNode;
 import org.kaazing.robot.lang.ast.AstUnbindNode;
 import org.kaazing.robot.lang.ast.AstUnboundNode;
 import org.kaazing.robot.lang.ast.AstWriteAwaitNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpContentLengthNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpHeaderNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpMethodNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpParameterNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpStatusNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpVersionNode;
+import org.kaazing.robot.lang.ast.AstWriteCloseNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
@@ -90,6 +81,17 @@ import org.kaazing.robot.lang.ast.value.AstLiteralBytesValue;
 import org.kaazing.robot.lang.ast.value.AstLiteralTextValue;
 import org.kaazing.robot.lang.ast.value.AstValue;
 import org.kaazing.robot.lang.el.ExpressionContext;
+import org.kaazing.robot.lang.http.ast.AstReadHttpHeaderNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpMethodNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpParameterNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpStatusNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpVersionNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpContentLengthNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpHeaderNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpMethodNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpParameterNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpStatusNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpVersionNode;
 import org.kaazing.robot.lang.parser.v2.RobotBaseVisitor;
 import org.kaazing.robot.lang.parser.v2.RobotParser;
 import org.kaazing.robot.lang.parser.v2.RobotParser.AcceptNodeContext;
@@ -98,8 +100,6 @@ import org.kaazing.robot.lang.parser.v2.RobotParser.BarrierNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.BoundNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ChildClosedNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ChildOpenedNodeContext;
-import org.kaazing.robot.lang.parser.v2.RobotParser.CloseHttpRequestNodeContext;
-import org.kaazing.robot.lang.parser.v2.RobotParser.CloseHttpResponseNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.CloseNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ClosedNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.CommandNodeContext;
@@ -113,12 +113,20 @@ import org.kaazing.robot.lang.parser.v2.RobotParser.ExactTextMatcherContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ExpressionMatcherContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ExpressionValueContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.FixedLengthBytesMatcherContext;
+import org.kaazing.robot.lang.parser.v2.RobotParser.FlushNodeContext;
+import org.kaazing.robot.lang.parser.v2.RobotParser.HttpAcceptedStreamableNodeContext;
+import org.kaazing.robot.lang.parser.v2.RobotParser.HttpConnectStreamableNodeContext;
+import org.kaazing.robot.lang.parser.v2.RobotParser.HttpRequestReadCloseNodeContext;
+import org.kaazing.robot.lang.parser.v2.RobotParser.HttpRequestWriteCloseNodeContext;
+import org.kaazing.robot.lang.parser.v2.RobotParser.HttpResponseReadCloseNodeContext;
+import org.kaazing.robot.lang.parser.v2.RobotParser.HttpResponseWriteCloseNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.LiteralBytesContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.LiteralTextContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.MatcherContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.OpenedNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.OptionNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadAwaitNodeContext;
+import org.kaazing.robot.lang.parser.v2.RobotParser.ReadClosedNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadHttpHeaderNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadHttpMethodNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadHttpParameterNodeContext;
@@ -127,6 +135,7 @@ import org.kaazing.robot.lang.parser.v2.RobotParser.ReadHttpVersionNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadNotifyNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadOptionNodeContext;
+import org.kaazing.robot.lang.parser.v2.RobotParser.ReadResumedNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.RegexMatcherContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ScriptNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ServerStreamableNodeContext;
@@ -136,6 +145,7 @@ import org.kaazing.robot.lang.parser.v2.RobotParser.UnbindNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.UnboundNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.VariableLengthBytesMatcherContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.WriteAwaitNodeContext;
+import org.kaazing.robot.lang.parser.v2.RobotParser.WriteCloseNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.WriteHttpContentLengthNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.WriteHttpHeaderNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.WriteHttpMethodNodeContext;
@@ -435,21 +445,66 @@ abstract class ScriptParseStrategy<T> {
         }
     };
 
-    public static final ScriptParseStrategy<AstCloseHttpRequestNode> CLOSE_HTTP_REQUEST = new ScriptParseStrategy<AstCloseHttpRequestNode>() {
+    public static final ScriptParseStrategy<AstReadClosedNode> HTTP_REQUEST_READ_CLOSE = new ScriptParseStrategy<AstReadClosedNode>() {
         @Override
-        public AstCloseHttpRequestNode parse(RobotParser parser,
-                                             ExpressionFactory elFactory,
-                                             ExpressionContext elContext) throws RecognitionException {
-            return new AstCloseHttpRequestNodeVisitor(elFactory, elContext).visit(parser.closeHttpRequestNode());
+        public AstReadClosedNode parse(RobotParser parser,
+                                      ExpressionFactory elFactory,
+                                      ExpressionContext elContext) throws RecognitionException {
+            return new AstReadClosedNodeVisitor(elFactory, elContext).visit(parser.httpRequestReadCloseNode());
         }
     };
 
-    public static final ScriptParseStrategy<AstCloseHttpResponseNode> CLOSE_HTTP_RESPONSE = new ScriptParseStrategy<AstCloseHttpResponseNode>() {
+    public static final ScriptParseStrategy<AstReadClosedNode> HTTP_RESPONSE_READ_CLOSE = new ScriptParseStrategy<AstReadClosedNode>() {
         @Override
-        public AstCloseHttpResponseNode parse(RobotParser parser,
+        public AstReadClosedNode parse(RobotParser parser,
+                                      ExpressionFactory elFactory,
+                                      ExpressionContext elContext) throws RecognitionException {
+            return new AstReadClosedNodeVisitor(elFactory, elContext).visit(parser.httpResponseReadCloseNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstWriteCloseNode> HTTP_REQUEST_WRITE_CLOSE = new ScriptParseStrategy<AstWriteCloseNode>() {
+        @Override
+        public AstWriteCloseNode parse(RobotParser parser,
                                               ExpressionFactory elFactory,
                                               ExpressionContext elContext) throws RecognitionException {
-            return new AstCloseHttpResponseNodeVisitor(elFactory, elContext).visit(parser.closeHttpResponseNode());
+            return new AstWriteCloseNodeVisitor(elFactory, elContext).visit(parser.httpRequestWriteCloseNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstWriteCloseNode> HTTP_RESPONSE_WRITE_CLOSE = new ScriptParseStrategy<AstWriteCloseNode>() {
+        @Override
+        public AstWriteCloseNode parse(RobotParser parser,
+                                              ExpressionFactory elFactory,
+                                              ExpressionContext elContext) throws RecognitionException {
+            return new AstWriteCloseNodeVisitor(elFactory, elContext).visit(parser.httpResponseWriteCloseNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstReadClosedNode> READ_CLOSED = new ScriptParseStrategy<AstReadClosedNode>() {
+        @Override
+        public AstReadClosedNode parse(RobotParser parser,
+                                             ExpressionFactory elFactory,
+                                             ExpressionContext elContext) throws RecognitionException {
+            return new AstReadClosedNodeVisitor(elFactory, elContext).visit(parser.readClosedNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstFlushNode> FLUSH = new ScriptParseStrategy<AstFlushNode>() {
+        @Override
+        public AstFlushNode parse(RobotParser parser,
+                                  ExpressionFactory elFactory,
+                                  ExpressionContext elContext) throws RecognitionException {
+            return new AstFlushNodeVisitor(elFactory, elContext).visit(parser.flushNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstWriteCloseNode> WRITE_CLOSE = new ScriptParseStrategy<AstWriteCloseNode>() {
+        @Override
+        public AstWriteCloseNode parse(RobotParser parser,
+                                              ExpressionFactory elFactory,
+                                              ExpressionContext elContext) throws RecognitionException {
+            return new AstWriteCloseNodeVisitor(elFactory, elContext).visit(parser.writeCloseNode());
         }
     };
 
@@ -722,6 +777,14 @@ abstract class ScriptParseStrategy<T> {
             return node;
         }
 
+        @Override
+        public AstAcceptableNode visitHttpAcceptedStreamableNode(HttpAcceptedStreamableNodeContext ctx) {
+            AstStreamableNodeVisitor visitor = new AstStreamableNodeVisitor(elFactory, elContext);
+            AstStreamableNode streamable = visitor.visitHttpAcceptedStreamableNode(ctx);
+            node.getStreamables().add(streamable);
+            return node;
+        }
+
     }
 
     private static class AstConnectNodeVisitor extends AstNodeVisitor<AstConnectNode> {
@@ -743,6 +806,14 @@ abstract class ScriptParseStrategy<T> {
         public AstConnectNode visitStreamableNode(StreamableNodeContext ctx) {
             AstStreamableNodeVisitor visitor = new AstStreamableNodeVisitor(elFactory, elContext);
             AstStreamableNode streamable = visitor.visitStreamableNode(ctx);
+            node.getStreamables().add(streamable);
+            return node;
+        }
+
+        @Override
+        public AstConnectNode visitHttpConnectStreamableNode(HttpConnectStreamableNodeContext ctx) {
+            AstStreamableNodeVisitor visitor = new AstStreamableNodeVisitor(elFactory, elContext);
+            AstStreamableNode streamable = visitor.visitHttpConnectStreamableNode(ctx);
             node.getStreamables().add(streamable);
             return node;
         }
@@ -773,7 +844,36 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstOptionNode visitOptionNode(OptionNodeContext ctx) {
             return new AstOptionNodeVisitor(elFactory, elContext).visitOptionNode(ctx);
+        }
 
+        // HTTP StreamableNode
+
+        @Override
+        public AstStreamableNode visitHttpRequestReadCloseNode(HttpRequestReadCloseNodeContext ctx) {
+            node = new AstReadClosedNode();
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            return node;
+        }
+
+        @Override
+        public AstStreamableNode visitHttpRequestWriteCloseNode(HttpRequestWriteCloseNodeContext ctx) {
+            node = new AstWriteCloseNode();
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            return node;
+        }
+
+        @Override
+        public AstStreamableNode visitHttpResponseReadCloseNode(HttpResponseReadCloseNodeContext ctx) {
+            node = new AstReadClosedNode();
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            return node;
+        }
+
+        @Override
+        public AstStreamableNode visitHttpResponseWriteCloseNode(HttpResponseWriteCloseNodeContext ctx) {
+            node = new AstWriteCloseNode();
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            return node;
         }
     }
 
@@ -879,11 +979,31 @@ abstract class ScriptParseStrategy<T> {
         }
 
         @Override
+        public AstReadResumedNode visitReadResumedNode(ReadResumedNodeContext ctx) {
+            return new AstReadResumedNodeVisitor(elFactory, elContext).visitReadResumedNode(ctx);
+        }
+
+        @Override
+        public AstReadClosedNode visitReadClosedNode(ReadClosedNodeContext ctx) {
+            return new AstReadClosedNodeVisitor(elFactory, elContext).visitReadClosedNode(ctx);
+        }
+
+        @Override
         public AstUnboundNode visitUnboundNode(UnboundNodeContext ctx) {
             return new AstUnboundNodeVisitor(elFactory, elContext).visitUnboundNode(ctx);
         }
 
         // HTTP events
+
+        @Override
+        public AstReadClosedNode visitHttpRequestReadCloseNode(HttpRequestReadCloseNodeContext ctx) {
+            return new AstReadClosedNodeVisitor(elFactory, elContext).visitHttpRequestReadCloseNode(ctx);
+        }
+
+        @Override
+        public AstReadClosedNode visitHttpResponseReadCloseNode(HttpResponseReadCloseNodeContext ctx) {
+            return new AstReadClosedNodeVisitor(elFactory, elContext).visitHttpResponseReadCloseNode(ctx);
+        }
 
         @Override
         public AstReadHttpHeaderNode visitReadHttpHeaderNode(ReadHttpHeaderNodeContext ctx) {
@@ -924,8 +1044,18 @@ abstract class ScriptParseStrategy<T> {
         }
 
         @Override
+        public AstFlushNode visitFlushNode(FlushNodeContext ctx) {
+            return new AstFlushNodeVisitor(elFactory, elContext).visitFlushNode(ctx);
+        }
+
+        @Override
         public AstWriteValueNode visitWriteNode(WriteNodeContext ctx) {
             return new AstWriteValueNodeVisitor(elFactory, elContext).visitWriteNode(ctx);
+        }
+
+        @Override
+        public AstWriteCloseNode visitWriteCloseNode(WriteCloseNodeContext ctx) {
+            return new AstWriteCloseNodeVisitor(elFactory, elContext).visitWriteCloseNode(ctx);
         }
 
         @Override
@@ -934,6 +1064,16 @@ abstract class ScriptParseStrategy<T> {
         }
 
         // HTTP commands
+
+        @Override
+        public AstWriteCloseNode visitHttpRequestWriteCloseNode(HttpRequestWriteCloseNodeContext ctx) {
+            return new AstWriteCloseNodeVisitor(elFactory, elContext).visitHttpRequestWriteCloseNode(ctx);
+        }
+
+        @Override
+        public AstWriteCloseNode visitHttpResponseWriteCloseNode(HttpResponseWriteCloseNodeContext ctx) {
+            return new AstWriteCloseNodeVisitor(elFactory, elContext).visitHttpResponseWriteCloseNode(ctx);
+        }
 
         @Override
         public AstWriteHttpHeaderNode visitWriteHttpHeaderNode(WriteHttpHeaderNodeContext ctx) {
@@ -963,16 +1103,6 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstWriteHttpStatusNode visitWriteHttpStatusNode(WriteHttpStatusNodeContext ctx) {
             return new AstWriteHttpStatusNodeVisitor(elFactory, elContext).visitWriteHttpStatusNode(ctx);
-        }
-
-        @Override
-        public AstCloseHttpRequestNode visitCloseHttpRequestNode(CloseHttpRequestNodeContext ctx) {
-            return new AstCloseHttpRequestNodeVisitor(elFactory, elContext).visitCloseHttpRequestNode(ctx);
-        }
-
-        @Override
-        public AstCloseHttpResponseNode visitCloseHttpResponseNode(CloseHttpResponseNodeContext ctx) {
-            return new AstCloseHttpResponseNodeVisitor(elFactory, elContext).visitCloseHttpResponseNode(ctx);
         }
 
     }
@@ -1189,6 +1319,21 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstUnboundNode visitUnboundNode(UnboundNodeContext ctx) {
             node = new AstUnboundNode();
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            return node;
+        }
+
+    }
+
+    private static class AstReadResumedNodeVisitor extends AstNodeVisitor<AstReadResumedNode> {
+
+        public AstReadResumedNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+            super(elFactory, elContext);
+        }
+
+        @Override
+        public AstReadResumedNode visitReadResumedNode(ReadResumedNodeContext ctx) {
+            node = new AstReadResumedNode();
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
@@ -1590,7 +1735,7 @@ abstract class ScriptParseStrategy<T> {
         public AstReadHttpParameterNode visitReadHttpParameterNode(ReadHttpParameterNodeContext ctx) {
             node = new AstReadHttpParameterNode();
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.setKey(new AstLiteralTextValueVisitor(elFactory, elContext).visit(ctx.name));
+            node.setName(new AstLiteralTextValueVisitor(elFactory, elContext).visit(ctx.name));
             node.setValue(new AstValueMatcherVisitor(elFactory, elContext).visit(ctx.value));
             return node;
         }
@@ -1607,7 +1752,7 @@ abstract class ScriptParseStrategy<T> {
         public AstWriteHttpParameterNode visitWriteHttpParameterNode(WriteHttpParameterNodeContext ctx) {
             node = new AstWriteHttpParameterNode();
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.setKey(new AstValueVisitor(elFactory, elContext).visit(ctx.name));
+            node.setName(new AstValueVisitor(elFactory, elContext).visit(ctx.name));
             node.setValue(new AstValueVisitor(elFactory, elContext).visit(ctx.value));
             return node;
         }
@@ -1680,30 +1825,73 @@ abstract class ScriptParseStrategy<T> {
 
     }
 
-    private static class AstCloseHttpRequestNodeVisitor extends AstNodeVisitor<AstCloseHttpRequestNode> {
+    private static class AstReadClosedNodeVisitor extends AstNodeVisitor<AstReadClosedNode> {
 
-        public AstCloseHttpRequestNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+        public AstReadClosedNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
             super(elFactory, elContext);
         }
 
         @Override
-        public AstCloseHttpRequestNode visitCloseHttpRequestNode(CloseHttpRequestNodeContext ctx) {
-            node = new AstCloseHttpRequestNode();
+        public AstReadClosedNode visitHttpRequestReadCloseNode(HttpRequestReadCloseNodeContext ctx) {
+            node = new AstReadClosedNode();
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            return node;
+        }
+
+        @Override
+        public AstReadClosedNode visitHttpResponseReadCloseNode(HttpResponseReadCloseNodeContext ctx) {
+            node = new AstReadClosedNode();
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            return node;
+        }
+
+        @Override
+        public AstReadClosedNode visitReadClosedNode(ReadClosedNodeContext ctx) {
+            node = new AstReadClosedNode();
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
 
     }
 
-    private static class AstCloseHttpResponseNodeVisitor extends AstNodeVisitor<AstCloseHttpResponseNode> {
+    private static class AstWriteCloseNodeVisitor extends AstNodeVisitor<AstWriteCloseNode> {
 
-        public AstCloseHttpResponseNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+        public AstWriteCloseNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
             super(elFactory, elContext);
         }
 
         @Override
-        public AstCloseHttpResponseNode visitCloseHttpResponseNode(CloseHttpResponseNodeContext ctx) {
-            node = new AstCloseHttpResponseNode();
+        public AstWriteCloseNode visitHttpRequestWriteCloseNode(HttpRequestWriteCloseNodeContext ctx) {
+            node = new AstWriteCloseNode();
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            return node;
+        }
+
+        @Override
+        public AstWriteCloseNode visitHttpResponseWriteCloseNode(HttpResponseWriteCloseNodeContext ctx) {
+            node = new AstWriteCloseNode();
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            return node;
+        }
+
+        @Override
+        public AstWriteCloseNode visitWriteCloseNode(WriteCloseNodeContext ctx) {
+            node = new AstWriteCloseNode();
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            return node;
+        }
+
+    }
+
+    private static class AstFlushNodeVisitor extends AstNodeVisitor<AstFlushNode> {
+
+        public AstFlushNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+            super(elFactory, elContext);
+        }
+
+        @Override
+        public AstFlushNode visitFlushNode(FlushNodeContext ctx) {
+            node = new AstFlushNode();
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }

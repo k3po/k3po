@@ -19,14 +19,14 @@
 
 package org.kaazing.robot.lang.parser;
 
-import static org.kaazing.robot.lang.parser.ScriptParseStrategy.CLOSE_HTTP_REQUEST;
-import static org.kaazing.robot.lang.parser.ScriptParseStrategy.CLOSE_HTTP_RESPONSE;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_CLOSED;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_HEADER;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_METHOD;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_PARAMETER;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_STATUS;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_VERSION;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.SCRIPT;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_CLOSE;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_CONTENT_LENGTH;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_HEADER;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_METHOD;
@@ -34,40 +34,38 @@ import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_PARAM
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_STATUS;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_VERSION;
 import static org.kaazing.robot.lang.test.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
 
 import org.junit.Test;
-import org.kaazing.robot.lang.ast.AstCloseHttpRequestNode;
-import org.kaazing.robot.lang.ast.AstCloseHttpResponseNode;
-import org.kaazing.robot.lang.ast.AstReadHttpHeaderNode;
-import org.kaazing.robot.lang.ast.AstReadHttpMethodNode;
-import org.kaazing.robot.lang.ast.AstReadHttpParameterNode;
-import org.kaazing.robot.lang.ast.AstReadHttpStatusNode;
-import org.kaazing.robot.lang.ast.AstReadHttpVersionNode;
+import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpContentLengthNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpHeaderNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpMethodNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpParameterNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpStatusNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpVersionNode;
-import org.kaazing.robot.lang.ast.builder.AstCloseHttpRequestNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstCloseHttpResponseNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstReadHttpHeaderNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstReadHttpMethodNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstReadHttpParameterNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstReadHttpStatusNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstReadHttpVersionNodeBuilder;
+import org.kaazing.robot.lang.ast.AstWriteCloseNode;
+import org.kaazing.robot.lang.ast.builder.AstReadClosedNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstScriptNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstWriteHttpContentLengthNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstWriteHttpHeaderNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstWriteHttpMethodNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstWriteHttpParameterNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstWriteHttpStatusNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstWriteHttpVersionNodeBuilder;
-import org.kaazing.robot.lang.parser.ScriptParserImpl;
+import org.kaazing.robot.lang.ast.builder.AstWriteCloseNodeBuilder;
+import org.kaazing.robot.lang.http.ast.AstReadHttpHeaderNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpMethodNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpParameterNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpStatusNode;
+import org.kaazing.robot.lang.http.ast.AstReadHttpVersionNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpContentLengthNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpHeaderNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpMethodNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpParameterNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpStatusNode;
+import org.kaazing.robot.lang.http.ast.AstWriteHttpVersionNode;
+import org.kaazing.robot.lang.http.ast.builder.AstReadHttpHeaderNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstReadHttpMethodNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstReadHttpParameterNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstReadHttpStatusNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstReadHttpVersionNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpContentLengthNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpHeaderNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpMethodNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpParameterNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpStatusNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpVersionNodeBuilder;
 
 public class HttpScriptParserTest {
 
@@ -275,15 +273,15 @@ public class HttpScriptParserTest {
     }
 
     @Test
-    public void shouldParseCloseRequest() throws Exception {
+    public void shouldParseReadClose() throws Exception {
 
-        String scriptFragment = "close request";
+        String scriptFragment = "read closed";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstCloseHttpRequestNode actual = parser.parseWithStrategy(scriptFragment, CLOSE_HTTP_REQUEST);
+        AstReadClosedNode actual = parser.parseWithStrategy(scriptFragment, READ_CLOSED);
 
         // @formatter:off
-        AstCloseHttpRequestNode expected = new AstCloseHttpRequestNodeBuilder()
+        AstReadClosedNode expected = new AstReadClosedNodeBuilder()
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -292,15 +290,15 @@ public class HttpScriptParserTest {
     }
 
     @Test
-    public void shouldParseCloseResponse() throws Exception {
+    public void shouldParseWriteClose() throws Exception {
 
-        String scriptFragment = "close response";
+        String scriptFragment = "write close";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstCloseHttpResponseNode actual = parser.parseWithStrategy(scriptFragment, CLOSE_HTTP_RESPONSE);
+        AstWriteCloseNode actual = parser.parseWithStrategy(scriptFragment, WRITE_CLOSE);
 
         // @formatter:off
-        AstCloseHttpResponseNode expected = new AstCloseHttpResponseNodeBuilder()
+        AstWriteCloseNode expected = new AstWriteCloseNodeBuilder()
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -317,11 +315,11 @@ public class HttpScriptParserTest {
              "read method \"get\"\n" +
              "read parameter \".kl\" \"y\"\n" +
              "read header \"Upgrade\" \"websocket\"\n" +
-             "close request\n" +
+             "read [0x82]\n" +
+             "read closed\n" +
              "write status \"101\" \"Switching Protocols\"\n" +
              "write header \"upgrade\" \"websocket\"\n" +
-             "close response \n" +
-             "read [0x82]\n" +
+             "write close \n" +
              "close\n" +
              "closed\n";
          // @formatter:on
@@ -351,7 +349,11 @@ public class HttpScriptParserTest {
                      .setValueExactText("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addCloseHttpRequestCommand()
+                 .addReadEvent()
+                     .addExactBytes(new byte[] {(byte) 0x82})
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addReadCloseCommand()
                      .setNextLineInfo(1, 0)
                  .done()
                  .addWriteHttpStatusCommand()
@@ -364,11 +366,7 @@ public class HttpScriptParserTest {
                      .setValueExactText("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addCloseHttpResponseCommand()
-                     .setNextLineInfo(1, 0)
-                 .done()
-                 .addReadEvent()
-                     .addExactBytes(new byte[] {(byte) 0x82})
+                 .addWriteCloseCommand()
                      .setNextLineInfo(1, 0)
                  .done()
                  .addCloseCommand()
@@ -392,10 +390,10 @@ public class HttpScriptParserTest {
              "write method \"get\"\n" +
              "write parameter \".kl\" \"y\"\n" +
              "write header \"Upgrade\" \"websocket\"\n" +
-             "close request\n" +
+             "write close\n" +
              "read status \"101\" \"Switching Protocols\"\n" +
              "read header \"upgrade\" \"websocket\"\n" +
-             "close response \n" +
+             "read closed \n" +
              "write [0x82]\n" +
              "close\n" +
              "closed\n";
@@ -426,7 +424,7 @@ public class HttpScriptParserTest {
                      .setValueExactText("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addCloseHttpRequestCommand()
+                 .addWriteCloseCommand()
                      .setNextLineInfo(1, 0)
                  .done()
                  .addReadHttpStatusEvent()
@@ -439,7 +437,7 @@ public class HttpScriptParserTest {
                      .setValueExactText("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addCloseHttpResponseCommand()
+                 .addReadCloseCommand()
                      .setNextLineInfo(1, 0)
                  .done()
                  .addWriteCommand()
@@ -465,11 +463,11 @@ public class HttpScriptParserTest {
              "accept http://somehost:8000/path\n" +
              "accepted\n" +
              "read method \"get\"\n" +
-             "close request\n" +
+             "read closed\n" +
              "write status \"200\" \"OK\"\n" +
              "write content-length\n" +
              "write \"some content\"\n" +
-             "close response \n";
+             "write close \n";
          // @formatter:on
 
          ScriptParserImpl parser = new ScriptParserImpl();
@@ -487,7 +485,7 @@ public class HttpScriptParserTest {
                      .setExactText("get")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addCloseHttpRequestCommand()
+                 .addReadCloseCommand()
                      .setNextLineInfo(1, 0)
                  .done()
                  .addWriteHttpStatusCommand()
@@ -502,7 +500,7 @@ public class HttpScriptParserTest {
                      .addExactText("some content")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addCloseHttpResponseCommand()
+                 .addWriteCloseCommand()
                      .setNextLineInfo(1, 0)
                  .done()
              .done()

@@ -2,7 +2,7 @@
 # Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
 #
 
-accept http://localhost:8000
+accept http://localhost:8000/
 accepted
 connected
 read method "GET"

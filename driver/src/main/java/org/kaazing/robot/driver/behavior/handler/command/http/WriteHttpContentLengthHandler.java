@@ -20,22 +20,16 @@
 package org.kaazing.robot.driver.behavior.handler.command.http;
 
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.http.HttpHeaders;
-import org.jboss.netty.handler.codec.http.HttpMessage;
-
 import org.kaazing.robot.driver.behavior.handler.command.AbstractCommandHandler;
+import org.kaazing.robot.driver.netty.bootstrap.http.HttpChannelConfig;
 
 public class WriteHttpContentLengthHandler extends AbstractCommandHandler {
 
-    private HttpMessage httpMessage;
-
-    public WriteHttpContentLengthHandler(HttpMessage httpMessage) {
-        this.httpMessage = httpMessage;
-    }
-
     @Override
-    protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
-        HttpHeaders.setContentLength(httpMessage, 0);
+    protected void invokeCommand(ChannelHandlerContext ctx) {
+        HttpChannelConfig httpConfig = (HttpChannelConfig) ctx.getChannel().getConfig();
+        // TODO: configure?
+        httpConfig.setMaximumBufferedContentLength(8192);
         getHandlerFuture().setSuccess();
     }
 }

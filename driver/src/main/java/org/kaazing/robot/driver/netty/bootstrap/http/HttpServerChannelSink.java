@@ -160,18 +160,20 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
             }
 
             Channel transport = closeHttpChannel.getTransport();
-            transport.close().addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture future) throws Exception {
-                    if (future.isSuccess()) {
-                        fireChannelClosed(closeHttpChannel);
-                        closeHttpFuture.setSuccess();
+            if (transport != null) {
+                transport.close().addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        if (future.isSuccess()) {
+                            fireChannelClosed(closeHttpChannel);
+                            closeHttpFuture.setSuccess();
+                        }
+                        else {
+                            closeHttpFuture.setFailure(future.getCause());
+                        }
                     }
-                    else {
-                        closeHttpFuture.setFailure(future.getCause());
-                    }
-                }
-            });
+                });
+            }
         }
     }
 

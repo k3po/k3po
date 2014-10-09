@@ -23,6 +23,17 @@ import java.net.URI;
 
 import org.kaazing.robot.lang.ast.AstConnectNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
+import org.kaazing.robot.lang.http.ast.builder.AstReadHttpHeaderNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstReadHttpMethodNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstReadHttpParameterNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstReadHttpStatusNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstReadHttpVersionNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpContentLengthNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpHeaderNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpMethodNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpParameterNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpStatusNodeBuilder;
+import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpVersionNodeBuilder;
 
 public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<AstConnectNode> {
 
@@ -192,18 +203,13 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
     }
 
     @Override
-    public AstCloseHttpRequestNodeBuilder.StreamNested<AstConnectNodeBuilder> addCloseHttpRequestCommand() {
-        return new AstCloseHttpRequestNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
+    public AstReadClosedNodeBuilder.StreamNested<AstConnectNodeBuilder> addReadCloseCommand() {
+        return new AstReadClosedNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
     }
 
     @Override
-    public AstCloseHttpResponseNodeBuilder.StreamNested<AstConnectNodeBuilder> addCloseHttpResponseCommand() {
-        return new AstCloseHttpResponseNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
-    }
-
-    @Override
-    public AstEndOfHttpHeadersNodeBuilder.StreamNested<AstConnectNodeBuilder> addEndOfHeadersCommand() {
-        return new AstEndOfHttpHeadersNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
+    public AstWriteCloseNodeBuilder.StreamNested<AstConnectNodeBuilder> addWriteCloseCommand() {
+        return new AstWriteCloseNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
     }
 
     @Override
@@ -382,18 +388,13 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         }
 
         @Override
-        public AstCloseHttpRequestNodeBuilder.StreamNested<ScriptNested<R>> addCloseHttpRequestCommand() {
-            return new AstCloseHttpRequestNodeBuilder.StreamNested<ScriptNested<R>>(this);
+        public AstReadClosedNodeBuilder.StreamNested<ScriptNested<R>> addReadCloseCommand() {
+            return new AstReadClosedNodeBuilder.StreamNested<ScriptNested<R>>(this);
         }
 
         @Override
-        public AstCloseHttpResponseNodeBuilder.StreamNested<ScriptNested<R>> addCloseHttpResponseCommand() {
-            return new AstCloseHttpResponseNodeBuilder.StreamNested<ScriptNested<R>>(this);
-        }
-
-        @Override
-        public AstEndOfHttpHeadersNodeBuilder.StreamNested<ScriptNested<R>> addEndOfHeadersCommand() {
-            return new AstEndOfHttpHeadersNodeBuilder.StreamNested<ScriptNested<R>>(this);
+        public AstWriteCloseNodeBuilder.StreamNested<ScriptNested<R>> addWriteCloseCommand() {
+            return new AstWriteCloseNodeBuilder.StreamNested<ScriptNested<R>>(this);
         }
 
         @Override
