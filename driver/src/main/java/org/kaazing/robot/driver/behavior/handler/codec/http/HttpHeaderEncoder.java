@@ -17,33 +17,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.driver.behavior.handler.command.http;
+package org.kaazing.robot.driver.behavior.handler.codec.http;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
-import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
+import org.kaazing.robot.driver.behavior.handler.codec.ConfigEncoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageEncoder;
-import org.kaazing.robot.driver.behavior.handler.command.AbstractCommandHandler;
 import org.kaazing.robot.driver.netty.bootstrap.http.HttpChannelConfig;
 
-public class WriteHttpHeaderHandler extends AbstractCommandHandler {
+public class HttpHeaderEncoder implements ConfigEncoder {
 
     private final MessageEncoder nameEncoder;
     private final MessageEncoder valueEncoder;
 
-    public WriteHttpHeaderHandler(MessageEncoder nameEncoder, MessageEncoder valueEncoder) {
+    public HttpHeaderEncoder(MessageEncoder nameEncoder, MessageEncoder valueEncoder) {
         this.nameEncoder = nameEncoder;
         this.valueEncoder = valueEncoder;
     }
 
-    protected void invokeCommand(ChannelHandlerContext ctx) {
-        HttpChannelConfig httpConfig = (HttpChannelConfig) ctx.getChannel().getConfig();
+    @Override
+    public void encode(Channel channel) throws Exception {
+        HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
         String headerName = nameEncoder.encode().toString(US_ASCII);
         String headerValue = valueEncoder.encode().toString(US_ASCII);
 
         HttpHeaders writeHeaders = httpConfig.getWriteHeaders();
         writeHeaders.add(headerName, headerValue);
-        getHandlerFuture().setSuccess();
     }
 }

@@ -17,30 +17,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.driver.behavior.handler.command.http;
+package org.kaazing.robot.driver.behavior.handler.codec.http;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.http.HttpVersion;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.kaazing.robot.driver.behavior.handler.codec.ConfigEncoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageEncoder;
-import org.kaazing.robot.driver.behavior.handler.command.AbstractCommandHandler;
 import org.kaazing.robot.driver.netty.bootstrap.http.HttpChannelConfig;
 
-public class WriteHttpVersionHandler extends AbstractCommandHandler {
+public class HttpStatusEncoder implements ConfigEncoder {
 
-    private MessageEncoder versionEncoder;
+    private final MessageEncoder codeEncoder;
+    private final MessageEncoder reasonEncoder;
 
-    public WriteHttpVersionHandler(MessageEncoder versionEncoder) {
-        this.versionEncoder = versionEncoder;
+    public HttpStatusEncoder(MessageEncoder codeEncoder, MessageEncoder reasonEncoder) {
+        this.codeEncoder = codeEncoder;
+        this.reasonEncoder = reasonEncoder;
     }
 
     @Override
-    protected void invokeCommand(ChannelHandlerContext ctx) {
-        HttpChannelConfig httpConfig = (HttpChannelConfig) ctx.getChannel().getConfig();
-        String versionName = versionEncoder.encode().toString(US_ASCII);
-        HttpVersion version = HttpVersion.valueOf(versionName);
-        httpConfig.setVersion(version);
+    public void encode(Channel channel) throws Exception {
+        HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
+        int code = Integer.parseInt(codeEncoder.encode().toString(US_ASCII));
+        String reason = reasonEncoder.encode().toString(US_ASCII);
+        HttpResponseStatus status = new HttpResponseStatus(code, reason);
+        httpConfig.setStatus(status);
     }
 
 }

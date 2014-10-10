@@ -17,30 +17,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.driver.behavior.handler.command.http;
+package org.kaazing.robot.driver.behavior.handler.codec.http;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
-import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.kaazing.robot.driver.behavior.handler.codec.ConfigEncoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageEncoder;
-import org.kaazing.robot.driver.behavior.handler.command.AbstractCommandHandler;
 import org.kaazing.robot.driver.netty.bootstrap.http.HttpChannelConfig;
 
-public class WriteHttpMethodHandler extends AbstractCommandHandler {
+public class HttpMethodEncoder implements ConfigEncoder {
 
     private final MessageEncoder methodEncoder;
 
-    public WriteHttpMethodHandler(MessageEncoder methodEncoder) {
+    public HttpMethodEncoder(MessageEncoder methodEncoder) {
         this.methodEncoder = methodEncoder;
     }
 
-    protected void invokeCommand(ChannelHandlerContext ctx) {
-        HttpChannelConfig httpConfig = (HttpChannelConfig) ctx.getChannel().getConfig();
+    @Override
+    public void encode(Channel channel) throws Exception {
+        HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
         String methodName = methodEncoder.encode().toString(US_ASCII);
         HttpMethod method = HttpMethod.valueOf(methodName);
         httpConfig.setMethod(method);
-        getHandlerFuture().setSuccess();
     }
 
 }

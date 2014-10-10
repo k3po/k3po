@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.driver.behavior.handler.event.http;
+package org.kaazing.robot.driver.behavior.handler.codec.http;
 
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
@@ -25,26 +25,26 @@ import static org.jboss.netty.util.CharsetUtil.UTF_8;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
+import org.kaazing.robot.driver.behavior.handler.codec.ConfigDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageMismatchException;
-import org.kaazing.robot.driver.behavior.handler.command.AbstractCommandHandler;
 import org.kaazing.robot.driver.netty.bootstrap.http.HttpChannelConfig;
 
-public class ReadHttpHeaderHandler extends AbstractCommandHandler {
+public class HttpHeaderDecoder implements ConfigDecoder {
 
     private String name;
     private MessageDecoder valueDecoder;
 
-    public ReadHttpHeaderHandler(String name, MessageDecoder valueDecoder) {
+    public HttpHeaderDecoder(String name, MessageDecoder valueDecoder) {
         this.name = name;
         this.valueDecoder = valueDecoder;
     }
 
     @Override
-    protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
-        HttpChannelConfig httpConfig = (HttpChannelConfig) ctx.getChannel().getConfig();
+    public void decode(Channel channel) throws Exception {
+        HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
         HttpHeaders headers = httpConfig.getReadHeaders();
         List<String> headerValues = headers.getAll(name);
         int headerValueCount = headerValues.size();
@@ -53,14 +53,8 @@ public class ReadHttpHeaderHandler extends AbstractCommandHandler {
         }
         else if (headerValueCount == 1) {
             // efficiently handle single-valued HTTP header
-            try {
-                String headerValue = headerValues.get(0);
-                valueDecoder.decode(copiedBuffer(headerValue, UTF_8));
-                getHandlerFuture().setSuccess();
-            }
-            catch (Exception e) {
-                getHandlerFuture().setFailure(e);
-            }
+            String headerValue = headerValues.get(0);
+            valueDecoder.decode(copiedBuffer(headerValue, UTF_8));
         }
         else {
             // attempt to match each HTTP header value with decoder

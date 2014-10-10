@@ -17,44 +17,43 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.driver.behavior.handler.command.http;
+package org.kaazing.robot.driver.behavior.handler.codec.http;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.kaazing.robot.driver.channel.Channels.remoteAddress;
 
 import java.net.URI;
 
-import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.QueryStringEncoder;
+import org.kaazing.robot.driver.behavior.handler.codec.ConfigEncoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageEncoder;
-import org.kaazing.robot.driver.behavior.handler.command.AbstractCommandHandler;
 import org.kaazing.robot.driver.netty.bootstrap.http.HttpChannelConfig;
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
 
-public class WriteHttpParameterHandler extends AbstractCommandHandler {
+public class HttpParameterEncoder implements ConfigEncoder {
 
     private final MessageEncoder nameEncoder;
     private final MessageEncoder valueEncoder;
 
-    public WriteHttpParameterHandler(MessageEncoder nameEncoder, MessageEncoder valueEncoder) {
+    public HttpParameterEncoder(MessageEncoder nameEncoder, MessageEncoder valueEncoder) {
         this.nameEncoder = nameEncoder;
         this.valueEncoder = valueEncoder;
     }
 
     @Override
-    protected void invokeCommand(ChannelHandlerContext ctx) {
-        HttpChannelConfig httpConfig = (HttpChannelConfig) ctx.getChannel().getConfig();
+    public void encode(Channel channel) throws Exception {
+        HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
         String paramName = nameEncoder.encode().toString(US_ASCII);
         String paramValue = valueEncoder.encode().toString(US_ASCII);
 
         QueryStringEncoder query = httpConfig.getWriteQuery();
         if (query == null) {
-            ChannelAddress remoteAddress = remoteAddress(ctx.getChannel());
+            ChannelAddress remoteAddress = remoteAddress(channel);
             URI httpRemoteURI = remoteAddress.getLocation();
             query = new QueryStringEncoder(httpRemoteURI.toString());
         }
         query.addParam(paramName, paramValue);
-        getHandlerFuture().setSuccess();
     }
 
 }

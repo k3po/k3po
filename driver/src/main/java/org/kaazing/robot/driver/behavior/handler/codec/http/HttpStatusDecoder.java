@@ -17,45 +17,39 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.driver.behavior.handler.event.http;
+package org.kaazing.robot.driver.behavior.handler.codec.http;
 
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.kaazing.robot.driver.behavior.handler.codec.ConfigDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageDecoder;
-import org.kaazing.robot.driver.behavior.handler.command.AbstractCommandHandler;
 import org.kaazing.robot.driver.netty.bootstrap.http.HttpChannelConfig;
 
-public class ReadHttpStatusHandler extends AbstractCommandHandler {
+public class HttpStatusDecoder implements ConfigDecoder {
 
     private final MessageDecoder codeDecoder;
     private final MessageDecoder reasonDecoder;
 
-    public ReadHttpStatusHandler(MessageDecoder codeDecoder, MessageDecoder reasonDecoder) {
+    public HttpStatusDecoder(MessageDecoder codeDecoder, MessageDecoder reasonDecoder) {
         this.codeDecoder = codeDecoder;
         this.reasonDecoder = reasonDecoder;
     }
 
     @Override
-    protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
-        HttpChannelConfig httpConfig = (HttpChannelConfig) ctx.getChannel().getConfig();
+    public void decode(Channel channel) throws Exception {
+        HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
         HttpResponseStatus status = httpConfig.getStatus();
         String code = Integer.toString(status.getCode());
         String reason = status.getReasonPhrase();
 
-        try {
-            ChannelBuffer buffer = copiedBuffer(code, UTF_8);
-            codeDecoder.decode(buffer);
-            buffer = copiedBuffer(reason, UTF_8);
-            reasonDecoder.decode(buffer);
-            getHandlerFuture().setSuccess();
-        }
-        catch (Exception e) {
-            getHandlerFuture().setFailure(e);
-        }
+        ChannelBuffer buffer = copiedBuffer(code, UTF_8);
+        codeDecoder.decode(buffer);
+        buffer = copiedBuffer(reason, UTF_8);
+        reasonDecoder.decode(buffer);
     }
 
 }

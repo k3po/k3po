@@ -17,19 +17,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.driver.behavior.handler.command.http;
+package org.kaazing.robot.driver.behavior.handler.codec;
 
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.kaazing.robot.driver.behavior.handler.command.AbstractCommandHandler;
-import org.kaazing.robot.driver.netty.bootstrap.http.HttpChannelConfig;
+import org.jboss.netty.channel.Channel;
 
-public class WriteHttpContentLengthHandler extends AbstractCommandHandler {
+public interface ConfigEncoder {
 
-    @Override
-    protected void invokeCommand(ChannelHandlerContext ctx) {
-        HttpChannelConfig httpConfig = (HttpChannelConfig) ctx.getChannel().getConfig();
-        // TODO: configure?
-        httpConfig.setMaximumBufferedContentLength(8192);
-        getHandlerFuture().setSuccess();
-    }
+    void encode(Channel channel) throws Exception;
+
 }

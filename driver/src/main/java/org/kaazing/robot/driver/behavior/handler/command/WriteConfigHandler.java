@@ -17,33 +17,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.driver.behavior.handler.event.http;
+package org.kaazing.robot.driver.behavior.handler.command;
 
-import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
-import static org.jboss.netty.util.CharsetUtil.UTF_8;
+import static java.util.Collections.singletonList;
+import static java.util.Objects.requireNonNull;
 
-import org.jboss.netty.buffer.ChannelBuffer;
+import java.util.List;
+
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.kaazing.robot.driver.behavior.handler.codec.MessageDecoder;
-import org.kaazing.robot.driver.behavior.handler.command.AbstractCommandHandler;
-import org.kaazing.robot.driver.netty.bootstrap.http.HttpChannelConfig;
+import org.kaazing.robot.driver.behavior.handler.codec.ConfigEncoder;
 
-public class ReadHttpVersionHandler extends AbstractCommandHandler {
+public class WriteConfigHandler extends AbstractCommandHandler {
 
-    private MessageDecoder versionDecoder;
+    private final List<ConfigEncoder> encoders;
 
-    public ReadHttpVersionHandler(MessageDecoder versionDecoder) {
-        this.versionDecoder = versionDecoder;
+    public WriteConfigHandler(ConfigEncoder encoder) {
+        this(singletonList(encoder));
+    }
+
+    public WriteConfigHandler(List<ConfigEncoder> encoders) {
+        requireNonNull(encoders, "encoders");
+        if (encoders.size() == 0) {
+            throw new IllegalArgumentException("must have at least one encoder");
+        }
+        this.encoders = encoders;
     }
 
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
-        HttpChannelConfig httpConfig = (HttpChannelConfig) ctx.getChannel().getConfig();
         try {
-            HttpVersion version = httpConfig.getVersion();
-            ChannelBuffer buffer = copiedBuffer(version.getText(), UTF_8);
-            versionDecoder.decode(buffer);
+            Channel channel = ctx.getChannel();
+            for (ConfigEncoder encoder : encoders) {
+                encoder.encode(channel);
+            }
             getHandlerFuture().setSuccess();
         }
         catch (Exception e) {
