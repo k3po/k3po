@@ -23,6 +23,7 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.kaazing.robot.driver.channel.Channels.remoteAddress;
 
 import java.net.URI;
+import java.util.List;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.QueryStringEncoder;
@@ -34,26 +35,29 @@ import org.kaazing.robot.driver.netty.channel.ChannelAddress;
 public class HttpParameterEncoder implements ConfigEncoder {
 
     private final MessageEncoder nameEncoder;
-    private final MessageEncoder valueEncoder;
+    private final List<MessageEncoder> valueEncoders;
 
-    public HttpParameterEncoder(MessageEncoder nameEncoder, MessageEncoder valueEncoder) {
+    public HttpParameterEncoder(MessageEncoder nameEncoder, List<MessageEncoder> valueEncoders) {
         this.nameEncoder = nameEncoder;
-        this.valueEncoder = valueEncoder;
+        this.valueEncoders = valueEncoders;
     }
 
     @Override
     public void encode(Channel channel) throws Exception {
         HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
-        String paramName = nameEncoder.encode().toString(US_ASCII);
-        String paramValue = valueEncoder.encode().toString(US_ASCII);
-
         QueryStringEncoder query = httpConfig.getWriteQuery();
         if (query == null) {
             ChannelAddress remoteAddress = remoteAddress(channel);
             URI httpRemoteURI = remoteAddress.getLocation();
             query = new QueryStringEncoder(httpRemoteURI.toString());
+            httpConfig.setWriteQuery(query);
         }
-        query.addParam(paramName, paramValue);
+
+        String paramName = nameEncoder.encode().toString(US_ASCII);
+        for (MessageEncoder valueEncoder : valueEncoders) {
+            String paramValue = valueEncoder.encode().toString(US_ASCII);
+            query.addParam(paramName, paramValue);
+        }
     }
 
 }

@@ -1,0 +1,23 @@
+#
+# Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
+#
+
+accept http://localhost:8000/
+accepted
+connected
+read method "GET"
+
+# exact text
+read header "some" "header3" "header2" 
+read header "some" "header" "header5" "header4"
+
+# regex
+read header "some" /Hello.+/ /(?<Capture>Howdy.+)/
+read header "some" /(?<Length>\d+)/
+
+close request
+write header "some" "header" "header2" "header3"
+write content-length
+write ${Length}
+write ${Capture}
+close response

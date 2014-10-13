@@ -21,13 +21,39 @@ package org.kaazing.robot.lang.http.ast;
 
 import static org.kaazing.robot.lang.ast.util.AstUtil.equivalent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kaazing.robot.lang.ast.AstCommandNode;
 import org.kaazing.robot.lang.ast.value.AstValue;
 
 public class AstWriteHttpParameterNode extends AstCommandNode {
 
     private AstValue name;
-    private AstValue value;
+    private List<AstValue> values;
+
+    public AstValue getName() {
+        return name;
+    }
+
+    public void setName(AstValue name) {
+        this.name = name;
+    }
+
+    public List<AstValue> getValues() {
+        return values;
+    }
+
+    public void setValues(List<AstValue> values) {
+        this.values = values;
+    }
+
+    public void addValue(AstValue value) {
+        if (values == null) {
+            values = new ArrayList<AstValue>();
+        }
+        values.add(value);
+    }
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
@@ -42,9 +68,9 @@ public class AstWriteHttpParameterNode extends AstCommandNode {
             hashCode <<= 4;
             hashCode ^= name.hashCode();
         }
-        if (value != null) {
+        if (values != null) {
             hashCode <<= 4;
-            hashCode ^= value.hashCode();
+            hashCode ^= values.hashCode();
         }
 
         return hashCode;
@@ -57,28 +83,12 @@ public class AstWriteHttpParameterNode extends AstCommandNode {
 
     protected boolean equals(AstWriteHttpParameterNode that) {
         return super.equalTo(that) && equivalent(this.name, that.name)
-                && equivalent(this.value, that.value);
+                && equivalent(this.values, that.values);
     }
 
     @Override
     protected void formatNode(StringBuilder sb) {
         super.formatNode(sb);
-        sb.append(String.format("write parameter %s %s\n", name, value));
-    }
-
-    public AstValue getValue() {
-        return value;
-    }
-
-    public void setValue(AstValue value) {
-        this.value = value;
-    }
-
-    public AstValue getName() {
-        return name;
-    }
-
-    public void setName(AstValue name) {
-        this.name = name;
+        sb.append(String.format("write parameter %s %s\n", name, values));
     }
 }

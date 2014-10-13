@@ -220,11 +220,11 @@ writeNotifyNode
     ;
 
 readHttpHeaderNode
-    : k=ReadKeyword HttpHeaderKeyword name=literalText value=matcher
+    : k=ReadKeyword HttpHeaderKeyword name=literalText matcher+
     ;
 
 writeHttpHeaderNode
-    : k=WriteKeyword HttpHeaderKeyword name=literalText value=writeValue
+    : k=WriteKeyword HttpHeaderKeyword name=literalText writeValue+
     ;
 
 writeHttpContentLengthNode
@@ -240,11 +240,11 @@ writeHttpMethodNode
     ;
 
 readHttpParameterNode
-    : k=ReadKeyword HttpParameterKeyword name=literalText value=matcher
+    : k=ReadKeyword HttpParameterKeyword name=literalText matcher+
     ;
 
 writeHttpParameterNode
-    : k=WriteKeyword HttpParameterKeyword name=literalText value=writeValue
+    : k=WriteKeyword HttpParameterKeyword name=literalText writeValue+
     ;
 
 readHttpVersionNode

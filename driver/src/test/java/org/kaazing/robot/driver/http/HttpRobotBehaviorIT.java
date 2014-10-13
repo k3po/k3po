@@ -75,6 +75,57 @@ public class HttpRobotBehaviorIT {
     }
 
     @Test
+    public void shouldAcceptHeaderWithMultipleTokens() throws Exception {
+        
+        String script = combineScripts("http.accept.header.with.multiple.tokens.rpt",
+                "tcp.connect.header.with.multiple.tokens.rpt");
+
+        String expected = script;
+
+        robot.prepareAndStart(script).await();
+
+        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+
+        doneFuture.await();
+
+        assertEquals(expected, doneFuture.getObservedScript());
+    }
+
+    @Test
+    public void shouldAcceptReadParameterWithMultipleTokens() throws Exception {
+        
+        String script = combineScripts("http.accept.read.parameter.with.multiple.tokens.rpt",
+                "tcp.connect.write.parameter.with.multiple.tokens.rpt");
+
+        String expected = script;
+
+        robot.prepareAndStart(script).await();
+
+        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+
+        doneFuture.await();
+
+        assertEquals(expected, doneFuture.getObservedScript());
+    }
+    
+    @Test
+    public void shouldAcceptWriteParameterWithMultipleTokens() throws Exception {
+        
+        String script = combineScripts("http.connect.write.parameter.with.multiple.tokens.rpt",
+                "tcp.accept.read.parameter.with.multiple.tokens.rpt");
+
+        String expected = script;
+
+        robot.prepareAndStart(script).await();
+
+        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+
+        doneFuture.await();
+
+        assertEquals(expected, doneFuture.getObservedScript());
+    }
+    
+    @Test
     public void shouldReceiveGetRequestAndProvideResponse() throws Exception {
 
         String script = combineScripts("http.accept.get.request.with.no.content.on.response.rpt",
@@ -179,7 +230,6 @@ public class HttpRobotBehaviorIT {
     }
 
     @Test
-    @Ignore("not yet implemented")
     public void shouldAcceptPostMessageWithChunking() throws Exception {
 
         String script = combineScripts("http.accept.post.with.chunking.rpt", "tcp.connect.post.with.chunking.rpt");
@@ -196,7 +246,6 @@ public class HttpRobotBehaviorIT {
     }
 
     @Test
-    @Ignore("not yet implemented")
     public void shouldConnectPostMessageWithChunking() throws Exception {
 
         String script = combineScripts("http.connect.post.with.chunking.rpt", "tcp.accept.post.with.chunking.rpt");
@@ -213,7 +262,6 @@ public class HttpRobotBehaviorIT {
     }
 
     @Test
-    @Ignore("not yet implemented")
     public void shouldAcceptResponseWithChunking() throws Exception {
 
         String script = combineScripts("http.accept.response.with.chunking.rpt",
@@ -231,7 +279,6 @@ public class HttpRobotBehaviorIT {
     }
 
     @Test
-    @Ignore("not yet implemented")
     public void shouldConnectResponseWithChunking() throws Exception {
 
         String script = combineScripts("http.connect.response.with.chunking.rpt",
@@ -248,6 +295,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
+    // TODO:
     @Test
     @Ignore("not yet implemented")
     public void shouldConnectConnectionCloseResponse() throws Exception {
@@ -266,6 +314,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
+    // TODO:
     @Test
     @Ignore("not yet implemented")
     public void shouldAcceptConnectionCloseResponse() throws Exception {
@@ -284,9 +333,10 @@ public class HttpRobotBehaviorIT {
 
     }
 
+    // TODO:
     @Ignore
     @Test
-    public void shouldAcceptMutlipleHttpOnDifferentTcp() throws Exception {
+    public void shouldAcceptMultipleHttpOnDifferentTcp() throws Exception {
 
         String script = combineScripts("http.accept.two.http.200.rpt",
                 "tcp.connect.two.http.200.on.different.streams.rpt");
@@ -302,9 +352,10 @@ public class HttpRobotBehaviorIT {
 
     }
 
+    // TODO:
     @Ignore
     @Test
-    public void shouldAcceptMutlipleHttpOnSameTcp() throws Exception {
+    public void shouldAcceptMultipleHttpOnSameTcp() throws Exception {
 
         String script = combineScripts("http.accept.two.http.200.rpt", "tcp.connect.two.http.200.on.same.streams.rpt");
 
@@ -336,4 +387,5 @@ public class HttpRobotBehaviorIT {
         }
         return sb.toString();
     }
+
 }

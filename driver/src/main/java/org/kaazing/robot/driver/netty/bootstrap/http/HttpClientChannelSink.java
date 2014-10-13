@@ -73,7 +73,6 @@ public class HttpClientChannelSink extends AbstractChannelSink {
 
     private Channel transport;
     private HttpRequest httpBufferedRequest;
-    private ChannelFuture httpBufferedFuture;
 
     public HttpClientChannelSink(BootstrapFactory bootstrapFactory, ChannelPipelineFactory pipelineFactory) {
         this.bootstrapFactory = bootstrapFactory;
@@ -160,14 +159,16 @@ public class HttpClientChannelSink extends AbstractChannelSink {
             HttpVersion version = httpClientConfig.getVersion();
             HttpMethod method = httpClientConfig.getMethod();
             HttpHeaders headers = httpClientConfig.getWriteHeaders();
+            QueryStringEncoder query = httpClientConfig.getWriteQuery();
             ChannelAddress httpRemoteAddress = httpClientChannel.getRemoteAddress();
-            QueryStringEncoder writeQuery = httpClientConfig.getWriteQuery();
-            URI httpRemoteURI = writeQuery != null ? writeQuery.toUri() : httpRemoteAddress.getLocation();
+            URI httpRemoteURI = query != null ? query.toUri() : httpRemoteAddress.getLocation();
 
-            String uri = httpRemoteURI.getPath();
+            String requestPath = httpRemoteURI.getPath();
+            String requestQuery = httpRemoteURI.getQuery();
+            String requestURI = (requestQuery != null) ? format("%s?%s", requestPath, requestQuery) : requestPath;
 //          String authority = httpRemoteURI.getAuthority();
 
-          HttpRequest httpRequest = new DefaultHttpRequest(version, method, uri);
+          HttpRequest httpRequest = new DefaultHttpRequest(version, method, requestURI);
           HttpHeaders httpRequestHeaders = httpRequest.headers();
           if (headers != null) {
               httpRequestHeaders.add(headers);
@@ -208,8 +209,8 @@ public class HttpClientChannelSink extends AbstractChannelSink {
                 // automatically calculate content-length
                 httpRequest.setContent(httpContent);
                 httpBufferedRequest = httpRequest;
-                httpBufferedFuture = httpFuture;
                 httpClientChannel.state(CONTENT_BUFFERED);
+                httpFuture.setSuccess();
             }
             else {
                 throw new IllegalStateException("Missing Upgrade, Content-Length, Transfer-Encoding: chunked");
@@ -220,7 +221,7 @@ public class HttpClientChannelSink extends AbstractChannelSink {
             int httpBufferedBytes = httpBufferedContent.readableBytes();
             if (httpClientConfig.getMaximumBufferedContentLength() >= httpBufferedBytes + httpReadableBytes) {
                 httpBufferedRequest.setContent(copiedBuffer(httpBufferedContent, httpContent));
-                chainFutures(httpBufferedFuture, httpFuture);
+                httpFuture.setSuccess();
             }
             else {
                 throw new IllegalStateException("Exceeded maximum buffered content to calculate content length");
@@ -294,7 +295,7 @@ public class HttpClientChannelSink extends AbstractChannelSink {
         }
     }
 
-    private void shutdownOutputRequested(HttpClientChannel httpClientChannel, ChannelFuture httpFuture) {
+    private void shutdownOutputRequested(HttpClientChannel httpClientChannel, ChannelFuture httpFuture) throws Exception {
         switch (httpClientChannel.state()) {
         case CONTENT_CHUNKED:
             ChannelFuture future = transport.write(DefaultHttpChunk.LAST_CHUNK);
@@ -307,20 +308,23 @@ public class HttpClientChannelSink extends AbstractChannelSink {
         }
     }
 
-    private void flushRequested(HttpClientChannel httpClientChannel, ChannelFuture httpFuture) {
+    private void flushRequested(HttpClientChannel httpClientChannel, ChannelFuture httpFuture) throws Exception {
         switch (httpClientChannel.state()) {
         case REQUEST: {
             HttpChannelConfig httpClientConfig = httpClientChannel.getConfig();
             HttpVersion version = httpClientConfig.getVersion();
             HttpMethod method = httpClientConfig.getMethod();
+            QueryStringEncoder query = httpClientConfig.getWriteQuery();
             HttpHeaders headers = httpClientConfig.getWriteHeaders();
             ChannelAddress httpRemoteAddress = httpClientChannel.getRemoteAddress();
-            URI httpRemoteURI = httpRemoteAddress.getLocation();
+            URI httpRemoteURI = (query != null) ? query.toUri() : httpRemoteAddress.getLocation();
 
-            String uri = httpRemoteURI.getPath();
+            String requestPath = httpRemoteURI.getPath();
+            String requestQuery = httpRemoteURI.getQuery();
+            String requestURI = (requestQuery != null) ? format("%s?%s", requestPath, requestQuery) : requestPath;
 //            String authority = httpRemoteURI.getAuthority();
 
-            HttpRequest httpRequest = new DefaultHttpRequest(version, method, uri);
+            HttpRequest httpRequest = new DefaultHttpRequest(version, method, requestURI);
             HttpHeaders httpRequestHeaders = httpRequest.headers();
             if (headers != null) {
                 httpRequestHeaders.add(headers);
@@ -367,18 +371,14 @@ public class HttpClientChannelSink extends AbstractChannelSink {
         }
         case CONTENT_BUFFERED: {
             HttpRequest httpBufferedRequest = this.httpBufferedRequest;
-            ChannelFuture httpBufferedFuture = this.httpBufferedFuture;
             this.httpBufferedRequest = null;
-            this.httpBufferedFuture = null;
-
-            chainFutures(httpBufferedFuture, httpFuture);
 
             ChannelBuffer httpBufferedContent = httpBufferedRequest.getContent();
             int httpReadableBytes = httpBufferedContent.readableBytes();
             setContentLength(httpBufferedRequest, httpReadableBytes);
             ChannelFuture future = transport.write(httpBufferedRequest);
             httpClientChannel.state(CONTENT_COMPLETE);
-            chainWriteCompletes(future, httpBufferedFuture, httpReadableBytes);
+            chainWriteCompletes(future, httpFuture, httpReadableBytes);
             break;
         }
         case UPGRADEABLE:

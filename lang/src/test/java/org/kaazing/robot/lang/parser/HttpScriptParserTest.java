@@ -80,7 +80,7 @@ public class HttpScriptParserTest {
         // @formatter:off
         AstReadHttpHeaderNode expected = new AstReadHttpHeaderNodeBuilder()
             .setNameExactText("Host")
-            .setValueExactText("localhost:8000")
+            .addValueExactText("localhost:8000")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -99,7 +99,7 @@ public class HttpScriptParserTest {
         // @formatter:off
         AstWriteHttpHeaderNode expected = new AstWriteHttpHeaderNodeBuilder()
             .setNameExactText("Host")
-            .setValueExactText("localhost:8000")
+            .addValueExactText("localhost:8000")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -170,8 +170,8 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstReadHttpParameterNode expected = new AstReadHttpParameterNodeBuilder()
-            .setKeyExactText(".kl")
-            .setValueExactText("y")
+            .setNameExactText(".kl")
+            .addValueExactText("y")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -189,8 +189,8 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstWriteHttpParameterNode expected = new AstWriteHttpParameterNodeBuilder()
-            .setKeyExactText(".kl")
-            .setValueExactText("y")
+            .setNameExactText(".kl")
+            .addValueExactText("y")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -340,13 +340,13 @@ public class HttpScriptParserTest {
                      .setNextLineInfo(1, 0)
                  .done()
                  .addReadHttpParameterEvent()
-                     .setKeyExactText(".kl")
-                     .setValueExactText("y")
+                     .setNameExactText(".kl")
+                     .addValueExactText("y")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addReadHttpHeaderEvent()
                      .setNameExactText("Upgrade")
-                     .setValueExactText("websocket")
+                     .addValueExactText("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addReadEvent()
@@ -363,7 +363,7 @@ public class HttpScriptParserTest {
                  .done()
                  .addWriteHttpHeaderCommand()
                      .setNameExactText("upgrade")
-                     .setValueExactText("websocket")
+                     .addValueExactText("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addWriteCloseCommand()
@@ -415,13 +415,13 @@ public class HttpScriptParserTest {
                      .setNextLineInfo(1, 0)
                  .done()
                  .addWriteHttpParameterCommand()
-                     .setKeyExactText(".kl")
-                     .setValueExactText("y")
+                     .setNameExactText(".kl")
+                     .addValueExactText("y")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addWriteHttpHeaderCommand()
                      .setNameExactText("Upgrade")
-                     .setValueExactText("websocket")
+                     .addValueExactText("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addWriteCloseCommand()
@@ -434,7 +434,7 @@ public class HttpScriptParserTest {
                  .done()
                  .addReadHttpHeaderEvent()
                      .setNameExactText("upgrade")
-                     .setValueExactText("websocket")
+                     .addValueExactText("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addReadCloseCommand()

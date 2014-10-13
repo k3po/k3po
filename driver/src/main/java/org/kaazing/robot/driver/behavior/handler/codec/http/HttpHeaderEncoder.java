@@ -21,6 +21,8 @@ package org.kaazing.robot.driver.behavior.handler.codec.http;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
+import java.util.List;
+
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.kaazing.robot.driver.behavior.handler.codec.ConfigEncoder;
@@ -30,20 +32,29 @@ import org.kaazing.robot.driver.netty.bootstrap.http.HttpChannelConfig;
 public class HttpHeaderEncoder implements ConfigEncoder {
 
     private final MessageEncoder nameEncoder;
-    private final MessageEncoder valueEncoder;
+    private final List<MessageEncoder> valueEncoders;
 
-    public HttpHeaderEncoder(MessageEncoder nameEncoder, MessageEncoder valueEncoder) {
+    public HttpHeaderEncoder(MessageEncoder nameEncoder, List<MessageEncoder> valueEncoders) {
         this.nameEncoder = nameEncoder;
-        this.valueEncoder = valueEncoder;
+        this.valueEncoders = valueEncoders;
     }
 
     @Override
     public void encode(Channel channel) throws Exception {
         HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
-        String headerName = nameEncoder.encode().toString(US_ASCII);
-        String headerValue = valueEncoder.encode().toString(US_ASCII);
-
         HttpHeaders writeHeaders = httpConfig.getWriteHeaders();
-        writeHeaders.add(headerName, headerValue);
+
+        String headerName = nameEncoder.encode().toString(US_ASCII);
+        if (valueEncoders.size() == 1) {
+            MessageEncoder valueEncoder = valueEncoders.get(0);
+            String headerValue = valueEncoder.encode().toString(US_ASCII);
+            writeHeaders.add(headerName, headerValue);
+        }
+        else {
+            for (MessageEncoder valueEncoder : valueEncoders) {
+                String headerValue = valueEncoder.encode().toString(US_ASCII);
+                writeHeaders.add(headerName, headerValue);
+            }
+        }
     }
 }

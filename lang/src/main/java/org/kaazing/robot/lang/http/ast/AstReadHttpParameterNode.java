@@ -21,6 +21,9 @@ package org.kaazing.robot.lang.http.ast;
 
 import static org.kaazing.robot.lang.ast.util.AstUtil.equivalent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kaazing.robot.lang.ast.AstEventNode;
 import org.kaazing.robot.lang.ast.matcher.AstValueMatcher;
 import org.kaazing.robot.lang.ast.value.AstLiteralTextValue;
@@ -28,7 +31,30 @@ import org.kaazing.robot.lang.ast.value.AstLiteralTextValue;
 public class AstReadHttpParameterNode extends AstEventNode {
 
     private AstLiteralTextValue name;
-    private AstValueMatcher value;
+    private List<AstValueMatcher> matchers;
+
+    public AstLiteralTextValue getName() {
+        return name;
+    }
+
+    public void setName(AstLiteralTextValue name) {
+        this.name = name;
+    }
+
+    public List<AstValueMatcher> getMatchers() {
+        return matchers;
+    }
+
+    public void setMatchers(List<AstValueMatcher> matchers) {
+        this.matchers = matchers;
+    }
+
+    public void addMatcher(AstValueMatcher matcher) {
+        if (matchers == null) {
+            matchers = new ArrayList<AstValueMatcher>();
+        }
+        matchers.add(matcher);
+    }
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
@@ -43,9 +69,9 @@ public class AstReadHttpParameterNode extends AstEventNode {
             hashCode <<= 4;
             hashCode ^= name.hashCode();
         }
-        if (value != null) {
+        if (matchers != null) {
             hashCode <<= 4;
-            hashCode ^= value.hashCode();
+            hashCode ^= matchers.hashCode();
         }
 
         return hashCode;
@@ -58,28 +84,16 @@ public class AstReadHttpParameterNode extends AstEventNode {
 
     protected boolean equals(AstReadHttpParameterNode that) {
         return super.equalTo(that) && equivalent(this.name, that.name)
-                && equivalent(this.value, that.value);
+                && equivalent(this.matchers, that.matchers);
     }
 
     @Override
     protected void formatNode(StringBuilder sb) {
         super.formatNode(sb);
-        sb.append(String.format("read parameter %s %s\n", name, value));
-    }
-
-    public AstLiteralTextValue getName() {
-        return name;
-    }
-
-    public void setName(AstLiteralTextValue name) {
-        this.name = name;
-    }
-
-    public AstValueMatcher getValue() {
-        return value;
-    }
-
-    public void setValue(AstValueMatcher value) {
-        this.value = value;
+        sb.append("read parameter");
+        for (AstValueMatcher matcher : matchers) {
+            sb.append(' ').append(matcher);
+        }
+        sb.append('\n');
     }
 }

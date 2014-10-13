@@ -51,23 +51,13 @@ public class AstWriteHttpHeaderNodeBuilder extends
         return this;
     }
 
-    public AstWriteHttpHeaderNodeBuilder setNameExactBytes(byte[] headerNameExactBytes) {
-        node.setName(new AstLiteralBytesValue(headerNameExactBytes));
-        return this;
-    }
-
-    public AstWriteHttpHeaderNodeBuilder setValueExactBytes(byte[] headerValueExactBytes) {
-        node.setValue(new AstLiteralBytesValue(headerValueExactBytes));
-        return this;
-    }
-
     public AstWriteHttpHeaderNodeBuilder setNameExactText(String headerNameExactText) {
         node.setName(new AstLiteralTextValue(headerNameExactText));
         return this;
     }
 
-    public AstWriteHttpHeaderNodeBuilder setValueExactText(String headerValueExactText) {
-        node.setValue(new AstLiteralTextValue(headerValueExactText));
+    public AstWriteHttpHeaderNodeBuilder setNameExactBytes(byte[] headerNameExactBytes) {
+        node.setName(new AstLiteralBytesValue(headerNameExactBytes));
         return this;
     }
 
@@ -76,8 +66,18 @@ public class AstWriteHttpHeaderNodeBuilder extends
         return this;
     }
 
-    public AstWriteHttpHeaderNodeBuilder setValueExpression(ValueExpression headerValueValueExpression) {
-        node.setValue(new AstExpressionValue(headerValueValueExpression));
+    public AstWriteHttpHeaderNodeBuilder addValueExactBytes(byte[] headerValueExactBytes) {
+        node.addValue(new AstLiteralBytesValue(headerValueExactBytes));
+        return this;
+    }
+
+    public AstWriteHttpHeaderNodeBuilder addValueExactText(String headerValueExactText) {
+        node.addValue(new AstLiteralTextValue(headerValueExactText));
+        return this;
+    }
+
+    public AstWriteHttpHeaderNodeBuilder addValueExpression(ValueExpression headerValueValueExpression) {
+        node.addValue(new AstExpressionValue(headerValueValueExpression));
         return this;
     }
 
@@ -121,23 +121,13 @@ public class AstWriteHttpHeaderNodeBuilder extends
             return this;
         }
 
-        public StreamNested<R> setNameExactBytes(byte[] headerNameExactBytes) {
-            node.setName(new AstLiteralBytesValue(headerNameExactBytes));
-            return this;
-        }
-
-        public StreamNested<R> setValueExactBytes(byte[] headerValueExactBytes) {
-            node.setValue(new AstLiteralBytesValue(headerValueExactBytes));
-            return this;
-        }
-
         public StreamNested<R> setNameExactText(String headerNameExactText) {
             node.setName(new AstLiteralTextValue(headerNameExactText));
             return this;
         }
 
-        public StreamNested<R> setValueExactText(String headerValueExactText) {
-            node.setValue(new AstLiteralTextValue(headerValueExactText));
+        public StreamNested<R> setNameExactBytes(byte[] headerNameExactBytes) {
+            node.setName(new AstLiteralBytesValue(headerNameExactBytes));
             return this;
         }
 
@@ -146,8 +136,18 @@ public class AstWriteHttpHeaderNodeBuilder extends
             return this;
         }
 
-        public StreamNested<R> setValueValueExpression(ValueExpression headerValueValueExpression) {
-            node.setValue(new AstExpressionValue(headerValueValueExpression));
+        public StreamNested<R> addValueExactBytes(byte[] headerValueExactBytes) {
+            node.addValue(new AstLiteralBytesValue(headerValueExactBytes));
+            return this;
+        }
+
+        public StreamNested<R> addValueExactText(String headerValueExactText) {
+            node.addValue(new AstLiteralTextValue(headerValueExactText));
+            return this;
+        }
+
+        public StreamNested<R> addValueValueExpression(ValueExpression headerValueValueExpression) {
+            node.addValue(new AstExpressionValue(headerValueValueExpression));
             return this;
         }
 

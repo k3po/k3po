@@ -78,50 +78,50 @@ public class AstReadHttpParameterNodeBuilder extends
         return line;
     }
 
-    public AstReadHttpParameterNodeBuilder setValueExactBytes(byte[] parameterValueBytes) {
-        node.setValue(new AstExactBytesMatcher(parameterValueBytes));
+    public AstReadHttpParameterNodeBuilder setNameExactText(String parameterName) {
+        node.setName(new AstLiteralTextValue(parameterName));
         return this;
     }
 
-    public AstReadHttpParameterNodeBuilder setKeyExactText(String keyExactText) {
-        node.setName(new AstLiteralTextValue(keyExactText));
+    public AstReadHttpParameterNodeBuilder addValueExactBytes(byte[] parameterValue) {
+        node.addMatcher(new AstExactBytesMatcher(parameterValue));
         return this;
     }
 
-    public AstReadHttpParameterNodeBuilder setValueExactText(String parameterValueExactText) {
-        node.setValue(new AstExactTextMatcher(parameterValueExactText));
+    public AstReadHttpParameterNodeBuilder addValueExactText(String parameterValue) {
+        node.addMatcher(new AstExactTextMatcher(parameterValue));
         return this;
     }
 
-    public AstReadHttpParameterNodeBuilder setValueExpression(ValueExpression parameterValueExpression) {
-        node.setValue(new AstExpressionMatcher(parameterValueExpression));
+    public AstReadHttpParameterNodeBuilder addValueExpression(ValueExpression parameterValue) {
+        node.addMatcher(new AstExpressionMatcher(parameterValue));
         return this;
     }
 
-    public AstReadHttpParameterNodeBuilder setValueFixedLengthBytes(int parameterValueLength) {
-        node.setValue(new AstFixedLengthBytesMatcher(parameterValueLength));
+    public AstReadHttpParameterNodeBuilder addValueFixedLengthBytes(int parameterValueLength) {
+        node.addMatcher(new AstFixedLengthBytesMatcher(parameterValueLength));
         return this;
     }
 
-    public AstReadHttpParameterNodeBuilder setValueFixedLengthBytes(int parameterValueLength,
-                                                                             String parameterValueName) {
-        node.setValue(new AstFixedLengthBytesMatcher(parameterValueLength, parameterValueName));
+    public AstReadHttpParameterNodeBuilder addValueFixedLengthBytes(int parameterValueLength,
+                                                                    String parameterValueName) {
+        node.addMatcher(new AstFixedLengthBytesMatcher(parameterValueLength, parameterValueName));
         return this;
     }
 
-    public AstReadHttpParameterNodeBuilder setParamterValueRegex(NamedGroupPattern parameterValuePattern) {
-        node.setValue(new AstRegexMatcher(parameterValuePattern));
+    public AstReadHttpParameterNodeBuilder addValueRegex(NamedGroupPattern parameterValue) {
+        node.addMatcher(new AstRegexMatcher(parameterValue));
         return this;
     }
 
-    public AstReadHttpParameterNodeBuilder setValueVariableLengthBytes(ValueExpression parameterValueLength) {
-        node.setValue(new AstVariableLengthBytesMatcher(parameterValueLength));
+    public AstReadHttpParameterNodeBuilder addValueVariableLengthBytes(ValueExpression parameterValueLength) {
+        node.addMatcher(new AstVariableLengthBytesMatcher(parameterValueLength));
         return this;
     }
 
-    public AstReadHttpParameterNodeBuilder setValueVariableLengthBytes(ValueExpression parameterValueLength,
-                                                                                String parameterValueName) {
-        node.setValue(new AstVariableLengthBytesMatcher(parameterValueLength, parameterValueName));
+    public AstReadHttpParameterNodeBuilder addValueVariableLengthBytes(ValueExpression parameterValueLength,
+                                                                       String parameterValueName) {
+        node.addMatcher(new AstVariableLengthBytesMatcher(parameterValueLength, parameterValueName));
         return this;
     }
 
@@ -145,49 +145,49 @@ public class AstReadHttpParameterNodeBuilder extends
             return this;
         }
 
-        public StreamNested<R> setValueExactBytes(byte[] parameterValueBytes) {
-            node.setValue(new AstExactBytesMatcher(parameterValueBytes));
+        public StreamNested<R> setNameExactText(String parameterName) {
+            node.setName(new AstLiteralTextValue(parameterName));
             return this;
         }
 
-        public StreamNested<R> setKeyExactText(String keyExactText) {
-            node.setName(new AstLiteralTextValue(keyExactText));
+        public StreamNested<R> addValueExactBytes(byte[] parameterValue) {
+            node.addMatcher(new AstExactBytesMatcher(parameterValue));
             return this;
         }
 
-        public StreamNested<R> setValueExactText(String parameterValueExactText) {
-            node.setValue(new AstExactTextMatcher(parameterValueExactText));
+        public StreamNested<R> addValueExactText(String parameterValue) {
+            node.addMatcher(new AstExactTextMatcher(parameterValue));
             return this;
         }
 
-        public StreamNested<R> setValueExpression(ValueExpression parameterValueExpression) {
-            node.setValue(new AstExpressionMatcher(parameterValueExpression));
+        public StreamNested<R> addValueExpression(ValueExpression parameterValue) {
+            node.addMatcher(new AstExpressionMatcher(parameterValue));
             return this;
         }
 
-        public StreamNested<R> setValueFixedLengthBytes(int parameterValueLength) {
-            node.setValue(new AstFixedLengthBytesMatcher(parameterValueLength));
+        public StreamNested<R> addValueFixedLengthBytes(int parameterValueLength) {
+            node.addMatcher(new AstFixedLengthBytesMatcher(parameterValueLength));
             return this;
         }
 
-        public StreamNested<R> setValueFixedLengthBytes(int parameterValueLength, String parameterValueName) {
-            node.setValue(new AstFixedLengthBytesMatcher(parameterValueLength, parameterValueName));
+        public StreamNested<R> addValueFixedLengthBytes(int parameterValueLength, String parameterValueName) {
+            node.addMatcher(new AstFixedLengthBytesMatcher(parameterValueLength, parameterValueName));
             return this;
         }
 
-        public StreamNested<R> setParamterValueRegex(NamedGroupPattern parameterValuePattern) {
-            node.setValue(new AstRegexMatcher(parameterValuePattern));
+        public StreamNested<R> addValueRegex(NamedGroupPattern parameterValue) {
+            node.addMatcher(new AstRegexMatcher(parameterValue));
             return this;
         }
 
-        public StreamNested<R> setValueVariableLengthBytes(ValueExpression parameterValueLength) {
-            node.setValue(new AstVariableLengthBytesMatcher(parameterValueLength));
+        public StreamNested<R> addValueVariableLengthBytes(ValueExpression parameterValueLength) {
+            node.addMatcher(new AstVariableLengthBytesMatcher(parameterValueLength));
             return this;
         }
 
-        public StreamNested<R> setValueVariableLengthBytes(ValueExpression parameterValueLength,
-                                                                    String parameterValueName) {
-            node.setValue(new AstVariableLengthBytesMatcher(parameterValueLength, parameterValueName));
+        public StreamNested<R> addValueVariableLengthBytes(ValueExpression parameterValueLength,
+                                                           String parameterValueName) {
+            node.addMatcher(new AstVariableLengthBytesMatcher(parameterValueLength, parameterValueName));
             return this;
         }
 

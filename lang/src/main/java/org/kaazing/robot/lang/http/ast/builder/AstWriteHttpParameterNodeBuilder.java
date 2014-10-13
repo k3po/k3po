@@ -51,33 +51,33 @@ public class AstWriteHttpParameterNodeBuilder extends
         return this;
     }
 
-    public AstWriteHttpParameterNodeBuilder setKeyExactBytes(byte[] keyExactBytes) {
-        node.setName(new AstLiteralBytesValue(keyExactBytes));
+    public AstWriteHttpParameterNodeBuilder setNameExactText(String parameterName) {
+        node.setName(new AstLiteralTextValue(parameterName));
         return this;
     }
 
-    public AstWriteHttpParameterNodeBuilder setValueExactBytes(byte[] valueExactBytes) {
-        node.setValue(new AstLiteralBytesValue(valueExactBytes));
+    public AstWriteHttpParameterNodeBuilder setNameExactBytes(byte[] parameterName) {
+        node.setName(new AstLiteralBytesValue(parameterName));
         return this;
     }
 
-    public AstWriteHttpParameterNodeBuilder setKeyExactText(String keyExactText) {
-        node.setName(new AstLiteralTextValue(keyExactText));
+    public AstWriteHttpParameterNodeBuilder setNameExpression(ValueExpression parameterName) {
+        node.setName(new AstExpressionValue(parameterName));
         return this;
     }
 
-    public AstWriteHttpParameterNodeBuilder setValueExactText(String valueExactText) {
-        node.setValue(new AstLiteralTextValue(valueExactText));
+    public AstWriteHttpParameterNodeBuilder addValueExactBytes(byte[] parameterValue) {
+        node.addValue(new AstLiteralBytesValue(parameterValue));
         return this;
     }
 
-    public AstWriteHttpParameterNodeBuilder setKeyExpression(ValueExpression keyExpression) {
-        node.setName(new AstExpressionValue(keyExpression));
+    public AstWriteHttpParameterNodeBuilder addValueExactText(String valueExactText) {
+        node.addValue(new AstLiteralTextValue(valueExactText));
         return this;
     }
 
-    public AstWriteHttpParameterNodeBuilder setValueExpression(ValueExpression valueExpression) {
-        node.setValue(new AstExpressionValue(valueExpression));
+    public AstWriteHttpParameterNodeBuilder addValueExpression(ValueExpression valueExpression) {
+        node.addValue(new AstExpressionValue(valueExpression));
         return this;
     }
 
@@ -121,33 +121,33 @@ public class AstWriteHttpParameterNodeBuilder extends
             return this;
         }
 
-        public StreamNested<R> setKeyExactBytes(byte[] keyExactBytes) {
-            node.setName(new AstLiteralBytesValue(keyExactBytes));
+        public StreamNested<R> setNameExactText(String parameterName) {
+            node.setName(new AstLiteralTextValue(parameterName));
             return this;
         }
 
-        public StreamNested<R> setValueExactBytes(byte[] valueExactBytes) {
-            node.setValue(new AstLiteralBytesValue(valueExactBytes));
+        public StreamNested<R> setNameExactBytes(byte[] parameterName) {
+            node.setName(new AstLiteralBytesValue(parameterName));
             return this;
         }
 
-        public StreamNested<R> setKeyExactText(String keyExactText) {
-            node.setName(new AstLiteralTextValue(keyExactText));
+        public StreamNested<R> setNameExpression(ValueExpression parameterName) {
+            node.setName(new AstExpressionValue(parameterName));
             return this;
         }
 
-        public StreamNested<R> setValueExactText(String valueExactText) {
-            node.setValue(new AstLiteralTextValue(valueExactText));
+        public StreamNested<R> addValueExactBytes(byte[] parameterValue) {
+            node.addValue(new AstLiteralBytesValue(parameterValue));
             return this;
         }
 
-        public StreamNested<R> setKeyExpression(ValueExpression keyExpression) {
-            node.setName(new AstExpressionValue(keyExpression));
+        public StreamNested<R> addValueExactText(String parameterValue) {
+            node.addValue(new AstLiteralTextValue(parameterValue));
             return this;
         }
 
-        public StreamNested<R> setValueExpression(ValueExpression valueExpression) {
-            node.setValue(new AstExpressionValue(valueExpression));
+        public StreamNested<R> addValueExpression(ValueExpression parameterValue) {
+            node.addValue(new AstExpressionValue(parameterValue));
             return this;
         }
 

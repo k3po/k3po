@@ -36,19 +36,33 @@ import org.kaazing.robot.driver.netty.bootstrap.http.HttpChannelConfig;
 public class HttpParameterDecoder implements ConfigDecoder {
 
     private String name;
-    private MessageDecoder valueDecoder;
+    private List<MessageDecoder> valueDecoders;
 
-    public HttpParameterDecoder(String name, MessageDecoder valueDecoder) {
+    public HttpParameterDecoder(String name, List<MessageDecoder> valueDecoders) {
         this.name = name;
-        this.valueDecoder = valueDecoder;
+        this.valueDecoders = valueDecoders;
     }
 
     @Override
     public void decode(Channel channel) throws Exception {
-        HttpChannelConfig httpConfig = (HttpChannelConfig) channel;
+        HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
         QueryStringDecoder query = httpConfig.getReadQuery();
         Map<String, List<String>> parameters = query.getParameters();
         List<String> parameterValues = parameters.get(name);
+        if (valueDecoders.size() == 1) {
+            MessageDecoder valueDecoder = valueDecoders.get(0);
+            decodeParameterValue(parameters, parameterValues, valueDecoder);
+        }
+        else {
+            for (MessageDecoder valueDecoder : valueDecoders) {
+                decodeParameterValue(parameters, parameterValues, valueDecoder);
+            }
+        }
+    }
+
+    private void decodeParameterValue(Map<String, List<String>> parameters,
+            List<String> parameterValues, MessageDecoder valueDecoder)
+            throws MessageMismatchException, Exception {
         int parameterValueCount = parameterValues.size();
         if (parameterValueCount == 0) {
             throw new MessageMismatchException("Missing HTTP query parameter", name, null);
@@ -56,16 +70,16 @@ public class HttpParameterDecoder implements ConfigDecoder {
         else if (parameterValueCount == 1) {
             // efficiently handle single-valued HTTP query parameter
             String parameterValue = parameterValues.get(0);
-            valueDecoder.decode(copiedBuffer(parameterValue, UTF_8));
+            valueDecoder.decodeLast(copiedBuffer(parameterValue, UTF_8));
         }
         else {
             // attempt to match each HTTP query parameter value with decoder
             // throw last decode failure exception if none match
             Exception decodeFailure = null;
             for (Iterator<String> $i = parameterValues.iterator(); $i.hasNext();) {
-                String headerValue = $i.next();
+                String parameterValue = $i.next();
                 try {
-                    valueDecoder.decode(copiedBuffer(headerValue, UTF_8));
+                    valueDecoder.decodeLast(copiedBuffer(parameterValue, UTF_8));
                     $i.remove();
                     break;
                 }

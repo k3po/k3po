@@ -35,11 +35,11 @@ import org.kaazing.robot.driver.netty.bootstrap.http.HttpChannelConfig;
 public class HttpHeaderDecoder implements ConfigDecoder {
 
     private String name;
-    private MessageDecoder valueDecoder;
+    private List<MessageDecoder> valueDecoders;
 
-    public HttpHeaderDecoder(String name, MessageDecoder valueDecoder) {
+    public HttpHeaderDecoder(String name, List<MessageDecoder> valueDecoders) {
         this.name = name;
-        this.valueDecoder = valueDecoder;
+        this.valueDecoders = valueDecoders;
     }
 
     @Override
@@ -47,6 +47,21 @@ public class HttpHeaderDecoder implements ConfigDecoder {
         HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
         HttpHeaders headers = httpConfig.getReadHeaders();
         List<String> headerValues = headers.getAll(name);
+        if (valueDecoders.size() == 1) {
+            MessageDecoder valueDecoder = valueDecoders.get(0);
+            decodeHeaderValue(headers, headerValues, valueDecoder);
+        }
+        else {
+            for (MessageDecoder valueDecoder : valueDecoders) {
+                decodeHeaderValue(headers, headerValues, valueDecoder);
+            }
+        }
+    }
+
+    private void decodeHeaderValue(HttpHeaders headers,
+            List<String> headerValues, MessageDecoder valueDecoder)
+            throws MessageMismatchException, Exception {
+
         int headerValueCount = headerValues.size();
         if (headerValueCount == 0) {
             throw new MessageMismatchException("Missing HTTP header", name, null);
@@ -54,7 +69,7 @@ public class HttpHeaderDecoder implements ConfigDecoder {
         else if (headerValueCount == 1) {
             // efficiently handle single-valued HTTP header
             String headerValue = headerValues.get(0);
-            valueDecoder.decode(copiedBuffer(headerValue, UTF_8));
+            valueDecoder.decodeLast(copiedBuffer(headerValue, UTF_8));
         }
         else {
             // attempt to match each HTTP header value with decoder
@@ -63,7 +78,7 @@ public class HttpHeaderDecoder implements ConfigDecoder {
             for (Iterator<String> $i = headerValues.iterator(); $i.hasNext();) {
                 String headerValue = $i.next();
                 try {
-                    valueDecoder.decode(copiedBuffer(headerValue, UTF_8));
+                    valueDecoder.decodeLast(copiedBuffer(headerValue, UTF_8));
                     $i.remove();
                     break;
                 }

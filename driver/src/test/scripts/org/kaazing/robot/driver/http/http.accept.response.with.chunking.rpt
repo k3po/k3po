@@ -2,4 +2,22 @@
 # Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
 #
 
-// TODO
+accept http://localhost:8000/
+accepted
+connected
+
+read method "POST"
+read header "Date" "Fri, 31 Dec 1999 23:59:59 GMT"
+read header "Content-Type" "text/plain"
+read header "Content-Length" "11"
+read "Hello World"
+close request
+
+write status "200" "OK"
+write header "Date" "Fri, 31 Dec 1999 23:59:59 GMT"
+write header "Content-Type" "text/plain"
+write header "Transfer-Encoding" "chunked"
+write "Chunk A"
+write "Chunk B"
+write "Chunk C"
+close response
