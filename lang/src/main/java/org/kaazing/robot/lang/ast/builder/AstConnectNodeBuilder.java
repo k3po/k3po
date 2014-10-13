@@ -23,11 +23,6 @@ import java.net.URI;
 
 import org.kaazing.robot.lang.ast.AstConnectNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
-import org.kaazing.robot.lang.http.ast.builder.AstReadHttpHeaderNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstReadHttpMethodNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstReadHttpParameterNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstReadHttpStatusNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstReadHttpVersionNodeBuilder;
 import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpContentLengthNodeBuilder;
 import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpHeaderNodeBuilder;
 import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpMethodNodeBuilder;
@@ -146,12 +141,12 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         return new AstWriteOptionNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
     }
 
-    // Http
     @Override
-    public AstReadHttpHeaderNodeBuilder.StreamNested<AstConnectNodeBuilder> addReadHttpHeaderEvent() {
-        return new AstReadHttpHeaderNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
+    public AstReadConfigNodeBuilder.StreamNested<AstConnectNodeBuilder> addReadConfigEvent() {
+        return new AstReadConfigNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
     }
 
+    // Http
     @Override
     public AstWriteHttpHeaderNodeBuilder.StreamNested<AstConnectNodeBuilder> addWriteHttpHeaderCommand() {
         return new AstWriteHttpHeaderNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
@@ -163,18 +158,8 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
     }
 
     @Override
-    public AstReadHttpMethodNodeBuilder.StreamNested<AstConnectNodeBuilder> addReadHttpMethodEvent() {
-        return new AstReadHttpMethodNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
-    }
-
-    @Override
     public AstWriteHttpMethodNodeBuilder.StreamNested<AstConnectNodeBuilder> addWriteHttpMethodCommand() {
         return new AstWriteHttpMethodNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
-    }
-
-    @Override
-    public AstReadHttpParameterNodeBuilder.StreamNested<AstConnectNodeBuilder> addReadHttpParameterEvent() {
-        return new AstReadHttpParameterNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
     }
 
     @Override
@@ -183,18 +168,8 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
     }
 
     @Override
-    public AstReadHttpVersionNodeBuilder.StreamNested<AstConnectNodeBuilder> addReadHttpVersionEvent() {
-        return new AstReadHttpVersionNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
-    }
-
-    @Override
     public AstWriteHttpVersionNodeBuilder.StreamNested<AstConnectNodeBuilder> addWriteHttpVersionCommand() {
         return new AstWriteHttpVersionNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
-    }
-
-    @Override
-    public AstReadHttpStatusNodeBuilder.StreamNested<AstConnectNodeBuilder> addReadHttpStatusEvent() {
-        return new AstReadHttpStatusNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
     }
 
     @Override
@@ -333,8 +308,8 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         }
 
         @Override
-        public AstReadHttpHeaderNodeBuilder.StreamNested<ScriptNested<R>> addReadHttpHeaderEvent() {
-            return new AstReadHttpHeaderNodeBuilder.StreamNested<ScriptNested<R>>(this);
+        public AstReadConfigNodeBuilder.StreamNested<ScriptNested<R>> addReadConfigEvent() {
+            return new AstReadConfigNodeBuilder.StreamNested<ScriptNested<R>>(this);
         }
 
         @Override
@@ -348,18 +323,8 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         }
 
         @Override
-        public AstReadHttpMethodNodeBuilder.StreamNested<ScriptNested<R>> addReadHttpMethodEvent() {
-            return new AstReadHttpMethodNodeBuilder.StreamNested<ScriptNested<R>>(this);
-        }
-
-        @Override
         public AstWriteHttpMethodNodeBuilder.StreamNested<ScriptNested<R>> addWriteHttpMethodCommand() {
             return new AstWriteHttpMethodNodeBuilder.StreamNested<ScriptNested<R>>(this);
-        }
-
-        @Override
-        public AstReadHttpParameterNodeBuilder.StreamNested<ScriptNested<R>> addReadHttpParameterEvent() {
-            return new AstReadHttpParameterNodeBuilder.StreamNested<ScriptNested<R>>(this);
         }
 
         @Override
@@ -368,18 +333,8 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         }
 
         @Override
-        public AstReadHttpVersionNodeBuilder.StreamNested<ScriptNested<R>> addReadHttpVersionEvent() {
-            return new AstReadHttpVersionNodeBuilder.StreamNested<ScriptNested<R>>(this);
-        }
-
-        @Override
         public AstWriteHttpVersionNodeBuilder.StreamNested<ScriptNested<R>> addWriteHttpVersionCommand() {
             return new AstWriteHttpVersionNodeBuilder.StreamNested<ScriptNested<R>>(this);
-        }
-
-        @Override
-        public AstReadHttpStatusNodeBuilder.StreamNested<ScriptNested<R>> addReadHttpStatusEvent() {
-            return new AstReadHttpStatusNodeBuilder.StreamNested<ScriptNested<R>>(this);
         }
 
         @Override

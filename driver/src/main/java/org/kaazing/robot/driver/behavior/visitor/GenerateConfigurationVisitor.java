@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.behavior.visitor;
 
+import static java.util.Objects.requireNonNull;
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 
@@ -126,6 +127,7 @@ import org.kaazing.robot.lang.ast.AstNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadClosedNode;
+import org.kaazing.robot.lang.ast.AstReadConfigNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
@@ -155,11 +157,6 @@ import org.kaazing.robot.lang.ast.value.AstLiteralBytesValue;
 import org.kaazing.robot.lang.ast.value.AstLiteralTextValue;
 import org.kaazing.robot.lang.ast.value.AstValue;
 import org.kaazing.robot.lang.el.ExpressionContext;
-import org.kaazing.robot.lang.http.ast.AstReadHttpHeaderNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpMethodNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpParameterNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpStatusNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpVersionNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpContentLengthNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpHeaderNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpMethodNode;
@@ -818,23 +815,89 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
     // HTTP
     @Override
-    public Configuration visit(AstReadHttpHeaderNode node, State state) throws Exception {
+    public Configuration visit(AstReadConfigNode node, State state) throws Exception {
 
-        AstLiteralTextValue name = node.getName();
+        switch (node.getType()) {
+        case "method": {
+            AstValueMatcher method = node.getMatcher("name");
+            requireNonNull(method);
 
-        List<MessageDecoder> valueDecoders = new ArrayList<MessageDecoder>();
+            MessageDecoder methodValueDecoder = method.accept(new GenerateReadDecoderVisitor(), state.configuration);
 
-        for (AstValueMatcher matcher : node.getMatchers()) {
-            valueDecoders.add(matcher.accept(new GenerateReadDecoderVisitor(), state.configuration));
+            // TODO: compareEqualsIgnoreCase
+            ReadConfigHandler handler = new ReadConfigHandler(new HttpMethodDecoder(methodValueDecoder));
+
+            handler.setLocationInfo(node.getLocationInfo());
+            Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+            String handlerName = String.format("readConfig#%d (http method)", pipelineAsMap.size() + 1);
+            pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
         }
+        case "header": {
+            AstLiteralTextValue name = (AstLiteralTextValue) node.getValue("name");
+            requireNonNull(name);
 
-        ReadConfigHandler handler = new ReadConfigHandler(new HttpHeaderDecoder(name.getValue(), valueDecoders));
+            List<MessageDecoder> valueDecoders = new ArrayList<MessageDecoder>();
+            for (AstValueMatcher matcher : node.getMatchers()) {
+                valueDecoders.add(matcher.accept(new GenerateReadDecoderVisitor(), state.configuration));
+            }
 
-        handler.setLocationInfo(node.getLocationInfo());
-        Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
-        String handlerName = String.format("readConfig#%d (http header)", pipelineAsMap.size() + 1);
-        pipelineAsMap.put(handlerName, handler);
-        return state.configuration;
+            ReadConfigHandler handler = new ReadConfigHandler(new HttpHeaderDecoder(name.getValue(), valueDecoders));
+
+            handler.setLocationInfo(node.getLocationInfo());
+            Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+            String handlerName = String.format("readConfig#%d (http header)", pipelineAsMap.size() + 1);
+            pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
+        case "parameter": {
+            AstLiteralTextValue name = (AstLiteralTextValue) node.getValue("name");
+            requireNonNull(name);
+
+            List<MessageDecoder> valueDecoders = new ArrayList<MessageDecoder>();
+            for (AstValueMatcher matcher : node.getMatchers()) {
+                valueDecoders.add(matcher.accept(new GenerateReadDecoderVisitor(), state.configuration));
+            }
+
+            ReadConfigHandler handler = new ReadConfigHandler(new HttpParameterDecoder(name.getValue(), valueDecoders));
+
+            handler.setLocationInfo(node.getLocationInfo());
+            Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+            String handlerName = String.format("readConfig#%d (http parameter)", pipelineAsMap.size() + 1);
+            pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
+        case "version": {
+            AstValueMatcher version = node.getMatcher("version");
+
+            MessageDecoder versionDecoder = version.accept(new GenerateReadDecoderVisitor(), state.configuration);
+
+            ReadConfigHandler handler = new ReadConfigHandler(new HttpVersionDecoder(versionDecoder));
+
+            handler.setLocationInfo(node.getLocationInfo());
+            Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+            String handlerName = String.format("readConfig#%d (http version)", pipelineAsMap.size() + 1);
+            pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
+        case "status": {
+            AstValueMatcher code = node.getMatcher("code");
+            AstValueMatcher reason = node.getMatcher("reason");
+
+            MessageDecoder codeDecoder = code.accept(new GenerateReadDecoderVisitor(), state.configuration);
+            MessageDecoder reasonDecoder = reason.accept(new GenerateReadDecoderVisitor(), state.configuration);
+
+            ReadConfigHandler handler = new ReadConfigHandler(new HttpStatusDecoder(codeDecoder, reasonDecoder));
+
+            handler.setLocationInfo(node.getLocationInfo());
+            Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+            String handlerName = String.format("readConfig#%d (http status)", pipelineAsMap.size() + 1);
+            pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
+        default:
+            throw new IllegalStateException("Unrecognized configuration type: " + node.getType());
+        }
     }
 
     @Override
@@ -866,23 +929,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     }
 
     @Override
-    public Configuration visit(AstReadHttpMethodNode node, State state) throws Exception {
-
-        AstValueMatcher method = node.getMethod();
-
-        MessageDecoder methodValueDecoder = method.accept(new GenerateReadDecoderVisitor(), state.configuration);
-
-        // TODO: compareEqualsIgnoreCase
-        ReadConfigHandler handler = new ReadConfigHandler(new HttpMethodDecoder(methodValueDecoder));
-
-        handler.setLocationInfo(node.getLocationInfo());
-        Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
-        String handlerName = String.format("readConfig#%d (http method)", pipelineAsMap.size() + 1);
-        pipelineAsMap.put(handlerName, handler);
-        return state.configuration;
-    }
-
-    @Override
     public Configuration visit(AstWriteHttpMethodNode node, State state) throws Exception {
 
         AstValue method = node.getMethod();
@@ -893,25 +939,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         handler.setLocationInfo(node.getLocationInfo());
         String handlerName = String.format("writeConfig#%d (http method)", state.pipelineAsMap.size() + 1);
         state.pipelineAsMap.put(handlerName, handler);
-        return state.configuration;
-    }
-
-    @Override
-    public Configuration visit(AstReadHttpParameterNode node, State state) throws Exception {
-
-        AstLiteralTextValue name = node.getName();
-
-        List<MessageDecoder> valueDecoders = new ArrayList<MessageDecoder>();
-        for (AstValueMatcher matcher : node.getMatchers()) {
-            valueDecoders.add(matcher.accept(new GenerateReadDecoderVisitor(), state.configuration));
-        }
-
-        ReadConfigHandler handler = new ReadConfigHandler(new HttpParameterDecoder(name.getValue(), valueDecoders));
-
-        handler.setLocationInfo(node.getLocationInfo());
-        Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
-        String handlerName = String.format("readConfig#%d (http parameter)", pipelineAsMap.size() + 1);
-        pipelineAsMap.put(handlerName, handler);
         return state.configuration;
     }
 
@@ -935,21 +962,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     }
 
     @Override
-    public Configuration visit(AstReadHttpVersionNode node, State state) throws Exception {
-        AstValueMatcher version = node.getVersion();
-
-        MessageDecoder versionDecoder = version.accept(new GenerateReadDecoderVisitor(), state.configuration);
-
-        ReadConfigHandler handler = new ReadConfigHandler(new HttpVersionDecoder(versionDecoder));
-
-        handler.setLocationInfo(node.getLocationInfo());
-        Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
-        String handlerName = String.format("readConfig#%d (http version)", pipelineAsMap.size() + 1);
-        pipelineAsMap.put(handlerName, handler);
-        return state.configuration;
-    }
-
-    @Override
     public Configuration visit(AstWriteHttpVersionNode node, State state) throws Exception {
         AstValue version = node.getVersion();
 
@@ -960,23 +972,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         handler.setLocationInfo(node.getLocationInfo());
         String handlerName = String.format("writeConfig#%d (http version)", state.pipelineAsMap.size() + 1);
         state.pipelineAsMap.put(handlerName, handler);
-        return state.configuration;
-    }
-
-    @Override
-    public Configuration visit(AstReadHttpStatusNode node, State state) throws Exception {
-        AstValueMatcher code = node.getCode();
-        AstValueMatcher reason = node.getReason();
-
-        MessageDecoder codeDecoder = code.accept(new GenerateReadDecoderVisitor(), state.configuration);
-        MessageDecoder reasonDecoder = reason.accept(new GenerateReadDecoderVisitor(), state.configuration);
-
-        ReadConfigHandler handler = new ReadConfigHandler(new HttpStatusDecoder(codeDecoder, reasonDecoder));
-
-        handler.setLocationInfo(node.getLocationInfo());
-        Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
-        String handlerName = String.format("readConfig#%d (http status)", pipelineAsMap.size() + 1);
-        pipelineAsMap.put(handlerName, handler);
         return state.configuration;
     }
 

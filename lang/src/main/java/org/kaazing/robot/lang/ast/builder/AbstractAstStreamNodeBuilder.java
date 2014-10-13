@@ -28,6 +28,7 @@ import org.kaazing.robot.lang.ast.AstDisconnectedNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadClosedNode;
+import org.kaazing.robot.lang.ast.AstReadConfigNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
@@ -39,11 +40,6 @@ import org.kaazing.robot.lang.ast.AstWriteCloseNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpHeaderNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpMethodNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpParameterNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpStatusNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpVersionNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpContentLengthNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpHeaderNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpMethodNode;
@@ -101,9 +97,8 @@ public abstract class AbstractAstStreamNodeBuilder<T extends AstStreamNode, R> e
     public abstract AbstractAstStreamableNodeBuilder<AstWriteNotifyNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
             addWriteNotifyBarrier();
 
-    // http
-    public abstract AbstractAstStreamableNodeBuilder<AstReadHttpHeaderNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
-        addReadHttpHeaderEvent();
+    public abstract AbstractAstStreamableNodeBuilder<AstReadConfigNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
+        addReadConfigEvent();
 
     public abstract AbstractAstStreamableNodeBuilder<AstWriteHttpHeaderNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
         addWriteHttpHeaderCommand();
@@ -111,26 +106,14 @@ public abstract class AbstractAstStreamNodeBuilder<T extends AstStreamNode, R> e
     public abstract AbstractAstStreamableNodeBuilder<AstWriteHttpContentLengthNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
         addWriteHttpContentLengthCommand();
 
-    public abstract AbstractAstStreamableNodeBuilder<AstReadHttpMethodNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
-        addReadHttpMethodEvent();
-
     public abstract AbstractAstStreamableNodeBuilder<AstWriteHttpMethodNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
         addWriteHttpMethodCommand();
-
-    public abstract AbstractAstStreamableNodeBuilder<AstReadHttpParameterNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
-        addReadHttpParameterEvent();
 
     public abstract AbstractAstStreamableNodeBuilder<AstWriteHttpParameterNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
         addWriteHttpParameterCommand();
 
-    public abstract AbstractAstStreamableNodeBuilder<AstReadHttpVersionNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
-        addReadHttpVersionEvent();
-
     public abstract AbstractAstStreamableNodeBuilder<AstWriteHttpVersionNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
         addWriteHttpVersionCommand();
-
-    public abstract AbstractAstStreamableNodeBuilder<AstReadHttpStatusNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
-        addReadHttpStatusEvent();
 
     public abstract AbstractAstStreamableNodeBuilder<AstWriteHttpStatusNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
         addWriteHttpStatusCommand();

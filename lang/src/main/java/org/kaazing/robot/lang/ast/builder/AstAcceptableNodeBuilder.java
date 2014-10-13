@@ -22,11 +22,6 @@ package org.kaazing.robot.lang.ast.builder;
 import org.kaazing.robot.lang.ast.AstAcceptNode;
 import org.kaazing.robot.lang.ast.AstAcceptableNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
-import org.kaazing.robot.lang.http.ast.builder.AstReadHttpHeaderNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstReadHttpMethodNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstReadHttpParameterNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstReadHttpStatusNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstReadHttpVersionNodeBuilder;
 import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpContentLengthNodeBuilder;
 import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpHeaderNodeBuilder;
 import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpMethodNodeBuilder;
@@ -165,12 +160,12 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         super(node, node);
     }
 
-    // Http
     @Override
-    public AstReadHttpHeaderNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addReadHttpHeaderEvent() {
-        return new AstReadHttpHeaderNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
+    public AstReadConfigNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addReadConfigEvent() {
+        return new AstReadConfigNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
     }
 
+    // Http
     @Override
     public AstWriteHttpHeaderNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addWriteHttpHeaderCommand() {
         return new AstWriteHttpHeaderNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
@@ -182,18 +177,8 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
     }
 
     @Override
-    public AstReadHttpMethodNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addReadHttpMethodEvent() {
-        return new AstReadHttpMethodNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
-    }
-
-    @Override
     public AstWriteHttpMethodNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addWriteHttpMethodCommand() {
         return new AstWriteHttpMethodNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
-    }
-
-    @Override
-    public AstReadHttpParameterNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addReadHttpParameterEvent() {
-        return new AstReadHttpParameterNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
     }
 
     @Override
@@ -202,18 +187,8 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
     }
 
     @Override
-    public AstReadHttpVersionNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addReadHttpVersionEvent() {
-        return new AstReadHttpVersionNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
-    }
-
-    @Override
     public AstWriteHttpVersionNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addWriteHttpVersionCommand() {
         return new AstWriteHttpVersionNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
-    }
-
-    @Override
-    public AstReadHttpStatusNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addReadHttpStatusEvent() {
-        return new AstReadHttpStatusNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
     }
 
     @Override
@@ -348,12 +323,12 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
             return result.line(line);
         }
 
-        // HTTP
         @Override
-        public AstReadHttpHeaderNodeBuilder.StreamNested<ScriptNested<R>> addReadHttpHeaderEvent() {
-            return new AstReadHttpHeaderNodeBuilder.StreamNested<ScriptNested<R>>(this);
+        public AstReadConfigNodeBuilder.StreamNested<ScriptNested<R>> addReadConfigEvent() {
+            return new AstReadConfigNodeBuilder.StreamNested<ScriptNested<R>>(this);
         }
 
+        // Http
         @Override
         public AstWriteHttpHeaderNodeBuilder.StreamNested<ScriptNested<R>> addWriteHttpHeaderCommand() {
             return new AstWriteHttpHeaderNodeBuilder.StreamNested<ScriptNested<R>>(this);
@@ -365,18 +340,8 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         }
 
         @Override
-        public AstReadHttpMethodNodeBuilder.StreamNested<ScriptNested<R>> addReadHttpMethodEvent() {
-            return new AstReadHttpMethodNodeBuilder.StreamNested<ScriptNested<R>>(this);
-        }
-
-        @Override
         public AstWriteHttpMethodNodeBuilder.StreamNested<ScriptNested<R>> addWriteHttpMethodCommand() {
             return new AstWriteHttpMethodNodeBuilder.StreamNested<ScriptNested<R>>(this);
-        }
-
-        @Override
-        public AstReadHttpParameterNodeBuilder.StreamNested<ScriptNested<R>> addReadHttpParameterEvent() {
-            return new AstReadHttpParameterNodeBuilder.StreamNested<ScriptNested<R>>(this);
         }
 
         @Override
@@ -385,18 +350,8 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         }
 
         @Override
-        public AstReadHttpVersionNodeBuilder.StreamNested<ScriptNested<R>> addReadHttpVersionEvent() {
-            return new AstReadHttpVersionNodeBuilder.StreamNested<ScriptNested<R>>(this);
-        }
-
-        @Override
         public AstWriteHttpVersionNodeBuilder.StreamNested<ScriptNested<R>> addWriteHttpVersionCommand() {
             return new AstWriteHttpVersionNodeBuilder.StreamNested<ScriptNested<R>>(this);
-        }
-
-        @Override
-        public AstReadHttpStatusNodeBuilder.StreamNested<ScriptNested<R>> addReadHttpStatusEvent() {
-            return new AstReadHttpStatusNodeBuilder.StreamNested<ScriptNested<R>>(this);
         }
 
         @Override
@@ -552,12 +507,12 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
             return new AstWriteOptionNodeBuilder.StreamNested<AcceptNested<R>>(this);
         }
 
-        // Http
         @Override
-        public AstReadHttpHeaderNodeBuilder.StreamNested<AcceptNested<R>> addReadHttpHeaderEvent() {
-            return new AstReadHttpHeaderNodeBuilder.StreamNested<AcceptNested<R>>(this);
+        public AstReadConfigNodeBuilder.StreamNested<AcceptNested<R>> addReadConfigEvent() {
+            return new AstReadConfigNodeBuilder.StreamNested<AcceptNested<R>>(this);
         }
 
+        // Http
         @Override
         public AstWriteHttpHeaderNodeBuilder.StreamNested<AcceptNested<R>> addWriteHttpHeaderCommand() {
             return new AstWriteHttpHeaderNodeBuilder.StreamNested<AcceptNested<R>>(this);
@@ -569,18 +524,8 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         }
 
         @Override
-        public AstReadHttpMethodNodeBuilder.StreamNested<AcceptNested<R>> addReadHttpMethodEvent() {
-            return new AstReadHttpMethodNodeBuilder.StreamNested<AcceptNested<R>>(this);
-        }
-
-        @Override
         public AstWriteHttpMethodNodeBuilder.StreamNested<AcceptNested<R>> addWriteHttpMethodCommand() {
             return new AstWriteHttpMethodNodeBuilder.StreamNested<AcceptNested<R>>(this);
-        }
-
-        @Override
-        public AstReadHttpParameterNodeBuilder.StreamNested<AcceptNested<R>> addReadHttpParameterEvent() {
-            return new AstReadHttpParameterNodeBuilder.StreamNested<AcceptNested<R>>(this);
         }
 
         @Override
@@ -589,18 +534,8 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         }
 
         @Override
-        public AstReadHttpVersionNodeBuilder.StreamNested<AcceptNested<R>> addReadHttpVersionEvent() {
-            return new AstReadHttpVersionNodeBuilder.StreamNested<AcceptNested<R>>(this);
-        }
-
-        @Override
         public AstWriteHttpVersionNodeBuilder.StreamNested<AcceptNested<R>> addWriteHttpVersionCommand() {
             return new AstWriteHttpVersionNodeBuilder.StreamNested<AcceptNested<R>>(this);
-        }
-
-        @Override
-        public AstReadHttpStatusNodeBuilder.StreamNested<AcceptNested<R>> addReadHttpStatusEvent() {
-            return new AstReadHttpStatusNodeBuilder.StreamNested<AcceptNested<R>>(this);
         }
 
         @Override

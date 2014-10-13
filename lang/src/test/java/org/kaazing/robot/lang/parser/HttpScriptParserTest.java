@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.lang.parser;
 
+import static org.junit.Assert.assertEquals;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_CLOSED;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_HEADER;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_METHOD;
@@ -39,27 +40,19 @@ import java.net.URI;
 
 import org.junit.Test;
 import org.kaazing.robot.lang.ast.AstReadClosedNode;
+import org.kaazing.robot.lang.ast.AstReadConfigNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.AstWriteCloseNode;
 import org.kaazing.robot.lang.ast.builder.AstReadClosedNodeBuilder;
+import org.kaazing.robot.lang.ast.builder.AstReadConfigNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstScriptNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstWriteCloseNodeBuilder;
-import org.kaazing.robot.lang.http.ast.AstReadHttpHeaderNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpMethodNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpParameterNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpStatusNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpVersionNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpContentLengthNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpHeaderNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpMethodNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpParameterNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpStatusNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpVersionNode;
-import org.kaazing.robot.lang.http.ast.builder.AstReadHttpHeaderNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstReadHttpMethodNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstReadHttpParameterNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstReadHttpStatusNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstReadHttpVersionNodeBuilder;
 import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpContentLengthNodeBuilder;
 import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpHeaderNodeBuilder;
 import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpMethodNodeBuilder;
@@ -75,12 +68,13 @@ public class HttpScriptParserTest {
         String scriptFragment = "read header \"Host\" \"localhost:8000\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstReadHttpHeaderNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_HEADER);
+        AstReadConfigNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_HEADER);
 
         // @formatter:off
-        AstReadHttpHeaderNode expected = new AstReadHttpHeaderNodeBuilder()
-            .setNameExactText("Host")
-            .addValueExactText("localhost:8000")
+        AstReadConfigNode expected = new AstReadConfigNodeBuilder()
+            .setType("header")
+            .setValueExactText("name", "Host")
+            .addMatcherExactText("localhost:8000")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -130,11 +124,12 @@ public class HttpScriptParserTest {
         String scriptFragment = "read method \"get\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstReadHttpMethodNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_METHOD);
+        AstReadConfigNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_METHOD);
 
         // @formatter:off
-        AstReadHttpMethodNode expected = new AstReadHttpMethodNodeBuilder()
-            .setExactText("get")
+        AstReadConfigNode expected = new AstReadConfigNodeBuilder()
+            .setType("method")
+            .setMatcherExactText("name", "get")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -166,12 +161,13 @@ public class HttpScriptParserTest {
         String scriptFragment = "read parameter \".kl\" \"y\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstReadHttpParameterNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_PARAMETER);
+        AstReadConfigNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_PARAMETER);
 
         // @formatter:off
-        AstReadHttpParameterNode expected = new AstReadHttpParameterNodeBuilder()
-            .setNameExactText(".kl")
-            .addValueExactText("y")
+        AstReadConfigNode expected = new AstReadConfigNodeBuilder()
+            .setType("parameter")
+            .setValueExactText("name", ".kl")
+            .addMatcherExactText("y")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -204,11 +200,12 @@ public class HttpScriptParserTest {
         String scriptFragment = "read version \"Http/1.1\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstReadHttpVersionNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_VERSION);
+        AstReadConfigNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_VERSION);
 
         // @formatter:off
-        AstReadHttpVersionNode expected = new AstReadHttpVersionNodeBuilder()
-            .setExactText("Http/1.1")
+        AstReadConfigNode expected = new AstReadConfigNodeBuilder()
+            .setType("version")
+            .setMatcherExactText("version", "Http/1.1")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -240,12 +237,13 @@ public class HttpScriptParserTest {
         String scriptFragment = "read status \"403\" \"Unauthorized\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstReadHttpStatusNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_STATUS);
+        AstReadConfigNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_STATUS);
 
         // @formatter:off
-        AstReadHttpStatusNode expected = new AstReadHttpStatusNodeBuilder()
-            .setCodeExactText("403")
-            .setReasonExactText("Unauthorized")
+        AstReadConfigNode expected = new AstReadConfigNodeBuilder()
+            .setType("status")
+            .setMatcherExactText("code", "403")
+            .setMatcherExactText("reason", "Unauthorized")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -335,18 +333,21 @@ public class HttpScriptParserTest {
              .done()
              .addAcceptedStream()
                  .setNextLineInfo(1, 0)
-                 .addReadHttpMethodEvent()
-                     .setExactText("get")
+                 .addReadConfigEvent()
+                     .setType("method")
+                     .setMatcherExactText("name", "get")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addReadHttpParameterEvent()
-                     .setNameExactText(".kl")
-                     .addValueExactText("y")
+                 .addReadConfigEvent()
+                     .setType("parameter")
+                     .setValueExactText("name", ".kl")
+                     .addMatcherExactText("y")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addReadHttpHeaderEvent()
-                     .setNameExactText("Upgrade")
-                     .addValueExactText("websocket")
+                 .addReadConfigEvent()
+                     .setType("header")
+                     .setValueExactText("name", "Upgrade")
+                     .addMatcherExactText("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addReadEvent()
@@ -427,14 +428,16 @@ public class HttpScriptParserTest {
                  .addWriteCloseCommand()
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addReadHttpStatusEvent()
-                     .setCodeExactText("101")
-                     .setReasonExactText("Switching Protocols")
+                 .addReadConfigEvent()
+                     .setType("status")
+                     .setMatcherExactText("code", "101")
+                     .setMatcherExactText("reason", "Switching Protocols")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addReadHttpHeaderEvent()
-                     .setNameExactText("upgrade")
-                     .addValueExactText("websocket")
+                 .addReadConfigEvent()
+                     .setType("header")
+                     .setValueExactText("name", "upgrade")
+                     .addMatcherExactText("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addReadCloseCommand()
@@ -481,8 +484,9 @@ public class HttpScriptParserTest {
              .done()
              .addAcceptedStream()
                  .setNextLineInfo(1, 0)
-                 .addReadHttpMethodEvent()
-                     .setExactText("get")
+                 .addReadConfigEvent()
+                     .setType("method")
+                     .setMatcherExactText("name", "get")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addReadCloseCommand()

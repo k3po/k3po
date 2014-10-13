@@ -44,6 +44,7 @@ import org.kaazing.robot.lang.ast.AstNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadClosedNode;
+import org.kaazing.robot.lang.ast.AstReadConfigNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
@@ -57,11 +58,6 @@ import org.kaazing.robot.lang.ast.AstWriteCloseNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpHeaderNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpMethodNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpParameterNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpStatusNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpVersionNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpContentLengthNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpHeaderNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpMethodNode;
@@ -271,7 +267,7 @@ public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBa
     }
 
     @Override
-    public Void visit(AstReadHttpHeaderNode node, State parameter) throws Exception {
+    public Void visit(AstReadConfigNode node, State parameter) throws Exception {
         // NOOP
         return null;
     }
@@ -289,19 +285,7 @@ public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBa
     }
 
     @Override
-    public Void visit(AstReadHttpMethodNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
     public Void visit(AstWriteHttpMethodNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstReadHttpParameterNode node, State parameter) throws Exception {
         // NOOP
         return null;
     }
@@ -313,19 +297,7 @@ public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBa
     }
 
     @Override
-    public Void visit(AstReadHttpVersionNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
     public Void visit(AstWriteHttpVersionNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstReadHttpStatusNode node, State parameter) throws Exception {
         // NOOP
         return null;
     }

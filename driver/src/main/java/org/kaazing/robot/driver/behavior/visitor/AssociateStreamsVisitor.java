@@ -44,6 +44,7 @@ import org.kaazing.robot.lang.ast.AstNodeException;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadClosedNode;
+import org.kaazing.robot.lang.ast.AstReadConfigNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
@@ -57,11 +58,6 @@ import org.kaazing.robot.lang.ast.AstWriteCloseNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpHeaderNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpMethodNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpParameterNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpStatusNode;
-import org.kaazing.robot.lang.http.ast.AstReadHttpVersionNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpContentLengthNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpHeaderNode;
 import org.kaazing.robot.lang.http.ast.AstWriteHttpMethodNode;
@@ -321,7 +317,7 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
     }
 
     @Override
-    public AstScriptNode visit(AstReadHttpHeaderNode node, State state) throws Exception {
+    public AstScriptNode visit(AstReadConfigNode node, State state) throws Exception {
         state.streamables.add(node);
         return null;
     }
@@ -339,19 +335,7 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
     }
 
     @Override
-    public AstScriptNode visit(AstReadHttpMethodNode node, State state) throws Exception {
-        state.streamables.add(node);
-        return null;
-    }
-
-    @Override
     public AstScriptNode visit(AstWriteHttpMethodNode node, State state) throws Exception {
-        state.streamables.add(node);
-        return null;
-    }
-
-    @Override
-    public AstScriptNode visit(AstReadHttpParameterNode node, State state) throws Exception {
         state.streamables.add(node);
         return null;
     }
@@ -363,19 +347,7 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
     }
 
     @Override
-    public AstScriptNode visit(AstReadHttpVersionNode node, State state) throws Exception {
-        state.streamables.add(node);
-        return null;
-    }
-
-    @Override
     public AstScriptNode visit(AstWriteHttpVersionNode node, State state) throws Exception {
-        state.streamables.add(node);
-        return null;
-    }
-
-    @Override
-    public AstScriptNode visit(AstReadHttpStatusNode node, State state) throws Exception {
         state.streamables.add(node);
         return null;
     }
