@@ -19,7 +19,6 @@
 
 package org.kaazing.robot.driver.behavior.handler;
 
-import static java.util.Objects.requireNonNull;
 import static org.kaazing.robot.driver.channel.Channels.prepare;
 
 import java.util.concurrent.atomic.AtomicBoolean;
