@@ -1746,11 +1746,11 @@ public class RobotIT {
         RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
         OutputStream outputStream = accepted.getOutputStream();
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-        System.out.println("got before");
+
         while (!accepted.isConnected()) {
             Thread.sleep(1);
         }
-        System.out.println("got here");
+
         writer.write("whatever\"");
         writer.flush();
 

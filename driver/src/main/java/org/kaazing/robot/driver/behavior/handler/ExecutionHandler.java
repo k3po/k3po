@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.behavior.handler;
 
+import static java.util.Objects.requireNonNull;
 import static org.kaazing.robot.driver.channel.Channels.prepare;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -69,7 +70,7 @@ public class ExecutionHandler extends SimplePrepareUpstreamHandler implements Li
         return locationInfo;
     }
 
-    public void setLocationInfo(final LocationInfo locationInfo) {
+    public void setLocationInfo(LocationInfo locationInfo) {
         this.locationInfo = locationInfo;
     }
 

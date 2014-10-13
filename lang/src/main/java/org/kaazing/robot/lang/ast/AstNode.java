@@ -100,7 +100,6 @@ public abstract class AstNode {
         R visit(AstReadValueNode node, P parameter) throws Exception;
         R visit(AstDisconnectedNode node, P parameter) throws Exception;
         R visit(AstUnboundNode node, P parameter) throws Exception;
-        R visit(AstReadResumedNode node, P parameter) throws Exception;
         R visit(AstReadClosedNode node, P parameter) throws Exception;
         R visit(AstClosedNode node, P parameter) throws Exception;
 

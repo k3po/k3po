@@ -42,7 +42,6 @@ import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
-import org.kaazing.robot.lang.ast.AstReadResumedNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.AstStreamNode;
 import org.kaazing.robot.lang.ast.AstStreamableNode;
@@ -369,22 +368,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
         case HEADERS_COMPLETE:
         case CONTENT_COMPLETE:
             state.readState = StreamState.CLOSED;
-            break;
-        default:
-            throw new IllegalStateException(unexpectedReadEvent(node, state));
-        }
-        state.lastLocationInfo = state.lastLocationInfo;
-        state.streamables.add(node);
-        return null;
-    }
-
-    @Override
-    public AstScriptNode visit(AstReadResumedNode node, State state) throws Exception {
-        switch (state.readState) {
-        case REQUEST:
-        case RESPONSE:
-        case HEADERS_COMPLETE:
-        case CONTENT_COMPLETE:
             break;
         default:
             throw new IllegalStateException(unexpectedReadEvent(node, state));

@@ -47,7 +47,6 @@ import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
-import org.kaazing.robot.lang.ast.AstReadResumedNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.AstStreamNode;
 import org.kaazing.robot.lang.ast.AstStreamableNode;
@@ -333,12 +332,6 @@ public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBa
 
     @Override
     public Void visit(AstWriteHttpStatusNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstReadResumedNode node, State state) throws Exception {
         // NOOP
         return null;
     }

@@ -13,7 +13,6 @@ write header "Sec-WebSocket-Key" "uoH83mU2xzVTb+Gw6YWVJg=="
 write header "Sec-WebSocket-Version" "13" 
 flush
 
-read resumed
 read status "101" "Web Socket Protocol Handshake"
 read header "Connection" "Upgrade"
 read header "Date" "Tue, 15 Apr 2014 01:13:18 GMT"

@@ -20,22 +20,19 @@
 package org.kaazing.robot.driver.netty.channel;
 
 import static java.util.Objects.requireNonNull;
+import static org.jboss.netty.channel.Channels.succeededFuture;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 
-final class DownstreamFlushEvent implements FlushEvent {
+final class UpstreamFlushEvent implements FlushEvent {
 
     private final Channel channel;
-    private final ChannelFuture future;
 
-    DownstreamFlushEvent(
-            Channel channel,
-            ChannelFuture future) {
+    UpstreamFlushEvent(
+            Channel channel) {
         requireNonNull(channel);
-        requireNonNull(future);
         this.channel = channel;
-        this.future = future;
     }
 
     @Override
@@ -45,7 +42,7 @@ final class DownstreamFlushEvent implements FlushEvent {
 
     @Override
     public ChannelFuture getFuture() {
-        return future;
+        return succeededFuture(channel);
     }
 
     @Override
@@ -53,7 +50,7 @@ final class DownstreamFlushEvent implements FlushEvent {
         String channelString = getChannel().toString();
         StringBuilder buf = new StringBuilder(channelString.length() + 64);
         buf.append(channelString);
-        buf.append(" FLUSH_REQUEST");
+        buf.append(" FLUSHED");
         return buf.toString();
     }
 

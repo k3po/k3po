@@ -50,7 +50,7 @@ final class UpstreamShutdownInputEvent implements ShutdownInputEvent {
         String channelString = getChannel().toString();
         StringBuilder buf = new StringBuilder(channelString.length() + 64);
         buf.append(channelString);
-        buf.append(" INPUT SHUTDOWN");
+        buf.append(" INPUT_SHUTDOWN");
         return buf.toString();
     }
 

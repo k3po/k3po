@@ -42,7 +42,6 @@ import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
-import org.kaazing.robot.lang.ast.AstReadResumedNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.AstStreamNode;
 import org.kaazing.robot.lang.ast.AstStreamableNode;
@@ -490,12 +489,6 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
     @Override
     public AstScriptNode visit(AstWriteHttpStatusNode node, State state) throws Exception {
-        visitStreamableInConnectedState(node, state);
-        return null;
-    }
-
-    @Override
-    public AstScriptNode visit(AstReadResumedNode node, State state) throws Exception {
         visitStreamableInConnectedState(node, state);
         return null;
     }

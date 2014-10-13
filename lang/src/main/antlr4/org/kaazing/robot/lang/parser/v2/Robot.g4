@@ -89,7 +89,6 @@ commandNode
 eventNode
     : openedNode
     | boundNode
-    | readResumedNode
     | readNode
     | readClosedNode
     | disconnectedNode
@@ -195,10 +194,6 @@ openedNode
 
 readClosedNode: 
     k=ReadKeyword ClosedKeyword;
-
-readResumedNode
-    : k=ReadKeyword ResumedKeyword
-    ;
 
 readNode
     : k=ReadKeyword matcher+
@@ -430,10 +425,6 @@ OpenedKeyword
 
 ReadKeyword
     : 'read'
-    ;
-
-ResumedKeyword
-    : 'resumed'
     ;
 
 UnbindKeyword

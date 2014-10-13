@@ -32,19 +32,17 @@ import org.kaazing.robot.lang.ast.AstAcceptableNode;
 import org.kaazing.robot.lang.ast.AstBoundNode;
 import org.kaazing.robot.lang.ast.AstChildClosedNode;
 import org.kaazing.robot.lang.ast.AstChildOpenedNode;
-import org.kaazing.robot.lang.ast.AstFlushNode;
-import org.kaazing.robot.lang.ast.AstReadClosedNode;
-import org.kaazing.robot.lang.ast.AstReadResumedNode;
-import org.kaazing.robot.lang.ast.AstWriteCloseNode;
 import org.kaazing.robot.lang.ast.AstCloseNode;
 import org.kaazing.robot.lang.ast.AstClosedNode;
 import org.kaazing.robot.lang.ast.AstConnectNode;
 import org.kaazing.robot.lang.ast.AstConnectedNode;
 import org.kaazing.robot.lang.ast.AstDisconnectNode;
 import org.kaazing.robot.lang.ast.AstDisconnectedNode;
+import org.kaazing.robot.lang.ast.AstFlushNode;
 import org.kaazing.robot.lang.ast.AstNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
+import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
@@ -54,6 +52,7 @@ import org.kaazing.robot.lang.ast.AstStreamableNode;
 import org.kaazing.robot.lang.ast.AstUnbindNode;
 import org.kaazing.robot.lang.ast.AstUnboundNode;
 import org.kaazing.robot.lang.ast.AstWriteAwaitNode;
+import org.kaazing.robot.lang.ast.AstWriteCloseNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
@@ -345,11 +344,6 @@ public class GatherStreamsLocationVisitor implements AstNode.Visitor<AstScriptNo
 
     @Override
     public AstScriptNode visit(AstWriteHttpStatusNode node, State parameter) throws Exception {
-        return null;
-    }
-
-    @Override
-    public AstScriptNode visit(AstReadResumedNode node, State state) throws Exception {
         return null;
     }
 

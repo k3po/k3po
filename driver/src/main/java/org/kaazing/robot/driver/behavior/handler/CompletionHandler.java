@@ -26,10 +26,10 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.lang.LocationInfo;
 import org.kaazing.robot.driver.behavior.handler.prepare.DownstreamPreparationEvent;
 import org.kaazing.robot.driver.behavior.handler.prepare.PreparationEvent;
@@ -74,7 +74,9 @@ public class CompletionHandler extends ExecutionHandler {
                     LOGGER.debug("pipeline handler complete. Location info is " + progressInfo);
                 }
                 // Need to let the last event logger know we are done so we don't pick up the wrong event.
-                ctx.getPipeline().get(LogLastEventHandler.class).setDone();
+                ChannelPipeline pipeline = ctx.getPipeline();
+                LogLastEventHandler logHandler = pipeline.get(LogLastEventHandler.class);
+                logHandler.setDone();
             }
         });
         pipelineFuture.addListener(chainedFuture(handlerFuture));

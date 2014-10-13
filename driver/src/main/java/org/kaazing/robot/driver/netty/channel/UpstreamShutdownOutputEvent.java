@@ -50,7 +50,7 @@ final class UpstreamShutdownOutputEvent implements ShutdownOutputEvent {
         String channelString = getChannel().toString();
         StringBuilder buf = new StringBuilder(channelString.length() + 64);
         buf.append(channelString);
-        buf.append(" OUTPUT SHUTDOWN");
+        buf.append(" OUTPUT_SHUTDOWN");
         return buf.toString();
     }
 

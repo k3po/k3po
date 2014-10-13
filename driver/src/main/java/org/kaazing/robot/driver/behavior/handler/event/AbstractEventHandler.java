@@ -66,7 +66,7 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(AbstractEventHandler.class);
 
     protected static final EnumSet<ChannelEventKind> DEFAULT_INTERESTED_EVENTS =
-            complementOf(of(CHILD_OPEN, CHILD_CLOSED, WRITE_COMPLETED, INTEREST_OPS, EXCEPTION, IDLE_STATE, FLUSHED,
+            complementOf(of(CHILD_OPEN, CHILD_CLOSED, WRITE_COMPLETED, INTEREST_OPS, EXCEPTION, IDLE_STATE,
                             OUTPUT_SHUTDOWN, UNKNOWN));
 
     public static enum ChannelEventKind {

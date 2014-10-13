@@ -52,6 +52,16 @@ public final class Channels {
     }
 
     /**
+     * Sends a {@code "flushed"} event to the first
+     * {@link ChannelUpstreamHandler} in the {@link ChannelPipeline} of
+     * the specified {@link Channel}.
+     */
+    public static void fireFlushed(Channel channel) {
+        channel.getPipeline().sendUpstream(
+                new UpstreamFlushEvent(channel));
+    }
+
+    /**
      * Sends a {@code "shutdownInput"} request to the last
      * {@link ChannelDownstreamHandler} in the {@link ChannelPipeline} of
      * the specified {@link Channel}.

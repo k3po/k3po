@@ -53,7 +53,6 @@ import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
-import org.kaazing.robot.lang.ast.AstReadResumedNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.AstStreamNode;
@@ -135,7 +134,6 @@ import org.kaazing.robot.lang.parser.v2.RobotParser.ReadHttpVersionNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadNotifyNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadOptionNodeContext;
-import org.kaazing.robot.lang.parser.v2.RobotParser.ReadResumedNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.RegexMatcherContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ScriptNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ServerStreamableNodeContext;
@@ -979,11 +977,6 @@ abstract class ScriptParseStrategy<T> {
         }
 
         @Override
-        public AstReadResumedNode visitReadResumedNode(ReadResumedNodeContext ctx) {
-            return new AstReadResumedNodeVisitor(elFactory, elContext).visitReadResumedNode(ctx);
-        }
-
-        @Override
         public AstReadClosedNode visitReadClosedNode(ReadClosedNodeContext ctx) {
             return new AstReadClosedNodeVisitor(elFactory, elContext).visitReadClosedNode(ctx);
         }
@@ -1319,21 +1312,6 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstUnboundNode visitUnboundNode(UnboundNodeContext ctx) {
             node = new AstUnboundNode();
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            return node;
-        }
-
-    }
-
-    private static class AstReadResumedNodeVisitor extends AstNodeVisitor<AstReadResumedNode> {
-
-        public AstReadResumedNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
-            super(elFactory, elContext);
-        }
-
-        @Override
-        public AstReadResumedNode visitReadResumedNode(ReadResumedNodeContext ctx) {
-            node = new AstReadResumedNode();
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }

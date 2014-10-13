@@ -102,7 +102,6 @@ import org.kaazing.robot.driver.behavior.handler.event.DisconnectedHandler;
 import org.kaazing.robot.driver.behavior.handler.event.InputShutdownHandler;
 import org.kaazing.robot.driver.behavior.handler.event.OpenedHandler;
 import org.kaazing.robot.driver.behavior.handler.event.ReadHandler;
-import org.kaazing.robot.driver.behavior.handler.event.ReadResumedHandler;
 import org.kaazing.robot.driver.behavior.handler.event.UnboundHandler;
 import org.kaazing.robot.driver.behavior.visitor.GenerateConfigurationVisitor.State;
 import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
@@ -129,7 +128,6 @@ import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
-import org.kaazing.robot.lang.ast.AstReadResumedNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.AstStreamNode;
@@ -985,16 +983,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         handler.setLocationInfo(node.getLocationInfo());
         String handlerName = String.format("writeConfig#%d (http status)", state.pipelineAsMap.size() + 1);
-        state.pipelineAsMap.put(handlerName, handler);
-        return state.configuration;
-    }
-
-    @Override
-    public Configuration visit(AstReadResumedNode node, State state) throws Exception {
-        ReadResumedHandler handler = new ReadResumedHandler();
-
-        handler.setLocationInfo(node.getLocationInfo());
-        String handlerName = String.format("readResumed#%d", state.pipelineAsMap.size() + 1);
         state.pipelineAsMap.put(handlerName, handler);
         return state.configuration;
     }

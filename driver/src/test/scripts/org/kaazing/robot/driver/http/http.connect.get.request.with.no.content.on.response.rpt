@@ -7,7 +7,6 @@ connected
 write method "get"
 write header "some" "header" 
 close request
-read resumed
 read header "some" "header"
 close response
 closed
