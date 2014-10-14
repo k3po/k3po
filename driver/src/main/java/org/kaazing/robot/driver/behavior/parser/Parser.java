@@ -26,6 +26,7 @@ import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.robot.driver.behavior.visitor.AssociateStreamsVisitor;
 import org.kaazing.robot.driver.behavior.visitor.InjectBarriersVisitor;
 import org.kaazing.robot.driver.behavior.visitor.InjectEventsVisitor;
+import org.kaazing.robot.driver.behavior.visitor.InjectFlushVisitor;
 import org.kaazing.robot.driver.behavior.visitor.InjectHttpStreamsVisitor;
 import org.kaazing.robot.driver.behavior.visitor.ValidateBarriersVisitor;
 import org.kaazing.robot.lang.ast.AstScriptNode;
@@ -71,6 +72,13 @@ public class Parser implements ScriptParser {
 
             if (isDebugEnabled) {
                 LOGGER.debug("inject barriers visitor done. Result: " + script);
+            }
+
+            InjectFlushVisitor injectFlush = new InjectFlushVisitor();
+            script = script.accept(injectFlush, new InjectFlushVisitor.State());
+
+            if (isDebugEnabled) {
+                LOGGER.debug("inject flush visitor done. Result: " + script);
             }
 
             AssociateStreamsVisitor associateStreams = new AssociateStreamsVisitor();

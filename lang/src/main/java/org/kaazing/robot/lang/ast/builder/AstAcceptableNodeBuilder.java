@@ -165,6 +165,11 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
     }
 
     @Override
+    public AstFlushNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addFlushCommand() {
+        return new AstFlushNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
+    }
+
+    @Override
     public AstReadClosedNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addReadCloseCommand() {
         return new AstReadClosedNodeBuilder.StreamNested<AstAcceptableNodeBuilder>(this);
     }
@@ -299,6 +304,11 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         @Override
         public AstWriteConfigNodeBuilder.StreamNested<ScriptNested<R>> addWriteConfigCommand() {
             return new AstWriteConfigNodeBuilder.StreamNested<ScriptNested<R>>(this);
+        }
+
+        @Override
+        public AstFlushNodeBuilder.StreamNested<ScriptNested<R>> addFlushCommand() {
+            return new AstFlushNodeBuilder.StreamNested<ScriptNested<R>>(this);
         }
 
         @Override
@@ -457,6 +467,11 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         @Override
         public AstWriteConfigNodeBuilder.StreamNested<AcceptNested<R>> addWriteConfigCommand() {
             return new AstWriteConfigNodeBuilder.StreamNested<AcceptNested<R>>(this);
+        }
+
+        @Override
+        public AstFlushNodeBuilder.StreamNested<AcceptNested<R>> addFlushCommand() {
+            return new AstFlushNodeBuilder.StreamNested<AcceptNested<R>>(this);
         }
 
         @Override

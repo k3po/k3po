@@ -25,6 +25,7 @@ import org.kaazing.robot.lang.ast.AstClosedNode;
 import org.kaazing.robot.lang.ast.AstConnectedNode;
 import org.kaazing.robot.lang.ast.AstDisconnectNode;
 import org.kaazing.robot.lang.ast.AstDisconnectedNode;
+import org.kaazing.robot.lang.ast.AstFlushNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadClosedNode;
@@ -97,6 +98,9 @@ public abstract class AbstractAstStreamNodeBuilder<T extends AstStreamNode, R> e
 
     public abstract AbstractAstStreamableNodeBuilder<AstWriteConfigNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
         addWriteConfigCommand();
+
+    public abstract AbstractAstStreamableNodeBuilder<AstFlushNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
+        addFlushCommand();
 
     public abstract AbstractAstStreamableNodeBuilder<AstReadClosedNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
         addReadCloseCommand();

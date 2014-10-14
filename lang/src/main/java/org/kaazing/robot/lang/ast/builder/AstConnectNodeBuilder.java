@@ -146,6 +146,11 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
     }
 
     @Override
+    public AstFlushNodeBuilder.StreamNested<AstConnectNodeBuilder> addFlushCommand() {
+        return new AstFlushNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
+    }
+
+    @Override
     public AstReadClosedNodeBuilder.StreamNested<AstConnectNodeBuilder> addReadCloseCommand() {
         return new AstReadClosedNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
     }
@@ -283,6 +288,11 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         @Override
         public AstWriteConfigNodeBuilder.StreamNested<ScriptNested<R>> addWriteConfigCommand() {
             return new AstWriteConfigNodeBuilder.StreamNested<ScriptNested<R>>(this);
+        }
+
+        @Override
+        public AstFlushNodeBuilder.StreamNested<ScriptNested<R>> addFlushCommand() {
+            return new AstFlushNodeBuilder.StreamNested<ScriptNested<R>>(this);
         }
 
         @Override
