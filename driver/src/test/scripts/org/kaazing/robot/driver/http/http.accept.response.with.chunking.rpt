@@ -11,7 +11,7 @@ read header "Date" "Fri, 31 Dec 1999 23:59:59 GMT"
 read header "Content-Type" "text/plain"
 read header "Content-Length" "11"
 read "Hello World"
-close request
+read closed
 
 write status "200" "OK"
 write header "Date" "Fri, 31 Dec 1999 23:59:59 GMT"
@@ -20,4 +20,4 @@ write header "Transfer-Encoding" "chunked"
 write "Chunk A"
 write "Chunk B"
 write "Chunk C"
-close response
+write close

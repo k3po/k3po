@@ -6,7 +6,6 @@ connect http://localhost:8000/
 connected
 write method "get"
 write header "some" "header" 
-close request
+write close
 read header "some" "header"
-close response
-closed
+read closed

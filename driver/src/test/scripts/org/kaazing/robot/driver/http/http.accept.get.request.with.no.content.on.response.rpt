@@ -7,6 +7,6 @@ accepted
 connected
 read method "GET"
 read header "some" "header" 
-close request
+read closed
 write header "some" "header"
-close response
+write close

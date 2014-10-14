@@ -25,13 +25,11 @@ acceptNode
     ;
 
 acceptableNode
-    : k=AcceptedKeyword ( text=Name )?
-      (streamableNode | httpAcceptedStreamableNode)+
+    : k=AcceptedKeyword ( text=Name )? streamableNode+
     ;
 
 connectNode
-    : k=ConnectKeyword connectURI=URILiteral
-      (streamableNode | httpConnectStreamableNode)+
+    : k=ConnectKeyword connectURI=URILiteral streamableNode+
     ;
 
 serverStreamableNode
@@ -100,38 +98,6 @@ eventNode
     | readHttpParameterNode
     | readHttpVersionNode
     | readHttpStatusNode
-    ;
-
-// TODO: determine if this should be retained
-httpAcceptedStreamableNode
-    : httpRequestReadCloseNode
-    | httpResponseWriteCloseNode
-    ;
-
-// TODO: determine if this should be retained
-httpConnectStreamableNode
-    : httpRequestWriteCloseNode
-    | httpResponseReadCloseNode
-    ;
-
-// TODO: determine if this should be retained
-httpRequestWriteCloseNode
-    : k=CloseKeyword HttpRequestKeyword
-    ;
-
-// TODO: determine if this should be retained
-httpRequestReadCloseNode
-    : k=CloseKeyword HttpRequestKeyword
-    ;
-
-// TODO: determine if this should be retained
-httpResponseWriteCloseNode
-    : k=CloseKeyword HttpResponseKeyword
-    ;
-
-// TODO: determine if this should be retained
-httpResponseReadCloseNode
-    : k=CloseKeyword HttpResponseKeyword
     ;
 
 barrierNode
@@ -228,7 +194,7 @@ writeHttpHeaderNode
     ;
 
 writeHttpContentLengthNode
-    : k=WriteKeyword HttpContentLengthKeyword
+    : k=WriteKeyword HttpHeaderKeyword HttpContentLengthKeyword
     ;
 
 readHttpMethodNode

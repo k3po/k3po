@@ -15,9 +15,9 @@ read header "some" "header" "header5" "header4"
 read header "some" /Hello.+/ /(?<Capture>Howdy.+)/
 read header "some" /(?<Length>\d+)/
 
-close request
+read closed
 write header "some" "header" "header2" "header3"
-write content-length
+write header content-length
 write ${Length}
 write ${Capture}
-close response
+write close

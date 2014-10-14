@@ -7,19 +7,19 @@ accepted
 connected
 read method "GET"
 read header "some" "header" 
-close request
+read closed
 write header "some" "header"
-write content-length
+write header content-length
 write "content"
-close response
+write close
 
 accept http://localhost:8000/path2
 accepted
 connected
 read method "GET"
 read header "some" "header" 
-close request
+read closed
 write header "some" "header"
-write content-length
+write header content-length
 write "content"
-close response
+write close

@@ -95,7 +95,7 @@ public class HttpScriptParserTest {
     @Test
     public void shouldParseWriteHttpContentLength() throws Exception {
 
-        String scriptFragment = "write content-length";
+        String scriptFragment = "write header content-length";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_CONTENT_LENGTH);
@@ -469,7 +469,7 @@ public class HttpScriptParserTest {
              "read method \"get\"\n" +
              "read closed\n" +
              "write status \"200\" \"OK\"\n" +
-             "write content-length\n" +
+             "write header content-length\n" +
              "write \"some content\"\n" +
              "write close \n";
          // @formatter:on

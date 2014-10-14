@@ -12,9 +12,9 @@ write header "Transfer-Encoding" "chunked"
 write "Chunk A"
 write "Chunk B"
 write "Chunk C"
-close request
+write close
 
 read status "200" "OK"
 read header "Content-Length" "7"
 read "content"
-close response
+read closed
