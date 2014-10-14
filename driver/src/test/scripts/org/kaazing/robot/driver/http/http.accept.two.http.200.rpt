@@ -3,6 +3,7 @@
 #
 
 accept http://localhost:8000/path1
+
 accepted
 connected
 read method "GET"
@@ -13,7 +14,6 @@ write header content-length
 write "content"
 write close
 
-accept http://localhost:8000/path2
 accepted
 connected
 read method "GET"

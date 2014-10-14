@@ -32,7 +32,6 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -295,9 +294,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    // TODO:
     @Test
-    @Ignore("not yet implemented")
     public void shouldConnectConnectionCloseResponse() throws Exception {
 
         String script = combineScripts("http.connect.connection.close.response.rpt",
@@ -314,9 +311,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    // TODO:
     @Test
-    @Ignore("not yet implemented")
     public void shouldAcceptConnectionCloseResponse() throws Exception {
 
         String script = combineScripts("http.accept.connection.close.response.rpt",
@@ -333,8 +328,6 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    // TODO:
-    @Ignore
     @Test
     public void shouldAcceptMultipleHttpOnDifferentTcp() throws Exception {
 
@@ -352,8 +345,6 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    // TODO:
-    @Ignore
     @Test
     public void shouldAcceptMultipleHttpOnSameTcp() throws Exception {
 
