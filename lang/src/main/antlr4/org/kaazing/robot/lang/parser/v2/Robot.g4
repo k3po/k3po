@@ -73,7 +73,6 @@ streamableNode
 
 commandNode
     : writeNode
-    | flushNode
     | writeCloseNode
     | closeNode
     | writeHttpHeaderNode
@@ -120,10 +119,6 @@ disconnectNode
 
 unbindNode
     : k=UnbindKeyword
-    ;
-
-flushNode
-    : k=FlushKeyword
     ;
 
 writeNode
@@ -375,10 +370,6 @@ DisconnectKeyword
 
 DisconnectedKeyword
     : 'disconnected'
-    ;
-
-FlushKeyword
-    : 'flush'
     ;
 
 NotifyKeyword

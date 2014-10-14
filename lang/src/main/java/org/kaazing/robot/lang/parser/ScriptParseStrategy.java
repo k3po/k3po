@@ -45,7 +45,6 @@ import org.kaazing.robot.lang.ast.AstConnectedNode;
 import org.kaazing.robot.lang.ast.AstDisconnectNode;
 import org.kaazing.robot.lang.ast.AstDisconnectedNode;
 import org.kaazing.robot.lang.ast.AstEventNode;
-import org.kaazing.robot.lang.ast.AstFlushNode;
 import org.kaazing.robot.lang.ast.AstNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
 import org.kaazing.robot.lang.ast.AstOptionNode;
@@ -103,7 +102,6 @@ import org.kaazing.robot.lang.parser.v2.RobotParser.ExactTextMatcherContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ExpressionMatcherContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ExpressionValueContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.FixedLengthBytesMatcherContext;
-import org.kaazing.robot.lang.parser.v2.RobotParser.FlushNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.LiteralBytesContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.LiteralTextContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.MatcherContext;
@@ -434,15 +432,6 @@ abstract class ScriptParseStrategy<T> {
                                              ExpressionFactory elFactory,
                                              ExpressionContext elContext) throws RecognitionException {
             return new AstReadClosedNodeVisitor(elFactory, elContext).visit(parser.readClosedNode());
-        }
-    };
-
-    public static final ScriptParseStrategy<AstFlushNode> FLUSH = new ScriptParseStrategy<AstFlushNode>() {
-        @Override
-        public AstFlushNode parse(RobotParser parser,
-                                  ExpressionFactory elFactory,
-                                  ExpressionContext elContext) throws RecognitionException {
-            return new AstFlushNodeVisitor(elFactory, elContext).visit(parser.flushNode());
         }
     };
 
@@ -928,11 +917,6 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstUnbindNode visitUnbindNode(UnbindNodeContext ctx) {
             return new AstUnbindNodeVisitor(elFactory, elContext).visitUnbindNode(ctx);
-        }
-
-        @Override
-        public AstFlushNode visitFlushNode(FlushNodeContext ctx) {
-            return new AstFlushNodeVisitor(elFactory, elContext).visitFlushNode(ctx);
         }
 
         @Override
@@ -1659,21 +1643,6 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstWriteCloseNode visitWriteCloseNode(WriteCloseNodeContext ctx) {
             node = new AstWriteCloseNode();
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            return node;
-        }
-
-    }
-
-    private static class AstFlushNodeVisitor extends AstNodeVisitor<AstFlushNode> {
-
-        public AstFlushNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
-            super(elFactory, elContext);
-        }
-
-        @Override
-        public AstFlushNode visitFlushNode(FlushNodeContext ctx) {
-            node = new AstFlushNode();
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
