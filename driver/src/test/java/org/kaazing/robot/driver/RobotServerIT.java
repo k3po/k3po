@@ -112,6 +112,7 @@ public class RobotServerIT {
         
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
+        out.append("version:2.0\n");
         out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();
@@ -161,6 +162,7 @@ public class RobotServerIT {
         
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
+        out.append("version:2.0\n");
         out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();
@@ -217,6 +219,7 @@ public class RobotServerIT {
         
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
+        out.append("version:2.0\n");
         out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();
@@ -288,6 +291,7 @@ public class RobotServerIT {
         
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
+        out.append("version:2.0\n");
         out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();
@@ -360,6 +364,7 @@ public class RobotServerIT {
         
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
         out.append("PREPARE\n");
+        out.append("version:2.0\n");
         out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();
@@ -369,10 +374,9 @@ public class RobotServerIT {
             in.read(prepared);
         }
         prepared.flip();
-        
+
         assertEquals(expectedPrepared, prepared);
-        
-        
+
         out.append("START\n");
         out.append("\n");
         out.flush();
@@ -429,6 +433,7 @@ public class RobotServerIT {
         
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
+        out.append("version:2.0\n");
         out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();
@@ -498,6 +503,7 @@ public class RobotServerIT {
 
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
+        out.append("version:2.0\n");
         out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();
@@ -566,6 +572,7 @@ public class RobotServerIT {
 
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
+        out.append("version:2.0\n");
         out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();
@@ -613,6 +620,7 @@ public class RobotServerIT {
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
                 control.getOutputStream()));
         out.append("PREPARE\n");
+        out.append("version:2.0\n");
         out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();
@@ -648,6 +656,7 @@ public class RobotServerIT {
         String path = "org/kaazing/robot/driver/invalidScript";
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
+        out.append("version:2.0\n");
         out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();

@@ -236,6 +236,9 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
         case PREPARE:
             PrepareMessage prepareMessage = (PrepareMessage) message;
             switch (headerName) {
+            case "version":
+                prepareMessage.setVersion(headerValue);
+                break;
             case "name":
                 prepareMessage.getNames().add(headerValue);
                 break;

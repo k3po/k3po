@@ -96,6 +96,13 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
         final PrepareMessage prepare = (PrepareMessage) evt.getMessage();
 
+        // enforce control protocol version
+        String version = prepare.getVersion();
+        if (!"2.0".equals(version)) {
+            sendVersionError(ctx);
+            return;
+        }
+
         List<String> scriptNames = prepare.getNames();
         if (logger.isDebugEnabled()) {
             logger.debug("preparing robot execution for script(s) " + scriptNames);
@@ -233,6 +240,13 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         FinishedMessage finished = new FinishedMessage();
         finished.setScript(observedScript);
         Channels.write(ctx, Channels.future(null), finished);
+    }
+
+    private void sendVersionError(ChannelHandlerContext ctx) {
+        ErrorMessage error = new ErrorMessage();
+        error.setSummary("Bad control protocol version");
+        error.setDescription("Robot requires control protocol version 2.0");
+        Channels.write(ctx, Channels.future(null), error);
     }
 
     private void sendErrorMessage(ChannelHandlerContext ctx, Exception exception) {

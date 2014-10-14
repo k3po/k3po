@@ -26,9 +26,18 @@ import java.util.Objects;
 public class PrepareMessage extends ControlMessage {
 
     private List<String> names;
+    private String version;
 
     public PrepareMessage() {
         this.names = new ArrayList<String>(5);
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getVersion() {
+        return version;
     }
 
     public List<String> getNames() {
