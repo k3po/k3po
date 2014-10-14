@@ -50,15 +50,10 @@ import org.kaazing.robot.lang.ast.AstUnbindNode;
 import org.kaazing.robot.lang.ast.AstUnboundNode;
 import org.kaazing.robot.lang.ast.AstWriteAwaitNode;
 import org.kaazing.robot.lang.ast.AstWriteCloseNode;
+import org.kaazing.robot.lang.ast.AstWriteConfigNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpContentLengthNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpHeaderNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpMethodNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpParameterNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpStatusNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpVersionNode;
 
 public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State> {
 
@@ -425,61 +420,76 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
     @Override
     public AstScriptNode visit(AstReadConfigNode node, State state) throws Exception {
-        visitStreamableInConnectedState(node, state);
+
+        switch (state.connectivityState) {
+        case CONNECTED:
+            break;
+        default:
+            throw new IllegalStateException(String.format("Unexpected \"%s\" before connected", node));
+        }
+        state.lastLocationInfo = node.getLocationInfo();
+        state.streamables.add(node);
+
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstWriteHttpHeaderNode node, State state) throws Exception {
-        visitStreamableInConnectedState(node, state);
-        return null;
-    }
+    public AstScriptNode visit(AstWriteConfigNode node, State state) throws Exception {
 
-    @Override
-    public AstScriptNode visit(AstWriteHttpContentLengthNode node, State state) throws Exception {
-        visitStreamableInConnectedState(node, state);
-        return null;
-    }
+        switch (state.connectivityState) {
+        case CONNECTED:
+            break;
+        default:
+            throw new IllegalStateException(String.format("Unexpected \"%s\" before connected", node));
+        }
+        state.lastLocationInfo = node.getLocationInfo();
+        state.streamables.add(node);
 
-    @Override
-    public AstScriptNode visit(AstWriteHttpMethodNode node, State state) throws Exception {
-        visitStreamableInConnectedState(node, state);
-        return null;
-    }
-
-    @Override
-    public AstScriptNode visit(AstWriteHttpParameterNode node, State state) throws Exception {
-        visitStreamableInConnectedState(node, state);
-        return null;
-    }
-
-    @Override
-    public AstScriptNode visit(AstWriteHttpVersionNode node, State state) throws Exception {
-        visitStreamableInConnectedState(node, state);
-        return null;
-    }
-
-    @Override
-    public AstScriptNode visit(AstWriteHttpStatusNode node, State state) throws Exception {
-        visitStreamableInConnectedState(node, state);
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstReadClosedNode node, State state) throws Exception {
-        visitStreamableInConnectedState(node, state);
+
+        switch (state.connectivityState) {
+        case CONNECTED:
+            break;
+        default:
+            throw new IllegalStateException(String.format("Unexpected \"%s\" before connected", node));
+        }
+        state.lastLocationInfo = node.getLocationInfo();
+        state.streamables.add(node);
+
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstWriteCloseNode node, State state) throws Exception {
-        visitStreamableInConnectedState(node, state);
+
+        switch (state.connectivityState) {
+        case CONNECTED:
+            break;
+        default:
+            throw new IllegalStateException(String.format("Unexpected \"%s\" before connected", node));
+        }
+        state.lastLocationInfo = node.getLocationInfo();
+        state.streamables.add(node);
+
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstFlushNode node, State state) throws Exception {
-        visitStreamableInConnectedState(node, state);
+
+        switch (state.connectivityState) {
+        case CONNECTED:
+            break;
+        default:
+            throw new IllegalStateException(String.format("Unexpected \"%s\" before connected", node));
+        }
+        state.lastLocationInfo = node.getLocationInfo();
+        state.streamables.add(node);
+
         return null;
     }
 
@@ -495,22 +505,6 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
         state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
-    }
-
-    /**
-     * Guarantees that it is in the connected state, if not it must throw an Exception
-     * @return
-     * @throws Exception
-     */
-    private void visitStreamableInConnectedState(AstStreamableNode node, State state) throws Exception {
-        switch (state.connectivityState) {
-        case CONNECTED:
-            break;
-        default:
-            throw new IllegalStateException(String.format("Unexpected \"%s\" before connected", node));
-        }
-        state.lastLocationInfo = node.getLocationInfo();
-        state.streamables.add(node);
     }
 
 }

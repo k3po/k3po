@@ -43,10 +43,11 @@ public class InjectHttpStreamsVisitorTest {
                     .addReadCloseCommand()
                         .setNextLineInfo(1, 0)
                     .done()
-                    .addWriteHttpHeaderCommand()
+                    .addWriteConfigCommand()
+                        .setType("header")
+                        .setName("name", "Transfer-Encoding")
+                        .addValue("Chunked")
                         .setNextLineInfo(1, 0)
-                        .setNameExactText("Transfer-Encoding")
-                        .addValueExactText("Chunked")
                     .done()
                     .addWriteCommand()
                         .setNextLineInfo(1, 0)
@@ -80,7 +81,8 @@ public class InjectHttpStreamsVisitorTest {
                     .addReadCloseCommand()
                         .setNextLineInfo(1, 0)
                     .done()
-                    .addWriteHttpContentLengthCommand()
+                    .addWriteConfigCommand()
+                        .setType("content-length")
                         .setNextLineInfo(1, 0)
                     .done()
                     .addWriteCommand()
@@ -118,9 +120,10 @@ public class InjectHttpStreamsVisitorTest {
                          .addMatcherExactText("websocket")
                          .setNextLineInfo(1, 0)
                     .done()
-                    .addWriteHttpStatusCommand()
-                        .setCodeExactText("101")
-                        .setReasonExactText("Switching Protocols")
+                    .addWriteConfigCommand()
+                        .setType("status")
+                        .setValue("code", "101")
+                        .setValue("reason", "Switching Protocols")
                     .done()
                     .addWriteCommand()
                         .setNextLineInfo(1, 0)
@@ -180,7 +183,7 @@ public class InjectHttpStreamsVisitorTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldNotAllowConnectWriteHttpStatus() throws Exception {
+    public void shouldNotAllowWriteConfigAfterWriteClose() throws Exception {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addConnectStream()
@@ -188,60 +191,18 @@ public class InjectHttpStreamsVisitorTest {
                 .setLocation(URI.create("http://localhost:8000/somepath"))
                 .addOpenedEvent()
                     .setNextLineInfo(1, 0)
-                .done()
-                .addWriteHttpMethodCommand()
-                     .setExactText("GET")
-                     .setNextLineInfo(1, 0)
-                .done()
-                .addWriteHttpHeaderCommand()
-                     .setNameExactText("Upgrade")
-                     .addValueExactText("websocket")
-                     .setNextLineInfo(1, 0)
-                .done()
-                .addWriteCommand()
-                    .setNextLineInfo(1, 0)
-                    .addExactText("some content")
-                .done()
-                .addWriteHttpStatusCommand()
-                    .setCodeExactText("101")
-                    .setReasonExactText("Switching Protocols")
                 .done()
                 .addWriteCloseCommand()
                     .setNextLineInfo(1, 0)
                 .done()
-            .done()
-        .done();
-        // @formatter:on
-
-        InjectHttpStreamsVisitor injectEvents = new InjectHttpStreamsVisitor();
-        inputScript.accept(injectEvents, new InjectHttpStreamsVisitor.State());
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldNotAllowConnectReadHttpRequest() throws Exception {
-        // @formatter:off
-        AstScriptNode inputScript = new AstScriptNodeBuilder()
-            .addConnectStream()
-                .setNextLineInfo(1, 0)
-                .setLocation(URI.create("http://localhost:8000/somepath"))
-                .addOpenedEvent()
-                    .setNextLineInfo(1, 0)
-                .done()
-                .addReadConfigEvent()
+                .addWriteConfigCommand()
                      .setType("method")
-                     .setValueExactText("method", "upgrade")
+                     .addValue("upgrade")
                      .setNextLineInfo(1, 0)
                 .done()
                 .addReadCloseCommand()
                     .setNextLineInfo(1, 0)
                 .done()
-                .addWriteHttpStatusCommand()
-                    .setCodeExactText("101")
-                    .setReasonExactText("Switching Protocols")
-                .done()
-                .addWriteCloseCommand()
-                    .setNextLineInfo(1, 0)
-                .done()
             .done()
         .done();
         // @formatter:on
@@ -251,7 +212,7 @@ public class InjectHttpStreamsVisitorTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldNotAllowAcceptReadHttpStatus() throws Exception {
+    public void shouldNotAllowReadConfigAfterReadClose() throws Exception {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()
@@ -276,40 +237,6 @@ public class InjectHttpStreamsVisitorTest {
                          .setType("status")
                          .setMatcherExactText("code", "101")
                          .setMatcherExactText("reason", "Switching Protocols")
-                    .done()
-                    .addWriteCloseCommand()
-                        .setNextLineInfo(1, 0)
-                    .done()
-                .done()
-            .done()
-        .done();
-        // @formatter:on
-
-        InjectHttpStreamsVisitor injectEvents = new InjectHttpStreamsVisitor();
-        inputScript.accept(injectEvents, new InjectHttpStreamsVisitor.State());
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldNotAllowAcceptWriteHttpRequest() throws Exception {
-        // @formatter:off
-        AstScriptNode inputScript = new AstScriptNodeBuilder()
-            .addAcceptStream()
-                .setNextLineInfo(1, 0)
-                .setLocation(URI.create("http://localhost:8000/somepath"))
-                .addAcceptedStream()
-                    .addWriteHttpMethodCommand()
-                         .setExactText("UPGRADE")
-                         .setNextLineInfo(1, 0)
-                    .done()
-                    .addWriteHttpContentLengthCommand()
-                         .setNextLineInfo(1, 0)
-                    .done()
-                    .addWriteCommand()
-                        .setNextLineInfo(1, 0)
-                        .addExactText("some content")
-                    .done()
-                    .addReadCloseCommand()
-                        .setNextLineInfo(1, 0)
                     .done()
                     .addWriteCloseCommand()
                         .setNextLineInfo(1, 0)

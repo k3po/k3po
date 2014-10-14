@@ -138,6 +138,7 @@ import org.kaazing.robot.lang.ast.AstUnbindNode;
 import org.kaazing.robot.lang.ast.AstUnboundNode;
 import org.kaazing.robot.lang.ast.AstWriteAwaitNode;
 import org.kaazing.robot.lang.ast.AstWriteCloseNode;
+import org.kaazing.robot.lang.ast.AstWriteConfigNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
@@ -157,12 +158,6 @@ import org.kaazing.robot.lang.ast.value.AstLiteralBytesValue;
 import org.kaazing.robot.lang.ast.value.AstLiteralTextValue;
 import org.kaazing.robot.lang.ast.value.AstValue;
 import org.kaazing.robot.lang.el.ExpressionContext;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpContentLengthNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpHeaderNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpMethodNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpParameterNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpStatusNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpVersionNode;
 
 /**
  * Builds the pipeline of handlers that are used to "execute" the Robot script.
@@ -819,10 +814,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         switch (node.getType()) {
         case "method": {
-            AstValueMatcher method = node.getMatcher("name");
-            requireNonNull(method);
+            AstValueMatcher methodName = node.getMatcher("name");
+            requireNonNull(methodName);
 
-            MessageDecoder methodValueDecoder = method.accept(new GenerateReadDecoderVisitor(), state.configuration);
+            MessageDecoder methodValueDecoder = methodName.accept(new GenerateReadDecoderVisitor(), state.configuration);
 
             // TODO: compareEqualsIgnoreCase
             ReadConfigHandler handler = new ReadConfigHandler(new HttpMethodDecoder(methodValueDecoder));
@@ -901,94 +896,88 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     }
 
     @Override
-    public Configuration visit(AstWriteHttpHeaderNode node, State state) throws Exception {
+    public Configuration visit(AstWriteConfigNode node, State state) throws Exception {
+        switch (node.getType()) {
+        case "header": {
+            AstValue name = node.getName("name");
+            MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
 
-        AstValue name = node.getName();
-        MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+            List<MessageEncoder> valueEncoders = new ArrayList<MessageEncoder>();
+            for (AstValue value : node.getValues()) {
+                valueEncoders.add(value.accept(new GenerateWriteEncoderVisitor(), state.configuration));
+            }
 
-        List<MessageEncoder> valueEncoders = new ArrayList<MessageEncoder>();
-        for (AstValue value : node.getValues()) {
-            valueEncoders.add(value.accept(new GenerateWriteEncoderVisitor(), state.configuration));
+            WriteConfigHandler handler = new WriteConfigHandler(new HttpHeaderEncoder(nameEncoder, valueEncoders));
+
+            handler.setLocationInfo(node.getLocationInfo());
+            String handlerName = String.format("writeConfig#%d (http header)", state.pipelineAsMap.size() + 1);
+            state.pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
         }
-
-        WriteConfigHandler handler = new WriteConfigHandler(new HttpHeaderEncoder(nameEncoder, valueEncoders));
-
-        handler.setLocationInfo(node.getLocationInfo());
-        String handlerName = String.format("writeConfig#%d (http header)", state.pipelineAsMap.size() + 1);
-        state.pipelineAsMap.put(handlerName, handler);
-        return state.configuration;
-    }
-
-    @Override
-    public Configuration visit(AstWriteHttpContentLengthNode node, State state) throws Exception {
-        WriteConfigHandler handler = new WriteConfigHandler(new HttpContentLengthEncoder());
-        handler.setLocationInfo(node.getLocationInfo());
-        String handlerName = String.format("writeConfig#%d (http content length)", state.pipelineAsMap.size() + 1);
-        state.pipelineAsMap.put(handlerName, handler);
-        return null;
-    }
-
-    @Override
-    public Configuration visit(AstWriteHttpMethodNode node, State state) throws Exception {
-
-        AstValue method = node.getMethod();
-
-        MessageEncoder methodEncoder = method.accept(new GenerateWriteEncoderVisitor(), state.configuration);
-
-        WriteConfigHandler handler = new WriteConfigHandler(new HttpMethodEncoder(methodEncoder));
-        handler.setLocationInfo(node.getLocationInfo());
-        String handlerName = String.format("writeConfig#%d (http method)", state.pipelineAsMap.size() + 1);
-        state.pipelineAsMap.put(handlerName, handler);
-        return state.configuration;
-    }
-
-    @Override
-    public Configuration visit(AstWriteHttpParameterNode node, State state) throws Exception {
-
-        AstValue name = node.getName();
-        MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
-
-        List<MessageEncoder> valueEncoders = new ArrayList<MessageEncoder>();
-        for (AstValue value : node.getValues()) {
-            valueEncoders.add(value.accept(new GenerateWriteEncoderVisitor(), state.configuration));
+        case "content-length": {
+            WriteConfigHandler handler = new WriteConfigHandler(new HttpContentLengthEncoder());
+            handler.setLocationInfo(node.getLocationInfo());
+            String handlerName = String.format("writeConfig#%d (http content length)", state.pipelineAsMap.size() + 1);
+            state.pipelineAsMap.put(handlerName, handler);
+            return null;
         }
+        case "method": {
+            AstValue methodName = node.getValue();
+            requireNonNull(methodName);
 
-        WriteConfigHandler handler = new WriteConfigHandler(new HttpParameterEncoder(nameEncoder, valueEncoders));
+            MessageEncoder methodEncoder = methodName.accept(new GenerateWriteEncoderVisitor(), state.configuration);
 
-        handler.setLocationInfo(node.getLocationInfo());
-        String handlerName = String.format("writeConfig#%d (http parameter)", state.pipelineAsMap.size() + 1);
-        state.pipelineAsMap.put(handlerName, handler);
-        return state.configuration;
-    }
+            WriteConfigHandler handler = new WriteConfigHandler(new HttpMethodEncoder(methodEncoder));
+            handler.setLocationInfo(node.getLocationInfo());
+            String handlerName = String.format("writeConfig#%d (http method)", state.pipelineAsMap.size() + 1);
+            state.pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
+        case "parameter": {
+            AstValue name = node.getName("name");
+            MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
 
-    @Override
-    public Configuration visit(AstWriteHttpVersionNode node, State state) throws Exception {
-        AstValue version = node.getVersion();
+            List<MessageEncoder> valueEncoders = new ArrayList<MessageEncoder>();
+            for (AstValue value : node.getValues()) {
+                valueEncoders.add(value.accept(new GenerateWriteEncoderVisitor(), state.configuration));
+            }
 
-        MessageEncoder versionEncoder = version.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+            WriteConfigHandler handler = new WriteConfigHandler(new HttpParameterEncoder(nameEncoder, valueEncoders));
 
-        WriteConfigHandler handler = new WriteConfigHandler(new HttpVersionEncoder(versionEncoder));
+            handler.setLocationInfo(node.getLocationInfo());
+            String handlerName = String.format("writeConfig#%d (http parameter)", state.pipelineAsMap.size() + 1);
+            state.pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
+        case "version": {
+            AstValue version = node.getValue();
 
-        handler.setLocationInfo(node.getLocationInfo());
-        String handlerName = String.format("writeConfig#%d (http version)", state.pipelineAsMap.size() + 1);
-        state.pipelineAsMap.put(handlerName, handler);
-        return state.configuration;
-    }
+            MessageEncoder versionEncoder = version.accept(new GenerateWriteEncoderVisitor(), state.configuration);
 
-    @Override
-    public Configuration visit(AstWriteHttpStatusNode node, State state) throws Exception {
-        AstValue code = node.getCode();
-        AstValue reason = node.getReason();
+            WriteConfigHandler handler = new WriteConfigHandler(new HttpVersionEncoder(versionEncoder));
 
-        MessageEncoder codeEncoder = code.accept(new GenerateWriteEncoderVisitor(), state.configuration);
-        MessageEncoder reasonEncoder = reason.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+            handler.setLocationInfo(node.getLocationInfo());
+            String handlerName = String.format("writeConfig#%d (http version)", state.pipelineAsMap.size() + 1);
+            state.pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
+        case "status": {
+            AstValue code = node.getValue("code");
+            AstValue reason = node.getValue("reason");
 
-        WriteConfigHandler handler = new WriteConfigHandler(new HttpStatusEncoder(codeEncoder, reasonEncoder));
+            MessageEncoder codeEncoder = code.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+            MessageEncoder reasonEncoder = reason.accept(new GenerateWriteEncoderVisitor(), state.configuration);
 
-        handler.setLocationInfo(node.getLocationInfo());
-        String handlerName = String.format("writeConfig#%d (http status)", state.pipelineAsMap.size() + 1);
-        state.pipelineAsMap.put(handlerName, handler);
-        return state.configuration;
+            WriteConfigHandler handler = new WriteConfigHandler(new HttpStatusEncoder(codeEncoder, reasonEncoder));
+
+            handler.setLocationInfo(node.getLocationInfo());
+            String handlerName = String.format("writeConfig#%d (http status)", state.pipelineAsMap.size() + 1);
+            state.pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
+        default:
+            throw new IllegalStateException("Unrecognized configuration type: " + node.getType());
+        }
     }
 
     @Override

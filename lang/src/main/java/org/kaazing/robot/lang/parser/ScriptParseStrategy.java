@@ -62,6 +62,7 @@ import org.kaazing.robot.lang.ast.AstUnbindNode;
 import org.kaazing.robot.lang.ast.AstUnboundNode;
 import org.kaazing.robot.lang.ast.AstWriteAwaitNode;
 import org.kaazing.robot.lang.ast.AstWriteCloseNode;
+import org.kaazing.robot.lang.ast.AstWriteConfigNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
@@ -81,12 +82,6 @@ import org.kaazing.robot.lang.ast.value.AstLiteralBytesValue;
 import org.kaazing.robot.lang.ast.value.AstLiteralTextValue;
 import org.kaazing.robot.lang.ast.value.AstValue;
 import org.kaazing.robot.lang.el.ExpressionContext;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpContentLengthNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpHeaderNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpMethodNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpParameterNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpStatusNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpVersionNode;
 import org.kaazing.robot.lang.parser.v2.RobotBaseVisitor;
 import org.kaazing.robot.lang.parser.v2.RobotParser;
 import org.kaazing.robot.lang.parser.v2.RobotParser.AcceptNodeContext;
@@ -354,20 +349,20 @@ abstract class ScriptParseStrategy<T> {
         }
     };
 
-    public static final ScriptParseStrategy<AstWriteHttpHeaderNode> WRITE_HTTP_HEADER = new ScriptParseStrategy<AstWriteHttpHeaderNode>() {
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_HEADER = new ScriptParseStrategy<AstWriteConfigNode>() {
         @Override
-        public AstWriteHttpHeaderNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+        public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
                 throws RecognitionException {
-            return new AstWriteHttpHeaderNodeVisitor(elFactory, elContext).visit(parser.writeHttpHeaderNode());
+            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpHeaderNode());
         }
     };
 
-    public static final ScriptParseStrategy<AstWriteHttpContentLengthNode> WRITE_HTTP_CONTENT_LENGTH = new ScriptParseStrategy<AstWriteHttpContentLengthNode>() {
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_CONTENT_LENGTH = new ScriptParseStrategy<AstWriteConfigNode>() {
         @Override
-        public AstWriteHttpContentLengthNode parse(RobotParser parser,
+        public AstWriteConfigNode parse(RobotParser parser,
                                                    ExpressionFactory elFactory,
                                                    ExpressionContext elContext) throws RecognitionException {
-            return new AstWriteHttpContentLengthNodeVisitor(elFactory, elContext).visit(parser
+            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser
                     .writeHttpContentLengthNode());
         }
     };
@@ -380,11 +375,11 @@ abstract class ScriptParseStrategy<T> {
         }
     };
 
-    public static final ScriptParseStrategy<AstWriteHttpMethodNode> WRITE_HTTP_METHOD = new ScriptParseStrategy<AstWriteHttpMethodNode>() {
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_METHOD = new ScriptParseStrategy<AstWriteConfigNode>() {
         @Override
-        public AstWriteHttpMethodNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+        public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
                 throws RecognitionException {
-            return new AstWriteHttpMethodNodeVisitor(elFactory, elContext).visit(parser.writeHttpMethodNode());
+            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpMethodNode());
         }
     };
 
@@ -397,12 +392,12 @@ abstract class ScriptParseStrategy<T> {
         }
     };
 
-    public static final ScriptParseStrategy<AstWriteHttpParameterNode> WRITE_HTTP_PARAMETER = new ScriptParseStrategy<AstWriteHttpParameterNode>() {
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_PARAMETER = new ScriptParseStrategy<AstWriteConfigNode>() {
         @Override
-        public AstWriteHttpParameterNode parse(RobotParser parser,
+        public AstWriteConfigNode parse(RobotParser parser,
                                                ExpressionFactory elFactory,
                                                ExpressionContext elContext) throws RecognitionException {
-            return new AstWriteHttpParameterNodeVisitor(elFactory, elContext).visit(parser.writeHttpParameterNode());
+            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpParameterNode());
         }
     };
 
@@ -414,12 +409,12 @@ abstract class ScriptParseStrategy<T> {
         }
     };
 
-    public static final ScriptParseStrategy<AstWriteHttpVersionNode> WRITE_HTTP_VERSION = new ScriptParseStrategy<AstWriteHttpVersionNode>() {
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_VERSION = new ScriptParseStrategy<AstWriteConfigNode>() {
         @Override
-        public AstWriteHttpVersionNode parse(RobotParser parser,
+        public AstWriteConfigNode parse(RobotParser parser,
                                              ExpressionFactory elFactory,
                                              ExpressionContext elContext) throws RecognitionException {
-            return new AstWriteHttpVersionNodeVisitor(elFactory, elContext).visit(parser.writeHttpVersionNode());
+            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpVersionNode());
         }
     };
 
@@ -431,11 +426,11 @@ abstract class ScriptParseStrategy<T> {
         }
     };
 
-    public static final ScriptParseStrategy<AstWriteHttpStatusNode> WRITE_HTTP_STATUS = new ScriptParseStrategy<AstWriteHttpStatusNode>() {
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_STATUS = new ScriptParseStrategy<AstWriteConfigNode>() {
         @Override
-        public AstWriteHttpStatusNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+        public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
                 throws RecognitionException {
-            return new AstWriteHttpStatusNodeVisitor(elFactory, elContext).visit(parser.writeHttpStatusNode());
+            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpStatusNode());
         }
     };
 
@@ -1065,33 +1060,33 @@ abstract class ScriptParseStrategy<T> {
         }
 
         @Override
-        public AstWriteHttpHeaderNode visitWriteHttpHeaderNode(WriteHttpHeaderNodeContext ctx) {
-            return new AstWriteHttpHeaderNodeVisitor(elFactory, elContext).visitWriteHttpHeaderNode(ctx);
+        public AstWriteConfigNode visitWriteHttpHeaderNode(WriteHttpHeaderNodeContext ctx) {
+            return new AstWriteConfigNodeVisitor(elFactory, elContext).visitWriteHttpHeaderNode(ctx);
         }
 
         @Override
-        public AstWriteHttpContentLengthNode visitWriteHttpContentLengthNode(WriteHttpContentLengthNodeContext ctx) {
-            return new AstWriteHttpContentLengthNodeVisitor(elFactory, elContext).visitWriteHttpContentLengthNode(ctx);
+        public AstWriteConfigNode visitWriteHttpContentLengthNode(WriteHttpContentLengthNodeContext ctx) {
+            return new AstWriteConfigNodeVisitor(elFactory, elContext).visitWriteHttpContentLengthNode(ctx);
         }
 
         @Override
-        public AstWriteHttpMethodNode visitWriteHttpMethodNode(WriteHttpMethodNodeContext ctx) {
-            return new AstWriteHttpMethodNodeVisitor(elFactory, elContext).visitWriteHttpMethodNode(ctx);
+        public AstWriteConfigNode visitWriteHttpMethodNode(WriteHttpMethodNodeContext ctx) {
+            return new AstWriteConfigNodeVisitor(elFactory, elContext).visitWriteHttpMethodNode(ctx);
         }
 
         @Override
-        public AstWriteHttpParameterNode visitWriteHttpParameterNode(WriteHttpParameterNodeContext ctx) {
-            return new AstWriteHttpParameterNodeVisitor(elFactory, elContext).visitWriteHttpParameterNode(ctx);
+        public AstWriteConfigNode visitWriteHttpParameterNode(WriteHttpParameterNodeContext ctx) {
+            return new AstWriteConfigNodeVisitor(elFactory, elContext).visitWriteHttpParameterNode(ctx);
         }
 
         @Override
-        public AstWriteHttpVersionNode visitWriteHttpVersionNode(WriteHttpVersionNodeContext ctx) {
-            return new AstWriteHttpVersionNodeVisitor(elFactory, elContext).visitWriteHttpVersionNode(ctx);
+        public AstWriteConfigNode visitWriteHttpVersionNode(WriteHttpVersionNodeContext ctx) {
+            return new AstWriteConfigNodeVisitor(elFactory, elContext).visitWriteHttpVersionNode(ctx);
         }
 
         @Override
-        public AstWriteHttpStatusNode visitWriteHttpStatusNode(WriteHttpStatusNodeContext ctx) {
-            return new AstWriteHttpStatusNodeVisitor(elFactory, elContext).visitWriteHttpStatusNode(ctx);
+        public AstWriteConfigNode visitWriteHttpStatusNode(WriteHttpStatusNodeContext ctx) {
+            return new AstWriteConfigNodeVisitor(elFactory, elContext).visitWriteHttpStatusNode(ctx);
         }
 
     }
@@ -1679,123 +1674,72 @@ abstract class ScriptParseStrategy<T> {
 
     }
 
-    private static class AstWriteHttpHeaderNodeVisitor extends AstNodeVisitor<AstWriteHttpHeaderNode> {
+    private static class AstWriteConfigNodeVisitor extends AstNodeVisitor<AstWriteConfigNode> {
 
-        private List<AstValue> values;
-
-        public AstWriteHttpHeaderNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+        public AstWriteConfigNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
             super(elFactory, elContext);
         }
 
         @Override
-        public AstWriteHttpHeaderNode visitWriteHttpHeaderNode(WriteHttpHeaderNodeContext ctx) {
-            node = new AstWriteHttpHeaderNode();
+        public AstWriteConfigNode visitWriteHttpHeaderNode(WriteHttpHeaderNodeContext ctx) {
+            node = new AstWriteConfigNode();
+            node.setType("header");
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.setName(new AstValueVisitor(elFactory, elContext).visit(ctx.name));
-            values = new LinkedList<AstValue>();
-            AstWriteHttpHeaderNode result = super.visitWriteHttpHeaderNode(ctx);
-            node.setValues(values);
-            return result;
+            node.setName("name", new AstValueVisitor(elFactory, elContext).visit(ctx.name));
+            return super.visitWriteHttpHeaderNode(ctx);
         }
 
         @Override
-        public AstWriteHttpHeaderNode visitWriteValue(WriteValueContext ctx) {
+        public AstWriteConfigNode visitWriteHttpContentLengthNode(WriteHttpContentLengthNodeContext ctx) {
+            node = new AstWriteConfigNode();
+            node.setType("content-length");
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            return node;
+        }
+
+        @Override
+        public AstWriteConfigNode visitWriteHttpMethodNode(WriteHttpMethodNodeContext ctx) {
+            node = new AstWriteConfigNode();
+            node.setType("method");
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            node.addValue(new AstValueVisitor(elFactory, elContext).visit(ctx.method));
+            return node;
+        }
+
+        @Override
+        public AstWriteConfigNode visitWriteHttpParameterNode(WriteHttpParameterNodeContext ctx) {
+            node = new AstWriteConfigNode();
+            node.setType("parameter");
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            node.setName("name", new AstValueVisitor(elFactory, elContext).visit(ctx.name));
+            return super.visitWriteHttpParameterNode(ctx);
+        }
+
+        @Override
+        public AstWriteConfigNode visitWriteHttpVersionNode(WriteHttpVersionNodeContext ctx) {
+            node = new AstWriteConfigNode();
+            node.setType("version");
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            node.addValue(new AstValueVisitor(elFactory, elContext).visit(ctx.version));
+            return node;
+        }
+
+        @Override
+        public AstWriteConfigNode visitWriteHttpStatusNode(WriteHttpStatusNodeContext ctx) {
+            node = new AstWriteConfigNode();
+            node.setType("status");
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            node.setValue("code", new AstValueVisitor(elFactory, elContext).visit(ctx.code));
+            node.setValue("reason", new AstValueVisitor(elFactory, elContext).visit(ctx.reason));
+            return node;
+        }
+
+        @Override
+        public AstWriteConfigNode visitWriteValue(WriteValueContext ctx) {
             AstValue value = new AstValueVisitor(elFactory, elContext).visit(ctx);
-            values.add(value);
+            node.addValue(value);
             return node;
         }
-    }
-
-    private static class AstWriteHttpContentLengthNodeVisitor extends AstNodeVisitor<AstWriteHttpContentLengthNode> {
-
-        public AstWriteHttpContentLengthNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
-            super(elFactory, elContext);
-        }
-
-        @Override
-        public AstWriteHttpContentLengthNode visitWriteHttpContentLengthNode(WriteHttpContentLengthNodeContext ctx) {
-            node = new AstWriteHttpContentLengthNode();
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            return node;
-        }
-
-    }
-
-    private static class AstWriteHttpMethodNodeVisitor extends AstNodeVisitor<AstWriteHttpMethodNode> {
-
-        public AstWriteHttpMethodNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
-            super(elFactory, elContext);
-        }
-
-        @Override
-        public AstWriteHttpMethodNode visitWriteHttpMethodNode(WriteHttpMethodNodeContext ctx) {
-            node = new AstWriteHttpMethodNode();
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.setMethod(new AstValueVisitor(elFactory, elContext).visit(ctx.method));
-            return node;
-        }
-
-    }
-
-    private static class AstWriteHttpParameterNodeVisitor extends AstNodeVisitor<AstWriteHttpParameterNode> {
-
-        private List<AstValue> values;
-
-        public AstWriteHttpParameterNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
-            super(elFactory, elContext);
-        }
-
-        @Override
-        public AstWriteHttpParameterNode visitWriteHttpParameterNode(WriteHttpParameterNodeContext ctx) {
-            node = new AstWriteHttpParameterNode();
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.setName(new AstValueVisitor(elFactory, elContext).visit(ctx.name));
-            values = new LinkedList<>();
-            AstWriteHttpParameterNode result = super.visitWriteHttpParameterNode(ctx);
-            node.setValues(values);
-            return result;
-        }
-
-        @Override
-        public AstWriteHttpParameterNode visitWriteValue(WriteValueContext ctx) {
-            AstValue value = new AstValueVisitor(elFactory, elContext).visit(ctx);
-            values.add(value);
-            return node;
-        }
-
-    }
-
-    private static class AstWriteHttpVersionNodeVisitor extends AstNodeVisitor<AstWriteHttpVersionNode> {
-
-        public AstWriteHttpVersionNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
-            super(elFactory, elContext);
-        }
-
-        @Override
-        public AstWriteHttpVersionNode visitWriteHttpVersionNode(WriteHttpVersionNodeContext ctx) {
-            node = new AstWriteHttpVersionNode();
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.setVersion(new AstValueVisitor(elFactory, elContext).visit(ctx.version));
-            return node;
-        }
-
-    }
-
-    private static class AstWriteHttpStatusNodeVisitor extends AstNodeVisitor<AstWriteHttpStatusNode> {
-
-        public AstWriteHttpStatusNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
-            super(elFactory, elContext);
-        }
-
-        @Override
-        public AstWriteHttpStatusNode visitWriteHttpStatusNode(WriteHttpStatusNodeContext ctx) {
-            node = new AstWriteHttpStatusNode();
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.setCode(new AstValueVisitor(elFactory, elContext).visit(ctx.code));
-            node.setReason(new AstValueVisitor(elFactory, elContext).visit(ctx.reason));
-            return node;
-        }
-
     }
 
     private static class AstReadClosedNodeVisitor extends AstNodeVisitor<AstReadClosedNode> {

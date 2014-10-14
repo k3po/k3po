@@ -23,12 +23,6 @@ import java.net.URI;
 
 import org.kaazing.robot.lang.ast.AstConnectNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
-import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpContentLengthNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpHeaderNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpMethodNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpParameterNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpStatusNodeBuilder;
-import org.kaazing.robot.lang.http.ast.builder.AstWriteHttpVersionNodeBuilder;
 
 public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<AstConnectNode> {
 
@@ -146,35 +140,9 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         return new AstReadConfigNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
     }
 
-    // Http
     @Override
-    public AstWriteHttpHeaderNodeBuilder.StreamNested<AstConnectNodeBuilder> addWriteHttpHeaderCommand() {
-        return new AstWriteHttpHeaderNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
-    }
-
-    @Override
-    public AstWriteHttpContentLengthNodeBuilder.StreamNested<AstConnectNodeBuilder> addWriteHttpContentLengthCommand() {
-        return new AstWriteHttpContentLengthNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
-    }
-
-    @Override
-    public AstWriteHttpMethodNodeBuilder.StreamNested<AstConnectNodeBuilder> addWriteHttpMethodCommand() {
-        return new AstWriteHttpMethodNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
-    }
-
-    @Override
-    public AstWriteHttpParameterNodeBuilder.StreamNested<AstConnectNodeBuilder> addWriteHttpParameterCommand() {
-        return new AstWriteHttpParameterNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
-    }
-
-    @Override
-    public AstWriteHttpVersionNodeBuilder.StreamNested<AstConnectNodeBuilder> addWriteHttpVersionCommand() {
-        return new AstWriteHttpVersionNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
-    }
-
-    @Override
-    public AstWriteHttpStatusNodeBuilder.StreamNested<AstConnectNodeBuilder> addWriteHttpStatusCommand() {
-        return new AstWriteHttpStatusNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
+    public AstWriteConfigNodeBuilder.StreamNested<AstConnectNodeBuilder> addWriteConfigCommand() {
+        return new AstWriteConfigNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
     }
 
     @Override
@@ -313,33 +281,8 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         }
 
         @Override
-        public AstWriteHttpHeaderNodeBuilder.StreamNested<ScriptNested<R>> addWriteHttpHeaderCommand() {
-            return new AstWriteHttpHeaderNodeBuilder.StreamNested<ScriptNested<R>>(this);
-        }
-
-        @Override
-        public AstWriteHttpContentLengthNodeBuilder.StreamNested<ScriptNested<R>> addWriteHttpContentLengthCommand() {
-            return new AstWriteHttpContentLengthNodeBuilder.StreamNested<ScriptNested<R>>(this);
-        }
-
-        @Override
-        public AstWriteHttpMethodNodeBuilder.StreamNested<ScriptNested<R>> addWriteHttpMethodCommand() {
-            return new AstWriteHttpMethodNodeBuilder.StreamNested<ScriptNested<R>>(this);
-        }
-
-        @Override
-        public AstWriteHttpParameterNodeBuilder.StreamNested<ScriptNested<R>> addWriteHttpParameterCommand() {
-            return new AstWriteHttpParameterNodeBuilder.StreamNested<ScriptNested<R>>(this);
-        }
-
-        @Override
-        public AstWriteHttpVersionNodeBuilder.StreamNested<ScriptNested<R>> addWriteHttpVersionCommand() {
-            return new AstWriteHttpVersionNodeBuilder.StreamNested<ScriptNested<R>>(this);
-        }
-
-        @Override
-        public AstWriteHttpStatusNodeBuilder.StreamNested<ScriptNested<R>> addWriteHttpStatusCommand() {
-            return new AstWriteHttpStatusNodeBuilder.StreamNested<ScriptNested<R>>(this);
+        public AstWriteConfigNodeBuilder.StreamNested<ScriptNested<R>> addWriteConfigCommand() {
+            return new AstWriteConfigNodeBuilder.StreamNested<ScriptNested<R>>(this);
         }
 
         @Override

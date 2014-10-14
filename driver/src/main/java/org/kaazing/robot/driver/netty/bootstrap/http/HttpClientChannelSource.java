@@ -39,6 +39,7 @@ import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseDecoder;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 
 
 public class HttpClientChannelSource extends HttpChannelHandler {
@@ -131,7 +132,9 @@ public class HttpClientChannelSource extends HttpChannelHandler {
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         if (httpClientChannel != null) {
             HttpChannelConfig httpClientConfig = httpClientChannel.getConfig();
-            if (httpClientConfig.getStatus().getCode() == SWITCHING_PROTOCOLS.getCode()) {
+            HttpResponseStatus httpStatus = httpClientConfig.getStatus();
+            int httpStatusCode = (httpStatus != null) ? httpStatus.getCode() : 0;
+            if (httpStatusCode == SWITCHING_PROTOCOLS.getCode()) {
                 if (httpClientChannel.setClosed()) {
                     fireChannelDisconnected(httpClientChannel);
                     fireChannelUnbound(httpClientChannel);

@@ -22,12 +22,6 @@ package org.kaazing.robot.lang.ast;
 import static org.kaazing.robot.lang.ast.util.AstUtil.equivalent;
 
 import org.kaazing.robot.lang.LocationInfo;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpContentLengthNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpHeaderNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpMethodNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpParameterNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpStatusNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpVersionNode;
 
 public abstract class AstNode {
 
@@ -104,13 +98,7 @@ public abstract class AstNode {
         R visit(AstWriteNotifyNode node, P parameter) throws Exception;
 
         R visit(AstReadConfigNode node, P parameter) throws Exception;
-
-        R visit(AstWriteHttpContentLengthNode node, P parameter) throws Exception;
-        R visit(AstWriteHttpHeaderNode node, P parameter) throws Exception;
-        R visit(AstWriteHttpMethodNode node, P parameter) throws Exception;
-        R visit(AstWriteHttpParameterNode node, P parameter) throws Exception;
-        R visit(AstWriteHttpStatusNode node, P parameter) throws Exception;
-        R visit(AstWriteHttpVersionNode node, P parameter) throws Exception;
+        R visit(AstWriteConfigNode node, P parameter) throws Exception;
 
         R visit(AstReadOptionNode node, P parameter) throws Exception;
         R visit(AstWriteOptionNode node, P parameter) throws Exception;

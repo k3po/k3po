@@ -55,15 +55,10 @@ import org.kaazing.robot.lang.ast.AstUnbindNode;
 import org.kaazing.robot.lang.ast.AstUnboundNode;
 import org.kaazing.robot.lang.ast.AstWriteAwaitNode;
 import org.kaazing.robot.lang.ast.AstWriteCloseNode;
+import org.kaazing.robot.lang.ast.AstWriteConfigNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpContentLengthNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpHeaderNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpMethodNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpParameterNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpStatusNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpVersionNode;
 
 public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, State> {
 
@@ -323,37 +318,7 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
     }
 
     @Override
-    public AstScriptNode visit(AstWriteHttpHeaderNode node, State state) throws Exception {
-        state.streamables.add(node);
-        return null;
-    }
-
-    @Override
-    public AstScriptNode visit(AstWriteHttpContentLengthNode node, State state) throws Exception {
-        state.streamables.add(node);
-        return null;
-    }
-
-    @Override
-    public AstScriptNode visit(AstWriteHttpMethodNode node, State state) throws Exception {
-        state.streamables.add(node);
-        return null;
-    }
-
-    @Override
-    public AstScriptNode visit(AstWriteHttpParameterNode node, State state) throws Exception {
-        state.streamables.add(node);
-        return null;
-    }
-
-    @Override
-    public AstScriptNode visit(AstWriteHttpVersionNode node, State state) throws Exception {
-        state.streamables.add(node);
-        return null;
-    }
-
-    @Override
-    public AstScriptNode visit(AstWriteHttpStatusNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteConfigNode node, State state) throws Exception {
         state.streamables.add(node);
         return null;
     }

@@ -55,15 +55,10 @@ import org.kaazing.robot.lang.ast.AstUnbindNode;
 import org.kaazing.robot.lang.ast.AstUnboundNode;
 import org.kaazing.robot.lang.ast.AstWriteAwaitNode;
 import org.kaazing.robot.lang.ast.AstWriteCloseNode;
+import org.kaazing.robot.lang.ast.AstWriteConfigNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpContentLengthNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpHeaderNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpMethodNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpParameterNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpStatusNode;
-import org.kaazing.robot.lang.http.ast.AstWriteHttpVersionNode;
 
 public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBarriersVisitor.State> {
 
@@ -273,37 +268,7 @@ public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBa
     }
 
     @Override
-    public Void visit(AstWriteHttpHeaderNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstWriteHttpContentLengthNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstWriteHttpMethodNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstWriteHttpParameterNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstWriteHttpVersionNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstWriteHttpStatusNode node, State parameter) throws Exception {
+    public Void visit(AstWriteConfigNode node, State parameter) throws Exception {
         // NOOP
         return null;
     }

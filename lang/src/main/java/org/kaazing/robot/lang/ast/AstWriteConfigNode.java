@@ -26,18 +26,17 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.kaazing.robot.lang.ast.matcher.AstValueMatcher;
 import org.kaazing.robot.lang.ast.value.AstValue;
 
-public class AstReadConfigNode extends AstEventNode {
+public class AstWriteConfigNode extends AstCommandNode {
 
     private String type;
+    private Map<String, AstValue> namesByName;
     private Map<String, AstValue> valuesByName;
-    private Map<String, AstValueMatcher> matchersByName;
 
-    public AstReadConfigNode() {
+    public AstWriteConfigNode() {
+        this.namesByName = new LinkedHashMap<String, AstValue>();
         this.valuesByName = new LinkedHashMap<String, AstValue>();
-        this.matchersByName = new LinkedHashMap<String, AstValueMatcher>();
     }
 
     public void setType(String type) {
@@ -48,6 +47,14 @@ public class AstReadConfigNode extends AstEventNode {
         return type;
     }
 
+    public void setName(String name, AstValue value) {
+        namesByName.put(name, value);
+    }
+
+    public AstValue getName(String name) {
+        return namesByName.get(name);
+    }
+
     public void setValue(String name, AstValue value) {
         valuesByName.put(name, value);
     }
@@ -56,25 +63,23 @@ public class AstReadConfigNode extends AstEventNode {
         return valuesByName.get(name);
     }
 
-    public Collection<AstValueMatcher> getMatchers() {
-        return matchersByName.values();
+    public void addValue(AstValue value) {
+        String name = format("value#%d", valuesByName.size());
+        valuesByName.put(name, value);
     }
 
-    public AstValueMatcher getMatcher(String name) {
-        return matchersByName.get(name);
+    public Collection<AstValue> getValues() {
+        return valuesByName.values();
     }
 
-    public void setMatcher(String name, AstValueMatcher matcher) {
-        matchersByName.put(name, matcher);
-    }
-
-    public void addMatcher(AstValueMatcher matcher) {
-        matchersByName.put(format("matcher#%d", matchersByName.size()), matcher);
-    }
-
-    public void addMatchers(Collection<AstValueMatcher> matchers) {
-        for (AstValueMatcher matcher : matchers) {
-            matchersByName.put(format("matcher#%d", matchersByName.size()), matcher);
+    public AstValue getValue() {
+        switch (valuesByName.size()) {
+        case 0:
+            return null;
+        case 1:
+            return valuesByName.values().iterator().next();
+        default:
+            throw new IllegalStateException("Multiple values available, yet assuming only one value");
         }
     }
 
@@ -95,35 +100,27 @@ public class AstReadConfigNode extends AstEventNode {
             hashCode <<= 4;
             hashCode ^= valuesByName.hashCode();
         }
-        if (matchersByName != null) {
-            hashCode <<= 4;
-            hashCode ^= matchersByName.hashCode();
-        }
 
         return hashCode;
     }
 
     @Override
     public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstReadConfigNode) && equals((AstReadConfigNode) obj));
+        return (this == obj) || ((obj instanceof AstWriteConfigNode) && equals((AstWriteConfigNode) obj));
     }
 
-    protected boolean equals(AstReadConfigNode that) {
+    protected boolean equals(AstWriteConfigNode that) {
         return super.equalTo(that) &&
                 equivalent(this.type, that.type) &&
-                equivalent(this.valuesByName, that.valuesByName) &&
-                equivalent(this.matchersByName, that.matchersByName);
+                equivalent(this.valuesByName, that.valuesByName);
     }
 
     @Override
     protected void formatNode(StringBuilder sb) {
         super.formatNode(sb);
-        sb.append("read ").append(type);
+        sb.append("write ").append(type);
         for (AstValue value : valuesByName.values()) {
             sb.append(' ').append(value);
-        }
-        for (AstValueMatcher matcher : matchersByName.values()) {
-            sb.append(' ').append(matcher);
         }
         sb.append('\n');
     }
