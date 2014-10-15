@@ -24,6 +24,7 @@ import static org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory.newBoots
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -69,6 +70,10 @@ public class ServerBootstrapRule implements TestRule {
 
     public void setPipeline(ChannelPipeline pipeline) {
         bootstrap.setPipeline(pipeline);
+    }
+
+    public void setPipelineFactory(ChannelPipelineFactory pipelineFactory) {
+        bootstrap.setPipelineFactory(pipelineFactory);
     }
 
 }
