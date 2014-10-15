@@ -1,0 +1,24 @@
+accept tcp://localhost:12345
+accepted
+connected
+
+read "PREPARE\n"
+read "version:2.0\n"
+read "\n"
+
+write "PREPARED\n"
+write "content-length:0\n"
+write "\n"
+
+read "START\n"
+read "\n"
+
+write "STARTED\n"
+write "\n"
+
+write "FINISHED\n"
+write "content-length:0\n"
+write "\n"
+
+close
+closed
