@@ -7,7 +7,6 @@ connected
 write method "GET"
 write header "Upgrade" "websocket" 
 write header "Connection" "Upgrade" 
-write header "Host" "localhost:8001" 
 write header "Origin" "http://localhost:8001" 
 write header "Sec-WebSocket-Key" "uoH83mU2xzVTb+Gw6YWVJg==" 
 write header "Sec-WebSocket-Version" "13" 

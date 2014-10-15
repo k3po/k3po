@@ -7,6 +7,7 @@ accepted
 connected
 
 read "POST / HTTP/1.1\r\n"
+read "Host: localhost:8000\r\n"
 read "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n"
 read "Content-Type: text/plain\r\n"
 read "Transfer-Encoding: chunked\r\n"

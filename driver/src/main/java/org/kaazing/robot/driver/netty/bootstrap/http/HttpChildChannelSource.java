@@ -102,7 +102,8 @@ public class HttpChildChannelSource extends HttpChannelHandler {
         String host = getHost(httpRequest);
         String uri = httpRequest.getUri();
         URI httpLocation = URI.create(format("http://%s%s", host, uri));
-        Entry<URI, HttpServerChannel> httpBinding = httpBindings.floorEntry(httpLocation);
+
+        Entry<URI, HttpServerChannel> httpBinding = (host != null) ? httpBindings.floorEntry(httpLocation) : null;
 
         if (httpBinding == null) {
             HttpResponse httpResponse = new DefaultHttpResponse(httpRequest.getProtocolVersion(), NOT_FOUND);

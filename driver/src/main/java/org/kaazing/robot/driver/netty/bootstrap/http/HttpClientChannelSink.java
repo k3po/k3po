@@ -166,18 +166,19 @@ public class HttpClientChannelSink extends AbstractChannelSink {
             String requestPath = httpRemoteURI.getPath();
             String requestQuery = httpRemoteURI.getQuery();
             String requestURI = (requestQuery != null) ? format("%s?%s", requestPath, requestQuery) : requestPath;
-//          String authority = httpRemoteURI.getAuthority();
+            String authority = httpRemoteURI.getAuthority();
 
-          HttpRequest httpRequest = new DefaultHttpRequest(version, method, requestURI);
-          HttpHeaders httpRequestHeaders = httpRequest.headers();
-          if (headers != null) {
-              httpRequestHeaders.add(headers);
-          }
+            HttpRequest httpRequest = new DefaultHttpRequest(version, method, requestURI);
+            HttpHeaders httpRequestHeaders = httpRequest.headers();
 
-          // TODO: default the Host header if not already specified
-//          if (!httpRequestHeaders.contains(Names.HOST)) {
-//              httpRequestHeaders.set(Names.HOST, authority);
-//          }
+            // TODO: provide HttpConfig option to disable automatic Host header
+            if (!headers.contains(Names.HOST)) {
+                httpRequestHeaders.set(Names.HOST, authority);
+            }
+
+            if (headers != null) {
+                httpRequestHeaders.add(headers);
+            }
 
             if (isContentLengthSet(httpRequest)) {
                 httpRequest.setContent(httpContent);
@@ -322,18 +323,19 @@ public class HttpClientChannelSink extends AbstractChannelSink {
             String requestPath = httpRemoteURI.getPath();
             String requestQuery = httpRemoteURI.getQuery();
             String requestURI = (requestQuery != null) ? format("%s?%s", requestPath, requestQuery) : requestPath;
-//            String authority = httpRemoteURI.getAuthority();
+            String authority = httpRemoteURI.getAuthority();
 
             HttpRequest httpRequest = new DefaultHttpRequest(version, method, requestURI);
             HttpHeaders httpRequestHeaders = httpRequest.headers();
+
+            // TODO: provide HttpConfig option to disable automatic Host header
+            if (!headers.contains(Names.HOST)) {
+                httpRequestHeaders.set(Names.HOST, authority);
+            }
+
             if (headers != null) {
                 httpRequestHeaders.add(headers);
             }
-
-            // TODO: default the Host header if not already specified
-//            if (!httpRequestHeaders.contains(Names.HOST)) {
-//                httpRequestHeaders.set(Names.HOST, authority);
-//            }
 
             if (isContentLengthSet(httpRequest)) {
                 ChannelFuture future = transport.write(httpRequest);
@@ -360,6 +362,13 @@ public class HttpClientChannelSink extends AbstractChannelSink {
                      "HEAD".equalsIgnoreCase(method.getName())) {
 
                 // no content and no content-length
+                ChannelFuture future = transport.write(httpRequest);
+                httpClientChannel.state(CONTENT_COMPLETE);
+                chainFutures(future, httpFuture);
+            }
+            else if (httpClientConfig.getMaximumBufferedContentLength() > 0) {
+                // no content and content-length: 0
+                setContentLength(httpRequest, 0);
                 ChannelFuture future = transport.write(httpRequest);
                 httpClientChannel.state(CONTENT_COMPLETE);
                 chainFutures(future, httpFuture);
