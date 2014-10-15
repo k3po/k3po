@@ -26,8 +26,10 @@ import static org.jboss.netty.channel.Channels.fireChannelUnbound;
 
 import java.net.URI;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelException;
@@ -43,6 +45,7 @@ import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.ChannelGroupFutureListener;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
+import org.jboss.netty.util.internal.ConcurrentHashMap;
 import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
 import org.kaazing.robot.driver.netty.bootstrap.channel.AbstractServerChannelSink;
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
@@ -50,6 +53,7 @@ import org.kaazing.robot.driver.netty.channel.ChannelAddress;
 public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerChannel> {
 
     private final ConcurrentNavigableMap<URI, HttpServerChannel> httpBindings;
+    private final ConcurrentMap<URI, HttpTransport> httpTransportsByLocation; // TODO: use address for location stack
 
     public HttpServerChannelSink() {
         this(new ConcurrentSkipListMap<URI, HttpServerChannel>());
@@ -58,6 +62,7 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
     private HttpServerChannelSink(ConcurrentNavigableMap<URI, HttpServerChannel> httpBindings) {
         super(new HttpChildChannelPipelineFactory(httpBindings));
         this.httpBindings = httpBindings;
+        this.httpTransportsByLocation = new ConcurrentHashMap<URI, HttpTransport>();
     }
 
     @Override
@@ -68,84 +73,87 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
         URI httpLocation = httpLocalAddress.getLocation();
 
         HttpServerChannel httpBoundChannel = httpBindings.putIfAbsent(httpLocation, httpBindChannel);
-        if (httpBoundChannel == null) {
-            httpBoundChannel = httpBindChannel;
-        }
-        final HttpServerChannel httpBoundChannel0 = httpBoundChannel;
-
-        if (!Objects.equals(httpBindChannel.getConfig(), httpBoundChannel.getConfig()) ||
-                !Objects.equals(httpBindChannel.getTransport(), httpBoundChannel.getTransport())) {
+        if (httpBoundChannel != null) {
             httpBindFuture.setFailure(new ChannelException(format("Duplicate bind failed: %s", httpLocation)));
         }
+
+        ChannelAddress address = httpLocalAddress.getTransport();
+        URI location = address.getLocation();
+        HttpTransport httpTransport = httpTransportsByLocation.get(location);
+        if (httpTransport == null) {
+            String schemeName = address.getLocation().getScheme();
+            String httpSchemeName = httpLocalAddress.getLocation().getScheme();
+
+            ServerBootstrap bootstrap = bootstrapFactory.newServerBootstrap(schemeName);
+            bootstrap.setParentHandler(createParentHandler(httpBindChannel));
+            bootstrap.setPipelineFactory(pipelineFactory);
+            bootstrap.setOption(format("%s.nextProtocol", schemeName), httpSchemeName);
+
+            // bind transport
+            ChannelFuture bindFuture = bootstrap.bindAsync(address);
+            HttpTransport newHttpTransport = new HttpTransport(bindFuture, 1);
+            httpTransport = httpTransportsByLocation.putIfAbsent(location, newHttpTransport);
+            if (httpTransport == null) {
+                httpTransport = newHttpTransport;
+            }
+        }
         else {
-            if (httpBoundChannel.getBindCount().getAndIncrement() == 0) {
-                ChannelAddress address = httpLocalAddress.getTransport();
-                String schemeName = address.getLocation().getScheme();
-                String httpSchemeName = httpLocalAddress.getLocation().getScheme();
+            httpTransport.count.incrementAndGet();
+        }
 
-                ServerBootstrap bootstrap = bootstrapFactory.newServerBootstrap(schemeName);
-                bootstrap.setParentHandler(createParentHandler(httpBindChannel));
-                bootstrap.setPipelineFactory(pipelineFactory);
-                bootstrap.setOption(format("%s.nextProtocol", schemeName), httpSchemeName);
-
-                ChannelFuture bindFuture = bootstrap.bindAsync(address);
-                bindFuture.addListener(new ChannelFutureListener() {
-                    @Override
-                    public void operationComplete(ChannelFuture bindFuture) throws Exception {
-                        if (bindFuture.isSuccess()) {
-                            httpBindChannel.setTransport(bindFuture.getChannel());
-                            httpBindChannel.setLocalAddress(httpLocalAddress);
-                            httpBindChannel.setBound();
-
-                            fireChannelBound(httpBindChannel, httpBindChannel.getLocalAddress());
-                            httpBindFuture.setSuccess();
-                        }
-                        else {
-                            httpBindFuture.setFailure(bindFuture.getCause());
-                        }
-                    }
-                });
-            }
-            else {
-                httpBindChannel.setTransport(httpBoundChannel0.getTransport());
-                httpBindChannel.setLocalAddress(httpBoundChannel0.getLocalAddress());
-                httpBindChannel.setBound();
-
-                fireChannelBound(httpBindChannel, httpBindChannel.getLocalAddress());
-                httpBindFuture.setSuccess();
-            }
+        if (httpTransport.future.isDone()) {
+            handleHttpTransportBindComplete(httpBindChannel, httpBindFuture, httpLocalAddress, httpTransport.future);
+        }
+        else {
+            httpTransport.future.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    handleHttpTransportBindComplete(httpBindChannel, httpBindFuture, httpLocalAddress, future);
+                }
+            });
         }
     }
 
     @Override
     protected void unbindRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
-        final HttpServerChannel unbindHttpChannel = (HttpServerChannel) evt.getChannel();
-        final ChannelFuture unbindHttpFuture = evt.getFuture();
-        ChannelAddress httpLocalAddress = unbindHttpChannel.getLocalAddress();
+        final HttpServerChannel httpUnbindChannel = (HttpServerChannel) evt.getChannel();
+        final ChannelFuture httpUnbindFuture = evt.getFuture();
+        ChannelAddress httpLocalAddress = httpUnbindChannel.getLocalAddress();
         URI httpLocation = httpLocalAddress.getLocation();
 
-        HttpServerChannel boundHttpChannel = httpBindings.get(httpLocation);
-        assert Objects.equals(unbindHttpChannel.getConfig(), boundHttpChannel.getConfig());
+        if (!httpBindings.remove(httpLocation, httpUnbindChannel)) {
+            httpUnbindFuture.setFailure(new ChannelException("Channel not bound").fillInStackTrace());
+            return;
+        }
 
-        if (boundHttpChannel.getBindCount().decrementAndGet() == 0) {
-            httpBindings.remove(httpLocation, boundHttpChannel);
-            Channel transport = boundHttpChannel.getTransport();
-            transport.unbind().addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture future) throws Exception {
-                    if (future.isSuccess()) {
-                        fireChannelUnbound(unbindHttpChannel);
-                        unbindHttpFuture.setSuccess();
+        ChannelAddress address = httpLocalAddress.getTransport();
+        URI location = address.getLocation();
+        HttpTransport httpTransport = httpTransportsByLocation.get(location);
+        assert httpTransport != null;
+
+        if (httpTransport.count.decrementAndGet() == 0) {
+            // ensure only zero count is removed
+            HttpTransport oldHttpTransport = new HttpTransport(httpTransport.future);
+            if (httpTransportsByLocation.remove(location, oldHttpTransport)) {
+                // unbind transport
+                Channel transport = httpUnbindChannel.getTransport();
+                transport.unbind().addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        if (future.isSuccess()) {
+                            fireChannelUnbound(httpUnbindChannel);
+                            httpUnbindFuture.setSuccess();
+                        }
+                        else {
+                            httpUnbindFuture.setFailure(future.getCause());
+                        }
                     }
-                    else {
-                        unbindHttpFuture.setFailure(future.getCause());
-                    }
-                }
-            });
+                });
+            }
         }
         else {
-            fireChannelUnbound(unbindHttpChannel);
-            evt.getFuture().setSuccess();
+            fireChannelUnbound(httpUnbindChannel);
+            httpUnbindFuture.setSuccess();
         }
     }
 
@@ -208,4 +216,52 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
         };
     }
 
+    private static void handleHttpTransportBindComplete(
+            final HttpServerChannel httpBindChannel,
+            final ChannelFuture httpBindFuture,
+            final ChannelAddress httpLocalAddress, ChannelFuture future) {
+
+        if (future.isSuccess()) {
+            httpBindChannel.setTransport(future.getChannel());
+            httpBindChannel.setLocalAddress(httpLocalAddress);
+            httpBindChannel.setBound();
+
+            fireChannelBound(httpBindChannel, httpBindChannel.getLocalAddress());
+            httpBindFuture.setSuccess();
+        }
+        else {
+            httpBindFuture.setFailure(future.getCause());
+        }
+    }
+
+    private static final class HttpTransport {
+        final ChannelFuture future;
+        final AtomicInteger count;
+
+        HttpTransport(ChannelFuture future) {
+            this(future, 0);
+        }
+
+        HttpTransport(ChannelFuture future, int count) {
+            this.future = future;
+            this.count = new AtomicInteger(count);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(future, count);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            HttpTransport that = (HttpTransport) obj;
+            return Objects.equals(this.future, that.future) &&
+                    this.count.get() == that.count.get();
+        }
+
+        @Override
+        public String toString() {
+            return format("[future=@%d, count=%d]", Objects.hashCode(future), count.get());
+        }
+    }
 }

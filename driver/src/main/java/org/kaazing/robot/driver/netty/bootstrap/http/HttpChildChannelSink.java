@@ -28,8 +28,6 @@ import static org.jboss.netty.handler.codec.http.HttpHeaders.getContentLength;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.isContentLengthSet;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.isTransferEncodingChunked;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.setContentLength;
-import static org.jboss.netty.handler.codec.http.HttpResponseStatus.NO_CONTENT;
-import static org.jboss.netty.handler.codec.http.HttpResponseStatus.OK;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.SWITCHING_PROTOCOLS;
 import static org.kaazing.robot.driver.channel.Channels.chainFutures;
 import static org.kaazing.robot.driver.channel.Channels.chainWriteCompletes;
@@ -224,9 +222,10 @@ public class HttpChildChannelSink extends AbstractChannelSink {
                 httpResponse.headers().add(headers);
             }
 
-            ChannelFuture future = transport.write(httpResponse);
-
-            if (httpResponse.getStatus().getCode() == SWITCHING_PROTOCOLS.getCode()) {
+            HttpResponseStatus httpStatus = httpResponse.getStatus();
+            int httpStatusCode = (httpStatus != null) ? httpStatus.getCode() : 0;
+            if (httpStatusCode == SWITCHING_PROTOCOLS.getCode()) {
+                ChannelFuture future = transport.write(httpResponse);
                 httpChildChannel.state(UPGRADED);
                 ChannelPipeline pipeline = transport.getPipeline();
                 pipeline.remove(HttpRequestDecoder.class);
@@ -234,15 +233,24 @@ public class HttpChildChannelSink extends AbstractChannelSink {
                 chainFutures(future, httpFuture);
             }
             else if (httpResponse.headers().getAll(Names.CONNECTION).contains(Values.CLOSE)) {
+                ChannelFuture future = transport.write(httpResponse);
                 httpChildChannel.state(CONTENT_CLOSE);
                 chainFutures(future, httpFuture);
             }
-            else if (httpResponse.getStatus() == OK) {
-                httpResponse.headers().set(Names.CONTENT_LENGTH, 0);
-                httpChildChannel.state(CONTENT_COMPLETE);
-                chainFutures(future, httpFuture);
-            }
-            else if (httpResponse.getStatus() == NO_CONTENT) {
+            else {
+                if (httpStatusCode >= 200 && httpChildConfig.getMaximumBufferedContentLength() > 0) {
+                    switch (httpStatusCode) {
+                    case 204: // NO_CONTENT
+                    case 205: // RESET_CONTENT
+                    case 304: // NOT_MODIFIED
+                        break;
+                    default:
+                        setContentLength(httpResponse, 0);
+                        break;
+                    }
+                }
+
+                ChannelFuture future = transport.write(httpResponse);
                 httpChildChannel.state(CONTENT_COMPLETE);
                 chainFutures(future, httpFuture);
             }

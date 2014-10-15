@@ -57,6 +57,7 @@ import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
@@ -84,6 +85,37 @@ public class HttpServerBootstrapTest {
 
     @DataPoints
     public static final Set<ContentStrategy> CONTENT_STRATEGIES = EnumSet.allOf(ContentStrategy.class);
+
+    @Test
+    public void shouldBindMoreThanOnceThenUnbindMoreThanOnce() throws Exception {
+
+        server.setPipeline(pipeline(new SimpleChannelHandler()));
+
+        ChannelAddressFactory channelAddressFactory = newChannelAddressFactory();
+        ChannelAddress channelAddress1 = channelAddressFactory.newChannelAddress(URI.create("http://localhost:8000/path1"));
+        ChannelAddress channelAddress2 = channelAddressFactory.newChannelAddress(URI.create("http://localhost:8000/path2"));
+        Channel binding1 = server.bind(channelAddress1).syncUninterruptibly().getChannel();
+        Channel binding2 = server.bind(channelAddress2).syncUninterruptibly().getChannel();
+
+        binding1.unbind().syncUninterruptibly();
+        binding2.unbind().syncUninterruptibly();
+    }
+
+    @Test(expected = Exception.class)
+    public void shouldFailToBindMoreThanOnceWithEquivalentAddresses() throws Exception {
+
+
+        server.setPipeline(pipeline(new SimpleChannelHandler()));
+
+        ChannelAddressFactory channelAddressFactory = newChannelAddressFactory();
+        ChannelAddress channelAddress1 = channelAddressFactory.newChannelAddress(URI.create("http://localhost:8000/path"));
+        ChannelAddress channelAddress2 = channelAddressFactory.newChannelAddress(URI.create("http://localhost:8000/path"));
+        Channel binding1 = server.bind(channelAddress1).syncUninterruptibly().getChannel();
+        Channel binding2 = server.bind(channelAddress2).syncUninterruptibly().getChannel();
+
+        binding1.unbind().syncUninterruptibly();
+        binding2.unbind().syncUninterruptibly();
+    }
 
     @Theory
     public void shouldAcceptEchoThenClose(final ContentStrategy strategy) throws Exception {
