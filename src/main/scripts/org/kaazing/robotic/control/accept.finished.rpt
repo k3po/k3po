@@ -1,7 +1,9 @@
-accept tcp://localhost:11672
+accept tcp://localhost:12345
+accepted
 connected
 
 read "PREPARE\n"
+read "version:2.0\n"
 read "name:path/to/script/server"
 read "name:path/to/script/client"
 read "\n"
