@@ -22,7 +22,7 @@ BBOSH server can safely reclaim resources associated with the BBOSH connection i
 sufficiently.  A long-polling BBOSH client can detect an error if the time to receive a response exceeds the the interval 
 sufficiently to account for network round-trip time.
 
-    POST /connection HTTP/1.1
+    POST /connections HTTP/1.1
     Accept: application/octet-stream
     Content-Type: application/octet-stream
     Content-Length: ...
@@ -35,7 +35,7 @@ sufficiently to account for network round-trip time.
     Cache-Control: no-cache
     Content-Type: application/octet-stream
     Content-Length: ...
-    Location: /controls/[ID]
+    Location: /connections/[ID]
     X-Strategy: polling;interval=5s
     [body optional]
 
@@ -64,7 +64,7 @@ requests arrive at the server in a different order.  This is done by using the `
 The maximum number of requests that can arrive out of order is governed by the "requests" parameter to the "long-polling"
 strategy.
 
-    PUT /connection/[ID] HTTP/1.1
+    PUT /connections/[ID] HTTP/1.1
     Accept: application/octet-stream
     Content-Type: application/octet-stream
     Content-Length: ...
@@ -82,7 +82,7 @@ Note: the `204` status code may be used if `Content-Length` is zero.
 
 When no new data needs to be written to the BBOSH connection, the subsequent HTTP request can use the `GET` method instead.
 
-    GET /connection/[ID] HTTP/1.1
+    GET /connections/[ID] HTTP/1.1
     Accept: application/octet-stream
     X-Sequence-No: 2
     [no body]
@@ -100,7 +100,7 @@ Note: the `204` status code may be used if `Content-Length` is zero.
 When the server chooses to close the BBOSH connection, it sends `404` as the next response status code, with optional body to
 flush any remaining data to the client.
 
-    PUT /connection/[ID] HTTP/1.1
+    PUT /connections/[ID] HTTP/1.1
     Accept: application/octet-stream
     Content-Type: application/octet-stream
     Content-Length: ...
@@ -120,7 +120,7 @@ When the client chooses to close the BBOSH connection, it sends a DELETE request
 data to the server.  In response, the server confirms the connection has been closed with 200 OK status code, and optional body
 to flush any remaining data to the client.
 
-    DELETE /connection/[ID] HTTP/1.1
+    DELETE /connections/[ID] HTTP/1.1
     Accept: application/octet-stream
     Content-Type: application/octet-stream
     Content-Length: ...
@@ -140,7 +140,7 @@ Note: the `204` status code may be used if `Content-Length` is zero.
 When both the client and server choose to close the BBOSH connection simultaneously, the client sends a DELETE request as before,
 and the server's response has status code 404, still with optional body to flush any remaining data to the client.
 
-    DELETE /connection/[ID] HTTP/1.1
+    DELETE /connections/[ID] HTTP/1.1
     Accept: application/octet-stream
     Content-Type: application/octet-stream
     Content-Length: ...
@@ -175,7 +175,7 @@ status codes that can be processed by the client, such as 200 indicating that al
 `200` with `X-HTTP-Status-Code-Override` response header containing the actual status code, or `3xx` indicating that all `3xx`
 status codes can be handled explicitly.
 
-    POST /connection HTTP/1.1
+    POST /connections HTTP/1.1
     Accept: application/octet-stream
     Content-Type: application/octet-stream
     Content-Length: ...
@@ -188,7 +188,7 @@ status codes can be handled explicitly.
     Cache-Control: no-cache
     Content-Type: application/octet-stream
     Content-Length: ...
-    Location: /controls/[ID]
+    Location: /connections/[ID]
     X-Strategy: polling;interval=5s
     X-HTTP-Status-Code-Override: 201
     [body optional]
