@@ -48,9 +48,6 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
-import org.kaazing.robot.driver.netty.bootstrap.ClientBootstrap;
-import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
 import org.kaazing.robot.driver.behavior.Configuration;
 import org.kaazing.robot.driver.behavior.PlayBackScript;
 import org.kaazing.robot.driver.behavior.RobotCompletionFuture;
@@ -59,10 +56,13 @@ import org.kaazing.robot.driver.behavior.handler.CompletionHandler;
 import org.kaazing.robot.driver.behavior.parser.Parser;
 import org.kaazing.robot.driver.behavior.visitor.GatherStreamsLocationVisitor;
 import org.kaazing.robot.driver.behavior.visitor.GenerateConfigurationVisitor;
+import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
+import org.kaazing.robot.driver.netty.bootstrap.ClientBootstrap;
+import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
+import org.kaazing.robot.driver.netty.channel.CompositeChannelFuture;
 import org.kaazing.robot.lang.LocationInfo;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.parser.ScriptParser;
-import org.kaazing.robot.driver.netty.channel.CompositeChannelFuture;
 
 public class Robot {
 
@@ -91,15 +91,21 @@ public class Robot {
     private ChannelFuture preparedFuture;
     private volatile boolean destroyed;
 
-    private BootstrapFactory bootstrapFactory;
+    private final BootstrapFactory bootstrapFactory;
+    private final boolean releaseBootstrapFactory;
 
     // tests
     public Robot() {
-        this(newBootstrapFactory());
+        this(newBootstrapFactory(), true);
     }
 
     public Robot(BootstrapFactory bootstrapFactory) {
+        this(bootstrapFactory, false);
+    }
+
+    private Robot(BootstrapFactory bootstrapFactory, boolean releaseBootstrapFactory) {
         this.bootstrapFactory = bootstrapFactory;
+        this.releaseBootstrapFactory = releaseBootstrapFactory;
         listenForFinishedFuture();
     }
 
@@ -258,13 +264,15 @@ public class Robot {
 
         abort();
 
-        try {
-            releaseExternalResources();
-        } catch (Exception e) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Caught exception releasing resources", e);
+        if (releaseBootstrapFactory) {
+            try {
+                bootstrapFactory.releaseExternalResources();
+            } catch (Exception e) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Caught exception releasing resources", e);
+                }
+                return false;
             }
-            return false;
         }
 
         return destroyed = true;
@@ -379,17 +387,6 @@ public class Robot {
                 }
             }
         });
-    }
-
-    private void releaseExternalResources() {
-        if (configuration != null) {
-            for (final ServerBootstrap server : configuration.getServerBootstraps()) {
-                server.releaseExternalResources();
-            }
-            for (final ClientBootstrap client : configuration.getClientBootstraps()) {
-                client.releaseExternalResources();
-            }
-        }
     }
 
     private void detachAllPipelines() {
