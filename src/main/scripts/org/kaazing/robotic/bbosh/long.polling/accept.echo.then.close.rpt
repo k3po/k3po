@@ -1,0 +1,59 @@
+accept http://localhost:8000/connections
+
+accepted
+connected
+
+read method "POST"
+read header "Accept" "application/octet-stream"
+read header "Content-Length" "0"
+read header "X-Protocol" "bbosh/1.0"
+read header "X-Accept-Strategy" "long-polling;interval=30s;requests=5"
+read closed
+
+write status "201" "Created"
+write header "Cache-Control" "no-cache"
+write header "Content-Type" "application/octet-stream"
+write header content-length
+write header "Location" "/connections/ac32fb3844fe11e4a183164230d1df67"
+write header "X-Strategy" "long-polling;interval=30s;requests=2"
+write close
+
+accept http://localhost:8000/connections/ac32fb3844fe11e4a183164230d1df67
+
+accepted
+connected
+
+read method "PUT"
+read header "Accept" "application/octet-stream"
+read header "Content-Type" "application/octet-stream"
+read header "Content-Length" "12"
+read header "X-Sequence-No" "1"
+read "Hello,"
+read closed
+
+write await BARRIER_ONE
+write status "200" "OK"
+write header "Cache-Control" "no-cache"
+write header "Content-Type" "application/octet-stream"
+write header content-length
+write "Hello,"
+write close
+
+accepted
+connected
+
+read method "PUT"
+read header "Accept" "application/octet-stream"
+read header "Content-Type" "application/octet-stream"
+read header "Content-Length" "12"
+read header "X-Sequence-No" "2"
+read " world"
+read closed
+read notify BARRIER_ONE
+
+write status "404" "Closed"
+write header "Cache-Control" "no-cache"
+write header "Content-Type" "application/octet-stream"
+write header content-length
+write " world"
+write close
