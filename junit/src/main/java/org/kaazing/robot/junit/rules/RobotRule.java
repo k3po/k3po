@@ -95,7 +95,7 @@ public final class RobotRule extends Verifier {
             }
 
             // script is a required attribute on @Robotic
-            String[] scripts = note.script();
+            String[] scripts = note.value();
             List<String> scriptNames = new LinkedList<>();
             for (int i = 0; i < scripts.length; i++) {
                 // strict compatibility (relax to support fully qualified paths later)
