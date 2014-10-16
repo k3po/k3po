@@ -27,7 +27,7 @@ import org.junit.rules.Timeout;
 import org.kaazing.robot.junit.annotation.Robotic;
 import org.kaazing.robot.junit.rules.RobotRule;
 
-public class RoboticIT {
+public class RoboticControlIT {
 
     private final RobotRule robot = new RobotRule();
 
