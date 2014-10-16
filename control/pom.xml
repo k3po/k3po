@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.kaazing</groupId>
         <artifactId>robot.java</artifactId>
-        <version>1.0.0.2-SNAPSHOT</version>
+        <version>2.0.0-alpha-1-SNAPSHOT</version>
     </parent>
 
     <artifactId>robot.control</artifactId>

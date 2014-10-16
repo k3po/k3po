@@ -19,6 +19,8 @@
 
 package org.kaazing.robot.control.command;
 
+import java.util.Objects;
+
 public final class StartCommand extends Command {
 
     public Kind getKind() {
@@ -27,7 +29,7 @@ public final class StartCommand extends Command {
 
     @Override
     public int hashCode() {
-        return hashTo();
+        return Objects.hash(getKind());
     }
 
     @Override
@@ -35,7 +37,4 @@ public final class StartCommand extends Command {
         return o == this || o instanceof StartCommand && equalTo((StartCommand) o);
     }
 
-    protected boolean equalTo(StartCommand that) {
-        return super.equalTo(that);
-    }
 }

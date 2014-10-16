@@ -19,30 +19,26 @@
 
 package org.kaazing.robot.control.command;
 
+import java.util.Objects;
+
 public abstract class Command {
 
     public static enum Kind {
         PREPARE, START, ABORT
     }
 
-    private String name;
-
     public abstract Kind getKind();
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public abstract int hashCode();
+
+    @Override
+    public boolean equals(Object o) {
+        return o == this || o instanceof Command && equalTo((Command) o);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    protected int hashTo() {
-        return name != null ? name.hashCode() : 0;
-    }
-
-    protected boolean equalTo(Command that) {
-        return this.name == that.name || this.name != null && this.name.equals(that.name);
+    protected final boolean equalTo(Command that) {
+        return Objects.equals(this.getKind(), that.getKind());
     }
 
 }

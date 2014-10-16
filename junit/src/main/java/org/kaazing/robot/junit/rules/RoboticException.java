@@ -19,30 +19,19 @@
 
 package org.kaazing.robot.junit.rules;
 
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+class RoboticException extends RuntimeException {
 
-@Deprecated
-public class ServerRobot implements TestRule {
+    private static final long serialVersionUID = 1L;
 
-    private final RobotRule robot;
-
-    public ServerRobot() {
-        this.robot = new RobotRule();
+    public RoboticException() {
+        super();
     }
 
-    @Override
-    public Statement apply(Statement base, Description description) {
-        return robot.apply(base, description);
+    public RoboticException(String msg) {
+        super(msg);
     }
 
-    public void awaitFinish() {
-        try {
-            robot.join();
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public RoboticException(Throwable cause) {
+        super(cause);
     }
 }

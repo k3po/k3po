@@ -19,7 +19,31 @@
 
 package org.kaazing.robot.control.command;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+
 public final class PrepareCommand extends Command {
+
+    private final List<String> names;
+
+    public PrepareCommand() {
+        this.names = new LinkedList<>();
+    }
+
+    public void setName(String name) {
+        this.names.clear();
+        this.names.add(name);
+    }
+
+    public void setNames(List<String> names) {
+        this.names.clear();
+        this.names.addAll(names);
+    }
+
+    public List<String> getNames() {
+        return names;
+    }
 
     public Kind getKind() {
         return Kind.PREPARE;
@@ -27,7 +51,7 @@ public final class PrepareCommand extends Command {
 
     @Override
     public int hashCode() {
-        return hashTo();
+        return Objects.hash(getKind(), names);
     }
 
     @Override
@@ -36,6 +60,6 @@ public final class PrepareCommand extends Command {
     }
 
     protected boolean equalTo(PrepareCommand that) {
-        return super.equalTo(that);
+        return super.equalTo(that) && Objects.equals(this.names, that.names);
     }
 }

@@ -19,6 +19,9 @@
 
 package org.kaazing.robot.control.event;
 
+import java.util.Objects;
+
+
 public final class StartedEvent extends CommandEvent {
 
     public Kind getKind() {
@@ -27,11 +30,12 @@ public final class StartedEvent extends CommandEvent {
 
     @Override
     public int hashCode() {
-        return hashTo();
+        return Objects.hash(getKind());
     }
 
     @Override
     public boolean equals(Object o) {
         return o == this || o instanceof StartedEvent && equalTo((StartedEvent) o);
     }
+
 }

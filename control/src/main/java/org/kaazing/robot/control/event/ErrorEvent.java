@@ -19,6 +19,8 @@
 
 package org.kaazing.robot.control.event;
 
+import java.util.Objects;
+
 public final class ErrorEvent extends CommandEvent {
 
     private String summary;
@@ -46,13 +48,7 @@ public final class ErrorEvent extends CommandEvent {
 
     @Override
     public int hashCode() {
-        int hashCode = hashTo();
-
-        if (summary != null) {
-            hashCode ^= summary.hashCode();
-        }
-
-        return hashCode;
+        return Objects.hash(summary, description);
     }
 
     @Override
@@ -62,7 +58,7 @@ public final class ErrorEvent extends CommandEvent {
 
     protected boolean equalTo(ErrorEvent that) {
         return super.equalTo(that) &&
-                (this.summary == that.summary || this.summary != null && this.summary.equals(that.summary)) &&
-                (this.description == that.description || this.description != null && this.description.equals(that.description));
+                Objects.equals(this.summary, that.summary) &&
+                Objects.equals(this.description, that.description);
     }
 }
