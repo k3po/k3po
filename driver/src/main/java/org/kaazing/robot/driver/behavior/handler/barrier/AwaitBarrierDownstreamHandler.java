@@ -75,6 +75,7 @@ public class AwaitBarrierDownstreamHandler extends AbstractBarrierHandler implem
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
                 if (future.isSuccess()) {
+                    // TODO: review need for synchronized
                     synchronized (ctx) {
                         Queue<ChannelEvent> pending = queue;
                         queue = null;
@@ -90,8 +91,19 @@ public class AwaitBarrierDownstreamHandler extends AbstractBarrierHandler implem
 
     @Override
     public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent evt) throws Exception {
-        synchronized (ctx) {
-            ctx.sendDownstream(evt);
+
+        ChannelFuture pipelineFuture = getPipelineFuture();
+        ChannelFuture handlerFuture = getHandlerFuture();
+
+        // while handler future not complete, queue channel events
+        if (queue != null && pipelineFuture.isDone() && !handlerFuture.isDone()) {
+            queue.add(evt);
+        }
+        else {
+            // TODO: review need for synchronized
+            synchronized (ctx) {
+                ctx.sendDownstream(evt);
+            }
         }
     }
 
