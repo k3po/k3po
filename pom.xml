@@ -23,7 +23,7 @@
     <groupId>org.kaazing</groupId>
     <artifactId>robot.parent</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.0-alpha-1</version>
+    <version>2.0.0-alpha-2-SNAPSHOT</version>
 
     <name>robot/parent</name>
     <url>https://github.com/kaazing/robot</url>
