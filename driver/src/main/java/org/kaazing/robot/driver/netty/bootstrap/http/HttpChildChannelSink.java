@@ -267,6 +267,7 @@ public class HttpChildChannelSink extends AbstractChannelSink {
                 chainFutures(future, httpFuture);
             }
             else {
+                // see RFC-7320 section 3.3 regarding content-length
                 if (httpStatusCode >= 200 && httpChildConfig.getMaximumBufferedContentLength() > 0) {
                     switch (httpStatusCode) {
                     case 204: // NO_CONTENT

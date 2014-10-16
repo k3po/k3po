@@ -32,6 +32,7 @@ import static org.jboss.netty.channel.Channels.future;
 import static org.jboss.netty.channel.Channels.write;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.getHost;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.isContentLengthSet;
+import static org.jboss.netty.handler.codec.http.HttpHeaders.isTransferEncodingChunked;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.SWITCHING_PROTOCOLS;
 import static org.kaazing.robot.driver.channel.Channels.remoteAddress;
@@ -55,7 +56,6 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpChunk;
-import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
@@ -174,15 +174,15 @@ public class HttpChildChannelSource extends HttpChannelHandler {
         this.httpChildChannel = httpChildChannel;
 
         // update read state before firing channel events
-        if (httpRequest.isChunked()) {
+        if (isTransferEncodingChunked(httpRequest)) {
             httpChildChannel.readState(HttpReadState.CONTENT_CHUNKED);
         }
         else if (isContentLengthSet(httpRequest)) {
             httpChildChannel.readState(HttpReadState.CONTENT_COMPLETE);
         }
-        else if (httpRequest.getMethod() == HttpMethod.GET ||
-                httpRequest.getMethod() == HttpMethod.HEAD) {
-            // no content by default for these HTTP methods
+        else {
+            // see RFC-7230 section 3.3
+            // content indicated by presence of Content-Length or Transfer-Encoding
             httpChildChannel.readState(HttpReadState.CONTENT_COMPLETE);
         }
 
