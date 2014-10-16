@@ -1,0 +1,40 @@
+connect http://localhost:8000/connections
+connected
+
+write method "POST"
+write header "Accept" "application/octet-stream"
+write header "X-Protocol" "bbosh/1.0"
+write header "X-Accept-Strategy" "streaming;request=chunked"
+write header content-length
+write close
+
+read status "201" "Created"
+read header "Cache-Control" "no-cache"
+read header "Location" "/connections/ac32fb3844fe11e4a183164230d1df67"
+read header "X-Strategy" "streaming;encoding=chunked"
+read closed
+read notify CONNECT_ONE
+
+connect http://localhost:8000/connections/ac32fb3844fe11e4a183164230d1df67
+connected
+
+write await CONNECT_ONE
+write method "PUT"
+write header "Accept" "application/octet-stream"
+write header "Content-Type" "application/octet-stream"
+write header "Transfer-Encoding" "chunked"
+write header "X-Sequence-No" "1"
+
+read status "200" "OK"
+read header "Cache-Control" "no-cache"
+read header "Content-Type" "application/octet-stream"
+read header "Transfer-Encoding" "chunked"
+
+write "Hello,"
+read "Hello,"
+
+write " world"
+read " world"
+
+write close
+read closed

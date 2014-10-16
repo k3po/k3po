@@ -5,7 +5,6 @@ connected
 
 read method "POST"
 read header "Accept" "application/octet-stream"
-read header "Content-Length" "0"
 read header "X-Protocol" "bbosh/1.0"
 read header "X-Accept-Strategy" "polling;interval=5s"
 read closed
@@ -26,7 +25,6 @@ connected
 read method "PUT"
 read header "Accept" "application/octet-stream"
 read header "Content-Type" "application/octet-stream"
-read header "Content-Length" "12"
 read header "X-Sequence-No" "1"
 read "Hello, world"
 read closed
@@ -46,6 +44,7 @@ read header "Accept" "application/octet-stream"
 read header "X-Sequence-No" "2"
 read closed
 
-write status "200" "OK"
+write status "404" "Closed"
+write header "Cache-Control" "no-cache"
 write header content-length
 write close

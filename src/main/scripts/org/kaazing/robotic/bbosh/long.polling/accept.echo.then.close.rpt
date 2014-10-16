@@ -5,7 +5,6 @@ connected
 
 read method "POST"
 read header "Accept" "application/octet-stream"
-read header "Content-Length" "0"
 read header "X-Protocol" "bbosh/1.0"
 read header "X-Accept-Strategy" "long-polling;interval=30s;requests=5"
 read closed
@@ -26,12 +25,10 @@ connected
 read method "PUT"
 read header "Accept" "application/octet-stream"
 read header "Content-Type" "application/octet-stream"
-read header "Content-Length" "12"
 read header "X-Sequence-No" "1"
 read "Hello,"
 read closed
 
-write await BARRIER_ONE
 write status "200" "OK"
 write header "Cache-Control" "no-cache"
 write header "Content-Type" "application/octet-stream"
@@ -45,11 +42,9 @@ connected
 read method "PUT"
 read header "Accept" "application/octet-stream"
 read header "Content-Type" "application/octet-stream"
-read header "Content-Length" "12"
 read header "X-Sequence-No" "2"
 read " world"
 read closed
-read notify BARRIER_ONE
 
 write status "404" "Closed"
 write header "Cache-Control" "no-cache"
