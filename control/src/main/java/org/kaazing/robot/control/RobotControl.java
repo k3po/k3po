@@ -137,15 +137,17 @@ public final class RobotControl {
         connection.setReadTimeout((int) unit.toMillis(timeout));
 
         String eventType = textIn.readLine();
-        switch (eventType) {
-        case PREPARED_EVENT:
-            return readPreparedEvent();
-        case STARTED_EVENT:
-            return readStartedEvent();
-        case ERROR_EVENT:
-            return readErrorEvent();
-        case FINISHED_EVENT:
-            return readFinishedEvent();
+        if (eventType != null) {
+            switch (eventType) {
+            case PREPARED_EVENT:
+                return readPreparedEvent();
+            case STARTED_EVENT:
+                return readStartedEvent();
+            case ERROR_EVENT:
+                return readErrorEvent();
+            case FINISHED_EVENT:
+                return readFinishedEvent();
+            }
         }
 
         throw new IllegalStateException("Invalid protocol frame: " + eventType);
