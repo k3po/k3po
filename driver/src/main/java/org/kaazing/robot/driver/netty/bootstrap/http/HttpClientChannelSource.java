@@ -34,6 +34,7 @@ import org.jboss.netty.channel.ChannelException;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
@@ -126,6 +127,21 @@ public class HttpClientChannelSource extends HttpChannelHandler {
             // after 101 switching protocols
             fireMessageReceived(httpClientChannel, message);
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+        if (httpClientChannel != null) {
+            HttpClientChannel httpClientChannel = this.httpClientChannel;
+            this.httpClientChannel = null;
+            if (httpClientChannel.setClosed()) {
+                fireExceptionCaught(httpClientChannel, e.getCause());
+                fireChannelClosed(httpClientChannel);
+            }
+        }
+
+        Channel channel = ctx.getChannel();
+        channel.close();
     }
 
     @Override

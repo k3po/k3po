@@ -56,6 +56,8 @@ import org.jboss.netty.channel.WriteCompletionEvent;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
+import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
+import org.jboss.netty.handler.codec.http.HttpHeaders.Values;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
@@ -119,7 +121,6 @@ public class HttpServerBootstrapTest {
 
     @Theory
     public void shouldAcceptEchoThenClose(final ContentStrategy strategy) throws Exception {
-
         ChannelHandler echoHandler = new SimpleChannelHandler() {
             @Override
             public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
@@ -133,13 +134,13 @@ public class HttpServerBootstrapTest {
                     config.setMaximumBufferedContentLength(8192);
                     break;
                 case CLOSE:
-                    writeHeaders.set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.CLOSE);
+                    writeHeaders.set(Names.CONNECTION, Values.CLOSE);
                     break;
                 case CHUNKED:
-                    writeHeaders.set(HttpHeaders.Names.TRANSFER_ENCODING, HttpHeaders.Values.CHUNKED);
+                    writeHeaders.set(Names.TRANSFER_ENCODING, Values.CHUNKED);
                     break;
                 case EXPLICIT:
-                    writeHeaders.set(HttpHeaders.Names.CONTENT_LENGTH, 12);
+                    writeHeaders.set(Names.CONTENT_LENGTH, 12);
                     break;
                 }
 
