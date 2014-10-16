@@ -429,6 +429,12 @@ public class Robot {
                 public void childChannelOpen(ChannelHandlerContext ctx, ChildChannelStateEvent e) throws Exception {
                     clientChannels.add(e.getChildChannel());
                 }
+
+                @Override
+                public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+                    Channel channel = ctx.getChannel();
+                    channel.close();
+                }
             });
 
 
@@ -458,13 +464,6 @@ public class Robot {
 
                     } else {
                         Throwable cause = future.getCause();
-                        String errMsg = "Bind to " + server.getOption("localAddress") + " failed.";
-
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.error(errMsg, cause);
-                        } else {
-                            LOGGER.error(errMsg + "Due to " + cause);
-                        }
                         /*
                          * Grab the set of completion handlers for the server. This is the set of completion futures for the
                          * Accept stream.
