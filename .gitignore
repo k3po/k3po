@@ -28,3 +28,4 @@ out
 *.sublime-workspace
 build-local.properties
 .gradle
+dependency-reduced-pom.xml
