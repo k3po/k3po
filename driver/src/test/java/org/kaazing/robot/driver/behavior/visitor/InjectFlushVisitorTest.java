@@ -29,7 +29,7 @@ import org.kaazing.robot.lang.ast.builder.AstScriptNodeBuilder;
 public class InjectFlushVisitorTest {
 
     @Test
-    public void shouldInjectFlushAfterWriteConfigBeforeReadConfig()
+    public void shouldInjectFlushAfterWriteConfigBeforeFirstReadConfig()
         throws Exception {
 
         AstScriptNode expectedScriptNode = new AstScriptNodeBuilder()
@@ -42,6 +42,9 @@ public class InjectFlushVisitorTest {
                     .setNextLineInfo(1, 0)
                     .done()
                 .addFlushCommand()
+                    .done()
+                .addReadConfigEvent()
+                    .setNextLineInfo(1, 0)
                     .done()
                 .addReadConfigEvent()
                     .setNextLineInfo(1, 0)
@@ -59,6 +62,57 @@ public class InjectFlushVisitorTest {
                     .setNextLineInfo(1, 0)
                     .done()
                 .addReadConfigEvent()
+                    .setNextLineInfo(1, 0)
+                    .done()
+                .addReadConfigEvent()
+                    .setNextLineInfo(1, 0)
+                    .done()
+                .done()
+            .done();
+
+        InjectFlushVisitor injectFlush = new InjectFlushVisitor();
+        AstScriptNode actualScriptNode = inputScriptNode.accept(injectFlush, new InjectFlushVisitor.State());
+
+        assertEquals(expectedScriptNode, actualScriptNode);
+    }
+
+    @Test
+    public void shouldInjectFlushAfterWriteConfigBeforeFirstReadValue()
+        throws Exception {
+
+        AstScriptNode expectedScriptNode = new AstScriptNodeBuilder()
+            .addConnectStream()
+                .setNextLineInfo(1, 0)
+                .addConnectedEvent()
+                    .setNextLineInfo(1, 0)
+                    .done()
+                .addWriteConfigCommand()
+                    .setNextLineInfo(1, 0)
+                    .done()
+                .addFlushCommand()
+                    .done()
+                .addReadEvent()
+                    .setNextLineInfo(1, 0)
+                    .done()
+                .addReadEvent()
+                    .setNextLineInfo(1, 0)
+                    .done()
+                .done()
+            .done();
+
+        AstScriptNode inputScriptNode = new AstScriptNodeBuilder()
+            .addConnectStream()
+                .setNextLineInfo(1, 0)
+                .addConnectedEvent()
+                    .setNextLineInfo(1, 0)
+                    .done()
+                .addWriteConfigCommand()
+                    .setNextLineInfo(1, 0)
+                    .done()
+                .addReadEvent()
+                    .setNextLineInfo(1, 0)
+                    .done()
+                .addReadEvent()
                     .setNextLineInfo(1, 0)
                     .done()
                 .done()
