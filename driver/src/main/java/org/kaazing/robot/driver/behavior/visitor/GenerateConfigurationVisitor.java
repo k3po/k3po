@@ -45,7 +45,6 @@ import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.robot.driver.RobotException;
@@ -189,7 +188,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         private Barrier lookupBarrier(String barrierName) {
             Barrier barrier = barriersByName.get(barrierName);
             if (barrier == null) {
-                Barrier newBarrier = new Barrier();
+                Barrier newBarrier = new Barrier(barrierName);
                 barrier = barriersByName.putIfAbsent(barrierName, newBarrier);
                 if (barrier == null) {
                     barrier = newBarrier;
@@ -249,7 +248,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // masking is a no-op by default for each stream
         state.readUnmasker = DEFAULT_READ_UNMASKER;
         state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
-        state.pipelineAsMap.put("loghandler", new LoggingHandler(true));
         state.pipelineAsMap.put("lastevent", new LogLastEventHandler(acceptedNode.getLocationInfo()));
         state.streamStartLocation = acceptedNode.getLocationInfo();
 
@@ -349,7 +347,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         Map<String, Object> connectOptions = connectNode.getOptions();
 
         state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
-        state.pipelineAsMap.put("loghandler", new LoggingHandler(true));
         state.pipelineAsMap.put("lastevent", new LogLastEventHandler(connectNode.getLocationInfo()));
 
         state.streamStartLocation = connectNode.getLocationInfo();

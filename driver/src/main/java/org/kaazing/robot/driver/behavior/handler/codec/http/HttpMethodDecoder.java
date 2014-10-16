@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.behavior.handler.codec.http;
 
+import static java.lang.String.format;
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 
@@ -31,10 +32,10 @@ import org.kaazing.robot.driver.netty.bootstrap.http.HttpChannelConfig;
 
 public class HttpMethodDecoder implements ConfigDecoder {
 
-    private MessageDecoder methodValueDecoder;
+    private final MessageDecoder methodDecoder;
 
     public HttpMethodDecoder(MessageDecoder methodValueDecoder) {
-        this.methodValueDecoder = methodValueDecoder;
+        this.methodDecoder = methodValueDecoder;
     }
 
     @Override
@@ -43,7 +44,12 @@ public class HttpMethodDecoder implements ConfigDecoder {
         HttpMethod method = httpConfig.getMethod();
         String methodName = method.getName();
         ChannelBuffer buffer = copiedBuffer(methodName, UTF_8);
-        methodValueDecoder.decode(buffer);
+        methodDecoder.decode(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return format("http:method %s", methodDecoder);
     }
 
 }

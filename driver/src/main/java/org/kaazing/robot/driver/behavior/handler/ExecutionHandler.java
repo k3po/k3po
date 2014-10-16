@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.behavior.handler;
 
+import static java.lang.String.format;
 import static org.kaazing.robot.driver.channel.Channels.prepare;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -26,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.DefaultChannelFuture;
@@ -50,7 +52,7 @@ public class ExecutionHandler extends SimplePrepareUpstreamHandler implements Li
 
     private final AtomicBoolean preparationLatch = new AtomicBoolean();
 
-    private Channel                     channel;
+    private Channel channel;
 
     // Same as canceling the pipeline future ... except sometimes you might want to cancel before it is prepared
     // in which case you need to wait for the prepare. Calling this method works around that.
@@ -88,10 +90,6 @@ public class ExecutionHandler extends SimplePrepareUpstreamHandler implements Li
     @Override
     public void prepareRequested(ChannelHandlerContext ctx, PreparationEvent evt) {
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("preparation request received in execution handler for " + this);
-        }
-
         // Ideally one could extract the future from the handlerFuture. But we are
         // creating them before the channel is set up :(
         channel = ctx.getChannel();
@@ -119,6 +117,21 @@ public class ExecutionHandler extends SimplePrepareUpstreamHandler implements Li
                 return ctx.getChannel();
             }
         };
+
+        handlerFuture.addListener(new ChannelFutureListener() {
+            
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                Channel channel = future.getChannel();
+                int id = (channel != null) ? channel.getId() : 0;
+                if (future.isSuccess()) {
+                    LOGGER.debug(format("[id: 0x%08x] %s", id, ExecutionHandler.this));
+                }
+                else {
+                    LOGGER.debug(format("[id: 0x%08x] %s [FAILED]", id, ExecutionHandler.this));
+                }
+            }
+        });
     }
 
     @Override

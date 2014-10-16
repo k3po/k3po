@@ -244,6 +244,7 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
         case CONFIG_ONLY:
             AstFlushNode flush = new AstFlushNode();
             state.streamables.add(flush);
+            state.writeState = ReadWriteState.CONFIG_OR_VALUE;
             break;
         default:
             break;
@@ -283,6 +284,7 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
         case CONFIG_ONLY:
             AstFlushNode flush = new AstFlushNode();
             state.streamables.add(flush);
+            state.writeState = ReadWriteState.CONFIG_OR_VALUE;
             break;
         default:
             break;

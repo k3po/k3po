@@ -36,4 +36,9 @@ public class FlushedHandler extends AbstractEventHandler {
         getHandlerFuture().setSuccess();
     }
 
+    @Override
+    public String toString() {
+        return "flushed";
+    }
+
 }

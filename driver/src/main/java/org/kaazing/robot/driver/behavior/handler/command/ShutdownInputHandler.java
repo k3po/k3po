@@ -22,18 +22,18 @@ package org.kaazing.robot.driver.behavior.handler.command;
 import static org.kaazing.robot.driver.netty.channel.Channels.shutdownInput;
 
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
 
 public class ShutdownInputHandler extends AbstractCommandHandler {
 
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ShutdownInputHandler.class);
-
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) {
-        LOGGER.debug("Shutting down channel input");
         shutdownInput(ctx, getHandlerFuture());
         getHandlerFuture().setSuccess();
+    }
+
+    @Override
+    public String toString() {
+        return "read close";
     }
 
 }

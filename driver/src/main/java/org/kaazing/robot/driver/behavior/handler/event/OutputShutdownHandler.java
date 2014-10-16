@@ -36,4 +36,9 @@ public class OutputShutdownHandler extends AbstractEventHandler {
         getHandlerFuture().setSuccess();
     }
 
+    @Override
+    public String toString() {
+        return "output shutdown";
+    }
+
 }

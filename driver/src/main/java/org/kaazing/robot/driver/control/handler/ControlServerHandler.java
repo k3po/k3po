@@ -83,7 +83,6 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-        logger.debug("Control channel closed");
         if (robot != null) {
             robot.destroy();
         }
@@ -105,7 +104,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
         List<String> scriptNames = prepare.getNames();
         if (logger.isDebugEnabled()) {
-            logger.debug("preparing robot execution for script(s) " + scriptNames);
+            logger.debug("preparing script(s) " + scriptNames);
         }
 
         List<String> scriptNamesWithExtension = new LinkedList<>();
@@ -185,12 +184,6 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     @Override
     public void startReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
 
-        final boolean infoDebugEnabled = logger.isDebugEnabled();
-
-        if (infoDebugEnabled) {
-            logger.debug("starting robot execution for script");
-        }
-
         try {
             ChannelFuture startFuture = robot.start();
             startFuture.addListener(new ChannelFutureListener() {
@@ -221,15 +214,11 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     @Override
     public void abortReceived(ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
-        if (logger.isInfoEnabled()) {
-            logger.debug("Aborting script");
+        if (logger.isDebugEnabled()) {
+            logger.debug("ABORT");
         }
         robot.abort();
-        if (ctx.getPipeline().get("http.control.request.decoder") != null && robot != null && robot.getScriptCompleteFuture().isDone()) {
-            // is HTTP
-            sendFinishedMessage(ctx, robot.getScriptCompleteFuture());
-        } else if (robot != null && !robot.getStartedFuture().isDone()) {
-            // is TCP. handle case where abort before started
+        if (robot != null && !robot.getStartedFuture().isDone()) {
             sendFinishedMessage(ctx, robot.getScriptCompleteFuture());
         }
     }

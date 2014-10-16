@@ -70,9 +70,6 @@ public class CompletionHandler extends ExecutionHandler {
                 if (progressInfo == null) {
                     progressInfo = getStreamStartLocation();
                 }
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("pipeline handler complete. Location info is " + progressInfo);
-                }
                 // Need to let the last event logger know we are done so we don't pick up the wrong event.
                 ChannelPipeline pipeline = ctx.getPipeline();
                 LogLastEventHandler logHandler = pipeline.get(LogLastEventHandler.class);
@@ -104,5 +101,10 @@ public class CompletionHandler extends ExecutionHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         LOGGER.error("Unexpected handled exception ", e.getCause());
+    }
+
+    @Override
+    public String toString() {
+        return "complete";
     }
 }

@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.behavior.handler.barrier;
 
+import static java.lang.String.format;
 import static org.kaazing.robot.driver.netty.channel.ChannelFutureListeners.chainedFuture;
 
 import java.util.Queue;
@@ -29,15 +30,10 @@ import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.driver.behavior.Barrier;
 import org.kaazing.robot.driver.behavior.handler.prepare.PreparationEvent;
 
 public class AwaitBarrierDownstreamHandler extends AbstractBarrierHandler implements ChannelDownstreamHandler {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(AwaitBarrierDownstreamHandler.class);
 
     private Queue<ChannelEvent> queue;
 
@@ -48,17 +44,7 @@ public class AwaitBarrierDownstreamHandler extends AbstractBarrierHandler implem
     @Override
     public void prepareRequested(final ChannelHandlerContext ctx, PreparationEvent evt) {
 
-        final boolean isDebugEnabled = LOGGER.isDebugEnabled();
-
-        if (isDebugEnabled) {
-            LOGGER.debug("await barrier downstream prepare received");
-        }
-
         super.prepareRequested(ctx, evt);
-
-        if (isDebugEnabled) {
-            LOGGER.debug("await barrier downstream prepare on super returned");
-        }
 
         // when pipeline future complete, pay attention to barrier future
         final ChannelFuture handlerFuture = getHandlerFuture();
@@ -66,7 +52,6 @@ public class AwaitBarrierDownstreamHandler extends AbstractBarrierHandler implem
         pipelineFuture.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(final ChannelFuture f) throws Exception {
-                LOGGER.debug("pipeline future for downstream barrier complete");
                 // If the pipeline was not complete successfully we dont want nor need to wait for the barrier
                 if (!f.isSuccess()) {
                     if (f.isCancelled()) {
@@ -91,15 +76,12 @@ public class AwaitBarrierDownstreamHandler extends AbstractBarrierHandler implem
             public void operationComplete(ChannelFuture future) throws Exception {
                 if (future.isSuccess()) {
                     synchronized (ctx) {
-                        LOGGER.debug("Barrier has been notified. Releasing queued downstream events");
                         Queue<ChannelEvent> pending = queue;
                         queue = null;
                         for (ChannelEvent evt : pending) {
                             ctx.sendDownstream(evt);
                         }
                     }
-                } else {
-                    LOGGER.debug("handler future for downstream barrier failed - not releasing downstream events");
                 }
             }
 
@@ -108,35 +90,14 @@ public class AwaitBarrierDownstreamHandler extends AbstractBarrierHandler implem
 
     @Override
     public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent evt) throws Exception {
-
-        if (queue == null) {
-            // We need to wait for the prepare to complete
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("downstream barrier not finished preparing sending event " + evt + " upstream");
-            }
-
-        } else if (!getPipelineFuture().isDone()) {
-            // Wait for the pipeline to complete before we start holding events.
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("downstream barrier pipeline not finished sending event " + evt + " upstream");
-            }
-
-        } else if (!getHandlerFuture().isDone()) {
-            // while handler future not complete, queue channel events
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Awaiting on barrier notification. Queueing downstream event " + evt);
-            }
-            queue.add(evt);
-            return;
-        } else {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("barrier future is done sending event " + evt + " upstream");
-            }
-        }
-
         synchronized (ctx) {
             ctx.sendDownstream(evt);
         }
+    }
+
+    @Override
+    public String toString() {
+        return format("write await %s", getBarrier());
     }
 
     boolean hasQueuedChannelEvents() {

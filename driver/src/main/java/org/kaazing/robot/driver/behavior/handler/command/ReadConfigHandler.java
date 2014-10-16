@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.behavior.handler.command;
 
+import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 import static org.jboss.netty.channel.Channel.OP_READ;
@@ -99,6 +100,11 @@ public class ReadConfigHandler extends AbstractCommandHandler {
         catch (Exception e) {
             getHandlerFuture().setFailure(e);
         }
+    }
+
+    @Override
+    public String toString() {
+        return format("read config %s", decoders);
     }
 
 }

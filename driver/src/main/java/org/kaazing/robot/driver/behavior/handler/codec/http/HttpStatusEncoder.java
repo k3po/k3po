@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.behavior.handler.codec.http;
 
+import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 import org.jboss.netty.channel.Channel;
@@ -44,6 +45,11 @@ public class HttpStatusEncoder implements ConfigEncoder {
         String reason = reasonEncoder.encode().toString(US_ASCII);
         HttpResponseStatus status = new HttpResponseStatus(code, reason);
         httpConfig.setStatus(status);
+    }
+
+    @Override
+    public String toString() {
+        return format("http:status %s %s", codeEncoder, reasonEncoder);
     }
 
 }

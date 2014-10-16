@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.behavior.handler.codec.http;
 
+import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 import org.jboss.netty.channel.Channel;
@@ -41,6 +42,11 @@ public class HttpMethodEncoder implements ConfigEncoder {
         String methodName = methodEncoder.encode().toString(US_ASCII);
         HttpMethod method = HttpMethod.valueOf(methodName);
         httpConfig.setMethod(method);
+    }
+
+    @Override
+    public String toString() {
+        return format("http:method %s", methodEncoder);
     }
 
 }

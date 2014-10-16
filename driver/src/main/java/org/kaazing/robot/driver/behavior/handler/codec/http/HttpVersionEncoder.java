@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.behavior.handler.codec.http;
 
+import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 import org.jboss.netty.channel.Channel;
@@ -41,6 +42,11 @@ public class HttpVersionEncoder implements ConfigEncoder {
         String versionName = versionEncoder.encode().toString(US_ASCII);
         HttpVersion version = HttpVersion.valueOf(versionName);
         httpConfig.setVersion(version);
+    }
+
+    @Override
+    public String toString() {
+        return format("http:version %s", versionEncoder);
     }
 
 }

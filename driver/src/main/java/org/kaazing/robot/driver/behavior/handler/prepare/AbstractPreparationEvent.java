@@ -21,20 +21,14 @@ package org.kaazing.robot.driver.behavior.handler.prepare;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
-
-import org.kaazing.robot.lang.LocationInfo;
 import org.kaazing.robot.driver.netty.channel.CompositeChannelFuture;
+import org.kaazing.robot.lang.LocationInfo;
 
 public abstract class AbstractPreparationEvent implements PreparationEvent {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(AbstractPreparationEvent.class);
 
     private final Channel channel;
     private final ChannelFuture future;
@@ -75,20 +69,6 @@ public abstract class AbstractPreparationEvent implements PreparationEvent {
     @Override
     public ChannelFuture checkpoint(final LocationInfo locationInfo, final ChannelFuture handlerFuture) {
 
-        if (LOGGER.isDebugEnabled()) {
-            Iterator<ChannelFuture> i = pipelineFutures.iterator();
-
-            if (i.hasNext()) {
-                LOGGER.debug("Creating pipelineFuture. With the below futures");
-                while (i.hasNext()) {
-                    LOGGER.debug("\t" + i.next());
-                }
-            }
-            else {
-                LOGGER.debug("Creating pipelinedFuture with no futures. Automatically set to success");
-            }
-        }
-
         // We set the composite to failFast. This is so that as soon as one handler future fails ... any pipelinefutures
         // that contain it will also fail. This is needed so that the listener in the CompletionHandler will fire
         ChannelFuture pipelineFuture = new CompositeChannelFuture<ChannelFuture>(channel, pipelineFutures, true);
@@ -103,9 +83,6 @@ public abstract class AbstractPreparationEvent implements PreparationEvent {
             handlerFuture.addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture future) throws Exception {
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("handler future completed: " + handlerFuture);
-                    }
                     if (future.isSuccess()) {
                         AbstractPreparationEvent.this.progressInfo = locationInfo;
                     }

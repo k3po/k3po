@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.behavior.handler.codec.http;
 
+import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.kaazing.robot.driver.channel.Channels.remoteAddress;
 
@@ -58,6 +59,11 @@ public class HttpParameterEncoder implements ConfigEncoder {
             String paramValue = valueEncoder.encode().toString(US_ASCII);
             query.addParam(paramName, paramValue);
         }
+    }
+
+    @Override
+    public String toString() {
+        return format("http:parameter %s %s", nameEncoder, valueEncoders);
     }
 
 }

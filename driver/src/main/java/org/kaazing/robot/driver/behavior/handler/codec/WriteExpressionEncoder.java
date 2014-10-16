@@ -64,4 +64,9 @@ public class WriteExpressionEncoder implements MessageEncoder {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return expression.toString();
+    }
+
 }

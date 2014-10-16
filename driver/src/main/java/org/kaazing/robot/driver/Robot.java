@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandler;
@@ -41,6 +40,7 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ChildChannelStateEvent;
 import org.jboss.netty.channel.DefaultChannelFuture;
+import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.ChannelGroupFutureListener;
@@ -129,29 +129,24 @@ public class Robot {
 
         this.expectedScript = script;
 
-        final boolean debugLogEnabled = LOGGER.isDebugEnabled();
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Expected script:\n" + expectedScript);
+        }
 
         final ScriptParser parser = new Parser();
         scriptAST = parser.parse(new ByteArrayInputStream(expectedScript.getBytes(UTF_8)));
 
-        if (debugLogEnabled) {
-            LOGGER.debug("script parsed");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Parsed script:\n" + scriptAST);
         }
 
         final GenerateConfigurationVisitor visitor = new GenerateConfigurationVisitor(bootstrapFactory);
         configuration = scriptAST.accept(visitor, new GenerateConfigurationVisitor.State());
 
-        if (debugLogEnabled) {
-            LOGGER.debug("configuration created");
-        }
-
         preparedFuture = bindServers();
 
         /* Iterate over the set of completion handlers. */
         for (final CompletionHandler h : configuration.getCompletionHandlers()) {
-            if (debugLogEnabled) {
-                LOGGER.debug("Adding listener for a completion future");
-            }
             /* Add the completion future */
             final ChannelFuture f = h.getHandlerFuture();
             completionFutures.add(f);
@@ -165,9 +160,6 @@ public class Robot {
                 @Override
                 public void operationComplete(final ChannelFuture future) throws Exception {
                     LocationInfo location = h.getProgressInfo();
-                    if (debugLogEnabled) {
-                        LOGGER.debug("Completion future done. Location info is " + location);
-                    }
                     /*
                      * An accept or connect that never connected will have a
                      * null location. Don't include these.
@@ -178,11 +170,6 @@ public class Robot {
 
                     Throwable cause = future.getCause();
                     if (cause != null) {
-                        if (debugLogEnabled) {
-                            LOGGER.error("channel failed with cause: ", cause);
-                        } else {
-                            LOGGER.error("channel failed with cause: " + cause);
-                        }
                         failedCauses.put(h.getStreamStartLocation(), cause);
                     }
                 }
@@ -214,13 +201,11 @@ public class Robot {
             throw new IllegalStateException("Script has already been started");
         }
 
-        final boolean infoLogEnabled = LOGGER.isInfoEnabled();
-
         /* Connect to any clients */
         for (final ClientBootstrap client : configuration.getClientBootstraps()) {
 
-            if (infoLogEnabled) {
-                LOGGER.debug("Connecting to remote address " + client.getOption("remoteAddress"));
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("[id:           ] connect " + client.getOption("remoteAddress"));
             }
 
             ChannelFuture connectFuture = client.connect();
@@ -243,9 +228,6 @@ public class Robot {
     public RobotCompletionFuture abort() {
 
         if (!finishedFuture.isDone()) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Aborting script");
-            }
             finishedFuture.cancel();
         }
 
@@ -267,7 +249,8 @@ public class Robot {
         if (releaseBootstrapFactory) {
             try {
                 bootstrapFactory.releaseExternalResources();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Caught exception releasing resources", e);
                 }
@@ -289,19 +272,6 @@ public class Robot {
 
             @Override
             public void operationComplete(final ChannelFuture future) throws Exception {
-
-                final boolean debugLogEnabled = LOGGER.isDebugEnabled();
-                final String finishedStatus = future.isSuccess() ? "SUCCESS" : "FAILED";
-
-                LOGGER.debug("script completion futures finished with status: " + finishedStatus);
-
-                if (debugLogEnabled) {
-                    StringBuilder sb = new StringBuilder();
-                    for (LocationInfo progressInfo : progressInfos) {
-                        sb.append(progressInfo).append(",");
-                    }
-                    LOGGER.debug("ProgressInfos at script completion: " + sb);
-                }
 
                 /*
                  * We need to map our progressInfos to streams so that we can create the observed script. After running the
@@ -329,8 +299,8 @@ public class Robot {
                 // Close server and client channels
                 closeChannels();
 
-                if (debugLogEnabled) {
-                    LOGGER.debug("Observed:\n" + observedScript);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Observed script:\n" + observedScript);
                 }
 
                 if (finishedFuture.isDone()) {
@@ -394,13 +364,9 @@ public class Robot {
         // We need some kind of handler to avoid warnings.
         ChannelHandler finalHandler = new SimpleChannelHandler() {
             @Override
-            public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-                super.handleDownstream(ctx, e);
-            }
-
-            @Override
-            public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-                super.handleUpstream(ctx, e);
+            public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+                Channel channel = ctx.getChannel();
+                channel.close();
             }
 
         };

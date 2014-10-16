@@ -44,4 +44,9 @@ public class DisconnectedHandler extends AbstractEventHandler {
         assert handlerFuture != null;
         handlerFuture.setSuccess();
     }
+
+    @Override
+    public String toString() {
+        return "disconnected";
+    }
 }

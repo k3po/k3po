@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.behavior.handler.codec.http;
 
+import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 import java.util.List;
@@ -56,5 +57,10 @@ public class HttpHeaderEncoder implements ConfigEncoder {
                 writeHeaders.add(headerName, headerValue);
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return format("http:header %s %s", nameEncoder, valueEncoders);
     }
 }

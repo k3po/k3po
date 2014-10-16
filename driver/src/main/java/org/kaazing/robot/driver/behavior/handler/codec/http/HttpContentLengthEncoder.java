@@ -37,4 +37,9 @@ public class HttpContentLengthEncoder implements ConfigEncoder {
         HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
         httpConfig.setMaximumBufferedContentLength(maximumBufferedContentLength);
     }
+
+    @Override
+    public String toString() {
+        return "http:content-length";
+    }
 }

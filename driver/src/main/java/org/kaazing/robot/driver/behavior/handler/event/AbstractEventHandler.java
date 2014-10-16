@@ -54,16 +54,12 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.WriteCompletionEvent;
 import org.jboss.netty.handler.timeout.IdleStateEvent;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.robot.driver.behavior.handler.ExecutionHandler;
 import org.kaazing.robot.driver.netty.channel.FlushEvent;
 import org.kaazing.robot.driver.netty.channel.ShutdownInputEvent;
 import org.kaazing.robot.driver.netty.channel.ShutdownOutputEvent;
 
 public abstract class AbstractEventHandler extends ExecutionHandler {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(AbstractEventHandler.class);
 
     protected static final EnumSet<ChannelEventKind> DEFAULT_INTERESTED_EVENTS =
             complementOf(of(CHILD_OPEN, CHILD_CLOSED, WRITE_COMPLETED, INTEREST_OPS, EXCEPTION, IDLE_STATE,
@@ -93,20 +89,10 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
         ChannelEventKind eventAsKind = asEventKind(evt);
         ChannelFuture handlerFuture = getHandlerFuture();
 
-        boolean isLogDebugEnabled = LOGGER.isDebugEnabled();
-
-        if (isLogDebugEnabled) {
-            LOGGER.debug("handleUpstream1 event " + eventAsKind);
-        }
-
         assert handlerFuture != null;
         if (handlerFuture.isDone() || !interestEvents.contains(eventAsKind)) {
             // Skip events not deemed interesting, such as write
             // completion events
-
-            if (isLogDebugEnabled) {
-                LOGGER.debug(eventAsKind + "event not interesting send upstream");
-            }
 
             ctx.sendUpstream(evt);
 
@@ -115,18 +101,9 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
         } else {
             ChannelFuture pipelineFuture = getPipelineFuture();
             if (!pipelineFuture.isSuccess()) {
-                LOGGER.error(getClass()
-                        + String.format(
-                                "  future is not success. setting handler future to failure done(%s), cannceled(%s), cause(%s)",
-                                pipelineFuture.isDone(), pipelineFuture.isCancelled(), pipelineFuture.getCause()));
-
                 handlerFuture.setFailure(new ChannelException("Expected event arrived too early").fillInStackTrace());
 
             } else {
-                if (isLogDebugEnabled) {
-                    LOGGER.debug(getClass() + " handler's pipelinefuture is a success. Sending event " + eventAsKind
-                            + " to handler");
-                }
                 super.handleUpstream1(ctx, evt);
             }
         }
@@ -137,7 +114,6 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
 
         // Treat interesting but unexpected events as failure
         String message = String.format("Unexpected event |%s| for handler %s", eventAsKind, getClass());
-        LOGGER.error(message);
         switch (eventAsKind) {
         case EXCEPTION:
             Throwable cause = ((ExceptionEvent) evt).getCause();

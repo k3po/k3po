@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.behavior.handler.codec.http;
 
+import static java.lang.String.format;
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 
@@ -43,6 +44,11 @@ public class HttpVersionDecoder implements ConfigDecoder {
         HttpVersion version = httpConfig.getVersion();
         ChannelBuffer buffer = copiedBuffer(version.getText(), UTF_8);
         versionDecoder.decode(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return format("http:version %s", versionDecoder);
     }
 
 }

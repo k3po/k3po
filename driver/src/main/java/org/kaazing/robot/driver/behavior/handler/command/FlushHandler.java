@@ -23,19 +23,18 @@ import static org.kaazing.robot.driver.netty.channel.Channels.flush;
 
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
 
 public class FlushHandler extends AbstractCommandHandler {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(FlushHandler.class);
 
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
 
-        LOGGER.debug("flushing channel");
         ChannelFuture handlerFuture = getHandlerFuture();
         flush(ctx, handlerFuture);
     }
 
+    @Override
+    public String toString() {
+        return "flush";
+    }
 }

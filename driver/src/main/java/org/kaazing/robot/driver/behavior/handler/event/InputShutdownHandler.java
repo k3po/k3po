@@ -36,4 +36,9 @@ public class InputShutdownHandler extends AbstractEventHandler {
         getHandlerFuture().setSuccess();
     }
 
+    @Override
+    public String toString() {
+        return "input shutdown";
+    }
+
 }

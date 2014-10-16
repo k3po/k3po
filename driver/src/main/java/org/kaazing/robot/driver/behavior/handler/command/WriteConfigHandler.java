@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.behavior.handler.command;
 
+import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 
@@ -56,6 +57,11 @@ public class WriteConfigHandler extends AbstractCommandHandler {
         catch (Exception e) {
             getHandlerFuture().setFailure(e);
         }
+    }
+
+    @Override
+    public String toString() {
+        return format("write config %s", encoders);
     }
 
 }

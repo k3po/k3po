@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.behavior.handler.codec.http;
 
+import static java.lang.String.format;
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 
@@ -50,6 +51,11 @@ public class HttpStatusDecoder implements ConfigDecoder {
         codeDecoder.decode(buffer);
         buffer = copiedBuffer(reason, UTF_8);
         reasonDecoder.decode(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return format("http:status %s %s", codeDecoder, reasonDecoder);
     }
 
 }
