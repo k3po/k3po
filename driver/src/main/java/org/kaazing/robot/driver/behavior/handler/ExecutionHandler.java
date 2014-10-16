@@ -119,7 +119,7 @@ public class ExecutionHandler extends SimplePrepareUpstreamHandler implements Li
         };
 
         handlerFuture.addListener(new ChannelFutureListener() {
-            
+
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
                 Channel channel = future.getChannel();
