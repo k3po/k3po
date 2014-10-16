@@ -19,11 +19,23 @@
 
 package org.kaazing.robot.driver.control;
 
+import java.util.Objects;
+
 public class PreparedMessage extends ControlMessage {
+
+    private String script = "";
+
+    public String getScript() {
+        return script;
+    }
+
+    public void setScript(String script) {
+        this.script = script;
+    }
 
     @Override
     public int hashCode() {
-        return hashTo();
+        return Objects.hash(getKind(), script);
     }
 
     @Override
@@ -34,6 +46,10 @@ public class PreparedMessage extends ControlMessage {
     @Override
     public Kind getKind() {
         return Kind.PREPARED;
+    }
+
+    protected final boolean equals(PreparedMessage that) {
+        return super.equalTo(that) && Objects.equals(this.script, that.script);
     }
 
 }

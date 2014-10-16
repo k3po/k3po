@@ -46,6 +46,11 @@ public class ReadRegexDecoder extends MessageDecoder {
     }
 
     @Override
+    public String toString() {
+        return pattern.toString();
+    }
+
+    @Override
     protected Object decodeBufferLast(final ChannelBuffer buffer) throws Exception {
         return decodeBuffer(buffer, true);
     }

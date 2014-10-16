@@ -74,7 +74,9 @@ public abstract class AstNode {
         R visit(AstAcceptableNode node, P parameter) throws Exception;
         R visit(AstConnectNode node, P parameter) throws Exception;
 
+        R visit(AstFlushNode node, P parameter) throws Exception;
         R visit(AstWriteValueNode node, P parameter) throws Exception;
+        R visit(AstWriteCloseNode node, P parameter) throws Exception;
         R visit(AstDisconnectNode node, P parameter) throws Exception;
         R visit(AstUnbindNode node, P parameter) throws Exception;
         R visit(AstCloseNode node, P parameter) throws Exception;
@@ -87,6 +89,7 @@ public abstract class AstNode {
         R visit(AstReadValueNode node, P parameter) throws Exception;
         R visit(AstDisconnectedNode node, P parameter) throws Exception;
         R visit(AstUnboundNode node, P parameter) throws Exception;
+        R visit(AstReadClosedNode node, P parameter) throws Exception;
         R visit(AstClosedNode node, P parameter) throws Exception;
 
         R visit(AstReadAwaitNode node, P parameter) throws Exception;
@@ -94,20 +97,8 @@ public abstract class AstNode {
         R visit(AstReadNotifyNode node, P parameter) throws Exception;
         R visit(AstWriteNotifyNode node, P parameter) throws Exception;
 
-        R visit(AstReadHttpHeaderNode node, P parameter) throws Exception;
-        R visit(AstWriteHttpHeaderNode node, P parameter) throws Exception;
-        R visit(AstWriteHttpContentLengthNode node, P parameter) throws Exception;
-        R visit(AstReadHttpMethodNode node, P parameter) throws Exception;
-        R visit(AstWriteHttpMethodNode node, P parameter) throws Exception;
-        R visit(AstReadHttpParameterNode node, P parameter) throws Exception;
-        R visit(AstWriteHttpParameterNode node, P parameter) throws Exception;
-        R visit(AstReadHttpVersionNode node, P parameter) throws Exception;
-        R visit(AstWriteHttpVersionNode node, P parameter) throws Exception;
-        R visit(AstReadHttpStatusNode node, P parameter) throws Exception;
-        R visit(AstWriteHttpStatusNode node, P parameter) throws Exception;
-        R visit(AstCloseHttpRequestNode node, P parameter) throws Exception;
-        R visit(AstCloseHttpResponseNode node, P parameter) throws Exception;
-        R visit(AstEndOfHttpHeadersNode node, P parameter) throws Exception;
+        R visit(AstReadConfigNode node, P parameter) throws Exception;
+        R visit(AstWriteConfigNode node, P parameter) throws Exception;
 
         R visit(AstReadOptionNode node, P parameter) throws Exception;
         R visit(AstWriteOptionNode node, P parameter) throws Exception;

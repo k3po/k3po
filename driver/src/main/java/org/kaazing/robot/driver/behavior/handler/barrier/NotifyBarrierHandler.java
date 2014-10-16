@@ -19,20 +19,16 @@
 
 package org.kaazing.robot.driver.behavior.handler.barrier;
 
+import static java.lang.String.format;
 import static org.kaazing.robot.driver.netty.channel.ChannelFutureListeners.chainedFuture;
 
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.driver.behavior.Barrier;
 import org.kaazing.robot.driver.behavior.handler.prepare.PreparationEvent;
 
 public class NotifyBarrierHandler extends AbstractBarrierHandler {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(NotifyBarrierHandler.class);
 
     public NotifyBarrierHandler(Barrier barrier) {
         super(barrier);
@@ -49,24 +45,23 @@ public class NotifyBarrierHandler extends AbstractBarrierHandler {
         ChannelFuture pipelineFuture = getPipelineFuture();
         ChannelFuture handlerFuture = getHandlerFuture();
 
-        // Add a listener for logging
-        if (LOGGER.isInfoEnabled()) {
-
-            pipelineFuture.addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(final ChannelFuture f) throws Exception {
-                    if (f.isSuccess()) {
-                        LOGGER.debug("Notifying barrier");
-                        // We only want to set barrier future when the pipeline is success. Otherwise it could cause other
-                        // streams
-                        // to "fail" incorrectly.
-                        barrierFuture.setSuccess();
-                    }
+        pipelineFuture.addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(final ChannelFuture f) throws Exception {
+                if (f.isSuccess()) {
+                    // We only want to set barrier future when the pipeline is success. Otherwise it could cause other
+                    // streams to "fail" incorrectly.
+                    barrierFuture.setSuccess();
                 }
-            });
-        }
+            }
+        });
 
         pipelineFuture.addListener(chainedFuture(handlerFuture));
+    }
+
+    @Override
+    public String toString() {
+        return format("read|write notify %s", getBarrier());
     }
 
 }

@@ -19,6 +19,8 @@
 
 package org.kaazing.robot.driver.control;
 
+import java.util.Objects;
+
 import org.jboss.netty.channel.ChannelFuture;
 
 public class AbortMessage extends ControlMessage {
@@ -35,7 +37,7 @@ public class AbortMessage extends ControlMessage {
 
     @Override
     public int hashCode() {
-        return hashTo();
+        return Objects.hashCode(getKind());
     }
 
     @Override

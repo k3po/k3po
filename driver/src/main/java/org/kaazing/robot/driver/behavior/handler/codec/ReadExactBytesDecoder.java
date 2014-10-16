@@ -20,14 +20,11 @@
 package org.kaazing.robot.driver.behavior.handler.codec;
 
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
+import static org.kaazing.robot.driver.util.Utils.byteArrayToString;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
 
 public class ReadExactBytesDecoder extends MessageDecoder {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ReadExactBytesDecoder.class);
 
     private final ChannelBuffer expected;
 
@@ -39,8 +36,6 @@ public class ReadExactBytesDecoder extends MessageDecoder {
     protected Object decodeBuffer(ChannelBuffer buffer) throws Exception {
 
         if (buffer.readableBytes() < expected.readableBytes()) {
-            LOGGER.debug("not enough bytes are ready to read. Expecting " + expected.readableBytes()
-                    + " bytes. Read to read is " + buffer.readableBytes());
             return null;
         }
 
@@ -50,5 +45,10 @@ public class ReadExactBytesDecoder extends MessageDecoder {
         }
 
         return buffer;
+    }
+
+    @Override
+    public String toString() {
+        return byteArrayToString(expected.array());
     }
 }

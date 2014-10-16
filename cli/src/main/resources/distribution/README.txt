@@ -1,1 +1,0 @@
-For project information see https://github.com/kaazing/robot

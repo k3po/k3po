@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -42,14 +43,18 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.DisableOnDebug;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TestRule;
+import org.junit.rules.Timeout;
 import org.kaazing.robot.driver.behavior.RobotCompletionFuture;
 import org.kaazing.robot.driver.Robot;
 import org.kaazing.robot.lang.parser.ScriptParseException;
 
 public class RobotIT {
 
-    private static final long TEST_TIMEOUT = 2000;
+    @Rule
+    public TestRule timeout = new DisableOnDebug(new Timeout(2, SECONDS));
 
     private Robot robot;
     private Socket client;
@@ -77,7 +82,7 @@ public class RobotIT {
         server.close();
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void parseErrorThrowsExceptionOnPrepare() throws Exception {
 
         String script = "foobar";
@@ -86,7 +91,7 @@ public class RobotIT {
         robot.prepare(script);
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void parseErrorThrowsExceptionOnPrepareAndStart() throws Exception {
 
         String script = "foobar";
@@ -95,13 +100,13 @@ public class RobotIT {
         robot.prepareAndStart(script);
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void canNotStartWithoutPrepare() throws Exception {
         thrown.expect(IllegalStateException.class);
         robot.start();
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldFinishEmptyOK() throws Exception {
 
         // Empty Script
@@ -117,7 +122,7 @@ public class RobotIT {
         assertEquals(expected, doneFuture.getObservedScript());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldAcceptThenCloseOK() throws Exception {
 
         // @formatter:off
@@ -144,7 +149,7 @@ public class RobotIT {
         assertEquals(-1, client.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldConnectThenCloseOK() throws Exception {
         // @formatter:off
         String script =
@@ -171,7 +176,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldAbortConnectOK() throws Exception {
 
         // @formatter:off
@@ -215,7 +220,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldAbortAcceptedOK() throws Exception {
 
         // @formatter:off
@@ -262,7 +267,7 @@ public class RobotIT {
         assertEquals(-1, client.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldAbortAcceptNoConnectionsOK() throws Exception {
 
         // @formatter:off
@@ -288,7 +293,7 @@ public class RobotIT {
         assertEquals(expected, observedScript);
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldAbortPreparedNotStartedOK() throws Exception {
 
         // @formatter:off
@@ -316,7 +321,7 @@ public class RobotIT {
         assertEquals(expected, observedScript);
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldConnectReadThenCloseOK() throws Exception {
         // @formatter:off
         String script =
@@ -349,7 +354,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldWriteMultiTextLiteralsOK() throws Exception {
         // @formatter:off
         String script =
@@ -382,7 +387,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldWriteMultiByteAndTextOK() throws Exception {
         // @formatter:off
         String script =
@@ -419,7 +424,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldFailReadWrongOK() throws Exception {
         // @formatter:off
         String script =
@@ -460,7 +465,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldFailConnectNoOneHome() throws Exception {
         // @formatter:off
          String script =
@@ -481,7 +486,7 @@ public class RobotIT {
         assertNotEquals(script, observedScript);
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldEcho() throws Exception {
         // @formatter:off
         String script =
@@ -510,7 +515,7 @@ public class RobotIT {
         assertEquals(expected, doneFuture.getObservedScript());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldEchoWrongOK() throws Exception {
         // @formatter:off
         String script =
@@ -554,7 +559,7 @@ public class RobotIT {
         // assertNotEquals(script, observed);
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadNotifyOK() throws Exception {
         // @formatter:off
         String script =
@@ -582,7 +587,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldWriteNotifyOK() throws Exception {
         // @formatter:off
         String script =
@@ -610,7 +615,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldWriteNotifyAwaitOK() throws Exception {
         // @formatter:off
         String script =
@@ -639,7 +644,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadNotifyAwaitOK() throws Exception {
         // @formatter:off
         String script =
@@ -668,7 +673,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadNotifyWriteAwaitOK() throws Exception {
         // @formatter:off
         String script =
@@ -697,7 +702,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldImplicitBarrierOK() throws Exception {
         // @formatter:off
         String script =
@@ -737,7 +742,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadNewLineOK() throws Exception {
         // @formatter:off
         String script =
@@ -770,7 +775,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldWriteNewLineOK() throws Exception {
         // @formatter:off
         String script =
@@ -812,7 +817,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadFixedBytesOK() throws Exception {
         // @formatter:off
         String script =
@@ -846,7 +851,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadByteOK() throws Exception {
         // @formatter:off
         String script =
@@ -880,7 +885,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadByteLiteralOK() throws Exception {
         // @formatter:off
         String script =
@@ -914,7 +919,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadCaptureByteOK() throws Exception {
         // @formatter:off
         String script =
@@ -950,7 +955,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadCapturedWithExpressionByteOK() throws Exception {
         // @formatter:off
         String script =
@@ -987,7 +992,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadShortOK() throws Exception {
         // @formatter:off
         String script =
@@ -1021,7 +1026,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadShortLiteralOK() throws Exception {
         // @formatter:off
         String script =
@@ -1055,7 +1060,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadCaptureShortOK() throws Exception {
         // @formatter:off
         String script =
@@ -1091,7 +1096,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadCapturedWithExpressionShortOK() throws Exception {
         // @formatter:off
         String script =
@@ -1128,7 +1133,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadIntOK() throws Exception {
         // @formatter:off
         String script =
@@ -1162,7 +1167,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadIntLiteralOK() throws Exception {
         // @formatter:off
         String script =
@@ -1196,7 +1201,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadLongOK() throws Exception {
         // @formatter:off
         String script =
@@ -1230,7 +1235,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadLongLiteralOK() throws Exception {
         // @formatter:off
         String script =
@@ -1264,7 +1269,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadRegexGroupNoCapturesOK() throws Exception {
         // @formatter:off
         String script =
@@ -1296,7 +1301,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadRegexGroupCapturesOK() throws Exception {
         // @formatter:off
         String script =
@@ -1332,7 +1337,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadRegexGroupTwoCapturesOK() throws Exception {
         // @formatter:off
         String script =
@@ -1369,7 +1374,7 @@ public class RobotIT {
     }
 
     @Ignore("Can't get the nested matcher this test was created with to compile in java")
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadRegexWithBackRefAndCapturesOK() throws Exception {
         Pattern pattern = Pattern.compile("/(?<all>Hello (?<subgroup>\\d+) Bye from \\g{2})\\n/");
         Matcher matcher = pattern.matcher("Hello 123 Bye from 123\n");
@@ -1415,7 +1420,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadRegexInnerGroupsOK() throws Exception {
         // @formatter:off
          String script =
@@ -1452,7 +1457,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadRegexOK() throws Exception {
         // @formatter:off
         String script =
@@ -1484,7 +1489,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadRegexDoubleNewLineTerminatorOK() throws Exception {
         // @formatter:off
         String script =
@@ -1517,7 +1522,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldCaptureByteArrayAndReadValueOK() throws Exception {
         // @formatter:off
         String script =
@@ -1551,7 +1556,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldCaptureAndWriteValueOK() throws Exception {
         // @formatter:off
         String script =
@@ -1590,7 +1595,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldNotUseByteArrayAsIntegerOK() throws Exception {
         // @formatter:off
         String script =
@@ -1626,7 +1631,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadVariableBytesOK() throws Exception {
         // @formatter:off
         String script =
@@ -1662,7 +1667,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldFailBadReadOK() throws Exception {
         // @formatter:off
         String script =
@@ -1694,7 +1699,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldWriteNotifyReadAwaitOK() throws Exception {
         // @formatter:off
         String script =
@@ -1721,7 +1726,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadEscapedQuote() throws Exception {
         // @formatter:off
         String script =
@@ -1741,11 +1746,11 @@ public class RobotIT {
         RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
         OutputStream outputStream = accepted.getOutputStream();
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-        System.out.println("got before");
+
         while (!accepted.isConnected()) {
             Thread.sleep(1);
         }
-        System.out.println("got here");
+
         writer.write("whatever\"");
         writer.flush();
 
@@ -1756,7 +1761,7 @@ public class RobotIT {
         assertEquals(-1, accepted.getInputStream().read());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void noBindOk() throws Exception {
         // @formatter:off
         String script =
@@ -1777,7 +1782,7 @@ public class RobotIT {
         assertEquals("", doneFuture.getObservedScript());
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldEchoWrong2OK() throws Exception {
         // @formatter:off
         String script =
@@ -1835,7 +1840,7 @@ public class RobotIT {
         assertTrue(p.matcher(observed).matches());
     }
     
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldReadOptionMask() throws Exception {
         // @formatter:off
         String script =
@@ -1872,7 +1877,7 @@ public class RobotIT {
     }
 
     @Ignore("KG-7385 needed ... but ok since clients can ABORT")
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldAcceptNoStreamsOk() throws Exception {
         // String script =
         // "accept tcp://" + HOSTNAME + ":" + CLIENTPORT + "\n" +

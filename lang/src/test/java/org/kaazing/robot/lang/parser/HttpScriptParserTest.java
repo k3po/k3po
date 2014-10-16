@@ -19,14 +19,15 @@
 
 package org.kaazing.robot.lang.parser;
 
-import static org.kaazing.robot.lang.parser.ScriptParseStrategy.CLOSE_HTTP_REQUEST;
-import static org.kaazing.robot.lang.parser.ScriptParseStrategy.CLOSE_HTTP_RESPONSE;
+import static org.junit.Assert.assertEquals;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_CLOSED;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_HEADER;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_METHOD;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_PARAMETER;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_STATUS;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_HTTP_VERSION;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.SCRIPT;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_CLOSE;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_CONTENT_LENGTH;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_HEADER;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_METHOD;
@@ -34,40 +35,20 @@ import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_PARAM
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_STATUS;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.WRITE_HTTP_VERSION;
 import static org.kaazing.robot.lang.test.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
 
 import org.junit.Test;
-import org.kaazing.robot.lang.ast.AstCloseHttpRequestNode;
-import org.kaazing.robot.lang.ast.AstCloseHttpResponseNode;
-import org.kaazing.robot.lang.ast.AstReadHttpHeaderNode;
-import org.kaazing.robot.lang.ast.AstReadHttpMethodNode;
-import org.kaazing.robot.lang.ast.AstReadHttpParameterNode;
-import org.kaazing.robot.lang.ast.AstReadHttpStatusNode;
-import org.kaazing.robot.lang.ast.AstReadHttpVersionNode;
+import org.kaazing.robot.lang.ast.AstReadClosedNode;
+import org.kaazing.robot.lang.ast.AstReadConfigNode;
 import org.kaazing.robot.lang.ast.AstScriptNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpContentLengthNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpHeaderNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpMethodNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpParameterNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpStatusNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpVersionNode;
-import org.kaazing.robot.lang.ast.builder.AstCloseHttpRequestNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstCloseHttpResponseNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstReadHttpHeaderNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstReadHttpMethodNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstReadHttpParameterNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstReadHttpStatusNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstReadHttpVersionNodeBuilder;
+import org.kaazing.robot.lang.ast.AstWriteCloseNode;
+import org.kaazing.robot.lang.ast.AstWriteConfigNode;
+import org.kaazing.robot.lang.ast.builder.AstReadClosedNodeBuilder;
+import org.kaazing.robot.lang.ast.builder.AstReadConfigNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstScriptNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstWriteHttpContentLengthNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstWriteHttpHeaderNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstWriteHttpMethodNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstWriteHttpParameterNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstWriteHttpStatusNodeBuilder;
-import org.kaazing.robot.lang.ast.builder.AstWriteHttpVersionNodeBuilder;
-import org.kaazing.robot.lang.parser.ScriptParserImpl;
+import org.kaazing.robot.lang.ast.builder.AstWriteCloseNodeBuilder;
+import org.kaazing.robot.lang.ast.builder.AstWriteConfigNodeBuilder;
 
 public class HttpScriptParserTest {
 
@@ -77,12 +58,13 @@ public class HttpScriptParserTest {
         String scriptFragment = "read header \"Host\" \"localhost:8000\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstReadHttpHeaderNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_HEADER);
+        AstReadConfigNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_HEADER);
 
         // @formatter:off
-        AstReadHttpHeaderNode expected = new AstReadHttpHeaderNodeBuilder()
-            .setNameExactText("Host")
-            .setValueExactText("localhost:8000")
+        AstReadConfigNode expected = new AstReadConfigNodeBuilder()
+            .setType("header")
+            .setValueExactText("name", "Host")
+            .addMatcherExactText("localhost:8000")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -96,12 +78,13 @@ public class HttpScriptParserTest {
         String scriptFragment = "write header \"Host\" \"localhost:8000\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstWriteHttpHeaderNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_HEADER);
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_HEADER);
 
         // @formatter:off
-        AstWriteHttpHeaderNode expected = new AstWriteHttpHeaderNodeBuilder()
-            .setNameExactText("Host")
-            .setValueExactText("localhost:8000")
+        AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
+            .setType("header")
+            .setName("name", "Host")
+            .addValue("localhost:8000")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -112,13 +95,14 @@ public class HttpScriptParserTest {
     @Test
     public void shouldParseWriteHttpContentLength() throws Exception {
 
-        String scriptFragment = "write content-length";
+        String scriptFragment = "write header content-length";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstWriteHttpContentLengthNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_CONTENT_LENGTH);
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_CONTENT_LENGTH);
 
         // @formatter:off
-        AstWriteHttpContentLengthNode expected = new AstWriteHttpContentLengthNodeBuilder()
+        AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
+            .setType("content-length")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -132,11 +116,12 @@ public class HttpScriptParserTest {
         String scriptFragment = "read method \"get\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstReadHttpMethodNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_METHOD);
+        AstReadConfigNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_METHOD);
 
         // @formatter:off
-        AstReadHttpMethodNode expected = new AstReadHttpMethodNodeBuilder()
-            .setExactText("get")
+        AstReadConfigNode expected = new AstReadConfigNodeBuilder()
+            .setType("method")
+            .setMatcherExactText("name", "get")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -150,11 +135,12 @@ public class HttpScriptParserTest {
         String scriptFragment = "write method \"get\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstWriteHttpMethodNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_METHOD);
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_METHOD);
 
         // @formatter:off
-        AstWriteHttpMethodNode expected = new AstWriteHttpMethodNodeBuilder()
-            .setExactText("get")
+        AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
+            .setType("method")
+            .addValue("get")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -168,12 +154,13 @@ public class HttpScriptParserTest {
         String scriptFragment = "read parameter \".kl\" \"y\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstReadHttpParameterNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_PARAMETER);
+        AstReadConfigNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_PARAMETER);
 
         // @formatter:off
-        AstReadHttpParameterNode expected = new AstReadHttpParameterNodeBuilder()
-            .setKeyExactText(".kl")
-            .setValueExactText("y")
+        AstReadConfigNode expected = new AstReadConfigNodeBuilder()
+            .setType("parameter")
+            .setValueExactText("name", ".kl")
+            .addMatcherExactText("y")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -187,12 +174,13 @@ public class HttpScriptParserTest {
         String scriptFragment = "write parameter \".kl\" \"y\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstWriteHttpParameterNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_PARAMETER);
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_PARAMETER);
 
         // @formatter:off
-        AstWriteHttpParameterNode expected = new AstWriteHttpParameterNodeBuilder()
-            .setKeyExactText(".kl")
-            .setValueExactText("y")
+        AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
+            .setType("parameter")
+            .setName("name", ".kl")
+            .addValue("y")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -206,11 +194,12 @@ public class HttpScriptParserTest {
         String scriptFragment = "read version \"Http/1.1\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstReadHttpVersionNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_VERSION);
+        AstReadConfigNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_VERSION);
 
         // @formatter:off
-        AstReadHttpVersionNode expected = new AstReadHttpVersionNodeBuilder()
-            .setExactText("Http/1.1")
+        AstReadConfigNode expected = new AstReadConfigNodeBuilder()
+            .setType("version")
+            .setMatcherExactText("version", "Http/1.1")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -224,11 +213,12 @@ public class HttpScriptParserTest {
         String scriptFragment = "write version \"Http/1.1\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstWriteHttpVersionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_VERSION);
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_VERSION);
 
         // @formatter:off
-        AstWriteHttpVersionNode expected = new AstWriteHttpVersionNodeBuilder()
-            .setExactText("Http/1.1")
+        AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
+            .setType("version")
+            .addValue("Http/1.1")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -242,12 +232,13 @@ public class HttpScriptParserTest {
         String scriptFragment = "read status \"403\" \"Unauthorized\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstReadHttpStatusNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_STATUS);
+        AstReadConfigNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_STATUS);
 
         // @formatter:off
-        AstReadHttpStatusNode expected = new AstReadHttpStatusNodeBuilder()
-            .setCodeExactText("403")
-            .setReasonExactText("Unauthorized")
+        AstReadConfigNode expected = new AstReadConfigNodeBuilder()
+            .setType("status")
+            .setMatcherExactText("code", "403")
+            .setMatcherExactText("reason", "Unauthorized")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -261,12 +252,13 @@ public class HttpScriptParserTest {
         String scriptFragment = "write status \"403\" \"Unauthorized\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstWriteHttpStatusNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_STATUS);
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_STATUS);
 
         // @formatter:off
-        AstWriteHttpStatusNode expected = new AstWriteHttpStatusNodeBuilder()
-            .setCodeExactText("403")
-            .setReasonExactText("Unauthorized")
+        AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
+            .setType("status")
+            .setValue("code", "403")
+            .setValue("reason", "Unauthorized")
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -275,15 +267,15 @@ public class HttpScriptParserTest {
     }
 
     @Test
-    public void shouldParseCloseRequest() throws Exception {
+    public void shouldParseReadClose() throws Exception {
 
-        String scriptFragment = "close request";
+        String scriptFragment = "read closed";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstCloseHttpRequestNode actual = parser.parseWithStrategy(scriptFragment, CLOSE_HTTP_REQUEST);
+        AstReadClosedNode actual = parser.parseWithStrategy(scriptFragment, READ_CLOSED);
 
         // @formatter:off
-        AstCloseHttpRequestNode expected = new AstCloseHttpRequestNodeBuilder()
+        AstReadClosedNode expected = new AstReadClosedNodeBuilder()
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -292,15 +284,15 @@ public class HttpScriptParserTest {
     }
 
     @Test
-    public void shouldParseCloseResponse() throws Exception {
+    public void shouldParseWriteClose() throws Exception {
 
-        String scriptFragment = "close response";
+        String scriptFragment = "write close";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstCloseHttpResponseNode actual = parser.parseWithStrategy(scriptFragment, CLOSE_HTTP_RESPONSE);
+        AstWriteCloseNode actual = parser.parseWithStrategy(scriptFragment, WRITE_CLOSE);
 
         // @formatter:off
-        AstCloseHttpResponseNode expected = new AstCloseHttpResponseNodeBuilder()
+        AstWriteCloseNode expected = new AstWriteCloseNodeBuilder()
             .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
@@ -317,11 +309,11 @@ public class HttpScriptParserTest {
              "read method \"get\"\n" +
              "read parameter \".kl\" \"y\"\n" +
              "read header \"Upgrade\" \"websocket\"\n" +
-             "close request\n" +
+             "read [0x82]\n" +
+             "read closed\n" +
              "write status \"101\" \"Switching Protocols\"\n" +
              "write header \"upgrade\" \"websocket\"\n" +
-             "close response \n" +
-             "read [0x82]\n" +
+             "write close \n" +
              "close\n" +
              "closed\n";
          // @formatter:on
@@ -337,38 +329,43 @@ public class HttpScriptParserTest {
              .done()
              .addAcceptedStream()
                  .setNextLineInfo(1, 0)
-                 .addReadHttpMethodEvent()
-                     .setExactText("get")
+                 .addReadConfigEvent()
+                     .setType("method")
+                     .setMatcherExactText("name", "get")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addReadHttpParameterEvent()
-                     .setKeyExactText(".kl")
-                     .setValueExactText("y")
+                 .addReadConfigEvent()
+                     .setType("parameter")
+                     .setValueExactText("name", ".kl")
+                     .addMatcherExactText("y")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addReadHttpHeaderEvent()
-                     .setNameExactText("Upgrade")
-                     .setValueExactText("websocket")
-                     .setNextLineInfo(1, 0)
-                 .done()
-                 .addCloseHttpRequestCommand()
-                     .setNextLineInfo(1, 0)
-                 .done()
-                 .addWriteHttpStatusCommand()
-                     .setCodeExactText("101")
-                     .setReasonExactText("Switching Protocols")
-                     .setNextLineInfo(1, 0)
-                 .done()
-                 .addWriteHttpHeaderCommand()
-                     .setNameExactText("upgrade")
-                     .setValueExactText("websocket")
-                     .setNextLineInfo(1, 0)
-                 .done()
-                 .addCloseHttpResponseCommand()
+                 .addReadConfigEvent()
+                     .setType("header")
+                     .setValueExactText("name", "Upgrade")
+                     .addMatcherExactText("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addReadEvent()
                      .addExactBytes(new byte[] {(byte) 0x82})
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addReadCloseCommand()
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addWriteConfigCommand()
+                     .setType("status")
+                     .setValue("code", "101")
+                     .setValue("reason", "Switching Protocols")
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addWriteConfigCommand()
+                     .setType("header")
+                     .setName("name", "upgrade")
+                     .addValue("websocket")
+                     .setNextLineInfo(1, 0)
+                 .done()
+                 .addWriteCloseCommand()
                      .setNextLineInfo(1, 0)
                  .done()
                  .addCloseCommand()
@@ -392,10 +389,10 @@ public class HttpScriptParserTest {
              "write method \"get\"\n" +
              "write parameter \".kl\" \"y\"\n" +
              "write header \"Upgrade\" \"websocket\"\n" +
-             "close request\n" +
+             "write close\n" +
              "read status \"101\" \"Switching Protocols\"\n" +
              "read header \"upgrade\" \"websocket\"\n" +
-             "close response \n" +
+             "read closed \n" +
              "write [0x82]\n" +
              "close\n" +
              "closed\n";
@@ -412,34 +409,39 @@ public class HttpScriptParserTest {
                  .addConnectedEvent()
                     .setNextLineInfo(1, 0)
                  .done()
-                 .addWriteHttpMethodCommand()
-                     .setExactText("get")
+                 .addWriteConfigCommand()
+                     .setType("method")
+                     .addValue("get")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addWriteHttpParameterCommand()
-                     .setKeyExactText(".kl")
-                     .setValueExactText("y")
+                 .addWriteConfigCommand()
+                     .setType("parameter")
+                     .setName("name", ".kl")
+                     .addValue("y")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addWriteHttpHeaderCommand()
-                     .setNameExactText("Upgrade")
-                     .setValueExactText("websocket")
+                 .addWriteConfigCommand()
+                     .setType("header")
+                     .setName("name", "Upgrade")
+                     .addValue("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addCloseHttpRequestCommand()
+                 .addWriteCloseCommand()
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addReadHttpStatusEvent()
-                     .setCodeExactText("101")
-                     .setReasonExactText("Switching Protocols")
+                 .addReadConfigEvent()
+                     .setType("status")
+                     .setMatcherExactText("code", "101")
+                     .setMatcherExactText("reason", "Switching Protocols")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addReadHttpHeaderEvent()
-                     .setNameExactText("upgrade")
-                     .setValueExactText("websocket")
+                 .addReadConfigEvent()
+                     .setType("header")
+                     .setValueExactText("name", "upgrade")
+                     .addMatcherExactText("websocket")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addCloseHttpResponseCommand()
+                 .addReadCloseCommand()
                      .setNextLineInfo(1, 0)
                  .done()
                  .addWriteCommand()
@@ -465,11 +467,11 @@ public class HttpScriptParserTest {
              "accept http://somehost:8000/path\n" +
              "accepted\n" +
              "read method \"get\"\n" +
-             "close request\n" +
+             "read closed\n" +
              "write status \"200\" \"OK\"\n" +
-             "write content-length\n" +
+             "write header content-length\n" +
              "write \"some content\"\n" +
-             "close response \n";
+             "write close \n";
          // @formatter:on
 
          ScriptParserImpl parser = new ScriptParserImpl();
@@ -483,26 +485,29 @@ public class HttpScriptParserTest {
              .done()
              .addAcceptedStream()
                  .setNextLineInfo(1, 0)
-                 .addReadHttpMethodEvent()
-                     .setExactText("get")
+                 .addReadConfigEvent()
+                     .setType("method")
+                     .setMatcherExactText("name", "get")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addCloseHttpRequestCommand()
+                 .addReadCloseCommand()
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addWriteHttpStatusCommand()
-                     .setCodeExactText("200")
-                     .setReasonExactText("OK")
+                 .addWriteConfigCommand()
+                     .setType("status")
+                     .setValue("code", "200")
+                     .setValue("reason", "OK")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addWriteHttpContentLengthCommand()
+                 .addWriteConfigCommand()
+                     .setType("content-length")
                      .setNextLineInfo(1, 0)
                  .done()
                  .addWriteCommand()
                      .addExactText("some content")
                      .setNextLineInfo(1, 0)
                  .done()
-                 .addCloseHttpResponseCommand()
+                 .addWriteCloseCommand()
                      .setNextLineInfo(1, 0)
                  .done()
              .done()

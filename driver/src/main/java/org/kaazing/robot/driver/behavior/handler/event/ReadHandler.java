@@ -19,11 +19,13 @@
 
 package org.kaazing.robot.driver.behavior.handler.event;
 
+import static java.lang.String.format;
 import static java.util.EnumSet.of;
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.channel.Channels.fireMessageReceived;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,18 +36,15 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.UpstreamMessageEvent;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.robot.driver.behavior.handler.codec.MaskingDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageDecoder;
 
 public class ReadHandler extends AbstractEventHandler {
 
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ReadHandler.class);
-
     private final List<MessageDecoder> decoders;
-
     private final MaskingDecoder unmasker;
+
+    private final List<MessageDecoder> consumedDecoders;
 
     public ReadHandler(List<MessageDecoder> decoders, MaskingDecoder unmasker) {
         super(of(ChannelEventKind.MESSAGE));
@@ -56,11 +55,17 @@ public class ReadHandler extends AbstractEventHandler {
         }
         this.decoders = decoders;
         this.unmasker = unmasker;
+        this.consumedDecoders = new ArrayList<MessageDecoder>(decoders);
     }
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         messageReceived(ctx, e, false);
+    }
+
+    @Override
+    public String toString() {
+        return format("read %s", decoders);
     }
 
     @Override
@@ -78,7 +83,6 @@ public class ReadHandler extends AbstractEventHandler {
 
     private void messageReceived(ChannelHandlerContext ctx, MessageEvent e, boolean isLast) throws Exception {
 
-        final boolean isDebugEnabled = LOGGER.isDebugEnabled();
         ChannelBuffer buf = (ChannelBuffer) e.getMessage();
         // first unmask the bytes (if mask read option is specified)
         buf = unmasker.applyMask(buf);
@@ -86,7 +90,7 @@ public class ReadHandler extends AbstractEventHandler {
         ChannelFuture handlerFuture = getHandlerFuture();
         assert handlerFuture != null;
 
-        Iterator<MessageDecoder> iterator = decoders.iterator();
+        Iterator<MessageDecoder> iterator = consumedDecoders.iterator();
         while (iterator.hasNext()) {
             MessageDecoder decoder = iterator.next();
 
@@ -97,11 +101,6 @@ public class ReadHandler extends AbstractEventHandler {
                     buf = decoder.decode(buf);
                 }
             } catch (Exception mme) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.error("read handler failed ", mme);
-                } else {
-                    LOGGER.error("read handler failed " + mme);
-                }
                 // TODO: We will eventually have to create an AstRead node containing what we actually saw. This will come
                 // later.
                 handlerFuture.setFailure(mme);
@@ -111,21 +110,15 @@ public class ReadHandler extends AbstractEventHandler {
                 // Need more data to complete the decode
                 return;
             }
-            if (isDebugEnabled) {
-                LOGGER.debug("decoder " + decoder + " completed");
-            }
             // Remove the decoder because it is done
             iterator.remove();
         }
-
-        LOGGER.debug("Read handler completed");
 
         // If we get through the list of decoders without an exception we are done.
         handlerFuture.setSuccess();
 
         // Propagate remaining data for next handler(s)
         if (buf.readable()) {
-            LOGGER.debug("More bytes are available for reading. Firing message received.");
             buf = unmasker.undoMask(buf);
             fireMessageReceived(ctx, buf, ctx.getChannel().getRemoteAddress());
         }

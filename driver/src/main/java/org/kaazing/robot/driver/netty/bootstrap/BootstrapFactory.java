@@ -24,10 +24,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.jboss.netty.util.ExternalResourceReleasable;
 import org.kaazing.robot.driver.executor.ExecutorServiceFactory;
-import org.kaazing.robot.driver.netty.bootstrap.spi.BootstrapFactorySpi;
 
-public final class BootstrapFactory {
+public final class BootstrapFactory implements ExternalResourceReleasable {
+
     private final Map<String, BootstrapFactorySpi> bootstrapFactories;
 
     private BootstrapFactory(Map<String, BootstrapFactorySpi> bootstrapFactories) {
@@ -62,6 +63,19 @@ public final class BootstrapFactory {
         }
 
         return bootstrapFactory;
+    }
+
+    public void shutdown() {
+        for (BootstrapFactorySpi bootstrapFactory : bootstrapFactories.values()) {
+            bootstrapFactory.shutdown();
+        }
+    }
+
+    @Override
+    public void releaseExternalResources() {
+        for (BootstrapFactorySpi bootstrapFactory : bootstrapFactories.values()) {
+            bootstrapFactory.releaseExternalResources();
+        }
     }
 
     public ServerBootstrap newServerBootstrap(String transportName) throws Exception {

@@ -20,16 +20,11 @@
 package org.kaazing.robot.driver.behavior.handler.codec;
 
 import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
+import static org.kaazing.robot.driver.util.Utils.byteArrayToString;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
-
-import org.kaazing.robot.driver.util.Utils;
 
 public class WriteBytesEncoder implements MessageEncoder {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(WriteBytesEncoder.class);
 
     private final byte[] bytes;
 
@@ -39,14 +34,12 @@ public class WriteBytesEncoder implements MessageEncoder {
 
     @Override
     public ChannelBuffer encode() {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Encoding " + bytes.length + " exact bytes. Bytes: " + Utils.byteArrayToString(bytes));
-        }
         return wrappedBuffer(bytes);
     }
 
     @Override
-    public String encodeToString() {
-        return new String(bytes);
+    public String toString() {
+        return byteArrayToString(bytes);
     }
+
 }

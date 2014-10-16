@@ -25,13 +25,11 @@ acceptNode
     ;
 
 acceptableNode
-    : k=AcceptedKeyword ( text=Name )?
-      streamableNode+
+    : k=AcceptedKeyword ( text=Name )? streamableNode+
     ;
 
 connectNode
-    : k=ConnectKeyword connectURI=URILiteral
-      streamableNode+
+    : k=ConnectKeyword connectURI=URILiteral streamableNode+
     ;
 
 serverStreamableNode
@@ -42,21 +40,21 @@ serverStreamableNode
     ;
     
 optionNode 
-	: readOptionNode
-	| writeOptionNode
-	;
+    : readOptionNode
+    | writeOptionNode
+    ;
 
 writeOptionNode: 
-	k=WriteKeyword OptionKeyword name=MaskKeyword value=writeValue;
+    k=WriteKeyword OptionKeyword name=MaskKeyword value=writeValue;
 
 readOptionNode: 
-	k=ReadKeyword OptionKeyword name=MaskKeyword value=writeValue;
+    k=ReadKeyword OptionKeyword name=MaskKeyword value=writeValue;
 
 serverCommandNode
     : unbindNode
     | closeNode
     ;
-    
+
 serverEventNode
     : openedNode
     | boundNode
@@ -65,7 +63,7 @@ serverEventNode
     | unboundNode
     | closedNode
     ;
-    
+
 streamableNode
     : barrierNode
     | eventNode
@@ -75,6 +73,7 @@ streamableNode
 
 commandNode
     : writeNode
+    | writeCloseNode
     | closeNode
     | writeHttpHeaderNode
     | writeHttpContentLengthNode
@@ -82,25 +81,24 @@ commandNode
     | writeHttpParameterNode
     | writeHttpVersionNode
     | writeHttpStatusNode
-    | closeHttpRequestNode
-    | closeHttpResponseNode
     ;
-    
+
 eventNode
-    : boundNode
-    | closedNode
-    | disconnectedNode
-    | connectedNode
-    | openedNode
+    : openedNode
+    | boundNode
     | readNode
+    | readClosedNode
+    | disconnectedNode
     | unboundNode
+    | closedNode
+    | connectedNode
     | readHttpHeaderNode
     | readHttpMethodNode
     | readHttpParameterNode
     | readHttpVersionNode
     | readHttpStatusNode
     ;
-    
+
 barrierNode
     : readAwaitNode
     | readNotifyNode
@@ -111,6 +109,9 @@ barrierNode
 closeNode
     : k=CloseKeyword
     ;
+
+writeCloseNode: 
+    k=WriteKeyword CloseKeyword;
 
 disconnectNode
     : k=DisconnectKeyword
@@ -152,6 +153,9 @@ openedNode
     : k=OpenedKeyword
     ;
 
+readClosedNode: 
+    k=ReadKeyword ClosedKeyword;
+
 readNode
     : k=ReadKeyword matcher+
     ;
@@ -177,56 +181,49 @@ writeNotifyNode
     ;
 
 readHttpHeaderNode
-	: k=ReadKeyword HttpHeaderKeyword name=literalText value=matcher
-	;
+    : k=ReadKeyword HttpHeaderKeyword name=literalText matcher+
+    ;
 
 writeHttpHeaderNode
-	: k=WriteKeyword HttpHeaderKeyword name=literalText value=writeValue
-	;
+    : k=WriteKeyword HttpHeaderKeyword name=literalText writeValue+
+    ;
 
 writeHttpContentLengthNode
-	: k=WriteKeyword HttpContentLengthKeyword
-	;
+    : k=WriteKeyword HttpHeaderKeyword HttpContentLengthKeyword
+    ;
 
 readHttpMethodNode
-	: k=ReadKeyword HttpMethodKeyword method=matcher
-	;
+    : k=ReadKeyword HttpMethodKeyword method=matcher
+    ;
 
 writeHttpMethodNode
-	: k=WriteKeyword HttpMethodKeyword method=writeValue
-	;
+    : k=WriteKeyword HttpMethodKeyword method=writeValue
+    ;
 
 readHttpParameterNode
-	: k=ReadKeyword HttpParameterKeyword name=literalText value=matcher
-	;
+    : k=ReadKeyword HttpParameterKeyword name=literalText matcher+
+    ;
 
 writeHttpParameterNode
-	: k=WriteKeyword HttpParameterKeyword name=literalText value=writeValue
-	;
+    : k=WriteKeyword HttpParameterKeyword name=literalText writeValue+
+    ;
 
 readHttpVersionNode
-	: k=ReadKeyword HttpVersionKeyword version=matcher
-	;
+    : k=ReadKeyword HttpVersionKeyword version=matcher
+    ;
 
 writeHttpVersionNode
-	: k=WriteKeyword HttpVersionKeyword version=writeValue
-	;
+    : k=WriteKeyword HttpVersionKeyword version=writeValue
+    ;
 
 readHttpStatusNode
-	: k=ReadKeyword HttpStatusKeyword code=matcher reason=matcher
-	;
+    : k=ReadKeyword HttpStatusKeyword code=matcher reason=matcher
+    ;
 
 writeHttpStatusNode
-	: k=WriteKeyword HttpStatusKeyword code=writeValue reason=writeValue
-	;
+    : k=WriteKeyword HttpStatusKeyword code=writeValue reason=writeValue
+    ;
 
-closeHttpRequestNode
-	: k=CloseKeyword HttpRequestKeyword
-	;
-
-closeHttpResponseNode
-	: k=CloseKeyword HttpResponseKeyword
-	;
 
 matcher
     : exactTextMatcher
@@ -256,7 +253,7 @@ regexMatcher
 expressionMatcher
     : expression=ExpressionLiteral
     ;
-    
+
 fixedLengthBytesMatcher
     : '[0..' lastIndex=DecimalLiteral ']'
     | '([0..' lastIndex=DecimalLiteral ']' capture=CaptureLiteral ')'
@@ -400,36 +397,36 @@ WriteKeyword
     ;
 
 HttpHeaderKeyword
-	: 'header'
-	;
-	
+    : 'header'
+    ;
+    
 HttpContentLengthKeyword
-	: 'content-length'
-	;
+    : 'content-length'
+    ;
 
 HttpMethodKeyword
-	: 'method'
-	;
+    : 'method'
+    ;
 
 HttpParameterKeyword
-	: 'parameter'
-	;
+    : 'parameter'
+    ;
 
 HttpVersionKeyword
-	: 'version'
-	;
+    : 'version'
+    ;
 
 HttpStatusKeyword
-	: 'status'
-	;
+    : 'status'
+    ;
 
 HttpResponseKeyword
-	: 'response'
-	;
+    : 'response'
+    ;
 
 HttpRequestKeyword
-	: 'request'
-	;
+    : 'request'
+    ;
 
 // URI cannot begin with any of our data type delimiters, and MUST contain a colon.
 URILiteral

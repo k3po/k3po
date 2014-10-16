@@ -63,7 +63,7 @@ public class NotifyBarrierHandlerTest {
         upstream = context.mock(ChannelUpstreamHandler.class);
         downstream = context.mock(ChannelDownstreamHandler.class);
 
-        barrier = new Barrier();
+        barrier = new Barrier("BARRIER");
         handler = new NotifyBarrierHandler(barrier);
 
         pipeline = pipeline(new SimpleChannelHandler() {

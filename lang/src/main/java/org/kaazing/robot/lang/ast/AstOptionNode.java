@@ -19,8 +19,9 @@
 
 package org.kaazing.robot.lang.ast;
 
-import org.kaazing.robot.lang.ast.value.AstValue;
 import static org.kaazing.robot.lang.ast.util.AstUtil.equivalent;
+
+import org.kaazing.robot.lang.ast.value.AstValue;
 
 public abstract class AstOptionNode extends AstStreamableNode {
 

@@ -8,9 +8,9 @@ connected
 
 #Connection request
 read "GET /echo HTTP/1.1\r\n"
+read "Host: localhost:8001\r\n"
 read "Upgrade: websocket\r\n"
 read "Connection: Upgrade\r\n"
-read "Host: localhost:8001\r\n"
 read "Origin: http://localhost:8001\r\n"
 read "Sec-WebSocket-Key: uoH83mU2xzVTb+Gw6YWVJg==\r\n"
 read "Sec-WebSocket-Version: 13\r\n"
