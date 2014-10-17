@@ -22,44 +22,52 @@ package org.kaazing.robot.driver.netty.bootstrap.tcp;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URI;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.Executor;
 
 import javax.annotation.Resource;
 
-import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.socket.ClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.ServerSocketChannelFactory;
-import org.jboss.netty.channel.socket.nio.BossPool;
-import org.jboss.netty.channel.socket.nio.NioClientBoss;
+import org.jboss.netty.channel.socket.nio.NioClientBossPool;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioServerBoss;
+import org.jboss.netty.channel.socket.nio.NioServerBossPool;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioWorker;
-import org.jboss.netty.channel.socket.nio.WorkerPool;
-
+import org.jboss.netty.channel.socket.nio.NioWorkerPool;
+import org.jboss.netty.util.ExternalResourceReleasable;
 import org.kaazing.robot.driver.executor.ExecutorServiceFactory;
+import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactorySpi;
 import org.kaazing.robot.driver.netty.bootstrap.ClientBootstrap;
 import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
-import org.kaazing.robot.driver.netty.bootstrap.spi.BootstrapFactorySpi;
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
-import org.kaazing.robot.driver.netty.channel.socket.nio.ShareableClientBossPool;
-import org.kaazing.robot.driver.netty.channel.socket.nio.ShareableServerBossPool;
-import org.kaazing.robot.driver.netty.channel.socket.nio.ShareableWorkerPool;
 
-// TODO: Create the ShareableWorker/Boss SPIs and fit it into the Bootstrap factor.
-// This class was copied out of netty.bootstrap.tcp. And the dependency on that removed from the robot. until that is done.
-//
-public class TcpBootstrapFactorySpi extends BootstrapFactorySpi {
+public final class TcpBootstrapFactorySpi extends BootstrapFactorySpi implements ExternalResourceReleasable {
 
+    private final Collection<ChannelFactory> channelFactories;
     private ExecutorServiceFactory executorServiceFactory;
-
+    private NioClientSocketChannelFactory clientChannelFactory;
+    private NioServerSocketChannelFactory serverChannelFactory;
 
     public TcpBootstrapFactorySpi() {
+        channelFactories = new ConcurrentLinkedDeque<ChannelFactory>();
     }
 
     @Resource
     public void setExecutorServiceFactory(ExecutorServiceFactory executorServiceFactory) {
         this.executorServiceFactory = executorServiceFactory;
+    }
+
+    @Resource
+    public void setNioClientSocketChannelFactory(NioClientSocketChannelFactory clientChannelFactory) {
+        this.clientChannelFactory = clientChannelFactory;
+    }
+
+    @Resource
+    public void setNioServerSocketChannelFactory(NioServerSocketChannelFactory serverChannelFactory) {
+        this.serverChannelFactory = serverChannelFactory;
     }
 
     /**
@@ -71,20 +79,40 @@ public class TcpBootstrapFactorySpi extends BootstrapFactorySpi {
         return "tcp";
     }
 
+    @Override
+    public void shutdown() {
+        for (ChannelFactory channelFactory : channelFactories) {
+            channelFactory.shutdown();
+        }
+    }
+
+    @Override
+    public void releaseExternalResources() {
+        for (ChannelFactory channelFactory : channelFactories) {
+            channelFactory.releaseExternalResources();
+        }
+    }
+
     /**
      * Returns a {@link ClientBootstrap} instance for the named transport.
      */
     @Override
     public synchronized ClientBootstrap newClientBootstrap() throws Exception {
 
-        // Note the details are in the Shareable classes. But the workerPool (of size 1) will be shared with clients and all
-        // servers. There is also only one ClientBoss pool (of size 1) for all clients.
-        WorkerPool<NioWorker> workerPool = ShareableWorkerPool.getInstance(executorServiceFactory);
-        BossPool<NioClientBoss> bossPool = ShareableClientBossPool.getInstance(executorServiceFactory);
+        ClientSocketChannelFactory clientChannelFactory = this.clientChannelFactory;
 
-        ClientSocketChannelFactory clientSocketFactory = new NioClientSocketChannelFactory(bossPool, workerPool);
+        if (clientChannelFactory == null) {
+            Executor bossExecutor = executorServiceFactory.newExecutorService("boss.client");
+            NioClientBossPool bossPool = new NioClientBossPool(bossExecutor, 1);
+            Executor workerExecutor = executorServiceFactory.newExecutorService("worker.client");
+            NioWorkerPool workerPool = new NioWorkerPool(workerExecutor, 1);
+            clientChannelFactory = new NioClientSocketChannelFactory(bossPool, workerPool);
 
-        return new ClientBootstrap(clientSocketFactory) {
+            // unshared
+            channelFactories.add(clientChannelFactory);
+        }
+
+        return new ClientBootstrap(clientChannelFactory) {
             @Override
             public ChannelFuture connect(SocketAddress localAddress, SocketAddress remoteAddress) {
                 InetSocketAddress localChannelAddress = toInetSocketAddress((ChannelAddress) localAddress);
@@ -100,33 +128,35 @@ public class TcpBootstrapFactorySpi extends BootstrapFactorySpi {
     @Override
     public synchronized ServerBootstrap newServerBootstrap() throws Exception {
 
-        // Note the details are in the Shareable classes. But the workerPool (of size 1) will be shared with clients and all
-        // servers. There is also only one ClientBoss pool (of size 1) for all clients.
-        WorkerPool<NioWorker> workerPool = ShareableWorkerPool.getInstance(executorServiceFactory);
-        BossPool<NioServerBoss> bossPool = ShareableServerBossPool.getInstance(executorServiceFactory);
+        ServerSocketChannelFactory serverChannelFactory = this.serverChannelFactory;
 
-        ServerSocketChannelFactory serverSocketFactory = new NioServerSocketChannelFactory(bossPool, workerPool);
+        if (serverChannelFactory == null) {
+            Executor bossExecutor = executorServiceFactory.newExecutorService("boss.server");
+            NioServerBossPool bossPool = new NioServerBossPool(bossExecutor, 1);
+            Executor workerExecutor = executorServiceFactory.newExecutorService("worker.server");
+            NioWorkerPool workerPool = new NioWorkerPool(workerExecutor, 1);
+            serverChannelFactory = new NioServerSocketChannelFactory(bossPool, workerPool);
 
-        return new ServerBootstrap(serverSocketFactory) {
+            // unshared
+            channelFactories.add(serverChannelFactory);
+        }
 
-            @Override
-            public Channel bind(SocketAddress localAddress) {
-                return super.bind(localAddressTransformation(localAddress));
-            }
+        return new ServerBootstrap(serverChannelFactory) {
 
             @Override
             public ChannelFuture bindAsync(SocketAddress localAddress) {
-                return super.bindAsync(localAddressTransformation(localAddress));
+                return super.bindAsync(toInetSocketAddress(localAddress));
             }
 
         };
     }
 
-    private static SocketAddress localAddressTransformation(final SocketAddress localAddress) {
+    private static InetSocketAddress toInetSocketAddress(final SocketAddress localAddress) {
         if (localAddress instanceof ChannelAddress) {
             return toInetSocketAddress((ChannelAddress) localAddress);
-        } else {
-            return localAddress;
+        }
+        else {
+            return (InetSocketAddress) localAddress;
         }
     }
 

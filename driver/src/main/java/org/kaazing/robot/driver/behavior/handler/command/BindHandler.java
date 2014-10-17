@@ -25,14 +25,10 @@ import java.net.SocketAddress;
 
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
 
 public class BindHandler extends AbstractCommandHandler {
 
     private final SocketAddress localAddress;
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(BindHandler.class);
 
     public BindHandler(SocketAddress localAddress) {
         this.localAddress = localAddress;
@@ -40,10 +36,13 @@ public class BindHandler extends AbstractCommandHandler {
 
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
-
-        LOGGER.debug("binding channel");
         ChannelFuture handlerFuture = getHandlerFuture();
         bind(ctx, handlerFuture, localAddress);
+    }
+
+    @Override
+    public String toString() {
+        return "bind";
     }
 
 }

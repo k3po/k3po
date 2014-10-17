@@ -19,11 +19,13 @@
 
 package org.kaazing.robot.driver.control;
 
+import java.util.Objects;
+
 public class StartedMessage extends ControlMessage {
 
     @Override
     public int hashCode() {
-        return hashTo();
+        return Objects.hash(getKind());
     }
 
     @Override

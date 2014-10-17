@@ -28,8 +28,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.jboss.netty.channel.ChannelException;
 
-import org.kaazing.robot.driver.netty.channel.spi.ChannelAddressFactorySpi;
-
 public final class ChannelAddressFactory {
     private final Map<String, ChannelAddressFactorySpi> channelAddressFactories;
 

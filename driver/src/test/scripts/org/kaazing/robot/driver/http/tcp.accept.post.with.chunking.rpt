@@ -2,4 +2,29 @@
 # Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
 #
 
-// TODO
+accept tcp://localhost:8000
+accepted
+connected
+
+read "POST / HTTP/1.1\r\n"
+read "Host: localhost:8000\r\n"
+read "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n"
+read "Content-Type: text/plain\r\n"
+read "Transfer-Encoding: chunked\r\n"
+read "\r\n"
+read "7\r\n"
+read "Chunk A\r\n"
+read "7\r\n"
+read "Chunk B\r\n"
+read "7\r\n"
+read "Chunk C\r\n"
+read "0\r\n"
+read "\r\n"
+
+write "HTTP/1.1 200 OK\r\n"
+write "Content-Length: 7\r\n"
+write "\r\n"
+write "content"
+
+close
+closed

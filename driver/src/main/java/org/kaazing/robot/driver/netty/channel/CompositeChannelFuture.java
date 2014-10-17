@@ -29,8 +29,6 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelFutureProgressListener;
 import org.jboss.netty.channel.DefaultChannelFuture;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
 
 /**
  * A {@link ChannelFuture} of {@link ChannelFuture}s. It is useful when you want
@@ -47,8 +45,6 @@ import org.jboss.netty.logging.InternalLoggerFactory;
  * @param <E> the type of the child futures.
  */
 public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChannelFuture {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(CompositeChannelFuture.class);
 
     private final NotifyingListener listener = new NotifyingListener();
     private final AtomicInteger unnotified = new AtomicInteger();
@@ -69,14 +65,10 @@ public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChan
 
         this.failFast = failFast;
         this.kids = new ArrayList<E>(kids);
-        boolean isLogDebugEnabled = LOGGER.isDebugEnabled();
 
         for (E k : kids) {
             k.addListener(listener);
             unnotified.incrementAndGet();
-            if (isLogDebugEnabled) {
-                LOGGER.debug("Adding listener |" + listener + "| for future |" + k + "|");
-            }
         }
         /*
          * Note that a composite with no children will be automatically set to
@@ -186,15 +178,9 @@ public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChan
         @Override
         public void operationComplete(final ChannelFuture future) {
 
-            boolean isLogDebugEnabled = LOGGER.isDebugEnabled();
             boolean isSuccess = future.isSuccess();
             boolean isCancelled = future.isCancelled();
             boolean failed = false;
-
-            if (isLogDebugEnabled) {
-                LOGGER.debug("listener |" + listener + "| notified that future " + future
-                        + " completed. Current unnotified value is " + unnotified.get());
-            }
 
             /* We need to synchronize here due to the addChildren method */
             synchronized (CompositeChannelFuture.this) {
@@ -218,14 +204,8 @@ public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChan
                 if (currentUnnotified == 0 && constructionFinished) {
                     final int totalKids = kids.size();
                     if (totalKids == successCount) {
-                        if (isLogDebugEnabled) {
-                            LOGGER.debug("Composite completed with success");
-                        }
                         setSuccess();
                     } else if (totalKids == cancelledCount) {
-                        if (isLogDebugEnabled) {
-                            LOGGER.debug("Composite completed all cancelled");
-                        }
                         if (!cancel()) {
                             if (!isCancelled()) {
                                 // Then the composite was non-cancellable. Set to success
@@ -236,9 +216,6 @@ public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChan
                         for (E f : kids) {
                             Throwable t = f.getCause();
                             if (t != null) {
-                                if (isLogDebugEnabled) {
-                                    LOGGER.debug("Composite completed one or more failed. Setting failed to first", t);
-                                }
                                 setFailure(t);
                                 return;
                             }

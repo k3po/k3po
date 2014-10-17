@@ -22,19 +22,20 @@ package org.kaazing.robot.driver.netty.bootstrap.channel;
 import static org.jboss.netty.channel.Channels.fireChannelOpen;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelConfig;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelSink;
-
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
 
 public class AbstractServerChannel<T extends ChannelConfig> extends org.jboss.netty.channel.AbstractServerChannel {
 
     private final T config;
     private final AtomicBoolean bound;
+    private final AtomicInteger bindCount;
 
     private volatile ChannelAddress localAddress;
     private volatile Channel transport;
@@ -44,6 +45,7 @@ public class AbstractServerChannel<T extends ChannelConfig> extends org.jboss.ne
 
         this.config = config;
         this.bound = new AtomicBoolean();
+        this.bindCount = new AtomicInteger();
 
         // required by ServerBootstrap
         fireChannelOpen(this);
@@ -67,6 +69,10 @@ public class AbstractServerChannel<T extends ChannelConfig> extends org.jboss.ne
     @Override
     public boolean isBound() {
         return isOpen() && bound.get();
+    }
+
+    public AtomicInteger getBindCount() {
+        return bindCount;
     }
 
     protected void setLocalAddress(ChannelAddress localAddress) {

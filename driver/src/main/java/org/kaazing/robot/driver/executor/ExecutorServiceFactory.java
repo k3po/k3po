@@ -32,12 +32,23 @@ public final class ExecutorServiceFactory {
 
     private final SortedMap<String, ExecutorServiceFactorySpi> executorServiceFactories;
 
-    public static ExecutorServiceFactory newInstance() {
+    public static ExecutorServiceFactory newInstance(ClassLoader loader) {
+        return newInstance(ServiceLoader.load(ExecutorServiceFactorySpi.class, loader));
+    }
 
+    public static ExecutorServiceFactory newInstance() {
+        ServiceLoader<ExecutorServiceFactorySpi> loader = loadExecutorServiceFactorySpi();
+        return newInstance(loader);
+    }
+
+    private ExecutorServiceFactory(SortedMap<String, ExecutorServiceFactorySpi> executorServiceFactories) {
+        this.executorServiceFactories = executorServiceFactories;
+    }
+
+    private static ExecutorServiceFactory newInstance(
+            ServiceLoader<ExecutorServiceFactorySpi> loader) {
         SortedMap<String, ExecutorServiceFactorySpi> executorServiceFactories =
                 new TreeMap<String, ExecutorServiceFactorySpi>();
-
-        ServiceLoader<ExecutorServiceFactorySpi> loader = loadExecutorServiceFactorySpi();
 
         for (ExecutorServiceFactorySpi spi : loader) {
             String executorName = spi.getName();
@@ -67,10 +78,6 @@ public final class ExecutorServiceFactory {
         }
 
         return new ExecutorServiceFactory(executorServiceFactories);
-    }
-
-    private ExecutorServiceFactory(SortedMap<String, ExecutorServiceFactorySpi> executorServiceFactories) {
-        this.executorServiceFactories = executorServiceFactories;
     }
 
     public ExecutorService newExecutorService(String executorName) {

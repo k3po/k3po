@@ -19,24 +19,25 @@
 
 package org.kaazing.robot.driver.netty.bootstrap.channel;
 
+import static java.lang.String.format;
 import static org.jboss.netty.channel.Channels.fireChannelBound;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelStateEvent;
-
 import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
 import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
 
 public abstract class AbstractServerChannelSink<T extends AbstractServerChannel<?>> extends AbstractChannelSink {
 
-    private final ChannelPipelineFactory pipelineFactory;
+    protected final ChannelPipelineFactory pipelineFactory;
 
-    private BootstrapFactory bootstrapFactory;
+    protected BootstrapFactory bootstrapFactory;
 
     protected AbstractServerChannelSink(ChannelPipelineFactory pipelineFactory) {
         this.pipelineFactory = pipelineFactory;
@@ -49,9 +50,9 @@ public abstract class AbstractServerChannelSink<T extends AbstractServerChannel<
     @Override
     @SuppressWarnings("unchecked")
     protected void bindRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
-        T channel = (T) evt.getChannel();
-        ChannelFuture future = evt.getFuture();
-        ChannelAddress localAddress = (ChannelAddress) evt.getValue();
+        final T channel = (T) evt.getChannel();
+        final ChannelFuture future = evt.getFuture();
+        final ChannelAddress localAddress = (ChannelAddress) evt.getValue();
 
         ChannelAddress transportAddress = localAddress.getTransport();
         String transportName = transportAddress.getLocation().getScheme();
@@ -59,18 +60,19 @@ public abstract class AbstractServerChannelSink<T extends AbstractServerChannel<
         ServerBootstrap bootstrap = bootstrapFactory.newServerBootstrap(transportName);
         bootstrap.setParentHandler(createParentHandler(channel));
         bootstrap.setPipelineFactory(pipelineFactory);
-        bootstrap.setOption(String.format("%s.next-protocol", transportName), localAddress.getLocation().getScheme());
+        bootstrap.setOption(format("%s.nextProtocol", transportName), localAddress.getLocation().getScheme());
 
-        try {
-            Channel transport = bootstrap.bind(transportAddress);
-            channel.setTransport(transport);
-            channel.setLocalAddress(localAddress);
-            channel.setBound();
-            fireChannelBound(channel, localAddress);
-
-            future.setSuccess();
-        } catch (Exception e) {
-            future.setFailure(e);
+        ChannelFuture transportFuture = bootstrap.bindAsync(transportAddress);
+        if (transportFuture.isDone()) {
+            bindTransportCompleted(channel, future, localAddress, transportFuture);
+        }
+        else {
+            transportFuture.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture transportFuture) throws Exception {
+                    bindTransportCompleted(channel, future, localAddress, transportFuture);
+                }
+            });
         }
     }
 
@@ -78,16 +80,21 @@ public abstract class AbstractServerChannelSink<T extends AbstractServerChannel<
     @SuppressWarnings("unchecked")
     protected void unbindRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
 
-        T channel = (T) evt.getChannel();
-        ChannelFuture future = evt.getFuture();
+        final T channel = (T) evt.getChannel();
+        final ChannelFuture future = evt.getFuture();
 
-        try {
-            Channel transport = channel.getTransport();
-            transport.unbind().awaitUninterruptibly();
-
-            close(channel, future);
-        } catch (Exception e) {
-            future.setFailure(e);
+        Channel transport = channel.getTransport();
+        ChannelFuture transportFuture = transport.unbind();
+        if  (transportFuture.isDone()) {
+            unbindTransportCompleted(channel, future, transportFuture);
+        }
+        else {
+            transportFuture.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture transportFuture) throws Exception {
+                    unbindTransportCompleted(channel, future, transportFuture);
+                }
+            });
         }
     }
 
@@ -97,21 +104,70 @@ public abstract class AbstractServerChannelSink<T extends AbstractServerChannel<
 
         T channel = (T) evt.getChannel();
         ChannelFuture future = evt.getFuture();
+        close(channel, future);
+    }
 
-        try {
-            close(channel, future);
-        } catch (Exception e) {
-            future.setFailure(e);
+    protected ChannelHandler createParentHandler(T channel) {
+        return null;
+    }
+
+    private static <T extends AbstractServerChannel<?>> void close(T channel, final ChannelFuture future) throws Exception {
+
+        Channel transport = channel.getTransport();
+        ChannelFuture transportFuture = transport.close();
+        if (transportFuture.isDone()) {
+            closeTransportCompleted(future, transportFuture);
+        }
+        else {
+            transportFuture.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture transportFuture) throws Exception {
+                    closeTransportCompleted(future, transportFuture);
+                }
+            });
         }
     }
 
-    protected abstract ChannelHandler createParentHandler(T channel);
+    private static <T extends AbstractServerChannel<?>> void bindTransportCompleted(
+            T channel,
+            ChannelFuture future,
+            ChannelAddress localAddress,
+            ChannelFuture transportFuture) {
 
-    private void close(T channel, ChannelFuture future) throws Exception {
-
-        Channel transport = channel.getTransport();
-        transport.close().awaitUninterruptibly();
-
-        future.setSuccess();
+        if (transportFuture.isSuccess()) {
+            Channel transport = transportFuture.getChannel();
+            channel.setTransport(transport);
+            channel.setLocalAddress(localAddress);
+            channel.setBound();
+            fireChannelBound(channel, localAddress);
+            future.setSuccess();
+        }
+        else {
+            future.setFailure(transportFuture.getCause());
+        }
     }
+
+
+    private static <T extends AbstractServerChannel<?>> void unbindTransportCompleted(
+            T channel,
+            ChannelFuture future,
+            ChannelFuture transportFuture) throws Exception {
+        if (transportFuture.isSuccess()) {
+            close(channel, future);
+        }
+        else {
+            future.setFailure(transportFuture.getCause());
+        }
+    }
+
+    private static void closeTransportCompleted(ChannelFuture future,
+            ChannelFuture transportFuture) {
+        if (transportFuture.isSuccess()) {
+            future.setSuccess();
+        }
+        else {
+            future.setFailure(transportFuture.getCause());
+        }
+    }
+
 }

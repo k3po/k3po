@@ -19,21 +19,17 @@
 
 package org.kaazing.robot.driver.behavior.handler.command;
 
+import static java.lang.String.format;
 import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
+import static org.jboss.netty.channel.Channels.write;
 
 import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.driver.behavior.handler.codec.MessageEncoder;
 
 public class WriteHandler extends AbstractCommandHandler {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(WriteHandler.class);
 
     private final List<MessageEncoder> encoders;
 
@@ -54,8 +50,12 @@ public class WriteHandler extends AbstractCommandHandler {
             buffers[idx] = encoder.encode();
             idx++;
         }
-        LOGGER.debug("Invoking write command");
-        Channels.write(ctx, getHandlerFuture(), wrappedBuffer(buffers));
+        write(ctx, getHandlerFuture(), wrappedBuffer(buffers));
+    }
+
+    @Override
+    public String toString() {
+        return format("write %s", encoders);
     }
 
 }

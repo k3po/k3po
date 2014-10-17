@@ -19,7 +19,6 @@
 
 package org.kaazing.robot.lang.el;
 
-import org.kaazing.robot.lang.el.Function;
 import org.kaazing.robot.lang.el.spi.FunctionMapperSpi;
 
 public class TestFunctionMapperSpi extends FunctionMapperSpi.Reflective {

@@ -67,7 +67,7 @@ public class AwaitBarrierDownstreamHandlerTest {
         upstream = context.mock(ChannelUpstreamHandler.class);
         downstream = context.mock(ChannelDownstreamHandler.class);
 
-        barrier = new Barrier();
+        barrier = new Barrier("BARRIER");
         handler = new AwaitBarrierDownstreamHandler(barrier);
 
         pipeline = pipeline(new SimpleChannelHandler() {

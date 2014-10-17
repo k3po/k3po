@@ -19,9 +19,12 @@
 
 package org.kaazing.robot.driver.netty.bootstrap;
 
-import org.jboss.netty.channel.ChannelFactory;
+import java.net.SocketAddress;
 
-// TODO: add asynchronous bind returning ChannelFuture instead of Channel
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelFuture;
+
 public class ServerBootstrap extends org.jboss.netty.bootstrap.ServerBootstrap {
 
     public ServerBootstrap() {
@@ -30,6 +33,21 @@ public class ServerBootstrap extends org.jboss.netty.bootstrap.ServerBootstrap {
 
     public ServerBootstrap(ChannelFactory channelFactory) {
         super(channelFactory);
+    }
+
+    @Override
+    public final Channel bind() {
+        return super.bind();
+    }
+
+    @Override
+    public final Channel bind(SocketAddress localAddress) {
+        return super.bind(localAddress);
+    }
+
+    @Override
+    public final ChannelFuture bindAsync() {
+        return super.bindAsync();
     }
 
 }

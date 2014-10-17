@@ -1,4 +1,5 @@
 # Robot a.k.a. K3PO
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/kaazing/robot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 The K3PO Robot is a Network Protocol Testing Tool
 

@@ -28,7 +28,7 @@ import java.util.ServiceLoader;
 
 import org.junit.Test;
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
-import org.kaazing.robot.driver.netty.channel.spi.ChannelAddressFactorySpi;
+import org.kaazing.robot.driver.netty.channel.ChannelAddressFactorySpi;
 
 public class TcpChannelAddressFactorySpiTest {
 

@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.http;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -31,16 +32,19 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.DisableOnDebug;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TestRule;
+import org.junit.rules.Timeout;
 import org.kaazing.robot.driver.Robot;
 import org.kaazing.robot.driver.behavior.RobotCompletionFuture;
 
 public class HttpRobotBehaviorIT {
 
-    private static final long TEST_TIMEOUT = 2000;
+    @Rule
+    public TestRule timeout = new DisableOnDebug(new Timeout(2, SECONDS));
 
     private Robot robot;
     private Socket client;
@@ -69,8 +73,59 @@ public class HttpRobotBehaviorIT {
         robot.destroy();
     }
 
-    @Test(timeout = TEST_TIMEOUT)
-    public void shouldRecieveGetRequestAndProvideResponse() throws Exception {
+    @Test
+    public void shouldAcceptHeaderWithMultipleTokens() throws Exception {
+        
+        String script = combineScripts("http.accept.header.with.multiple.tokens.rpt",
+                "tcp.connect.header.with.multiple.tokens.rpt");
+
+        String expected = script;
+
+        robot.prepareAndStart(script).await();
+
+        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+
+        doneFuture.await();
+
+        assertEquals(expected, doneFuture.getObservedScript());
+    }
+
+    @Test
+    public void shouldAcceptReadParameterWithMultipleTokens() throws Exception {
+        
+        String script = combineScripts("http.accept.read.parameter.with.multiple.tokens.rpt",
+                "tcp.connect.write.parameter.with.multiple.tokens.rpt");
+
+        String expected = script;
+
+        robot.prepareAndStart(script).await();
+
+        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+
+        doneFuture.await();
+
+        assertEquals(expected, doneFuture.getObservedScript());
+    }
+    
+    @Test
+    public void shouldAcceptWriteParameterWithMultipleTokens() throws Exception {
+        
+        String script = combineScripts("http.connect.write.parameter.with.multiple.tokens.rpt",
+                "tcp.accept.read.parameter.with.multiple.tokens.rpt");
+
+        String expected = script;
+
+        robot.prepareAndStart(script).await();
+
+        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+
+        doneFuture.await();
+
+        assertEquals(expected, doneFuture.getObservedScript());
+    }
+    
+    @Test
+    public void shouldReceiveGetRequestAndProvideResponse() throws Exception {
 
         String script = combineScripts("http.accept.get.request.with.no.content.on.response.rpt",
                 "tcp.connect.get.request.with.no.content.on.response.rpt");
@@ -87,8 +142,8 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    @Test(timeout = TEST_TIMEOUT)
-    public void shouldRecieveGetRequestAndProvideResponseWithContent() throws Exception {
+    @Test
+    public void shouldReceiveGetRequestAndProvideResponseWithContent() throws Exception {
 
         String script = combineScripts("http.accept.get.request.with.content.on.response.rpt",
                 "tcp.connect.get.request.with.content.on.response.rpt");
@@ -105,8 +160,8 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    @Test(timeout = TEST_TIMEOUT)
-    public void shouldSendGetRequestAndRecieveResponseWithNoContent() throws Exception {
+    @Test
+    public void shouldSendGetRequestAndReceiveResponseWithNoContent() throws Exception {
 
         String script = combineScripts("http.connect.get.request.with.no.content.on.response.rpt",
                 "tcp.accept.get.request.with.no.content.on.response.rpt");
@@ -123,8 +178,8 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    @Test(timeout = TEST_TIMEOUT)
-    public void shouldSendGetRequestAndRecieveResponseWithContent() throws Exception {
+    @Test
+    public void shouldSendGetRequestAndReceiveResponseWithContent() throws Exception {
 
         String script = combineScripts("http.connect.get.request.with.content.on.response.rpt",
                 "tcp.accept.get.request.with.content.on.response.rpt");
@@ -141,7 +196,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldAcceptWebsocketHandshake() throws Exception {
 
         String script = combineScripts("http.accept.websocket.handshake.rpt", "tcp.connect.websocket.handshake.rpt");
@@ -157,7 +212,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    @Test(timeout = TEST_TIMEOUT)
+    @Test
     public void shouldConnectWebsocketHandshake() throws Exception {
 
         String script = combineScripts("http.connect.websocket.handshake.rpt", "tcp.accept.websocket.handshake.rpt");
@@ -173,8 +228,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    @Test(timeout = TEST_TIMEOUT)
-    @Ignore("not yet implemented")
+    @Test
     public void shouldAcceptPostMessageWithChunking() throws Exception {
 
         String script = combineScripts("http.accept.post.with.chunking.rpt", "tcp.connect.post.with.chunking.rpt");
@@ -190,8 +244,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    @Test(timeout = TEST_TIMEOUT)
-    @Ignore("not yet implemented")
+    @Test
     public void shouldConnectPostMessageWithChunking() throws Exception {
 
         String script = combineScripts("http.connect.post.with.chunking.rpt", "tcp.accept.post.with.chunking.rpt");
@@ -207,8 +260,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    @Test(timeout = TEST_TIMEOUT)
-    @Ignore("not yet implemented")
+    @Test
     public void shouldAcceptResponseWithChunking() throws Exception {
 
         String script = combineScripts("http.accept.response.with.chunking.rpt",
@@ -225,8 +277,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    @Test(timeout = TEST_TIMEOUT)
-    @Ignore("not yet implemented")
+    @Test
     public void shouldConnectResponseWithChunking() throws Exception {
 
         String script = combineScripts("http.connect.response.with.chunking.rpt",
@@ -243,8 +294,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    @Test(timeout = TEST_TIMEOUT)
-    @Ignore("not yet implemented")
+    @Test
     public void shouldConnectConnectionCloseResponse() throws Exception {
 
         String script = combineScripts("http.connect.connection.close.response.rpt",
@@ -261,8 +311,7 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    @Test(timeout = TEST_TIMEOUT)
-    @Ignore("not yet implemented")
+    @Test
     public void shouldAcceptConnectionCloseResponse() throws Exception {
 
         String script = combineScripts("http.accept.connection.close.response.rpt",
@@ -279,9 +328,8 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    @Ignore
-    @Test(timeout = TEST_TIMEOUT)
-    public void shouldAcceptMutlipleHttpOnDifferentTcp() throws Exception {
+    @Test
+    public void shouldAcceptMultipleHttpOnDifferentTcp() throws Exception {
 
         String script = combineScripts("http.accept.two.http.200.rpt",
                 "tcp.connect.two.http.200.on.different.streams.rpt");
@@ -297,9 +345,8 @@ public class HttpRobotBehaviorIT {
 
     }
 
-    @Ignore
-    @Test(timeout = TEST_TIMEOUT)
-    public void shouldAcceptMutlipleHttpOnSameTcp() throws Exception {
+    @Test
+    public void shouldAcceptMultipleHttpOnSameTcp() throws Exception {
 
         String script = combineScripts("http.accept.two.http.200.rpt", "tcp.connect.two.http.200.on.same.streams.rpt");
 
@@ -331,4 +378,5 @@ public class HttpRobotBehaviorIT {
         }
         return sb.toString();
     }
+
 }
