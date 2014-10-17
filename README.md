@@ -1,9 +1,9 @@
 # Binary Bidirectional Streams Over HTTP (BBOSH)
 The Bidirectional Streams Over HTTP (BOSH) transport protocol was initially designed to transmit XML text for XMPP.
 The BBOSH transport protocol extends BOSH by adding support for binary, such that it can be used to replace TCP where
-WebSocket is not available.  No HTTP streaming is required, just HTTP polling or long-polling.
+WebSocket is not available.  Although HTTP streaming is supported, just HTTP polling or long-polling is sufficient.
 
-## Connect
+## Handshake
 A standard REST request is used to create the BBOSH connection.  Following the REST pattern, the `Location` response header
 indicates the URL to be used for further communication on the new connection.
 
@@ -22,13 +22,15 @@ BBOSH server can safely reclaim resources associated with the BBOSH connection i
 sufficiently.  A long-polling BBOSH client can detect an error if the time to receive a response exceeds the the interval 
 sufficiently to account for network round-trip time.
 
+The "streaming" strategy supports a bidirectional stream of HTTP chunks, terminated by the empty chunk in each direction.
+
     POST /connections HTTP/1.1
     Accept: application/octet-stream
     Content-Type: application/octet-stream
     Content-Length: ...
     X-Protocol: bbosh/1.0
     X-Sequence-No: 0
-    X-Accept-Strategy:  polling;interval=5s, long-polling;interval=30s;requests=5
+    X-Accept-Strategy:  polling;interval=5s, long-polling;interval=30s;requests=5, streaming;request=chunked
     [body optional]
     
     HTTP/1.1 201 Created
@@ -40,14 +42,14 @@ sufficiently to account for network round-trip time.
     [body optional]
 
 The sequence number can be any value for this create request, but subsequent requests must increment the sequence number by 1 
-each time.
+each time.  If the sequence number is omitted, its value is assumed to be zero.
 
 Note: the `Content-Type` header may be omitted if `Content-Length` is zero.
-Note: the `204` status code may be used if `Content-Length` is zero.
 
-## Read & Write
-In general, each HTTP request body writes data to the connection, and each HTTP response body reads data from the connection.
+## Polling & Long-Polling
+Each HTTP request body writes data to the connection, and each HTTP response body reads data from the connection.
 
+### Read & Write
 The "polling" strategy permits only one outstanding HTTP request per BBOSH connection. Therefore, if a polling HTTP request is
 currently in flight when the client makes an attempt to write data to the connection, the HTTP response must first be received
 before the next HTTP request can be sent with the data to be written.
@@ -96,7 +98,7 @@ When no new data needs to be written to the BBOSH connection, the subsequent HTT
 Note: the `Content-Type` header may be omitted if `Content-Length` is zero.
 Note: the `204` status code may be used if `Content-Length` is zero.
 
-## Close (server)
+### Close (server)
 When the server chooses to close the BBOSH connection, it sends `404` as the next response status code, with optional body to
 flush any remaining data to the client.
 
@@ -115,7 +117,7 @@ flush any remaining data to the client.
 
 Note: the `Content-Type` header may be omitted if `Content-Length` is zero.
 
-## Close (client)
+### Close (client)
 When the client chooses to close the BBOSH connection, it sends a DELETE request with optional body to flush any remaining
 data to the server.  In response, the server confirms the connection has been closed with 200 OK status code, and optional body
 to flush any remaining data to the client.
@@ -136,7 +138,7 @@ to flush any remaining data to the client.
 Note: the `Content-Type` header may be omitted if `Content-Length` is zero.
 Note: the `204` status code may be used if `Content-Length` is zero.
 
-## Close (simultaneous)
+### Close (simultaneous)
 When both the client and server choose to close the BBOSH connection simultaneously, the client sends a DELETE request as before,
 and the server's response has status code 404, still with optional body to flush any remaining data to the client.
 
@@ -153,10 +155,80 @@ and the server's response has status code 404, still with optional body to flush
     Content-Length: ...
     [body optional]
 
-## HTTP PUT or DELETE method not available?
+## Streaming
+HTTP supports chunked transfer-encoding for both requests and responses, and allows the response to be generated before the
+request has been fully transmitted.
+
+    PUT /connections/[ID] HTTP/1.1
+    Accept: application/octet-stream
+    Content-Type: application/octet-stream
+    TransferEncoding: chunked
+    X-Sequence-No: ...
+    [body deferred]
+    
+    HTTP/1.1 200 OK
+    Cache-Control: no-cache
+    Content-Type: application/octet-stream
+    Transfer-Encoding: chunked
+    [body deferred]
+
+Chunks can be transmitted in either direction to represent binary data on this streaming BBOSH connection.
+
+### Read & Write
+Data is sent and received in either direction at any time via HTTP chunks on the streaming BBOSH connection.
+
+    c\r\n
+    Hello, world\r\n
+
+    c\r\n
+    Hello, world\r\n
+
+### Close (server)
+When the server chooses to close the BBOSH connection, it sends an empty chunk to the client, and then the client sends an
+empty chunk to the server after flushing any remaining data.
+
+    0\r\n
+    \r\n
+
+    ...\r\n
+    remaining data flushed to server by client\r\n
+    0\r\n
+    \r\n
+
+When the server receives the empty chunk from the client after sending an empty chunk to the client, the BBOSH connection is
+considered closed.
+
+### Close (client)
+When the client chooses to close the BBOSH connection, it sends an empty chunk to the server, and then the server sends an
+empty chunk to the client after flushing any remaining data.
+
+    0\r\n
+    \r\n
+
+    ...\r\n
+    remaining data flushed to client by server\r\n
+    0\r\n
+    \r\n
+
+When the client receives the empty chunk from the server after sending an empty chunk to the server, the BBOSH connection is
+considered closed.
+
+### Close (simultaneous)
+When both the client and server choose to close the BBOSH connection simultaneously, the client sends an empty chunk as before,
+and the server also sends an empty chunk.
+
+When the client has both send and received an empty chunk, it considers the BBOSH connection is closed.
+
+When the server has both send and received an empty chunk, it considers the BBOSH connection is closed.
+
+## HTTP workarounds
+In some cases, the HTTP support in a particular platform may be capable of specifying the usage of HTTP outlined above. Here we
+cover common issues and corresponding workarounds.
+
+### HTTP PUT or DELETE method not available?
 Use `POST` method with `X-HTTP-Method-Override` header with value of `PUT` or `DELETE`.
 
-## HTTP Content-Type application/octet-stream not available?
+### HTTP Content-Type application/octet-stream not available?
 Use `text/plain;charset=utf-8` instead and encode the payload as utf8-encoded-binary.
 
 If a client cannot send or receive a specific character values such as `\u0000`, use the higher order equivalent character value
@@ -169,7 +241,7 @@ indicates that the byte value in that bit position requires masking with 0x100 t
 The `X-Charset-Mask` header indicates which of the 256 byte values are masked with `0x100` in the current payload using the same
 syntax for the header value as `X-Accept-Charset-Mask`.
 
-## HTTP response status code 201 or 204 not available?
+### HTTP response status code 201 or 204 not available?
 When a client has minimal support for HTTP status codes (Flash plugin), use request header `X-Accept-HTTP-Status-Code` with 
 status codes that can be processed by the client, such as 200 indicating that all `2xx` codes should be returned as status code 
 `200` with `X-HTTP-Status-Code-Override` response header containing the actual status code, or `3xx` indicating that all `3xx`
