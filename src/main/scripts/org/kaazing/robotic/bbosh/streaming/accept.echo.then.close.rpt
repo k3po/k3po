@@ -12,7 +12,7 @@ read closed
 write status "201" "Created"
 write header "Cache-Control" "no-cache"
 write header "Location" "/connections/ac32fb3844fe11e4a183164230d1df67"
-write header "X-Strategy" "streaming;encoding=chunked"
+write header "X-Strategy" "streaming;request=chunked"
 write header content-length
 write close
 

@@ -26,20 +26,17 @@ The "streaming" strategy supports a bidirectional stream of HTTP chunks, termina
 
     POST /connections HTTP/1.1
     Accept: application/octet-stream
-    Content-Type: application/octet-stream
-    Content-Length: ...
+    Content-Length: 0
     X-Protocol: bbosh/1.0
     X-Sequence-No: 0
     X-Accept-Strategy:  polling;interval=5s, long-polling;interval=30s;requests=5, streaming;request=chunked
-    [body optional]
-    
+
     HTTP/1.1 201 Created
     Cache-Control: no-cache
     Content-Type: application/octet-stream
-    Content-Length: ...
+    Content-Length: 0
     Location: /connections/[ID]
     X-Strategy: polling;interval=5s
-    [body optional]
 
 The sequence number can be any value for this create request, but subsequent requests must increment the sequence number by 1 
 each time.  If the sequence number is omitted, its value is assumed to be zero.
@@ -162,7 +159,7 @@ request has been fully transmitted.
     PUT /connections/[ID] HTTP/1.1
     Accept: application/octet-stream
     Content-Type: application/octet-stream
-    TransferEncoding: chunked
+    Transfer-Encoding: chunked
     X-Sequence-No: ...
     [body deferred]
     
