@@ -32,6 +32,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -76,7 +78,7 @@ public class Robot {
      * a completion handler. The completion handler's handlerFuture is the complete future
      */
     private final List<ChannelFuture> completionFutures = new ArrayList<>();
-    private final List<LocationInfo> progressInfos = new ArrayList<>();
+    private final List<LocationInfo> progressInfos = new CopyOnWriteArrayList<>();
     private final Map<LocationInfo, Object> serverLocations = new HashMap<>();
     private final List<ChannelFuture> bindFutures = new ArrayList<>();
     private final List<ChannelFuture> connectFutures = new ArrayList<>();
@@ -86,7 +88,7 @@ public class Robot {
     private final RobotCompletionFutureImpl finishedFuture = new RobotCompletionFutureImpl(channel, true);
     private final DefaultChannelGroup serverChannels = new DefaultChannelGroup();
     private final DefaultChannelGroup clientChannels = new DefaultChannelGroup();
-    private final Map<LocationInfo, Throwable> failedCauses = new HashMap<>();
+    private final Map<LocationInfo, Throwable> failedCauses = new ConcurrentHashMap<>();
 
     private String expectedScript;
     private Configuration configuration;
