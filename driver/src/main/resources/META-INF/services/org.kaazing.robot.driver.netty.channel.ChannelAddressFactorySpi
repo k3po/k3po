@@ -38,3 +38,5 @@
 
 org.kaazing.robot.driver.netty.channel.tcp.TcpChannelAddressFactorySpi
 org.kaazing.robot.driver.netty.channel.http.HttpChannelAddressFactorySpi
+org.kaazing.robot.driver.netty.channel.bbosh.BBoshChannelAddressFactorySpi
+

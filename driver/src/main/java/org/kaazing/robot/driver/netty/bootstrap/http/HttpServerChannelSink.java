@@ -38,6 +38,7 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ChildChannelStateEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
@@ -54,13 +55,14 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
 
     private final ConcurrentNavigableMap<URI, HttpServerChannel> httpBindings;
     private final ConcurrentMap<URI, HttpTransport> httpTransportsByLocation; // TODO: use address for location stack
+    private final ChannelPipelineFactory pipelineFactory;
 
     public HttpServerChannelSink() {
         this(new ConcurrentSkipListMap<URI, HttpServerChannel>());
     }
 
     private HttpServerChannelSink(ConcurrentNavigableMap<URI, HttpServerChannel> httpBindings) {
-        super(new HttpChildChannelPipelineFactory(httpBindings));
+        this.pipelineFactory = new HttpChildChannelPipelineFactory(httpBindings);
         this.httpBindings = httpBindings;
         this.httpTransportsByLocation = new ConcurrentHashMap<URI, HttpTransport>();
     }
@@ -137,18 +139,18 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
             if (httpTransportsByLocation.remove(location, oldHttpTransport)) {
                 // unbind transport
                 Channel transport = httpUnbindChannel.getTransport();
-                transport.unbind().addListener(new ChannelFutureListener() {
-                    @Override
-                    public void operationComplete(ChannelFuture future) throws Exception {
-                        if (future.isSuccess()) {
-                            fireChannelUnbound(httpUnbindChannel);
-                            httpUnbindFuture.setSuccess();
+                ChannelFuture unbindFuture = transport.unbind();
+                if (unbindFuture.isDone()) {
+                    handleHttpTransportUnbindComplete(httpUnbindChannel, httpUnbindFuture, unbindFuture);
+                }
+                else {
+                    unbindFuture.addListener(new ChannelFutureListener() {
+                        @Override
+                        public void operationComplete(ChannelFuture unbindFuture) throws Exception {
+                            handleHttpTransportUnbindComplete(httpUnbindChannel, httpUnbindFuture, unbindFuture);
                         }
-                        else {
-                            httpUnbindFuture.setFailure(future.getCause());
-                        }
-                    }
-                });
+                    });
+                }
             }
         }
         else {
@@ -159,33 +161,33 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
 
     @Override
     protected void closeRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
-        final HttpServerChannel closeHttpChannel = (HttpServerChannel) evt.getChannel();
-        final ChannelFuture closeHttpFuture = evt.getFuture();
-        boolean wasBound = closeHttpChannel.isBound();
-        if (closeHttpChannel.setClosed()) {
+        final HttpServerChannel httpCloseChannel = (HttpServerChannel) evt.getChannel();
+        final ChannelFuture httpCloseFuture = evt.getFuture();
+        boolean wasBound = httpCloseChannel.isBound();
+        if (httpCloseChannel.setClosed()) {
             if (wasBound) {
                 unbindRequested(pipeline, evt);
             }
 
-            Channel transport = closeHttpChannel.getTransport();
+            Channel transport = httpCloseChannel.getTransport();
             if (transport != null) {
-                transport.close().addListener(new ChannelFutureListener() {
-                    @Override
-                    public void operationComplete(ChannelFuture future) throws Exception {
-                        if (future.isSuccess()) {
-                            fireChannelClosed(closeHttpChannel);
-                            closeHttpFuture.setSuccess();
+                ChannelFuture closeFuture = transport.close();
+                if (closeFuture.isDone()) {
+                    handleHttpTransportCloseComplete(httpCloseChannel, httpCloseFuture, closeFuture);
+                }
+                else {
+                    closeFuture.addListener(new ChannelFutureListener() {
+                        @Override
+                        public void operationComplete(ChannelFuture closeFuture) throws Exception {
+                            handleHttpTransportCloseComplete(httpCloseChannel, httpCloseFuture, closeFuture);
                         }
-                        else {
-                            closeHttpFuture.setFailure(future.getCause());
-                        }
-                    }
-                });
+                    });
+                }
             }
         }
     }
 
-    protected ChannelHandler createParentHandler(HttpServerChannel channel) {
+    private ChannelHandler createParentHandler(HttpServerChannel channel) {
         return new SimpleChannelHandler() {
 
             private final ChannelGroup childChannels = new DefaultChannelGroup();
@@ -217,12 +219,13 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
     }
 
     private static void handleHttpTransportBindComplete(
-            final HttpServerChannel httpBindChannel,
-            final ChannelFuture httpBindFuture,
-            final ChannelAddress httpLocalAddress, ChannelFuture future) {
+            HttpServerChannel httpBindChannel,
+            ChannelFuture httpBindFuture,
+            ChannelAddress httpLocalAddress,
+            ChannelFuture bindFuture) {
 
-        if (future.isSuccess()) {
-            httpBindChannel.setTransport(future.getChannel());
+        if (bindFuture.isSuccess()) {
+            httpBindChannel.setTransport(bindFuture.getChannel());
             httpBindChannel.setLocalAddress(httpLocalAddress);
             httpBindChannel.setBound();
 
@@ -230,7 +233,35 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
             httpBindFuture.setSuccess();
         }
         else {
-            httpBindFuture.setFailure(future.getCause());
+            httpBindFuture.setFailure(bindFuture.getCause());
+        }
+    }
+
+    private static void handleHttpTransportUnbindComplete(
+            HttpServerChannel httpUnbindChannel,
+            ChannelFuture httpUnbindFuture,
+            ChannelFuture unbindFuture) {
+
+        if (unbindFuture.isSuccess()) {
+            fireChannelUnbound(httpUnbindChannel);
+            httpUnbindFuture.setSuccess();
+        }
+        else {
+            httpUnbindFuture.setFailure(unbindFuture.getCause());
+        }
+    }
+
+    private static void handleHttpTransportCloseComplete(
+            HttpServerChannel httpCloseChannel,
+            ChannelFuture httpCloseFuture,
+            ChannelFuture closeFuture) {
+
+        if (closeFuture.isSuccess()) {
+            fireChannelClosed(httpCloseChannel);
+            httpCloseFuture.setSuccess();
+        }
+        else {
+            httpCloseFuture.setFailure(closeFuture.getCause());
         }
     }
 

@@ -51,6 +51,7 @@ import org.kaazing.robot.driver.control.PrepareMessage;
 import org.kaazing.robot.driver.control.PreparedMessage;
 import org.kaazing.robot.driver.control.StartedMessage;
 import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
+import org.kaazing.robot.driver.netty.channel.ChannelAddressFactory;
 import org.kaazing.robot.lang.parser.ScriptParseException;
 
 public class ControlServerHandler extends ControlUpstreamHandler {
@@ -64,8 +65,13 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     private final ChannelFuture channelClosedFuture = Channels.future(null);
 
+    private ChannelAddressFactory addressFactory;
     private BootstrapFactory bootstrapFactory;
     private ClassLoader scriptLoader;
+
+    public void setAddressFactory(ChannelAddressFactory addressFactory) {
+        this.addressFactory = addressFactory;
+    }
 
     public void setBootstrapFactory(BootstrapFactory bootstrapFactory) {
         this.bootstrapFactory = bootstrapFactory;
@@ -113,7 +119,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             scriptNamesWithExtension.add(scriptNameWithExtension);
         }
 
-        robot = new Robot(bootstrapFactory);
+        robot = new Robot(addressFactory, bootstrapFactory);
 
         ChannelFuture prepareFuture;
         try {

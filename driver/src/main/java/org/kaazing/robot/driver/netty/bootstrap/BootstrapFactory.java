@@ -19,6 +19,8 @@
 
 package org.kaazing.robot.driver.netty.bootstrap;
 
+import static java.util.Collections.emptyMap;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +38,7 @@ public final class BootstrapFactory implements ExternalResourceReleasable {
     }
 
     public static BootstrapFactory newBootstrapFactory() {
-        Map<Class<?>, Object> injectables = new HashMap<>();
-        injectables.put(ExecutorServiceFactory.class, ExecutorServiceFactory.newInstance());
+        Map<Class<?>, Object> injectables = emptyMap();
         return newBootstrapFactory(injectables);
     }
 
@@ -55,10 +56,13 @@ public final class BootstrapFactory implements ExternalResourceReleasable {
             }
         }
 
+        ExecutorServiceFactory executorServiceFactory = ExecutorServiceFactory.newInstance();
+
         // inject resources into BootstrapFactorySpi instances
         BootstrapFactory bootstrapFactory = new BootstrapFactory(bootstrapFactories);
         for (BootstrapFactorySpi bootstrapFactorySpi : bootstrapFactories.values()) {
             Utils.inject(bootstrapFactorySpi, BootstrapFactory.class, bootstrapFactory);
+            Utils.inject(bootstrapFactorySpi, ExecutorServiceFactory.class, executorServiceFactory);
             Utils.injectAll(bootstrapFactorySpi, injectables);
         }
 
