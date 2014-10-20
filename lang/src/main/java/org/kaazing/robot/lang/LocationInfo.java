@@ -19,6 +19,8 @@
 
 package org.kaazing.robot.lang;
 
+import static java.lang.String.format;
+
 public final class LocationInfo implements Comparable<LocationInfo> {
     public final int line;
     public final int column;
@@ -35,16 +37,12 @@ public final class LocationInfo implements Comparable<LocationInfo> {
 
     @Override
     public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof LocationInfo) && equals((LocationInfo) obj));
+        return (this == obj) || ((obj instanceof LocationInfo) && equalTo((LocationInfo) obj));
     }
 
     @Override
     public String toString() {
-        return String.format("%d:%d", line, column);
-    }
-
-    private boolean equals(LocationInfo that) {
-        return this.line == that.line && this.column == that.column;
+        return format("%d:%d", line, column);
     }
 
     @Override
@@ -53,9 +51,10 @@ public final class LocationInfo implements Comparable<LocationInfo> {
         final int EQUAL = 0;
         final int MORE = 1;
 
-        if (this.equals(that)) {
-            return 0;
+        if (this.equalTo(that)) {
+            return EQUAL;
         }
+
         if (this.line < that.line) {
             return LESS;
         } else if (this.line > that.line) {
@@ -66,7 +65,7 @@ public final class LocationInfo implements Comparable<LocationInfo> {
             return MORE;
         }
 
-        assert this.equals(that) : "compareTo inconsitant with equal";
+        assert this.equals(that) : "compareTo inconsitant with equals";
         return EQUAL;
     }
 
@@ -74,6 +73,10 @@ public final class LocationInfo implements Comparable<LocationInfo> {
     public boolean isBetween(LocationInfo start, LocationInfo end) {
         assert start.compareTo(end) <= 0 : String.format("end |%s| before start |%s|", end, start);
         return start.compareTo(this) <= 0 && end.compareTo(this) >= 0;
+    }
+
+    private boolean equalTo(LocationInfo that) {
+        return this.line == that.line && this.column == that.column;
     }
 
 }

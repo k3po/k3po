@@ -17,16 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.driver.netty.bootstrap.channel;
+package org.kaazing.robot.driver.netty.bootstrap.bbosh;
 
-import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
+import org.jboss.netty.channel.ChannelConfig;
 
-public abstract class AbstractServerChannelSink<T extends AbstractServerChannel<?>> extends AbstractChannelSink {
-
-    protected BootstrapFactory bootstrapFactory;
-
-    public void setBootstrapFactory(BootstrapFactory bootstrapFactory) {
-        this.bootstrapFactory = bootstrapFactory;
-    }
+public interface BBoshChannelConfig extends ChannelConfig {
 
 }

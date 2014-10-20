@@ -33,6 +33,7 @@ import static org.jboss.netty.channel.Channels.write;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.getHost;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.isContentLengthSet;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.isTransferEncodingChunked;
+import static org.jboss.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.SWITCHING_PROTOCOLS;
 import static org.kaazing.robot.driver.channel.Channels.remoteAddress;
@@ -59,6 +60,7 @@ import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.jboss.netty.handler.codec.http.QueryStringEncoder;
 import org.kaazing.robot.driver.netty.bootstrap.http.HttpChildChannel.HttpReadState;
@@ -137,14 +139,23 @@ public class HttpChildChannelSource extends HttpChannelHandler {
     @Override
     protected void httpMessageReceived(ChannelHandlerContext ctx, MessageEvent e, HttpRequest httpRequest) throws Exception {
 
+        HttpVersion version = httpRequest.getProtocolVersion();
         String host = getHost(httpRequest);
+        if (host == null) {
+            // see RFC-7230 section 5.4 Host
+            HttpResponse httpResponse = new DefaultHttpResponse(version, BAD_REQUEST);
+            ChannelFuture future = future(ctx.getChannel());
+            write(ctx, future, httpResponse);
+            return;
+        }
+
         String uri = httpRequest.getUri();
         URI httpLocation = URI.create(format("http://%s%s", host, uri));
 
         Entry<URI, HttpServerChannel> httpBinding = (host != null) ? httpBindings.floorEntry(httpLocation) : null;
 
         if (httpBinding == null) {
-            HttpResponse httpResponse = new DefaultHttpResponse(httpRequest.getProtocolVersion(), NOT_FOUND);
+            HttpResponse httpResponse = new DefaultHttpResponse(version, NOT_FOUND);
             ChannelFuture future = future(ctx.getChannel());
             write(ctx, future, httpResponse);
             return;
@@ -165,7 +176,7 @@ public class HttpChildChannelSource extends HttpChannelHandler {
         HttpChildChannel httpChildChannel = new HttpChildChannel(parent, factory, pipeline, sink);
         HttpChannelConfig httpChildConfig = httpChildChannel.getConfig();
         httpChildConfig.setMethod(httpRequest.getMethod());
-        httpChildConfig.setVersion(httpRequest.getProtocolVersion());
+        httpChildConfig.setVersion(version);
         httpChildConfig.getReadHeaders().set(httpRequest.headers());
         httpChildConfig.setReadQuery(new QueryStringDecoder(httpRequest.getUri()));
         httpChildConfig.setWriteQuery(new QueryStringEncoder(httpRequest.getUri()));

@@ -90,7 +90,7 @@ public class RobotServer {
         Map<String, Object> options = new HashMap<>();
         // TODO: options.put("tcp.transport", "socks://...");
 
-        ChannelAddressFactory addressFactory = ChannelAddressFactory.newChannelAddressFactory();
+        final ChannelAddressFactory addressFactory = ChannelAddressFactory.newChannelAddressFactory();
         ChannelAddress localAddress = addressFactory.newChannelAddress(controlURI, options);
 
         NioClientBossPool clientBossPool = new NioClientBossPool(newCachedThreadPool(), 1);
@@ -101,6 +101,7 @@ public class RobotServer {
         serverChannelFactory = new NioServerSocketChannelFactory(serverBossPool, sharedWorkerPool);
 
         Map<Class<?>, Object> injectables = new HashMap<Class<?>, Object>();
+        injectables.put(ChannelAddressFactory.class, addressFactory);
         injectables.put(NioClientSocketChannelFactory.class, clientChannelFactory);
         injectables.put(NioServerSocketChannelFactory.class, serverChannelFactory);
 
@@ -128,6 +129,7 @@ public class RobotServer {
                 }
 
                 ControlServerHandler controller = new ControlServerHandler();
+                controller.setAddressFactory(addressFactory);
                 controller.setBootstrapFactory(bootstrapFactory);
                 controller.setScriptLoader(scriptLoader);
                 pipeline.addLast("control.handler", controller);

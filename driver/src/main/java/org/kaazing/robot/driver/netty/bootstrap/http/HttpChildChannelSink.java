@@ -19,6 +19,7 @@
 
 package org.kaazing.robot.driver.netty.bootstrap.http;
 
+import static java.util.Objects.requireNonNull;
 import static org.jboss.netty.buffer.ChannelBuffers.EMPTY_BUFFER;
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.channel.Channels.fireChannelClosed;
@@ -66,7 +67,17 @@ public class HttpChildChannelSink extends AbstractChannelSink {
     private HttpResponse httpBufferedResponse;
 
     public HttpChildChannelSink(Channel transport) {
-        this.transport = transport;
+        this.transport = requireNonNull(transport);
+    }
+
+    @Override
+    public ChannelFuture execute(ChannelPipeline httpPipeline, Runnable task) {
+        ChannelPipeline pipeline = transport.getPipeline();
+        ChannelFuture future = pipeline.execute(task);
+        Channel httpChannel = pipeline.getChannel();
+        ChannelFuture httpFuture = future(httpChannel);
+        chainFutures(future, httpFuture);
+        return httpFuture;
     }
 
     @Override

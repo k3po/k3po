@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.kaazing</groupId>
         <artifactId>robot.parent</artifactId>
-        <version>2.0.0-alpha-1</version>
+        <version>2.0.0-alpha-2</version>
     </parent>
 
     <artifactId>robot.driver</artifactId>
@@ -81,10 +81,17 @@
         <dependency>
             <groupId>org.kaazing</groupId>
             <artifactId>net.api</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.kaazing</groupId>
             <artifactId>net.tcp</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.kaazing</groupId>
+            <artifactId>net.bbosh</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

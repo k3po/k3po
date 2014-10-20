@@ -167,7 +167,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
     private static final MaskingDecoder DEFAULT_READ_UNMASKER = new DefaultReadUnmasker();
 
-    private final ChannelAddressFactory addressFactory = ChannelAddressFactory.newChannelAddressFactory();
+    private final ChannelAddressFactory addressFactory;
     private final BootstrapFactory bootstrapFactory;
 
     public static final class State {
@@ -238,8 +238,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         return state.configuration;
     }
 
-    public GenerateConfigurationVisitor(BootstrapFactory bootstrapFactory) {
+    public GenerateConfigurationVisitor(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory) {
         this.bootstrapFactory = bootstrapFactory;
+        this.addressFactory = addressFactory;
     }
 
     @Override
