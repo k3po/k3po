@@ -294,6 +294,7 @@ public class Robot {
                  * We need to map our progressInfos to streams so that we can create the observed script. After running the
                  * GatherStreamsLocationVisitor our results are in state.results.
                  */
+                List<LocationInfo> progressInfos = new ArrayList<>(Robot.this.progressInfos);
                 final GatherStreamsLocationVisitor.State state = new GatherStreamsLocationVisitor.State(progressInfos,
                         serverLocations);
 
