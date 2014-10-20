@@ -21,6 +21,9 @@ package org.kaazing.robot.driver.netty.bootstrap;
 
 import static org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory.newBootstrapFactory;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
@@ -29,17 +32,21 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
+import org.kaazing.robot.driver.netty.channel.ChannelAddressFactory;
 
 public class ServerBootstrapRule implements TestRule {
 
     private final String transportName;
     private final BootstrapFactory bootstrapFactory;
+    private final ChannelAddressFactory addressFactory;
 
     private ServerBootstrap bootstrap;
 
     public ServerBootstrapRule(String transportName) {
         this.transportName = transportName;
-        this.bootstrapFactory = newBootstrapFactory();
+        this.addressFactory = ChannelAddressFactory.newChannelAddressFactory();
+        Map<Class<?>, Object> options = Collections.<Class<?>, Object>singletonMap(ChannelAddressFactory.class, addressFactory);
+        this.bootstrapFactory = newBootstrapFactory(options);
     }
 
     @Override
@@ -76,4 +83,7 @@ public class ServerBootstrapRule implements TestRule {
         bootstrap.setPipelineFactory(pipelineFactory);
     }
 
+    public ChannelAddressFactory getAddressFactory() {
+        return addressFactory;
+    }
 }

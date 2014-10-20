@@ -38,3 +38,5 @@
 
 org.kaazing.robot.driver.netty.bootstrap.tcp.TcpBootstrapFactorySpi
 org.kaazing.robot.driver.netty.bootstrap.http.HttpBootstrapFactorySpi
+org.kaazing.robot.driver.netty.bootstrap.bbosh.BBoshBootstrapFactorySpi
+

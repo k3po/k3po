@@ -80,6 +80,21 @@ public class HttpClientChannelSink extends AbstractChannelSink {
     }
 
     @Override
+    public ChannelFuture execute(ChannelPipeline httpPipeline, Runnable task) {
+
+        if (transport != null) {
+            ChannelPipeline pipeline = transport.getPipeline();
+            ChannelFuture future = pipeline.execute(task);
+            Channel httpChannel = pipeline.getChannel();
+            ChannelFuture httpFuture = future(httpChannel);
+            chainFutures(future, httpFuture);
+            return httpFuture;
+        }
+
+        return super.execute(httpPipeline, task);
+    }
+
+    @Override
     protected void setInterestOpsRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
         ChannelFuture httpFuture = evt.getFuture();
         HttpClientChannel httpClientChannel = (HttpClientChannel) evt.getChannel();

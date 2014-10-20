@@ -23,10 +23,12 @@ import static org.jboss.netty.channel.Channels.pipeline;
 import static org.jboss.netty.channel.Channels.pipelineFactory;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 import static org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory.newBootstrapFactory;
+import static org.kaazing.robot.driver.netty.channel.ChannelAddressFactory.newChannelAddressFactory;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +61,7 @@ import org.kaazing.robot.driver.behavior.visitor.GenerateConfigurationVisitor;
 import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
 import org.kaazing.robot.driver.netty.bootstrap.ClientBootstrap;
 import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
+import org.kaazing.robot.driver.netty.channel.ChannelAddressFactory;
 import org.kaazing.robot.driver.netty.channel.CompositeChannelFuture;
 import org.kaazing.robot.lang.LocationInfo;
 import org.kaazing.robot.lang.ast.AstScriptNode;
@@ -91,20 +94,32 @@ public class Robot {
     private ChannelFuture preparedFuture;
     private volatile boolean destroyed;
 
+    private final ChannelAddressFactory addressFactory;
     private final BootstrapFactory bootstrapFactory;
     private final boolean releaseBootstrapFactory;
 
+
     // tests
     public Robot() {
-        this(newBootstrapFactory(), true);
+        this(newChannelAddressFactory());
     }
 
-    public Robot(BootstrapFactory bootstrapFactory) {
-        this(bootstrapFactory, false);
+    private Robot(ChannelAddressFactory addressFactory) {
+        this(addressFactory,
+             newBootstrapFactory(Collections.<Class<?>, Object>singletonMap(ChannelAddressFactory.class, addressFactory)), true);
     }
 
-    private Robot(BootstrapFactory bootstrapFactory, boolean releaseBootstrapFactory) {
+    public Robot(ChannelAddressFactory addressFactory, BootstrapFactory bootstrapFactory) {
+        this(addressFactory, bootstrapFactory, false);
+    }
+
+    private Robot(
+            ChannelAddressFactory addressFactory,
+            BootstrapFactory bootstrapFactory,
+            boolean releaseBootstrapFactory) {
+
         this.bootstrapFactory = bootstrapFactory;
+        this.addressFactory = addressFactory;
         this.releaseBootstrapFactory = releaseBootstrapFactory;
         listenForFinishedFuture();
     }
@@ -140,7 +155,7 @@ public class Robot {
             LOGGER.debug("Parsed script:\n" + scriptAST);
         }
 
-        final GenerateConfigurationVisitor visitor = new GenerateConfigurationVisitor(bootstrapFactory);
+        final GenerateConfigurationVisitor visitor = new GenerateConfigurationVisitor(bootstrapFactory, addressFactory);
         configuration = scriptAST.accept(visitor, new GenerateConfigurationVisitor.State());
 
         preparedFuture = bindServers();
