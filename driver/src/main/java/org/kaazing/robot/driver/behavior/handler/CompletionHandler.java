@@ -24,21 +24,12 @@ import static org.kaazing.robot.driver.netty.channel.ChannelFutureListeners.chai
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.kaazing.robot.driver.behavior.handler.prepare.DownstreamPreparationEvent;
 import org.kaazing.robot.driver.behavior.handler.prepare.PreparationEvent;
-import org.kaazing.robot.lang.LocationInfo;
 
 public class CompletionHandler extends ExecutionHandler {
-
-    private LocationInfo progressInfo;
-
-    public LocationInfo getProgressInfo() {
-        return progressInfo;
-    }
 
     @Override
     public void prepareRequested(final ChannelHandlerContext ctx, final PreparationEvent evt) {
@@ -50,28 +41,6 @@ public class CompletionHandler extends ExecutionHandler {
         ChannelFuture pipelineFuture = getPipelineFuture();
         ChannelFuture handlerFuture = getHandlerFuture();
 
-        /*
-         * I don't like this because it depends on the order the listeners fire
-         * which I don't think we can guarentee. In particular this assumes the
-         * listener created in AbstractPreparationEvent is fired before this
-         * one. We also assume that this listener fires before the next listener
-         * created. The next listener sets the completion handlers future to
-         * success and we have listeners on that in order to extract the
-         * progress info
-         */
-        pipelineFuture.addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
-                progressInfo = evt.getProgressInfo();
-                if (progressInfo == null) {
-                    progressInfo = getStreamStartLocation();
-                }
-                // Need to let the last event logger know we are done so we don't pick up the wrong event.
-                ChannelPipeline pipeline = ctx.getPipeline();
-                LogLastEventHandler logHandler = pipeline.get(LogLastEventHandler.class);
-                logHandler.setDone();
-            }
-        });
         pipelineFuture.addListener(chainedFuture(handlerFuture));
 
         ChannelFuture prepareFuture = evt.getFuture();
@@ -79,19 +48,6 @@ public class CompletionHandler extends ExecutionHandler {
 
         Channel channel = evt.getChannel();
         ctx.sendDownstream(new DownstreamPreparationEvent(channel, succeededFuture(channel)));
-
-        /*
-         * We were doing this before. But the problem was that the other
-         * listener on this future used to extract the progress info in
-         * ControlServerHandler was firing first ... so the progressInfo was
-         * null handlerFuture.addListener(new ChannelFutureListener() {
-         *
-         * @Override public void operationComplete(ChannelFuture future) throws
-         * Exception { progressInfo = evt.getProgressInfo(); if(
-         * logger.isTraceEnabled() ) { logger.trace(
-         * "completion handler complete. Location info is " + progressInfo ); }
-         * } });
-         */
     }
 
     @Override

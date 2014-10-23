@@ -19,7 +19,9 @@
 
 package org.kaazing.robot.lang.ast.matcher;
 
-public abstract class AstValueMatcher {
+import org.kaazing.robot.lang.ast.AstRegion;
+
+public abstract class AstValueMatcher extends AstRegion {
 
     public abstract <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception;
 

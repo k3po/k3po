@@ -42,6 +42,7 @@ import org.kaazing.robot.lang.ast.AstDisconnectedNode;
 import org.kaazing.robot.lang.ast.AstFlushNode;
 import org.kaazing.robot.lang.ast.AstNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
+import org.kaazing.robot.lang.ast.AstPropertyNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstReadConfigNode;
@@ -68,9 +69,13 @@ public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBa
     }
 
     @Override
-    public Void visit(AstScriptNode node, State state) throws Exception {
+    public Void visit(AstScriptNode scriptNode, State state) throws Exception {
 
-        for (AstStreamNode stream : node.getStreams()) {
+        for (AstPropertyNode property : scriptNode.getProperties()) {
+            property.accept(this, state);
+        }
+
+        for (AstStreamNode stream : scriptNode.getStreams()) {
             stream.accept(this, state);
         }
 
@@ -86,6 +91,11 @@ public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBa
                     awaiterName));
         }
 
+        return null;
+    }
+
+    @Override
+    public Void visit(AstPropertyNode propertyNode, State parameter) throws Exception {
         return null;
     }
 

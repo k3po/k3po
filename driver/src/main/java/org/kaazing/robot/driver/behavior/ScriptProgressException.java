@@ -17,27 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.driver.behavior.handler.codec;
+package org.kaazing.robot.driver.behavior;
 
-import org.kaazing.robot.driver.RobotException;
+import static java.util.Objects.requireNonNull;
+
+import org.kaazing.robot.lang.RegionInfo;
 
 @SuppressWarnings("serial")
-public class MessageMismatchException extends RobotException {
+public class ScriptProgressException extends Exception {
 
-    protected Object expected;
-    protected Object observed;
+    private final RegionInfo regionInfo;
 
-    public MessageMismatchException(String msg, Object expected, Object observed) {
-        super(msg);
-        this.expected = expected;
-        this.observed = observed;
+    public ScriptProgressException(RegionInfo regionInfo, String message) {
+        super(message);
+        this.regionInfo = requireNonNull(regionInfo);
     }
 
-    public Object getExpected() {
-        return expected;
-    }
-
-    public Object getObserved() {
-        return observed;
+    public RegionInfo getRegionInfo() {
+        return regionInfo;
     }
 }

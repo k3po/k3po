@@ -44,7 +44,6 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.robot.driver.Robot;
-import org.kaazing.robot.driver.behavior.RobotCompletionFuture;
 import org.kaazing.robot.driver.control.ErrorMessage;
 import org.kaazing.robot.driver.control.FinishedMessage;
 import org.kaazing.robot.driver.control.PrepareMessage;
@@ -61,7 +60,6 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(ControlServerHandler.class);
 
     private Robot robot;
-    private RobotCompletionFuture scriptDoneFuture;
 
     private final ChannelFuture channelClosedFuture = Channels.future(null);
 
@@ -204,33 +202,35 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             return;
         }
 
-        scriptDoneFuture = robot.getScriptCompleteFuture();
+        ChannelFuture finishedFuture = robot.finish();
 
-        scriptDoneFuture.addListener(new ChannelFutureListener() {
+        finishedFuture.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(final ChannelFuture f) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Script completed");
                 }
 
-                sendFinishedMessage(ctx, scriptDoneFuture);
+                sendFinishedMessage(ctx);
             }
         });
     }
 
     @Override
-    public void abortReceived(ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
+    public void abortReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
         if (logger.isDebugEnabled()) {
             logger.debug("ABORT");
         }
-        robot.abort();
-        if (robot != null && !robot.getStartedFuture().isDone()) {
-            sendFinishedMessage(ctx, robot.getScriptCompleteFuture());
-        }
+        robot.abort().addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                sendFinishedMessage(ctx);
+            }
+        });
     }
 
-    private void sendFinishedMessage(ChannelHandlerContext ctx, RobotCompletionFuture scriptDoneFuture) {
-        String observedScript = scriptDoneFuture.getObservedScript();
+    private void sendFinishedMessage(ChannelHandlerContext ctx) {
+        String observedScript = robot.getObservedScript();
 
         FinishedMessage finished = new FinishedMessage();
         finished.setScript(observedScript);

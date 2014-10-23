@@ -20,6 +20,7 @@
 package org.kaazing.robot.driver.behavior.handler.codec;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.kaazing.robot.lang.RegionInfo;
 import org.kaazing.robot.lang.el.ExpressionContext;
 
 public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
@@ -28,13 +29,12 @@ public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
     private final ExpressionContext environment;
     private final String captureName;
 
-    public ReadFixedLengthBytesDecoder(int length) {
-        this.length = length;
-        environment = null;
-        captureName = null;
+    public ReadFixedLengthBytesDecoder(RegionInfo regionInfo, int length) {
+        this(regionInfo, length, null, null);
     }
 
-    public ReadFixedLengthBytesDecoder(int length, ExpressionContext environment, String captureName) {
+    public ReadFixedLengthBytesDecoder(RegionInfo regionInfo, int length, ExpressionContext environment, String captureName) {
+        super(regionInfo);
         this.length = length;
         this.environment = environment;
         this.captureName = captureName;

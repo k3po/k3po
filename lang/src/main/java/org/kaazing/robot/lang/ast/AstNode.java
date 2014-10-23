@@ -19,11 +19,13 @@
 
 package org.kaazing.robot.lang.ast;
 
-import static org.kaazing.robot.lang.ast.util.AstUtil.equivalent;
+import static java.lang.String.format;
+
+import java.util.Objects;
 
 import org.kaazing.robot.lang.LocationInfo;
 
-public abstract class AstNode {
+public abstract class AstNode extends AstRegion {
 
     private LocationInfo locationInfo;
 
@@ -52,16 +54,16 @@ public abstract class AstNode {
     }
 
     protected int hashTo() {
-        return (locationInfo != null) ? locationInfo.hashCode() : 0;
+        return Objects.hash(locationInfo);
     }
 
     protected final boolean equalTo(AstNode that) {
-        return equivalent(this.locationInfo, that.locationInfo);
+        return Objects.equals(this.locationInfo, that.locationInfo);
     }
 
     protected void formatNode(StringBuilder sb) {
         if (locationInfo != null) {
-            sb.append(String.format("[%03d:%02d] ", locationInfo.line, locationInfo.column));
+            sb.append(format("[%03d:%02d] ", locationInfo.line, locationInfo.column));
         }
         else {
             sb.append("         ");
@@ -70,6 +72,7 @@ public abstract class AstNode {
 
     public interface Visitor<R, P> {
         R visit(AstScriptNode node, P parameter) throws Exception;
+        R visit(AstPropertyNode node, P parameter) throws Exception;
         R visit(AstAcceptNode node, P parameter) throws Exception;
         R visit(AstAcceptableNode node, P parameter) throws Exception;
         R visit(AstConnectNode node, P parameter) throws Exception;

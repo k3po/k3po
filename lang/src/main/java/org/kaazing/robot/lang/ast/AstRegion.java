@@ -17,28 +17,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.driver.behavior.handler.codec;
+package org.kaazing.robot.lang.ast;
 
-import static org.kaazing.robot.lang.RegionInfo.newSequential;
-
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.kaazing.robot.lang.RegionInfo;
-import org.kaazing.robot.lang.el.ExpressionContext;
 
-public class ReadByteLengthBytesDecoder extends ReadFixedLengthBytesDecoder<Byte> {
+public abstract class AstRegion {
 
-    public ReadByteLengthBytesDecoder(RegionInfo regionInfo, ExpressionContext environment, String captureName) {
-        super(regionInfo, Byte.SIZE / Byte.SIZE, environment, captureName);
+    private RegionInfo regionInfo;
+
+    public RegionInfo getRegionInfo() {
+        return regionInfo;
     }
 
-    // Read the data into a Byte
-    @Override
-    public Byte readBuffer(ChannelBuffer buffer) {
-        return buffer.readByte();
+    public void setRegionInfo(RegionInfo regionInfo) {
+        this.regionInfo = regionInfo;
     }
 
-    // unit tests
-    ReadByteLengthBytesDecoder(ExpressionContext environment, String captureName) {
-        this(newSequential(0, 0), environment, captureName);
-    }
 }

@@ -19,31 +19,29 @@
 
 package org.kaazing.robot.driver;
 
+import static java.lang.String.format;
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.jboss.netty.channel.Channels.pipelineFactory;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 import static org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory.newBootstrapFactory;
 import static org.kaazing.robot.driver.netty.channel.ChannelAddressFactory.newChannelAddressFactory;
+import static org.kaazing.robot.lang.RegionInfo.newSequential;
 
 import java.io.ByteArrayInputStream;
+import java.net.SocketAddress;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandler;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ChildChannelStateEvent;
-import org.jboss.netty.channel.DefaultChannelFuture;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.group.ChannelGroupFuture;
@@ -53,19 +51,17 @@ import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.robot.driver.behavior.Configuration;
-import org.kaazing.robot.driver.behavior.PlayBackScript;
-import org.kaazing.robot.driver.behavior.RobotCompletionFuture;
-import org.kaazing.robot.driver.behavior.RobotCompletionFutureImpl;
+import org.kaazing.robot.driver.behavior.ScriptProgress;
+import org.kaazing.robot.driver.behavior.ScriptProgressException;
 import org.kaazing.robot.driver.behavior.handler.CompletionHandler;
 import org.kaazing.robot.driver.behavior.parser.Parser;
-import org.kaazing.robot.driver.behavior.visitor.GatherStreamsLocationVisitor;
 import org.kaazing.robot.driver.behavior.visitor.GenerateConfigurationVisitor;
 import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
 import org.kaazing.robot.driver.netty.bootstrap.ClientBootstrap;
 import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
 import org.kaazing.robot.driver.netty.channel.ChannelAddressFactory;
 import org.kaazing.robot.driver.netty.channel.CompositeChannelFuture;
-import org.kaazing.robot.lang.LocationInfo;
+import org.kaazing.robot.lang.RegionInfo;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.parser.ScriptParser;
 
@@ -73,33 +69,28 @@ public class Robot {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(Robot.class);
 
-    /*
-     * A list of completion futures that will indicate that the script is completed. Each stream except for a AcceptNode has
-     * a completion handler. The completion handler's handlerFuture is the complete future
-     */
-    private final List<ChannelFuture> completionFutures = new ArrayList<>();
-    private final List<LocationInfo> progressInfos = new CopyOnWriteArrayList<>();
-    private final Map<LocationInfo, Object> serverLocations = new HashMap<>();
     private final List<ChannelFuture> bindFutures = new ArrayList<>();
     private final List<ChannelFuture> connectFutures = new ArrayList<>();
 
     private final Channel channel = new DefaultLocalClientChannelFactory().newChannel(pipeline(new SimpleChannelHandler()));
     private final ChannelFuture startedFuture = Channels.future(channel);
-    private final RobotCompletionFutureImpl finishedFuture = new RobotCompletionFutureImpl(channel, true);
+    private final ChannelFuture abortedFuture = Channels.future(channel);
+    private final ChannelFuture finishedFuture = Channels.future(channel);
+
     private final DefaultChannelGroup serverChannels = new DefaultChannelGroup();
     private final DefaultChannelGroup clientChannels = new DefaultChannelGroup();
-    private final Map<LocationInfo, Throwable> failedCauses = new ConcurrentHashMap<>();
 
-    private String expectedScript;
     private Configuration configuration;
-    private AstScriptNode scriptAST;
     private ChannelFuture preparedFuture;
     private volatile boolean destroyed;
 
     private final ChannelAddressFactory addressFactory;
     private final BootstrapFactory bootstrapFactory;
-    private final boolean releaseBootstrapFactory;
+    private final boolean createdBootstrapFactory;
 
+    private ScriptProgress progress;
+
+    private final ChannelHandler closeOnExceptionHandler = new CloseOnExceptionHandler();
 
     // tests
     public Robot() {
@@ -122,12 +113,11 @@ public class Robot {
 
         this.bootstrapFactory = bootstrapFactory;
         this.addressFactory = addressFactory;
-        this.releaseBootstrapFactory = releaseBootstrapFactory;
-        listenForFinishedFuture();
-    }
+        this.createdBootstrapFactory = releaseBootstrapFactory;
 
-    public RobotCompletionFuture getScriptCompleteFuture() {
-        return finishedFuture;
+        ChannelFutureListener stopConfigurationListener = createStopConfigurationListener();
+        this.abortedFuture.addListener(stopConfigurationListener);
+        this.finishedFuture.addListener(stopConfigurationListener);
     }
 
     public ChannelFuture getPreparedFuture() {
@@ -138,72 +128,39 @@ public class Robot {
         return startedFuture;
     }
 
-    public ChannelFuture prepare(String script) throws Exception {
+    public ChannelFuture prepare(String expectedScript) throws Exception {
 
         if (preparedFuture != null) {
             throw new IllegalStateException("Script already prepared");
         }
-
-        this.expectedScript = script;
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Expected script:\n" + expectedScript);
         }
 
         final ScriptParser parser = new Parser();
-        scriptAST = parser.parse(new ByteArrayInputStream(expectedScript.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(expectedScript.getBytes(UTF_8)));
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Parsed script:\n" + scriptAST);
         }
 
+        RegionInfo scriptInfo = scriptAST.getRegionInfo();
+        progress = new ScriptProgress(scriptInfo, expectedScript);
+
         final GenerateConfigurationVisitor visitor = new GenerateConfigurationVisitor(bootstrapFactory, addressFactory);
         configuration = scriptAST.accept(visitor, new GenerateConfigurationVisitor.State());
 
-        preparedFuture = bindServers();
-
-        /* Iterate over the set of completion handlers. */
-        for (final CompletionHandler h : configuration.getCompletionHandlers()) {
-            /* Add the completion future */
-            final ChannelFuture f = h.getHandlerFuture();
-            completionFutures.add(f);
-
-            /*
-             * Listen for each completion future and grab its location info.
-             * This is the last command or event (not implicit) that
-             * succeeds
-             */
-            f.addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(final ChannelFuture future) throws Exception {
-                    LocationInfo location = h.getProgressInfo();
-                    /*
-                     * An accept or connect that never connected will have a
-                     * null location. Don't include these.
-                     */
-                    if (location != null) {
-                        progressInfos.add(location);
-                    }
-
-                    Throwable cause = future.getCause();
-                    if (cause != null) {
-                        failedCauses.put(h.getStreamStartLocation(), cause);
-                    }
-                }
-            });
-        }
-
-        // We start listening before start because one can abort before start.
-        listenForScriptCompletion();
+        preparedFuture = prepareConfiguration();
 
         return preparedFuture;
     }
 
     public ChannelFuture prepareAndStart(String script) throws Exception {
-        ChannelFuture prepareFuture = prepare(script);
-        prepareFuture.addListener(new ChannelFutureListener() {
+        ChannelFuture preparedFuture = prepare(script);
+        preparedFuture.addListener(new ChannelFutureListener() {
             @Override
-            public void operationComplete(final ChannelFuture future) throws Exception {
+            public void operationComplete(ChannelFuture future) throws Exception {
                 start();
             }
         });
@@ -218,37 +175,32 @@ public class Robot {
             throw new IllegalStateException("Script has already been started");
         }
 
-        /* Connect to any clients */
-        for (final ClientBootstrap client : configuration.getClientBootstraps()) {
-
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("[id:           ] connect " + client.getOption("remoteAddress"));
+        // ensure prepare has completed before start can progress
+        preparedFuture.addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                startConfiguration();
+                startedFuture.setSuccess();
             }
+        });
 
-            ChannelFuture connectFuture = client.connect();
-            connectFutures.add(connectFuture);
-            clientChannels.add(connectFuture.getChannel());
-        }
-
-        /*
-         * If we have no completion futures it means that there was an error or
-         * otherwise we have the null script
-         */
-        if (completionFutures.isEmpty() && !scriptAST.toString().equals("")) {
-            throw new RobotException("No Completion Futures exists");
-        }
-
-        startedFuture.setSuccess();
         return startedFuture;
     }
 
-    public RobotCompletionFuture abort() {
+    public ChannelFuture abort() {
 
-        if (!finishedFuture.isDone()) {
-            finishedFuture.cancel();
-        }
+        abortedFuture.setSuccess();
 
         return finishedFuture;
+    }
+
+    public ChannelFuture finish() {
+
+        return finishedFuture;
+    }
+
+    public String getObservedScript() {
+        return (progress != null) ? progress.getObservedScript() : null;
     }
 
     public boolean isDestroyed() {
@@ -263,8 +215,9 @@ public class Robot {
 
         abort();
 
-        if (releaseBootstrapFactory) {
+        if (createdBootstrapFactory) {
             try {
+                bootstrapFactory.shutdown();
                 bootstrapFactory.releaseExternalResources();
             }
             catch (Exception e) {
@@ -278,168 +231,34 @@ public class Robot {
         return destroyed = true;
     }
 
-    private void listenForScriptCompletion() {
-        /*
-         * OK. Now listen for the set of all completion futures so that we can
-         * tell the client when we are done
-         */
+    private ChannelFuture prepareConfiguration() {
+
+        ChannelFuture prepareAllFuture = prepareServers();
+
+        List<ChannelFuture> completionFutures = new ArrayList<>();
+        ChannelFutureListener streamCompletionListener = createStreamCompletionListener();
+        for (ChannelPipeline pipeline : configuration.getClientAndServerPipelines()) {
+            CompletionHandler completionHandler = pipeline.get(CompletionHandler.class);
+            ChannelFuture completionFuture = completionHandler.getHandlerFuture();
+            completionFutures.add(completionFuture);
+            completionFuture.addListener(streamCompletionListener);
+        }
+
         ChannelFuture executionFuture = new CompositeChannelFuture<>(channel, completionFutures);
+        ChannelFutureListener executionListener = createScriptCompletionListener();
+        executionFuture.addListener(executionListener);
 
-        executionFuture.addListener(new ChannelFutureListener() {
-
-            @Override
-            public void operationComplete(final ChannelFuture future) throws Exception {
-
-                /*
-                 * We need to map our progressInfos to streams so that we can create the observed script. After running the
-                 * GatherStreamsLocationVisitor our results are in state.results.
-                 */
-                List<LocationInfo> progressInfos = new ArrayList<>(Robot.this.progressInfos);
-                final GatherStreamsLocationVisitor.State state = new GatherStreamsLocationVisitor.State(progressInfos,
-                        serverLocations);
-
-                scriptAST.accept(new GatherStreamsLocationVisitor(), state);
-
-                // Create observed Script
-                PlayBackScript o = new PlayBackScript(expectedScript, state.results, failedCauses);
-                String observedScript = o.createPlayBackScript();
-
-                detachAllPipelines();
-
-                // Cancel any pending binds and connects
-                for (ChannelFuture f : bindFutures) {
-                    f.cancel();
-                }
-                for (ChannelFuture f : connectFutures) {
-                    f.cancel();
-                }
-
-                // Close server and client channels
-                closeChannels();
-
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Observed script:\n" + observedScript);
-                }
-
-                if (finishedFuture.isDone()) {
-                    finishedFuture.setExpectedScript(expectedScript);
-                    finishedFuture.setObservedScript(observedScript);
-                } else {
-                    finishedFuture.setSuccess(observedScript, expectedScript);
-                }
-            }
-
-        });
+        return prepareAllFuture;
     }
 
-    // If we are canceling we have to cancel the script execution.
-    // And then ... in all cases we need to release external resources.
-    private void listenForFinishedFuture() {
-        finishedFuture.addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(final ChannelFuture future) throws Exception {
-
-                if (future.isCancelled()) {
-                    if (configuration != null) {
-
-                        for (final CompletionHandler h : configuration.getCompletionHandlers()) {
-
-                            // Cancel the completion handler
-                            ChannelFuture cancelFuture = h.cancel();
-
-                            boolean isDefaultChannelFuture = cancelFuture instanceof DefaultChannelFuture;
-
-                            // Edge case. Normally the cancel occurs immediately. Only when the pipeline is not
-                            // prepared (preperation event) does it not.
-                            // Since we are aborting we don't care that we are blocking in the io thread.
-                            if (isDefaultChannelFuture) {
-                                DefaultChannelFuture.setUseDeadLockChecker(false);
-                            }
-
-                            boolean isCancelled = cancelFuture.awaitUninterruptibly(500);
-
-                            if (isDefaultChannelFuture) {
-                                DefaultChannelFuture.setUseDeadLockChecker(true);
-                            }
-
-                            if (!isCancelled) {
-                                // Force the completion handler future to success if it does not cancel in half a second
-                                h.getHandlerFuture().setSuccess();
-                            }
-                        }
-                    } else {
-                        // Then we just get the empty script
-                        LOGGER.debug("Abort received but script not prepared");
-                        finishedFuture.setObservedScript("");
-                    }
-                }
-            }
-        });
-    }
-
-    private void detachAllPipelines() {
-
-        // We need some kind of handler to avoid warnings.
-        ChannelHandler finalHandler = new SimpleChannelHandler() {
-            @Override
-            public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-                Channel channel = ctx.getChannel();
-                channel.close();
-            }
-
-        };
-
-        /*
-         * Set the pipelines to empty just in case some one trys to connect before we close the server channel Or just in
-         * case one of the client bootstraps havent connected yet ... dont think that is poosible
-         */
-        for (ServerBootstrap bootstrap : configuration.getServerBootstraps()) {
-            bootstrap.setPipelineFactory(pipelineFactory(pipeline(finalHandler)));
-        }
-        for (ClientBootstrap bootstrap : configuration.getClientBootstraps()) {
-            bootstrap.setPipelineFactory(pipelineFactory(pipeline(finalHandler)));
-        }
-        /*
-         * Remove all the handlers from any existing channels. The problem we are solving here is that when a script is
-         * aborted we set the pipeline future of the completion handler to success. However, this does not cause earlier
-         * pipeline futures to succeed. As such if there are any barriers. A subsequent close will end up getting queued and
-         * will never end. Another option would be when be to cancel the pipeline future. And make that cancel on a composite
-         * cancel all its containing futures. However, it does not seem right to do that for cancel, but not setSuccess and
-         * setFailure. But maybe we can do that too. But ... removing all the handlers seems cleaner anyway. Why have events
-         * flowing through the system do to us closing the channels when the script is already considered complete.
-         */
-        for (Channel c : clientChannels) {
-            ChannelPipeline pipeline = c.getPipeline();
-            for (ChannelHandler handler : pipeline.toMap().values()) {
-                pipeline.remove(handler);
-            }
-            pipeline.addLast("SCRIPTDONEHANDLER", finalHandler);
-        }
-    }
-
-    private void closeChannels() {
-        final ChannelGroupFuture closeFuture = serverChannels.close();
-        closeFuture.addListener(new ChannelGroupFutureListener() {
-            @Override
-            public void operationComplete(final ChannelGroupFuture future) {
-                clientChannels.close();
-            }
-        });
-    }
-
-    private ChannelFuture bindServers() {
+    private ChannelFuture prepareServers() {
 
         /* Accept's ... Robot acting as a server */
-        for (final ServerBootstrap server : configuration.getServerBootstraps()) {
+        for (ServerBootstrap server : configuration.getServerBootstraps()) {
 
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Binding to address " + server.getOption("localAddress"));
             }
-
-            final LocationInfo location = (LocationInfo) server.getOption("locationInfo");
-
-            assert !serverLocations.containsKey(location) : "There is already a location " + location
-                    + " for this server " + server.getOption("localAddress");
 
             /* Keep track of the client channels */
             server.setParentHandler(new SimpleChannelHandler() {
@@ -466,39 +285,10 @@ public class Robot {
             bindFutures.add(bindFuture);
 
             // Listen for the bindFuture.
-            bindFuture.addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(final ChannelFuture future) throws Exception {
-
-                    final boolean isDebugEnabled = LOGGER.isDebugEnabled();
-
-                    if (future.isSuccess()) {
-                        if (isDebugEnabled) {
-                            LOGGER.debug("Successfully bound to " + server.getOption("localAddress"));
-                        }
-                        // Add to our list of serverLocations ... which contain the locationInfo's of successfully bound
-                        // server channels
-                        serverLocations.put((LocationInfo) server.getOption("locationInfo"), null);
-
-                    } else {
-                        Throwable cause = future.getCause();
-                        /*
-                         * Grab the set of completion handlers for the server. This is the set of completion futures for the
-                         * Accept stream.
-                         */
-                        @SuppressWarnings("unchecked")
-                        final Collection<ChannelFuture> serverCompletionFutures =
-                                (Collection<ChannelFuture>) server.getOption("completionFutures");
-
-                        /* Set all the futures to fail. If we couldn't bind */
-                        for (ChannelFuture f : serverCompletionFutures) {
-                            f.setFailure(cause);
-                        }
-                    }
-
-                }
-            });
+            RegionInfo regionInfo = (RegionInfo) server.getOption("regionInfo");
+            bindFuture.addListener(createBindCompleteListener(regionInfo));
         }
+
         // What should prepared mean ... server channels have all completed binding or just that they started.
         // Initially I was thinking that it should be when they are done. But I'm not so sure.
         // In that case what should happen if a subset of the binds fail and a subset succeed? What should happen if they all
@@ -506,6 +296,211 @@ public class Robot {
         // the accept lines. This is why I choose to return a successful future rather than some composite of the bind
         // futures.
         return Channels.succeededFuture(channel);
+    }
+
+    private void startConfiguration() {
+        /* Connect to any clients */
+        for (ClientBootstrap client : configuration.getClientBootstraps()) {
+
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("[id:           ] connect " + client.getOption("remoteAddress"));
+            }
+
+            final RegionInfo regionInfo = (RegionInfo) client.getOption("regionInfo");
+            ChannelFuture connectFuture = client.connect();
+            connectFutures.add(connectFuture);
+            clientChannels.add(connectFuture.getChannel());
+            connectFuture.addListener(createConnectCompleteListener(regionInfo));
+        }
+    }
+
+    private void stopConfiguration() {
+
+        if (configuration == null) {
+            // abort received but script not prepared, therefore entire script failed
+            if (progress == null) {
+                progress = new ScriptProgress(newSequential(0, 0), "");
+            }
+            RegionInfo scriptInfo = progress.getScriptInfo();
+            progress.addScriptFailure(scriptInfo);
+        }
+        else {
+            // stopping the configuration will implicitly trigger the script complete listener
+            // to handle incomplete script that is being aborted by canceling the finish future
+
+            // clear out the pipelines for new connections to avoid impacting the observed script
+            for (ServerBootstrap server : configuration.getServerBootstraps()) {
+                server.setPipelineFactory(pipelineFactory(pipeline(closeOnExceptionHandler)));
+            }
+            for (ClientBootstrap bootstrap : configuration.getClientBootstraps()) {
+                bootstrap.setPipelineFactory(pipelineFactory(pipeline(closeOnExceptionHandler)));
+            }
+
+            // remove each handler from the configuration pipelines
+            // this will trigger failures for any handlers on a pipeline for an incomplete stream
+            // including pipelines not yet associated with any channel
+            for (ChannelPipeline pipeline : configuration.getClientAndServerPipelines()) {
+                stopStream(pipeline);
+            }
+
+            // cancel any pending binds and connects
+            for (ChannelFuture bindFuture : bindFutures) {
+                bindFuture.cancel();
+            }
+
+            for (ChannelFuture connectFuture : connectFutures) {
+                connectFuture.cancel();
+            }
+
+            // close server and client channels
+            final ChannelGroupFuture closeFuture = serverChannels.close();
+            closeFuture.addListener(new ChannelGroupFutureListener() {
+                @Override
+                public void operationComplete(final ChannelGroupFuture future) {
+                    clientChannels.close();
+                }
+            });
+        }
+    }
+
+    private void stopStream(final ChannelPipeline pipeline) {
+        if (pipeline.isAttached()) {
+
+            // avoid race between pipeline clean up and channel events on same pipeline
+            // by executing the pipeline clean up on the I/O worker thread
+            pipeline.execute(new Runnable() {
+                @Override
+                public void run() {
+                    stopStreamAligned(pipeline);
+                }
+
+            });
+        }
+        else {
+            // no race if not attached
+            stopStreamAligned(pipeline);
+        }
+    }
+
+    private void stopStreamAligned(final ChannelPipeline pipeline) {
+        for (ChannelHandler handler : pipeline.toMap().values()) {
+            // note: removing this handler can trigger script completion
+            //       which in turn can re-attempt to stop this pipeline
+            pipeline.remove(handler);
+        }
+
+        // non-empty pipeline required to avoid warnings
+        if (pipeline.getContext(closeOnExceptionHandler) == null) {
+            pipeline.addLast("closeOnException", closeOnExceptionHandler);
+        }
+    }
+
+    private ChannelFutureListener createBindCompleteListener(final RegionInfo regionInfo) {
+        return new ChannelFutureListener() {
+            @Override
+            public void operationComplete(final ChannelFuture bindFuture) throws Exception {
+
+                if (bindFuture.isSuccess()) {
+                    if (LOGGER.isDebugEnabled()) {
+                        Channel boundChannel = bindFuture.getChannel();
+                        SocketAddress localAddress = boundChannel.getLocalAddress();
+                        LOGGER.debug("Successfully bound to " + localAddress);
+                    }
+                } else {
+                    Throwable cause = bindFuture.getCause();
+                    String message = format("accept failed: %s", cause.getMessage());
+                    progress.addScriptFailure(regionInfo, message);
+
+                    // fail each pipeline that required this bind to succeed
+                    List<ChannelPipeline> acceptedPipelines = configuration.getServerPipelines(regionInfo);
+                    for (ChannelPipeline acceptedPipeline : acceptedPipelines) {
+                        stopStream(acceptedPipeline);
+                    }
+                }
+
+            }
+        };
+    }
+
+    private ChannelFutureListener createConnectCompleteListener(final RegionInfo regionInfo) {
+        return new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture connectFuture) throws Exception {
+                if (connectFuture.isCancelled()) {
+                    progress.addScriptFailure(regionInfo, "connect failed");
+                }
+                else if (!connectFuture.isSuccess()) {
+                    Throwable cause = connectFuture.getCause();
+                    String message = format("connect failed: %s", cause.getMessage());
+                    progress.addScriptFailure(regionInfo, message);
+                }
+            }
+        };
+    }
+
+    private ChannelFutureListener createStreamCompletionListener() {
+        return new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture completionFuture) throws Exception {
+                if (!completionFuture.isSuccess()) {
+                    Throwable cause = completionFuture.getCause();
+                    if (cause instanceof ScriptProgressException) {
+                        ScriptProgressException exception = (ScriptProgressException) cause;
+                        progress.addScriptFailure(exception.getRegionInfo(), exception.getMessage());
+                    }
+                    else {
+                        LOGGER.warn("Unexpected exception", cause);
+                    }
+                }
+            }
+        };
+    }
+
+    private ChannelFutureListener createScriptCompletionListener() {
+        ChannelFutureListener executionListener = new ChannelFutureListener() {
+
+            @Override
+            public void operationComplete(final ChannelFuture future) throws Exception {
+
+                if (LOGGER.isDebugEnabled()) {
+                    // detect observed script
+                    String observedScript = progress.getObservedScript();
+                    LOGGER.debug("Observed script:\n" + observedScript);
+                }
+
+                if (abortedFuture.isDone()) {
+                    // abort complete, trigger finished future
+                    finishedFuture.setSuccess();
+                }
+                else {
+                    // execution complete, trigger finished future
+                    finishedFuture.setSuccess();
+                }
+            }
+
+        };
+
+        return executionListener;
+    }
+
+    private ChannelFutureListener createStopConfigurationListener() {
+        return new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                stopConfiguration();
+            }
+        };
+    }
+
+    @Sharable
+    private static final class CloseOnExceptionHandler extends SimpleChannelHandler {
+
+        @Override
+        public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+            // close channel and avoid warning logged by default exceptionCaught implementation
+            Channel channel = ctx.getChannel();
+            channel.close();
+        }
     }
 
 }

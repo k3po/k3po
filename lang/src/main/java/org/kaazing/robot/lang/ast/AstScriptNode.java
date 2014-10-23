@@ -26,7 +26,16 @@ import java.util.List;
 
 public class AstScriptNode extends AstNode {
 
+    private List<AstPropertyNode> properties;
     private List<AstStreamNode> streams;
+
+    public List<AstPropertyNode> getProperties() {
+        if (properties == null) {
+            properties = new LinkedList<AstPropertyNode>();
+        }
+
+        return properties;
+    }
 
     public List<AstStreamNode> getStreams() {
         if (streams == null) {
@@ -65,6 +74,11 @@ public class AstScriptNode extends AstNode {
 
     @Override
     protected void formatNode(StringBuilder sb) {
+        if (properties != null) {
+            for (AstPropertyNode property : properties) {
+                property.formatNode(sb);
+            }
+        }
         if (streams != null) {
             for (AstStreamNode stream : streams) {
                 stream.formatNode(sb);

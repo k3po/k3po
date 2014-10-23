@@ -36,6 +36,7 @@ import org.kaazing.robot.lang.ast.AstDisconnectedNode;
 import org.kaazing.robot.lang.ast.AstFlushNode;
 import org.kaazing.robot.lang.ast.AstNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
+import org.kaazing.robot.lang.ast.AstPropertyNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstReadConfigNode;
@@ -71,7 +72,9 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     public AstScriptNode visit(AstScriptNode script, State state) throws Exception {
 
         AstScriptNode newScript = new AstScriptNode();
+        newScript.setRegionInfo(script.getRegionInfo());
         newScript.setLocationInfo(script.getLocationInfo());
+        newScript.getProperties().addAll(script.getProperties());
 
         state.streams = newScript.getStreams();
 
@@ -83,12 +86,18 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     }
 
     @Override
+    public AstScriptNode visit(AstPropertyNode propertyNode, State state) throws Exception {
+        return null;
+    }
+
+    @Override
     public AstScriptNode visit(AstAcceptNode acceptNode, State state) throws Exception {
 
         state.readState = ReadWriteState.NONE;
         state.writeState = ReadWriteState.NONE;
 
         AstAcceptNode newAcceptNode = new AstAcceptNode();
+        newAcceptNode.setRegionInfo(acceptNode.getRegionInfo());
         newAcceptNode.setLocationInfo(acceptNode.getLocationInfo());
         newAcceptNode.setAcceptName(acceptNode.getAcceptName());
         newAcceptNode.setLocation(acceptNode.getLocation());
@@ -114,6 +123,7 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
         state.writeState = ReadWriteState.NONE;
 
         AstAcceptableNode newAcceptableNode = new AstAcceptableNode();
+        newAcceptableNode.setRegionInfo(acceptableNode.getRegionInfo());
         newAcceptableNode.setLocationInfo(acceptableNode.getLocationInfo());
         newAcceptableNode.setAcceptName(acceptableNode.getAcceptName());
 
@@ -134,6 +144,7 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
         state.writeState = ReadWriteState.NONE;
 
         AstConnectNode newConnectNode = new AstConnectNode();
+        newConnectNode.setRegionInfo(connectNode.getRegionInfo());
         newConnectNode.setLocationInfo(connectNode.getLocationInfo());
         newConnectNode.setLocation(connectNode.getLocation());
 
@@ -243,6 +254,7 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
         switch (state.writeState) {
         case CONFIG_ONLY:
             AstFlushNode flush = new AstFlushNode();
+            flush.setRegionInfo(node.getRegionInfo());
             state.streamables.add(flush);
             state.writeState = ReadWriteState.CONFIG_OR_VALUE;
             break;
@@ -283,6 +295,7 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
         switch (state.writeState) {
         case CONFIG_ONLY:
             AstFlushNode flush = new AstFlushNode();
+            flush.setRegionInfo(node.getRegionInfo());
             state.streamables.add(flush);
             state.writeState = ReadWriteState.CONFIG_OR_VALUE;
             break;

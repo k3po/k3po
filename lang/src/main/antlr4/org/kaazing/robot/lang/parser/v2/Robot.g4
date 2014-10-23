@@ -10,7 +10,19 @@ grammar Robot;
 // handle scripts which are comprised of nothing but empty lines and comments.
 
 scriptNode
-    : streamNode* EOF
+    : propertyNode* streamNode* EOF
+    ;
+
+propertyNode
+    : k=PropertyKeyword name=propertyName value=propertyValue
+    ;
+
+propertyName
+    : Name
+    ;
+
+propertyValue
+    : writeValue
     ;
 
 streamNode
@@ -20,7 +32,7 @@ streamNode
     ;
 
 acceptNode
-    : k=AcceptKeyword acceptURI=URILiteral ( AsKeyword text=Name )?
+    : k=AcceptKeyword acceptURI=location ( AsKeyword text=Name )?
       serverStreamableNode*
     ;
 
@@ -29,7 +41,7 @@ acceptableNode
     ;
 
 connectNode
-    : k=ConnectKeyword connectURI=URILiteral streamableNode+
+    : k=ConnectKeyword connectURI=location streamableNode+
     ;
 
 serverStreamableNode
@@ -293,7 +305,12 @@ literalBytes
 expressionValue
     : expression=ExpressionLiteral
     ;
-    
+
+location
+    : URILiteral
+    | ExpressionLiteral
+    ;
+
 SignedDecimalLiteral
     :  Plus DecimalLiteral
     |  Minus DecimalLiteral
@@ -378,6 +395,10 @@ NotifyKeyword
 
 OpenedKeyword
     : 'opened'
+    ;
+
+PropertyKeyword
+    : 'property'
     ;
 
 ReadKeyword
@@ -544,8 +565,6 @@ Letter
     | '\uf900'..'\ufaff'
     ;
 
-// Keep the whitespace, rather than skipping it, so that we can serialize
-// the AST out to a pretty robot script, if need be
 WS    : (' ' | '\r' | '\n' | '\t' | '\u000C')+ -> skip;
 
 LineComment

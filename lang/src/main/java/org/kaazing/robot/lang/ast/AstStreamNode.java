@@ -24,12 +24,9 @@ import static org.kaazing.robot.lang.ast.util.AstUtil.equivalent;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.kaazing.robot.lang.LocationInfo;
-
 public abstract class AstStreamNode extends AstNode {
 
     private List<AstStreamableNode> streamables;
-    private LocationInfo endLocation;
 
     public List<AstStreamableNode> getStreamables() {
         if (streamables == null) {
@@ -37,14 +34,6 @@ public abstract class AstStreamNode extends AstNode {
         }
 
         return streamables;
-    }
-
-    public LocationInfo getEndLocation() {
-        return endLocation;
-    }
-
-    public void setEndLocation(LocationInfo info) {
-        endLocation = info;
     }
 
     @Override

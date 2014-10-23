@@ -57,6 +57,10 @@ public class AstScriptNodeBuilder extends AbstractAstNodeBuilder<AstScriptNode, 
         return this;
     }
 
+    public AstPropertyNodeBuilder.ScriptNested<AstScriptNodeBuilder> addProperty() {
+        return new AstPropertyNodeBuilder.ScriptNested<AstScriptNodeBuilder>(this);
+    }
+
     public AstAcceptNodeBuilder.ScriptNested<AstScriptNodeBuilder> addAcceptStream() {
         return new AstAcceptNodeBuilder.ScriptNested<AstScriptNodeBuilder>(this);
     }

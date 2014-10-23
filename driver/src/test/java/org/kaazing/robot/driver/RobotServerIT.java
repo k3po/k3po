@@ -109,14 +109,14 @@ public class RobotServerIT {
         // @formatter:on
         CharBuffer expectedPrepared = CharBuffer.wrap(strPrepared);
         CharBuffer expectedStartedAndFinished = CharBuffer.wrap(strExpected);      
-        
+
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
         out.append("version:2.0\n");
         out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();
-        
+
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
         
         CharBuffer prepared = CharBuffer.allocate(strPrepared.length());
@@ -492,9 +492,9 @@ public class RobotServerIT {
         String strExpectedStarted = "STARTED\n" +
                                     "\n";
         String strExpectedFinished = "FINISHED\n" +
-                                     "content-length:30\n" +
+                                     "content-length:15\n" +
                                      "\n" +
-                                     "connect tcp://localhost:62345\n";
+                                     "connect failed\n";
 
         // @formatter:on
         CharBuffer expectedPrepared = CharBuffer.wrap(strExpectedPrepared);
@@ -563,7 +563,8 @@ public class RobotServerIT {
                                      "close\n" +
                                      "closed\n";
         String strExpectedFinished = "FINISHED\n" +
-                                     "content-length:0\n" +
+                                     "content-length:1\n" +
+                                     "\n" +
                                      "\n";
 
         // @formatter:on

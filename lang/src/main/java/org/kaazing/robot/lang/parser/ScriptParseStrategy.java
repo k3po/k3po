@@ -20,6 +20,9 @@
 package org.kaazing.robot.lang.parser;
 
 import static java.lang.Integer.parseInt;
+import static java.util.Collections.emptyList;
+import static org.kaazing.robot.lang.RegionInfo.newParallel;
+import static org.kaazing.robot.lang.RegionInfo.newSequential;
 import static org.kaazing.robot.lang.parser.ParserHelper.parseHexBytes;
 
 import java.net.URI;
@@ -30,7 +33,10 @@ import java.util.List;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Token;
+import org.kaazing.robot.lang.RegionInfo;
 import org.kaazing.robot.lang.ast.AstAcceptNode;
 import org.kaazing.robot.lang.ast.AstAcceptableNode;
 import org.kaazing.robot.lang.ast.AstBarrierNode;
@@ -48,12 +54,14 @@ import org.kaazing.robot.lang.ast.AstEventNode;
 import org.kaazing.robot.lang.ast.AstNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
 import org.kaazing.robot.lang.ast.AstOptionNode;
+import org.kaazing.robot.lang.ast.AstPropertyNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstReadConfigNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
+import org.kaazing.robot.lang.ast.AstRegion;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.AstStreamNode;
 import org.kaazing.robot.lang.ast.AstStreamableNode;
@@ -107,6 +115,7 @@ import org.kaazing.robot.lang.parser.v2.RobotParser.LiteralTextContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.MatcherContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.OpenedNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.OptionNodeContext;
+import org.kaazing.robot.lang.parser.v2.RobotParser.PropertyNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadAwaitNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadClosedNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.ReadHttpHeaderNodeContext;
@@ -139,13 +148,21 @@ import org.kaazing.robot.lang.parser.v2.RobotParser.WriteOptionNodeContext;
 import org.kaazing.robot.lang.parser.v2.RobotParser.WriteValueContext;
 import org.kaazing.robot.lang.regex.NamedGroupPattern;
 
-abstract class ScriptParseStrategy<T> {
+abstract class ScriptParseStrategy<T extends AstRegion> {
 
     public static final ScriptParseStrategy<AstScriptNode> SCRIPT = new ScriptParseStrategy<AstScriptNode>() {
         @Override
         public AstScriptNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
                 throws RecognitionException {
             return new AstScriptNodeVisitor(elFactory, elContext).visit(parser.scriptNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstPropertyNode> PROPERTY_NODE = new ScriptParseStrategy<AstPropertyNode>() {
+        @Override
+        public AstPropertyNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                throws RecognitionException {
+            return new AstPropertyNodeVisitor(elFactory, elContext).visit(parser.propertyNode());
         }
     };
 
@@ -595,6 +612,10 @@ abstract class ScriptParseStrategy<T> {
             throws RecognitionException;
 
     private static class AstVisitor<T> extends RobotBaseVisitor<T> {
+        private static final List<RegionInfo> EMPTY_CHILDREN = emptyList();
+
+        protected List<RegionInfo> childInfos = EMPTY_CHILDREN;
+
         protected final ExpressionFactory elFactory;
         protected final ExpressionContext elContext;
 
@@ -602,9 +623,17 @@ abstract class ScriptParseStrategy<T> {
             this.elFactory = elFactory;
             this.elContext = elContext;
         }
+
+        protected List<RegionInfo> childInfos() {
+            if (childInfos == EMPTY_CHILDREN) {
+                childInfos = new LinkedList<>();
+            }
+            return childInfos;
+        }
     }
 
     private static class AstNodeVisitor<T extends AstNode> extends AstVisitor<T> {
+
         protected T node;
 
         public AstNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
@@ -615,6 +644,7 @@ abstract class ScriptParseStrategy<T> {
         protected T defaultResult() {
             return node;
         }
+
     }
 
     private static class AstScriptNodeVisitor extends AstNodeVisitor<AstScriptNode> {
@@ -626,14 +656,54 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstScriptNode visitScriptNode(ScriptNodeContext ctx) {
             node = new AstScriptNode();
-            return super.visitScriptNode(ctx);
+            super.visitScriptNode(ctx);
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return node;
+        }
+
+        @Override
+        public AstScriptNode visitPropertyNode(PropertyNodeContext ctx) {
+            AstPropertyNodeVisitor visitor = new AstPropertyNodeVisitor(elFactory, elContext);
+            AstPropertyNode propertyNode = visitor.visitPropertyNode(ctx);
+            if (propertyNode != null) {
+                node.getProperties().add(propertyNode);
+                childInfos().add(propertyNode.getRegionInfo());
+            }
+            return node;
         }
 
         @Override
         public AstScriptNode visitStreamNode(StreamNodeContext ctx) {
             AstStreamNodeVisitor visitor = new AstStreamNodeVisitor(elFactory, elContext);
             AstStreamNode streamNode = visitor.visitStreamNode(ctx);
-            node.getStreams().add(streamNode);
+            if (streamNode != null) {
+                node.getStreams().add(streamNode);
+                childInfos().add(streamNode.getRegionInfo());
+            }
+            return node;
+        }
+
+    }
+
+    private static class AstPropertyNodeVisitor extends AstNodeVisitor<AstPropertyNode> {
+
+        public AstPropertyNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+            super(elFactory, elContext);
+        }
+
+        @Override
+        public AstPropertyNode visitPropertyNode(PropertyNodeContext ctx) {
+
+            AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext, Object.class);
+            AstValue value = visitor.visit(ctx.value);
+            childInfos().add(value.getRegionInfo());
+
+            node = new AstPropertyNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            node.setPropertyName(ctx.name.getText());
+            node.setPropertyValue(value);
+
             return node;
         }
 
@@ -647,17 +717,32 @@ abstract class ScriptParseStrategy<T> {
 
         @Override
         public AstAcceptNode visitAcceptNode(AcceptNodeContext ctx) {
-            return new AstAcceptNodeVisitor(elFactory, elContext).visitAcceptNode(ctx);
+            AstAcceptNodeVisitor visitor = new AstAcceptNodeVisitor(elFactory, elContext);
+            AstAcceptNode acceptNode = visitor.visitAcceptNode(ctx);
+            if (acceptNode != null) {
+                childInfos().add(acceptNode.getRegionInfo());
+            }
+            return acceptNode;
         }
 
         @Override
         public AstAcceptableNode visitAcceptableNode(AcceptableNodeContext ctx) {
-            return new AstAcceptedNodeVisitor(elFactory, elContext).visitAcceptableNode(ctx);
+            AstAcceptedNodeVisitor visitor = new AstAcceptedNodeVisitor(elFactory, elContext);
+            AstAcceptableNode acceptableNode = visitor.visitAcceptableNode(ctx);
+            if (acceptableNode != null) {
+                childInfos().add(acceptableNode.getRegionInfo());
+            }
+            return acceptableNode;
         }
 
         @Override
         public AstConnectNode visitConnectNode(ConnectNodeContext ctx) {
-            return new AstConnectNodeVisitor(elFactory, elContext).visitConnectNode(ctx);
+            AstConnectNodeVisitor visitor = new AstConnectNodeVisitor(elFactory, elContext);
+            AstConnectNode connectNode = visitor.visitConnectNode(ctx);
+            if (connectNode != null) {
+                childInfos().add(connectNode.getRegionInfo());
+            }
+            return connectNode;
         }
 
     }
@@ -676,14 +761,19 @@ abstract class ScriptParseStrategy<T> {
             if (ctx.text != null) {
                 node.setAcceptName(ctx.text.getText());
             }
-            return super.visitAcceptNode(ctx);
+            super.visitAcceptNode(ctx);
+            node.setRegionInfo(asParallelRegion(childInfos, ctx));
+            return node;
         }
 
         @Override
         public AstAcceptNode visitServerStreamableNode(ServerStreamableNodeContext ctx) {
             AstStreamableNodeVisitor visitor = new AstStreamableNodeVisitor(elFactory, elContext);
-            AstStreamableNode streamable = visitor.visitServerStreamableNode(ctx);
-            node.getStreamables().add(streamable);
+            AstStreamableNode streamableNode = visitor.visitServerStreamableNode(ctx);
+            if (streamableNode != null) {
+                node.getStreamables().add(streamableNode);
+                childInfos().add(streamableNode.getRegionInfo());
+            }
             return node;
         }
 
@@ -702,14 +792,19 @@ abstract class ScriptParseStrategy<T> {
             if (ctx.text != null) {
                 node.setAcceptName(ctx.text.getText());
             }
-            return super.visitAcceptableNode(ctx);
+            super.visitAcceptableNode(ctx);
+            node.setRegionInfo(asParallelRegion(childInfos, ctx));
+            return node;
         }
 
         @Override
         public AstAcceptableNode visitStreamableNode(StreamableNodeContext ctx) {
             AstStreamableNodeVisitor visitor = new AstStreamableNodeVisitor(elFactory, elContext);
-            AstStreamableNode streamable = visitor.visitStreamableNode(ctx);
-            node.getStreamables().add(streamable);
+            AstStreamableNode streamableNode = visitor.visitStreamableNode(ctx);
+            if (streamableNode != null) {
+                node.getStreamables().add(streamableNode);
+                childInfos().add(streamableNode.getRegionInfo());
+            }
             return node;
         }
 
@@ -719,7 +814,6 @@ abstract class ScriptParseStrategy<T> {
 
         public AstConnectNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
             super(elFactory, elContext);
-            // TODO Auto-generated constructor stub
         }
 
         @Override
@@ -727,14 +821,19 @@ abstract class ScriptParseStrategy<T> {
             node = new AstConnectNode();
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setLocation(URI.create(ctx.connectURI.getText()));
-            return super.visitConnectNode(ctx);
+            super.visitConnectNode(ctx);
+            node.setRegionInfo(asParallelRegion(childInfos, ctx));
+            return node;
         }
 
         @Override
         public AstConnectNode visitStreamableNode(StreamableNodeContext ctx) {
             AstStreamableNodeVisitor visitor = new AstStreamableNodeVisitor(elFactory, elContext);
-            AstStreamableNode streamable = visitor.visitStreamableNode(ctx);
-            node.getStreamables().add(streamable);
+            AstStreamableNode streamableNode = visitor.visitStreamableNode(ctx);
+            if (streamableNode != null) {
+                node.getStreamables().add(streamableNode);
+                childInfos().add(streamableNode.getRegionInfo());
+            }
             return node;
         }
 
@@ -748,22 +847,42 @@ abstract class ScriptParseStrategy<T> {
 
         @Override
         public AstBarrierNode visitBarrierNode(BarrierNodeContext ctx) {
-            return new AstBarrierNodeVisitor(elFactory, elContext).visitBarrierNode(ctx);
+            AstBarrierNodeVisitor visitor = new AstBarrierNodeVisitor(elFactory, elContext);
+            AstBarrierNode barrierNode = visitor.visitBarrierNode(ctx);
+            if (barrierNode != null) {
+                childInfos().add(barrierNode.getRegionInfo());
+            }
+            return barrierNode;
         }
 
         @Override
         public AstEventNode visitEventNode(EventNodeContext ctx) {
-            return new AstEventNodeVisitor(elFactory, elContext).visitEventNode(ctx);
+            AstEventNodeVisitor visitor = new AstEventNodeVisitor(elFactory, elContext);
+            AstEventNode eventNode = visitor.visitEventNode(ctx);
+            if (eventNode != null) {
+                childInfos().add(eventNode.getRegionInfo());
+            }
+            return eventNode;
         }
 
         @Override
         public AstCommandNode visitCommandNode(CommandNodeContext ctx) {
-            return new AstCommandNodeVisitor(elFactory, elContext).visitCommandNode(ctx);
+            AstCommandNodeVisitor visitor = new AstCommandNodeVisitor(elFactory, elContext);
+            AstCommandNode commandNode = visitor.visitCommandNode(ctx);
+            if (commandNode != null) {
+                childInfos().add(commandNode.getRegionInfo());
+            }
+            return commandNode;
         }
 
         @Override
         public AstOptionNode visitOptionNode(OptionNodeContext ctx) {
-            return new AstOptionNodeVisitor(elFactory, elContext).visitOptionNode(ctx);
+            AstOptionNodeVisitor visitor = new AstOptionNodeVisitor(elFactory, elContext);
+            AstOptionNode optionNode = visitor.visitOptionNode(ctx);
+            if (optionNode != null) {
+                childInfos().add(optionNode.getRegionInfo());
+            }
+            return optionNode;
         }
 
     }
@@ -786,21 +905,33 @@ abstract class ScriptParseStrategy<T> {
 
         @Override
         public AstOptionNode visitReadOptionNode(ReadOptionNodeContext ctx) {
+
+            AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
+            AstValue value = visitor.visit(ctx);
+            childInfos().add(value.getRegionInfo());
+
             node = new AstReadOptionNode();
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setOptionName(ctx.name.getText());
-            AstValue value = new AstValueVisitor(elFactory, elContext).visit(ctx);
             node.setOptionValue(value);
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+
             return node;
         }
 
         @Override
         public AstOptionNode visitWriteOptionNode(WriteOptionNodeContext ctx) {
+
+            AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
+            AstValue value = visitor.visit(ctx);
+            childInfos().add(value.getRegionInfo());
+
             node = new AstWriteOptionNode();
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setOptionName(ctx.name.getText());
-            AstValue value = new AstValueVisitor(elFactory, elContext).visit(ctx);
             node.setOptionValue(value);
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+
             return node;
         }
     }
@@ -813,22 +944,48 @@ abstract class ScriptParseStrategy<T> {
 
         @Override
         public AstReadAwaitNode visitReadAwaitNode(ReadAwaitNodeContext ctx) {
-            return new AstReadAwaitNodeVisitor(elFactory, elContext).visitReadAwaitNode(ctx);
+
+            AstReadAwaitNodeVisitor visitor = new AstReadAwaitNodeVisitor(elFactory, elContext);
+            AstReadAwaitNode readAwaitNode = visitor.visitReadAwaitNode(ctx);
+            if (readAwaitNode != null) {
+                childInfos().add(readAwaitNode.getRegionInfo());
+            }
+
+            return readAwaitNode;
         }
 
         @Override
         public AstReadNotifyNode visitReadNotifyNode(ReadNotifyNodeContext ctx) {
-            return new AstReadNotifyNodeVisitor(elFactory, elContext).visitReadNotifyNode(ctx);
+            AstReadNotifyNodeVisitor visitor = new AstReadNotifyNodeVisitor(elFactory, elContext);
+            AstReadNotifyNode readNotifyNode = visitor.visitReadNotifyNode(ctx);
+            if (readNotifyNode != null) {
+                childInfos().add(readNotifyNode.getRegionInfo());
+            }
+            return readNotifyNode;
         }
 
         @Override
         public AstWriteAwaitNode visitWriteAwaitNode(WriteAwaitNodeContext ctx) {
-            return new AstWriteAwaitNodeVisitor(elFactory, elContext).visitWriteAwaitNode(ctx);
+
+            AstWriteAwaitNodeVisitor visitor = new AstWriteAwaitNodeVisitor(elFactory, elContext);
+            AstWriteAwaitNode writeAwaitNode = visitor.visitWriteAwaitNode(ctx);
+            if (writeAwaitNode != null) {
+                childInfos().add(writeAwaitNode.getRegionInfo());
+            }
+
+            return writeAwaitNode;
         }
 
         @Override
         public AstWriteNotifyNode visitWriteNotifyNode(WriteNotifyNodeContext ctx) {
-            return new AstWriteNotifyNodeVisitor(elFactory, elContext).visitWriteNotifyNode(ctx);
+
+            AstWriteNotifyNodeVisitor visitor = new AstWriteNotifyNodeVisitor(elFactory, elContext);
+            AstWriteNotifyNode writeNotifyNode = visitor.visitWriteNotifyNode(ctx);
+            if (writeNotifyNode != null) {
+                childInfos().add(writeNotifyNode.getRegionInfo());
+            }
+
+            return writeNotifyNode;
         }
 
     }
@@ -841,69 +998,160 @@ abstract class ScriptParseStrategy<T> {
 
         @Override
         public AstBoundNode visitBoundNode(BoundNodeContext ctx) {
-            return new AstBoundNodeVisitor(elFactory, elContext).visitBoundNode(ctx);
+
+            AstBoundNodeVisitor visitor = new AstBoundNodeVisitor(elFactory, elContext);
+            AstBoundNode boundNode = visitor.visitBoundNode(ctx);
+            if (boundNode != null) {
+                childInfos().add(boundNode.getRegionInfo());
+            }
+
+            return boundNode;
         }
 
         @Override
         public AstClosedNode visitClosedNode(ClosedNodeContext ctx) {
-            return new AstClosedNodeVisitor(elFactory, elContext).visitClosedNode(ctx);
+
+            AstClosedNodeVisitor visitor = new AstClosedNodeVisitor(elFactory, elContext);
+            AstClosedNode closedNode = visitor.visitClosedNode(ctx);
+            if (closedNode != null) {
+                childInfos().add(closedNode.getRegionInfo());
+            }
+
+            return closedNode;
         }
 
         @Override
         public AstConnectedNode visitConnectedNode(ConnectedNodeContext ctx) {
-            return new AstConnectedNodeVisitor(elFactory, elContext).visitConnectedNode(ctx);
+
+            AstConnectedNodeVisitor visitor = new AstConnectedNodeVisitor(elFactory, elContext);
+            AstConnectedNode connectedNode = visitor.visitConnectedNode(ctx);
+            if (connectedNode != null) {
+                childInfos().add(connectedNode.getRegionInfo());
+            }
+
+            return connectedNode;
         }
 
         @Override
         public AstDisconnectedNode visitDisconnectedNode(DisconnectedNodeContext ctx) {
-            return new AstDisconnectedNodeVisitor(elFactory, elContext).visitDisconnectedNode(ctx);
+
+            AstDisconnectedNodeVisitor visitor = new AstDisconnectedNodeVisitor(elFactory, elContext);
+            AstDisconnectedNode disconnectedNode = visitor.visitDisconnectedNode(ctx);
+            if (disconnectedNode != null) {
+                childInfos().add(disconnectedNode.getRegionInfo());
+            }
+
+            return disconnectedNode;
         }
 
         @Override
         public AstOpenedNode visitOpenedNode(OpenedNodeContext ctx) {
-            return new AstOpenedNodeVisitor(elFactory, elContext).visitOpenedNode(ctx);
+
+            AstOpenedNodeVisitor visitor = new AstOpenedNodeVisitor(elFactory, elContext);
+            AstOpenedNode openedNode = visitor.visitOpenedNode(ctx);
+            if (openedNode != null) {
+                childInfos().add(openedNode.getRegionInfo());
+            }
+
+            return openedNode;
         }
 
         @Override
         public AstReadValueNode visitReadNode(ReadNodeContext ctx) {
-            return new AstReadValueNodeVisitor(elFactory, elContext).visitReadNode(ctx);
+
+            AstReadValueNodeVisitor visitor = new AstReadValueNodeVisitor(elFactory, elContext);
+            AstReadValueNode readNode = visitor.visitReadNode(ctx);
+            if (readNode != null) {
+                childInfos().add(readNode.getRegionInfo());
+            }
+
+            return readNode;
         }
 
         @Override
         public AstReadClosedNode visitReadClosedNode(ReadClosedNodeContext ctx) {
-            return new AstReadClosedNodeVisitor(elFactory, elContext).visitReadClosedNode(ctx);
+
+            AstReadClosedNodeVisitor visitor = new AstReadClosedNodeVisitor(elFactory, elContext);
+            AstReadClosedNode readClosedNode = visitor.visitReadClosedNode(ctx);
+            if (readClosedNode != null) {
+                childInfos().add(readClosedNode.getRegionInfo());
+            }
+
+            return readClosedNode;
         }
 
         @Override
         public AstUnboundNode visitUnboundNode(UnboundNodeContext ctx) {
-            return new AstUnboundNodeVisitor(elFactory, elContext).visitUnboundNode(ctx);
+
+            AstUnboundNodeVisitor visitor = new AstUnboundNodeVisitor(elFactory, elContext);
+            AstUnboundNode unboundNode = visitor.visitUnboundNode(ctx);
+            if (unboundNode != null) {
+                childInfos().add(unboundNode.getRegionInfo());
+            }
+
+            return unboundNode;
         }
 
         // HTTP events
 
         @Override
         public AstReadConfigNode visitReadHttpHeaderNode(ReadHttpHeaderNodeContext ctx) {
-            return new AstReadHttpConfigNodeVisitor(elFactory, elContext).visitReadHttpHeaderNode(ctx);
+
+            AstReadHttpConfigNodeVisitor visitor = new AstReadHttpConfigNodeVisitor(elFactory, elContext);
+            AstReadConfigNode readHttpHeaderNode = visitor.visitReadHttpHeaderNode(ctx);
+            if (readHttpHeaderNode != null) {
+                childInfos().add(readHttpHeaderNode.getRegionInfo());
+            }
+
+            return readHttpHeaderNode;
         }
 
         @Override
         public AstReadConfigNode visitReadHttpMethodNode(ReadHttpMethodNodeContext ctx) {
-            return new AstReadHttpConfigNodeVisitor(elFactory, elContext).visitReadHttpMethodNode(ctx);
+
+            AstReadHttpConfigNodeVisitor visitor = new AstReadHttpConfigNodeVisitor(elFactory, elContext);
+            AstReadConfigNode readHttpMethodNode = visitor.visitReadHttpMethodNode(ctx);
+            if (readHttpMethodNode != null) {
+                childInfos().add(readHttpMethodNode.getRegionInfo());
+            }
+
+            return readHttpMethodNode;
         }
 
         @Override
         public AstReadConfigNode visitReadHttpParameterNode(ReadHttpParameterNodeContext ctx) {
-            return new AstReadHttpConfigNodeVisitor(elFactory, elContext).visitReadHttpParameterNode(ctx);
+
+            AstReadHttpConfigNodeVisitor visitor = new AstReadHttpConfigNodeVisitor(elFactory, elContext);
+            AstReadConfigNode readHttpParameterNode = visitor.visitReadHttpParameterNode(ctx);
+            if (readHttpParameterNode != null) {
+                childInfos().add(readHttpParameterNode.getRegionInfo());
+            }
+
+            return readHttpParameterNode;
         }
 
         @Override
         public AstReadConfigNode visitReadHttpVersionNode(ReadHttpVersionNodeContext ctx) {
-            return new AstReadHttpConfigNodeVisitor(elFactory, elContext).visitReadHttpVersionNode(ctx);
+
+            AstReadHttpConfigNodeVisitor visitor = new AstReadHttpConfigNodeVisitor(elFactory, elContext);
+            AstReadConfigNode readHttpVersionNode = visitor.visitReadHttpVersionNode(ctx);
+            if (readHttpVersionNode != null) {
+                childInfos().add(readHttpVersionNode.getRegionInfo());
+            }
+
+            return readHttpVersionNode;
         }
 
         @Override
         public AstReadConfigNode visitReadHttpStatusNode(ReadHttpStatusNodeContext ctx) {
-            return new AstReadHttpConfigNodeVisitor(elFactory, elContext).visitReadHttpStatusNode(ctx);
+
+            AstReadHttpConfigNodeVisitor visitor = new AstReadHttpConfigNodeVisitor(elFactory, elContext);
+            AstReadConfigNode readHttpStatusNode = visitor.visitReadHttpStatusNode(ctx);
+            if (readHttpStatusNode != null) {
+                childInfos().add(readHttpStatusNode.getRegionInfo());
+            }
+
+            return readHttpStatusNode;
         }
 
     }
@@ -916,54 +1164,122 @@ abstract class ScriptParseStrategy<T> {
 
         @Override
         public AstUnbindNode visitUnbindNode(UnbindNodeContext ctx) {
-            return new AstUnbindNodeVisitor(elFactory, elContext).visitUnbindNode(ctx);
+
+            AstUnbindNodeVisitor visitor = new AstUnbindNodeVisitor(elFactory, elContext);
+            AstUnbindNode unbindNode = visitor.visitUnbindNode(ctx);
+            if (unbindNode != null) {
+                childInfos().add(unbindNode.getRegionInfo());
+            }
+
+            return unbindNode;
         }
 
         @Override
         public AstWriteValueNode visitWriteNode(WriteNodeContext ctx) {
-            return new AstWriteValueNodeVisitor(elFactory, elContext).visitWriteNode(ctx);
+            AstWriteValueNodeVisitor visitor = new AstWriteValueNodeVisitor(elFactory, elContext);
+            AstWriteValueNode writeNode = visitor.visitWriteNode(ctx);
+            if (writeNode != null) {
+                childInfos().add(writeNode.getRegionInfo());
+            }
+            return writeNode;
         }
 
         @Override
         public AstWriteCloseNode visitWriteCloseNode(WriteCloseNodeContext ctx) {
-            return new AstWriteCloseNodeVisitor(elFactory, elContext).visitWriteCloseNode(ctx);
+
+            AstWriteCloseNodeVisitor visitor = new AstWriteCloseNodeVisitor(elFactory, elContext);
+            AstWriteCloseNode writeCloseNode = visitor.visitWriteCloseNode(ctx);
+            if (writeCloseNode != null) {
+                childInfos().add(writeCloseNode.getRegionInfo());
+            }
+
+            return writeCloseNode;
         }
 
         @Override
         public AstCloseNode visitCloseNode(CloseNodeContext ctx) {
-            return new AstCloseNodeVisitor(elFactory, elContext).visitCloseNode(ctx);
+
+            AstCloseNodeVisitor visitor = new AstCloseNodeVisitor(elFactory, elContext);
+            AstCloseNode closeNode = visitor.visitCloseNode(ctx);
+            if (closeNode != null) {
+                childInfos().add(closeNode.getRegionInfo());
+            }
+
+            return closeNode;
         }
 
         // HTTP commands
 
         @Override
         public AstWriteConfigNode visitWriteHttpHeaderNode(WriteHttpHeaderNodeContext ctx) {
-            return new AstWriteConfigNodeVisitor(elFactory, elContext).visitWriteHttpHeaderNode(ctx);
+
+            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(elFactory, elContext);
+            AstWriteConfigNode writeHttpHeaderNode = visitor.visitWriteHttpHeaderNode(ctx);
+            if (writeHttpHeaderNode != null) {
+                childInfos().add(writeHttpHeaderNode.getRegionInfo());
+            }
+
+            return writeHttpHeaderNode;
         }
 
         @Override
         public AstWriteConfigNode visitWriteHttpContentLengthNode(WriteHttpContentLengthNodeContext ctx) {
-            return new AstWriteConfigNodeVisitor(elFactory, elContext).visitWriteHttpContentLengthNode(ctx);
+
+            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(elFactory, elContext);
+            AstWriteConfigNode writeHttpContentLengthNode = visitor.visitWriteHttpContentLengthNode(ctx);
+            if (writeHttpContentLengthNode != null) {
+                childInfos().add(writeHttpContentLengthNode.getRegionInfo());
+            }
+
+            return writeHttpContentLengthNode;
         }
 
         @Override
         public AstWriteConfigNode visitWriteHttpMethodNode(WriteHttpMethodNodeContext ctx) {
-            return new AstWriteConfigNodeVisitor(elFactory, elContext).visitWriteHttpMethodNode(ctx);
+
+            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(elFactory, elContext);
+            AstWriteConfigNode writeHttpMethodNode = visitor.visitWriteHttpMethodNode(ctx);
+            if (writeHttpMethodNode != null) {
+                childInfos().add(writeHttpMethodNode.getRegionInfo());
+            }
+
+            return writeHttpMethodNode;
         }
 
         @Override
         public AstWriteConfigNode visitWriteHttpParameterNode(WriteHttpParameterNodeContext ctx) {
-            return new AstWriteConfigNodeVisitor(elFactory, elContext).visitWriteHttpParameterNode(ctx);
+
+            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(elFactory, elContext);
+            AstWriteConfigNode writeHttpParameterNode = visitor.visitWriteHttpParameterNode(ctx);
+            if (writeHttpParameterNode != null) {
+                childInfos().add(writeHttpParameterNode.getRegionInfo());
+            }
+
+            return writeHttpParameterNode;
         }
 
         @Override
         public AstWriteConfigNode visitWriteHttpVersionNode(WriteHttpVersionNodeContext ctx) {
-            return new AstWriteConfigNodeVisitor(elFactory, elContext).visitWriteHttpVersionNode(ctx);
+
+            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(elFactory, elContext);
+            AstWriteConfigNode writeHttpVersionNode = visitor.visitWriteHttpVersionNode(ctx);
+            if (writeHttpVersionNode != null) {
+                childInfos().add(writeHttpVersionNode.getRegionInfo());
+            }
+
+            return writeHttpVersionNode;
         }
 
         @Override
         public AstWriteConfigNode visitWriteHttpStatusNode(WriteHttpStatusNodeContext ctx) {
-            return new AstWriteConfigNodeVisitor(elFactory, elContext).visitWriteHttpStatusNode(ctx);
+
+            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(elFactory, elContext);
+            AstWriteConfigNode writeHttpStatusNode = visitor.visitWriteHttpStatusNode(ctx);
+            if (writeHttpStatusNode != null) {
+                childInfos().add(writeHttpStatusNode.getRegionInfo());
+            }
+
+            return writeHttpStatusNode;
         }
 
     }
@@ -977,6 +1293,7 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstCloseNode visitCloseNode(CloseNodeContext ctx) {
             node = new AstCloseNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
@@ -992,6 +1309,7 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstDisconnectNode visitDisconnectNode(DisconnectNodeContext ctx) {
             node = new AstDisconnectNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
@@ -1007,6 +1325,7 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstUnbindNode visitUnbindNode(UnbindNodeContext ctx) {
             node = new AstUnbindNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
@@ -1014,8 +1333,6 @@ abstract class ScriptParseStrategy<T> {
     }
 
     private static class AstWriteValueNodeVisitor extends AstNodeVisitor<AstWriteValueNode> {
-
-        private List<AstValue> values;
 
         public AstWriteValueNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
             super(elFactory, elContext);
@@ -1025,16 +1342,17 @@ abstract class ScriptParseStrategy<T> {
         public AstWriteValueNode visitWriteNode(WriteNodeContext ctx) {
             node = new AstWriteValueNode();
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            values = new LinkedList<>();
-            AstWriteValueNode result = super.visitWriteNode(ctx);
-            node.setValues(values);
-            return result;
+            super.visitWriteNode(ctx);
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return node;
         }
 
         @Override
         public AstWriteValueNode visitWriteValue(WriteValueContext ctx) {
-            AstValue value = new AstValueVisitor(elFactory, elContext).visit(ctx);
-            values.add(value);
+            AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
+            AstValue value = visitor.visit(ctx);
+            node.addValue(value);
+            childInfos().add(value.getRegionInfo());
             return node;
         }
     }
@@ -1048,6 +1366,7 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstChildOpenedNode visitChildOpenedNode(ChildOpenedNodeContext ctx) {
             node = new AstChildOpenedNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
@@ -1063,6 +1382,7 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstChildClosedNode visitChildClosedNode(ChildClosedNodeContext ctx) {
             node = new AstChildClosedNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
@@ -1078,6 +1398,7 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstBoundNode visitBoundNode(BoundNodeContext ctx) {
             node = new AstBoundNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
@@ -1093,6 +1414,7 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstClosedNode visitClosedNode(ClosedNodeContext ctx) {
             node = new AstClosedNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
@@ -1108,6 +1430,7 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstConnectedNode visitConnectedNode(ConnectedNodeContext ctx) {
             node = new AstConnectedNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
@@ -1123,6 +1446,7 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstDisconnectedNode visitDisconnectedNode(DisconnectedNodeContext ctx) {
             node = new AstDisconnectedNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
@@ -1138,6 +1462,7 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstOpenedNode visitOpenedNode(OpenedNodeContext ctx) {
             node = new AstOpenedNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
@@ -1145,8 +1470,6 @@ abstract class ScriptParseStrategy<T> {
     }
 
     private static class AstReadValueNodeVisitor extends AstNodeVisitor<AstReadValueNode> {
-
-        private List<AstValueMatcher> matchers;
 
         public AstReadValueNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
             super(elFactory, elContext);
@@ -1156,16 +1479,17 @@ abstract class ScriptParseStrategy<T> {
         public AstReadValueNode visitReadNode(ReadNodeContext ctx) {
             node = new AstReadValueNode();
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            matchers = new LinkedList<>();
-            AstReadValueNode result = super.visitReadNode(ctx);
-            node.setMatchers(matchers);
-            return result;
+            super.visitReadNode(ctx);
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return node;
         }
 
         @Override
         public AstReadValueNode visitMatcher(MatcherContext ctx) {
-            AstValueMatcher matcher = new AstValueMatcherVisitor(elFactory, elContext).visit(ctx);
-            matchers.add(matcher);
+            AstValueMatcherVisitor visitor = new AstValueMatcherVisitor(elFactory, elContext);
+            AstValueMatcher matcher = visitor.visit(ctx);
+            node.addMatcher(matcher);
+            childInfos().add(matcher.getRegionInfo());
             return node;
         }
 
@@ -1180,6 +1504,7 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstUnboundNode visitUnboundNode(UnboundNodeContext ctx) {
             node = new AstUnboundNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
@@ -1195,6 +1520,7 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstReadAwaitNode visitReadAwaitNode(ReadAwaitNodeContext ctx) {
             node = new AstReadAwaitNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setBarrierName(ctx.barrier.getText());
             return node;
@@ -1211,6 +1537,7 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstReadNotifyNode visitReadNotifyNode(ReadNotifyNodeContext ctx) {
             node = new AstReadNotifyNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setBarrierName(ctx.barrier.getText());
             return node;
@@ -1227,6 +1554,7 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstWriteAwaitNode visitWriteAwaitNode(WriteAwaitNodeContext ctx) {
             node = new AstWriteAwaitNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setBarrierName(ctx.barrier.getText());
             return node;
@@ -1243,6 +1571,7 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstWriteNotifyNode visitWriteNotifyNode(WriteNotifyNodeContext ctx) {
             node = new AstWriteNotifyNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setBarrierName(ctx.barrier.getText());
             return node;
@@ -1257,33 +1586,75 @@ abstract class ScriptParseStrategy<T> {
         }
 
         @Override
-        public AstExactTextMatcher visitExactTextMatcher(ExactTextMatcherContext ctx) {
-            return new AstExactTextMatcherVisitor(elFactory, elContext).visit(ctx);
+        public AstValueMatcher visitExactTextMatcher(ExactTextMatcherContext ctx) {
+
+            AstExactTextMatcherVisitor visitor = new AstExactTextMatcherVisitor(elFactory, elContext);
+            AstExactTextMatcher matcher = visitor.visit(ctx);
+            if (matcher != null) {
+                childInfos().add(matcher.getRegionInfo());
+            }
+
+            return matcher;
         }
 
         @Override
         public AstExactBytesMatcher visitExactBytesMatcher(ExactBytesMatcherContext ctx) {
-            return new AstExactBytesMatcherVisitor(elFactory, elContext).visit(ctx);
+
+            AstExactBytesMatcherVisitor visitor = new AstExactBytesMatcherVisitor(elFactory, elContext);
+            AstExactBytesMatcher matcher = visitor.visit(ctx);
+            if (matcher != null) {
+                childInfos().add(matcher.getRegionInfo());
+            }
+
+            return matcher;
         }
 
         @Override
         public AstRegexMatcher visitRegexMatcher(RegexMatcherContext ctx) {
-            return new AstRegexMatcherVisitor(elFactory, elContext).visit(ctx);
+
+            AstRegexMatcherVisitor visitor = new AstRegexMatcherVisitor(elFactory, elContext);
+            AstRegexMatcher matcher = visitor.visit(ctx);
+            if (matcher != null) {
+                childInfos().add(matcher.getRegionInfo());
+            }
+
+            return matcher;
         }
 
         @Override
         public AstExpressionMatcher visitExpressionMatcher(ExpressionMatcherContext ctx) {
-            return new AstExpressionMatcherVisitor(elFactory, elContext).visit(ctx);
+
+            AstExpressionMatcherVisitor visitor = new AstExpressionMatcherVisitor(elFactory, elContext);
+            AstExpressionMatcher matcher = visitor.visit(ctx);
+            if (matcher != null) {
+                childInfos().add(matcher.getRegionInfo());
+            }
+
+            return matcher;
         }
 
         @Override
         public AstFixedLengthBytesMatcher visitFixedLengthBytesMatcher(FixedLengthBytesMatcherContext ctx) {
-            return new AstFixedLengthBytesMatcherVisitor(elFactory, elContext).visit(ctx);
+
+            AstFixedLengthBytesMatcherVisitor visitor = new AstFixedLengthBytesMatcherVisitor(elFactory, elContext);
+            AstFixedLengthBytesMatcher matcher = visitor.visit(ctx);
+            if (matcher != null) {
+                childInfos().add(matcher.getRegionInfo());
+            }
+
+            return matcher;
         }
 
         @Override
         public AstVariableLengthBytesMatcher visitVariableLengthBytesMatcher(VariableLengthBytesMatcherContext ctx) {
-            return new AstVariableLengthBytesMatcherVisitor(elFactory, elContext).visit(ctx);
+
+            AstVariableLengthBytesMatcherVisitor visitor = new AstVariableLengthBytesMatcherVisitor(elFactory, elContext);
+            AstVariableLengthBytesMatcher matcher = visitor.visit(ctx);
+            if (matcher != null) {
+                childInfos().add(matcher.getRegionInfo());
+            }
+
+            return matcher;
         }
 
     }
@@ -1299,7 +1670,9 @@ abstract class ScriptParseStrategy<T> {
             String text = ctx.text.getText();
             String textWithoutQuote = text.substring(1, text.length() - 1);
             String escapedText = escapeString(textWithoutQuote);
-            return new AstExactTextMatcher(escapedText);
+            AstExactTextMatcher matcher = new AstExactTextMatcher(escapedText);
+            matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return matcher;
         }
 
     }
@@ -1314,23 +1687,33 @@ abstract class ScriptParseStrategy<T> {
         public AstExactBytesMatcher visitExactBytesMatcher(ExactBytesMatcherContext ctx) {
             if (ctx.bytes != null) {
                 byte[] array = parseHexBytes(ctx.bytes.getText());
-                return new AstExactBytesMatcher(array);
+                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
+                matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+                return matcher;
             } else if (ctx.byteLiteral != null) {
                 byte[] array = parseHexBytes(ctx.byteLiteral.getText());
-                return new AstExactBytesMatcher(array);
+                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
+                matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+                return matcher;
             } else if (ctx.shortLiteral != null) {
                 byte[] array = parseHexBytes(ctx.shortLiteral.getText());
-                return new AstExactBytesMatcher(array);
+                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
+                matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+                return matcher;
             } else if (ctx.longLiteral != null) {
                 ByteBuffer buf = ByteBuffer.allocate(Long.SIZE / 8);
                 buf.putLong(Long.parseLong(ctx.longLiteral.getText()));
                 byte[] array = buf.array();
-                return new AstExactBytesMatcher(array);
+                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
+                matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+                return matcher;
             } else if (ctx.intLiteral != null) {
                 ByteBuffer buf = ByteBuffer.allocate(Integer.SIZE / 8);
                 buf.putInt(Integer.parseInt(ctx.intLiteral.getText()));
                 byte[] array = buf.array();
-                return new AstExactBytesMatcher(array);
+                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
+                matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+                return matcher;
             }
 
             return null;
@@ -1347,7 +1730,9 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstRegexMatcher visitRegexMatcher(RegexMatcherContext ctx) {
             String regex = ctx.regex.getText();
-            return new AstRegexMatcher(NamedGroupPattern.compile(regex));
+            AstRegexMatcher matcher = new AstRegexMatcher(NamedGroupPattern.compile(regex));
+            matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return matcher;
         }
 
     }
@@ -1362,7 +1747,9 @@ abstract class ScriptParseStrategy<T> {
         public AstExpressionMatcher visitExpressionMatcher(ExpressionMatcherContext ctx) {
             ValueExpression expression = elFactory.createValueExpression(elContext, ctx.expression.getText(),
                     byte[].class);
-            return new AstExpressionMatcher(expression);
+            AstExpressionMatcher matcher = new AstExpressionMatcher(expression);
+            matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return matcher;
         }
 
     }
@@ -1379,22 +1766,35 @@ abstract class ScriptParseStrategy<T> {
                 String lastIndex = ctx.lastIndex.getText();
                 if (ctx.capture != null) {
                     String capture = ctx.capture.getText();
-                    return new AstFixedLengthBytesMatcher(parseInt(lastIndex), capture.substring(1, capture.length()));
+                    String captureName = capture.substring(1, capture.length());
+                    AstFixedLengthBytesMatcher matcher = new AstFixedLengthBytesMatcher(parseInt(lastIndex), captureName);
+                    matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+                    return matcher;
                 } else {
-                    return new AstFixedLengthBytesMatcher(parseInt(lastIndex));
+                    AstFixedLengthBytesMatcher matcher = new AstFixedLengthBytesMatcher(parseInt(lastIndex));
+                    matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+                    return matcher;
                 }
             } else if (ctx.byteCapture != null) {
                 String byteCapture = ctx.byteCapture.getText();
-                return new AstByteLengthBytesMatcher(byteCapture.substring(1));
+                AstByteLengthBytesMatcher matcher = new AstByteLengthBytesMatcher(byteCapture.substring(1));
+                matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+                return matcher;
             } else if (ctx.shortCapture != null) {
                 String shortCapture = ctx.shortCapture.getText();
-                return new AstShortLengthBytesMatcher(shortCapture.substring(1));
+                AstShortLengthBytesMatcher matcher = new AstShortLengthBytesMatcher(shortCapture.substring(1));
+                matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+                return matcher;
             } else if (ctx.intCapture != null) {
                 String intCapture = ctx.intCapture.getText();
-                return new AstIntLengthBytesMatcher(intCapture.substring(1));
+                AstIntLengthBytesMatcher matcher = new AstIntLengthBytesMatcher(intCapture.substring(1));
+                matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+                return matcher;
             } else if (ctx.longCapture != null) {
                 String longCapture = ctx.longCapture.getText();
-                return new AstLongLengthBytesMatcher(longCapture.substring(1));
+                AstLongLengthBytesMatcher matcher = new AstLongLengthBytesMatcher(longCapture.substring(1));
+                matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+                return matcher;
             }
 
             return null;
@@ -1413,32 +1813,65 @@ abstract class ScriptParseStrategy<T> {
             ValueExpression length = elFactory.createValueExpression(elContext, ctx.length.getText(), Integer.class);
             if (ctx.capture != null) {
                 String capture = ctx.capture.getText();
-                return new AstVariableLengthBytesMatcher(length, capture.substring(1));
+                String captureName = capture.substring(1);
+                AstVariableLengthBytesMatcher matcher = new AstVariableLengthBytesMatcher(length, captureName);
+                matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+                return matcher;
             } else {
-                return new AstVariableLengthBytesMatcher(length);
+                AstVariableLengthBytesMatcher matcher = new AstVariableLengthBytesMatcher(length);
+                matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+                return matcher;
             }
         }
     }
 
     private static class AstValueVisitor extends AstVisitor<AstValue> {
 
+        private final Class<?> expectedType;
+
         public AstValueVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+            this(elFactory, elContext, byte[].class);
+        }
+
+        public AstValueVisitor(ExpressionFactory elFactory, ExpressionContext elContext, Class<?> expectedType) {
             super(elFactory, elContext);
+            this.expectedType = expectedType;
         }
 
         @Override
         public AstValue visitLiteralBytes(LiteralBytesContext ctx) {
-            return new AstLiteralBytesValueVisitor(elFactory, elContext).visit(ctx);
+
+            AstLiteralBytesValueVisitor visitor = new AstLiteralBytesValueVisitor(elFactory, elContext);
+            AstLiteralBytesValue value = visitor.visit(ctx);
+            if (value != null) {
+                childInfos().add(value.getRegionInfo());
+            }
+
+            return value;
         }
 
         @Override
         public AstValue visitLiteralText(LiteralTextContext ctx) {
-            return new AstLiteralTextValueVisitor(elFactory, elContext).visit(ctx);
+
+            AstLiteralTextValueVisitor visitor = new AstLiteralTextValueVisitor(elFactory, elContext);
+            AstLiteralTextValue value = visitor.visit(ctx);
+            if (value != null) {
+                childInfos().add(value.getRegionInfo());
+            }
+
+            return value;
         }
 
         @Override
         public AstValue visitExpressionValue(ExpressionValueContext ctx) {
-            return new AstExpressionValueVisitor(elFactory, elContext).visit(ctx);
+
+            AstExpressionValueVisitor visitor = new AstExpressionValueVisitor(elFactory, elContext, expectedType);
+            AstExpressionValue value = visitor.visit(ctx);
+            if (value != null) {
+                childInfos().add(value.getRegionInfo());
+            }
+
+            return value;
         }
 
     }
@@ -1454,7 +1887,9 @@ abstract class ScriptParseStrategy<T> {
             String text = ctx.text.getText();
             String textWithoutQuotes = text.substring(1, text.length() - 1);
             String escapedText = escapeString(textWithoutQuotes);
-            return new AstLiteralTextValue(escapedText);
+            AstLiteralTextValue value = new AstLiteralTextValue(escapedText);
+            value.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return value;
         }
 
     }
@@ -1468,22 +1903,32 @@ abstract class ScriptParseStrategy<T> {
         @Override
         public AstLiteralBytesValue visitLiteralBytes(LiteralBytesContext ctx) {
             String bytes = ctx.bytes.getText();
-            return new AstLiteralBytesValue(parseHexBytes(bytes));
+            AstLiteralBytesValue value = new AstLiteralBytesValue(parseHexBytes(bytes));
+            value.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return value;
         }
 
     }
 
     private static class AstExpressionValueVisitor extends AstVisitor<AstExpressionValue> {
 
+        private final Class<?> expectedType;
+
         public AstExpressionValueVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+            this(elFactory, elContext, byte[].class);
+        }
+
+        public AstExpressionValueVisitor(ExpressionFactory elFactory, ExpressionContext elContext, Class<?> expectedType) {
             super(elFactory, elContext);
+            this.expectedType = expectedType;
         }
 
         @Override
         public AstExpressionValue visitExpressionValue(ExpressionValueContext ctx) {
-            ValueExpression expression = elFactory.createValueExpression(elContext, ctx.expression.getText(),
-                    byte[].class);
-            return new AstExpressionValue(expression);
+            ValueExpression expression = elFactory.createValueExpression(elContext, ctx.expression.getText(), expectedType);
+            AstExpressionValue value = new AstExpressionValue(expression);
+            value.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return value;
         }
 
     }
@@ -1498,54 +1943,98 @@ abstract class ScriptParseStrategy<T> {
 
         @Override
         public AstReadConfigNode visitReadHttpMethodNode(ReadHttpMethodNodeContext ctx) {
+
+            AstValueMatcherVisitor visitor = new AstValueMatcherVisitor(elFactory, elContext);
+            AstValueMatcher value = visitor.visit(ctx.method);
+            childInfos().add(value.getRegionInfo());
+
             node = new AstReadConfigNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setType("method");
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.setMatcher("name", new AstValueMatcherVisitor(elFactory, elContext).visit(ctx.method));
+            node.setMatcher("name", value);
+
             return node;
         }
 
         @Override
         public AstReadConfigNode visitReadHttpHeaderNode(ReadHttpHeaderNodeContext ctx) {
+
+            AstLiteralTextValueVisitor visitor = new AstLiteralTextValueVisitor(elFactory, elContext);
+            AstLiteralTextValue value = visitor.visit(ctx.name);
+            childInfos().add(value.getRegionInfo());
+
             node = new AstReadConfigNode();
             node.setType("header");
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.setValue("name", new AstLiteralTextValueVisitor(elFactory, elContext).visit(ctx.name));
+            node.setValue("name", value);
+
             return super.visitReadHttpHeaderNode(ctx);
         }
 
         @Override
         public AstReadConfigNode visitReadHttpParameterNode(ReadHttpParameterNodeContext ctx) {
+
+            AstLiteralTextValueVisitor visitor = new AstLiteralTextValueVisitor(elFactory, elContext);
+            AstLiteralTextValue value = visitor.visit(ctx.name);
+
             node = new AstReadConfigNode();
-            node.setType("parameter");
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.setValue("name", new AstLiteralTextValueVisitor(elFactory, elContext).visit(ctx.name));
-            return super.visitReadHttpParameterNode(ctx);
+            node.setType("parameter");
+            node.setValue("name", value);
+
+            super.visitReadHttpParameterNode(ctx);
+
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+
+            return node;
         }
 
         @Override
         public AstReadConfigNode visitReadHttpStatusNode(ReadHttpStatusNodeContext ctx) {
+
+            AstValueMatcherVisitor codeVisitor = new AstValueMatcherVisitor(elFactory, elContext);
+            AstValueMatcherVisitor reasonVisitor = new AstValueMatcherVisitor(elFactory, elContext);
+            AstValueMatcher codeMatcher = codeVisitor.visit(ctx.code);
+            AstValueMatcher reasonMatcher = reasonVisitor.visit(ctx.reason);
+
             node = new AstReadConfigNode();
-            node.setType("status");
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.setMatcher("code", new AstValueMatcherVisitor(elFactory, elContext).visit(ctx.code));
-            node.setMatcher("reason", new AstValueMatcherVisitor(elFactory, elContext).visit(ctx.reason));
+            node.setType("status");
+            node.setMatcher("code", codeMatcher);
+            node.setMatcher("reason", reasonMatcher);
+
             return node;
         }
 
         @Override
         public AstReadConfigNode visitReadHttpVersionNode(ReadHttpVersionNodeContext ctx) {
+
+            AstValueMatcherVisitor visitor = new AstValueMatcherVisitor(elFactory, elContext);
+            AstValueMatcher value = visitor.visit(ctx.version);
+
             node = new AstReadConfigNode();
-            node.setType("version");
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.setMatcher("version", new AstValueMatcherVisitor(elFactory, elContext).visit(ctx.version));
+            node.setType("version");
+            node.setMatcher("version", value);
+
             return node;
         }
 
         @Override
         public AstReadConfigNode visitMatcher(MatcherContext ctx) {
-            AstValueMatcher matcher = new AstValueMatcherVisitor(elFactory, elContext).visit(ctx);
-            node.addMatcher(matcher);
+
+            AstValueMatcherVisitor visitor = new AstValueMatcherVisitor(elFactory, elContext);
+            AstValueMatcher matcher = visitor.visit(ctx);
+
+            if (matcher != null) {
+                node.addMatcher(matcher);
+                childInfos().add(matcher.getRegionInfo());
+            }
+
             return node;
         }
 
@@ -1559,62 +2048,104 @@ abstract class ScriptParseStrategy<T> {
 
         @Override
         public AstWriteConfigNode visitWriteHttpHeaderNode(WriteHttpHeaderNodeContext ctx) {
+
+            AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
+            AstValue value = visitor.visit(ctx.name);
+
             node = new AstWriteConfigNode();
-            node.setType("header");
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.setName("name", new AstValueVisitor(elFactory, elContext).visit(ctx.name));
-            return super.visitWriteHttpHeaderNode(ctx);
+            node.setType("header");
+            node.setName("name", value);
+
+            super.visitWriteHttpHeaderNode(ctx);
+
+            return node;
         }
 
         @Override
         public AstWriteConfigNode visitWriteHttpContentLengthNode(WriteHttpContentLengthNodeContext ctx) {
+
             node = new AstWriteConfigNode();
-            node.setType("content-length");
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+            node.setType("content-length");
+
             return node;
         }
 
         @Override
         public AstWriteConfigNode visitWriteHttpMethodNode(WriteHttpMethodNodeContext ctx) {
+
             node = new AstWriteConfigNode();
-            node.setType("method");
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.addValue(new AstValueVisitor(elFactory, elContext).visit(ctx.method));
+            node.setType("method");
+
+            super.visitWriteHttpMethodNode(ctx);
+
             return node;
         }
 
         @Override
         public AstWriteConfigNode visitWriteHttpParameterNode(WriteHttpParameterNodeContext ctx) {
+
+            AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
+            AstValue value = visitor.visit(ctx.name);
+
             node = new AstWriteConfigNode();
-            node.setType("parameter");
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.setName("name", new AstValueVisitor(elFactory, elContext).visit(ctx.name));
-            return super.visitWriteHttpParameterNode(ctx);
+            node.setType("parameter");
+            node.setName("name", value);
+
+            super.visitWriteHttpParameterNode(ctx);
+
+            return node;
         }
 
         @Override
         public AstWriteConfigNode visitWriteHttpVersionNode(WriteHttpVersionNodeContext ctx) {
+
             node = new AstWriteConfigNode();
             node.setType("version");
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.addValue(new AstValueVisitor(elFactory, elContext).visit(ctx.version));
+
+            super.visitWriteHttpVersionNode(ctx);
+
             return node;
         }
 
         @Override
         public AstWriteConfigNode visitWriteHttpStatusNode(WriteHttpStatusNodeContext ctx) {
+
+            AstValueVisitor codeVisitor = new AstValueVisitor(elFactory, elContext);
+            AstValueVisitor reasonVisitor = new AstValueVisitor(elFactory, elContext);
+            AstValue codeValue = codeVisitor.visit(ctx.code);
+            AstValue reasonValue = reasonVisitor.visit(ctx.reason);
+
             node = new AstWriteConfigNode();
-            node.setType("status");
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
-            node.setValue("code", new AstValueVisitor(elFactory, elContext).visit(ctx.code));
-            node.setValue("reason", new AstValueVisitor(elFactory, elContext).visit(ctx.reason));
+            node.setType("status");
+            node.setValue("code", codeValue);
+            node.setValue("reason", reasonValue);
+
             return node;
         }
 
         @Override
         public AstWriteConfigNode visitWriteValue(WriteValueContext ctx) {
-            AstValue value = new AstValueVisitor(elFactory, elContext).visit(ctx);
-            node.addValue(value);
+
+            AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
+            AstValue value = visitor.visit(ctx);
+
+            if (value != null) {
+                node.addValue(value);
+                childInfos().add(value.getRegionInfo());
+            }
+
             return node;
         }
     }
@@ -1627,8 +2158,11 @@ abstract class ScriptParseStrategy<T> {
 
         @Override
         public AstReadClosedNode visitReadClosedNode(ReadClosedNodeContext ctx) {
+
             node = new AstReadClosedNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+
             return node;
         }
 
@@ -1642,8 +2176,11 @@ abstract class ScriptParseStrategy<T> {
 
         @Override
         public AstWriteCloseNode visitWriteCloseNode(WriteCloseNodeContext ctx) {
+
             node = new AstWriteCloseNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
+
             return node;
         }
 
@@ -1692,6 +2229,30 @@ abstract class ScriptParseStrategy<T> {
             }
         }
         return sb.toString();
+    }
+
+    private static RegionInfo asSequentialRegion(List<RegionInfo> childInfos, ParserRuleContext ctx) {
+        if (childInfos.isEmpty()) {
+            return newSequential(startIndex(ctx.start), stopIndex(ctx.stop) + 1);
+        }
+
+        return newSequential(childInfos, startIndex(ctx.start), stopIndex(ctx.stop) + 1);
+    }
+
+    private static RegionInfo asParallelRegion(List<RegionInfo> childInfos, ParserRuleContext ctx) {
+        if (childInfos.isEmpty()) {
+            return newParallel(startIndex(ctx.start), stopIndex(ctx.stop) + 1);
+        }
+
+        return newParallel(childInfos, startIndex(ctx.start), stopIndex(ctx.stop) + 1);
+    }
+
+    private static int startIndex(Token token) {
+        return (token != null && token.getType() != Token.EOF) ? token.getStartIndex() : 0;
+    }
+
+    private static int stopIndex(Token token) {
+        return (token != null) ? token.getStopIndex() : 0;
     }
 
 }

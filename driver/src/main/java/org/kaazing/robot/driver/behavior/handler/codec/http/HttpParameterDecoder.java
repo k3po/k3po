@@ -29,12 +29,12 @@ import java.util.Map;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
-import org.kaazing.robot.driver.behavior.handler.codec.ConfigDecoder;
+import org.kaazing.robot.driver.behavior.ScriptProgressException;
+import org.kaazing.robot.driver.behavior.handler.codec.AbstractConfigDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageDecoder;
-import org.kaazing.robot.driver.behavior.handler.codec.MessageMismatchException;
 import org.kaazing.robot.driver.netty.bootstrap.http.HttpChannelConfig;
 
-public class HttpParameterDecoder implements ConfigDecoder {
+public class HttpParameterDecoder extends AbstractConfigDecoder {
 
     private String name;
     private List<MessageDecoder> valueDecoders;
@@ -68,10 +68,10 @@ public class HttpParameterDecoder implements ConfigDecoder {
 
     private void decodeParameterValue(Map<String, List<String>> parameters,
             List<String> parameterValues, MessageDecoder valueDecoder)
-            throws MessageMismatchException, Exception {
+            throws Exception {
         int parameterValueCount = parameterValues.size();
         if (parameterValueCount == 0) {
-            throw new MessageMismatchException("Missing HTTP query parameter", name, null);
+            throw new ScriptProgressException(getRegionInfo(), format("Missing HTTP query parameter: %s", name));
         }
         else if (parameterValueCount == 1) {
             // efficiently handle single-valued HTTP query parameter

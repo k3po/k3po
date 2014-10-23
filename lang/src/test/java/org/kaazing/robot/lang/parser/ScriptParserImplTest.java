@@ -28,6 +28,7 @@ import static org.kaazing.robot.lang.parser.ScriptParseStrategy.EXPRESSION_MATCH
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.FIXED_LENGTH_BYTES_MATCHER;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.LITERAL_BYTES_VALUE;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.LITERAL_TEXT_VALUE;
+import static org.kaazing.robot.lang.parser.ScriptParseStrategy.PROPERTY_NODE;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_AWAIT;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.READ_NOTIFY;
@@ -56,6 +57,7 @@ import org.kaazing.robot.lang.ast.AstAcceptNode;
 import org.kaazing.robot.lang.ast.AstCloseNode;
 import org.kaazing.robot.lang.ast.AstClosedNode;
 import org.kaazing.robot.lang.ast.AstConnectedNode;
+import org.kaazing.robot.lang.ast.AstPropertyNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
@@ -69,6 +71,7 @@ import org.kaazing.robot.lang.ast.builder.AstAcceptNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstCloseNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstClosedNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstConnectedNodeBuilder;
+import org.kaazing.robot.lang.ast.builder.AstPropertyNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstReadAwaitNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstReadNodeBuilder;
 import org.kaazing.robot.lang.ast.builder.AstReadNotifyNodeBuilder;
@@ -1720,6 +1723,64 @@ public class ScriptParserImplTest {
 
 	        assertEquals(expected, actual);
 	    }
+
+	    @Test
+	    public void shouldParseNamedPropertyWithLiteralText() throws Exception {
+
+	        String scriptFragment = "property location \"tcp://localhost:8000\"";
+
+	        ScriptParserImpl parser = new ScriptParserImpl();
+
+	        AstPropertyNode actual = parser.parseWithStrategy(scriptFragment, PROPERTY_NODE);
+
+	        AstPropertyNode expected = new AstPropertyNodeBuilder()
+	                .setNextLineInfo(1, 0)
+	                .setPropertyName("location")
+	                .setPropertyValue("tcp://localhost:8000")
+                .done();
+
+	        assertEquals(expected, actual);
+	    }
+
+        @Test
+        public void shouldParseNamedPropertyWithLiteralBytes() throws Exception {
+
+            String scriptFragment = "property location [0x00 0x01 0x02 0x03]";
+
+            ScriptParserImpl parser = new ScriptParserImpl();
+            AstPropertyNode actual = parser.parseWithStrategy(scriptFragment, PROPERTY_NODE);
+
+            AstPropertyNode expected = new AstPropertyNodeBuilder()
+                    .setNextLineInfo(1, 0)
+                    .setPropertyName("location")
+                    .setPropertyValue(new byte[] { 0x00, 0x01, 0x02, 0x03 })
+                .done();
+
+            assertEquals(expected, actual);
+        }
+
+        @Test
+        public void shouldParseNamedPropertyWithExpression() throws Exception {
+
+            String scriptFragment = "property location ${expression}";
+
+            ScriptParserImpl parser = new ScriptParserImpl();
+
+            ExpressionFactory factory = parser.getExpressionFactory();
+            ExpressionContext context = parser.getExpressionContext();
+
+            AstPropertyNode actual = parser.parseWithStrategy(scriptFragment, PROPERTY_NODE);
+
+            ValueExpression expression = factory.createValueExpression(context, "${expression}", Object.class);
+
+            AstPropertyNode expected = new AstPropertyNodeBuilder()
+                    .setNextLineInfo(1, 0)
+                    .setPropertyName("location")
+                    .setPropertyValue(expression)
+                .done();
+
+            assertEquals(expected, actual);
+        }
 
 	// @formatter:on
 }

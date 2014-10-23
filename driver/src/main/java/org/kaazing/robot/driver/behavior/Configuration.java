@@ -20,15 +20,18 @@
 package org.kaazing.robot.driver.behavior;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.el.ExpressionFactory;
 
+import org.jboss.netty.channel.ChannelPipeline;
 import org.kaazing.robot.driver.netty.bootstrap.ClientBootstrap;
 import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
-import org.kaazing.robot.driver.behavior.handler.CompletionHandler;
+import org.kaazing.robot.lang.RegionInfo;
 import org.kaazing.robot.lang.el.ExpressionContext;
 import org.kaazing.robot.lang.el.SetExpressionValueContext;
 
@@ -36,17 +39,31 @@ public class Configuration {
 
     private List<ServerBootstrap> serverBootstraps;
     private List<ClientBootstrap> clientBootstraps;
-    private List<CompletionHandler> completionHandlers;
+    private List<ChannelPipeline> pipelines;
     private Set<Barrier> barriers;
     private org.kaazing.robot.lang.el.SetExpressionValueContext setExpresionContext;
     private org.kaazing.robot.lang.el.ExpressionContext expresionContext;
     private ExpressionFactory factory;
+    private Map<RegionInfo, List<ChannelPipeline>> serverPipelinesByRegion;
 
-    public List<CompletionHandler> getCompletionHandlers() {
-        if (completionHandlers == null) {
-            completionHandlers = new ArrayList<CompletionHandler>();
+    public List<ChannelPipeline> getClientAndServerPipelines() {
+        if (pipelines == null) {
+            pipelines = new ArrayList<ChannelPipeline>();
         }
-        return completionHandlers;
+        return pipelines;
+    }
+
+    public List<ChannelPipeline> getServerPipelines(RegionInfo regionInfo) {
+        if (serverPipelinesByRegion == null) {
+            serverPipelinesByRegion = new HashMap<RegionInfo, List<ChannelPipeline>>();
+        }
+
+        List<ChannelPipeline> serverPipelines = serverPipelinesByRegion.get(regionInfo);
+        if (serverPipelines == null) {
+            serverPipelines = new ArrayList<ChannelPipeline>();
+            serverPipelinesByRegion.put(regionInfo, serverPipelines);
+        }
+        return serverPipelines;
     }
 
     public SetExpressionValueContext getSetExpressionContext() {
@@ -100,10 +117,6 @@ public class Configuration {
             barriers = new HashSet<Barrier>();
         }
         return barriers;
-    }
-
-    public void cancel() {
-
     }
 
 }

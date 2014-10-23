@@ -22,7 +22,6 @@ package org.kaazing.robot.driver.behavior.visitor;
 import java.net.URI;
 import java.util.List;
 
-import org.kaazing.robot.lang.LocationInfo;
 import org.kaazing.robot.lang.ast.AstAcceptNode;
 import org.kaazing.robot.lang.ast.AstAcceptableNode;
 import org.kaazing.robot.lang.ast.AstBoundNode;
@@ -37,6 +36,7 @@ import org.kaazing.robot.lang.ast.AstDisconnectedNode;
 import org.kaazing.robot.lang.ast.AstFlushNode;
 import org.kaazing.robot.lang.ast.AstNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
+import org.kaazing.robot.lang.ast.AstPropertyNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstReadConfigNode;
@@ -55,6 +55,7 @@ import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
 
+// Note: this is no longer injecting, just validating, as injection is now generalized
 public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, InjectHttpStreamsVisitor.State> {
 
     // READ_OPEN  -> [READ_START  -> READ_HEADERS_COMPLETE  -> READ_CONTENT_COMPLETE]  -> READ_CLOSED
@@ -94,7 +95,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
     public static final class State {
         private List<AstStreamNode> streams;
         private List<AstStreamableNode> streamables;
-        private LocationInfo lastLocationInfo;
         private StreamState readState;
         private StreamState writeState;
         public List<AstAcceptableNode> acceptables;
@@ -106,14 +106,34 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
     }
 
     @Override
+    public AstScriptNode visit(AstScriptNode script, State state) throws Exception {
+        AstScriptNode newScript = new AstScriptNode();
+        newScript.setRegionInfo(script.getRegionInfo());
+        newScript.setLocationInfo(script.getLocationInfo());
+        newScript.getProperties().addAll(script.getProperties());
+
+        state.streams = newScript.getStreams();
+
+        for (AstStreamNode stream : script.getStreams()) {
+            stream.accept(this, state);
+        }
+
+        return newScript;
+    }
+
+    @Override
+    public AstScriptNode visit(AstPropertyNode propertyNode, State state) throws Exception {
+        return null;
+    }
+
+    @Override
     public AstScriptNode visit(AstAcceptNode acceptNode, State state) throws Exception {
 
         AstAcceptNode newAcceptNode = new AstAcceptNode();
+        newAcceptNode.setRegionInfo(acceptNode.getRegionInfo());
         newAcceptNode.setLocationInfo(acceptNode.getLocationInfo());
         newAcceptNode.setAcceptName(acceptNode.getAcceptName());
         newAcceptNode.setLocation(acceptNode.getLocation());
-        newAcceptNode.setEndLocation(acceptNode.getEndLocation());
-        state.lastLocationInfo = acceptNode.getLocationInfo();
 
         state.streamables = newAcceptNode.getStreamables();
         state.streams.add(newAcceptNode);
@@ -163,10 +183,9 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
         }
 
         AstConnectNode newConnectNode = new AstConnectNode();
+        newConnectNode.setRegionInfo(connectNode.getRegionInfo());
         newConnectNode.setLocationInfo(connectNode.getLocationInfo());
         newConnectNode.setLocation(connectNode.getLocation());
-        newConnectNode.setEndLocation(connectNode.getEndLocation());
-        state.lastLocationInfo = connectNode.getLocationInfo();
 
         state.streamables = newConnectNode.getStreamables();
         for (AstStreamableNode streamable : connectNode.getStreamables()) {
@@ -181,7 +200,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
             throw new IllegalStateException(String.format("Http write was left in state: %s", state.writeState));
         }
 
-        state.lastLocationInfo = connectNode.getLocationInfo();
         state.streams.add(newConnectNode);
 
         return null;
@@ -199,7 +217,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
             throw new IllegalStateException(String.format("Unexpected read config event (%s) while reading in state %s", node
                     .toString().trim(), state.readState));
         }
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
@@ -216,7 +233,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
             throw new IllegalStateException(String.format("Unexpected write config command (%s) while writing in state %s", node
                     .toString().trim(), state.writeState));
         }
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
@@ -234,7 +250,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
         default:
             throw new IllegalStateException(unexpectedReadEvent(node, state));
         }
-        state.lastLocationInfo = state.lastLocationInfo;
         state.streamables.add(node);
         return null;
     }
@@ -252,7 +267,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
         default:
             throw new IllegalStateException(unexpectedWriteEvent(node, state));
         }
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
@@ -273,7 +287,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
         default:
             throw new IllegalStateException(unexpectedReadEvent(node, state));
         }
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
@@ -294,7 +307,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
         default:
             throw new IllegalStateException(unexpectedWriteEvent(node, state));
         }
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
@@ -315,38 +327,21 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
         default:
             throw new IllegalStateException(unexpectedWriteEvent(node, state));
         }
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstScriptNode script, State state) throws Exception {
-        AstScriptNode newScript = new AstScriptNode();
-        newScript.setLocationInfo(script.getLocationInfo());
-
-        state.streams = newScript.getStreams();
-
-        for (AstStreamNode stream : script.getStreams()) {
-            stream.accept(this, state);
-        }
-
-        return newScript;
-    }
-
-    @Override
     public AstScriptNode visit(AstAcceptableNode acceptableNode, State state) throws Exception {
         AstAcceptableNode newAcceptableNode = new AstAcceptableNode();
+        newAcceptableNode.setRegionInfo(acceptableNode.getRegionInfo());
         newAcceptableNode.setLocationInfo(acceptableNode.getLocationInfo());
         newAcceptableNode.setAcceptName(acceptableNode.getAcceptName());
-        newAcceptableNode.setEndLocation(acceptableNode.getEndLocation());
-        state.lastLocationInfo = acceptableNode.getLocationInfo();
 
         state.streamables = newAcceptableNode.getStreamables();
         for (AstStreamableNode streamable : acceptableNode.getStreamables()) {
             streamable.accept(this, state);
         }
-        state.lastLocationInfo = acceptableNode.getLocationInfo();
 
         if (state.acceptables != null) {
             state.acceptables.add(newAcceptableNode);
@@ -360,70 +355,60 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
 
     @Override
     public AstScriptNode visit(AstDisconnectNode node, State state) throws Exception {
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstUnbindNode node, State state) throws Exception {
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstCloseNode node, State state) throws Exception {
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstChildOpenedNode node, State state) throws Exception {
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstChildClosedNode node, State state) throws Exception {
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstOpenedNode node, State state) throws Exception {
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstBoundNode node, State state) throws Exception {
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstConnectedNode node, State state) throws Exception {
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstDisconnectedNode node, State state) throws Exception {
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstUnboundNode node, State state) throws Exception {
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
@@ -458,49 +443,42 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
             throw new IllegalStateException(unexpectedWriteEvent(node, state));
         }
 
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstReadAwaitNode node, State state) throws Exception {
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstWriteAwaitNode node, State state) throws Exception {
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstReadNotifyNode node, State state) throws Exception {
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstWriteNotifyNode node, State state) throws Exception {
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstReadOptionNode node, State state) throws Exception {
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstWriteOptionNode node, State state) throws Exception {
-        state.lastLocationInfo = node.getLocationInfo();
         state.streamables.add(node);
         return null;
     }
