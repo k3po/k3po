@@ -33,4 +33,36 @@ public abstract class AstRegion {
         this.regionInfo = regionInfo;
     }
 
+    @Override
+    public final int hashCode() {
+        return hashTo();
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj == null || !getClass().isAssignableFrom(obj.getClass())) {
+            return false;
+        }
+
+        AstRegion that = (AstRegion) obj;
+        return equalTo(that);
+    }
+
+    public final String toString() {
+        StringBuilder sb = new StringBuilder();
+        describe(sb);
+        return sb.toString();
+    }
+
+    protected abstract int hashTo();
+
+    protected abstract boolean equalTo(AstRegion that);
+
+    protected void describe(StringBuilder buf) {
+    }
+
 }

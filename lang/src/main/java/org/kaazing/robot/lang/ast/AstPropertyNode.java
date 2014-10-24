@@ -34,16 +34,6 @@ public class AstPropertyNode extends AstNode {
         return visitor.visit(this, parameter);
     }
 
-    @Override
-    public int hashCode() {
-        return hashTo();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstPropertyNode) && equalTo((AstPropertyNode) obj));
-    }
-
     public String getPropertyName() {
         return propertyName;
     }
@@ -61,7 +51,7 @@ public class AstPropertyNode extends AstNode {
     }
 
     protected int hashTo() {
-        int hashCode = super.hashTo();
+        int hashCode = getClass().hashCode();
 
         if (propertyName != null) {
             hashCode <<= 4;
@@ -76,14 +66,19 @@ public class AstPropertyNode extends AstNode {
         return hashCode;
     }
 
+    @Override
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstPropertyNode && equalTo((AstPropertyNode) that);
+    }
+
     protected boolean equalTo(AstPropertyNode that) {
         return equivalent(this.propertyName, that.propertyName) && equivalent(this.propertyValue, that.propertyValue);
     }
 
     @Override
-    protected void formatNode(StringBuilder sb) {
-        super.formatNode(sb);
-        sb.append(format("property %s %s\n", getPropertyName(), getPropertyValue()));
+    protected void describe(StringBuilder buf) {
+        super.describe(buf);
+        buf.append(format("property %s %s\n", getPropertyName(), getPropertyValue()));
     }
 
 }

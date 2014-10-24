@@ -262,7 +262,6 @@ public class NamedGroupPatternTest {
 
 		// @formatter:off
 		AstReadValueNode expected = new AstReadNodeBuilder()
-				.setNextLineInfo(1, 0)
 				.addRegex(NamedGroupPattern.compile("/hello\\:^foo.*\\n/"))
 				.done();
 		// @formatter:on
@@ -302,7 +301,6 @@ public class NamedGroupPatternTest {
 
 		// @formatter:off
 		AstReadValueNode expected = new AstReadNodeBuilder()
-				.setNextLineInfo(1, 0)
 				.addExactText("Hello")
 				.addExactBytes(new byte[] { 0x01, (byte) 0x02, (byte) 0x03 })
 				.addRegex(NamedGroupPattern.compile("/.*\\n/"))
@@ -373,7 +371,6 @@ public class NamedGroupPatternTest {
 				new AstShortLengthBytesMatcher("s"),
 				new AstIntLengthBytesMatcher("i"),
 				new AstLongLengthBytesMatcher("l")));
-		expected.setLocationInfo(1, 0);
 
 		assertEquals(expected, actual);
 	}

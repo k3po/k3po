@@ -40,16 +40,6 @@ public abstract class AstStreamNodeBuilder<T extends AstStreamNode> extends
         super(node, builder);
     }
 
-    @Override
-    public int line() {
-        return result.line();
-    }
-
-    @Override
-    public int line(int line) {
-        return result.line(line);
-    }
-
     public abstract AbstractAstStreamableNodeBuilder<AstOpenedNode, ? extends AstStreamNodeBuilder<T>> addOpenedEvent();
 
     public abstract AbstractAstStreamableNodeBuilder<AstBoundNode, ? extends AstStreamNodeBuilder<T>> addBoundEvent();

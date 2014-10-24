@@ -29,23 +29,8 @@ import org.kaazing.robot.lang.ast.value.AstLiteralTextValue;
 
 public class AstPropertyNodeBuilder extends AbstractAstNodeBuilder<AstPropertyNode, AstPropertyNode> {
 
-    private int line;
-
     public AstPropertyNodeBuilder() {
         this(new AstPropertyNode());
-    }
-
-    @Override
-    public AstPropertyNodeBuilder setLocationInfo(int line, int column) {
-        node.setLocationInfo(line, column);
-        internalSetLineInfo(line);
-        return this;
-    }
-
-    @Override
-    public AstPropertyNodeBuilder setNextLineInfo(int linesToSkip, int column) {
-        internalSetNextLineInfo(linesToSkip, column);
-        return this;
     }
 
     public AstPropertyNodeBuilder setPropertyName(String propertyName) {
@@ -73,17 +58,6 @@ public class AstPropertyNodeBuilder extends AbstractAstNodeBuilder<AstPropertyNo
         return result;
     }
 
-    @Override
-    protected int line() {
-        return line;
-    }
-
-    @Override
-    protected int line(int line) {
-        this.line = line;
-        return line;
-    }
-
     private AstPropertyNodeBuilder(AstPropertyNode node) {
         super(node, node);
     }
@@ -93,19 +67,6 @@ public class AstPropertyNodeBuilder extends AbstractAstNodeBuilder<AstPropertyNo
 
         public ScriptNested(R builder) {
             super(new AstPropertyNode(), builder);
-        }
-
-        @Override
-        public ScriptNested<R> setLocationInfo(int line, int column) {
-            node.setLocationInfo(line, column);
-            internalSetLineInfo(line);
-            return this;
-        }
-
-        @Override
-        public ScriptNested<R> setNextLineInfo(int linesToSkip, int column) {
-            internalSetNextLineInfo(linesToSkip, column);
-            return this;
         }
 
         public ScriptNested<R> setOptionName(String propertyName) {
@@ -133,16 +94,6 @@ public class AstPropertyNodeBuilder extends AbstractAstNodeBuilder<AstPropertyNo
             AstScriptNode scriptNode = result.node;
             scriptNode.getProperties().add(node);
             return result;
-        }
-
-        @Override
-        protected int line() {
-            return result.line();
-        }
-
-        @Override
-        protected int line(int line) {
-            return result.line(line);
         }
 
     }

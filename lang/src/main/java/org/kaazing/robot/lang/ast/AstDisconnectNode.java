@@ -27,18 +27,18 @@ public class AstDisconnectNode extends AstCommandNode {
     }
 
     @Override
-    public int hashCode() {
-        return hashTo();
+    protected int hashTo() {
+        return getClass().hashCode();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstDisconnectNode) && equalTo((AstDisconnectNode) obj));
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstDisconnectNode;
     }
 
     @Override
-    protected void formatNode(StringBuilder sb) {
-        super.formatNode(sb);
-        sb.append("disconnect\n");
+    protected void describe(StringBuilder buf) {
+        super.describe(buf);
+        buf.append("disconnect\n");
     }
 }

@@ -47,13 +47,12 @@ public class AstScriptNode extends AstNode {
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
-
         return visitor.visit(this, parameter);
     }
 
     @Override
-    public int hashCode() {
-        int hashCode = super.hashTo();
+    protected int hashTo() {
+        int hashCode = getClass().hashCode();
 
         if (streams != null) {
             hashCode <<= 4;
@@ -64,24 +63,24 @@ public class AstScriptNode extends AstNode {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstScriptNode) && equalTo((AstScriptNode) obj));
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstScriptNode && equalTo((AstScriptNode) that);
     }
 
     protected boolean equalTo(AstScriptNode that) {
-        return super.equalTo(that) && equivalent(this.streams, that.streams);
+        return equivalent(this.streams, that.streams);
     }
 
     @Override
-    protected void formatNode(StringBuilder sb) {
+    protected void describe(StringBuilder buf) {
         if (properties != null) {
             for (AstPropertyNode property : properties) {
-                property.formatNode(sb);
+                property.describe(buf);
             }
         }
         if (streams != null) {
             for (AstStreamNode stream : streams) {
-                stream.formatNode(sb);
+                stream.describe(buf);
             }
         }
     }

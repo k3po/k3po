@@ -109,7 +109,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
     public AstScriptNode visit(AstScriptNode script, State state) throws Exception {
         AstScriptNode newScript = new AstScriptNode();
         newScript.setRegionInfo(script.getRegionInfo());
-        newScript.setLocationInfo(script.getLocationInfo());
         newScript.getProperties().addAll(script.getProperties());
 
         state.streams = newScript.getStreams();
@@ -131,7 +130,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
 
         AstAcceptNode newAcceptNode = new AstAcceptNode();
         newAcceptNode.setRegionInfo(acceptNode.getRegionInfo());
-        newAcceptNode.setLocationInfo(acceptNode.getLocationInfo());
         newAcceptNode.setAcceptName(acceptNode.getAcceptName());
         newAcceptNode.setLocation(acceptNode.getLocation());
 
@@ -184,7 +182,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
 
         AstConnectNode newConnectNode = new AstConnectNode();
         newConnectNode.setRegionInfo(connectNode.getRegionInfo());
-        newConnectNode.setLocationInfo(connectNode.getLocationInfo());
         newConnectNode.setLocation(connectNode.getLocation());
 
         state.streamables = newConnectNode.getStreamables();
@@ -335,7 +332,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
     public AstScriptNode visit(AstAcceptableNode acceptableNode, State state) throws Exception {
         AstAcceptableNode newAcceptableNode = new AstAcceptableNode();
         newAcceptableNode.setRegionInfo(acceptableNode.getRegionInfo());
-        newAcceptableNode.setLocationInfo(acceptableNode.getLocationInfo());
         newAcceptableNode.setAcceptName(acceptableNode.getAcceptName());
 
         state.streamables = newAcceptableNode.getStreamables();

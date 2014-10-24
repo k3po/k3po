@@ -109,11 +109,11 @@ public class Robot {
     private Robot(
             ChannelAddressFactory addressFactory,
             BootstrapFactory bootstrapFactory,
-            boolean releaseBootstrapFactory) {
+            boolean createdBootstrapFactory) {
 
-        this.bootstrapFactory = bootstrapFactory;
         this.addressFactory = addressFactory;
-        this.createdBootstrapFactory = releaseBootstrapFactory;
+        this.bootstrapFactory = bootstrapFactory;
+        this.createdBootstrapFactory = createdBootstrapFactory;
 
         ChannelFutureListener stopConfigurationListener = createStopConfigurationListener();
         this.abortedFuture.addListener(stopConfigurationListener);

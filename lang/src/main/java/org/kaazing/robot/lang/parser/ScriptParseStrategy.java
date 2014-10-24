@@ -700,7 +700,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             node = new AstPropertyNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setPropertyName(ctx.name.getText());
             node.setPropertyValue(value);
 
@@ -756,7 +755,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstAcceptNode visitAcceptNode(AcceptNodeContext ctx) {
             node = new AstAcceptNode();
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setLocation(URI.create(ctx.acceptURI.getText()));
             if (ctx.text != null) {
                 node.setAcceptName(ctx.text.getText());
@@ -788,7 +786,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstAcceptableNode visitAcceptableNode(AcceptableNodeContext ctx) {
             node = new AstAcceptableNode();
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             if (ctx.text != null) {
                 node.setAcceptName(ctx.text.getText());
             }
@@ -819,7 +816,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstConnectNode visitConnectNode(ConnectNodeContext ctx) {
             node = new AstConnectNode();
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setLocation(URI.create(ctx.connectURI.getText()));
             super.visitConnectNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
@@ -911,7 +907,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             childInfos().add(value.getRegionInfo());
 
             node = new AstReadOptionNode();
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setOptionName(ctx.name.getText());
             node.setOptionValue(value);
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
@@ -927,7 +922,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             childInfos().add(value.getRegionInfo());
 
             node = new AstWriteOptionNode();
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setOptionName(ctx.name.getText());
             node.setOptionValue(value);
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
@@ -1294,7 +1288,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstCloseNode visitCloseNode(CloseNodeContext ctx) {
             node = new AstCloseNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
 
@@ -1310,7 +1303,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstDisconnectNode visitDisconnectNode(DisconnectNodeContext ctx) {
             node = new AstDisconnectNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
 
@@ -1326,7 +1318,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstUnbindNode visitUnbindNode(UnbindNodeContext ctx) {
             node = new AstUnbindNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
 
@@ -1341,7 +1332,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstWriteValueNode visitWriteNode(WriteNodeContext ctx) {
             node = new AstWriteValueNode();
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             super.visitWriteNode(ctx);
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return node;
@@ -1367,7 +1357,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstChildOpenedNode visitChildOpenedNode(ChildOpenedNodeContext ctx) {
             node = new AstChildOpenedNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
 
@@ -1383,7 +1372,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstChildClosedNode visitChildClosedNode(ChildClosedNodeContext ctx) {
             node = new AstChildClosedNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
 
@@ -1399,7 +1387,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstBoundNode visitBoundNode(BoundNodeContext ctx) {
             node = new AstBoundNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
 
@@ -1415,7 +1402,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstClosedNode visitClosedNode(ClosedNodeContext ctx) {
             node = new AstClosedNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
 
@@ -1431,7 +1417,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstConnectedNode visitConnectedNode(ConnectedNodeContext ctx) {
             node = new AstConnectedNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
 
@@ -1447,7 +1432,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstDisconnectedNode visitDisconnectedNode(DisconnectedNodeContext ctx) {
             node = new AstDisconnectedNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
 
@@ -1463,7 +1447,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstOpenedNode visitOpenedNode(OpenedNodeContext ctx) {
             node = new AstOpenedNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
 
@@ -1478,7 +1461,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstReadValueNode visitReadNode(ReadNodeContext ctx) {
             node = new AstReadValueNode();
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             super.visitReadNode(ctx);
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return node;
@@ -1505,7 +1487,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstUnboundNode visitUnboundNode(UnboundNodeContext ctx) {
             node = new AstUnboundNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             return node;
         }
 
@@ -1521,7 +1502,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstReadAwaitNode visitReadAwaitNode(ReadAwaitNodeContext ctx) {
             node = new AstReadAwaitNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setBarrierName(ctx.barrier.getText());
             return node;
         }
@@ -1538,7 +1518,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstReadNotifyNode visitReadNotifyNode(ReadNotifyNodeContext ctx) {
             node = new AstReadNotifyNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setBarrierName(ctx.barrier.getText());
             return node;
         }
@@ -1555,7 +1534,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstWriteAwaitNode visitWriteAwaitNode(WriteAwaitNodeContext ctx) {
             node = new AstWriteAwaitNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setBarrierName(ctx.barrier.getText());
             return node;
         }
@@ -1572,7 +1550,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstWriteNotifyNode visitWriteNotifyNode(WriteNotifyNodeContext ctx) {
             node = new AstWriteNotifyNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setBarrierName(ctx.barrier.getText());
             return node;
         }
@@ -1951,7 +1928,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             node = new AstReadConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setType("method");
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setMatcher("name", value);
 
             return node;
@@ -1967,7 +1943,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             node = new AstReadConfigNode();
             node.setType("header");
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setValue("name", value);
 
             return super.visitReadHttpHeaderNode(ctx);
@@ -1980,7 +1955,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             AstLiteralTextValue value = visitor.visit(ctx.name);
 
             node = new AstReadConfigNode();
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setType("parameter");
             node.setValue("name", value);
 
@@ -2001,7 +1975,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             node = new AstReadConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setType("status");
             node.setMatcher("code", codeMatcher);
             node.setMatcher("reason", reasonMatcher);
@@ -2017,7 +1990,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             node = new AstReadConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setType("version");
             node.setMatcher("version", value);
 
@@ -2054,7 +2026,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             node = new AstWriteConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setType("header");
             node.setName("name", value);
 
@@ -2068,7 +2039,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             node = new AstWriteConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setType("content-length");
 
             return node;
@@ -2079,7 +2049,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             node = new AstWriteConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setType("method");
 
             super.visitWriteHttpMethodNode(ctx);
@@ -2095,7 +2064,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             node = new AstWriteConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setType("parameter");
             node.setName("name", value);
 
@@ -2110,7 +2078,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             node = new AstWriteConfigNode();
             node.setType("version");
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
 
             super.visitWriteHttpVersionNode(ctx);
 
@@ -2127,7 +2094,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             node = new AstWriteConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
             node.setType("status");
             node.setValue("code", codeValue);
             node.setValue("reason", reasonValue);
@@ -2161,7 +2127,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             node = new AstReadClosedNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
 
             return node;
         }
@@ -2179,7 +2144,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             node = new AstWriteCloseNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setLocationInfo(ctx.k.getLine(), ctx.k.getCharPositionInLine());
 
             return node;
         }

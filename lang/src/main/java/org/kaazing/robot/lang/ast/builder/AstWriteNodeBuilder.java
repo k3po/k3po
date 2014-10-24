@@ -29,23 +29,8 @@ import org.kaazing.robot.lang.ast.value.AstLiteralTextValue;
 
 public class AstWriteNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWriteValueNode, AstWriteValueNode> {
 
-    private int line;
-
     public AstWriteNodeBuilder() {
         this(new AstWriteValueNode());
-    }
-
-    @Override
-    public AstWriteNodeBuilder setLocationInfo(int line, int column) {
-        node.setLocationInfo(line, column);
-        internalSetLineInfo(line);
-        return this;
-    }
-
-    @Override
-    public AstWriteNodeBuilder setNextLineInfo(int linesToSkip, int column) {
-        internalSetNextLineInfo(linesToSkip, column);
-        return this;
     }
 
     public AstWriteNodeBuilder addExactBytes(byte[] exactBytes) {
@@ -68,17 +53,6 @@ public class AstWriteNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWri
         return result;
     }
 
-    @Override
-    protected int line() {
-        return line;
-    }
-
-    @Override
-    protected int line(int line) {
-        this.line = line;
-        return line;
-    }
-
     private AstWriteNodeBuilder(AstWriteValueNode node) {
         super(node, node);
     }
@@ -88,19 +62,6 @@ public class AstWriteNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWri
 
         public StreamNested(R builder) {
             super(new AstWriteValueNode(), builder);
-        }
-
-        @Override
-        public StreamNested<R> setLocationInfo(int line, int column) {
-            node.setLocationInfo(line, column);
-            internalSetLineInfo(line);
-            return this;
-        }
-
-        @Override
-        public StreamNested<R> setNextLineInfo(int linesToSkip, int column) {
-            internalSetNextLineInfo(linesToSkip, column);
-            return this;
         }
 
         public StreamNested<R> addExactBytes(byte[] exactBytes) {
@@ -123,16 +84,6 @@ public class AstWriteNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWri
             AstStreamNode streamNode = result.node;
             streamNode.getStreamables().add(node);
             return result;
-        }
-
-        @Override
-        protected int line() {
-            return result.line();
-        }
-
-        @Override
-        protected int line(int line) {
-            return result.line(line);
         }
 
     }

@@ -31,31 +31,7 @@ public abstract class AbstractAstNodeBuilder<N extends AstNode, R> {
         this.result = result;
     }
 
-    public abstract AbstractAstNodeBuilder<N, R> setNextLineInfo(int linesToSkip, int column);
-
-    public abstract AbstractAstNodeBuilder<N, R> setLocationInfo(int line, int column);
-
     public abstract R done();
-
-    protected abstract int line();
-
-    protected abstract int line(int line);
-
-    protected void internalSetLineInfo(int line) {
-        line(line);
-    }
-
-    protected void internalSetNextLineInfo(int linesToSkip, int column) {
-        setLocationInfo(line() + linesToSkip, column);
-    }
-
-    protected final int line(AbstractAstNodeBuilder<?, ?> builder) {
-        return builder.line();
-    }
-
-    protected final int line(AbstractAstNodeBuilder<?, ?> builder, int line) {
-        return builder.line(line);
-    }
 
     protected <T extends AstNode, B extends AbstractAstNodeBuilder<? extends T, ?>> T node(B builder) {
         return builder.node;

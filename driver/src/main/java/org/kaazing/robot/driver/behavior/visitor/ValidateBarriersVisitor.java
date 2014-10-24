@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.kaazing.robot.lang.LocationInfo;
 import org.kaazing.robot.lang.ast.AstAcceptNode;
 import org.kaazing.robot.lang.ast.AstAcceptableNode;
 import org.kaazing.robot.lang.ast.AstBarrierNode;
@@ -60,6 +59,7 @@ import org.kaazing.robot.lang.ast.AstWriteConfigNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
+import org.kaazing.robot.lang.parser.ScriptParseException;
 
 public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBarriersVisitor.State> {
 
@@ -83,12 +83,7 @@ public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBa
         awaiterNames.removeAll(state.notifierNames);
         if (!awaiterNames.isEmpty()) {
             String awaiterName = awaiterNames.iterator().next();
-            AstBarrierNode awaiter = state.awaitersByName.get(awaiterName);
-            LocationInfo locationInfo = awaiter.getLocationInfo();
-            String lineInfo = String.format("line %d:%d", locationInfo.line, locationInfo.column);
-
-            throw new IllegalStateException(format("%s : barrier name '%s' not triggered by any 'notify' directives", lineInfo,
-                    awaiterName));
+            throw new ScriptParseException(format("barrier name '%s' not triggered by any 'notify' directives", awaiterName));
         }
 
         return null;

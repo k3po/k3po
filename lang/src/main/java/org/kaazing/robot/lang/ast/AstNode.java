@@ -19,56 +19,10 @@
 
 package org.kaazing.robot.lang.ast;
 
-import static java.lang.String.format;
-
-import java.util.Objects;
-
-import org.kaazing.robot.lang.LocationInfo;
 
 public abstract class AstNode extends AstRegion {
 
-    private LocationInfo locationInfo;
-
-    public LocationInfo getLocationInfo() {
-        return locationInfo;
-    }
-
-    public void setLocationInfo(int line, int column) {
-        this.locationInfo = new LocationInfo(line, column);
-    }
-
-    public void setLocationInfo(LocationInfo locationInfo) {
-        this.locationInfo = locationInfo;
-    }
-
     public abstract <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception;
-
-    public abstract int hashCode();
-
-    public abstract boolean equals(Object obj);
-
-    public final String toString() {
-        StringBuilder sb = new StringBuilder();
-        formatNode(sb);
-        return sb.toString();
-    }
-
-    protected int hashTo() {
-        return Objects.hash(locationInfo);
-    }
-
-    protected final boolean equalTo(AstNode that) {
-        return Objects.equals(this.locationInfo, that.locationInfo);
-    }
-
-    protected void formatNode(StringBuilder sb) {
-        if (locationInfo != null) {
-            sb.append(format("[%03d:%02d] ", locationInfo.line, locationInfo.column));
-        }
-        else {
-            sb.append("         ");
-        }
-    }
 
     public interface Visitor<R, P> {
         R visit(AstScriptNode node, P parameter) throws Exception;

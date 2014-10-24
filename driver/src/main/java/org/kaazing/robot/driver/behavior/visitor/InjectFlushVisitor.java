@@ -73,7 +73,6 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
 
         AstScriptNode newScript = new AstScriptNode();
         newScript.setRegionInfo(script.getRegionInfo());
-        newScript.setLocationInfo(script.getLocationInfo());
         newScript.getProperties().addAll(script.getProperties());
 
         state.streams = newScript.getStreams();
@@ -98,7 +97,6 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
 
         AstAcceptNode newAcceptNode = new AstAcceptNode();
         newAcceptNode.setRegionInfo(acceptNode.getRegionInfo());
-        newAcceptNode.setLocationInfo(acceptNode.getLocationInfo());
         newAcceptNode.setAcceptName(acceptNode.getAcceptName());
         newAcceptNode.setLocation(acceptNode.getLocation());
 
@@ -124,7 +122,6 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
 
         AstAcceptableNode newAcceptableNode = new AstAcceptableNode();
         newAcceptableNode.setRegionInfo(acceptableNode.getRegionInfo());
-        newAcceptableNode.setLocationInfo(acceptableNode.getLocationInfo());
         newAcceptableNode.setAcceptName(acceptableNode.getAcceptName());
 
         state.streamables = newAcceptableNode.getStreamables();
@@ -145,7 +142,6 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
 
         AstConnectNode newConnectNode = new AstConnectNode();
         newConnectNode.setRegionInfo(connectNode.getRegionInfo());
-        newConnectNode.setLocationInfo(connectNode.getLocationInfo());
         newConnectNode.setLocation(connectNode.getLocation());
 
         state.streamables = newConnectNode.getStreamables();

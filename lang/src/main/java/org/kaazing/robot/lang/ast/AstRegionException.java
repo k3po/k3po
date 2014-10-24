@@ -19,36 +19,36 @@
 
 package org.kaazing.robot.lang.ast;
 
-import org.kaazing.robot.lang.LocationInfo;
+import org.kaazing.robot.lang.RegionInfo;
 
-public class AstNodeException extends Exception {
+public class AstRegionException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    private LocationInfo locationInfo;
+    private RegionInfo regionInfo;
 
-    public AstNodeException() {
+    public AstRegionException() {
         super();
     }
 
-    public AstNodeException(String message, Throwable cause) {
+    public AstRegionException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public AstNodeException(String message) {
+    public AstRegionException(String message) {
         super(message);
     }
 
-    public AstNodeException(Throwable cause) {
+    public AstRegionException(Throwable cause) {
         super(cause);
     }
 
-    public LocationInfo getLocationInfo() {
-        return locationInfo;
+    public RegionInfo getLocationInfo() {
+        return regionInfo;
     }
 
-    public AstNodeException initLocationInfo(LocationInfo locationInfo) {
-        this.locationInfo = locationInfo;
+    public AstRegionException initRegionInfo(RegionInfo regionInfo) {
+        this.regionInfo = regionInfo;
         return this;
     }
 

@@ -32,13 +32,12 @@ public abstract class AstStreamNode extends AstNode {
         if (streamables == null) {
             streamables = new LinkedList<AstStreamableNode>();
         }
-
         return streamables;
     }
 
     @Override
     protected int hashTo() {
-        int hashCode = super.hashTo();
+        int hashCode = getClass().hashCode();
 
         if (streamables != null) {
             hashCode <<= 4;
@@ -49,20 +48,20 @@ public abstract class AstStreamNode extends AstNode {
     }
 
     protected boolean equalTo(AstStreamNode that) {
-        return super.equalTo(that) && equivalent(this.streamables, that.streamables);
+        return equivalent(this.streamables, that.streamables);
     }
 
     @Override
-    protected void formatNode(StringBuilder sb) {
-        formatNodeLine(sb);
+    protected void describe(StringBuilder buf) {
+        describeLine(buf);
         if (streamables != null) {
-            for (AstStreamableNode streamable : streamables) {
-                streamable.formatNode(sb);
+            for (AstRegion streamable : streamables) {
+                streamable.describe(buf);
             }
         }
     }
 
-    protected void formatNodeLine(StringBuilder sb) {
-        super.formatNode(sb);
+    protected void describeLine(StringBuilder sb) {
+        super.describe(sb);
     }
 }

@@ -72,7 +72,6 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
         AstScriptNode newScript = new AstScriptNode();
         newScript.setRegionInfo(script.getRegionInfo());
-        newScript.setLocationInfo(script.getLocationInfo());
         newScript.getProperties().addAll(script.getProperties());
 
         state.streams = newScript.getStreams();
@@ -96,7 +95,6 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
         AstAcceptNode newAcceptNode = new AstAcceptNode();
         newAcceptNode.setRegionInfo(acceptNode.getRegionInfo());
-        newAcceptNode.setLocationInfo(acceptNode.getLocationInfo());
         newAcceptNode.setAcceptName(acceptNode.getAcceptName());
         newAcceptNode.setLocation(acceptNode.getLocation());
 
@@ -121,7 +119,6 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
         AstAcceptableNode newAcceptableNode = new AstAcceptableNode();
         newAcceptableNode.setRegionInfo(acceptableNode.getRegionInfo());
-        newAcceptableNode.setLocationInfo(acceptableNode.getLocationInfo());
         newAcceptableNode.setAcceptName(acceptableNode.getAcceptName());
 
         state.streamables = newAcceptableNode.getStreamables();
@@ -141,7 +138,6 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
         AstConnectNode newConnectNode = new AstConnectNode();
         newConnectNode.setRegionInfo(connectNode.getRegionInfo());
-        newConnectNode.setLocationInfo(connectNode.getLocationInfo());
         newConnectNode.setLocation(connectNode.getLocation());
 
         state.streamables = newConnectNode.getStreamables();
@@ -272,7 +268,6 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
         case NONE:
             AstOpenedNode openedNode = new AstOpenedNode();
             openedNode.setRegionInfo(boundNode.getRegionInfo());
-            openedNode.setLocationInfo(boundNode.getLocationInfo());
             openedNode.accept(this, state);
             break;
         default:
@@ -301,7 +296,6 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
         case OPENED:
             AstBoundNode boundNode = new AstBoundNode();
             boundNode.setRegionInfo(connectedNode.getRegionInfo());
-            boundNode.setLocationInfo(connectedNode.getLocationInfo());
             boundNode.accept(this, state);
             break;
         default:
@@ -361,7 +355,6 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
         case CONNECTED:
             AstDisconnectedNode disconnectedNode = new AstDisconnectedNode();
             disconnectedNode.setRegionInfo(unboundNode.getRegionInfo());
-            disconnectedNode.setLocationInfo(unboundNode.getLocationInfo());
             disconnectedNode.accept(this, state);
             break;
         default:
@@ -389,7 +382,6 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
         case DISCONNECTED:
             AstUnboundNode unboundNode = new AstUnboundNode();
             unboundNode.setRegionInfo(closedNode.getRegionInfo());
-            unboundNode.setLocationInfo(closedNode.getLocationInfo());
             unboundNode.accept(this, state);
             break;
         default:

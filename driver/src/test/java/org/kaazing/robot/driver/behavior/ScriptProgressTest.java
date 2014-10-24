@@ -26,9 +26,9 @@ import java.io.ByteArrayInputStream;
 
 import org.junit.Test;
 import org.kaazing.robot.lang.RegionInfo;
+import org.kaazing.robot.lang.ast.AstRegion;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.AstStreamNode;
-import org.kaazing.robot.lang.ast.AstStreamableNode;
 import org.kaazing.robot.lang.parser.ScriptParser;
 import org.kaazing.robot.lang.parser.ScriptParserImpl;
 
@@ -70,7 +70,7 @@ public class ScriptProgressTest {
         ScriptParser parser = new ScriptParserImpl();
         AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
-        AstStreamableNode readAST = connectAST.getStreamables().get(1);
+        AstRegion readAST = connectAST.getStreamables().get(1);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
 
@@ -176,7 +176,7 @@ public class ScriptProgressTest {
         ScriptParser parser = new ScriptParserImpl();
         AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
-        AstStreamableNode closedAST = connectAST.getStreamables().get(2);
+        AstRegion closedAST = connectAST.getStreamables().get(2);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
  
@@ -208,7 +208,7 @@ public class ScriptProgressTest {
         ScriptParser parser = new ScriptParserImpl();
         AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
-        AstStreamableNode closedAST = connectAST.getStreamables().get(2);
+        AstRegion closedAST = connectAST.getStreamables().get(2);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
 
@@ -270,7 +270,7 @@ public class ScriptProgressTest {
         ScriptParser parser = new ScriptParserImpl();
         AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
-        AstStreamableNode closedAST = connectAST.getStreamables().get(2);
+        AstRegion closedAST = connectAST.getStreamables().get(2);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
 
@@ -376,7 +376,7 @@ public class ScriptProgressTest {
         ScriptParser parser = new ScriptParserImpl();
         AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
-        AstStreamableNode closeAST = connectAST.getStreamables().get(1);
+        AstRegion closeAST = connectAST.getStreamables().get(1);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
 
@@ -428,9 +428,9 @@ public class ScriptProgressTest {
         ScriptParser parser = new ScriptParserImpl();
         AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
         AstStreamNode connectOneAST = scriptAST.getStreams().get(0);
-        AstStreamableNode closeOneAST = connectOneAST.getStreamables().get(1);
+        AstRegion closeOneAST = connectOneAST.getStreamables().get(1);
         AstStreamNode connectTwoAST = scriptAST.getStreams().get(1);
-        AstStreamableNode closeTwoAST = connectTwoAST.getStreamables().get(1);
+        AstRegion closeTwoAST = connectTwoAST.getStreamables().get(1);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
 
@@ -480,7 +480,7 @@ public class ScriptProgressTest {
         ScriptParser parser = new ScriptParserImpl();
         AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
         AstStreamNode connectAST = scriptAST.getStreams().get(1);
-        AstStreamableNode closeAST = connectAST.getStreamables().get(1);
+        AstRegion closeAST = connectAST.getStreamables().get(1);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
         ScriptProgress progress = new ScriptProgress(scriptInfo, script);
@@ -579,7 +579,7 @@ public class ScriptProgressTest {
         ScriptParser parser = new ScriptParserImpl();
         AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
         AstStreamNode acceptedAST = scriptAST.getStreams().get(1);
-        AstStreamableNode closeAST = acceptedAST.getStreamables().get(1);
+        AstRegion closeAST = acceptedAST.getStreamables().get(1);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
 
@@ -667,7 +667,7 @@ public class ScriptProgressTest {
         ScriptParser parser = new ScriptParserImpl();
         AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
         AstStreamNode acceptedAST = scriptAST.getStreams().get(1);
-        AstStreamableNode closeAST = acceptedAST.getStreamables().get(1);
+        AstRegion closeAST = acceptedAST.getStreamables().get(1);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
 
@@ -727,7 +727,7 @@ public class ScriptProgressTest {
         ScriptParser parser = new ScriptParserImpl();
         AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
         AstStreamNode acceptedAST = scriptAST.getStreams().get(2);
-        AstStreamableNode closeAST = acceptedAST.getStreamables().get(1);
+        AstRegion closeAST = acceptedAST.getStreamables().get(1);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
 
@@ -787,9 +787,9 @@ public class ScriptProgressTest {
         ScriptParser parser = new ScriptParserImpl();
         AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
         AstStreamNode acceptedOneAST = scriptAST.getStreams().get(1);
-        AstStreamableNode closeOneAST = acceptedOneAST.getStreamables().get(1);
+        AstRegion closeOneAST = acceptedOneAST.getStreamables().get(1);
         AstStreamNode acceptedTwoAST = scriptAST.getStreams().get(2);
-        AstStreamableNode closeTwoAST = acceptedTwoAST.getStreamables().get(1);
+        AstRegion closeTwoAST = acceptedTwoAST.getStreamables().get(1);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
 
@@ -1267,7 +1267,7 @@ public class ScriptProgressTest {
         ScriptParser parser = new ScriptParserImpl();
         AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
-        AstStreamableNode connectedAST = connectAST.getStreamables().get(0);
+        AstRegion connectedAST = connectAST.getStreamables().get(0);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
 
@@ -1352,7 +1352,7 @@ public class ScriptProgressTest {
         ScriptParser parser = new ScriptParserImpl();
         AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
         AstStreamNode acceptedAST = scriptAST.getStreams().get(1);
-        AstStreamableNode readAST = acceptedAST.getStreamables().get(1);
+        AstRegion readAST = acceptedAST.getStreamables().get(1);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
 
@@ -1395,9 +1395,9 @@ public class ScriptProgressTest {
         ScriptParser parser = new ScriptParserImpl();
         AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
         AstStreamNode connectOneAST = scriptAST.getStreams().get(1);
-        AstStreamableNode connectedOneAST = connectOneAST.getStreamables().get(0);
+        AstRegion connectedOneAST = connectOneAST.getStreamables().get(0);
         AstStreamNode connectTwoAST = scriptAST.getStreams().get(2);
-        AstStreamableNode connectedTwoAST = connectTwoAST.getStreamables().get(0);
+        AstRegion connectedTwoAST = connectTwoAST.getStreamables().get(0);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
 
@@ -1436,9 +1436,9 @@ public class ScriptProgressTest {
         ScriptParser parser = new ScriptParserImpl();
         AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
-        AstStreamableNode connectedOneAST = connectAST.getStreamables().get(0);
+        AstRegion connectedOneAST = connectAST.getStreamables().get(0);
         AstStreamNode acceptedAST = scriptAST.getStreams().get(2);
-        AstStreamableNode connectedTwoAST = acceptedAST.getStreamables().get(0);
+        AstRegion connectedTwoAST = acceptedAST.getStreamables().get(0);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
 
