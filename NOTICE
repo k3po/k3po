@@ -1,0 +1,58 @@
+K3P0
+
+==============================================================================
+The following is a complete list of all third party software, including free
+and open source software as well as proprietary third party code, that is
+delivered with or as part of the licensed product or upon which the licensed
+server product depends:
+==============================================================================
+
+------------------------------------------------------------------------------
+
+This project depends on Netty
+                                               
+    Homepage:    http://netty.io/
+    Description: Network application framework for Java NIO.
+    License:     Apache License 2.0            
+    License URL: http://www.apache.org/licenses/LICENSE-2.0
+                                               
+------------------------------------------------------------------------------
+
+This product depends on jline2
+
+    Homepage:    https://github.com/jline/jline2
+    Description: A library for creating Java CLI 
+    License:     BSD
+    License URL: http://www.opensource.org/licenses/bsd-license.php
+
+------------------------------------------------------------------------------
+
+This product depends on Jackson
+
+    Homepage:    http://wiki.fasterxml.com/JacksonHome
+    Description: JSON library for parsing and creating JSON formatted
+                 messages.
+    License:     Apache License 2.0
+    License URL: http://www.apache.org/licenses/LICENSE-2.0
+
+------------------------------------------------------------------------------
+                 
+This project depends on JUEL
+                                               
+    Homepage:    http://juel.sourceforge.net/
+    Description: JUEL is an implementation of the Unified Expression Language
+                 (EL)
+    License:     Apache License 2.0            
+    License URL: http://www.apache.org/licenses/LICENSE-2.0
+                                               
+------------------------------------------------------------------------------
+
+This project depends on ANTLR
+
+    Homepage:    http://www.antlr.org 
+    Description: Parsing and grammar framework 
+    License:     BSD
+    License URL: http://www.antlr.org/license.html
+
+------------------------------------------------------------------------------
+
