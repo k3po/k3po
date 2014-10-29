@@ -84,12 +84,12 @@ public class LogLastEventHandler extends SimpleChannelHandler {
     private static String eventToString(ChannelEvent e) {
 
         // Append hex dump if necessary. ... Copied from
-        // org.jboss.netty.handler.logging.LoggingHandler.log
+        // org.jboss.netty.handler.logging.LoggingHandler.log see NOTICE
 
         String msg = e.toString();
 
         // Append hex dump if necessary. ... Copied from
-        // org.jboss.netty.handler.logging.LoggingHandler
+        // org.jboss.netty.handler.logging.LoggingHandler see NOTICE
         if (e instanceof MessageEvent) {
             MessageEvent me = (MessageEvent) e;
             if (me.getMessage() instanceof ChannelBuffer) {
@@ -107,7 +107,7 @@ public class LogLastEventHandler extends SimpleChannelHandler {
     private static final String[] BYTEPADDING = new String[16];
     private static final char[] BYTE2CHAR = new char[256];
 
-    // Copied From org.jboss.netty.handler.logging.LoggingHandler
+    // Copied From org.jboss.netty.handler.logging.LoggingHandler see NOTICE
     static {
         int i;
 
@@ -161,7 +161,7 @@ public class LogLastEventHandler extends SimpleChannelHandler {
         }
     }
 
-    // Copied from org.jboss.netty.handler.logging.LoggingHandler
+    // Copied from org.jboss.netty.handler.logging.LoggingHandler, see NOTICE
     private static String formatBuffer(ChannelBuffer buf) {
         int length = buf.readableBytes();
         int rows = length / 16 + (length % 15 == 0 ? 0 : 1) + 4;
