@@ -22,19 +22,19 @@ package org.kaazing.robot.driver.behavior.handler.command;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.Channels;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
 
 public class DisconnectHandler extends AbstractCommandHandler {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(DisconnectHandler.class);
 
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
 
-        LOGGER.debug("disconnecting channel");
         ChannelFuture handlerFuture = getHandlerFuture();
         Channels.disconnect(ctx, handlerFuture);
+    }
+
+    @Override
+    public String toString() {
+        return "disconnect";
     }
 
 }

@@ -19,24 +19,20 @@
 
 package org.kaazing.robot.driver.behavior.handler;
 
-import static org.kaazing.robot.driver.netty.channel.ChannelFutureListeners.chainedFuture;
 import static org.jboss.netty.channel.Channels.succeededFuture;
+import static org.kaazing.robot.driver.netty.channel.ChannelFutureListeners.chainedFuture;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
-
-import org.kaazing.robot.lang.LocationInfo;
 import org.kaazing.robot.driver.behavior.handler.prepare.DownstreamPreparationEvent;
 import org.kaazing.robot.driver.behavior.handler.prepare.PreparationEvent;
+import org.kaazing.robot.lang.LocationInfo;
 
 public class CompletionHandler extends ExecutionHandler {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(CompletionHandler.class);
 
     private LocationInfo progressInfo;
 
@@ -70,11 +66,10 @@ public class CompletionHandler extends ExecutionHandler {
                 if (progressInfo == null) {
                     progressInfo = getStreamStartLocation();
                 }
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("pipeline handler complete. Location info is " + progressInfo);
-                }
                 // Need to let the last event logger know we are done so we don't pick up the wrong event.
-                ctx.getPipeline().get(LogLastEventHandler.class).setDone();
+                ChannelPipeline pipeline = ctx.getPipeline();
+                LogLastEventHandler logHandler = pipeline.get(LogLastEventHandler.class);
+                logHandler.setDone();
             }
         });
         pipelineFuture.addListener(chainedFuture(handlerFuture));
@@ -101,6 +96,11 @@ public class CompletionHandler extends ExecutionHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-        LOGGER.error("Unexpected handled exception ", e.getCause());
+        // ignore (already tracking completion status via completion future cause)
+    }
+
+    @Override
+    public String toString() {
+        return "complete";
     }
 }

@@ -24,13 +24,20 @@ import org.jboss.netty.channel.Channels;
 
 public class Barrier {
 
+    private final String name;
     private final ChannelFuture future;
 
-    public Barrier() {
+    public Barrier(String name) {
+        this.name = name;
         future = Channels.future(null);
     }
 
     public ChannelFuture getFuture() {
         return future;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

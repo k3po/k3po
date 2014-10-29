@@ -24,12 +24,8 @@ import static java.util.EnumSet.of;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
 
 public class UnboundHandler extends AbstractEventHandler {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(UnboundHandler.class);
 
     public UnboundHandler() {
         super(of(ChannelEventKind.UNBOUND));
@@ -38,9 +34,13 @@ public class UnboundHandler extends AbstractEventHandler {
     @Override
     public void channelUnbound(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
 
-        LOGGER.debug("channel unbound");
         ChannelFuture handlerFuture = getHandlerFuture();
         assert handlerFuture != null;
         handlerFuture.setSuccess();
+    }
+
+    @Override
+    public String toString() {
+        return "unbound";
     }
 }

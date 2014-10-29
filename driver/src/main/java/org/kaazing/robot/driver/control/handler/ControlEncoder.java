@@ -67,98 +67,71 @@ public class ControlEncoder extends OneToOneEncoder {
     private Object encodePreparedMessage(ChannelHandlerContext ctx, Channel channel, PreparedMessage preparedMessage) {
 
         Kind kind = preparedMessage.getKind();
-        String name = preparedMessage.getName();
+        String script = preparedMessage.getScript();
 
-        ChannelBuffer header = dynamicBuffer(channel.getConfig().getBufferFactory());
-        encodeInitial(kind, header);
-        encodeNameHeader(name, header);
-        return encodeNoContent(header);
+        ChannelBuffer buf = dynamicBuffer(channel.getConfig().getBufferFactory());
+        encodeInitial(kind, buf);
+        return encodeContent(script, buf);
     }
 
     private Object encodeStartedMessage(ChannelHandlerContext ctx, Channel channel, StartedMessage startedMessage) {
 
         Kind kind = startedMessage.getKind();
-        String name = startedMessage.getName();
 
-        ChannelBuffer header = dynamicBuffer(channel.getConfig().getBufferFactory());
-        encodeInitial(kind, header);
-        encodeNameHeader(name, header);
-        return encodeNoContent(header);
+        ChannelBuffer buf = dynamicBuffer(channel.getConfig().getBufferFactory());
+        encodeInitial(kind, buf);
+        return encodeNoContent(buf);
     }
 
     private Object encodeErrorMessage(ChannelHandlerContext ctx, Channel channel, ErrorMessage errorMessage) {
-
         Kind kind = errorMessage.getKind();
-        String name = errorMessage.getName();
         String summary = errorMessage.getSummary();
         String description = errorMessage.getDescription();
 
-        ChannelBuffer header = dynamicBuffer(channel.getConfig().getBufferFactory());
-        encodeInitial(kind, header);
-        encodeNameHeader(name, header);
-        encodeHeader("summary", summary, header);
-        return encodeContent(description, header);
+        ChannelBuffer buf = dynamicBuffer(channel.getConfig().getBufferFactory());
+        encodeInitial(kind, buf);
+        encodeHeader("summary", summary, buf);
+        return encodeContent(description, buf);
     }
 
     private Object encodeFinishedMessage(ChannelHandlerContext ctx, Channel channel, FinishedMessage finishedMessage) {
         Kind kind = finishedMessage.getKind();
-        String name = finishedMessage.getName();
-        String expectedScript = finishedMessage.getExpectedScript();
-        String observedScript = finishedMessage.getObservedScript();
+        String script = finishedMessage.getScript();
 
-        ChannelBuffer header = dynamicBuffer(channel.getConfig().getBufferFactory());
-        encodeInitial(kind, header);
-        encodeNameHeader(name, header);
-        Object encoded = encodeContent(expectedScript, header);
+        ChannelBuffer buf = dynamicBuffer(channel.getConfig().getBufferFactory());
+        encodeInitial(kind, buf);
+        return encodeContent(script, buf);
+    }
 
-        ChannelBuffer content = dynamicBuffer(channel.getConfig().getBufferFactory());
-        Object encodedEnd = encodeContent(observedScript, content);
+    private static void encodeInitial(Kind kind, ChannelBuffer buf) {
+        buf.writeBytes(copiedBuffer(kind.toString(), UTF_8));
+        buf.writeByte(LF);
+    }
 
-        if (encoded instanceof ChannelBuffer && encodedEnd instanceof ChannelBuffer) {
-            return wrappedBuffer((ChannelBuffer) encoded, (ChannelBuffer) encodedEnd);
-        } else {
-            throw new IllegalStateException("Expected Objects returned from encodeContent to be of type ChannelBuffer");
+    private static void encodeHeader(String bufName, Object bufValue, ChannelBuffer buf) {
+        if (bufValue != null) {
+            buf.writeBytes(copiedBuffer(format("%s:%s", bufName, bufValue), UTF_8));
+            buf.writeByte(LF);
         }
     }
 
-    private static void encodeInitial(Kind kind, ChannelBuffer header) {
-        header.writeBytes(copiedBuffer(kind.toString(), UTF_8));
-        header.writeByte(LF);
+    private static ChannelBuffer encodeNoContent(ChannelBuffer buf) {
+        buf.writeByte(LF);
+        return buf;
     }
 
-    private static void encodeNameHeader(String scriptPath, ChannelBuffer header) {
-        if (scriptPath != null) {
-            header.writeBytes(copiedBuffer(format("name:%s", scriptPath), UTF_8));
-            header.writeByte(LF);
+    private static ChannelBuffer encodeContent(String content, ChannelBuffer buf) {
+        if (content == null) {
+            // note: missing content not same as empty content
+            return encodeNoContent(buf);
         }
-    }
-
-    private static void encodeHeader(String headerName, Object headerValue, ChannelBuffer header) {
-        if (headerValue != null) {
-            header.writeBytes(copiedBuffer(format("%s:%s", headerName, headerValue), UTF_8));
-            header.writeByte(LF);
+        else {
+            ChannelBuffer contentBuf = copiedBuffer(content, UTF_8);
+            encodeHeader("content-length", contentBuf.readableBytes(), buf);
+            buf.writeByte(LF);
+            return wrappedBuffer(buf, contentBuf);
         }
-    }
 
-    private static Object encodeNoContent(ChannelBuffer header) {
-        header.writeByte(LF);
-        return header;
-    }
-
-    private static Object encodeContent(String contentAsString, ChannelBuffer header) {
-        if (contentAsString != null) {
-            ChannelBuffer content = copiedBuffer(contentAsString, UTF_8);
-            encodeHeader("content-length", content.readableBytes(), header);
-            header.writeByte(LF);
-
-            return wrappedBuffer(header, content);
-        } else {
-            header.writeBytes(copiedBuffer("content-length:0", UTF_8));
-            header.writeByte(LF);
-            header.writeByte(LF);
-
-            return header;
-        }
     }
 
 }

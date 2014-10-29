@@ -21,7 +21,7 @@ package org.kaazing.robot.driver.behavior.handler.prepare;
 
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.kaazing.robot.driver.netty.channel.SimpleChannelUpstreamHandler;
 
 public abstract class SimplePrepareUpstreamHandler extends SimpleChannelUpstreamHandler {
 

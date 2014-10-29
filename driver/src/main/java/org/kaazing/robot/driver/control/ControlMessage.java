@@ -19,22 +19,10 @@
 
 package org.kaazing.robot.driver.control;
 
-import java.util.Objects;
-
 public abstract class ControlMessage {
 
     public static enum Kind {
-        PREPARE, PREPARED, START, STARTED, ERROR, ABORT, RESULT_REQUEST, FINISHED, BAD_REQUEST, CLEAR_CACHE
-    }
-
-    private String name;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        PREPARE, PREPARED, START, STARTED, ERROR, ABORT, FINISHED
     }
 
     public abstract Kind getKind();
@@ -43,16 +31,12 @@ public abstract class ControlMessage {
 
     public abstract boolean equals(Object obj);
 
-    protected int hashTo() {
-        return (name != null) ? name.hashCode() : 0;
-    }
-
     protected final boolean equalTo(ControlMessage that) {
-        return this.getKind() == that.getKind() && Objects.equals(this.name, that.name);
+        return this.getKind() == that.getKind();
     }
 
     @Override
     public String toString() {
-        return String.format("%s %s", getKind(), getName());
+        return String.format("%s", getKind());
     }
 }

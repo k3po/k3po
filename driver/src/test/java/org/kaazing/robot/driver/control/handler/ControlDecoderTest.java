@@ -19,13 +19,12 @@
 
 package org.kaazing.robot.driver.control.handler;
 
+import static java.util.Collections.singletonList;
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.channel.Channels.future;
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 import static org.junit.Assert.assertEquals;
-
-import java.nio.file.Paths;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -43,10 +42,10 @@ import org.jmock.Mockery;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.kaazing.robot.driver.jmock.Expectations;
 import org.kaazing.robot.driver.control.AbortMessage;
 import org.kaazing.robot.driver.control.PrepareMessage;
 import org.kaazing.robot.driver.control.StartMessage;
+import org.kaazing.robot.driver.jmock.Expectations;
 
 public class ControlDecoderTest {
 
@@ -89,10 +88,10 @@ public class ControlDecoderTest {
     @Test
     public void shouldDecodePrepareMessage() throws Exception {
 
-        String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/control/handler/testScript.rpt";
+        String path = "org/kaazing/robot/driver/control/handler/testScript.rpt";
 
         final PrepareMessage expected = new PrepareMessage();
-        expected.setName(path);
+        expected.setNames(singletonList(path));
 
         context.checking(new Expectations() {
             {
@@ -119,9 +118,6 @@ public class ControlDecoderTest {
     public void shouldDecodeAbortMessage() throws Exception {
 
         final AbortMessage expected = new AbortMessage();
-        String path = Paths.get("").toAbsolutePath().toString()
-                + "/src/test/scripts/org/kaazing/robot/driver/control/handler/testScript.rpt";
-        expected.setName(path);
 
         context.checking(new Expectations() {
             {
@@ -131,7 +127,6 @@ public class ControlDecoderTest {
 
         // @formatter:off
         ChannelBuffer buffer = copiedBuffer("ABORT\n" +
-                                            "name:" + path + "\n" +
                                             "\n", UTF_8);
         // @formatter:on
 
@@ -148,7 +143,7 @@ public class ControlDecoderTest {
     public void shouldDecodeMultipleMessages() throws Exception {
 
         // @formatter:off
-    	String path = Paths.get("").toAbsolutePath().toString() + "/src/test/scripts/org/kaazing/robot/driver/control/handler/emptyScript.rpt";
+        String path = "org/kaazing/robot/driver/control/handler/emptyScript.rpt";
         ChannelBuffer buffer1 = copiedBuffer("PREPARE\n" +
                                              "name:" + path + 
                                              "\n" + "\n", UTF_8);
@@ -156,7 +151,6 @@ public class ControlDecoderTest {
 
         // @formatter:off
         ChannelBuffer buffer2 = copiedBuffer("START\n" +
-                                             "name:" + path + "\n" +
                                              "\n", UTF_8);
         // @formatter:on
 
@@ -164,7 +158,7 @@ public class ControlDecoderTest {
         Channel channel = future.getChannel();
 
         final PrepareMessage expectedPrepare = new PrepareMessage();
-        expectedPrepare.setName(path);
+        expectedPrepare.setNames(singletonList(path));
 
         context.checking(new Expectations() {
             {
@@ -175,7 +169,6 @@ public class ControlDecoderTest {
         channel.write(buffer1).sync();
 
         final StartMessage expectedStart = new StartMessage();
-        expectedStart.setName(path);
 
         context.checking(new Expectations() {
             {

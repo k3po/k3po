@@ -19,12 +19,13 @@
 
 package org.kaazing.robot.driver.behavior.handler.codec;
 
+import static java.lang.String.format;
+
 import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.lang.el.ExpressionContext;
 
 public class ReadVariableLengthBytesDecoder extends MessageDecoder {
@@ -45,6 +46,11 @@ public class ReadVariableLengthBytesDecoder extends MessageDecoder {
         this.length = length;
         this.environment = environment;
         this.captureName = captureName;
+    }
+
+    @Override
+    public String toString() {
+        return format("%s bytes", length);
     }
 
     @Override

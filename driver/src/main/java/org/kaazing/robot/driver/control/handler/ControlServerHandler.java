@@ -31,7 +31,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
@@ -43,16 +45,18 @@ import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.robot.driver.Robot;
 import org.kaazing.robot.driver.behavior.RobotCompletionFuture;
-import org.kaazing.robot.driver.control.AbortMessage;
 import org.kaazing.robot.driver.control.ErrorMessage;
 import org.kaazing.robot.driver.control.FinishedMessage;
 import org.kaazing.robot.driver.control.PrepareMessage;
 import org.kaazing.robot.driver.control.PreparedMessage;
-import org.kaazing.robot.driver.control.StartMessage;
 import org.kaazing.robot.driver.control.StartedMessage;
+import org.kaazing.robot.driver.netty.bootstrap.BootstrapFactory;
+import org.kaazing.robot.driver.netty.channel.ChannelAddressFactory;
 import org.kaazing.robot.lang.parser.ScriptParseException;
 
 public class ControlServerHandler extends ControlUpstreamHandler {
+
+    private static final Map<String, Object> EMPTY_ENVIRONMENT = Collections.<String, Object>emptyMap();
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(ControlServerHandler.class);
 
@@ -61,7 +65,17 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     private final ChannelFuture channelClosedFuture = Channels.future(null);
 
+    private ChannelAddressFactory addressFactory;
+    private BootstrapFactory bootstrapFactory;
     private ClassLoader scriptLoader;
+
+    public void setAddressFactory(ChannelAddressFactory addressFactory) {
+        this.addressFactory = addressFactory;
+    }
+
+    public void setBootstrapFactory(BootstrapFactory bootstrapFactory) {
+        this.bootstrapFactory = bootstrapFactory;
+    }
 
     public void setScriptLoader(ClassLoader scriptLoader) {
         this.scriptLoader = scriptLoader;
@@ -73,24 +87,8 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         return channelClosedFuture;
     }
 
-    // public void completeShutDown(long timeout) throws TimeoutException {
-    // long timeoutExpiredMs = System.currentTimeMillis() + timeout;
-    // if (robot != null && !robot.isDestroyed()) {
-    // boolean destroyed = robot.destroy();
-    // while (!destroyed) {
-    // Thread.yield();
-    // destroyed = robot.destroy();
-    // if (!destroyed && (System.currentTimeMillis() >= timeoutExpiredMs)) {
-    // throw new TimeoutException("Could not destroy robot in " + timeout + " milliseconds.");
-    // }
-    // }
-    // }
-    // logger.info("Shutdown robot succesfully");
-    // }
-
     @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-        logger.debug("Control channel closed");
         if (robot != null) {
             robot.destroy();
         }
@@ -103,22 +101,37 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
         final PrepareMessage prepare = (PrepareMessage) evt.getMessage();
 
-        String scriptName = prepare.getName();
-        if (logger.isDebugEnabled()) {
-            logger.debug("preparing robot execution for script " + scriptName);
+        // enforce control protocol version
+        String version = prepare.getVersion();
+        if (!"2.0".equals(version)) {
+            sendVersionError(ctx);
+            return;
         }
 
-        String scriptNameWithExtension = format("%s.rpt", scriptName);
+        List<String> scriptNames = prepare.getNames();
+        if (logger.isDebugEnabled()) {
+            logger.debug("preparing script(s) " + scriptNames);
+        }
 
-        robot = new Robot();
+        List<String> scriptNamesWithExtension = new LinkedList<>();
+        for (String scriptName : scriptNames) {
+            String scriptNameWithExtension = format("%s.rpt", scriptName);
+            scriptNamesWithExtension.add(scriptNameWithExtension);
+        }
+
+        robot = new Robot(addressFactory, bootstrapFactory);
 
         ChannelFuture prepareFuture;
         try {
-            // @formatter:off
-            Path scriptPath = Paths.get(scriptNameWithExtension);
-            String script = null;
+            final StringBuilder aggregatedScript = new StringBuilder();
 
-            if (!scriptPath.isAbsolute()) {
+            for (String scriptNameWithExtension : scriptNamesWithExtension) {
+                // @formatter:off
+                Path scriptPath = Paths.get(scriptNameWithExtension);
+                String script = null;
+
+                assert !scriptPath.isAbsolute();
+
                 // resolve relative scripts in local file system
                 if (scriptLoader != null) {
                     // resolve relative scripts from class loader to support
@@ -131,38 +144,36 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                             script = readScript(resourcePath);
                         }
                         else {
-                            try (FileSystem fileSystem = newFileSystem(resourceURI, Collections.<String, Object>emptyMap())) {
+                            try (FileSystem fileSystem = newFileSystem(resourceURI, EMPTY_ENVIRONMENT)) {
                                 Path resourcePath = Paths.get(resourceURI);
                                 script = readScript(resourcePath);
                             }
                         }
                     }
                 }
-            }
-            else {
-                // backwards compatibility
-                script = readScript(Paths.get(scriptName));
+
+                if (script == null) {
+                    throw new RuntimeException("Script not found: " + scriptPath);
+                }
+
+                aggregatedScript.append(script);
             }
 
-            if (script == null) {
-                throw new RuntimeException("Script not found: " + scriptPath);
-            }
-
-            prepareFuture = robot.prepare(script);
+            prepareFuture = robot.prepare(aggregatedScript.toString());
             // @formatter:on
+
+            prepareFuture.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(final ChannelFuture f) {
+                    PreparedMessage prepared = new PreparedMessage();
+                    prepared.setScript(aggregatedScript.toString());
+                    Channels.write(ctx, Channels.future(null), prepared);
+                }
+            });
         } catch (Exception e) {
-            sendErrorMessage(ctx, e, scriptName);
+            sendErrorMessage(ctx, e);
             return;
         }
-
-        prepareFuture.addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(final ChannelFuture f) {
-                PreparedMessage prepared = new PreparedMessage();
-                prepared.setName(prepare.getName());
-                Channels.write(ctx, Channels.future(null), prepared);
-            }
-        });
     }
 
     private String readScript(Path scriptPath) throws IOException {
@@ -179,26 +190,17 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     @Override
     public void startReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
 
-        final boolean infoDebugEnabled = logger.isDebugEnabled();
-        final StartMessage start = (StartMessage) evt.getMessage();
-        final String name = start.getName();
-
-        if (infoDebugEnabled) {
-            logger.debug("starting robot execution for script " + name);
-        }
-
         try {
             ChannelFuture startFuture = robot.start();
             startFuture.addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(final ChannelFuture f) {
                     final StartedMessage started = new StartedMessage();
-                    started.setName(name);
                     Channels.write(ctx, Channels.future(null), started);
                 }
             });
         } catch (Exception e) {
-            sendErrorMessage(ctx, e, name);
+            sendErrorMessage(ctx, e);
             return;
         }
 
@@ -208,45 +210,43 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             @Override
             public void operationComplete(final ChannelFuture f) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Script " + name + " completed");
+                    logger.debug("Script completed");
                 }
 
-                sendFinishedMessage(ctx, name, scriptDoneFuture);
+                sendFinishedMessage(ctx, scriptDoneFuture);
             }
         });
     }
 
     @Override
     public void abortReceived(ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
-        AbortMessage abort = (AbortMessage) evt.getMessage();
-        if (logger.isInfoEnabled()) {
-            logger.debug("Aborting script " + abort.getName());
+        if (logger.isDebugEnabled()) {
+            logger.debug("ABORT");
         }
         robot.abort();
-        if (ctx.getPipeline().get("http.control.request.decoder") != null && robot != null && robot.getScriptCompleteFuture().isDone()) {
-            // is HTTP
-            sendFinishedMessage(ctx, abort.getName(), robot.getScriptCompleteFuture());
-        } else if (robot != null && !robot.getStartedFuture().isDone()) {
-            // is TCP. handle case where abort before started
-            sendFinishedMessage(ctx, abort.getName(), robot.getScriptCompleteFuture());
+        if (robot != null && !robot.getStartedFuture().isDone()) {
+            sendFinishedMessage(ctx, robot.getScriptCompleteFuture());
         }
     }
 
-    private void sendFinishedMessage(ChannelHandlerContext ctx, String name, RobotCompletionFuture scriptDoneFuture) {
-        String expectedScript = scriptDoneFuture.getExpectedScript();
+    private void sendFinishedMessage(ChannelHandlerContext ctx, RobotCompletionFuture scriptDoneFuture) {
         String observedScript = scriptDoneFuture.getObservedScript();
 
         FinishedMessage finished = new FinishedMessage();
-        finished.setName(name);
-        finished.setExpectedScript(expectedScript);
-        finished.setObservedScript(observedScript);
+        finished.setScript(observedScript);
         Channels.write(ctx, Channels.future(null), finished);
     }
 
-    private void sendErrorMessage(ChannelHandlerContext ctx, Exception exception, String name) {
+    private void sendVersionError(ChannelHandlerContext ctx) {
+        ErrorMessage error = new ErrorMessage();
+        error.setSummary("Bad control protocol version");
+        error.setDescription("Robot requires control protocol version 2.0");
+        Channels.write(ctx, Channels.future(null), error);
+    }
+
+    private void sendErrorMessage(ChannelHandlerContext ctx, Exception exception) {
         ErrorMessage error = new ErrorMessage();
         error.setDescription(exception.getMessage());
-        error.setName(name);
 
         if (exception instanceof ScriptParseException) {
             if (logger.isDebugEnabled()) {

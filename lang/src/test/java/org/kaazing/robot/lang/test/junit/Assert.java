@@ -20,7 +20,6 @@
 package org.kaazing.robot.lang.test.junit;
 
 import org.junit.ComparisonFailure;
-
 import org.kaazing.robot.lang.ast.AstNode;
 import org.kaazing.robot.lang.ast.matcher.AstValueMatcher;
 

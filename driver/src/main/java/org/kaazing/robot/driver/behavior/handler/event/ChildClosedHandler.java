@@ -39,4 +39,9 @@ public class ChildClosedHandler extends AbstractServerEventHandler {
         assert handlerFuture != null;
         handlerFuture.setSuccess();
     }
+
+    @Override
+    public String toString() {
+        return "child closed";
+    }
 }

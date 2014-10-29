@@ -21,7 +21,7 @@ package org.kaazing.robot.driver.control;
 
 import java.util.Objects;
 
-public class ErrorMessage extends ControlMessage {
+public final class ErrorMessage extends ControlMessage {
 
     private String summary;
     private String description;
@@ -44,29 +44,21 @@ public class ErrorMessage extends ControlMessage {
 
     @Override
     public int hashCode() {
-        int hashCode = super.hashTo();
-
-        hashCode <<= 8;
-        hashCode ^= (description != null) ? description.hashCode() : 0;
-
-        hashCode <<= 8;
-        hashCode ^= (summary != null) ? summary.hashCode() : 0;
-
-        return hashCode;
+        return Objects.hash(getKind(), description, summary);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return (this == obj) || (obj instanceof ErrorMessage) && equals((ErrorMessage) obj);
-    }
-
-    protected final boolean equals(ErrorMessage that) {
-        return super.equalTo(that) && Objects.equals(this.summary, that.summary)
-                && Objects.equals(this.description, that.description);
+        return (this == obj) || (obj instanceof ErrorMessage) && equalTo((ErrorMessage) obj);
     }
 
     @Override
     public Kind getKind() {
         return Kind.ERROR;
+    }
+
+    protected boolean equalTo(ErrorMessage that) {
+        return super.equalTo(that) && Objects.equals(this.summary, that.summary)
+                && Objects.equals(this.description, that.description);
     }
 }

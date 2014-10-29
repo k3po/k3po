@@ -1,0 +1,28 @@
+#
+# Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
+#
+
+connect tcp://localhost:8000
+connected
+write "GET / HTTP/1.1\r\n"
+write "Host: localhost:8000\r\n"
+write "some: header\r\n"
+write "some: header2\r\n"
+write "some: header3\r\n"
+write "some: header4\r\n"
+write "some: header5\r\n"
+write "some: 10\r\n"
+write "some: HelloWorld\r\n"
+write "some: HowdyPartner\r\n"
+
+write "\r\n"
+read "HTTP/1.1 200 OK\r\n"
+read "some: header\r\n"
+read "some: header2\r\n"
+read "some: header3\r\n"
+read "Content-Length: 14\r\n"
+read "\r\n"
+read "10"
+read "HowdyPartner"
+close
+closed

@@ -33,23 +33,18 @@ import org.kaazing.robot.lang.ast.AstBarrierNode;
 import org.kaazing.robot.lang.ast.AstBoundNode;
 import org.kaazing.robot.lang.ast.AstChildClosedNode;
 import org.kaazing.robot.lang.ast.AstChildOpenedNode;
-import org.kaazing.robot.lang.ast.AstCloseHttpRequestNode;
-import org.kaazing.robot.lang.ast.AstCloseHttpResponseNode;
 import org.kaazing.robot.lang.ast.AstCloseNode;
 import org.kaazing.robot.lang.ast.AstClosedNode;
 import org.kaazing.robot.lang.ast.AstConnectNode;
 import org.kaazing.robot.lang.ast.AstConnectedNode;
 import org.kaazing.robot.lang.ast.AstDisconnectNode;
 import org.kaazing.robot.lang.ast.AstDisconnectedNode;
-import org.kaazing.robot.lang.ast.AstEndOfHttpHeadersNode;
+import org.kaazing.robot.lang.ast.AstFlushNode;
 import org.kaazing.robot.lang.ast.AstNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
-import org.kaazing.robot.lang.ast.AstReadHttpHeaderNode;
-import org.kaazing.robot.lang.ast.AstReadHttpMethodNode;
-import org.kaazing.robot.lang.ast.AstReadHttpParameterNode;
-import org.kaazing.robot.lang.ast.AstReadHttpStatusNode;
-import org.kaazing.robot.lang.ast.AstReadHttpVersionNode;
+import org.kaazing.robot.lang.ast.AstReadClosedNode;
+import org.kaazing.robot.lang.ast.AstReadConfigNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
@@ -59,12 +54,8 @@ import org.kaazing.robot.lang.ast.AstStreamableNode;
 import org.kaazing.robot.lang.ast.AstUnbindNode;
 import org.kaazing.robot.lang.ast.AstUnboundNode;
 import org.kaazing.robot.lang.ast.AstWriteAwaitNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpContentLengthNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpHeaderNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpMethodNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpParameterNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpStatusNode;
-import org.kaazing.robot.lang.ast.AstWriteHttpVersionNode;
+import org.kaazing.robot.lang.ast.AstWriteCloseNode;
+import org.kaazing.robot.lang.ast.AstWriteConfigNode;
 import org.kaazing.robot.lang.ast.AstWriteNotifyNode;
 import org.kaazing.robot.lang.ast.AstWriteOptionNode;
 import org.kaazing.robot.lang.ast.AstWriteValueNode;
@@ -180,6 +171,13 @@ public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBa
     }
 
     @Override
+    public Void visit(AstFlushNode node, State state) throws Exception {
+
+        // NOOP
+        return null;
+    }
+
+    @Override
     public Void visit(AstDisconnectNode node, State state) throws Exception {
 
         // NOOP
@@ -264,85 +262,25 @@ public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBa
     }
 
     @Override
-    public Void visit(AstReadHttpHeaderNode node, State parameter) throws Exception {
+    public Void visit(AstReadConfigNode node, State parameter) throws Exception {
         // NOOP
         return null;
     }
 
     @Override
-    public Void visit(AstWriteHttpHeaderNode node, State parameter) throws Exception {
+    public Void visit(AstWriteConfigNode node, State parameter) throws Exception {
         // NOOP
         return null;
     }
 
     @Override
-    public Void visit(AstWriteHttpContentLengthNode node, State parameter) throws Exception {
+    public Void visit(AstReadClosedNode node, State parameter) throws Exception {
         // NOOP
         return null;
     }
 
     @Override
-    public Void visit(AstReadHttpMethodNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstWriteHttpMethodNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstReadHttpParameterNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstWriteHttpParameterNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstReadHttpVersionNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstWriteHttpVersionNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstReadHttpStatusNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstWriteHttpStatusNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstCloseHttpRequestNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstCloseHttpResponseNode node, State parameter) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstEndOfHttpHeadersNode node, State parameter) throws Exception {
+    public Void visit(AstWriteCloseNode node, State parameter) throws Exception {
         // NOOP
         return null;
     }

@@ -25,14 +25,12 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.driver.control.AbortMessage;
 import org.kaazing.robot.driver.control.ControlMessage;
 import org.kaazing.robot.driver.control.ErrorMessage;
 import org.kaazing.robot.driver.control.FinishedMessage;
 import org.kaazing.robot.driver.control.PrepareMessage;
+import org.kaazing.robot.driver.control.PreparedMessage;
 import org.kaazing.robot.driver.control.StartMessage;
 
 public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
@@ -41,7 +39,6 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
         READ_INITIAL, READ_HEADER, READ_CONTENT
     }
 
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ControlDecoder.class);
     private final int maxInitialLineLength;
     private final int maxHeaderLineLength;
     private final int maxContentLength;
@@ -67,8 +64,6 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
     protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, State state)
             throws Exception {
 
-        LOGGER.debug("decode: state=" + state);
-
         switch (state) {
         case READ_INITIAL: {
             String initialLine = readLine(buffer, maxInitialLineLength);
@@ -76,29 +71,23 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
                 message = createMessage(initialLine);
                 contentLength = 0;
                 checkpoint(State.READ_HEADER);
-                LOGGER.debug("Received initialLine. Message is=" + message);
             }
-            LOGGER.debug("initialLine is null. Message is=" + message);
             return null;
         }
         case READ_HEADER: {
             State nextState = readHeader(buffer);
             checkpoint(nextState);
             if (nextState == State.READ_INITIAL) {
-                LOGGER.debug("State changed to READ_INITIAL return message=" + message);
                 return message;
             }
-            LOGGER.debug("State didn't change to initial after reading header message=" + message);
             return null;
         }
         case READ_CONTENT: {
             State nextState = readContent(buffer);
             checkpoint(nextState);
             if (nextState != State.READ_CONTENT) {
-                LOGGER.debug("State changed to " + nextState + " after reading content. Message=" + message);
                 return message;
             }
-            LOGGER.debug("State didn't change to initial after reading content. Message=" + message);
             return null;
         }
         default:
@@ -116,11 +105,6 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
         int readerIndex = buffer.readerIndex();
 
         int endOfLineAt = buffer.indexOf(readerIndex, Math.min(readableBytes, maxLineLength) + 1, (byte) 0x0a);
-
-        if (readerIndex > 0) {
-            LOGGER.debug(String.format("readLine: endofLineAt=%d, readableBytes=%d, readerIndex=%d", endOfLineAt,
-                    readableBytes, readerIndex));
-        }
 
         // end-of-line not found
         if (endOfLineAt == -1) {
@@ -144,7 +128,6 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
 
     private ControlMessage createMessage(String initialLine) {
 
-        LOGGER.debug("Creating message with line |" + initialLine + "|");
         ControlMessage.Kind messageKind = ControlMessage.Kind.valueOf(initialLine);
         switch (messageKind) {
         case PREPARE:
@@ -162,7 +145,6 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
 
         int readableBytes = buffer.readableBytes();
         if (readableBytes == 0) {
-            LOGGER.debug("No readable bytes found");
             return null;
         }
 
@@ -176,7 +158,6 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
             if (readableBytes >= maxHeaderLineLength) {
                 throw new IllegalArgumentException("Header line too long");
             }
-            LOGGER.debug("endOfLineAt=-1");
             return null;
         }
 
@@ -185,7 +166,6 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
             assert endOfLine == 0x0a;
 
             if (contentLength == 0) {
-                LOGGER.debug("Content Length is 0 so returning state initial");
                 return State.READ_INITIAL;
             }
 
@@ -193,11 +173,9 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
             case PREPARE:
             case FINISHED:
             case ERROR:
-                LOGGER.debug("Change state to READ_CONTENT");
                 // content for these message kinds
                 return State.READ_CONTENT;
             default:
-                LOGGER.debug("Change state to READ_INITIAL. Message not recongized and endOfLineAt equals endOfLineSearchForm");
                 return State.READ_INITIAL;
             }
         }
@@ -231,27 +209,32 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
         }
         String headerValue = headerValueBuilder.toString();
 
-        // add common headers
-        if ("name".equals(headerName)) {
-            message.setName(headerValue);
-        } else if ("content-length".equals(headerName)) {
-            // determine content-length
-            contentLength = Integer.parseInt(headerValue);
-            if (contentLength > maxContentLength) {
-                throw new IllegalArgumentException("Content too long");
+        // add kind-specific headers
+        switch (message.getKind()) {
+        case PREPARE:
+            PrepareMessage prepareMessage = (PrepareMessage) message;
+            switch (headerName) {
+            case "version":
+                prepareMessage.setVersion(headerValue);
+                break;
+            case "name":
+                prepareMessage.getNames().add(headerValue);
+                break;
             }
-        } else {
-            // add kind-specific headers
-            switch (message.getKind()) {
-            case ERROR:
-                ErrorMessage errorMessage = (ErrorMessage) message;
-                if ("summary".equals(headerName)) {
-                    errorMessage.setSummary(headerValue);
+            break;
+        case PREPARED:
+        case ERROR:
+        case FINISHED:
+            switch (headerName) {
+            case "content-length":
+                contentLength = Integer.parseInt(headerValue);
+                if (contentLength > maxContentLength) {
+                    throw new IllegalArgumentException("Content too long");
                 }
                 break;
-            default:
-                break;
             }
+        default:
+            break;
         }
 
         byte endOfLine = buffer.readByte();
@@ -269,13 +252,13 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
 
         String content = buffer.readBytes(contentLength).toString(UTF_8);
         switch (message.getKind()) {
-        case PREPARE:
-            PrepareMessage prepareMessage = (PrepareMessage) message;
-            prepareMessage.setName(content);
+        case PREPARED:
+            PreparedMessage preparedMessage = (PreparedMessage) message;
+            preparedMessage.setScript(content);
             break;
         case FINISHED:
             FinishedMessage finishedMessage = (FinishedMessage) message;
-            finishedMessage.setObservedScript(content);
+            finishedMessage.setScript(content);
             break;
         case ERROR:
             ErrorMessage errorMessage = (ErrorMessage) message;

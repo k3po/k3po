@@ -34,7 +34,16 @@ final class Utils {
         inject0(target, injectableType, injectableInstance);
     }
 
-    public static void inject0(Object target, Class<?> injectableType, Object injectableInstance) {
+    public static void injectAll(Object target, Map<Class<?>, Object> injectables) {
+
+        for (Map.Entry<Class<?>, Object> entry : injectables.entrySet()) {
+            Class<?> injectableType = entry.getKey();
+            Object injectableInstance = entry.getValue();
+            inject0(target, injectableType, injectableInstance);
+        }
+    }
+
+    private static void inject0(Object target, Class<?> injectableType, Object injectableInstance) {
 
         Class<? extends Object> targetClass = target.getClass();
         Method[] methods = targetClass.getMethods();
@@ -69,15 +78,6 @@ final class Utils {
                     }
                 }
             }
-        }
-    }
-
-    public static void injectAll(Object target, Map<Class<?>, Object> injectables) {
-
-        for (Map.Entry<Class<?>, Object> entry : injectables.entrySet()) {
-            Class<?> injectableType = entry.getKey();
-            Object injectableInstance = entry.getValue();
-            inject0(target, injectableType, injectableInstance);
         }
     }
 }

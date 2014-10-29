@@ -40,4 +40,9 @@ public class ConnectHandler extends AbstractCommandHandler {
         Channels.connect(ctx, handlerFuture, remoteAddress);
     }
 
+    @Override
+    public String toString() {
+        return "connect";
+    }
+
 }

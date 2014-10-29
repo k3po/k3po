@@ -40,38 +40,45 @@ public abstract class MessageDecoder {
     }
 
     private ChannelBuffer decode0(ChannelBuffer buffer, boolean isLast) throws Exception {
-        // If we don't have a cumulation buffer yet, create it
-        if (cumulation == null) {
-            cumulation = ChannelBuffers.dynamicBuffer();
+        try {
+            // If we don't have a cumulation buffer yet, create it
+            if (cumulation == null) {
+                cumulation = ChannelBuffers.dynamicBuffer();
+            }
+
+            // Write the input bytes in the cumulation buffer
+            cumulation.writeBytes(buffer);
+
+            Object decoded;
+            if (isLast) {
+                decoded = decodeBufferLast(cumulation);
+            } else {
+                decoded = decodeBuffer(cumulation);
+            }
+
+            if (decoded == null) {
+                // Not enough data yet, keeping accumulating more (unless last)
+                return null;
+            }
+
+            ChannelBuffer remaining = EMPTY_BUFFER;
+
+            if (cumulation.readable()) {
+                // The decoder did not consume all of our accumulated bytes; create
+                // the ChannelBuffer to pass on.
+                remaining = cumulation.readBytes(cumulation.readableBytes());
+            }
+
+            // Let the VM know we're done with the cumulation buffer
+            cumulation = null;
+
+            return remaining;
         }
-
-        // Write the input bytes in the cumulation buffer
-        cumulation.writeBytes(buffer);
-
-        Object decoded;
-        if (isLast) {
-            decoded = decodeBufferLast(cumulation);
-        } else {
-            decoded = decodeBuffer(cumulation);
+        catch (MessageMismatchException e) {
+            // clean up on failure to prevent side-effects when re-using decoder
+            cumulation = null;
+            throw e;
         }
-
-        if (decoded == null) {
-            // Not enough data yet, keeping accumulating more
-            return null;
-        }
-
-        ChannelBuffer remaining = EMPTY_BUFFER;
-
-        if (cumulation.readable()) {
-            // The decoder did not consume all of our accumulated bytes; create
-            // the ChannelBuffer to pass on.
-            remaining = cumulation.readBytes(cumulation.readableBytes());
-        }
-
-        // Let the VM know we're done with the cumulation buffer
-        cumulation = null;
-
-        return remaining;
     }
 
     protected ChannelBuffer createCumulationBuffer(ChannelHandlerContext ctx) {

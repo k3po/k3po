@@ -20,14 +20,9 @@
 package org.kaazing.robot.driver.behavior.handler.codec;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
-
 import org.kaazing.robot.lang.el.ExpressionContext;
 
 public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ReadFixedLengthBytesDecoder.class);
 
     private final int length;
     private final ExpressionContext environment;
@@ -56,10 +51,6 @@ public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
     protected Object decodeBuffer(ChannelBuffer buffer) throws Exception {
 
         if (buffer.readableBytes() < length) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("not enough bytes are ready to read. Expecting " + length + " bytes. Read to read is "
-                        + buffer.readableBytes());
-            }
             return null;
         }
         if (captureName == null) {
@@ -69,5 +60,10 @@ public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
             environment.getELResolver().setValue(environment, null, captureName, value);
         }
         return buffer;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%d bytes", length);
     }
 }

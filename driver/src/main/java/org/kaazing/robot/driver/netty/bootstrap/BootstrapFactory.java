@@ -19,15 +19,18 @@
 
 package org.kaazing.robot.driver.netty.bootstrap;
 
+import static java.util.Collections.emptyMap;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.jboss.netty.util.ExternalResourceReleasable;
 import org.kaazing.robot.driver.executor.ExecutorServiceFactory;
-import org.kaazing.robot.driver.netty.bootstrap.spi.BootstrapFactorySpi;
 
-public final class BootstrapFactory {
+public final class BootstrapFactory implements ExternalResourceReleasable {
+
     private final Map<String, BootstrapFactorySpi> bootstrapFactories;
 
     private BootstrapFactory(Map<String, BootstrapFactorySpi> bootstrapFactories) {
@@ -35,8 +38,7 @@ public final class BootstrapFactory {
     }
 
     public static BootstrapFactory newBootstrapFactory() {
-        Map<Class<?>, Object> injectables = new HashMap<>();
-        injectables.put(ExecutorServiceFactory.class, ExecutorServiceFactory.newInstance());
+        Map<Class<?>, Object> injectables = emptyMap();
         return newBootstrapFactory(injectables);
     }
 
@@ -54,14 +56,30 @@ public final class BootstrapFactory {
             }
         }
 
+        ExecutorServiceFactory executorServiceFactory = ExecutorServiceFactory.newInstance();
+
         // inject resources into BootstrapFactorySpi instances
         BootstrapFactory bootstrapFactory = new BootstrapFactory(bootstrapFactories);
         for (BootstrapFactorySpi bootstrapFactorySpi : bootstrapFactories.values()) {
             Utils.inject(bootstrapFactorySpi, BootstrapFactory.class, bootstrapFactory);
+            Utils.inject(bootstrapFactorySpi, ExecutorServiceFactory.class, executorServiceFactory);
             Utils.injectAll(bootstrapFactorySpi, injectables);
         }
 
         return bootstrapFactory;
+    }
+
+    public void shutdown() {
+        for (BootstrapFactorySpi bootstrapFactory : bootstrapFactories.values()) {
+            bootstrapFactory.shutdown();
+        }
+    }
+
+    @Override
+    public void releaseExternalResources() {
+        for (BootstrapFactorySpi bootstrapFactory : bootstrapFactories.values()) {
+            bootstrapFactory.releaseExternalResources();
+        }
     }
 
     public ServerBootstrap newServerBootstrap(String transportName) throws Exception {

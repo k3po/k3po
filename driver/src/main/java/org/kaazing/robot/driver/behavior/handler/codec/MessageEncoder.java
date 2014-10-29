@@ -25,6 +25,5 @@ import org.jboss.netty.buffer.ChannelBuffer;
 public interface MessageEncoder {
 
     ChannelBuffer encode();
-    String encodeToString();
 
 }

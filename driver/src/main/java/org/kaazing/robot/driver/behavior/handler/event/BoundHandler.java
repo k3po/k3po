@@ -24,12 +24,8 @@ import static java.util.EnumSet.of;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
 
 public class BoundHandler extends AbstractEventHandler {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(BoundHandler.class);
 
     public BoundHandler() {
         super(of(ChannelEventKind.BOUND));
@@ -38,9 +34,13 @@ public class BoundHandler extends AbstractEventHandler {
     @Override
     public void channelBound(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
 
-        LOGGER.debug("channel bound");
         ChannelFuture handlerFuture = getHandlerFuture();
         assert handlerFuture != null;
         handlerFuture.setSuccess();
+    }
+
+    @Override
+    public String toString() {
+        return "bound";
     }
 }
