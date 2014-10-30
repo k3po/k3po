@@ -20,6 +20,7 @@
 package org.kaazing.robot.driver.behavior.handler.event;
 
 import static java.lang.Boolean.TRUE;
+import static java.lang.String.format;
 import static java.util.EnumSet.complementOf;
 import static java.util.EnumSet.of;
 import static org.kaazing.robot.driver.behavior.handler.event.AbstractEventHandler.ChannelEventKind.BOUND;
@@ -54,6 +55,7 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.WriteCompletionEvent;
 import org.jboss.netty.handler.timeout.IdleStateEvent;
+import org.kaazing.robot.driver.behavior.ScriptProgressException;
 import org.kaazing.robot.driver.behavior.handler.ExecutionHandler;
 import org.kaazing.robot.driver.netty.channel.FlushEvent;
 import org.kaazing.robot.driver.netty.channel.ShutdownInputEvent;
@@ -113,15 +115,47 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
         ChannelEventKind eventAsKind = asEventKind(evt);
 
         // Treat interesting but unexpected events as failure
-        String message = String.format("Unexpected event |%s| for handler %s", eventAsKind, getClass());
-        switch (eventAsKind) {
-        case EXCEPTION:
-            Throwable cause = ((ExceptionEvent) evt).getCause();
-            getHandlerFuture().setFailure(new ChannelException(message, cause).fillInStackTrace());
-            break;
-        default:
-            getHandlerFuture().setFailure(new ChannelException(message).fillInStackTrace());
-            break;
+        try {
+            switch (eventAsKind) {
+            case OPEN:
+                throw new ScriptProgressException(getRegionInfo(), "opened");
+            case BOUND:
+                throw new ScriptProgressException(getRegionInfo(), "bound");
+            case CONNECTED:
+                throw new ScriptProgressException(getRegionInfo(), "connected");
+            case DISCONNECTED:
+                throw new ScriptProgressException(getRegionInfo(), "disconnected");
+            case UNBOUND:
+                throw new ScriptProgressException(getRegionInfo(), "unbound");
+            case CLOSED:
+                throw new ScriptProgressException(getRegionInfo(), "closed");
+            case FLUSHED:
+                throw new ScriptProgressException(getRegionInfo(), "flushed");
+            case MESSAGE:
+                throw new ScriptProgressException(getRegionInfo(), "read ...");
+            case INPUT_SHUTDOWN:
+                throw new ScriptProgressException(getRegionInfo(), "read closed");
+            case OUTPUT_SHUTDOWN:
+                throw new ScriptProgressException(getRegionInfo(), "write closed");
+            case CHILD_OPEN:
+                throw new ScriptProgressException(getRegionInfo(), "child opened");
+            case CHILD_CLOSED:
+                throw new ScriptProgressException(getRegionInfo(), "child closed");
+            case EXCEPTION:
+            default:
+                String message = format("Unexpected event |%s| for handler %s", eventAsKind, getClass());
+                ChannelException exception = new ChannelException(message);
+                exception.fillInStackTrace();
+                if (evt instanceof ExceptionEvent) {
+                    Throwable cause = ((ExceptionEvent) evt).getCause();
+                    exception.initCause(cause);
+                }
+                getHandlerFuture().setFailure(exception);
+                break;
+            }
+        }
+        catch (ScriptProgressException e) {
+            getHandlerFuture().setFailure(e);
         }
     }
 

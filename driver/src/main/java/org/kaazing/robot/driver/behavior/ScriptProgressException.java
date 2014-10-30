@@ -17,39 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.lang.ast;
+package org.kaazing.robot.driver.behavior;
 
-import org.kaazing.robot.lang.LocationInfo;
+import static java.util.Objects.requireNonNull;
 
-public class AstNodeException extends Exception {
+import org.kaazing.robot.lang.RegionInfo;
 
-    private static final long serialVersionUID = 1L;
+@SuppressWarnings("serial")
+public class ScriptProgressException extends Exception {
 
-    private LocationInfo locationInfo;
+    private final RegionInfo regionInfo;
 
-    public AstNodeException() {
-        super();
-    }
-
-    public AstNodeException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public AstNodeException(String message) {
+    public ScriptProgressException(RegionInfo regionInfo, String message) {
         super(message);
+        this.regionInfo = requireNonNull(regionInfo);
     }
 
-    public AstNodeException(Throwable cause) {
-        super(cause);
+    public RegionInfo getRegionInfo() {
+        return regionInfo;
     }
-
-    public LocationInfo getLocationInfo() {
-        return locationInfo;
-    }
-
-    public AstNodeException initLocationInfo(LocationInfo locationInfo) {
-        this.locationInfo = locationInfo;
-        return this;
-    }
-
 }

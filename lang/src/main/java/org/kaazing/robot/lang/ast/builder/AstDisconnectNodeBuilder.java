@@ -24,39 +24,13 @@ import org.kaazing.robot.lang.ast.AstStreamNode;
 
 public class AstDisconnectNodeBuilder extends AbstractAstStreamableNodeBuilder<AstDisconnectNode, AstDisconnectNode> {
 
-    private int line;
-
     public AstDisconnectNodeBuilder() {
         this(new AstDisconnectNode());
     }
 
     @Override
-    public AstDisconnectNodeBuilder setLocationInfo(int line, int column) {
-        node.setLocationInfo(line, column);
-        internalSetLineInfo(line);
-        return this;
-    }
-
-    @Override
-    public AstDisconnectNodeBuilder setNextLineInfo(int linesToSkip, int column) {
-        internalSetNextLineInfo(linesToSkip, column);
-        return this;
-    }
-
-    @Override
     public AstDisconnectNode done() {
         return result;
-    }
-
-    @Override
-    protected int line() {
-        return line;
-    }
-
-    @Override
-    protected int line(int line) {
-        this.line = line;
-        return line;
     }
 
     private AstDisconnectNodeBuilder(AstDisconnectNode node) {
@@ -71,33 +45,10 @@ public class AstDisconnectNodeBuilder extends AbstractAstStreamableNodeBuilder<A
         }
 
         @Override
-        public StreamNested<R> setLocationInfo(int line, int column) {
-            node.setLocationInfo(line, column);
-            internalSetLineInfo(line);
-            return this;
-        }
-
-        @Override
-        public StreamNested<R> setNextLineInfo(int linesToSkip, int column) {
-            internalSetNextLineInfo(linesToSkip, column);
-            return this;
-        }
-
-        @Override
         public R done() {
             AstStreamNode streamNode = result.node;
             streamNode.getStreamables().add(node);
             return result;
-        }
-
-        @Override
-        protected int line() {
-            return result.line();
-        }
-
-        @Override
-        protected int line(int line) {
-            return result.line(line);
         }
 
     }

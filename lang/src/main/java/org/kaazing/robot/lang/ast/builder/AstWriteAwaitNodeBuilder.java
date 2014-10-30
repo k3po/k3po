@@ -24,23 +24,8 @@ import org.kaazing.robot.lang.ast.AstWriteAwaitNode;
 
 public class AstWriteAwaitNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWriteAwaitNode, AstWriteAwaitNode> {
 
-    private int line;
-
     public AstWriteAwaitNodeBuilder() {
         this(new AstWriteAwaitNode());
-    }
-
-    @Override
-    public AstWriteAwaitNodeBuilder setLocationInfo(int line, int column) {
-        node.setLocationInfo(line, column);
-        internalSetLineInfo(line);
-        return this;
-    }
-
-    @Override
-    public AstWriteAwaitNodeBuilder setNextLineInfo(int linesToSkip, int column) {
-        internalSetNextLineInfo(linesToSkip, column);
-        return this;
     }
 
     public AstWriteAwaitNodeBuilder setBarrierName(String barrierName) {
@@ -51,17 +36,6 @@ public class AstWriteAwaitNodeBuilder extends AbstractAstStreamableNodeBuilder<A
     @Override
     public AstWriteAwaitNode done() {
         return result;
-    }
-
-    @Override
-    protected int line() {
-        return line;
-    }
-
-    @Override
-    protected int line(int line) {
-        this.line = line;
-        return line;
     }
 
     private AstWriteAwaitNodeBuilder(AstWriteAwaitNode node) {
@@ -75,19 +49,6 @@ public class AstWriteAwaitNodeBuilder extends AbstractAstStreamableNodeBuilder<A
             super(new AstWriteAwaitNode(), builder);
         }
 
-        @Override
-        public StreamNested<R> setLocationInfo(int line, int column) {
-            node.setLocationInfo(line, column);
-            internalSetLineInfo(line);
-            return this;
-        }
-
-        @Override
-        public StreamNested<R> setNextLineInfo(int linesToSkip, int column) {
-            internalSetNextLineInfo(linesToSkip, column);
-            return this;
-        }
-
         public StreamNested<R> setBarrierName(String barrierName) {
             node.setBarrierName(barrierName);
             return this;
@@ -99,16 +60,5 @@ public class AstWriteAwaitNodeBuilder extends AbstractAstStreamableNodeBuilder<A
             streamNode.getStreamables().add(node);
             return result;
         }
-
-        @Override
-        protected int line() {
-            return result.line();
-        }
-
-        @Override
-        protected int line(int line) {
-            return result.line(line);
-        }
-
     }
 }

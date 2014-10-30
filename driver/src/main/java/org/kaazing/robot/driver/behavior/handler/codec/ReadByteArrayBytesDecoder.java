@@ -19,18 +19,20 @@
 
 package org.kaazing.robot.driver.behavior.handler.codec;
 
-import org.jboss.netty.buffer.ChannelBuffer;
+import static org.kaazing.robot.lang.RegionInfo.newSequential;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.kaazing.robot.lang.RegionInfo;
 import org.kaazing.robot.lang.el.ExpressionContext;
 
 public class ReadByteArrayBytesDecoder extends ReadFixedLengthBytesDecoder<byte[]> {
 
-    public ReadByteArrayBytesDecoder(final int length) {
-        super(length);
+    public ReadByteArrayBytesDecoder(RegionInfo regionInfo, int length) {
+        super(regionInfo, length);
     }
 
-    public ReadByteArrayBytesDecoder(final int length, final ExpressionContext environment, final String captureName) {
-        super(length, environment, captureName);
+    public ReadByteArrayBytesDecoder(RegionInfo regionInfo, int length, ExpressionContext environment, String captureName) {
+        super(regionInfo, length, environment, captureName);
     }
 
     // Read the data into an array of bytes
@@ -40,5 +42,15 @@ public class ReadByteArrayBytesDecoder extends ReadFixedLengthBytesDecoder<byte[
         byte[] matched = new byte[len];
         buffer.readBytes(matched, 0, len);
         return matched;
+    }
+
+    // unit tests
+    ReadByteArrayBytesDecoder(int length) {
+        this(newSequential(0, 0), length);
+    }
+
+    // unit tests
+    ReadByteArrayBytesDecoder(int length, ExpressionContext environment, String captureName) {
+        this(newSequential(0, 0), length, environment, captureName);
     }
 }

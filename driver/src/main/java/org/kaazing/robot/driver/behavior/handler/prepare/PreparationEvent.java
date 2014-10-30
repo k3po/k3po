@@ -24,13 +24,10 @@ import java.util.Collection;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelFuture;
 
-import org.kaazing.robot.lang.LocationInfo;
-
 public interface PreparationEvent extends ChannelEvent {
 
     Collection<ChannelFuture> getPipelineFutures();
 
-    ChannelFuture checkpoint(LocationInfo locationInfo, ChannelFuture handlerFuture);
+    ChannelFuture checkpoint(ChannelFuture handlerFuture);
 
-    LocationInfo getProgressInfo();
 }

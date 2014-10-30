@@ -65,7 +65,6 @@ public class HttpScriptParserTest {
             .setType("header")
             .setValueExactText("name", "Host")
             .addMatcherExactText("localhost:8000")
-            .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
 
@@ -85,7 +84,6 @@ public class HttpScriptParserTest {
             .setType("header")
             .setName("name", "Host")
             .addValue("localhost:8000")
-            .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
 
@@ -103,7 +101,6 @@ public class HttpScriptParserTest {
         // @formatter:off
         AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
             .setType("content-length")
-            .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
 
@@ -122,7 +119,6 @@ public class HttpScriptParserTest {
         AstReadConfigNode expected = new AstReadConfigNodeBuilder()
             .setType("method")
             .setMatcherExactText("name", "get")
-            .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
 
@@ -141,7 +137,6 @@ public class HttpScriptParserTest {
         AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
             .setType("method")
             .addValue("get")
-            .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
 
@@ -161,7 +156,6 @@ public class HttpScriptParserTest {
             .setType("parameter")
             .setValueExactText("name", ".kl")
             .addMatcherExactText("y")
-            .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
 
@@ -181,7 +175,6 @@ public class HttpScriptParserTest {
             .setType("parameter")
             .setName("name", ".kl")
             .addValue("y")
-            .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
 
@@ -200,7 +193,6 @@ public class HttpScriptParserTest {
         AstReadConfigNode expected = new AstReadConfigNodeBuilder()
             .setType("version")
             .setMatcherExactText("version", "Http/1.1")
-            .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
 
@@ -219,7 +211,6 @@ public class HttpScriptParserTest {
         AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
             .setType("version")
             .addValue("Http/1.1")
-            .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
 
@@ -239,7 +230,6 @@ public class HttpScriptParserTest {
             .setType("status")
             .setMatcherExactText("code", "403")
             .setMatcherExactText("reason", "Unauthorized")
-            .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
 
@@ -259,7 +249,6 @@ public class HttpScriptParserTest {
             .setType("status")
             .setValue("code", "403")
             .setValue("reason", "Unauthorized")
-            .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
 
@@ -276,7 +265,6 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstReadClosedNode expected = new AstReadClosedNodeBuilder()
-            .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
 
@@ -293,7 +281,6 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstWriteCloseNode expected = new AstWriteCloseNodeBuilder()
-            .setNextLineInfo(1, 0)
         .done();
         // @formatter:on
 
@@ -324,55 +311,43 @@ public class HttpScriptParserTest {
          // @formatter:off
          AstScriptNode expected = new AstScriptNodeBuilder()
              .addAcceptStream()
-                 .setNextLineInfo(1, 0)
                  .setLocation(URI.create("http://somehost:8000/path"))
              .done()
              .addAcceptedStream()
-                 .setNextLineInfo(1, 0)
                  .addReadConfigEvent()
                      .setType("method")
                      .setMatcherExactText("name", "get")
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addReadConfigEvent()
                      .setType("parameter")
                      .setValueExactText("name", ".kl")
                      .addMatcherExactText("y")
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addReadConfigEvent()
                      .setType("header")
                      .setValueExactText("name", "Upgrade")
                      .addMatcherExactText("websocket")
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addReadEvent()
                      .addExactBytes(new byte[] {(byte) 0x82})
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addReadCloseCommand()
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addWriteConfigCommand()
                      .setType("status")
                      .setValue("code", "101")
                      .setValue("reason", "Switching Protocols")
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addWriteConfigCommand()
                      .setType("header")
                      .setName("name", "upgrade")
                      .addValue("websocket")
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addWriteCloseCommand()
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addCloseCommand()
-                     .setNextLineInfo(1, 0)
-                     .done()
+                 .done()
                  .addClosedEvent()
-                     .setNextLineInfo(1, 0)
                      .done()
                  .done()
              .done();
@@ -404,58 +379,46 @@ public class HttpScriptParserTest {
          // @formatter:off
          AstScriptNode expected = new AstScriptNodeBuilder()
              .addConnectStream()
-                 .setNextLineInfo(1, 0)
                  .setLocation(URI.create("http://somehost:8000/path"))
                  .addConnectedEvent()
-                    .setNextLineInfo(1, 0)
                  .done()
                  .addWriteConfigCommand()
                      .setType("method")
                      .addValue("get")
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addWriteConfigCommand()
                      .setType("parameter")
                      .setName("name", ".kl")
                      .addValue("y")
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addWriteConfigCommand()
                      .setType("header")
                      .setName("name", "Upgrade")
                      .addValue("websocket")
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addWriteCloseCommand()
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addReadConfigEvent()
                      .setType("status")
                      .setMatcherExactText("code", "101")
                      .setMatcherExactText("reason", "Switching Protocols")
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addReadConfigEvent()
                      .setType("header")
                      .setValueExactText("name", "upgrade")
                      .addMatcherExactText("websocket")
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addReadCloseCommand()
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addWriteCommand()
                      .addExactBytes(new byte[] {(byte) 0x82})
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addCloseCommand()
-                     .setNextLineInfo(1, 0)
-                     .done()
-                 .addClosedEvent()
-                     .setNextLineInfo(1, 0)
-                     .done()
                  .done()
-             .done();
+                 .addClosedEvent()
+                 .done()
+             .done()
+         .done();
          // @formatter:on
          assertEquals(expected, actual);
      }
@@ -480,35 +443,27 @@ public class HttpScriptParserTest {
          // @formatter:off
          AstScriptNode expected = new AstScriptNodeBuilder()
              .addAcceptStream()
-                 .setNextLineInfo(1, 0)
                  .setLocation(URI.create("http://somehost:8000/path"))
              .done()
              .addAcceptedStream()
-                 .setNextLineInfo(1, 0)
                  .addReadConfigEvent()
                      .setType("method")
                      .setMatcherExactText("name", "get")
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addReadCloseCommand()
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addWriteConfigCommand()
                      .setType("status")
                      .setValue("code", "200")
                      .setValue("reason", "OK")
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addWriteConfigCommand()
                      .setType("content-length")
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addWriteCommand()
                      .addExactText("some content")
-                     .setNextLineInfo(1, 0)
                  .done()
                  .addWriteCloseCommand()
-                     .setNextLineInfo(1, 0)
                  .done()
              .done()
          .done();

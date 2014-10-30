@@ -84,8 +84,8 @@ public class AstReadConfigNode extends AstEventNode {
     }
 
     @Override
-    public int hashCode() {
-        int hashCode = super.hashTo();
+    protected int hashTo() {
+        int hashCode = getClass().hashCode();
 
         if (type != null) {
             hashCode <<= 4;
@@ -104,27 +104,26 @@ public class AstReadConfigNode extends AstEventNode {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstReadConfigNode) && equals((AstReadConfigNode) obj));
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstReadConfigNode && equalTo((AstReadConfigNode) that);
     }
 
-    protected boolean equals(AstReadConfigNode that) {
-        return super.equalTo(that) &&
-                equivalent(this.type, that.type) &&
+    protected boolean equalTo(AstReadConfigNode that) {
+        return equivalent(this.type, that.type) &&
                 equivalent(this.valuesByName, that.valuesByName) &&
                 equivalent(this.matchersByName, that.matchersByName);
     }
 
     @Override
-    protected void formatNode(StringBuilder sb) {
-        super.formatNode(sb);
-        sb.append("read ").append(type);
+    protected void describe(StringBuilder buf) {
+        super.describe(buf);
+        buf.append("read ").append(type);
         for (AstValue value : valuesByName.values()) {
-            sb.append(' ').append(value);
+            buf.append(' ').append(value);
         }
         for (AstValueMatcher matcher : matchersByName.values()) {
-            sb.append(' ').append(matcher);
+            buf.append(' ').append(matcher);
         }
-        sb.append('\n');
+        buf.append('\n');
     }
 }

@@ -19,52 +19,48 @@
 
 package org.kaazing.robot.lang.ast;
 
+import static java.lang.String.format;
 import static org.kaazing.robot.lang.ast.util.AstUtil.equivalent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.kaazing.robot.lang.ast.value.AstValue;
 
-public class AstWriteValueNode extends AstCommandNode {
+public class AstPropertyNode extends AstNode {
 
-    private List<AstValue> values;
-
-    public List<AstValue> getValues() {
-        return values;
-    }
-
-    public void setValues(List<AstValue> values) {
-        this.values = values;
-    }
-
-    public void addValue(AstValue value) {
-        if (values == null) {
-            values = new ArrayList<AstValue>();
-        }
-        values.add(value);
-    }
-
-    @Deprecated
-    public void setValue(AstValue value) {
-        if (values != null) {
-            throw new IllegalStateException("Can not setValue when there are already values");
-        }
-        addValue(value);
-    }
+    private String propertyName;
+    private AstValue propertyValue;
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
         return visitor.visit(this, parameter);
     }
 
-    @Override
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    public void setPropertyName(String propertyName) {
+        this.propertyName = propertyName;
+    }
+
+    public AstValue getPropertyValue() {
+        return propertyValue;
+    }
+
+    public void setPropertyValue(AstValue propertyValue) {
+        this.propertyValue = propertyValue;
+    }
+
     protected int hashTo() {
         int hashCode = getClass().hashCode();
 
-        if (values != null) {
+        if (propertyName != null) {
             hashCode <<= 4;
-            hashCode ^= values.hashCode();
+            hashCode ^= propertyName.hashCode();
+        }
+
+        if (propertyValue != null) {
+            hashCode <<= 4;
+            hashCode ^= propertyValue.hashCode();
         }
 
         return hashCode;
@@ -72,20 +68,17 @@ public class AstWriteValueNode extends AstCommandNode {
 
     @Override
     protected boolean equalTo(AstRegion that) {
-        return that instanceof AstWriteValueNode && equalTo((AstWriteValueNode) that);
+        return that instanceof AstPropertyNode && equalTo((AstPropertyNode) that);
     }
 
-    protected boolean equalTo(AstWriteValueNode that) {
-        return equivalent(this.values, that.values);
+    protected boolean equalTo(AstPropertyNode that) {
+        return equivalent(this.propertyName, that.propertyName) && equivalent(this.propertyValue, that.propertyValue);
     }
 
     @Override
     protected void describe(StringBuilder buf) {
         super.describe(buf);
-        buf.append("write");
-        for (AstValue val : values) {
-            buf.append(" " + val);
-        }
-        buf.append("\n");
+        buf.append(format("property %s %s\n", getPropertyName(), getPropertyValue()));
     }
+
 }

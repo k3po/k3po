@@ -47,8 +47,8 @@ public class AstConnectNode extends AstStreamNode {
     }
 
     @Override
-    public int hashCode() {
-        int hashCode = super.hashTo();
+    protected int hashTo() {
+        int hashCode = getClass().hashCode();
 
         if (location != null) {
             hashCode <<= 4;
@@ -64,8 +64,13 @@ public class AstConnectNode extends AstStreamNode {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstConnectNode) && equalTo((AstConnectNode) obj));
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+        return visitor.visit(this, parameter);
+    }
+
+    @Override
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstConnectNode && equalTo((AstConnectNode) that);
     }
 
     protected boolean equalTo(AstConnectNode that) {
@@ -73,14 +78,8 @@ public class AstConnectNode extends AstStreamNode {
     }
 
     @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
-
-        return visitor.visit(this, parameter);
-    }
-
-    @Override
-    protected void formatNodeLine(StringBuilder sb) {
-        super.formatNodeLine(sb);
+    protected void describeLine(StringBuilder sb) {
+        super.describeLine(sb);
         sb.append(String.format("connect %s\n", location));
     }
 }

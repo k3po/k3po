@@ -40,6 +40,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.kaazing.robot.driver.behavior.ScriptProgressException;
 import org.kaazing.robot.lang.el.ExpressionContext;
 import org.kaazing.robot.lang.el.ExpressionFactoryUtils;
 import org.kaazing.robot.lang.regex.NamedGroupPattern;
@@ -85,7 +86,7 @@ public class ReadRegexDecoderTest {
         assertArrayEquals("Hello".getBytes(UTF_8), (byte[]) expression.getValue(environment));
     }
 
-    @Test(expected = MessageMismatchException.class)
+    @Test(expected = ScriptProgressException.class)
     public void noMatchOK() throws Exception {
         NamedGroupPattern pattern = NamedGroupPattern.compile("/H.*o\\n/");
         MessageDecoder decoder = new ReadRegexDecoder(pattern, UTF_8, environment);
@@ -93,7 +94,7 @@ public class ReadRegexDecoderTest {
         decoder.decode(copiedBuffer("Hellf\n", UTF_8));
     }
 
-    @Test(expected = MessageMismatchException.class)
+    @Test(expected = ScriptProgressException.class)
     public void noMatchWithCaptureOK() throws Exception {
         NamedGroupPattern pattern = NamedGroupPattern.compile("/(?<var>H.*o)\\n/");
         MessageDecoder decoder = new ReadRegexDecoder(pattern, UTF_8, environment);

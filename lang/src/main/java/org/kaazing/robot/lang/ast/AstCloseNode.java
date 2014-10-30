@@ -19,7 +19,7 @@
 
 package org.kaazing.robot.lang.ast;
 
-public class AstCloseNode extends AstCommandNode {
+public final class AstCloseNode extends AstCommandNode {
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
@@ -27,18 +27,18 @@ public class AstCloseNode extends AstCommandNode {
     }
 
     @Override
-    public int hashCode() {
-        return hashTo();
+    protected int hashTo() {
+        return getClass().hashCode();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstCloseNode) && equalTo((AstCloseNode) obj));
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstCloseNode;
     }
 
     @Override
-    protected void formatNode(StringBuilder sb) {
-        super.formatNode(sb);
-        sb.append("close\n");
+    protected void describe(StringBuilder buf) {
+        super.describe(buf);
+        buf.append("close\n");
     }
 }

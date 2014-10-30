@@ -20,12 +20,14 @@
 package org.kaazing.robot.driver.behavior.handler.codec;
 
 import static java.lang.String.format;
+import static org.kaazing.robot.lang.RegionInfo.newSequential;
 
 import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
+import org.kaazing.robot.lang.RegionInfo;
 import org.kaazing.robot.lang.el.ExpressionContext;
 
 public class ReadVariableLengthBytesDecoder extends MessageDecoder {
@@ -36,13 +38,12 @@ public class ReadVariableLengthBytesDecoder extends MessageDecoder {
     private final ExpressionContext environment;
     private final String captureName;
 
-    public ReadVariableLengthBytesDecoder(ValueExpression length, ExpressionContext environment) {
-        this.length = length;
-        this.environment = environment;
-        this.captureName = null;
+    public ReadVariableLengthBytesDecoder(RegionInfo regionInfo, ValueExpression length, ExpressionContext environment) {
+        this(regionInfo, length, environment, null);
     }
 
-    public ReadVariableLengthBytesDecoder(ValueExpression length, ExpressionContext environment, String captureName) {
+    public ReadVariableLengthBytesDecoder(RegionInfo regionInfo, ValueExpression length, ExpressionContext environment, String captureName) {
+        super(regionInfo);
         this.length = length;
         this.environment = environment;
         this.captureName = captureName;
@@ -73,5 +74,15 @@ public class ReadVariableLengthBytesDecoder extends MessageDecoder {
             environment.getELResolver().setValue(environment, null, captureName, bytes);
         }
         return buffer;
+    }
+
+    // unit tests
+    ReadVariableLengthBytesDecoder(ValueExpression length, ExpressionContext environment) {
+        this(newSequential(0, 0), length, environment);
+    }
+
+    // unit tests
+    ReadVariableLengthBytesDecoder(ValueExpression length, ExpressionContext environment, String captureName) {
+        this(newSequential(0, 0), length, environment, captureName);
     }
 }

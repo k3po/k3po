@@ -27,20 +27,19 @@ public class AstWriteNotifyNode extends AstBarrierNode {
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
         return visitor.visit(this, parameter);
     }
-
     @Override
-    public int hashCode() {
-        return hashTo();
+    protected int hashTo() {
+        return getClass().hashCode();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstWriteNotifyNode) && equalTo((AstWriteNotifyNode) obj));
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstWriteNotifyNode;
     }
 
     @Override
-    protected void formatNode(StringBuilder sb) {
-        super.formatNode(sb);
-        sb.append(format("write notify %s\n", getBarrierName()));
+    protected void describe(StringBuilder buf) {
+        super.describe(buf);
+        buf.append(format("write notify %s\n", getBarrierName()));
     }
 }

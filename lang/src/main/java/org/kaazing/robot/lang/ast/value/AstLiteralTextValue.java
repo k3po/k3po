@@ -19,7 +19,10 @@
 
 package org.kaazing.robot.lang.ast.value;
 
+import static java.lang.String.format;
 import static org.kaazing.robot.lang.ast.util.AstUtil.equivalent;
+
+import org.kaazing.robot.lang.ast.AstRegion;
 
 public class AstLiteralTextValue extends AstValue {
 
@@ -37,27 +40,26 @@ public class AstLiteralTextValue extends AstValue {
     }
 
     @Override
-    public int hashCode() {
-        return value.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || (obj instanceof AstLiteralTextValue) && equals((AstLiteralTextValue) obj);
-    }
-
-    protected boolean equals(AstLiteralTextValue that) {
-        return equivalent(this.value, that.value);
-    }
-
-    @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
-
         return visitor.visit(this, parameter);
     }
 
     @Override
-    public String toString() {
-        return String.format("\"%s\"", value);
+    protected int hashTo() {
+        return value.hashCode();
+    }
+
+    @Override
+    protected boolean equalTo(AstRegion that) {
+        return (that instanceof AstLiteralTextValue) && equalTo((AstLiteralTextValue) that);
+    }
+
+    protected boolean equalTo(AstLiteralTextValue that) {
+        return equivalent(this.value, that.value);
+    }
+
+    @Override
+    protected void describe(StringBuilder buf) {
+        buf.append(format("\"%s\"", value));
     }
 }

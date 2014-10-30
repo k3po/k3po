@@ -19,6 +19,8 @@
 
 package org.kaazing.robot.lang.ast.matcher;
 
+import static java.lang.String.format;
+
 public class AstByteLengthBytesMatcher extends AstFixedLengthBytesMatcher {
 
     @Deprecated
@@ -31,18 +33,18 @@ public class AstByteLengthBytesMatcher extends AstFixedLengthBytesMatcher {
     }
 
     @Override
-    public String toString() {
-        String captureName = getCaptureName();
-        if (captureName == null) {
-            return "byte";
-
-        }
-        return String.format("(byte:%s)", captureName);
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+        return visitor.visit(this, parameter);
     }
 
     @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
-
-        return visitor.visit(this, parameter);
+    protected void describe(StringBuilder buf) {
+        String captureName = getCaptureName();
+        if (captureName == null) {
+            buf.append("byte");
+        }
+        else {
+            buf.append(format("(byte:%s)", captureName));
+        }
     }
 }

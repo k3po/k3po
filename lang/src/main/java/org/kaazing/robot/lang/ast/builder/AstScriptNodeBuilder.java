@@ -23,8 +23,6 @@ import org.kaazing.robot.lang.ast.AstScriptNode;
 
 public class AstScriptNodeBuilder extends AbstractAstNodeBuilder<AstScriptNode, AstScriptNode> {
 
-    private int line;
-
     public AstScriptNodeBuilder() {
         this(new AstScriptNode());
     }
@@ -33,28 +31,8 @@ public class AstScriptNodeBuilder extends AbstractAstNodeBuilder<AstScriptNode, 
         super(node, node);
     }
 
-    @Override
-    public int line() {
-        return line;
-    }
-
-    @Override
-    public int line(int line) {
-        this.line = line;
-        return line;
-    }
-
-    @Override
-    public AstScriptNodeBuilder setLocationInfo(int line, int column) {
-        node.setLocationInfo(line, column);
-        internalSetLineInfo(line);
-        return this;
-    }
-
-    @Override
-    public AstScriptNodeBuilder setNextLineInfo(int linesToSkip, int column) {
-        internalSetNextLineInfo(linesToSkip, column);
-        return this;
+    public AstPropertyNodeBuilder.ScriptNested<AstScriptNodeBuilder> addProperty() {
+        return new AstPropertyNodeBuilder.ScriptNested<AstScriptNodeBuilder>(this);
     }
 
     public AstAcceptNodeBuilder.ScriptNested<AstScriptNodeBuilder> addAcceptStream() {

@@ -25,20 +25,19 @@ public class AstConnectedNode extends AstEventNode {
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
         return visitor.visit(this, parameter);
     }
-
     @Override
-    public int hashCode() {
-        return hashTo();
+    protected int hashTo() {
+        return getClass().hashCode();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstConnectedNode) && equalTo((AstConnectedNode) obj));
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstConnectedNode;
     }
 
     @Override
-    protected void formatNode(StringBuilder sb) {
-        super.formatNode(sb);
-        sb.append("connected\n");
+    protected void describe(StringBuilder buf) {
+        super.describe(buf);
+        buf.append("connected\n");
     }
 }

@@ -45,22 +45,14 @@ public class AstReadValueNode extends AstEventNode {
         matchers.add(matcher);
     }
 
-    @Deprecated
-    public void setMatcher(AstValueMatcher matcher) {
-        if (matchers != null) {
-            throw new IllegalStateException("Can not set a matcher when there already is one");
-        }
-        addMatcher(matcher);
-    }
-
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
         return visitor.visit(this, parameter);
     }
 
     @Override
-    public int hashCode() {
-        int hashCode = super.hashTo();
+    protected int hashTo() {
+        int hashCode = getClass().hashCode();
 
         if (matchers != null) {
             hashCode <<= 4;
@@ -71,21 +63,21 @@ public class AstReadValueNode extends AstEventNode {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstReadValueNode) && equals((AstReadValueNode) obj));
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstReadValueNode && equalTo((AstReadValueNode) that);
     }
 
-    protected boolean equals(AstReadValueNode that) {
-        return super.equalTo(that) && equivalent(this.matchers, that.matchers);
+    protected boolean equalTo(AstReadValueNode that) {
+        return equivalent(this.matchers, that.matchers);
     }
 
     @Override
-    protected void formatNode(StringBuilder sb) {
-        super.formatNode(sb);
-        sb.append("read");
+    protected void describe(StringBuilder buf) {
+        super.describe(buf);
+        buf.append("read");
         for (AstValueMatcher matcher : matchers) {
-            sb.append(" " + matcher);
+            buf.append(" " + matcher);
         }
-        sb.append("\n");
+        buf.append("\n");
     }
 }

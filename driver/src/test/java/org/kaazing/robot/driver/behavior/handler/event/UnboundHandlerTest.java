@@ -36,6 +36,7 @@ import static org.jboss.netty.channel.Channels.succeededFuture;
 import static org.jboss.netty.handler.timeout.IdleState.ALL_IDLE;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.kaazing.robot.lang.RegionInfo.newSequential;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelEvent;
@@ -57,7 +58,6 @@ import org.jboss.netty.handler.timeout.DefaultIdleStateEvent;
 import org.jboss.netty.handler.timeout.IdleStateEvent;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.kaazing.robot.driver.jmock.Expectations;
 import org.kaazing.robot.driver.jmock.Mockery;
 import org.kaazing.robot.driver.behavior.handler.TestChannelEvent;
@@ -83,6 +83,8 @@ public class UnboundHandlerTest {
         upstream = context.mock(ChannelUpstreamHandler.class);
 
         handler = new UnboundHandler();
+        handler.setRegionInfo(newSequential(0, 0));
+
         pipeline = pipeline(new SimpleChannelHandler() {
             @Override
             public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {

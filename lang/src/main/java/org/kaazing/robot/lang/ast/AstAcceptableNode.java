@@ -34,7 +34,7 @@ public class AstAcceptableNode extends AstStreamNode {
     }
 
     @Override
-    public int hashCode() {
+    protected int hashTo() {
         int hashCode = super.hashTo();
 
         if (acceptName != null) {
@@ -46,8 +46,8 @@ public class AstAcceptableNode extends AstStreamNode {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstAcceptableNode) && equals((AstAcceptableNode) obj));
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstAcceptableNode && equalTo((AstAcceptableNode) that);
     }
 
     @Override
@@ -56,8 +56,8 @@ public class AstAcceptableNode extends AstStreamNode {
     }
 
     @Override
-    protected void formatNodeLine(StringBuilder sb) {
-        super.formatNodeLine(sb);
+    protected void describeLine(StringBuilder sb) {
+        super.describeLine(sb);
 
         sb.append("accepted");
 
@@ -69,7 +69,7 @@ public class AstAcceptableNode extends AstStreamNode {
         sb.append('\n');
     }
 
-    protected boolean equals(AstAcceptableNode that) {
+    protected boolean equalTo(AstAcceptableNode that) {
         return super.equalTo(that) && equivalent(this.acceptName, that.acceptName);
     }
 

@@ -19,7 +19,10 @@
 
 package org.kaazing.robot.lang.ast.value;
 
-public abstract class AstValue {
+import org.kaazing.robot.lang.ast.AstRegion;
+
+public abstract class AstValue extends AstRegion {
+
     public abstract <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception;
 
     public interface Visitor<R, P> {

@@ -19,6 +19,8 @@
 
 package org.kaazing.robot.lang.el;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.nio.ByteBuffer;
 
 import javax.el.ELException;
@@ -56,6 +58,9 @@ public class ByteArrayTypeConverter extends TypeConverterImpl {
         }
         if (value instanceof Byte) {
             return new byte[] { ((Byte) value).byteValue() };
+        }
+        if (value instanceof String) {
+            return ((String) value).getBytes(UTF_8);
         }
         throw new ELException(LocalMessages.get("error.coerce.type", value.getClass(), byte[].class));
     }

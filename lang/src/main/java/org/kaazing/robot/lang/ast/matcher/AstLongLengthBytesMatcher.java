@@ -19,6 +19,8 @@
 
 package org.kaazing.robot.lang.ast.matcher;
 
+import static java.lang.String.format;
+
 public class AstLongLengthBytesMatcher extends AstFixedLengthBytesMatcher {
 
     @Deprecated
@@ -31,13 +33,14 @@ public class AstLongLengthBytesMatcher extends AstFixedLengthBytesMatcher {
     }
 
     @Override
-    public String toString() {
+    protected void describe(StringBuilder buf) {
         String captureName = getCaptureName();
         if (captureName == null) {
-            return "long";
-
+            buf.append("long");
         }
-        return String.format("(long:%s)", captureName);
+        else {
+            buf.append(format("(long:%s)", captureName));
+        }
     }
 
     @Override

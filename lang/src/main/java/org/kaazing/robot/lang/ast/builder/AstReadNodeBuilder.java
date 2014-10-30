@@ -33,23 +33,8 @@ import org.kaazing.robot.lang.regex.NamedGroupPattern;
 
 public class AstReadNodeBuilder extends AbstractAstStreamableNodeBuilder<AstReadValueNode, AstReadValueNode> {
 
-    private int line;
-
     public AstReadNodeBuilder() {
         this(new AstReadValueNode());
-    }
-
-    @Override
-    public AstReadNodeBuilder setLocationInfo(int line, int column) {
-        node.setLocationInfo(line, column);
-        internalSetLineInfo(line);
-        return this;
-    }
-
-    @Override
-    public AstReadNodeBuilder setNextLineInfo(int linesToSkip, int column) {
-        internalSetNextLineInfo(linesToSkip, column);
-        return this;
     }
 
     public AstReadNodeBuilder addExactBytes(byte[] exactBytes) {
@@ -97,17 +82,6 @@ public class AstReadNodeBuilder extends AbstractAstStreamableNodeBuilder<AstRead
         return result;
     }
 
-    @Override
-    protected int line() {
-        return line;
-    }
-
-    @Override
-    protected int line(int line) {
-        this.line = line;
-        return line;
-    }
-
     private AstReadNodeBuilder(AstReadValueNode node) {
         super(node, node);
     }
@@ -117,19 +91,6 @@ public class AstReadNodeBuilder extends AbstractAstStreamableNodeBuilder<AstRead
 
         public StreamNested(R builder) {
             super(new AstReadValueNode(), builder);
-        }
-
-        @Override
-        public StreamNested<R> setLocationInfo(int line, int column) {
-            node.setLocationInfo(line, column);
-            internalSetLineInfo(line);
-            return this;
-        }
-
-        @Override
-        public StreamNested<R> setNextLineInfo(int linesToSkip, int column) {
-            internalSetNextLineInfo(linesToSkip, column);
-            return this;
         }
 
         public StreamNested<R> addExactBytes(byte[] exactBytes) {
@@ -177,16 +138,6 @@ public class AstReadNodeBuilder extends AbstractAstStreamableNodeBuilder<AstRead
             AstStreamNode streamNode = result.node;
             streamNode.getStreamables().add(node);
             return result;
-        }
-
-        @Override
-        protected int line() {
-            return result.line();
-        }
-
-        @Override
-        protected int line(int line) {
-            return result.line(line);
         }
     }
 }

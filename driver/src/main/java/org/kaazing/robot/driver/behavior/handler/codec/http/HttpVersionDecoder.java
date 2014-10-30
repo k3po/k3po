@@ -26,11 +26,11 @@ import static org.jboss.netty.util.CharsetUtil.UTF_8;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.kaazing.robot.driver.behavior.handler.codec.ConfigDecoder;
+import org.kaazing.robot.driver.behavior.handler.codec.AbstractConfigDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageDecoder;
 import org.kaazing.robot.driver.netty.bootstrap.http.HttpChannelConfig;
 
-public class HttpVersionDecoder implements ConfigDecoder {
+public class HttpVersionDecoder extends AbstractConfigDecoder {
 
     private MessageDecoder versionDecoder;
 

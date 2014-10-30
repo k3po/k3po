@@ -38,6 +38,7 @@ import static org.jboss.netty.handler.timeout.IdleState.ALL_IDLE;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.kaazing.robot.lang.RegionInfo.newSequential;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +79,7 @@ import org.kaazing.robot.driver.behavior.handler.codec.ReadExactTextDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.ReadExpressionDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.ReadVariableLengthBytesDecoder;
 import org.kaazing.robot.driver.behavior.handler.prepare.PreparationEvent;
+import org.kaazing.robot.lang.RegionInfo;
 import org.kaazing.robot.lang.el.ExpressionContext;
 import org.kaazing.robot.lang.el.ExpressionFactoryUtils;
 
@@ -106,17 +108,18 @@ public class ReadHandlerTest {
         environment = new ExpressionContext();
 
         List<MessageDecoder> decoders = new ArrayList<MessageDecoder>();
-        decoders.add(new ReadExactTextDecoder("Hello", UTF_8));
-        decoders.add(new ReadExactBytesDecoder(new byte[] { 0x01, 0x02, 0x03 }));
+        RegionInfo regionInfo = newSequential(0, 0);
+        decoders.add(new ReadExactTextDecoder(regionInfo, "Hello", UTF_8));
+        decoders.add(new ReadExactBytesDecoder(regionInfo, new byte[] { 0x01, 0x02, 0x03 }));
         ValueExpression expression = expressionFactory.createValueExpression(environment, "${variable}", byte[].class);
-        decoders.add(new ReadExpressionDecoder(expression, environment));
-        decoders.add(new ReadByteArrayBytesDecoder(3));
+        decoders.add(new ReadExpressionDecoder(regionInfo, expression, environment));
+        decoders.add(new ReadByteArrayBytesDecoder(regionInfo, 3));
 
         // TODO: Add when Regex's work
         // decoders.add(new ReadRegexDecoder(NamedGroupPattern.compile("Hello\n"), UTF_8, environment));
         expression = expressionFactory.createValueExpression(environment, "${variable2}", Integer.class);
-        decoders.add(new ReadVariableLengthBytesDecoder(expression, environment));
-        decoders.add(new ReadExactTextDecoder("The last decoder", UTF_8));
+        decoders.add(new ReadVariableLengthBytesDecoder(regionInfo, expression, environment));
+        decoders.add(new ReadExactTextDecoder(regionInfo, "The last decoder", UTF_8));
 
         handler = new ReadHandler(decoders, new MaskingDecoder() {
             
@@ -130,6 +133,7 @@ public class ReadHandlerTest {
                 return buffer;
             }
         });
+        handler.setRegionInfo(newSequential(0, 0));
 
         pipeline = pipeline(new SimpleChannelHandler() {
             @Override

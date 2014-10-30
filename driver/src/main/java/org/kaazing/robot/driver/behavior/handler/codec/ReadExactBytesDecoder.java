@@ -21,14 +21,19 @@ package org.kaazing.robot.driver.behavior.handler.codec;
 
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.kaazing.robot.driver.util.Utils.byteArrayToString;
+import static org.kaazing.robot.lang.RegionInfo.newSequential;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.kaazing.robot.driver.behavior.ScriptProgressException;
+import org.kaazing.robot.driver.util.Utils;
+import org.kaazing.robot.lang.RegionInfo;
 
 public class ReadExactBytesDecoder extends MessageDecoder {
 
     private final ChannelBuffer expected;
 
-    public ReadExactBytesDecoder(byte[] expected) {
+    public ReadExactBytesDecoder(RegionInfo regionInfo, byte[] expected) {
+        super(regionInfo);
         this.expected = copiedBuffer(expected);
     }
 
@@ -41,7 +46,7 @@ public class ReadExactBytesDecoder extends MessageDecoder {
 
         ChannelBuffer observed = buffer.readSlice(expected.readableBytes());
         if (!observed.equals(expected)) {
-            throw new MessageMismatchException("Exact bytes mismatch", expected, observed);
+            throw new ScriptProgressException(getRegionInfo(), Utils.format(observed));
         }
 
         return buffer;
@@ -51,4 +56,10 @@ public class ReadExactBytesDecoder extends MessageDecoder {
     public String toString() {
         return byteArrayToString(expected.array());
     }
+
+    // unit tests
+    ReadExactBytesDecoder(byte[] expected) {
+        this(newSequential(0, 0), expected);
+    }
+
 }
