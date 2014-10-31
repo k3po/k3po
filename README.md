@@ -1,3 +1,1 @@
-#TODO
-
-* Support for overriding default property values during PREPARE.
+Robotic specification for Robot's own control protocol.
