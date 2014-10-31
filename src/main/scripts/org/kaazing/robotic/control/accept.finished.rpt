@@ -4,8 +4,8 @@ connected
 
 read "PREPARE\n"
 read "version:2.0\n"
-read "name:path/to/script/server"
-read "name:path/to/script/client"
+read "name:path/to/script/server\n"
+read "name:path/to/script/client\n"
 read "\n"
 
 write "PREPARED\n"
