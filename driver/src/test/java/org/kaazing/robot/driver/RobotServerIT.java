@@ -492,9 +492,11 @@ public class RobotServerIT {
         String strExpectedStarted = "STARTED\n" +
                                     "\n";
         String strExpectedFinished = "FINISHED\n" +
-                                     "content-length:15\n" +
+                                     "content-length:41\n" +
                                      "\n" +
-                                     "connect failed\n";
+                                     "connect tcp://localhost:62345\n" +
+                                     "connected\n" +
+                                     "\n";
 
         // @formatter:on
         CharBuffer expectedPrepared = CharBuffer.wrap(strExpectedPrepared);
@@ -533,6 +535,9 @@ public class RobotServerIT {
 
         accepted = server.accept();
 
+        // let the connect succeed before we abort
+        Thread.sleep(10);
+
         out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("ABORT\n");
         out.append("\n");
@@ -545,6 +550,7 @@ public class RobotServerIT {
         finished.flip();
 
         assertEquals(expectedFinished, finished);
+        assertFalse(in.ready());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
