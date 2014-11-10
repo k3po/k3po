@@ -34,7 +34,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -60,6 +62,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(ControlServerHandler.class);
 
     private Robot robot;
+    private ChannelFutureListener whenAbortedOrFinished;
 
     private final ChannelFuture channelClosedFuture = Channels.future(null);
 
@@ -118,6 +121,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         }
 
         robot = new Robot(addressFactory, bootstrapFactory);
+        whenAbortedOrFinished = whenAbortedOrFinished(ctx);
 
         ChannelFuture prepareFuture;
         try {
@@ -202,18 +206,8 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             return;
         }
 
-        ChannelFuture finishedFuture = robot.finish();
-
-        finishedFuture.addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(final ChannelFuture f) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Script completed");
-                }
-
-                sendFinishedMessage(ctx);
-            }
-        });
+        assert whenAbortedOrFinished != null;
+        robot.finish().addListener(whenAbortedOrFinished);
     }
 
     @Override
@@ -221,27 +215,38 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         if (logger.isDebugEnabled()) {
             logger.debug("ABORT");
         }
-        robot.abort().addListener(new ChannelFutureListener() {
+        assert whenAbortedOrFinished != null;
+        robot.abort().addListener(whenAbortedOrFinished);
+    }
+
+    private ChannelFutureListener whenAbortedOrFinished(final ChannelHandlerContext ctx) {
+        final AtomicBoolean latch = new AtomicBoolean();
+        return new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
-                sendFinishedMessage(ctx);
+                if (latch.compareAndSet(false, true)) {
+                    sendFinishedMessage(ctx);
+                }
             }
-        });
+        };
     }
 
     private void sendFinishedMessage(ChannelHandlerContext ctx) {
+
+        Channel channel = ctx.getChannel();
         String observedScript = robot.getObservedScript();
 
         FinishedMessage finished = new FinishedMessage();
         finished.setScript(observedScript);
-        Channels.write(ctx, Channels.future(null), finished);
+        channel.write(finished);
     }
 
     private void sendVersionError(ChannelHandlerContext ctx) {
+        Channel channel = ctx.getChannel();
         ErrorMessage error = new ErrorMessage();
         error.setSummary("Bad control protocol version");
         error.setDescription("Robot requires control protocol version 2.0");
-        Channels.write(ctx, Channels.future(null), error);
+        channel.write(error);
     }
 
     private void sendErrorMessage(ChannelHandlerContext ctx, Exception exception) {
