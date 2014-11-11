@@ -19,32 +19,43 @@
 
 package org.kaazing.robot.driver.behavior.handler.codec;
 
+import static java.lang.String.format;
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
+import static org.kaazing.robot.lang.RegionInfo.newSequential;
 
 import java.nio.charset.Charset;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.kaazing.robot.driver.behavior.ScriptProgressException;
+import org.kaazing.robot.lang.RegionInfo;
 
 public class ReadExactTextDecoder extends MessageDecoder {
 
     private final ChannelBuffer expected;
+    private final Charset charset;
 
-    public ReadExactTextDecoder(String expected, Charset charset) {
+    public ReadExactTextDecoder(RegionInfo regionInfo, String expected, Charset charset) {
+        super(regionInfo);
         this.expected = copiedBuffer(expected, charset);
+        this.charset = charset;
     }
 
     @Override
     protected Object decodeBuffer(ChannelBuffer buffer) throws Exception {
         if (buffer.readableBytes() < expected.readableBytes()) {
+            // TODO: compare readable bytes aggressively to fail fast?
             return null;
         }
 
         ChannelBuffer observed = buffer.readSlice(expected.readableBytes());
         if (!observed.equals(expected)) {
-            // Use a mismatch exception subclass, include the charset
-            // expected?
-            throw new MessageMismatchException("Exact text mismatch", expected, observed);
+            String observedText = observed.toString(charset);
+            // TODO: general escaping strategy (AstRegion in exception, plus Formatter?)
+            observedText = observedText.replace("\r", "\\r");
+            observedText = observedText.replace("\n", "\\n");
+            observedText = observedText.replace("\t", "\\t");
+            throw new ScriptProgressException(getRegionInfo(), format("\"%s\"", observedText));
         }
 
         return buffer;
@@ -55,4 +66,10 @@ public class ReadExactTextDecoder extends MessageDecoder {
         // note: assumes charset UTF-8
         return expected.toString(UTF_8);
     }
+
+    // unit tests
+    ReadExactTextDecoder(String expected, Charset charset) {
+        this(newSequential(0, 0), expected, charset);
+    }
+
 }

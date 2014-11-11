@@ -35,6 +35,7 @@ import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.kaazing.robot.driver.behavior.ScriptProgressException;
 import org.kaazing.robot.lang.el.ExpressionContext;
 import org.kaazing.robot.lang.el.ExpressionFactoryUtils;
 
@@ -65,7 +66,7 @@ public class ReadExpressionDecoderTest {
         assertEquals(0, remainingBuffer.readableBytes());
     }
 
-    @Test(expected = MessageMismatchException.class)
+    @Test(expected = ScriptProgressException.class)
     public void noMatchOK() throws Exception {
         ValueExpression expression = expressionFactory.createValueExpression(environment, "${variable}", byte[].class);
         MessageDecoder decoder = new ReadExpressionDecoder(expression, environment);
@@ -90,7 +91,7 @@ public class ReadExpressionDecoderTest {
         assertEquals(0, remainingBuffer.readableBytes());
     }
 
-    @Test(expected = MessageMismatchException.class)
+    @Test(expected = ScriptProgressException.class)
     public void onlyPartialMatchOK() throws Exception {
         ValueExpression expression = expressionFactory.createValueExpression(environment, "${variable}", byte[].class);
         MessageDecoder decoder = new ReadExpressionDecoder(expression, environment);

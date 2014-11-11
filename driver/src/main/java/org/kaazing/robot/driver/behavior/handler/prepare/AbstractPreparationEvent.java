@@ -24,26 +24,18 @@ import java.util.HashSet;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
 import org.kaazing.robot.driver.netty.channel.CompositeChannelFuture;
-import org.kaazing.robot.lang.LocationInfo;
 
 public abstract class AbstractPreparationEvent implements PreparationEvent {
 
     private final Channel channel;
     private final ChannelFuture future;
     private final Collection<ChannelFuture> pipelineFutures;
-    private volatile LocationInfo progressInfo;
 
     public AbstractPreparationEvent(Channel channel, ChannelFuture future) {
         this.channel = channel;
         this.future = future;
         this.pipelineFutures = new HashSet<ChannelFuture>();
-        /*
-         * Location 0:0 is meaningless. If we find a completion handler with 0:0
-         * we don't know which stream it was. Lets use null instead
-         */
-        // this.progressInfo = new LocationInfo(0, 0);
     }
 
     @Override
@@ -62,12 +54,7 @@ public abstract class AbstractPreparationEvent implements PreparationEvent {
     }
 
     @Override
-    public LocationInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public ChannelFuture checkpoint(final LocationInfo locationInfo, final ChannelFuture handlerFuture) {
+    public ChannelFuture checkpoint(final ChannelFuture handlerFuture) {
 
         // We set the composite to failFast. This is so that as soon as one handler future fails ... any pipelinefutures
         // that contain it will also fail. This is needed so that the listener in the CompletionHandler will fire
@@ -78,17 +65,6 @@ public abstract class AbstractPreparationEvent implements PreparationEvent {
         // the pipeline up-to-but-not-including this handler
         // and handlerFuture represents just this handler
         pipelineFutures.add(handlerFuture);
-
-        if (locationInfo != null) {
-            handlerFuture.addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture future) throws Exception {
-                    if (future.isSuccess()) {
-                        AbstractPreparationEvent.this.progressInfo = locationInfo;
-                    }
-                }
-            });
-        }
 
         return pipelineFuture;
     }

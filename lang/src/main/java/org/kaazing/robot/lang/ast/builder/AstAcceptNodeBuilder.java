@@ -26,23 +26,8 @@ import org.kaazing.robot.lang.ast.AstScriptNode;
 
 public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<AstAcceptNode> {
 
-    private int line;
-
     public AstAcceptNodeBuilder() {
         this(new AstAcceptNode());
-    }
-
-    @Override
-    public AstAcceptNodeBuilder setLocationInfo(int line, int column) {
-        node.setLocationInfo(line, column);
-        internalSetLineInfo(line);
-        return this;
-    }
-
-    @Override
-    public AstAcceptNodeBuilder setNextLineInfo(int linesToSkip, int column) {
-        internalSetNextLineInfo(linesToSkip, column);
-        return this;
     }
 
     public AstAcceptNodeBuilder setLocation(URI location) {
@@ -110,17 +95,6 @@ public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<Ast
         return result;
     }
 
-    @Override
-    protected int line() {
-        return line;
-    }
-
-    @Override
-    protected int line(int line) {
-        this.line = line;
-        return line;
-    }
-
     private AstAcceptNodeBuilder(AstAcceptNode node) {
         super(node, node);
     }
@@ -130,29 +104,6 @@ public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<Ast
 
         public ScriptNested(R builder) {
             super(new AstAcceptNode(), builder);
-        }
-
-        @Override
-        public int line() {
-            return result.line();
-        }
-
-        @Override
-        public int line(int line) {
-            return result.line(line);
-        }
-
-        @Override
-        public ScriptNested<R> setLocationInfo(int line, int column) {
-            node.setLocationInfo(line, column);
-            internalSetLineInfo(line);
-            return this;
-        }
-
-        @Override
-        public ScriptNested<R> setNextLineInfo(int linesToSkip, int column) {
-            internalSetNextLineInfo(linesToSkip, column);
-            return this;
         }
 
         public ScriptNested<R> setLocation(URI location) {

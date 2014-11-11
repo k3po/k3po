@@ -19,19 +19,26 @@
 
 package org.kaazing.robot.driver.behavior.handler.codec;
 
-import org.jboss.netty.buffer.ChannelBuffer;
+import static org.kaazing.robot.lang.RegionInfo.newSequential;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.kaazing.robot.lang.RegionInfo;
 import org.kaazing.robot.lang.el.ExpressionContext;
 
 public class ReadLongLengthBytesDecoder extends ReadFixedLengthBytesDecoder<Long> {
 
-    public ReadLongLengthBytesDecoder(ExpressionContext environment, String captureName) {
-        super(Long.SIZE / Byte.SIZE, environment, captureName);
+    public ReadLongLengthBytesDecoder(RegionInfo regionInfo, ExpressionContext environment, String captureName) {
+        super(regionInfo, Long.SIZE / Byte.SIZE, environment, captureName);
     }
 
     // Read the data into a Long
     @Override
     public Long readBuffer(ChannelBuffer buffer) {
         return buffer.readLong();
+    }
+
+    // unit tests
+    ReadLongLengthBytesDecoder(ExpressionContext environment, String captureName) {
+        this(newSequential(0, 0), environment, captureName);
     }
 }

@@ -19,19 +19,26 @@
 
 package org.kaazing.robot.driver.behavior.handler.codec;
 
-import org.jboss.netty.buffer.ChannelBuffer;
+import static org.kaazing.robot.lang.RegionInfo.newSequential;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.kaazing.robot.lang.RegionInfo;
 import org.kaazing.robot.lang.el.ExpressionContext;
 
 public class ReadShortLengthBytesDecoder extends ReadFixedLengthBytesDecoder<Short> {
 
-    public ReadShortLengthBytesDecoder(ExpressionContext environment, String captureName) {
-        super(Short.SIZE / Byte.SIZE, environment, captureName);
+    public ReadShortLengthBytesDecoder(RegionInfo regionInfo, ExpressionContext environment, String captureName) {
+        super(regionInfo, Short.SIZE / Byte.SIZE, environment, captureName);
     }
 
     // Read the data into a Short
     @Override
     public Short readBuffer(ChannelBuffer buffer) {
         return buffer.readShort();
+    }
+
+    // unit tests
+    ReadShortLengthBytesDecoder(ExpressionContext environment, String captureName) {
+        this(newSequential(0, 0), environment, captureName);
     }
 }

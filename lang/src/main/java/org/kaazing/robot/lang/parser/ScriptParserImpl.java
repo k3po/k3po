@@ -20,6 +20,8 @@
 package org.kaazing.robot.lang.parser;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.kaazing.robot.lang.RegionInfo.newParallel;
+import static org.kaazing.robot.lang.RegionInfo.newSequential;
 import static org.kaazing.robot.lang.el.ExpressionFactoryUtils.newExpressionFactory;
 import static org.kaazing.robot.lang.parser.ScriptParseStrategy.SCRIPT;
 
@@ -39,6 +41,8 @@ import org.antlr.v4.runtime.NoViableAltException;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.Token;
+import org.kaazing.robot.lang.RegionInfo;
+import org.kaazing.robot.lang.ast.AstRegion;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.el.ExpressionContext;
 import org.kaazing.robot.lang.parser.v2.RobotLexer;
@@ -76,24 +80,27 @@ public class ScriptParserImpl implements ScriptParser {
     }
 
     // package-private for unit testing
-    <T> T parseWithStrategy(String input, ScriptParseStrategy<T> strategy)
+    <T extends AstRegion> T parseWithStrategy(String input, ScriptParseStrategy<T> strategy)
             throws ScriptParseException {
         return parseWithStrategy(
                 new ByteArrayInputStream(input.getBytes(UTF_8)), strategy);
     }
 
-    <T> T parseWithStrategy(String input, ScriptParseStrategy<T> strategy,
+    <T extends AstRegion> T parseWithStrategy(String input, ScriptParseStrategy<T> strategy,
                             final List<ScriptParseException> parseErrors)
             throws ScriptParseException {
         return parseWithStrategy(
                 new ByteArrayInputStream(input.getBytes(UTF_8)), strategy);
     }
 
-    <T> T parseWithStrategy(InputStream input, ScriptParseStrategy<T> strategy)
+    <T extends AstRegion> T parseWithStrategy(InputStream input, ScriptParseStrategy<T> strategy)
             throws ScriptParseException {
         final List<ScriptParseException> parseErrors = new ArrayList<ScriptParseException>();
         T result = null;
         try {
+            int newStart = 0;
+            int newEnd = input.available();
+
             ANTLRInputStream ais = new ANTLRInputStream(input);
             RobotLexer lexer = new RobotLexer(ais);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -113,6 +120,17 @@ public class ScriptParserImpl implements ScriptParser {
 
             try {
                 result = strategy.parse(parser, factory, context);
+                RegionInfo regionInfo = result.getRegionInfo();
+                List<RegionInfo> newChildren = regionInfo.children;
+                switch (regionInfo.kind) {
+                case SEQUENTIAL:
+                    result.setRegionInfo(newSequential(newChildren, newStart, newEnd));
+                    break;
+                case PARALLEL:
+                    result.setRegionInfo(newParallel(newChildren, newStart, newEnd));
+                    break;
+                }
+
             } catch (IllegalArgumentException iae) {
                 Throwable cause = iae.getCause();
                 if (cause != null && cause instanceof RecognitionException) {

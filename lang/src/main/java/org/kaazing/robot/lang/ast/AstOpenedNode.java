@@ -27,18 +27,18 @@ public class AstOpenedNode extends AstEventNode {
     }
 
     @Override
-    public int hashCode() {
-        return hashTo();
+    protected int hashTo() {
+        return getClass().hashCode();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstOpenedNode) && equalTo((AstOpenedNode) obj));
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstOpenedNode;
     }
 
     @Override
-    protected void formatNode(StringBuilder sb) {
-        super.formatNode(sb);
-        sb.append("opened\n");
+    protected void describe(StringBuilder buf) {
+        super.describe(buf);
+        buf.append("opened\n");
     }
 }

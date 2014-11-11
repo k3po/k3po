@@ -19,27 +19,50 @@
 
 package org.kaazing.robot.lang.ast;
 
-import static java.lang.String.format;
+import org.kaazing.robot.lang.RegionInfo;
 
-public class AstWriteOptionNode extends AstOptionNode {
+public abstract class AstRegion {
 
-    @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
-        return visitor.visit(this, parameter);
-    }
-    @Override
-    protected int hashTo() {
-        return getClass().hashCode();
+    private RegionInfo regionInfo;
+
+    public RegionInfo getRegionInfo() {
+        return regionInfo;
     }
 
-    @Override
-    protected boolean equalTo(AstRegion that) {
-        return that instanceof AstWriteOptionNode;
+    public void setRegionInfo(RegionInfo regionInfo) {
+        this.regionInfo = regionInfo;
     }
 
     @Override
+    public final int hashCode() {
+        return hashTo();
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj == null || !getClass().isAssignableFrom(obj.getClass())) {
+            return false;
+        }
+
+        AstRegion that = (AstRegion) obj;
+        return equalTo(that);
+    }
+
+    public final String toString() {
+        StringBuilder sb = new StringBuilder();
+        describe(sb);
+        return sb.toString();
+    }
+
+    protected abstract int hashTo();
+
+    protected abstract boolean equalTo(AstRegion that);
+
     protected void describe(StringBuilder buf) {
-        super.describe(buf);
-        buf.append(format("write option %s %s\n", getOptionName(), getOptionValue()));
     }
+
 }

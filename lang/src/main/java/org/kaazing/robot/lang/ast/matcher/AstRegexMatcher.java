@@ -21,6 +21,7 @@ package org.kaazing.robot.lang.ast.matcher;
 
 import static org.kaazing.robot.lang.ast.util.AstUtil.equivalent;
 
+import org.kaazing.robot.lang.ast.AstRegion;
 import org.kaazing.robot.lang.regex.NamedGroupPattern;
 
 public class AstRegexMatcher extends AstValueMatcher {
@@ -39,16 +40,16 @@ public class AstRegexMatcher extends AstValueMatcher {
     }
 
     @Override
-    public int hashCode() {
+    protected int hashTo() {
         return pattern.hashCode();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || (obj instanceof AstRegexMatcher) && equals((AstRegexMatcher) obj);
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstRegexMatcher && equalTo((AstRegexMatcher) that);
     }
 
-    protected boolean equals(AstRegexMatcher that) {
+    protected boolean equalTo(AstRegexMatcher that) {
         return equivalent(this.pattern, that.pattern);
     }
 
@@ -59,7 +60,7 @@ public class AstRegexMatcher extends AstValueMatcher {
     }
 
     @Override
-    public String toString() {
-        return pattern.toString();
+    protected void describe(StringBuilder buf) {
+        buf.append(pattern.toString());
     }
 }

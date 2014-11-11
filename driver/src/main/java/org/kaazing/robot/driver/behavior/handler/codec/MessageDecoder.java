@@ -19,14 +19,23 @@
 
 package org.kaazing.robot.driver.behavior.handler.codec;
 
+import static java.util.Objects.requireNonNull;
 import static org.jboss.netty.buffer.ChannelBuffers.EMPTY_BUFFER;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.kaazing.robot.driver.behavior.ScriptProgressException;
+import org.kaazing.robot.lang.RegionInfo;
 
 public abstract class MessageDecoder {
+
+    private final RegionInfo regionInfo;
     private ChannelBuffer cumulation;
+
+    protected MessageDecoder(RegionInfo regionInfo) {
+        this.regionInfo = requireNonNull(regionInfo);
+    }
 
     public ChannelBuffer decodeLast(ChannelBuffer buffer) throws Exception {
         return decode0(buffer, true);
@@ -37,6 +46,10 @@ public abstract class MessageDecoder {
     // decoder.
     public ChannelBuffer decode(ChannelBuffer buffer) throws Exception {
         return decode0(buffer, false);
+    }
+
+    protected RegionInfo getRegionInfo() {
+        return regionInfo;
     }
 
     private ChannelBuffer decode0(ChannelBuffer buffer, boolean isLast) throws Exception {
@@ -74,7 +87,7 @@ public abstract class MessageDecoder {
 
             return remaining;
         }
-        catch (MessageMismatchException e) {
+        catch (ScriptProgressException e) {
             // clean up on failure to prevent side-effects when re-using decoder
             cumulation = null;
             throw e;

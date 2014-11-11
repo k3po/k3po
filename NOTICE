@@ -9,15 +9,6 @@ server product depends:
 
 ------------------------------------------------------------------------------
 
-This product contains modified code from Netty
-
-    Homepage:    http://netty.io/
-    Description: Network application framework for Java NIO.
-    License:     Apache License 2.0
-    License URL: http://www.apache.org/licenses/LICENSE-2.0
-
-------------------------------------------------------------------------------
-
 This project depends on Netty
                                                
     Homepage:    http://netty.io/

@@ -26,23 +26,8 @@ import org.kaazing.robot.lang.ast.AstScriptNode;
 
 public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<AstConnectNode> {
 
-    private int line;
-
     public AstConnectNodeBuilder() {
         this(new AstConnectNode());
-    }
-
-    @Override
-    public AstConnectNodeBuilder setLocationInfo(int line, int column) {
-        node.setLocationInfo(line, column);
-        internalSetLineInfo(line);
-        return this;
-    }
-
-    @Override
-    public AstConnectNodeBuilder setNextLineInfo(int linesToSkip, int column) {
-        internalSetNextLineInfo(linesToSkip, column);
-        return this;
     }
 
     public AstConnectNodeBuilder setLocation(URI location) {
@@ -165,17 +150,6 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         return result;
     }
 
-    @Override
-    protected int line() {
-        return line;
-    }
-
-    @Override
-    protected int line(int line) {
-        this.line = line;
-        return line;
-    }
-
     private AstConnectNodeBuilder(AstConnectNode node) {
         super(node, node);
     }
@@ -185,19 +159,6 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
 
         public ScriptNested(R builder) {
             super(new AstConnectNode(), builder);
-        }
-
-        @Override
-        public ScriptNested<R> setLocationInfo(int line, int column) {
-            node.setLocationInfo(line, column);
-            internalSetLineInfo(line);
-            return this;
-        }
-
-        @Override
-        public ScriptNested<R> setNextLineInfo(int linesToSkip, int column) {
-            internalSetNextLineInfo(linesToSkip, column);
-            return this;
         }
 
         public ScriptNested<R> setLocation(URI location) {
@@ -320,16 +281,6 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
             AstScriptNode scriptNode = result.node;
             scriptNode.getStreams().add(node);
             return result;
-        }
-
-        @Override
-        protected int line() {
-            return result.line();
-        }
-
-        @Override
-        protected int line(int line) {
-            return result.line(line);
         }
 
     }

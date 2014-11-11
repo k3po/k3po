@@ -23,7 +23,9 @@ import static org.kaazing.robot.lang.ast.util.AstUtil.equivalent;
 
 import java.util.Arrays;
 
-public class AstLiteralBytesValue extends AstValue {
+import org.kaazing.robot.lang.ast.AstRegion;
+
+public final class AstLiteralBytesValue extends AstValue {
 
     private final byte[] value;
 
@@ -45,32 +47,31 @@ public class AstLiteralBytesValue extends AstValue {
     }
 
     @Override
-    public int hashCode() {
+    protected int hashTo() {
         return Arrays.hashCode(value);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || (obj instanceof AstLiteralBytesValue) && equals((AstLiteralBytesValue) obj);
+    protected boolean equalTo(AstRegion that) {
+        return (that instanceof AstLiteralBytesValue) && equalTo((AstLiteralBytesValue) that);
     }
 
-    protected boolean equals(AstLiteralBytesValue that) {
+    protected boolean equalTo(AstLiteralBytesValue that) {
         return equivalent(this.value, that.value);
     }
 
     @Override
-    public String toString() {
+    protected void describe(StringBuilder buf) {
         if (value == null || value.length == 0) {
-            return "[]";
+            buf.append("[]");
         }
+        else {
+            for (byte b : value) {
+                buf.append(String.format(" 0x%02x", b));
+            }
 
-        StringBuffer buf = new StringBuffer();
-        for (byte b : value) {
-            buf.append(String.format(" 0x%02x", b));
+            buf.setCharAt(0, '[');
+            buf.append(']');
         }
-
-        buf.setCharAt(0, '[');
-        buf.append(']');
-        return buf.toString();
     }
 }

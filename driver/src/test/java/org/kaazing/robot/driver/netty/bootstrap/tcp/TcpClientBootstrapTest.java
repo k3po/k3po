@@ -93,11 +93,13 @@ public class TcpClientBootstrapTest {
         ChannelAddressFactory channelAddressFactory = newChannelAddressFactory();
         ChannelAddress channelAddress = channelAddressFactory.newChannelAddress(URI.create("tcp://localhost:8000"));
 
-        Future<String> readFuture = executor.submit(new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                
-                try (ServerSocket server = new ServerSocket(8000)) {
+        String message;
+        try (ServerSocket server = new ServerSocket(8000)) {
+
+            Future<String> readFuture = executor.submit(new Callable<String>() {
+                @Override
+                public String call() throws Exception {
+
                     Socket child = server.accept();
     
                     DataInputStream input = new DataInputStream(child.getInputStream());
@@ -113,17 +115,16 @@ public class TcpClientBootstrapTest {
     
                     return new String(buf, UTF_8);
                 }
-            }
-        });
-
-        Channel channel = bootstrap.connect(channelAddress).syncUninterruptibly().getChannel();
-        channel.write(copiedBuffer("Hello, world", UTF_8));
-        channel.getCloseFuture().syncUninterruptibly();
-
-        String message;
-        do {
-            Thread.sleep(1L);
-        } while ((message = readFuture.get()) == null);
+            });
+    
+            Channel channel = bootstrap.connect(channelAddress).syncUninterruptibly().getChannel();
+            channel.write(copiedBuffer("Hello, world", UTF_8));
+            channel.getCloseFuture().syncUninterruptibly();
+    
+            do {
+                Thread.sleep(1L);
+            } while ((message = readFuture.get()) == null);
+        }
 
         assertEquals("Hello, world", message);
 

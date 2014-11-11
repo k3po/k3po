@@ -20,9 +20,9 @@
 package org.kaazing.robot.driver.behavior.visitor;
 
 import org.junit.Test;
-
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.builder.AstScriptNodeBuilder;
+import org.kaazing.robot.lang.parser.ScriptParseException;
 
 public class ValidateBarriersVisitorTest {
 
@@ -32,17 +32,13 @@ public class ValidateBarriersVisitorTest {
 
         AstScriptNode inputScriptNode = new AstScriptNodeBuilder()
             .addConnectStream()
-                .setNextLineInfo(1, 0)
                 .addOpenedEvent()
-                    .setNextLineInfo(1, 0)
                     .done()
                 .addBoundEvent()
                     .done()
                 .addConnectedEvent()
-                    .setNextLineInfo(1, 0)
                     .done()
                 .addReadNotifyBarrier()
-                    .setNextLineInfo(1, 0)
                     .setBarrierName("BARRIER")
                     .done()
                 .addDisconnectedEvent()
@@ -58,23 +54,19 @@ public class ValidateBarriersVisitorTest {
         inputScriptNode.accept(validateBarriers, new ValidateBarriersVisitor.State());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = ScriptParseException.class)
     public void shouldFailAwaitWithoutMatchingNotify()
         throws Exception {
 
         AstScriptNode inputScriptNode = new AstScriptNodeBuilder()
             .addConnectStream()
-                .setNextLineInfo(1, 0)
                 .addOpenedEvent()
-                    .setNextLineInfo(1, 0)
                     .done()
                 .addBoundEvent()
                     .done()
                 .addConnectedEvent()
-                    .setNextLineInfo(1, 0)
                     .done()
                 .addReadAwaitBarrier()
-                    .setNextLineInfo(1, 0)
                     .setBarrierName("BARRIER")
                     .done()
                 .addDisconnectedEvent()

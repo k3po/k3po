@@ -19,11 +19,14 @@
 
 package org.kaazing.robot.lang.ast.value;
 
+import static java.lang.String.format;
 import static org.kaazing.robot.lang.ast.util.AstUtil.equivalent;
 
 import javax.el.ValueExpression;
 
-public class AstExpressionValue extends AstValue {
+import org.kaazing.robot.lang.ast.AstRegion;
+
+public final class AstExpressionValue extends AstValue {
 
     private final ValueExpression value;
 
@@ -39,27 +42,27 @@ public class AstExpressionValue extends AstValue {
     }
 
     @Override
-    public int hashCode() {
-        return value.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || (obj instanceof AstExpressionValue) && equals((AstExpressionValue) obj);
-    }
-
-    protected boolean equals(AstExpressionValue that) {
-        return equivalent(this.value, that.value);
-    }
-
-    @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
 
         return visitor.visit(this, parameter);
     }
 
     @Override
-    public String toString() {
-        return String.format("(%s)%s", value.getExpectedType().getSimpleName(), value.getExpressionString());
+    protected int hashTo() {
+        return value.hashCode();
+    }
+
+    @Override
+    protected boolean equalTo(AstRegion that) {
+        return (that instanceof AstExpressionValue) && equalTo((AstExpressionValue) that);
+    }
+
+    protected boolean equalTo(AstExpressionValue that) {
+        return equivalent(this.value, that.value);
+    }
+
+    @Override
+    protected void describe(StringBuilder buf) {
+        buf.append(format("(%s)%s", value.getExpectedType().getSimpleName(), value.getExpressionString()));
     }
 }

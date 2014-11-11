@@ -19,7 +19,9 @@
 
 package org.kaazing.robot.lang.ast.matcher;
 
-public class AstIntLengthBytesMatcher extends AstFixedLengthBytesMatcher {
+import static java.lang.String.format;
+
+public final class AstIntLengthBytesMatcher extends AstFixedLengthBytesMatcher {
 
     @Deprecated
     public AstIntLengthBytesMatcher() {
@@ -31,13 +33,14 @@ public class AstIntLengthBytesMatcher extends AstFixedLengthBytesMatcher {
     }
 
     @Override
-    public String toString() {
+    protected void describe(StringBuilder buf) {
         String captureName = getCaptureName();
         if (captureName == null) {
-            return "int";
-
+            buf.append("int");
         }
-        return String.format("(int:%s)", captureName);
+        else {
+            buf.append(format("(int:%s)", captureName));
+        }
     }
 
     @Override

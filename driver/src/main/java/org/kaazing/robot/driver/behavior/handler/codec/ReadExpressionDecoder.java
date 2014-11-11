@@ -19,11 +19,16 @@
 
 package org.kaazing.robot.driver.behavior.handler.codec;
 
+import static org.kaazing.robot.lang.RegionInfo.newSequential;
+
 import java.util.Arrays;
 
 import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.kaazing.robot.driver.behavior.ScriptProgressException;
+import org.kaazing.robot.driver.util.Utils;
+import org.kaazing.robot.lang.RegionInfo;
 import org.kaazing.robot.lang.el.ExpressionContext;
 
 public class ReadExpressionDecoder extends MessageDecoder {
@@ -31,7 +36,8 @@ public class ReadExpressionDecoder extends MessageDecoder {
     private final ValueExpression expression;
     private final ExpressionContext environment;
 
-    public ReadExpressionDecoder(ValueExpression expression, ExpressionContext environment) {
+    public ReadExpressionDecoder(RegionInfo regionInfo, ValueExpression expression, ExpressionContext environment) {
+        super(regionInfo);
         this.expression = expression;
         this.environment = environment;
     }
@@ -54,9 +60,15 @@ public class ReadExpressionDecoder extends MessageDecoder {
         buffer.readBytes(observed);
         if (!Arrays.equals(observed, expected)) {
             // Use a mismatch exception subclass, include the expression?
-            throw new MessageMismatchException("Expression mismatch", expected, observed);
+            throw new ScriptProgressException(getRegionInfo(), Utils.format(observed));
         }
 
         return buffer;
     }
+
+    // unit tests
+    ReadExpressionDecoder(ValueExpression expression, ExpressionContext environment) {
+        this(newSequential(0, 0), expression, environment);
+    }
+
 }

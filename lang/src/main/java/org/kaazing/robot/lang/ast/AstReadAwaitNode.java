@@ -29,18 +29,18 @@ public class AstReadAwaitNode extends AstBarrierNode {
     }
 
     @Override
-    public int hashCode() {
-        return hashTo();
+    protected int hashTo() {
+        return getClass().hashCode();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstReadAwaitNode) && equalTo((AstReadAwaitNode) obj));
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstReadAwaitNode;
     }
 
     @Override
-    protected void formatNode(StringBuilder sb) {
-        super.formatNode(sb);
-        sb.append(format("read await %s\n", getBarrierName()));
+    protected void describe(StringBuilder buf) {
+        super.describe(buf);
+        buf.append(format("read await %s\n", getBarrierName()));
     }
 }

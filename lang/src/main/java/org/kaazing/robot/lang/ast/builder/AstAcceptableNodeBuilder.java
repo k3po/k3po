@@ -25,23 +25,8 @@ import org.kaazing.robot.lang.ast.AstScriptNode;
 
 public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBuilder<AstAcceptableNode> {
 
-    private int line;
-
     public AstAcceptableNodeBuilder() {
         this(new AstAcceptableNode());
-    }
-
-    @Override
-    public AstAcceptableNodeBuilder setLocationInfo(int line, int column) {
-        node.setLocationInfo(line, column);
-        internalSetLineInfo(line);
-        return this;
-    }
-
-    @Override
-    public AstAcceptableNodeBuilder setNextLineInfo(int linesToSkip, int column) {
-        internalSetNextLineInfo(linesToSkip, column);
-        return this;
     }
 
     public AstAcceptableNodeBuilder setAcceptName(String acceptName) {
@@ -139,17 +124,6 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         return result;
     }
 
-    @Override
-    protected int line() {
-        return line;
-    }
-
-    @Override
-    protected int line(int line) {
-        this.line = line;
-        return line;
-    }
-
     private AstAcceptableNodeBuilder(AstAcceptableNode node) {
         super(node, node);
     }
@@ -184,19 +158,6 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
 
         public ScriptNested(R builder) {
             super(builder);
-        }
-
-        @Override
-        public ScriptNested<R> setLocationInfo(int line, int column) {
-            node.setLocationInfo(line, column);
-            internalSetLineInfo(line);
-            return this;
-        }
-
-        @Override
-        public ScriptNested<R> setNextLineInfo(int linesToSkip, int column) {
-            internalSetNextLineInfo(linesToSkip, column);
-            return this;
         }
 
         public ScriptNested<R> setAcceptName(String acceptName) {
@@ -287,16 +248,6 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         }
 
         @Override
-        protected int line() {
-            return result.line();
-        }
-
-        @Override
-        protected int line(int line) {
-            return result.line(line);
-        }
-
-        @Override
         public AstReadConfigNodeBuilder.StreamNested<ScriptNested<R>> addReadConfigEvent() {
             return new AstReadConfigNodeBuilder.StreamNested<ScriptNested<R>>(this);
         }
@@ -337,19 +288,6 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
 
         public AcceptNested(R builder) {
             super(builder);
-        }
-
-        @Override
-        public AcceptNested<R> setLocationInfo(int line, int column) {
-            node.setLocationInfo(line, column);
-            internalSetLineInfo(line);
-            return this;
-        }
-
-        @Override
-        public AcceptNested<R> setNextLineInfo(int linesToSkip, int column) {
-            internalSetNextLineInfo(linesToSkip, column);
-            return this;
         }
 
         public AcceptNested<R> setAcceptName(String acceptName) {
@@ -437,16 +375,6 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
             AstAcceptNode acceptNode = result.node;
             acceptNode.getAcceptables().add(node);
             return result;
-        }
-
-        @Override
-        protected int line() {
-            return result.line();
-        }
-
-        @Override
-        protected int line(int line) {
-            return result.line(line);
         }
 
         @Override

@@ -19,9 +19,9 @@
 
 package org.kaazing.robot.lang.ast.builder;
 
-import org.kaazing.robot.lang.ast.AstStreamableNode;
+import org.kaazing.robot.lang.ast.AstNode;
 
-public abstract class AbstractAstStreamableNodeBuilder<N extends AstStreamableNode, R> extends AbstractAstNodeBuilder<N, R> {
+public abstract class AbstractAstStreamableNodeBuilder<N extends AstNode, R> extends AbstractAstNodeBuilder<N, R> {
 
     public AbstractAstStreamableNodeBuilder(N node, R result) {
         super(node, result);

@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.kaazing.robot.driver.behavior.visitor.AssociateStreamsVisitor.State;
-import org.kaazing.robot.lang.LocationInfo;
+import org.kaazing.robot.lang.RegionInfo;
 import org.kaazing.robot.lang.ast.AstAcceptNode;
 import org.kaazing.robot.lang.ast.AstAcceptableNode;
 import org.kaazing.robot.lang.ast.AstBoundNode;
@@ -40,14 +40,15 @@ import org.kaazing.robot.lang.ast.AstDisconnectNode;
 import org.kaazing.robot.lang.ast.AstDisconnectedNode;
 import org.kaazing.robot.lang.ast.AstFlushNode;
 import org.kaazing.robot.lang.ast.AstNode;
-import org.kaazing.robot.lang.ast.AstNodeException;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
+import org.kaazing.robot.lang.ast.AstPropertyNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstReadConfigNode;
 import org.kaazing.robot.lang.ast.AstReadNotifyNode;
 import org.kaazing.robot.lang.ast.AstReadOptionNode;
 import org.kaazing.robot.lang.ast.AstReadValueNode;
+import org.kaazing.robot.lang.ast.AstRegionException;
 import org.kaazing.robot.lang.ast.AstScriptNode;
 import org.kaazing.robot.lang.ast.AstStreamNode;
 import org.kaazing.robot.lang.ast.AstStreamableNode;
@@ -78,7 +79,8 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
     public AstScriptNode visit(AstScriptNode script, State state) throws Exception {
 
         AstScriptNode newScript = new AstScriptNode();
-        newScript.setLocationInfo(script.getLocationInfo());
+        newScript.setRegionInfo(script.getRegionInfo());
+        newScript.getProperties().addAll(script.getProperties());
 
         state.streams = newScript.getStreams();
 
@@ -96,11 +98,15 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
     }
 
     @Override
+    public AstScriptNode visit(AstPropertyNode propertyNode, State state) throws Exception {
+        return null;
+    }
+
+    @Override
     public AstScriptNode visit(AstAcceptNode acceptNode, State state) throws Exception {
 
         AstAcceptNode newAcceptNode = new AstAcceptNode();
-        LocationInfo location = acceptNode.getLocationInfo();
-        newAcceptNode.setLocationInfo(location);
+        newAcceptNode.setRegionInfo(acceptNode.getRegionInfo());
         newAcceptNode.setLocation(acceptNode.getLocation());
 
         String acceptName = acceptNode.getAcceptName();
@@ -113,20 +119,12 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
 
         for (AstStreamableNode streamable : acceptNode.getStreamables()) {
             streamable.accept(this, state);
-            if (streamable.getLocationInfo() != null) {
-                location = streamable.getLocationInfo();
-            }
         }
 
         for (AstAcceptableNode acceptable : acceptNode.getAcceptables()) {
             assert equivalent(acceptName, acceptable.getAcceptName());
             acceptable.accept(this, state);
-            if (acceptable.getLocationInfo() != null) {
-                location = acceptable.getLocationInfo();
-            }
         }
-
-        newAcceptNode.setEndLocation(location);
 
         state.streams.add(newAcceptNode);
 
@@ -137,7 +135,7 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
     public AstScriptNode visit(AstAcceptableNode acceptableNode, State state) throws Exception {
 
         AstAcceptableNode newAcceptableNode = new AstAcceptableNode();
-        newAcceptableNode.setLocationInfo(acceptableNode.getLocationInfo());
+        newAcceptableNode.setRegionInfo(acceptableNode.getRegionInfo());
 
         String acceptName = acceptableNode.getAcceptName();
         if (acceptName == null) {
@@ -146,20 +144,14 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
 
         AstAcceptNode acceptNode = state.accepts.get(acceptName);
         if (acceptNode == null) {
-            LocationInfo locationInfo = acceptableNode.getLocationInfo();
-            throw new AstNodeException("Accept not found for accepted").initLocationInfo(locationInfo);
+            RegionInfo regionInfo = acceptableNode.getRegionInfo();
+            throw new AstRegionException("Accept not found for accepted").initRegionInfo(regionInfo);
         }
 
-        LocationInfo endLocation = newAcceptableNode.getLocationInfo();
         state.streamables = newAcceptableNode.getStreamables();
         for (AstStreamableNode streamable : acceptableNode.getStreamables()) {
             streamable.accept(this, state);
-            if (streamable.getLocationInfo() != null) {
-                endLocation = streamable.getLocationInfo();
-            }
         }
-        newAcceptableNode.setEndLocation(endLocation);
-        acceptNode.setEndLocation(endLocation);
 
         // associate accepted stream to corresponding accept
         acceptNode.getAcceptables().add(newAcceptableNode);
@@ -170,21 +162,16 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
     @Override
     public AstScriptNode visit(AstConnectNode connectNode, State state) throws Exception {
 
-        LocationInfo location = connectNode.getLocationInfo();
-
         AstConnectNode newConnectNode = new AstConnectNode();
-        newConnectNode.setLocationInfo(location);
+        newConnectNode.setRegionInfo(connectNode.getRegionInfo());
         newConnectNode.setLocation(connectNode.getLocation());
 
         state.streamables = newConnectNode.getStreamables();
 
         for (AstStreamableNode streamable : connectNode.getStreamables()) {
             streamable.accept(this, state);
-            if (streamable.getLocationInfo() != null) {
-                location = streamable.getLocationInfo();
-            }
         }
-        newConnectNode.setEndLocation(location);
+
         state.streams.add(newConnectNode);
 
         return null;
