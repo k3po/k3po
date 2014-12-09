@@ -118,6 +118,9 @@ public class AstWriteConfigNode extends AstCommandNode {
     protected void describe(StringBuilder buf) {
         super.describe(buf);
         buf.append("write ").append(type);
+        for (AstValue name : namesByName.values()) {
+            buf.append(' ').append(name);
+        }
         for (AstValue value : valuesByName.values()) {
             buf.append(' ').append(value);
         }
