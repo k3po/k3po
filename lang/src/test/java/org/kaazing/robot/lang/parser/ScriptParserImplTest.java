@@ -834,6 +834,34 @@ public class ScriptParserImplTest {
 		assertEquals(expected, actual);
 	}
 
+    @Test
+    public void shouldParseAcceptWithQueryString() throws Exception {
+
+        String scriptFragment = "accept http://localhost:8001/echo?param=value";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstAcceptNode actual = parser.parseWithStrategy(scriptFragment, ACCEPT);
+
+        AstAcceptNode expected = new AstAcceptNodeBuilder()
+                .setLocation(URI.create("http://localhost:8001/echo?param=value")).done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseAcceptWithQueryStringAndPathSegmentParameter() throws Exception {
+
+        String scriptFragment = "accept http://localhost:8001/echo/;e/ct?param=value";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstAcceptNode actual = parser.parseWithStrategy(scriptFragment, ACCEPT);
+
+        AstAcceptNode expected = new AstAcceptNodeBuilder()
+                .setLocation(URI.create("http://localhost:8001/echo/;e/ct?param=value")).done();
+
+        assertEquals(expected, actual);
+    }
+
 	@Test(expected = ScriptParseException.class)
 	public void shouldNotParseAcceptedWithoutBehavior() throws Exception {
 

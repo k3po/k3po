@@ -452,7 +452,7 @@ HttpRequestKeyword
 // URI cannot begin with any of our data type delimiters, and MUST contain a colon.
 URILiteral
     : Letter (Letter | '+')+ ':'
-      (Letter | ':' | '/' | '=' | '.' | DecimalLiteral | '?' | '%' | '-' | ',' | '*')+
+      (Letter | ':' | ';' | '/' | '=' | '.' | DecimalLiteral | '?' | '%' | '-' | ',' | '*')+
 //      ~('"' | '/' | ']' | '}')
     ;
 
