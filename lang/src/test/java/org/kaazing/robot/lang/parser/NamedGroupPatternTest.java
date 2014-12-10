@@ -63,10 +63,17 @@ public class NamedGroupPatternTest {
     public void shouldCompileNamedGroup() {
         NamedGroupPattern.compile("/(?<groupA>.*)/");
     }
-    
+
     @Test
     public void shouldCompilePlainText() {
         NamedGroupPattern.compile("/plainText/");
+    }
+
+    @Test
+    public void shouldParseDigitCharacterClass() {
+        NamedGroupPattern pattern = NamedGroupPattern.compile("/[0-9]/");
+        assertTrue(pattern.matcher("0").matches());
+
     }
 
     @Test

@@ -244,7 +244,7 @@ PatternUnicodCharacterClass
 
 fragment
 PatternCharacterClass
-  : Letter ( '-' Letter | Letter* )
+  : PatternCharacter ( '-' PatternCharacter | PatternCharacter* )
   ;
 
 //fragment
