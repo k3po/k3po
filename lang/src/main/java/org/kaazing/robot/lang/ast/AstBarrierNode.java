@@ -34,7 +34,7 @@ public abstract class AstBarrierNode extends AstStreamableNode {
     }
 
     protected int hashTo() {
-        int hashCode = super.hashTo();
+        int hashCode = getClass().hashCode();
 
         if (barrierName != null) {
             hashCode <<= 4;

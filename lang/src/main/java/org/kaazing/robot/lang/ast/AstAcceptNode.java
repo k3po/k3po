@@ -67,7 +67,7 @@ public class AstAcceptNode extends AstStreamNode {
     }
 
     @Override
-    public int hashCode() {
+    protected int hashTo() {
         int hashCode = super.hashTo();
 
         if (location != null) {
@@ -94,8 +94,8 @@ public class AstAcceptNode extends AstStreamNode {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstAcceptNode) && equalTo((AstAcceptNode) obj));
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstAcceptNode && equalTo((AstAcceptNode) that);
     }
 
     protected boolean equalTo(AstAcceptNode that) {
@@ -110,19 +110,19 @@ public class AstAcceptNode extends AstStreamNode {
     }
 
     @Override
-    protected void formatNode(StringBuilder sb) {
-        super.formatNode(sb);
+    protected void describe(StringBuilder buf) {
+        super.describe(buf);
 
         if (acceptables != null) {
             for (AstAcceptableNode acceptable : acceptables) {
-                acceptable.formatNode(sb);
+                acceptable.describe(buf);
             }
         }
     }
 
     @Override
-    protected void formatNodeLine(StringBuilder sb) {
-        super.formatNodeLine(sb);
+    protected void describeLine(StringBuilder sb) {
+        super.describeLine(sb);
         sb.append("accept ");
         sb.append(location);
 

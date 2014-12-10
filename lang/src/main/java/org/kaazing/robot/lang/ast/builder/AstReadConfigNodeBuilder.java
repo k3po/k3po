@@ -35,8 +35,6 @@ import org.kaazing.robot.lang.regex.NamedGroupPattern;
 public class AstReadConfigNodeBuilder extends
         AbstractAstStreamableNodeBuilder<AstReadConfigNode, AstReadConfigNode> {
 
-    private int line;
-
     public AstReadConfigNodeBuilder() {
         this(new AstReadConfigNode());
     }
@@ -46,33 +44,8 @@ public class AstReadConfigNodeBuilder extends
     }
 
     @Override
-    public AbstractAstNodeBuilder<AstReadConfigNode, AstReadConfigNode> setNextLineInfo(int linesToSkip,
-                                                                                                int column) {
-        internalSetNextLineInfo(linesToSkip, column);
-        return this;
-    }
-
-    @Override
-    public AbstractAstNodeBuilder<AstReadConfigNode, AstReadConfigNode> setLocationInfo(int line, int column) {
-        node.setLocationInfo(line, column);
-        internalSetLineInfo(line);
-        return this;
-    }
-
-    @Override
     public AstReadConfigNode done() {
         return result;
-    }
-
-    @Override
-    protected int line() {
-        return line;
-    }
-
-    @Override
-    protected int line(int line) {
-        this.line = line;
-        return line;
     }
 
     public AstReadConfigNodeBuilder setType(String type) {
@@ -172,19 +145,6 @@ public class AstReadConfigNodeBuilder extends
             super(new AstReadConfigNode(), builder);
         }
 
-        @Override
-        public StreamNested<R> setLocationInfo(int line, int column) {
-            node.setLocationInfo(line, column);
-            internalSetLineInfo(line);
-            return this;
-        }
-
-        @Override
-        public StreamNested<R> setNextLineInfo(int linesToSkip, int column) {
-            internalSetNextLineInfo(linesToSkip, column);
-            return this;
-        }
-
         public StreamNested<R> setType(String type) {
             node.setType(type);
             return this;
@@ -280,16 +240,6 @@ public class AstReadConfigNodeBuilder extends
             AstStreamNode streamNode = node(result);
             streamNode.getStreamables().add(node);
             return result;
-        }
-
-        @Override
-        protected int line() {
-            return line(result);
-        }
-
-        @Override
-        protected int line(int line) {
-            return line(result, line);
         }
     }
 }

@@ -19,6 +19,8 @@
 
 package org.kaazing.robot.driver.util;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+
 public final class Utils {
 
     public static String byteArrayToString(byte[] bytes) {
@@ -32,6 +34,36 @@ public final class Utils {
         }
 
         return sb.toString();
+    }
+
+    public static String format(ChannelBuffer observed) {
+        if (!observed.readable()) {
+            return "[]";
+        }
+        else {
+            StringBuilder sb = new StringBuilder();
+            sb.append("[");
+            for (int readerIndex = observed.readerIndex(); readerIndex < observed.writerIndex(); readerIndex++) {
+                sb.append(String.format("0x%02x ", observed.getByte(readerIndex)));
+            }
+            sb.setCharAt(sb.length() - 1, ']');
+            return sb.toString();
+        }
+    }
+
+    public static String format(byte[] observed) {
+        if (observed.length == 0) {
+            return "[]";
+        }
+        else {
+            StringBuilder sb = new StringBuilder();
+            sb.append("[");
+            for (int index = 0; index < observed.length; index++) {
+                sb.append(String.format("0x%02x ", observed[index]));
+            }
+            sb.setCharAt(sb.length() - 1, ']');
+            return sb.toString();
+        }
     }
 
     private Utils() {

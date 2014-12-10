@@ -17,11 +17,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.driver.behavior;
+package org.kaazing.robot.driver.behavior.handler.codec;
 
-import org.jboss.netty.channel.ChannelFuture;
+import org.kaazing.robot.lang.RegionInfo;
 
-public interface RobotCompletionFuture extends ChannelFuture {
-    String getObservedScript();
-    String getExpectedScript();
+
+public abstract class AbstractConfigDecoder implements ConfigDecoder {
+
+    private RegionInfo regionInfo;
+
+    public RegionInfo getRegionInfo() {
+        return regionInfo;
+    }
+
+    public void setRegionInfo(RegionInfo regionInfo) {
+        this.regionInfo = regionInfo;
+    }
+
 }

@@ -19,7 +19,10 @@
 
 package org.kaazing.robot.lang.ast.matcher;
 
+import static java.lang.String.format;
 import static org.kaazing.robot.lang.ast.util.AstUtil.equivalent;
+
+import org.kaazing.robot.lang.ast.AstRegion;
 
 public class AstFixedLengthBytesMatcher extends AstValueMatcher {
 
@@ -44,8 +47,8 @@ public class AstFixedLengthBytesMatcher extends AstValueMatcher {
     }
 
     @Override
-    public int hashCode() {
-        int hashCode = super.hashCode();
+    protected int hashTo() {
+        int hashCode = getClass().hashCode();
 
         hashCode <<= 4;
         hashCode ^= length;
@@ -59,25 +62,26 @@ public class AstFixedLengthBytesMatcher extends AstValueMatcher {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstFixedLengthBytesMatcher) && equals((AstFixedLengthBytesMatcher) obj));
-    }
-
-    protected boolean equals(AstFixedLengthBytesMatcher that) {
-        return equivalent(this.length, that.length) && equivalent(this.captureName, that.captureName);
-    }
-
-    @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
-
         return visitor.visit(this, parameter);
     }
 
     @Override
-    public String toString() {
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstFixedLengthBytesMatcher && equalTo((AstFixedLengthBytesMatcher) that);
+    }
+
+    protected boolean equalTo(AstFixedLengthBytesMatcher that) {
+        return equivalent(this.length, that.length) && equivalent(this.captureName, that.captureName);
+    }
+
+    @Override
+    protected void describe(StringBuilder buf) {
         if (captureName != null) {
-            return String.format("([0..%d}]:%s)", length, captureName);
+            buf.append(format("([0..%d}]:%s)", length, captureName));
         }
-        return String.format("[0..%d}]", length);
+        else {
+            buf.append(format("[0..%d}]", length));
+        }
     }
 }

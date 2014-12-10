@@ -39,7 +39,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
 import org.kaazing.robot.driver.Robot;
-import org.kaazing.robot.driver.behavior.RobotCompletionFuture;
 
 public class HttpRobotBehaviorIT {
 
@@ -82,12 +81,9 @@ public class HttpRobotBehaviorIT {
         String expected = script;
 
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
     }
 
     @Test
@@ -99,12 +95,9 @@ public class HttpRobotBehaviorIT {
         String expected = script;
 
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
     }
     
     @Test
@@ -116,12 +109,9 @@ public class HttpRobotBehaviorIT {
         String expected = script;
 
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
     }
     
     @Test
@@ -133,12 +123,9 @@ public class HttpRobotBehaviorIT {
         String expected = script;
 
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
     }
 
@@ -151,12 +138,9 @@ public class HttpRobotBehaviorIT {
         String expected = script;
 
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
     }
 
@@ -169,12 +153,9 @@ public class HttpRobotBehaviorIT {
         String expected = script;
 
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
     }
 
@@ -187,12 +168,9 @@ public class HttpRobotBehaviorIT {
         String expected = script;
 
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
     }
 
@@ -202,13 +180,11 @@ public class HttpRobotBehaviorIT {
         String script = combineScripts("http.accept.websocket.handshake.rpt", "tcp.connect.websocket.handshake.rpt");
 
         String expected = script;
+
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
     }
 
@@ -218,13 +194,11 @@ public class HttpRobotBehaviorIT {
         String script = combineScripts("http.connect.websocket.handshake.rpt", "tcp.accept.websocket.handshake.rpt");
 
         String expected = script;
+
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
     }
 
@@ -234,13 +208,11 @@ public class HttpRobotBehaviorIT {
         String script = combineScripts("http.accept.post.with.chunking.rpt", "tcp.connect.post.with.chunking.rpt");
 
         String expected = script;
+
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
     }
 
@@ -250,13 +222,11 @@ public class HttpRobotBehaviorIT {
         String script = combineScripts("http.connect.post.with.chunking.rpt", "tcp.accept.post.with.chunking.rpt");
 
         String expected = script;
+
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
     }
 
@@ -267,13 +237,11 @@ public class HttpRobotBehaviorIT {
                 "tcp.connect.response.with.chunking.rpt");
 
         String expected = script;
+
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
     }
 
@@ -284,13 +252,11 @@ public class HttpRobotBehaviorIT {
                 "tcp.accept.response.with.chunking.rpt");
 
         String expected = script;
+
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
     }
 
@@ -301,13 +267,11 @@ public class HttpRobotBehaviorIT {
                 "tcp.accept.connection.close.response.rpt");
 
         String expected = script;
+
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
     }
 
@@ -318,13 +282,11 @@ public class HttpRobotBehaviorIT {
                 "tcp.connect.connection.close.response.rpt");
 
         String expected = script;
+
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
     }
 
@@ -335,13 +297,11 @@ public class HttpRobotBehaviorIT {
                 "tcp.connect.two.http.200.on.different.streams.rpt");
 
         String expected = script;
+
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
     }
 
@@ -351,13 +311,11 @@ public class HttpRobotBehaviorIT {
         String script = combineScripts("http.accept.two.http.200.rpt", "tcp.connect.two.http.200.on.same.streams.rpt");
 
         String expected = script;
+
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
     }
 

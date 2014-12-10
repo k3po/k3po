@@ -99,16 +99,7 @@ public class BBoshServerBootstrapTest {
         };
         SimpleChannelHandler parentSpy = spy(parent);
 
-        SimpleChannelHandler child = new SimpleChannelHandler() {
-
-            @Override
-            public void handleUpstream(ChannelHandlerContext ctx,
-                    ChannelEvent e) throws Exception {
-                System.out.println(e);
-                super.handleUpstream(ctx, e);
-            }
-
-        };
+        SimpleChannelHandler child = new SimpleChannelHandler();
         SimpleChannelHandler childSpy = spy(child);
 
         server.setParentHandler(parentSpy);

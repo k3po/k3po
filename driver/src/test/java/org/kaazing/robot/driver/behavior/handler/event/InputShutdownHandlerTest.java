@@ -37,6 +37,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.kaazing.robot.driver.netty.channel.Channels.fireFlushed;
 import static org.kaazing.robot.driver.netty.channel.Channels.fireInputShutdown;
+import static org.kaazing.robot.lang.RegionInfo.newSequential;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelEvent;
@@ -84,6 +85,8 @@ public class InputShutdownHandlerTest {
         upstream = context.mock(ChannelUpstreamHandler.class);
 
         handler = new InputShutdownHandler();
+        handler.setRegionInfo(newSequential(0, 0));
+
         pipeline = pipeline(new SimpleChannelHandler() {
             @Override
             public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {

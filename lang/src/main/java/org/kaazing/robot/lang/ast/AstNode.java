@@ -19,57 +19,14 @@
 
 package org.kaazing.robot.lang.ast;
 
-import static org.kaazing.robot.lang.ast.util.AstUtil.equivalent;
 
-import org.kaazing.robot.lang.LocationInfo;
-
-public abstract class AstNode {
-
-    private LocationInfo locationInfo;
-
-    public LocationInfo getLocationInfo() {
-        return locationInfo;
-    }
-
-    public void setLocationInfo(int line, int column) {
-        this.locationInfo = new LocationInfo(line, column);
-    }
-
-    public void setLocationInfo(LocationInfo locationInfo) {
-        this.locationInfo = locationInfo;
-    }
+public abstract class AstNode extends AstRegion {
 
     public abstract <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception;
 
-    public abstract int hashCode();
-
-    public abstract boolean equals(Object obj);
-
-    public final String toString() {
-        StringBuilder sb = new StringBuilder();
-        formatNode(sb);
-        return sb.toString();
-    }
-
-    protected int hashTo() {
-        return (locationInfo != null) ? locationInfo.hashCode() : 0;
-    }
-
-    protected final boolean equalTo(AstNode that) {
-        return equivalent(this.locationInfo, that.locationInfo);
-    }
-
-    protected void formatNode(StringBuilder sb) {
-        if (locationInfo != null) {
-            sb.append(String.format("[%03d:%02d] ", locationInfo.line, locationInfo.column));
-        }
-        else {
-            sb.append("         ");
-        }
-    }
-
     public interface Visitor<R, P> {
         R visit(AstScriptNode node, P parameter) throws Exception;
+        R visit(AstPropertyNode node, P parameter) throws Exception;
         R visit(AstAcceptNode node, P parameter) throws Exception;
         R visit(AstAcceptableNode node, P parameter) throws Exception;
         R visit(AstConnectNode node, P parameter) throws Exception;

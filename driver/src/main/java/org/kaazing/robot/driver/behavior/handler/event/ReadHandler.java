@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.el.ELException;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelEvent;
@@ -36,6 +38,7 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.UpstreamMessageEvent;
+import org.kaazing.robot.driver.behavior.ScriptProgressException;
 import org.kaazing.robot.driver.behavior.handler.codec.MaskingDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageDecoder;
 
@@ -100,6 +103,12 @@ public class ReadHandler extends AbstractEventHandler {
                 } else {
                     buf = decoder.decode(buf);
                 }
+            } catch (ELException ele) {
+                ScriptProgressException exception = new ScriptProgressException(getRegionInfo(), ele.getMessage());
+                exception.initCause(ele);
+                exception.fillInStackTrace();
+                handlerFuture.setFailure(exception);
+                return;
             } catch (Exception mme) {
                 // TODO: We will eventually have to create an AstRead node containing what we actually saw. This will come
                 // later.

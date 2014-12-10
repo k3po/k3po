@@ -17,27 +17,39 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.driver.behavior.handler.codec;
+package org.kaazing.robot.lang.ast;
 
-import org.kaazing.robot.driver.RobotException;
+import org.kaazing.robot.lang.RegionInfo;
 
-@SuppressWarnings("serial")
-public class MessageMismatchException extends RobotException {
+public class AstRegionException extends Exception {
 
-    protected Object expected;
-    protected Object observed;
+    private static final long serialVersionUID = 1L;
 
-    public MessageMismatchException(String msg, Object expected, Object observed) {
-        super(msg);
-        this.expected = expected;
-        this.observed = observed;
+    private RegionInfo regionInfo;
+
+    public AstRegionException() {
+        super();
     }
 
-    public Object getExpected() {
-        return expected;
+    public AstRegionException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public Object getObserved() {
-        return observed;
+    public AstRegionException(String message) {
+        super(message);
     }
+
+    public AstRegionException(Throwable cause) {
+        super(cause);
+    }
+
+    public RegionInfo getLocationInfo() {
+        return regionInfo;
+    }
+
+    public AstRegionException initRegionInfo(RegionInfo regionInfo) {
+        this.regionInfo = regionInfo;
+        return this;
+    }
+
 }

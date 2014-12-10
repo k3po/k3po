@@ -28,12 +28,12 @@ import java.util.List;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
-import org.kaazing.robot.driver.behavior.handler.codec.ConfigDecoder;
+import org.kaazing.robot.driver.behavior.ScriptProgressException;
+import org.kaazing.robot.driver.behavior.handler.codec.AbstractConfigDecoder;
 import org.kaazing.robot.driver.behavior.handler.codec.MessageDecoder;
-import org.kaazing.robot.driver.behavior.handler.codec.MessageMismatchException;
 import org.kaazing.robot.driver.netty.bootstrap.http.HttpChannelConfig;
 
-public class HttpHeaderDecoder implements ConfigDecoder {
+public class HttpHeaderDecoder extends AbstractConfigDecoder {
 
     private String name;
     private List<MessageDecoder> valueDecoders;
@@ -66,11 +66,11 @@ public class HttpHeaderDecoder implements ConfigDecoder {
 
     private void decodeHeaderValue(HttpHeaders headers,
             List<String> headerValues, MessageDecoder valueDecoder)
-            throws MessageMismatchException, Exception {
+            throws Exception {
 
         int headerValueCount = headerValues.size();
         if (headerValueCount == 0) {
-            throw new MessageMismatchException("Missing HTTP header", name, null);
+            throw new ScriptProgressException(getRegionInfo(), format("Missing HTTP header: %s", name));
         }
         else if (headerValueCount == 1) {
             // efficiently handle single-valued HTTP header

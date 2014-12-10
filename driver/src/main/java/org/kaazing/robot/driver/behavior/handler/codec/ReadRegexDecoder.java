@@ -21,12 +21,15 @@ package org.kaazing.robot.driver.behavior.handler.codec;
 
 import static java.lang.String.format;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
+import static org.kaazing.robot.lang.RegionInfo.newSequential;
 
 import java.nio.charset.Charset;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
+import org.kaazing.robot.driver.behavior.ScriptProgressException;
+import org.kaazing.robot.lang.RegionInfo;
 import org.kaazing.robot.lang.el.ExpressionContext;
 import org.kaazing.robot.lang.regex.NamedGroupMatcher;
 import org.kaazing.robot.lang.regex.NamedGroupPattern;
@@ -39,7 +42,8 @@ public class ReadRegexDecoder extends MessageDecoder {
     private final Charset charset;
     private final ExpressionContext environment;
 
-    public ReadRegexDecoder(final NamedGroupPattern pattern, final Charset charset, final ExpressionContext environment) {
+    public ReadRegexDecoder(RegionInfo regionInfo, NamedGroupPattern pattern, Charset charset, ExpressionContext environment) {
+        super(regionInfo);
         this.pattern = pattern;
         this.environment = environment;
         this.charset = charset;
@@ -59,6 +63,12 @@ public class ReadRegexDecoder extends MessageDecoder {
     protected Object decodeBuffer(final ChannelBuffer buffer) throws Exception {
         return decodeBuffer(buffer, false);
     }
+
+    // unit tests
+    ReadRegexDecoder(NamedGroupPattern pattern, Charset charset, ExpressionContext environment) {
+        this(newSequential(0, 0), pattern, charset, environment);
+    }
+
 
     private Object decodeBuffer(final ChannelBuffer buffer, boolean isLast) throws Exception {
 
@@ -84,8 +94,7 @@ public class ReadRegexDecoder extends MessageDecoder {
 
         // If we never matched we fail.
         if (!prefixMatched) {
-            throw new MessageMismatchException(format("Regex %s mismatch.", pattern.pattern()), pattern.pattern(),
-                    observed);
+            throw new ScriptProgressException(getRegionInfo(), format("\"%s\"", observed));
         }
 
         captureGroups(matcher);

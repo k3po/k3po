@@ -29,15 +29,15 @@ import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.DefaultChannelFuture;
 import org.jboss.netty.channel.LifeCycleAwareChannelHandler;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
+import org.kaazing.robot.driver.behavior.ScriptProgressException;
 import org.kaazing.robot.driver.behavior.handler.barrier.AwaitBarrierDownstreamHandler;
 import org.kaazing.robot.driver.behavior.handler.prepare.PreparationEvent;
 import org.kaazing.robot.driver.behavior.handler.prepare.SimplePrepareUpstreamHandler;
-import org.kaazing.robot.lang.LocationInfo;
+import org.kaazing.robot.lang.RegionInfo;
 
 public class ExecutionHandler extends SimplePrepareUpstreamHandler implements LifeCycleAwareChannelHandler {
 
@@ -45,42 +45,19 @@ public class ExecutionHandler extends SimplePrepareUpstreamHandler implements Li
 
     private ChannelFuture handlerFuture;
     private ChannelFuture pipelineFuture;
-    private ChannelFuture cancelFuture;
 
-    private LocationInfo locationInfo;
-    private LocationInfo streamStartLocation;
+    private RegionInfo regionInfo;
 
     private final AtomicBoolean preparationLatch = new AtomicBoolean();
 
     private Channel channel;
 
-    // Same as canceling the pipeline future ... except sometimes you might want to cancel before it is prepared
-    // in which case you need to wait for the prepare. Calling this method works around that.
-    public ChannelFuture cancel() {
-        if (pipelineFuture != null) {
-            // TODO. Change to cancel
-            pipelineFuture.setSuccess();
-            cancelFuture = Channels.succeededFuture(pipelineFuture.getChannel());
-        } else {
-            cancelFuture = Channels.future(null);
-        }
-        return cancelFuture;
+    public RegionInfo getRegionInfo() {
+        return regionInfo;
     }
 
-    public LocationInfo getLocationInfo() {
-        return locationInfo;
-    }
-
-    public void setLocationInfo(LocationInfo locationInfo) {
-        this.locationInfo = locationInfo;
-    }
-
-    public LocationInfo getStreamStartLocation() {
-        return streamStartLocation;
-    }
-
-    public void setStreamStartLocation(LocationInfo streamStart) {
-        streamStartLocation = streamStart;
+    public void setRegionInfo(RegionInfo regionInfo) {
+        this.regionInfo = regionInfo;
     }
 
     public Channel getChannel() {
@@ -97,12 +74,7 @@ public class ExecutionHandler extends SimplePrepareUpstreamHandler implements Li
         // set latch in case prepare triggered by handler earlier in pipeline
         preparationLatch.set(true);
 
-        pipelineFuture = evt.checkpoint(locationInfo, handlerFuture);
-
-        if (cancelFuture != null) {
-            pipelineFuture.setSuccess();
-            cancelFuture.setSuccess();
-        }
+        pipelineFuture = evt.checkpoint(handlerFuture);
 
         super.prepareRequested(ctx, evt);
     }
@@ -149,9 +121,9 @@ public class ExecutionHandler extends SimplePrepareUpstreamHandler implements Li
 
         assert handlerFuture != null;
         if (!handlerFuture.isDone()) {
-            // Note this happens when the Robot is sent the abort command. The pipeline for the completion future is set to
-            // success. And then we detach all handlers. Doing this is essentially a no-op in that case.
-            handlerFuture.setFailure(new IllegalStateException("ChannelHandler removed before completion").fillInStackTrace());
+            ScriptProgressException exception = new ScriptProgressException(getRegionInfo(), "");
+            exception.fillInStackTrace();
+            handlerFuture.setFailure(exception);
         }
         handlerFuture = null;
     }

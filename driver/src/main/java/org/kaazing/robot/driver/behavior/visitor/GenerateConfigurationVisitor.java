@@ -27,9 +27,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -37,12 +35,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.el.ELResolver;
 import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandler;
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.logging.InternalLogger;
@@ -51,9 +48,7 @@ import org.kaazing.robot.driver.RobotException;
 import org.kaazing.robot.driver.behavior.Barrier;
 import org.kaazing.robot.driver.behavior.Configuration;
 import org.kaazing.robot.driver.behavior.handler.CompletionHandler;
-import org.kaazing.robot.driver.behavior.handler.ExecutionHandler;
 import org.kaazing.robot.driver.behavior.handler.FailureHandler;
-import org.kaazing.robot.driver.behavior.handler.LogLastEventHandler;
 import org.kaazing.robot.driver.behavior.handler.barrier.AwaitBarrierDownstreamHandler;
 import org.kaazing.robot.driver.behavior.handler.barrier.AwaitBarrierUpstreamHandler;
 import org.kaazing.robot.driver.behavior.handler.barrier.NotifyBarrierHandler;
@@ -109,7 +104,7 @@ import org.kaazing.robot.driver.netty.bootstrap.ClientBootstrap;
 import org.kaazing.robot.driver.netty.bootstrap.ServerBootstrap;
 import org.kaazing.robot.driver.netty.channel.ChannelAddress;
 import org.kaazing.robot.driver.netty.channel.ChannelAddressFactory;
-import org.kaazing.robot.lang.LocationInfo;
+import org.kaazing.robot.lang.RegionInfo;
 import org.kaazing.robot.lang.ast.AstAcceptNode;
 import org.kaazing.robot.lang.ast.AstAcceptableNode;
 import org.kaazing.robot.lang.ast.AstBoundNode;
@@ -124,6 +119,7 @@ import org.kaazing.robot.lang.ast.AstDisconnectedNode;
 import org.kaazing.robot.lang.ast.AstFlushNode;
 import org.kaazing.robot.lang.ast.AstNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
+import org.kaazing.robot.lang.ast.AstPropertyNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstReadConfigNode;
@@ -173,7 +169,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public static final class State {
         private final ConcurrentMap<String, Barrier> barriersByName;
         private Configuration configuration;
-        private LocationInfo streamStartLocation;
 
         // the read unmasker is reset per stream
         private MaskingDecoder readUnmasker;
@@ -226,10 +221,19 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
     }
 
+    public GenerateConfigurationVisitor(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory) {
+        this.bootstrapFactory = bootstrapFactory;
+        this.addressFactory = addressFactory;
+    }
+
     @Override
     public Configuration visit(AstScriptNode script, State state) throws Exception {
 
         state.configuration = new Configuration();
+
+        for (AstPropertyNode property : script.getProperties()) {
+            property.accept(this, state);
+        }
 
         for (AstStreamNode stream : script.getStreams()) {
             stream.accept(this, state);
@@ -238,9 +242,38 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         return state.configuration;
     }
 
-    public GenerateConfigurationVisitor(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory) {
-        this.bootstrapFactory = bootstrapFactory;
-        this.addressFactory = addressFactory;
+    @Override
+    public Configuration visit(AstPropertyNode propertyNode, State state) throws Exception {
+
+        String propertyName = propertyNode.getPropertyName();
+        AstValue propertyValue = propertyNode.getPropertyValue();
+
+        Configuration config = state.configuration;
+        ExpressionContext environment = config.getExpressionContext();
+        Object value = propertyValue.accept(new GeneratePropertyValueVisitor(), environment);
+        ELResolver resolver = environment.getELResolver();
+        resolver.setValue(environment, null, propertyName, value);
+
+        return state.configuration;
+    }
+
+    private static class GeneratePropertyValueVisitor implements AstValue.Visitor<Object, ExpressionContext> {
+
+        @Override
+        public Object visit(AstExpressionValue value, ExpressionContext environment) throws Exception {
+            return value.getValue().getValue(environment);
+        }
+
+        @Override
+        public Object visit(AstLiteralTextValue value, ExpressionContext environment) throws Exception {
+            return value.getValue();
+        }
+
+        @Override
+        public Object visit(AstLiteralBytesValue value, ExpressionContext environment) throws Exception {
+            return value.getValue();
+        }
+
     }
 
     @Override
@@ -249,8 +282,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // masking is a no-op by default for each stream
         state.readUnmasker = DEFAULT_READ_UNMASKER;
         state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
-        state.pipelineAsMap.put("lastevent", new LogLastEventHandler(acceptedNode.getLocationInfo()));
-        state.streamStartLocation = acceptedNode.getLocationInfo();
 
         for (AstStreamableNode streamable : acceptedNode.getStreamables()) {
             streamable.accept(this, state);
@@ -259,11 +290,11 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("completion#%d", pipelineAsMap.size() + 1);
 
-        CompletionHandler c = new CompletionHandler();
-        state.configuration.getCompletionHandlers().add(c);
-        pipelineAsMap.put(handlerName, c);
+        CompletionHandler handler = new CompletionHandler();
+        handler.setRegionInfo(acceptedNode.getRegionInfo());
+        pipelineAsMap.put(handlerName, handler);
 
-        return null;
+        return state.configuration;
     }
 
     @Override
@@ -273,12 +304,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         // masking is a no-op by default for each stream
         state.readUnmasker = DEFAULT_READ_UNMASKER;
-
-        /*
-         * Collection of Completion Futures. There should be one for each acceptable. We do this here instead of the
-         * visit because the handlerFuture is not created until the pipeline is created here.
-         */
-        Collection<ChannelFuture> completionFutures = new HashSet<ChannelFuture>();
 
         URI acceptURI = acceptNode.getLocation();
 
@@ -290,17 +315,15 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
             acceptableNode.accept(this, state);
 
-            ChannelPipeline pipeline = pipelineFromMap(state.pipelineAsMap, state);
-            ChannelHandlerContext context = pipeline.getContext(CompletionHandler.class);
-
-            /* Each pipeline must have a completion handler */
-            assert context != null;
-
-            completionFutures.add(((CompletionHandler) context.getHandler()).getHandlerFuture());
-
+            ChannelPipeline pipeline = pipelineFromMap(state.pipelineAsMap);
             pipelines.add(pipeline);
         }
         state.pipelineAsMap = savedPipelineAsMap;
+
+        // retain pipelines for tear down
+        RegionInfo acceptInfo = acceptNode.getRegionInfo();
+        state.configuration.getServerPipelines(acceptInfo).addAll(pipelines);
+        state.configuration.getClientAndServerPipelines().addAll(pipelines);
 
         /*
          * As new connections are accepted we grab a pipeline line off the list. Note the pipelines map is ordered. Note
@@ -322,12 +345,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         serverBootstrap.setOptions(acceptOptions);
         serverBootstrap.setPipelineFactory(pipelineFactory);
         serverBootstrap.setOption("localAddress", localAddress);
-        serverBootstrap.setOption("expectedChildCount", pipelines.size());
-
-        /* Remember the set of complete handlers for this accept node */
-        serverBootstrap.setOption("completionFutures", completionFutures);
-
-        serverBootstrap.setOption("locationInfo", acceptNode.getLocationInfo());
+        serverBootstrap.setOption("regionInfo", acceptInfo);
 
         state.configuration.getServerBootstraps().add(serverBootstrap);
 
@@ -348,27 +366,27 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         Map<String, Object> connectOptions = connectNode.getOptions();
 
         state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
-        state.pipelineAsMap.put("lastevent", new LogLastEventHandler(connectNode.getLocationInfo()));
 
-        state.streamStartLocation = connectNode.getLocationInfo();
         for (AstStreamableNode streamable : connectNode.getStreamables()) {
             streamable.accept(this, state);
         }
 
         /* Add the completion handler */
         String handlerName = String.format("completion#%d", state.pipelineAsMap.size() + 1);
-        CompletionHandler c = new CompletionHandler();
-        state.pipelineAsMap.put(handlerName, c);
-        state.configuration.getCompletionHandlers().add(c);
+        CompletionHandler completionHandler = new CompletionHandler();
+        completionHandler.setRegionInfo(connectNode.getRegionInfo());
+        state.pipelineAsMap.put(handlerName, completionHandler);
 
         ChannelAddress remoteAddress = addressFactory.newChannelAddress(connectURI);
         connectOptions.put("remoteAddress", remoteAddress);
-
-        connectOptions.put("locationInfo", connectNode.getLocationInfo());
+        connectOptions.put("regionInfo", connectNode.getRegionInfo());
 
         ClientBootstrap clientBootstrap = bootstrapFactory.newClientBootstrap(connectURI.getScheme());
 
-        final ChannelPipeline pipeline = pipelineFromMap(state.pipelineAsMap, state);
+        final ChannelPipeline pipeline = pipelineFromMap(state.pipelineAsMap);
+
+        // retain pipelines for tear down
+        state.configuration.getClientAndServerPipelines().add(pipeline);
 
         /*
          * TODO. This is weird. I will only have one pipeline per connect. But if I don't set a factory When a connect
@@ -400,12 +418,12 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstReadAwaitNode node, State state) throws Exception {
 
-        LocationInfo locationInfo = node.getLocationInfo();
+        RegionInfo regionInfo = node.getRegionInfo();
         String barrierName = node.getBarrierName();
         Barrier barrier = state.lookupBarrier(barrierName);
 
         AwaitBarrierUpstreamHandler handler = new AwaitBarrierUpstreamHandler(barrier);
-        handler.setLocationInfo(locationInfo);
+        handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("read.await#%d", pipelineAsMap.size() + 1);
@@ -419,12 +437,12 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstWriteAwaitNode node, State state) throws Exception {
 
-        LocationInfo locationInfo = node.getLocationInfo();
+        RegionInfo regionInfo = node.getRegionInfo();
         String barrierName = node.getBarrierName();
         Barrier barrier = state.lookupBarrier(barrierName);
 
         AwaitBarrierDownstreamHandler handler = new AwaitBarrierDownstreamHandler(barrier);
-        handler.setLocationInfo(locationInfo);
+        handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("write.await#%d", pipelineAsMap.size() + 1);
@@ -438,12 +456,12 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstReadNotifyNode node, State state) throws Exception {
 
-        LocationInfo locationInfo = node.getLocationInfo();
+        RegionInfo regionInfo = node.getRegionInfo();
         String barrierName = node.getBarrierName();
         Barrier barrier = state.lookupBarrier(barrierName);
 
         NotifyBarrierHandler handler = new NotifyBarrierHandler(barrier);
-        handler.setLocationInfo(locationInfo);
+        handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("read.notify#%d", pipelineAsMap.size() + 1);
@@ -457,12 +475,12 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstWriteNotifyNode node, State state) throws Exception {
 
-        LocationInfo locationInfo = node.getLocationInfo();
+        RegionInfo regionInfo = node.getRegionInfo();
         String barrierName = node.getBarrierName();
         Barrier barrier = state.lookupBarrier(barrierName);
 
         NotifyBarrierHandler handler = new NotifyBarrierHandler(barrier);
-        handler.setLocationInfo(locationInfo);
+        handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("write.notify#%d", pipelineAsMap.size() + 1);
@@ -481,7 +499,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             messageEncoders.add(val.accept(new GenerateWriteEncoderVisitor(), state.configuration));
         }
         WriteHandler handler = new WriteHandler(messageEncoders);
-        handler.setLocationInfo(node.getLocationInfo());
+        handler.setRegionInfo(node.getRegionInfo());
         String handlerName = String.format("write#%d", state.pipelineAsMap.size() + 1);
         state.pipelineAsMap.put(handlerName, handler);
         return state.configuration;
@@ -509,10 +527,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstDisconnectNode node, State state) throws Exception {
 
-        LocationInfo locationInfo = node.getLocationInfo();
+        RegionInfo regionInfo = node.getRegionInfo();
 
         DisconnectHandler handler = new DisconnectHandler();
-        handler.setLocationInfo(locationInfo);
+        handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("disconnect#%d", pipelineAsMap.size() + 1);
@@ -524,10 +542,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstUnbindNode node, State state) throws Exception {
 
-        LocationInfo locationInfo = node.getLocationInfo();
+        RegionInfo regionInfo = node.getRegionInfo();
 
         UnbindHandler handler = new UnbindHandler();
-        handler.setLocationInfo(locationInfo);
+        handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("unbind#%d", pipelineAsMap.size() + 1);
@@ -539,10 +557,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstCloseNode node, State state) throws Exception {
 
-        LocationInfo locationInfo = node.getLocationInfo();
+        RegionInfo regionInfo = node.getRegionInfo();
 
         CloseHandler handler = new CloseHandler();
-        handler.setLocationInfo(locationInfo);
+        handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("close#%d", pipelineAsMap.size() + 1);
@@ -554,10 +572,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstChildOpenedNode node, State state) throws Exception {
 
-        LocationInfo locationInfo = node.getLocationInfo();
+        RegionInfo regionInfo = node.getRegionInfo();
 
         ChildOpenedHandler handler = new ChildOpenedHandler();
-        handler.setLocationInfo(locationInfo);
+        handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("childOpened#%d", pipelineAsMap.size() + 1);
@@ -569,10 +587,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstChildClosedNode node, State state) throws Exception {
 
-        LocationInfo locationInfo = node.getLocationInfo();
+        RegionInfo regionInfo = node.getRegionInfo();
 
         ChildClosedHandler handler = new ChildClosedHandler();
-        handler.setLocationInfo(locationInfo);
+        handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("childClosed#%d", pipelineAsMap.size() + 1);
@@ -584,10 +602,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstOpenedNode node, State state) throws Exception {
 
-        LocationInfo locationInfo = node.getLocationInfo();
+        RegionInfo regionInfo = node.getRegionInfo();
 
         OpenedHandler handler = new OpenedHandler();
-        handler.setLocationInfo(locationInfo);
+        handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("opened#%d", pipelineAsMap.size() + 1);
@@ -599,10 +617,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstBoundNode node, State state) throws Exception {
 
-        LocationInfo locationInfo = node.getLocationInfo();
+        RegionInfo regionInfo = node.getRegionInfo();
 
         BoundHandler handler = new BoundHandler();
-        handler.setLocationInfo(locationInfo);
+        handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("bound#%d", pipelineAsMap.size() + 1);
@@ -614,10 +632,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstConnectedNode node, State state) throws Exception {
 
-        LocationInfo locationInfo = node.getLocationInfo();
+        RegionInfo regionInfo = node.getRegionInfo();
 
         ConnectedHandler handler = new ConnectedHandler();
-        handler.setLocationInfo(locationInfo);
+        handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("connected#%d", pipelineAsMap.size() + 1);
@@ -636,7 +654,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         }
 
         ReadHandler handler = new ReadHandler(messageDecoders, state.readUnmasker);
-        handler.setLocationInfo(node.getLocationInfo());
+        handler.setRegionInfo(node.getRegionInfo());
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("read#%d", pipelineAsMap.size() + 1);
         pipelineAsMap.put(handlerName, handler);
@@ -650,7 +668,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         public MessageDecoder visit(AstExpressionMatcher matcher, Configuration config) throws Exception {
             ValueExpression expression = matcher.getValue();
             ExpressionContext environment = config.getExpressionContext();
-            return new ReadExpressionDecoder(expression, environment);
+            return new ReadExpressionDecoder(matcher.getRegionInfo(), expression, environment);
         }
 
         @Override
@@ -659,8 +677,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             int length = matcher.getLength();
             String captureName = matcher.getCaptureName();
             ExpressionContext environment = config.getExpressionContext();
-            MessageDecoder decoder = (captureName != null) ? new ReadByteArrayBytesDecoder(length, environment,
-                    captureName) : new ReadByteArrayBytesDecoder(length);
+            MessageDecoder decoder = (captureName != null)
+                    ? new ReadByteArrayBytesDecoder(matcher.getRegionInfo(), length, environment, captureName)
+                    : new ReadByteArrayBytesDecoder(matcher.getRegionInfo(), length);
             return decoder;
         }
 
@@ -709,11 +728,12 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 IllegalArgumentException, InvocationTargetException {
 
             String captureName = matcher.getCaptureName();
+            RegionInfo regionInfo = matcher.getRegionInfo();
 
             ExpressionContext environment = config.getExpressionContext();
             @SuppressWarnings("unchecked") Constructor<MessageDecoder> constructor = (Constructor<MessageDecoder>) clazz
-                    .getConstructor(ExpressionContext.class, String.class);
-            return constructor.newInstance(environment, captureName);
+                    .getConstructor(RegionInfo.class, ExpressionContext.class, String.class);
+            return constructor.newInstance(regionInfo, environment, captureName);
 
         }
 
@@ -721,18 +741,18 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         public MessageDecoder visit(AstRegexMatcher matcher, Configuration config) throws Exception {
             ExpressionContext environment = config.getExpressionContext();
             MessageDecoder result;
-            result = new ReadRegexDecoder(matcher.getValue(), UTF_8, environment);
+            result = new ReadRegexDecoder(matcher.getRegionInfo(), matcher.getValue(), UTF_8, environment);
             return result;
         }
 
         @Override
         public MessageDecoder visit(AstExactTextMatcher matcher, Configuration config) throws Exception {
-            return new ReadExactTextDecoder(matcher.getValue(), UTF_8);
+            return new ReadExactTextDecoder(matcher.getRegionInfo(), matcher.getValue(), UTF_8);
         }
 
         @Override
         public MessageDecoder visit(AstExactBytesMatcher matcher, Configuration config) throws Exception {
-            return new ReadExactBytesDecoder(matcher.getValue());
+            return new ReadExactBytesDecoder(matcher.getRegionInfo(), matcher.getValue());
         }
 
         @Override
@@ -741,8 +761,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             ValueExpression length = matcher.getLength();
             String captureName = matcher.getCaptureName();
             ExpressionContext environment = config.getExpressionContext();
-            MessageDecoder decoder = (captureName != null) ? new ReadVariableLengthBytesDecoder(length, environment,
-                    captureName) : new ReadVariableLengthBytesDecoder(length, environment);
+            MessageDecoder decoder = (captureName != null)
+                    ? new ReadVariableLengthBytesDecoder(matcher.getRegionInfo(), length, environment, captureName)
+                    : new ReadVariableLengthBytesDecoder(matcher.getRegionInfo(), length, environment);
             return decoder;
         }
 
@@ -751,10 +772,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstDisconnectedNode node, State state) throws Exception {
 
-        LocationInfo locationInfo = node.getLocationInfo();
+        RegionInfo regionInfo = node.getRegionInfo();
 
         DisconnectedHandler handler = new DisconnectedHandler();
-        handler.setLocationInfo(locationInfo);
+        handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("disconnected#%d", pipelineAsMap.size() + 1);
@@ -766,10 +787,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstUnboundNode node, State state) throws Exception {
 
-        LocationInfo locationInfo = node.getLocationInfo();
+        RegionInfo regionInfo = node.getRegionInfo();
 
         UnboundHandler handler = new UnboundHandler();
-        handler.setLocationInfo(locationInfo);
+        handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("unbound#%d", pipelineAsMap.size() + 1);
@@ -781,10 +802,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstClosedNode node, State state) throws Exception {
 
-        LocationInfo locationInfo = node.getLocationInfo();
+        RegionInfo regionInfo = node.getRegionInfo();
 
         ClosedHandler handler = new ClosedHandler();
-        handler.setLocationInfo(locationInfo);
+        handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("closed#%d", pipelineAsMap.size() + 1);
@@ -793,13 +814,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         return state.configuration;
     }
 
-    private static ChannelPipeline pipelineFromMap(Map<String, ChannelHandler> pipelineAsMap, State state) {
+    private static ChannelPipeline pipelineFromMap(Map<String, ChannelHandler> pipelineAsMap) {
         ChannelPipeline pipeline = pipeline();
         for (Map.Entry<String, ChannelHandler> entry : pipelineAsMap.entrySet()) {
-            if (entry.getValue() instanceof ExecutionHandler) {
-                ExecutionHandler handler = (ExecutionHandler) entry.getValue();
-                handler.setStreamStartLocation(state.streamStartLocation);
-            }
             pipeline.addLast(entry.getKey(), entry.getValue());
         }
 
@@ -820,7 +837,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             // TODO: compareEqualsIgnoreCase
             ReadConfigHandler handler = new ReadConfigHandler(new HttpMethodDecoder(methodValueDecoder));
 
-            handler.setLocationInfo(node.getLocationInfo());
+            handler.setRegionInfo(node.getRegionInfo());
             Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
             String handlerName = String.format("readConfig#%d (http method)", pipelineAsMap.size() + 1);
             pipelineAsMap.put(handlerName, handler);
@@ -835,9 +852,11 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 valueDecoders.add(matcher.accept(new GenerateReadDecoderVisitor(), state.configuration));
             }
 
-            ReadConfigHandler handler = new ReadConfigHandler(new HttpHeaderDecoder(name.getValue(), valueDecoders));
+            HttpHeaderDecoder decoder = new HttpHeaderDecoder(name.getValue(), valueDecoders);
+            decoder.setRegionInfo(node.getRegionInfo());
+            ReadConfigHandler handler = new ReadConfigHandler(decoder);
 
-            handler.setLocationInfo(node.getLocationInfo());
+            handler.setRegionInfo(node.getRegionInfo());
             Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
             String handlerName = String.format("readConfig#%d (http header)", pipelineAsMap.size() + 1);
             pipelineAsMap.put(handlerName, handler);
@@ -852,9 +871,11 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 valueDecoders.add(matcher.accept(new GenerateReadDecoderVisitor(), state.configuration));
             }
 
-            ReadConfigHandler handler = new ReadConfigHandler(new HttpParameterDecoder(name.getValue(), valueDecoders));
+            HttpParameterDecoder decoder = new HttpParameterDecoder(name.getValue(), valueDecoders);
+            decoder.setRegionInfo(node.getRegionInfo());
+            ReadConfigHandler handler = new ReadConfigHandler(decoder);
 
-            handler.setLocationInfo(node.getLocationInfo());
+            handler.setRegionInfo(node.getRegionInfo());
             Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
             String handlerName = String.format("readConfig#%d (http parameter)", pipelineAsMap.size() + 1);
             pipelineAsMap.put(handlerName, handler);
@@ -867,7 +888,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
             ReadConfigHandler handler = new ReadConfigHandler(new HttpVersionDecoder(versionDecoder));
 
-            handler.setLocationInfo(node.getLocationInfo());
+            handler.setRegionInfo(node.getRegionInfo());
             Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
             String handlerName = String.format("readConfig#%d (http version)", pipelineAsMap.size() + 1);
             pipelineAsMap.put(handlerName, handler);
@@ -882,7 +903,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
             ReadConfigHandler handler = new ReadConfigHandler(new HttpStatusDecoder(codeDecoder, reasonDecoder));
 
-            handler.setLocationInfo(node.getLocationInfo());
+            handler.setRegionInfo(node.getRegionInfo());
             Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
             String handlerName = String.format("readConfig#%d (http status)", pipelineAsMap.size() + 1);
             pipelineAsMap.put(handlerName, handler);
@@ -907,14 +928,14 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
             WriteConfigHandler handler = new WriteConfigHandler(new HttpHeaderEncoder(nameEncoder, valueEncoders));
 
-            handler.setLocationInfo(node.getLocationInfo());
+            handler.setRegionInfo(node.getRegionInfo());
             String handlerName = String.format("writeConfig#%d (http header)", state.pipelineAsMap.size() + 1);
             state.pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }
         case "content-length": {
             WriteConfigHandler handler = new WriteConfigHandler(new HttpContentLengthEncoder());
-            handler.setLocationInfo(node.getLocationInfo());
+            handler.setRegionInfo(node.getRegionInfo());
             String handlerName = String.format("writeConfig#%d (http content length)", state.pipelineAsMap.size() + 1);
             state.pipelineAsMap.put(handlerName, handler);
             return null;
@@ -926,7 +947,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             MessageEncoder methodEncoder = methodName.accept(new GenerateWriteEncoderVisitor(), state.configuration);
 
             WriteConfigHandler handler = new WriteConfigHandler(new HttpMethodEncoder(methodEncoder));
-            handler.setLocationInfo(node.getLocationInfo());
+            handler.setRegionInfo(node.getRegionInfo());
             String handlerName = String.format("writeConfig#%d (http method)", state.pipelineAsMap.size() + 1);
             state.pipelineAsMap.put(handlerName, handler);
             return state.configuration;
@@ -942,7 +963,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
             WriteConfigHandler handler = new WriteConfigHandler(new HttpParameterEncoder(nameEncoder, valueEncoders));
 
-            handler.setLocationInfo(node.getLocationInfo());
+            handler.setRegionInfo(node.getRegionInfo());
             String handlerName = String.format("writeConfig#%d (http parameter)", state.pipelineAsMap.size() + 1);
             state.pipelineAsMap.put(handlerName, handler);
             return state.configuration;
@@ -954,7 +975,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
             WriteConfigHandler handler = new WriteConfigHandler(new HttpVersionEncoder(versionEncoder));
 
-            handler.setLocationInfo(node.getLocationInfo());
+            handler.setRegionInfo(node.getRegionInfo());
             String handlerName = String.format("writeConfig#%d (http version)", state.pipelineAsMap.size() + 1);
             state.pipelineAsMap.put(handlerName, handler);
             return state.configuration;
@@ -968,7 +989,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
             WriteConfigHandler handler = new WriteConfigHandler(new HttpStatusEncoder(codeEncoder, reasonEncoder));
 
-            handler.setLocationInfo(node.getLocationInfo());
+            handler.setRegionInfo(node.getRegionInfo());
             String handlerName = String.format("writeConfig#%d (http status)", state.pipelineAsMap.size() + 1);
             state.pipelineAsMap.put(handlerName, handler);
             return state.configuration;
@@ -982,7 +1003,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstReadClosedNode node, State state) throws Exception {
         InputShutdownHandler handler = new InputShutdownHandler();
 
-        handler.setLocationInfo(node.getLocationInfo());
+        handler.setRegionInfo(node.getRegionInfo());
         String handlerName = String.format("readClosed#%d", state.pipelineAsMap.size() + 1);
         state.pipelineAsMap.put(handlerName, handler);
         return state.configuration;
@@ -992,7 +1013,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstWriteCloseNode node, State state) throws Exception {
         ShutdownOutputHandler handler = new ShutdownOutputHandler();
 
-        handler.setLocationInfo(node.getLocationInfo());
+        handler.setRegionInfo(node.getRegionInfo());
         String handlerName = String.format("writeClose#%d", state.pipelineAsMap.size() + 1);
         state.pipelineAsMap.put(handlerName, handler);
         return state.configuration;
@@ -1002,7 +1023,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstFlushNode node, State state) throws Exception {
         FlushHandler handler = new FlushHandler();
 
-        handler.setLocationInfo(node.getLocationInfo());
+        handler.setRegionInfo(node.getRegionInfo());
         String handlerName = String.format("flush#%d", state.pipelineAsMap.size() + 1);
         state.pipelineAsMap.put(handlerName, handler);
         return state.configuration;

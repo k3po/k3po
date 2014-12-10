@@ -30,8 +30,6 @@ import org.kaazing.robot.lang.ast.value.AstLiteralTextValue;
 public class AstWriteConfigNodeBuilder extends
         AbstractAstStreamableNodeBuilder<AstWriteConfigNode, AstWriteConfigNode> {
 
-    private int line;
-
     public AstWriteConfigNodeBuilder() {
         this(new AstWriteConfigNode());
     }
@@ -41,33 +39,8 @@ public class AstWriteConfigNodeBuilder extends
     }
 
     @Override
-    public AbstractAstNodeBuilder<AstWriteConfigNode, AstWriteConfigNode> setNextLineInfo(int linesToSkip,
-                                                                                                int column) {
-        internalSetNextLineInfo(linesToSkip, column);
-        return this;
-    }
-
-    @Override
-    public AbstractAstNodeBuilder<AstWriteConfigNode, AstWriteConfigNode> setLocationInfo(int line, int column) {
-        node.setLocationInfo(line, column);
-        internalSetLineInfo(line);
-        return this;
-    }
-
-    @Override
     public AstWriteConfigNode done() {
         return result;
-    }
-
-    @Override
-    protected int line() {
-        return line;
-    }
-
-    @Override
-    protected int line(int line) {
-        this.line = line;
-        return line;
     }
 
     public AstWriteConfigNodeBuilder setType(String type) {
@@ -127,19 +100,6 @@ public class AstWriteConfigNodeBuilder extends
             super(new AstWriteConfigNode(), builder);
         }
 
-        @Override
-        public StreamNested<R> setLocationInfo(int line, int column) {
-            node.setLocationInfo(line, column);
-            internalSetLineInfo(line);
-            return this;
-        }
-
-        @Override
-        public StreamNested<R> setNextLineInfo(int linesToSkip, int column) {
-            internalSetNextLineInfo(linesToSkip, column);
-            return this;
-        }
-
         public StreamNested<R> setType(String type) {
             node.setType(type);
             return this;
@@ -195,16 +155,6 @@ public class AstWriteConfigNodeBuilder extends
             AstStreamNode streamNode = node(result);
             streamNode.getStreamables().add(node);
             return result;
-        }
-
-        @Override
-        protected int line() {
-            return line(result);
-        }
-
-        @Override
-        protected int line(int line) {
-            return line(result, line);
         }
     }
 }

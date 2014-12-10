@@ -45,7 +45,7 @@ public abstract class AstOptionNode extends AstStreamableNode {
     }
 
     protected int hashTo() {
-        int hashCode = super.hashTo();
+        int hashCode = getClass().hashCode();
 
         if (optionName != null) {
             hashCode <<= 4;

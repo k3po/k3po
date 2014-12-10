@@ -32,6 +32,7 @@ import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.kaazing.robot.driver.behavior.ScriptProgressException;
 
 public class ReadExactBytesDecoderTest {
 
@@ -51,7 +52,7 @@ public class ReadExactBytesDecoderTest {
         assertEquals(0, remainingBuffer.readableBytes());
     }
 
-    @Test(expected = MessageMismatchException.class)
+    @Test(expected = ScriptProgressException.class)
     public void NoMatchOK() throws Exception {
         MessageDecoder decoder = new ReadExactBytesDecoder(new byte[] { 0x01, 0x02, 0x03 });
         decoder.decode(copiedBuffer(new byte[] { 0x01, 0x02, 0x04 }));
@@ -67,7 +68,7 @@ public class ReadExactBytesDecoderTest {
         assertEquals(0, remainingBuffer.readableBytes());
     }
 
-    @Test(expected = MessageMismatchException.class)
+    @Test(expected = ScriptProgressException.class)
     public void onlyPartialMatchOK() throws Exception {
         MessageDecoder decoder = new ReadExactBytesDecoder(new byte[] { 0x01, 0x02, 0x03 });
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[] { 0x01, 0x02 }));

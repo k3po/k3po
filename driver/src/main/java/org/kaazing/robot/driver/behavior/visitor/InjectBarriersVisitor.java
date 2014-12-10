@@ -22,6 +22,7 @@ package org.kaazing.robot.driver.behavior.visitor;
 import java.util.List;
 
 import org.kaazing.robot.driver.behavior.visitor.InjectBarriersVisitor.State;
+import org.kaazing.robot.lang.RegionInfo;
 import org.kaazing.robot.lang.ast.AstAcceptNode;
 import org.kaazing.robot.lang.ast.AstAcceptableNode;
 import org.kaazing.robot.lang.ast.AstBoundNode;
@@ -36,6 +37,7 @@ import org.kaazing.robot.lang.ast.AstDisconnectedNode;
 import org.kaazing.robot.lang.ast.AstFlushNode;
 import org.kaazing.robot.lang.ast.AstNode;
 import org.kaazing.robot.lang.ast.AstOpenedNode;
+import org.kaazing.robot.lang.ast.AstPropertyNode;
 import org.kaazing.robot.lang.ast.AstReadAwaitNode;
 import org.kaazing.robot.lang.ast.AstReadClosedNode;
 import org.kaazing.robot.lang.ast.AstReadConfigNode;
@@ -71,7 +73,8 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
     public AstScriptNode visit(AstScriptNode script, State state) throws Exception {
 
         AstScriptNode newScript = new AstScriptNode();
-        newScript.setLocationInfo(script.getLocationInfo());
+        newScript.setRegionInfo(script.getRegionInfo());
+        newScript.getProperties().addAll(script.getProperties());
 
         state.streams = newScript.getStreams();
 
@@ -83,12 +86,17 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
     }
 
     @Override
+    public AstScriptNode visit(AstPropertyNode propertyNode, State state) throws Exception {
+        return null;
+    }
+
+    @Override
     public AstScriptNode visit(AstAcceptNode acceptNode, State state) throws Exception {
 
         state.readWriteState = ReadWriteState.NONE;
 
         AstAcceptNode newAcceptNode = new AstAcceptNode();
-        newAcceptNode.setLocationInfo(acceptNode.getLocationInfo());
+        newAcceptNode.setRegionInfo(acceptNode.getRegionInfo());
         newAcceptNode.setAcceptName(acceptNode.getAcceptName());
         newAcceptNode.setLocation(acceptNode.getLocation());
 
@@ -112,7 +120,7 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
         state.readWriteState = ReadWriteState.NONE;
 
         AstAcceptableNode newAcceptableNode = new AstAcceptableNode();
-        newAcceptableNode.setLocationInfo(acceptableNode.getLocationInfo());
+        newAcceptableNode.setRegionInfo(acceptableNode.getRegionInfo());
         newAcceptableNode.setAcceptName(acceptableNode.getAcceptName());
 
         state.streamables = newAcceptableNode.getStreamables();
@@ -131,7 +139,7 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
         state.readWriteState = ReadWriteState.NONE;
 
         AstConnectNode newConnectNode = new AstConnectNode();
-        newConnectNode.setLocationInfo(connectNode.getLocationInfo());
+        newConnectNode.setRegionInfo(connectNode.getRegionInfo());
         newConnectNode.setLocation(connectNode.getLocation());
 
         state.streamables = newConnectNode.getStreamables();
@@ -179,7 +187,7 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
     @Override
     public AstScriptNode visit(AstWriteValueNode node, State state) throws Exception {
 
-        conditionallyInjectWriteBarrier(state);
+        conditionallyInjectWriteBarrier(state, node.getRegionInfo());
         state.streamables.add(node);
         state.readWriteState = ReadWriteState.WRITE;
 
@@ -279,7 +287,7 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
 
     @Override
     public AstScriptNode visit(AstWriteConfigNode node, State state) throws Exception {
-        conditionallyInjectWriteBarrier(state);
+        conditionallyInjectWriteBarrier(state, node.getRegionInfo());
         state.streamables.add(node);
         state.readWriteState = ReadWriteState.WRITE;
         return null;
@@ -303,24 +311,6 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
         return null;
     }
 
-    private void conditionallyInjectWriteBarrier(State state) {
-        List<AstStreamableNode> streamables = state.streamables;
-
-        switch (state.readWriteState) {
-        case READ:
-            String barrierName = String.format("~read~write~%d", ++state.readWriteBarrierCount);
-            AstReadNotifyNode readNotify = new AstReadNotifyNode();
-            readNotify.setBarrierName(barrierName);
-            AstWriteAwaitNode writeAwait = new AstWriteAwaitNode();
-            writeAwait.setBarrierName(barrierName);
-            streamables.add(readNotify);
-            streamables.add(writeAwait);
-            break;
-        default:
-            break;
-        }
-    }
-
     @Override
     public AstScriptNode visit(AstReadOptionNode node, State state) throws Exception {
         state.streamables.add(node);
@@ -332,4 +322,25 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
         state.streamables.add(node);
         return null;
     }
+
+    private void conditionallyInjectWriteBarrier(State state, RegionInfo regionInfo) {
+        List<AstStreamableNode> streamables = state.streamables;
+
+        switch (state.readWriteState) {
+        case READ:
+            String barrierName = String.format("~read~write~%d", ++state.readWriteBarrierCount);
+            AstReadNotifyNode readNotify = new AstReadNotifyNode();
+            readNotify.setRegionInfo(regionInfo);
+            readNotify.setBarrierName(barrierName);
+            AstWriteAwaitNode writeAwait = new AstWriteAwaitNode();
+            writeAwait.setRegionInfo(regionInfo);
+            writeAwait.setBarrierName(barrierName);
+            streamables.add(readNotify);
+            streamables.add(writeAwait);
+            break;
+        default:
+            break;
+        }
+    }
+
 }

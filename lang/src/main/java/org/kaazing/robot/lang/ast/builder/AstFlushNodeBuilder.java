@@ -25,8 +25,6 @@ import org.kaazing.robot.lang.ast.AstFlushNode;
 public class AstFlushNodeBuilder extends
         AbstractAstStreamableNodeBuilder<AstFlushNode, AstFlushNode> {
 
-    private int line;
-
     public AstFlushNodeBuilder() {
         this(new AstFlushNode());
     }
@@ -36,32 +34,8 @@ public class AstFlushNodeBuilder extends
     }
 
     @Override
-    public AstFlushNodeBuilder setLocationInfo(int line, int column) {
-        node.setLocationInfo(line, column);
-        internalSetLineInfo(line);
-        return this;
-    }
-
-    @Override
-    public AstFlushNodeBuilder setNextLineInfo(int linesToSkip, int column) {
-        internalSetNextLineInfo(linesToSkip, column);
-        return this;
-    }
-
-    @Override
     public AstFlushNode done() {
         return result;
-    }
-
-    @Override
-    protected int line() {
-        return line;
-    }
-
-    @Override
-    protected int line(int line) {
-        this.line = line;
-        return line;
     }
 
     public static class StreamNested<R extends AbstractAstNodeBuilder<? extends AstStreamNode, ?>> extends
@@ -72,33 +46,10 @@ public class AstFlushNodeBuilder extends
         }
 
         @Override
-        public StreamNested<R> setLocationInfo(int line, int column) {
-            node.setLocationInfo(line, column);
-            internalSetLineInfo(line);
-            return this;
-        }
-
-        @Override
-        public StreamNested<R> setNextLineInfo(int linesToSkip, int column) {
-            internalSetNextLineInfo(linesToSkip, column);
-            return this;
-        }
-
-        @Override
         public R done() {
             AstStreamNode streamNode = result.node;
             streamNode.getStreamables().add(node);
             return result;
-        }
-
-        @Override
-        protected int line() {
-            return result.line();
-        }
-
-        @Override
-        protected int line(int line) {
-            return result.line(line);
         }
 
     }

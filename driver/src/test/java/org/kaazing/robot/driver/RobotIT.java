@@ -20,6 +20,7 @@
 package org.kaazing.robot.driver;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.regex.Pattern.compile;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -47,8 +48,6 @@ import org.junit.rules.DisableOnDebug;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
-import org.kaazing.robot.driver.behavior.RobotCompletionFuture;
-import org.kaazing.robot.driver.Robot;
 import org.kaazing.robot.lang.parser.ScriptParseException;
 
 public class RobotIT {
@@ -114,12 +113,9 @@ public class RobotIT {
         final String expected = script;
 
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
     }
 
     @Test
@@ -138,13 +134,11 @@ public class RobotIT {
 
         robot.prepareAndStart(script).await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
         client.connect(new InetSocketAddress("localhost", 62345));
 
-        doneFuture.await();
+        robot.finish().await();
 
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, client.getInputStream().read());
     }
@@ -165,13 +159,11 @@ public class RobotIT {
 
         robot.prepareAndStart(script).await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
         accepted = server.accept();
 
-        doneFuture.await();
+        robot.finish().await();
 
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -198,8 +190,6 @@ public class RobotIT {
 
         robot.prepareAndStart(script).await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
         accepted = server.accept();
 
         BufferedReader acceptedIn = new BufferedReader(new InputStreamReader(accepted.getInputStream()));
@@ -208,7 +198,7 @@ public class RobotIT {
 
         robot.abort().await();
 
-        String observedScript = doneFuture.getObservedScript();
+        String observedScript = robot.getObservedScript();
         assertNotEquals(script, observedScript);
 
         // TODO: Make the abort happen in the same thread as the robot I/O threads. So we can deterministically get the
@@ -233,37 +223,27 @@ public class RobotIT {
             "close\n" +
             "closed\n";
 
-        String expected = "(?s)" +
+        String expected =
                 "accept tcp://localhost:60002\n" +
                 "accepted\n" +
                 "connected\n" +
-                ".*";
+                "write \"Hello\\n\"\n" +
+                "\n";
         // @formatter:on
 
         robot.prepareAndStart(script).await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
         client.connect(new InetSocketAddress("localhost", 60002));
 
-        // We added this read here to make sure the robot accept's the connection before it is shut down
-        // with the abort
-        BufferedReader acceptedIn = new BufferedReader(new InputStreamReader(client.getInputStream()));
-        String in = acceptedIn.readLine();
-        assertEquals("Hello", in);
+        // ensure connection is accepted before abort
+        BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+        String message = reader.readLine();
+        assertEquals("Hello", message);
 
         robot.abort().await();
 
-        String observedScript = doneFuture.getObservedScript();
-        assertNotEquals(script, observedScript);
-
-        // TODO: Make the abort happen in the same thread as the robot I/O threads. So we can deterministically get the
-        // same
-        // answer
-        // Sometimes ... the abort will occur before we are notified that the write completed.
-        Pattern p = Pattern.compile(expected);
-        assertTrue(p.matcher(observedScript).matches());
-
+        String observedScript = robot.getObservedScript();
+        assertEquals(expected, observedScript);
         assertEquals(-1, client.getInputStream().read());
     }
 
@@ -279,16 +259,15 @@ public class RobotIT {
             "closed\n";
 
         String expected =
-                "accept tcp://localhost:62345\n";
+                "accept tcp://localhost:62345\n" +
+                "\n";
         // @formatter:on
 
         robot.prepareAndStart(script).await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
         robot.abort().await();
 
-        String observedScript = doneFuture.getObservedScript();
+        String observedScript = robot.getObservedScript();
 
         assertEquals(expected, observedScript);
     }
@@ -304,19 +283,16 @@ public class RobotIT {
             "close\n" +
             "closed\n";
 
-        // TODO: Since the client connects we really should be able to at least see "accepted". However, the cancel
-        //  beets the notification of the OPEN channel.
         String expected =
-                "accept tcp://localhost:62345\n";
+                "accept tcp://localhost:62345\n" +
+                "\n";
         // @formatter:on
 
         robot.prepare(script).await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
         robot.abort().await();
 
-        String observedScript = doneFuture.getObservedScript();
+        String observedScript = robot.getObservedScript();
 
         assertEquals(expected, observedScript);
     }
@@ -345,11 +321,9 @@ public class RobotIT {
         acceptedOut.write("Hello");
         acceptedOut.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -378,11 +352,9 @@ public class RobotIT {
 
         assertEquals("Hello World", in);
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -415,11 +387,9 @@ public class RobotIT {
 
         assertArrayEquals(new byte[]{0x01, 0x02, 0x03, 0x04, 0x05, 0x06}, byteArr);
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -430,14 +400,14 @@ public class RobotIT {
         String script =
             "connect tcp://localhost:62345\n" +
             "connected\n" +
-            "read \"M\"\n" +
+            "read \"Howdy\"\n" +
             "close\n" +
             "closed\n";
 
-        String expected = "(?s)" +
+        String expected =
                 "connect tcp://localhost:62345\n" +
                 "connected\n" +
-                ".*Hello.*";
+                "read \"Hello\"\n";
         // @formatter:on
 
         server.bind(new InetSocketAddress("localhost", 62345));
@@ -451,17 +421,11 @@ public class RobotIT {
         acceptedOut.write("Hello");
         acceptedOut.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
+        String observedScript = robot.getObservedScript();
 
-        String observedScript = doneFuture.getObservedScript();
-
-        assertNotEquals(script, observedScript);
-
-        Pattern p = Pattern.compile(expected);
-        assertTrue(p.matcher(observedScript).matches());
-
+        assertEquals(expected, observedScript);
         assertEquals(-1, accepted.getInputStream().read());
     }
 
@@ -476,12 +440,9 @@ public class RobotIT {
          // @formatter:on
 
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
-        doneFuture.await();
-
-        String observedScript = doneFuture.getObservedScript();
+        String observedScript = robot.getObservedScript();
 
         assertNotEquals(script, observedScript);
     }
@@ -507,12 +468,36 @@ public class RobotIT {
         // @formatter:on
 
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        assertEquals(expected, robot.getObservedScript());
+    }
 
-        doneFuture.await();
+    @Test
+    public void shouldEchoProperty() throws Exception {
+        // @formatter:off
+        String script =
+            "property greeting \"Hello\"\n" +
+            "accept tcp://localhost:62345\n" +
+            "accepted\n" +
+            "connected\n" +
+            "read ${greeting}\n" +
+            "closed\n" +
+            "\n" +
+            "#Connect channel\n" +
+            "connect tcp://localhost:62345\n" +
+            "connected\n" +
+            "write \"Hello\"\n" +
+            "close\n" +
+            "closed\n";
 
-        assertEquals(expected, doneFuture.getObservedScript());
+        String expected = script;
+        // @formatter:on
+
+        robot.prepareAndStart(script).await();
+        robot.finish().await();
+
+        assertEquals(expected, robot.getObservedScript());
     }
 
     @Test
@@ -547,10 +532,9 @@ public class RobotIT {
         // @formatter:on
 
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-        doneFuture.await();
-        String observed = doneFuture.getObservedScript();
+        String observed = robot.getObservedScript();
 
         Pattern p = Pattern.compile(expected);
         assertTrue(p.matcher(observed).matches());
@@ -578,11 +562,9 @@ public class RobotIT {
 
         accepted = server.accept();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -606,11 +588,9 @@ public class RobotIT {
 
         accepted = server.accept();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -635,11 +615,9 @@ public class RobotIT {
 
         accepted = server.accept();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -664,11 +642,9 @@ public class RobotIT {
 
         accepted = server.accept();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -693,11 +669,9 @@ public class RobotIT {
 
         accepted = server.accept();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -733,11 +707,9 @@ public class RobotIT {
 
         assertEquals("FOO", in);
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -766,11 +738,9 @@ public class RobotIT {
         acceptedOut.write("\n");
         acceptedOut.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -808,11 +778,9 @@ public class RobotIT {
         acceptedOut.write("\n");
         acceptedOut.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -842,11 +810,9 @@ public class RobotIT {
         out.write(b);
         out.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -876,11 +842,9 @@ public class RobotIT {
         out.write(b);
         out.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -910,11 +874,9 @@ public class RobotIT {
         out.write(b);
         out.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -946,11 +908,9 @@ public class RobotIT {
         out.write(b);
         out.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -983,11 +943,9 @@ public class RobotIT {
         out.write(b2);
         out.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1017,11 +975,9 @@ public class RobotIT {
         out.write(b);
         out.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1051,11 +1007,9 @@ public class RobotIT {
         out.write(b);
         out.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1087,11 +1041,9 @@ public class RobotIT {
         out.write(b);
         out.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1124,11 +1076,9 @@ public class RobotIT {
         out.write(b2);
         out.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1158,11 +1108,9 @@ public class RobotIT {
         out.write(b);
         out.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1192,11 +1140,9 @@ public class RobotIT {
         out.write(b);
         out.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1226,11 +1172,9 @@ public class RobotIT {
         out.write(b);
         out.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1260,11 +1204,9 @@ public class RobotIT {
         out.write(b);
         out.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1292,11 +1234,9 @@ public class RobotIT {
         writer.write("Hello World\n");
         writer.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1328,11 +1268,9 @@ public class RobotIT {
         writer.write("Hello World\n");
         writer.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1364,11 +1302,9 @@ public class RobotIT {
         writer.write("Hello World\n");
         writer.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1411,11 +1347,9 @@ public class RobotIT {
         writer.write("Hello 123 Bye from 123\n");
         writer.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1448,11 +1382,9 @@ public class RobotIT {
         writer.write("World");
         writer.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1480,11 +1412,9 @@ public class RobotIT {
         writer.write("Foo Bar\n");
         writer.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1513,11 +1443,9 @@ public class RobotIT {
         writer.write("Foo Bar\r\n\r\n");
         writer.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1547,11 +1475,9 @@ public class RobotIT {
         writer.write("HELLO");
         writer.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1586,11 +1512,9 @@ public class RobotIT {
 
         assertEquals("HELLO", in);
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(expected, doneFuture.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1622,11 +1546,9 @@ public class RobotIT {
         out.write(bytes);
         out.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertNotEquals(script, doneFuture.getObservedScript());
+        assertNotEquals(script, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1658,11 +1580,9 @@ public class RobotIT {
         out.write(bytes);
         out.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(script, doneFuture.getObservedScript());
+        assertEquals(script, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1690,11 +1610,9 @@ public class RobotIT {
         writer.write("Hello World\n");
         writer.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertNotEquals(script, doneFuture.getObservedScript());
+        assertNotEquals(script, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1717,11 +1635,9 @@ public class RobotIT {
 
         accepted = server.accept();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(script, doneFuture.getObservedScript());
+        assertEquals(script, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1743,7 +1659,6 @@ public class RobotIT {
 
         accepted = server.accept();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
         OutputStream outputStream = accepted.getOutputStream();
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
 
@@ -1754,9 +1669,9 @@ public class RobotIT {
         writer.write("whatever\"");
         writer.flush();
 
-        doneFuture.await();
+        robot.finish().await();
 
-        assertEquals(script, doneFuture.getObservedScript());
+        assertEquals(script, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }
@@ -1773,13 +1688,15 @@ public class RobotIT {
         // @formatter:on
 
         robot.prepareAndStart(script).await();
+        robot.finish().await();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        String expected =
+                "accept failed: .+\n" +
+                "\n";
 
-        doneFuture.await();
+        String observedScript = robot.getObservedScript();
 
-        // TODO: Ideally we would see the accept line and then the reason for failure.
-        assertEquals("", doneFuture.getObservedScript());
+        assertTrue(compile(expected).matcher(observedScript).matches());
     }
 
     @Test
@@ -1789,7 +1706,7 @@ public class RobotIT {
             "accept tcp://localhost:62345\n" +
             "accepted\n" +
             "connected\n" +
-            "read \"ello\"\n" +
+            "read \"hello\"\n" +
             "read notify BARRIER\n" +
             "close\n" +
             "closed\n" +
@@ -1801,15 +1718,16 @@ public class RobotIT {
             "close\n" +
             "closed\n";
 
-        String expected = "(?s)" +
+        String expected =
                 "accept tcp://localhost:62345\n" +
                 "accepted\n" +
                 "connected\n" +
-                ".+" +
+                "read \"Hello\"\n" +
                 "\n" +
                 "#Connect channel\n" +
                 "connect tcp://localhost:62346\n" +
-                "connected\n";
+                "connected\n" +
+                "\n";
         // @formatter:on
 
         server.bind(new InetSocketAddress("localhost", 62346));
@@ -1827,17 +1745,14 @@ public class RobotIT {
         acceptedOut.write("Hello");
         acceptedOut.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
-
         // We need to let the robot catch. So we have a script that looks right. TODO How can we not need the sleep.
         Thread.sleep(500);
         robot.abort().await();
 
         // doneFuture.await();
-        String observed = doneFuture.getObservedScript();
+        String observed = robot.getObservedScript();
 
-        Pattern p = Pattern.compile(expected);
-        assertTrue(p.matcher(observed).matches());
+        assertEquals(expected, observed);
     }
     
     @Test
@@ -1867,11 +1782,9 @@ public class RobotIT {
         writer.write("{w|}|");
         writer.flush();
 
-        RobotCompletionFuture doneFuture = robot.getScriptCompleteFuture();
+        robot.finish().await();
 
-        doneFuture.await();
-
-        assertEquals(script, doneFuture.getObservedScript());
+        assertEquals(script, robot.getObservedScript());
 
         assertEquals(-1, accepted.getInputStream().read());
     }

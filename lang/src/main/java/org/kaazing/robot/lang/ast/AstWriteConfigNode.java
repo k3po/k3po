@@ -89,8 +89,8 @@ public class AstWriteConfigNode extends AstCommandNode {
     }
 
     @Override
-    public int hashCode() {
-        int hashCode = super.hashTo();
+    protected int hashTo() {
+        int hashCode = getClass().hashCode();
 
         if (type != null) {
             hashCode <<= 4;
@@ -105,23 +105,25 @@ public class AstWriteConfigNode extends AstCommandNode {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstWriteConfigNode) && equals((AstWriteConfigNode) obj));
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstWriteConfigNode && equalTo((AstWriteConfigNode) that);
     }
 
-    protected boolean equals(AstWriteConfigNode that) {
-        return super.equalTo(that) &&
-                equivalent(this.type, that.type) &&
+    protected boolean equalTo(AstWriteConfigNode that) {
+        return equivalent(this.type, that.type) &&
                 equivalent(this.valuesByName, that.valuesByName);
     }
 
     @Override
-    protected void formatNode(StringBuilder sb) {
-        super.formatNode(sb);
-        sb.append("write ").append(type);
-        for (AstValue value : valuesByName.values()) {
-            sb.append(' ').append(value);
+    protected void describe(StringBuilder buf) {
+        super.describe(buf);
+        buf.append("write ").append(type);
+        for (AstValue name : namesByName.values()) {
+            buf.append(' ').append(name);
         }
-        sb.append('\n');
+        for (AstValue value : valuesByName.values()) {
+            buf.append(' ').append(value);
+        }
+        buf.append('\n');
     }
 }

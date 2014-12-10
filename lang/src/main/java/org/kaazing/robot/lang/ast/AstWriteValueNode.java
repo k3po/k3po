@@ -59,8 +59,8 @@ public class AstWriteValueNode extends AstCommandNode {
     }
 
     @Override
-    public int hashCode() {
-        int hashCode = super.hashTo();
+    protected int hashTo() {
+        int hashCode = getClass().hashCode();
 
         if (values != null) {
             hashCode <<= 4;
@@ -71,21 +71,21 @@ public class AstWriteValueNode extends AstCommandNode {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (this == obj) || ((obj instanceof AstWriteValueNode) && equals((AstWriteValueNode) obj));
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstWriteValueNode && equalTo((AstWriteValueNode) that);
     }
 
-    protected boolean equals(AstWriteValueNode that) {
-        return super.equalTo(that) && equivalent(this.values, that.values);
+    protected boolean equalTo(AstWriteValueNode that) {
+        return equivalent(this.values, that.values);
     }
 
     @Override
-    protected void formatNode(StringBuilder sb) {
-        super.formatNode(sb);
-        sb.append("write");
+    protected void describe(StringBuilder buf) {
+        super.describe(buf);
+        buf.append("write");
         for (AstValue val : values) {
-            sb.append(" " + val);
+            buf.append(" " + val);
         }
-        sb.append("\n");
+        buf.append("\n");
     }
 }
