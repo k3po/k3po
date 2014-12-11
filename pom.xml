@@ -20,7 +20,12 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.kaazing</groupId>
+    <parent>
+        <groupId>org.kaazing</groupId>
+        <artifactId>community</artifactId>
+        <version>1.2</version>
+    </parent>
+
     <artifactId>robot.parent</artifactId>
     <packaging>pom</packaging>
     <version>2.0.0-alpha-5-SNAPSHOT</version>
