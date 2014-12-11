@@ -60,7 +60,7 @@
         <module>lang</module>
         <module>driver</module>
         <module>robot-maven-plugin</module>
-        <module>all</module>
+<!--        <module>all</module>  -->
     </modules>
 
     <distributionManagement>
