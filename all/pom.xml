@@ -22,17 +22,17 @@
 
     <parent>
         <groupId>org.kaazing</groupId>
-        <artifactId>robot.parent</artifactId>
-        <version>2.0.0-alpha-5-SNAPSHOT</version>
+        <artifactId>k3po.parent</artifactId>
+        <version>2.0.0-alpha-6-SNAPSHOT</version>
     </parent>
 
-    <artifactId>robot.all</artifactId>
+    <artifactId>k3po.all</artifactId>
     <packaging>jar</packaging>
 
-    <name>robot/all</name>
-    <url>https://github.com/kaazing/robot</url>
+    <name>k3po/all</name>
+    <url>https://github.com/kaazing/k3po</url>
     <description>
-        A convenience project that packages the robot projects together
+        A convenience project that packages the k3po projects together
     </description>
 
     <properties>
@@ -45,14 +45,14 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>robot.driver</artifactId>
+            <artifactId>k3po.driver</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>robot.lang</artifactId>
+            <artifactId>k3po.lang</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
