@@ -32,9 +32,7 @@
 
     <name>k3po/parent</name>
     <url>https://github.com/kaazing/k3po</url>
-    <description>
-        K3PO Protocol Droid. Testing the "I" in IoT.
-    </description>
+    <description>K3PO Protocol Droid. Testing the "I" in IoT.</description>
 
     <licenses>
         <license>
