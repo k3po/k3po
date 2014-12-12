@@ -262,7 +262,7 @@
                                 <goal>jar</goal>
                             </goals>
                             <configuration>
-                                <doctitle><![CDATA[<h1>Robot Protocol Testing Tool</h1>]]></doctitle>
+                                <doctitle><![CDATA[<h1>K3PO Protocol Droid</h1>]]></doctitle>
                                 <bottom><![CDATA[<i>Copyright &#169; 2014 Kaazing, Inc. All Rights Reserved.</i>]]></bottom>
                             </configuration>
                         </execution>

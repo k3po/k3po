@@ -31,7 +31,7 @@
     <name>k3po.java/control</name>
     <url>https://github.com/kaazing/k3po.java</url>
     <description>
-        Robot control
+        K3PO control
     </description>
 
     <properties>

@@ -31,7 +31,7 @@
     <name>k3po.java/junit</name>
     <url>https://github.com/kaazing/k3po.java</url>
     <description>
-        Robot junit
+        K3PO junit
     </description>
 
     <properties>
