@@ -4,9 +4,7 @@
     <groupId>org.kaazing</groupId>
     <artifactId>robotic.bbosh</artifactId>
     <name>BBOSH specification</name>
-    <description>
-        Robotic specification for BBOSH protocol
-    </description>
+    <description>Robotic specification for BBOSH protocol</description>
     <url>https://github.com/kaazing/robotic.bbosh</url>
     <packaging>jar</packaging>
     <version>1.0.0-alpha-2-SNAPSHOT</version>
