@@ -27,9 +27,7 @@
 
     <name>robot.java</name>
     <url>https://github.com/kaazing/robot.java</url>
-    <description>
-        Robot Protocols Testing Tool for Java
-    </description>
+    <description>Robot Protocols Testing Tool for Java</description>
 
     <licenses>
         <license>
