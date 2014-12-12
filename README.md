@@ -1,6 +1,5 @@
-robot.java
+k3po.java
 ==========
 
-- Java Robot Testing Framework
-- JUnit Extension for Robot Testing
+- JUnit Extension for K3PO Protocol Droid
 
