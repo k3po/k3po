@@ -39,7 +39,7 @@ public class TcpIT {
             .done();
 
     @Test
-    @Robotic(script="helloWorld")
+    @Robotic("helloWorld")
     public void testHelloWorld() throws Exception {
         helloWorldClient.run();
         robot.join();

@@ -21,15 +21,15 @@
 
     <parent>
         <groupId>org.kaazing</groupId>
-        <artifactId>robot.java</artifactId>
+        <artifactId>k3po.java</artifactId>
         <version>2.0.0-alpha-2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>robot.junit</artifactId>
+    <artifactId>k3po.junit</artifactId>
     <packaging>jar</packaging>
 
-    <name>robot.java/junit</name>
-    <url>https://github.com/kaazing/robot.java</url>
+    <name>k3po.java/junit</name>
+    <url>https://github.com/kaazing/k3po.java</url>
     <description>
         Robot junit
     </description>
@@ -48,7 +48,7 @@
 
         <dependency>
             <groupId>org.kaazing</groupId>
-            <artifactId>robot.control</artifactId>
+            <artifactId>k3po.control</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -97,13 +97,13 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>org.kaazing:robot.control</include>
+                                    <include>org.kaazing:k3po.control</include>
                                 </includes>
                             </artifactSet>
                             <relocations>
                                 <relocation>
-                                    <pattern>org.kaazing.robot.control</pattern>
-                                    <shadedPattern>org.kaazing.robot.junit.shaded.control</shadedPattern>
+                                    <pattern>org.kaazing.k3po.control</pattern>
+                                    <shadedPattern>org.kaazing.k3po.junit.shaded.control</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
