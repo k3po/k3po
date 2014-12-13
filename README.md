@@ -1,8 +1,8 @@
-# robotic.mqtt
+# specification.mqtt_3_1_1
 
 # About this Project
 
-Project specifying mqtt 3.1.1 via K3P0 scripts
+MQTT 3.1.1 Protocol Specification
 
 # Building this Project
 
