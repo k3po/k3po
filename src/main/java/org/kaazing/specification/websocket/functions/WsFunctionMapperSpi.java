@@ -17,16 +17,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.websocket.functions;
+package org.kaazing.specification.websocket.functions;
 
-import static org.jboss.netty.util.CharsetUtil.UTF_8;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.kaazing.robot.lang.el.Function;
-import org.kaazing.robot.lang.el.spi.FunctionMapperSpi;
-
+import org.kaazing.k3po.lang.el.Function;
+import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
 
 public class WsFunctionMapperSpi extends FunctionMapperSpi.Reflective {
 

@@ -1,4 +1,4 @@
-robot-websocket-functions
-=========================
+specification.websocket
+=======================
 
-Robot WebSocket Functions
+WebSocket Protocol Specification
