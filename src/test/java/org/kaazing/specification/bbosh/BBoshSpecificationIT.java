@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kaazing.robotic.bbosh;
+package org.kaazing.specification.bbosh;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
@@ -27,7 +27,7 @@ import org.junit.rules.Timeout;
 import org.kaazing.robot.junit.annotation.Robotic;
 import org.kaazing.robot.junit.rules.RobotRule;
 
-public class RoboticBBoshIT {
+public class BBoshSpecificationIT {
 
     private final RobotRule robot = new RobotRule();
 
