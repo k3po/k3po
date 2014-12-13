@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kaazing.robotic.amqp_1_0.jms;
+package org.kaazing.specification.amqp_1_0.jms;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
@@ -27,7 +27,7 @@ import org.junit.rules.Timeout;
 import org.kaazing.robot.junit.annotation.Robotic;
 import org.kaazing.robot.junit.rules.RobotRule;
 
-public class RoboticTopicConsumerIT {
+public class QueueConsumerIT {
 
     private final RobotRule robot = new RobotRule();
 
@@ -37,15 +37,7 @@ public class RoboticTopicConsumerIT {
     public final TestRule chain = outerRule(robot).around(timeout);
 
     @Test
-    @Robotic({ "client/topic/consumer/create.durable.then.close.and.unsubscribe",
-               "server/topic/consumer/create.durable.then.close.and.unsubscribe" })
-    public void shouldCreateDurableThenCloseAndUnsubscribe() throws Exception {
-        robot.join();
-    }
-
-    @Test
-    @Robotic({ "client/topic/consumer/create.then.close",
-               "server/topic/consumer/create.then.close" })
+    @Robotic({"client/queue/consumer/create.then.close", "server/queue/consumer/create.then.close"})
     public void shouldCreateThenClose() throws Exception {
         robot.join();
     }

@@ -1,8 +1,8 @@
-# robotic.amqp_1_0.jms
+# specification.amqp_1_0.jms
 
 # About this Project
 
-Project specifying AMQP 1.0 via K3P0 scripts
+Protocol specification for AMQP 1.0 JMS mapping
 
 # Building this Project
 
