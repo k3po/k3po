@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kaazing.robotic.control;
+package org.kaazing.specification.control;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -27,7 +27,7 @@ import org.junit.rules.Timeout;
 import org.kaazing.robot.junit.annotation.Robotic;
 import org.kaazing.robot.junit.rules.RobotRule;
 
-public class RoboticControlIT {
+public class ControlIT {
 
     private final RobotRule robot = new RobotRule();
 

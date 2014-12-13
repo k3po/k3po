@@ -2,10 +2,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.kaazing</groupId>
-    <artifactId>robotic.control</artifactId>
-    <name>Robot control specification</name>
-    <description>Robotic specification for Robot control protocol</description>
-    <url>https://github.com/kaazing/robotic.control</url>
+    <artifactId>specification.k3po.control</artifactId>
+    <name>Specification for K3PO control protocol</name>
+    <description>Specification for K3PO control protocol</description>
+    <url>https://github.com/kaazing/specification.k3po.control</url>
     <packaging>jar</packaging>
     <version>1.0.0-alpha-1-SNAPSHOT</version>
 
@@ -19,8 +19,8 @@
     <inceptionYear>2014</inceptionYear>
 
     <scm>
-        <url>https://github.com/kaazing/robotic.control.git</url>
-        <connection>scm:git:https://github.com/kaazing/robotic.control.git</connection>
+        <url>https://github.com/kaazing/specification.control.git</url>
+        <connection>scm:git:https://github.com/kaazing/specification.control.git</connection>
     </scm>
 
     <properties>
@@ -102,8 +102,8 @@
         <plugins>
             <plugin>
                 <groupId>org.kaazing</groupId>
-                <artifactId>robot-maven-plugin</artifactId>
-                <version>2.0.0-alpha-1</version>
+                <artifactId>k3po-maven-plugin</artifactId>
+                <version>2.0.0-alpha-6</version>
                 <configuration>
                     <skipTests>${skipITs}</skipTests>
                 </configuration>

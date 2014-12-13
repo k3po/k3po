@@ -1,1 +1,1 @@
-Robotic specification for Robot's own control protocol.
+Specification for K3PO control protocol.
