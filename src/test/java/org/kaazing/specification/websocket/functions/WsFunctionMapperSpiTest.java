@@ -17,9 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.websocket.functions;
+package org.kaazing.specification.websocket.functions;
 
-import static org.jboss.netty.util.CharsetUtil.UTF_8;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertArrayEquals;
 
 import javax.el.ELContext;
@@ -28,7 +28,7 @@ import javax.el.ValueExpression;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.kaazing.robot.lang.el.ExpressionContext;
+import org.kaazing.k3po.lang.el.ExpressionContext;
 
 public class WsFunctionMapperSpiTest {
 

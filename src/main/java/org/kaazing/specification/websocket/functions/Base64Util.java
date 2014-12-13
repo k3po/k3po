@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kaazing.robot.websocket.functions;
+package org.kaazing.specification.websocket.functions;
 
 import java.util.logging.Logger;
 
