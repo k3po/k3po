@@ -20,13 +20,18 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.kaazing</groupId>
-    <artifactId>robot.java</artifactId>
-    <packaging>pom</packaging>
-    <version>2.0.0-alpha-2-SNAPSHOT</version>
+    <parent>
+        <groupId>org.kaazing</groupId>
+        <artifactId>community</artifactId>
+        <version>1.2</version>
+    </parent>
 
-    <name>robot.java</name>
-    <url>https://github.com/kaazing/robot.java</url>
+    <artifactId>k3po.java</artifactId>
+    <packaging>pom</packaging>
+    <version>2.0.0-alpha-2</version>
+
+    <name>k3po.java</name>
+    <url>https://github.com/kaazing/k3po.java</url>
     <description>Robot Protocols Testing Tool for Java</description>
 
     <licenses>
@@ -39,8 +44,9 @@
     <inceptionYear>2014</inceptionYear>
 
     <scm>
-        <url>https://github.com/kaazing/robot.java.git</url>
-        <connection>scm:git:https://github.com/kaazing/robot.java.git</connection>
+        <connection>scm:git:git@github.com:kaazing/k3po.java.git</connection>
+        <developerConnection>${project.scm.connection}</developerConnection>
+        <url>git@github.com:kaazing/k3po.java</url>
     </scm>
 
     <properties>
@@ -262,7 +268,7 @@
                                 <goal>jar</goal>
                             </goals>
                             <configuration>
-                                <doctitle><![CDATA[<h1>Robot Protocol Testing Tool</h1>]]></doctitle>
+                                <doctitle><![CDATA[<h1>K3PO Protocol Droid</h1>]]></doctitle>
                                 <bottom><![CDATA[<i>Copyright &#169; 2014 Kaazing, Inc. All Rights Reserved.</i>]]></bottom>
                             </configuration>
                         </execution>
