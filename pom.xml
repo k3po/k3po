@@ -25,11 +25,11 @@
         <version>1.2</version>
     </parent>
 
-    <artifactId>specification.websocket</artifactId>
-    <version>0.0.0.3-SNAPSHOT</version>
+    <artifactId>specification.ws</artifactId>
+    <version>1.0.0-alpha-1-SNAPSHOT</version>
 
     <name>Websocket Protocol Specification</name>
-    <url>https://github.com/kaazing/specification.websocket</url>
+    <url>https://github.com/kaazing/specification.ws</url>
     <description>WebSocket protocol specification, including necessary EL functions</description>
     <packaging>jar</packaging>
 
@@ -43,8 +43,8 @@
     <inceptionYear>2014</inceptionYear>
 
     <scm>
-        <url>https://github.com/kaazing/specification-websocket.git</url>
-        <connection>scm:git:https://github.com/kaazing/specification-websocket.git</connection>
+        <url>https://github.com/kaazing/specification.ws.git</url>
+        <connection>scm:git:https://github.com/kaazing/specification.ws.git</connection>
     </scm>
 
     <properties>
