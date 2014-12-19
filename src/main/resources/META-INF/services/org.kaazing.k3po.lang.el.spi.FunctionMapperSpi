@@ -1,2 +1,2 @@
-org.kaazing.specification.websocket.functions.WsFunctionMapperSpi
-org.kaazing.specification.websocket.functions.StringFunctionMapperSpi
+org.kaazing.specification.ws.functions.WsFunctionMapperSpi
+org.kaazing.specification.ws.functions.StringFunctionMapperSpi
