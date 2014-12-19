@@ -37,7 +37,7 @@ public class SpecificationIT {
     public final TestRule chain = outerRule(robot).around(timeout);
 
     @Test
-    @Robotic({"initial"})
+    @Robotic({"accept", "connect"})
     public void shouldPass() throws Exception {
         robot.join();
     }
