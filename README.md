@@ -1,4 +1,4 @@
-specification.websocket
-=======================
+specification.ws
+================
 
-WebSocket Protocol Specification
+WebSocket Protocol (RFC-6455) Specification
