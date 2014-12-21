@@ -70,6 +70,7 @@ import org.kaazing.k3po.lang.ast.AstUnboundNode;
 import org.kaazing.k3po.lang.ast.AstWriteAwaitNode;
 import org.kaazing.k3po.lang.ast.AstWriteCloseNode;
 import org.kaazing.k3po.lang.ast.AstWriteConfigNode;
+import org.kaazing.k3po.lang.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.ast.AstWriteNotifyNode;
 import org.kaazing.k3po.lang.ast.AstWriteOptionNode;
 import org.kaazing.k3po.lang.ast.AstWriteValueNode;
@@ -136,6 +137,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.UnboundNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.VariableLengthBytesMatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteAwaitNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteCloseNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteFlushNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpContentLengthNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpHeaderNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpMethodNodeContext;
@@ -440,6 +442,15 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
                 throws RecognitionException {
             return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpStatusNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstWriteFlushNode> WRITE_FLUSH = new ScriptParseStrategy<AstWriteFlushNode>() {
+        @Override
+        public AstWriteFlushNode parse(RobotParser parser,
+                                              ExpressionFactory elFactory,
+                                              ExpressionContext elContext) throws RecognitionException {
+            return new AstWriteFlushNodeVisitor(elFactory, elContext).visit(parser.writeFlushNode());
         }
     };
 
@@ -1179,6 +1190,18 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
+        public AstWriteFlushNode visitWriteFlushNode(WriteFlushNodeContext ctx) {
+
+            AstWriteFlushNodeVisitor visitor = new AstWriteFlushNodeVisitor(elFactory, elContext);
+            AstWriteFlushNode writeFlushNode = visitor.visitWriteFlushNode(ctx);
+            if (writeFlushNode != null) {
+                childInfos().add(writeFlushNode.getRegionInfo());
+            }
+
+            return writeFlushNode;
+        }
+
+        @Override
         public AstWriteCloseNode visitWriteCloseNode(WriteCloseNodeContext ctx) {
 
             AstWriteCloseNodeVisitor visitor = new AstWriteCloseNodeVisitor(elFactory, elContext);
@@ -1707,7 +1730,8 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstRegexMatcher visitRegexMatcher(RegexMatcherContext ctx) {
             String regex = ctx.regex.getText();
-            AstRegexMatcher matcher = new AstRegexMatcher(NamedGroupPattern.compile(regex));
+            String pattern = regex.substring(1, regex.length() - 1);
+            AstRegexMatcher matcher = new AstRegexMatcher(NamedGroupPattern.compile(pattern));
             matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return matcher;
         }
@@ -2114,6 +2138,23 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             return node;
         }
+    }
+
+    private static class AstWriteFlushNodeVisitor extends AstNodeVisitor<AstWriteFlushNode> {
+
+        public AstWriteFlushNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+            super(elFactory, elContext);
+        }
+
+        @Override
+        public AstWriteFlushNode visitWriteFlushNode(WriteFlushNodeContext ctx) {
+
+            node = new AstWriteFlushNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+
+            return node;
+        }
+
     }
 
     private static class AstReadClosedNodeVisitor extends AstNodeVisitor<AstReadClosedNode> {

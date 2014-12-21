@@ -615,8 +615,8 @@ public class ScriptParserImplTest {
 
 		AstReadValueNode expected = new AstReadValueNode();
 		expected.setMatchers(Arrays.<AstValueMatcher> asList(
-				new AstRegexMatcher(compile("/.*\\n/")), new AstRegexMatcher(
-						compile("/.+\\r/"))));
+				new AstRegexMatcher(compile(".*\\n")), new AstRegexMatcher(
+						compile(".+\\r"))));
 
 		assertEquals(expected, actual);
 	}

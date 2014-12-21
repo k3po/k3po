@@ -20,6 +20,7 @@
 package org.kaazing.k3po.driver.control.handler;
 
 import static java.lang.String.format;
+import static java.lang.Thread.currentThread;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.FileSystems.newFileSystem;
 
@@ -128,7 +129,6 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             final StringBuilder aggregatedScript = new StringBuilder();
 
             for (String scriptNameWithExtension : scriptNamesWithExtension) {
-                // @formatter:off
                 Path scriptPath = Paths.get(scriptNameWithExtension);
                 String script = null;
 
@@ -161,8 +161,20 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 aggregatedScript.append(script);
             }
 
-            prepareFuture = robot.prepare(aggregatedScript.toString());
-            // @formatter:on
+            if (scriptLoader != null) {
+                Thread currentThread = currentThread();
+                ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+                try {
+                    currentThread.setContextClassLoader(scriptLoader);
+                    prepareFuture = robot.prepare(aggregatedScript.toString());
+                }
+                finally {
+                    currentThread.setContextClassLoader(contextClassLoader);
+                }
+            }
+            else {
+                prepareFuture = robot.prepare(aggregatedScript.toString());
+            }
 
             prepareFuture.addListener(new ChannelFutureListener() {
                 @Override

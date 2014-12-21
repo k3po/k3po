@@ -98,9 +98,9 @@ public abstract class MessageDecoder {
         return ChannelBuffers.dynamicBuffer();
     }
 
-    // TODO Make abstract and fill in decoders.
     protected Object decodeBufferLast(ChannelBuffer buffer) throws Exception {
-        return null;
+        // by default, no distinct behavior between last and non-last
+        return decodeBuffer(buffer);
     }
 
     protected abstract Object decodeBuffer(ChannelBuffer buffer) throws Exception;

@@ -38,17 +38,17 @@ import org.kaazing.k3po.driver.RobotServer;
 import org.kaazing.k3po.maven.plugin.logging.MavenLoggerFactory;
 
 /**
- * Start the Robot
+ * Start K3PO
  *
  * @goal start
  * @phase pre-integration-test
  *
  * @requiresDependencyResolution test
  */
-public class RobotStartMojo extends AbstractRobotMojo {
+public class StartMojo extends AbstractMojo {
 
     /**
-     * @parameter default-value="true" expression="${maven.robot.daemon}"
+     * @parameter default-value="true" expression="${maven.k3po.daemon}"
      */
     private boolean daemon;
 
@@ -63,7 +63,7 @@ public class RobotStartMojo extends AbstractRobotMojo {
     private File scriptDir;
 
     /**
-     * @parameter default-value="false" expression="${maven.robot.verbose}"
+     * @parameter default-value="false" expression="${maven.k3po.verbose}"
      */
     private boolean verbose;
 
@@ -89,7 +89,7 @@ public class RobotStartMojo extends AbstractRobotMojo {
             long checkpoint = currentTimeMillis();
             server.start();
             float duration = (currentTimeMillis() - checkpoint) / 1000.0f;
-            getLog().debug(format("Robot [%08x] started in %.3fsec", identityHashCode(server), duration));
+            getLog().debug(format("K3PO [%08x] started in %.3fsec", identityHashCode(server), duration));
 
             setServer(server);
 
@@ -98,7 +98,7 @@ public class RobotStartMojo extends AbstractRobotMojo {
             }
         }
         catch (Exception e) {
-            throw new MojoExecutionException("Robot failed to start", e);
+            throw new MojoExecutionException("K3PO failed to start", e);
         }
     }
 
@@ -112,6 +112,8 @@ public class RobotStartMojo extends AbstractRobotMojo {
             URI scriptPathURI = new File(scriptPathEntry.toString()).getAbsoluteFile().toURI();
             scriptPath.add(scriptPathURI.toURL());
         }
-        return new URLClassLoader(scriptPath.toArray(new URL[scriptPath.size()]));
+
+        ClassLoader parent = getClass().getClassLoader();
+        return new URLClassLoader(scriptPath.toArray(new URL[scriptPath.size()]), parent);
     }
 }

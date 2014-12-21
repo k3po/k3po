@@ -25,7 +25,7 @@ import org.kaazing.k3po.lang.ast.AstClosedNode;
 import org.kaazing.k3po.lang.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.ast.AstDisconnectNode;
 import org.kaazing.k3po.lang.ast.AstDisconnectedNode;
-import org.kaazing.k3po.lang.ast.AstFlushNode;
+import org.kaazing.k3po.lang.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.ast.AstOpenedNode;
 import org.kaazing.k3po.lang.ast.AstReadAwaitNode;
 import org.kaazing.k3po.lang.ast.AstReadClosedNode;
@@ -99,7 +99,7 @@ public abstract class AbstractAstStreamNodeBuilder<T extends AstStreamNode, R> e
     public abstract AbstractAstStreamableNodeBuilder<AstWriteConfigNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
         addWriteConfigCommand();
 
-    public abstract AbstractAstStreamableNodeBuilder<AstFlushNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
+    public abstract AbstractAstStreamableNodeBuilder<AstWriteFlushNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
         addFlushCommand();
 
     public abstract AbstractAstStreamableNodeBuilder<AstReadClosedNode, ? extends AbstractAstStreamNodeBuilder<T, R>>

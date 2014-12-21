@@ -68,7 +68,7 @@ public class ReadRegexDecoderTest {
 
     @Test
     public void completeMatchOK() throws Exception {
-        NamedGroupPattern pattern = NamedGroupPattern.compile("/H.*o\\n/");
+        NamedGroupPattern pattern = NamedGroupPattern.compile("H.*o\\n");
         MessageDecoder decoder = new ReadRegexDecoder(pattern, UTF_8, environment);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer("Hello\n", UTF_8));
@@ -78,7 +78,7 @@ public class ReadRegexDecoderTest {
 
     @Test
     public void completeMatchWithCaptureOK() throws Exception {
-        NamedGroupPattern pattern = NamedGroupPattern.compile("/(?<var>H.*o)\\n/");
+        NamedGroupPattern pattern = NamedGroupPattern.compile("(?<var>H.*o)\\n");
         MessageDecoder decoder = new ReadRegexDecoder(pattern, UTF_8, environment);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer("Hello\n", UTF_8));
@@ -90,7 +90,7 @@ public class ReadRegexDecoderTest {
 
     @Test(expected = ScriptProgressException.class)
     public void noMatchOK() throws Exception {
-        NamedGroupPattern pattern = NamedGroupPattern.compile("/H.*o\\n/");
+        NamedGroupPattern pattern = NamedGroupPattern.compile("H.*o\\n");
         MessageDecoder decoder = new ReadRegexDecoder(pattern, UTF_8, environment);
 
         decoder.decode(copiedBuffer("Hellf\n", UTF_8));
@@ -98,7 +98,7 @@ public class ReadRegexDecoderTest {
 
     @Test(expected = ScriptProgressException.class)
     public void noMatchWithCaptureOK() throws Exception {
-        NamedGroupPattern pattern = NamedGroupPattern.compile("/(?<var>H.*o)\\n/");
+        NamedGroupPattern pattern = NamedGroupPattern.compile("(?<var>H.*o)\\n");
         MessageDecoder decoder = new ReadRegexDecoder(pattern, UTF_8, environment);
 
         decoder.decode(copiedBuffer("Hellf\n", UTF_8));
@@ -106,7 +106,7 @@ public class ReadRegexDecoderTest {
 
     @Test
     public void fragmentedMatchOK() throws Exception {
-        NamedGroupPattern pattern = NamedGroupPattern.compile("/H.*o\\n/");
+        NamedGroupPattern pattern = NamedGroupPattern.compile("H.*o\\n");
         MessageDecoder decoder = new ReadRegexDecoder(pattern, UTF_8, environment);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer("Hel", UTF_8));
@@ -118,7 +118,7 @@ public class ReadRegexDecoderTest {
 
     @Test
     public void fragmentedMatchWithCaptureOK() throws Exception {
-        NamedGroupPattern pattern = NamedGroupPattern.compile("/(?<var>H.*o)\\n/");
+        NamedGroupPattern pattern = NamedGroupPattern.compile("(?<var>H.*o)\\n");
         MessageDecoder decoder = new ReadRegexDecoder(pattern, UTF_8, environment);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer("Hel", UTF_8));
@@ -138,7 +138,7 @@ public class ReadRegexDecoderTest {
 
     @Test
     public void completeMatchWithBytesLeftOverOK() throws Exception {
-        NamedGroupPattern pattern = NamedGroupPattern.compile("/H.*o\\n/");
+        NamedGroupPattern pattern = NamedGroupPattern.compile("H.*o\\n");
         MessageDecoder decoder = new ReadRegexDecoder(pattern, UTF_8, environment);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer("Hello\nWorld", UTF_8));
@@ -149,7 +149,7 @@ public class ReadRegexDecoderTest {
     @Test
     public void completeMatchWithBytesLeftOverWithCapturerOK() throws Exception {
         
-        NamedGroupPattern pattern = NamedGroupPattern.compile("/(?<var>H.*o)\\n/");
+        NamedGroupPattern pattern = NamedGroupPattern.compile("(?<var>H.*o)\\n");
         MessageDecoder decoder = new ReadRegexDecoder(pattern, UTF_8, environment);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer("Hello\nWorld", UTF_8));

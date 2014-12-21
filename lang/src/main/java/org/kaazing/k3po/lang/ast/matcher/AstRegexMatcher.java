@@ -61,6 +61,6 @@ public class AstRegexMatcher extends AstValueMatcher {
 
     @Override
     protected void describe(StringBuilder buf) {
-        buf.append(pattern.toString());
+        buf.append('/').append(pattern.toString()).append('/');
     }
 }
