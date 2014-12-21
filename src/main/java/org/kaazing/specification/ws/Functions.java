@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kaazing.specification.ws.functions;
+package org.kaazing.specification.ws;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -24,33 +24,35 @@ import java.security.NoSuchAlgorithmException;
 import org.kaazing.k3po.lang.el.Function;
 import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
 
-public class WsFunctionMapperSpi extends FunctionMapperSpi.Reflective {
+public final class Functions {
 
     // See RFC-6455, section 1.3 Opening Handshake
     private static final byte[] WEBSOCKET_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11".getBytes(UTF_8);
 
-    public static class Functions {
+    @Function
+    public static byte[] handshakeHash(byte[] wsKeyBytes) throws NoSuchAlgorithmException {
+        MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+        sha1.update(wsKeyBytes);
+        byte[] digest = sha1.digest(WEBSOCKET_GUID);
+        return Base64.encode(digest);
+    }
 
-        @Function
-        public static byte[] computeHashAsBase64(byte[] keyAsBase64) throws NoSuchAlgorithmException {
-            MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
-            sha1.update(keyAsBase64);
-            byte[] digest = sha1.digest(WEBSOCKET_GUID);
-            return Base64Util.encode(digest);
+    public static class Mapper extends FunctionMapperSpi.Reflective {
+
+        public Mapper() {
+            super(Functions.class);
+        }
+
+        @Override
+        public String getPrefixName() {
+            return "ws";
         }
 
     }
 
-    public WsFunctionMapperSpi() {
-        super(Functions.class);
-    }
-
-    @Override
-    public String getPrefixName() {
-        return "ws";
+    private Functions() {
+        // utility
     }
 
 }
-
-
 

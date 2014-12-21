@@ -14,29 +14,17 @@
  * limitations under the License.
  */
 
-package org.kaazing.specification.ws.functions;
-
-import java.util.logging.Logger;
+package org.kaazing.specification.ws;
 
 /**
  * Internal class. This class manages the Base64 encoding and decoding
  */
-final class Base64Util {
-
-    private static final String CLASS_NAME = Base64Util.class.getName();
-    private static final Logger LOG = Logger.getLogger(CLASS_NAME);
+final class Base64 {
 
     private static final byte[] INDEXED = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".getBytes();
     private static final byte PADDING_BYTE = (byte) '=';
 
-    @Deprecated
-    private Base64Util() {
-        LOG.entering(CLASS_NAME, "<init>");
-    }
-
     public static byte[] encode(byte[] decodedArray) {
-        LOG.entering(CLASS_NAME, "encode", decodedArray);
-
         int decodedSize = decodedArray.length;
         int effectiveDecodedSize = ((decodedSize + 2) / 3) * 3;
         int decodedFragmentSize = decodedSize % 3;
@@ -82,8 +70,6 @@ final class Base64Util {
     }
 
     public static byte[] decode(byte[] encodedArray) {
-        LOG.entering(CLASS_NAME, "decode", encodedArray);
-
         if (encodedArray == null) {
             return null;
         }
@@ -158,9 +144,12 @@ final class Base64Util {
                 }
             }
         } else {
-            LOG.warning("Invalid BASE64 string");
             throw new IllegalArgumentException("Invalid BASE64 string");
         }
+    }
+
+    private Base64() {
+        // utility
     }
 }
 

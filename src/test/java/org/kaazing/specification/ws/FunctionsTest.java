@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.kaazing.specification.ws.functions;
+package org.kaazing.specification.ws;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.kaazing.k3po.lang.el.ExpressionFactoryUtils.newExpressionFactory;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.kaazing.k3po.lang.el.ExpressionContext;
 
-public class WsFunctionMapperSpiTest {
+public class FunctionsTest {
 
     private ExpressionFactory factory;
     private ELContext ctx;
@@ -35,17 +35,17 @@ public class WsFunctionMapperSpiTest {
     @Before
     public void setUp() throws Exception {
 
-        factory = ExpressionFactory.newInstance();
+        factory = newExpressionFactory();
         ctx = new ExpressionContext();
     }
 
     @Test
     public void shouldComputeHandshakeHash() throws Exception {
 
-        String expressionText = "${ws:computeHashAsBase64(string:asBytes('dGhlIHNhbXBsZSBub25jZQ=='))}";
-        ValueExpression expression = factory.createValueExpression(ctx, expressionText, byte[].class);
-        byte[] computedHash = (byte[]) expression.getValue(ctx);
+        String expressionText = "${ws:handshakeHash('dGhlIHNhbXBsZSBub25jZQ==')}";
+        ValueExpression expression = factory.createValueExpression(ctx, expressionText, String.class);
+        String computedHash = (String) expression.getValue(ctx);
 
-        assertArrayEquals("Inconsistent handshake hash", "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=".getBytes(UTF_8), computedHash);
+        assertEquals("Inconsistent handshake hash", "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=", computedHash);
     }
 }
