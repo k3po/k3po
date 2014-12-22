@@ -5,8 +5,8 @@ connected
 read method "GET"
 read version "HTTP/1.1"
 read header "Host" "localhost:8080"
-read header "Upgrade" /[wW][eE][bB][sS][oO][cC][kK][eE][tT]/
-read header "Connection" /[uU][pP][gG][rR][aA][dD][eE]/
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
 read header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
 read header "Sec-WebSocket-Version" "13"
 
@@ -25,8 +25,8 @@ read await FIRST_CONNECTION_ESTABLISHED
 read method "GET"
 read version "HTTP/1.1"
 read header "Host" "localhost:8080"
-read header "Upgrade" /[wW][eE][bB][sS][oO][cC][kK][eE][tT]/
-read header "Connection" /[uU][pP][gG][rR][aA][dD][eE]/
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
 read header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
 read header "Sec-WebSocket-Version" "13"
 

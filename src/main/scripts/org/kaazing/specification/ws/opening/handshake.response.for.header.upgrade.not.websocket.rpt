@@ -3,7 +3,7 @@ accept http://localhost:8080/path?query
 accepted
 connected
 
-read header "Upgrade" /(?![wW][eE][bB][sS][oO][cC][kK][eE][tT])/
+read header "Upgrade" /(?!(?i:websocket))/
 read closed
 
 write status "400" "Bad Request"

@@ -3,7 +3,7 @@ accept http://localhost:8080/path?query
 accepted
 connected
 
-read method /(?![gG][eE][tT])/
+read method /(?!GET)/
 read closed
 
 write status "400" "Bad Request"
