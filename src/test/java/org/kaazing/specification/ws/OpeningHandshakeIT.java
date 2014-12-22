@@ -54,7 +54,7 @@ public class OpeningHandshakeIT {
      * RFC-6455, section 4.2 "Server-Side Requirements"
      */
     @Test
-    @Robotic({"handshake.request", "handshake.response" })
+    @Robotic({"connection.established/handshake.request", "connection.established/handshake.response" })
     public void shouldEstablishConnection() throws Exception {
         robot.join();
     }
@@ -64,8 +64,8 @@ public class OpeningHandshakeIT {
      * RFC-6455, section 4.2 "Server-Side Requirements"
      */
     @Test
-    @Robotic({"handshake.request.with.header.origin",
-              "handshake.response.for.header.origin" })
+    @Robotic({"request.header.origin/handshake.request",
+              "request.header.origin/handshake.response" })
     public void shouldEstablishConnectionWithRequestHeaderOrigin() throws Exception {
         robot.join();
     }
@@ -75,8 +75,8 @@ public class OpeningHandshakeIT {
      * RFC-6455, section 4.2 "Server-Side Requirements"
      */
     @Test
-    @Robotic({"handshake.request.with.header.sec.websocket.protocol",
-              "handshake.response.for.header.sec.websocket.protocol" })
+    @Robotic({"request.header.sec.websocket.protocol/handshake.request",
+              "request.header.sec.websocket.protocol/handshake.response" })
     public void shouldEstablishConnectionWithRequestHeaderSecWebSocketProtocol() throws Exception {
         robot.join();
     }
@@ -86,8 +86,8 @@ public class OpeningHandshakeIT {
      * RFC-6455, section 4.2 "Server-Side Requirements"
      */
     @Test
-    @Robotic({"handshake.request.with.header.sec.websocket.extensions",
-              "handshake.response.for.header.sec.websocket.extensions" })
+    @Robotic({"request.header.sec.websocket.extensions/handshake.request",
+              "request.header.sec.websocket.extensions/handshake.response" })
     public void shouldEstablishConnectionWithRequestHeaderSecWebSocketExtensions() throws Exception {
         robot.join();
     }
@@ -96,7 +96,8 @@ public class OpeningHandshakeIT {
      * RFC-6455, section 4.2 "Server-Side Requirements"
      */
     @Test
-    @Robotic({"handshake.request.with.method.not.get", "handshake.response.for.method.not.get" })
+    @Robotic({"request.method.not.get/handshake.request",
+              "request.method.not.get/handshake.response" })
     public void shouldFailHandshakeWhenMethodNotGet() throws Exception {
         robot.join();
     }
@@ -105,7 +106,8 @@ public class OpeningHandshakeIT {
      * RFC-6455, section 4.2 "Server-Side Requirements"
      */
     @Test
-    @Robotic({"handshake.request.with.version.not.http.1.1", "handshake.response.for.version.not.http.1.1" })
+    @Robotic({"request.version.not.http.1.1/handshake.request",
+              "request.version.not.http.1.1/handshake.response" })
     public void shouldFailHandshakeWhenVersionNotHttp11() throws Exception {
         robot.join();
     }
@@ -115,7 +117,8 @@ public class OpeningHandshakeIT {
      */
     @Test
     @Ignore("Requires fail on 'missing' header K3PO language feature")
-    @Robotic({"handshake.request.with.header.host.missing", "handshake.response.for.header.host.missing" })
+    @Robotic({"request.header.host.missing/handshake.request",
+              "request.header.host.missing/handshake.response" })
     public void shouldFailHandshakeWhenRequestHeaderHostMissing() throws Exception {
         robot.join();
     }
@@ -125,7 +128,8 @@ public class OpeningHandshakeIT {
      */
     @Test
     @Ignore("Requires fail on 'missing' header K3PO language feature")
-    @Robotic({"handshake.request.with.header.upgrade.missing", "handshake.response.for.header.upgrade.missing" })
+    @Robotic({"request.header.upgrade.missing/handshake.request",
+              "request.header.upgrade.missing/handshake.response" })
     public void shouldFailHandshakeWhenRequestHeaderUpgradeMissing() throws Exception {
         robot.join();
     }
@@ -134,7 +138,8 @@ public class OpeningHandshakeIT {
      * RFC-6455, section 4.2 "Server-Side Requirements"
      */
     @Test
-    @Robotic({"handshake.request.with.header.upgrade.not.websocket", "handshake.response.for.header.upgrade.not.websocket" })
+    @Robotic({"request.header.upgrade.not.websocket/handshake.request",
+              "request.header.upgrade.not.websocket/handshake.response" })
     public void shouldFailHandshakeWhenRequestHeaderUpgradeNotWebSocket() throws Exception {
         robot.join();
     }
@@ -144,8 +149,8 @@ public class OpeningHandshakeIT {
      */
     @Test
     @Ignore("Requires fail on 'missing' header K3PO language feature")
-    @Robotic({"handshake.request.with.header.connection.missing",
-              "handshake.response.for.header.connection.missing" })
+    @Robotic({"request.header.connection.missing/handshake.request",
+              "request.header.connection.missing/handshake.response" })
     public void shouldFailHandshakeWhenRequestHeaderConnectionMissing() throws Exception {
         robot.join();
     }
@@ -154,7 +159,8 @@ public class OpeningHandshakeIT {
      * RFC-6455, section 4.2 "Server-Side Requirements"
      */
     @Test
-    @Robotic({"handshake.request.with.header.connection.not.upgrade", "handshake.response.for.header.connection.not.upgrade" })
+    @Robotic({"request.header.connection.not.upgrade/handshake.request",
+              "request.header.connection.not.upgrade/handshake.response" })
     public void shouldFailHandshakeWhenRequestHeaderConnectionNotUpgrade() throws Exception {
         robot.join();
     }
@@ -164,8 +170,8 @@ public class OpeningHandshakeIT {
      */
     @Test
     @Ignore("Requires fail on 'missing' header K3PO language feature")
-    @Robotic({"handshake.request.with.header.sec.websocket.key.missing",
-              "handshake.response.for.header.sec.websocket.key.missing" })
+    @Robotic({"request.header.sec.websocket.key.missing/handshake.request",
+              "request.header.sec.websocket.key.missing/handshake.response" })
     public void shouldFailHandshakeWhenRequestHeaderSecWebSocketKeyMissing() throws Exception {
         robot.join();
     }
@@ -174,8 +180,8 @@ public class OpeningHandshakeIT {
      * RFC-6455, section 4.2 "Server-Side Requirements"
      */
     @Test
-    @Robotic({"handshake.request.with.header.sec.websocket.key.not.16bytes.base64",
-              "handshake.response.for.header.sec.websocket.key.not.16bytes.base64" })
+    @Robotic({"request.header.sec.websocket.key.not.16bytes.base64/handshake.request",
+              "request.header.sec.websocket.key.not.16bytes.base64/handshake.response" })
     public void shouldFailHandshakeWhenRequestHeaderSecWebSocketKeyNot16BytesBase64() throws Exception {
         robot.join();
     }
@@ -184,8 +190,8 @@ public class OpeningHandshakeIT {
      * RFC-6455, section 4.4 "Handling Multiple Versions of WebSocket Protocol"
      */
     @Test
-    @Robotic({"handshake.request.with.header.sec.websocket.version.not.13",
-              "handshake.response.for.header.sec.websocket.version.not.13" })
+    @Robotic({"request.header.sec.websocket.version.not.13/handshake.request",
+              "request.header.sec.websocket.version.not.13/handshake.response" })
     public void shouldFailHandshakeWhenRequestHeaderSecWebSocketVersionNot13() throws Exception {
         robot.join();
     }
@@ -194,7 +200,8 @@ public class OpeningHandshakeIT {
      * RFC-6455, section 4.1 "Client-Side Requirements"
      */
     @Test
-    @Robotic({"handshake.request.for.header.connection.not.upgrade", "handshake.response.with.header.connection.not.upgrade" })
+    @Robotic({"response.header.connection.not.upgrade/handshake.request",
+              "response.header.connection.not.upgrade/handshake.response" })
     public void shouldFailConnectionWhenResponseHeaderConnectionNotUpgrade() throws Exception {
         robot.join();
     }
@@ -204,7 +211,8 @@ public class OpeningHandshakeIT {
      */
     @Test
     @Ignore("Requires fail on 'missing' header K3PO language feature")
-    @Robotic({"handshake.request.for.header.connection.missing", "handshake.response.with.header.connection.missing" })
+    @Robotic({"response.header.connection.missing/handshake.request",
+              "response.header.connection.missing/handshake.response" })
     public void shouldFailConnectionWhenResponseHeaderConnectionMissing() throws Exception {
         robot.join();
     }
@@ -213,7 +221,8 @@ public class OpeningHandshakeIT {
      * RFC-6455, section 4.1 "Client-Side Requirements"
      */
     @Test
-    @Robotic({"handshake.request.for.header.upgrade.not.websocket", "handshake.response.with.header.upgrade.not.websocket" })
+    @Robotic({"response.header.upgrade.not.websocket/handshake.request",
+              "response.header.upgrade.not.websocket/handshake.response" })
     public void shouldFailConnectionWhenResponseHeaderUpgradeNotWebSocket() throws Exception {
         robot.join();
     }
@@ -223,7 +232,8 @@ public class OpeningHandshakeIT {
      */
     @Test
     @Ignore("Requires fail on 'missing' header K3PO language feature")
-    @Robotic({"handshake.request.for.header.upgrade.missing", "handshake.response.with.header.upgrade.missing" })
+    @Robotic({"response.header.upgrade.missing/handshake.request",
+              "response.header.upgrade.missing/handshake.response" })
     public void shouldFailConnectionWhenResponseHeaderUpgradeMissing() throws Exception {
         robot.join();
     }
@@ -232,8 +242,8 @@ public class OpeningHandshakeIT {
      * RFC-6455, section 4.1 "Client-Side Requirements"
      */
     @Test
-    @Robotic({"handshake.request.for.header.sec.websocket.accept.not.hashed",
-              "handshake.response.with.header.sec.websocket.accept.not.hashed" })
+    @Robotic({"response.header.sec.websocket.accept.not.hashed/handshake.request",
+              "response.header.sec.websocket.accept.not.hashed/handshake.response" })
     public void shouldFailConnectionWhenResponseHeaderSecWebSocketAcceptNotHashed() throws Exception {
         robot.join();
     }
@@ -243,8 +253,8 @@ public class OpeningHandshakeIT {
      */
     @Test
     @Ignore("Requires fail on 'missing' header K3PO language feature")
-    @Robotic({"handshake.request.for.header.sec.websocket.accept.missing",
-              "handshake.response.with.header.sec.websocket.accept.missing" })
+    @Robotic({"response.header.sec.websocket.accept.missing/handshake.request",
+              "response.header.sec.websocket.accept.missing/handshake.response" })
     public void shouldFailConnectionWhenResponseHeaderSecWebSocketAcceptMissing() throws Exception {
         robot.join();
     }
@@ -253,8 +263,8 @@ public class OpeningHandshakeIT {
      * RFC-6455, section 4.1 "Client-Side Requirements"
      */
     @Test
-    @Robotic({"handshake.request.for.header.sec.websocket.extensions.not.negotiated",
-              "handshake.response.with.header.sec.websocket.extensions.not.negotiated" })
+    @Robotic({"response.header.sec.websocket.extensions.not.negotiated/handshake.request",
+              "response.header.sec.websocket.extensions.not.negotiated/handshake.response" })
     public void shouldFailConnectionWhenResponseHeaderSecWebSocketExtensionsNotNegotiated() throws Exception {
         robot.join();
     }
@@ -263,8 +273,8 @@ public class OpeningHandshakeIT {
      * RFC-6455, section 4.1 "Client-Side Requirements"
      */
     @Test
-    @Robotic({"handshake.request.for.header.sec.websocket.protocol.not.negotiated",
-              "handshake.response.with.header.sec.websocket.protocol.not.negotiated" })
+    @Robotic({"response.header.sec.websocket.protocol.not.negotiated/handshake.request",
+              "response.header.sec.websocket.protocol.not.negotiated/handshake.response" })
     public void shouldFailConnectionWhenResponseHeaderSecWebSocketProtocolNotNegotiated() throws Exception {
         robot.join();
     }
@@ -273,9 +283,9 @@ public class OpeningHandshakeIT {
      * RFC-6455, section 4.1 "Client-Side Requirements"
      */
     @Test
-    @Robotic({"handshake.requests.with.multiple.connections.serialized",
-              "handshake.responses.for.multiple.connections.serialized" })
-    public void shouldEstablishConnectionsWhenHandshakesSerialized() throws Exception {
+    @Robotic({"multiple.connections.established/handshake.requests",
+              "multiple.connections.established/handshake.responses" })
+    public void shouldEstablishMultipleConnections() throws Exception {
         robot.join();
     }
 }
