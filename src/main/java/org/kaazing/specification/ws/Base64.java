@@ -1,45 +1,30 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright 2014, Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-package org.kaazing.specification.websocket.functions;
-
-import java.util.logging.Logger;
+package org.kaazing.specification.ws;
 
 /**
  * Internal class. This class manages the Base64 encoding and decoding
  */
-final class Base64Util {
-
-    private static final String CLASS_NAME = Base64Util.class.getName();
-    private static final Logger LOG = Logger.getLogger(CLASS_NAME);
+final class Base64 {
 
     private static final byte[] INDEXED = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".getBytes();
     private static final byte PADDING_BYTE = (byte) '=';
 
-    @Deprecated
-    private Base64Util() {
-        LOG.entering(CLASS_NAME, "<init>");
-    }
-
     public static byte[] encode(byte[] decodedArray) {
-        LOG.entering(CLASS_NAME, "encode", decodedArray);
-
         int decodedSize = decodedArray.length;
         int effectiveDecodedSize = ((decodedSize + 2) / 3) * 3;
         int decodedFragmentSize = decodedSize % 3;
@@ -85,8 +70,6 @@ final class Base64Util {
     }
 
     public static byte[] decode(byte[] encodedArray) {
-        LOG.entering(CLASS_NAME, "decode", encodedArray);
-
         if (encodedArray == null) {
             return null;
         }
@@ -161,9 +144,12 @@ final class Base64Util {
                 }
             }
         } else {
-            LOG.warning("Invalid BASE64 string");
             throw new IllegalArgumentException("Invalid BASE64 string");
         }
+    }
+
+    private Base64() {
+        // utility
     }
 }
 
