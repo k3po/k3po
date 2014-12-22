@@ -38,7 +38,7 @@ import org.kaazing.k3po.lang.ast.AstConnectNode;
 import org.kaazing.k3po.lang.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.ast.AstDisconnectNode;
 import org.kaazing.k3po.lang.ast.AstDisconnectedNode;
-import org.kaazing.k3po.lang.ast.AstFlushNode;
+import org.kaazing.k3po.lang.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.ast.AstNode;
 import org.kaazing.k3po.lang.ast.AstOpenedNode;
 import org.kaazing.k3po.lang.ast.AstPropertyNode;
@@ -176,7 +176,7 @@ public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBa
     }
 
     @Override
-    public Void visit(AstFlushNode node, State state) throws Exception {
+    public Void visit(AstWriteFlushNode node, State state) throws Exception {
 
         // NOOP
         return null;

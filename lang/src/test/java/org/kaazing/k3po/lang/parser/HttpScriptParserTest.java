@@ -27,6 +27,7 @@ import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.READ_HTTP_STATUS;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.READ_HTTP_VERSION;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.SCRIPT;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_CLOSE;
+import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_FLUSH;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_CONTENT_LENGTH;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_HEADER;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_METHOD;
@@ -43,11 +44,13 @@ import org.kaazing.k3po.lang.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.ast.AstScriptNode;
 import org.kaazing.k3po.lang.ast.AstWriteCloseNode;
 import org.kaazing.k3po.lang.ast.AstWriteConfigNode;
+import org.kaazing.k3po.lang.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.ast.builder.AstReadClosedNodeBuilder;
 import org.kaazing.k3po.lang.ast.builder.AstReadConfigNodeBuilder;
 import org.kaazing.k3po.lang.ast.builder.AstScriptNodeBuilder;
 import org.kaazing.k3po.lang.ast.builder.AstWriteCloseNodeBuilder;
 import org.kaazing.k3po.lang.ast.builder.AstWriteConfigNodeBuilder;
+import org.kaazing.k3po.lang.ast.builder.AstWriteFlushNodeBuilder;
 
 public class HttpScriptParserTest {
 
@@ -264,6 +267,22 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstReadClosedNode expected = new AstReadClosedNodeBuilder()
+        .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseWriteFlush() throws Exception {
+
+        String scriptFragment = "write flush";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteFlushNode actual = parser.parseWithStrategy(scriptFragment, WRITE_FLUSH);
+
+        // @formatter:off
+        AstWriteFlushNode expected = new AstWriteFlushNodeBuilder()
         .done();
         // @formatter:on
 

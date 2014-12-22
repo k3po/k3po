@@ -33,7 +33,7 @@ import org.kaazing.k3po.lang.ast.AstConnectNode;
 import org.kaazing.k3po.lang.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.ast.AstDisconnectNode;
 import org.kaazing.k3po.lang.ast.AstDisconnectedNode;
-import org.kaazing.k3po.lang.ast.AstFlushNode;
+import org.kaazing.k3po.lang.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.ast.AstNode;
 import org.kaazing.k3po.lang.ast.AstOpenedNode;
 import org.kaazing.k3po.lang.ast.AstPropertyNode;
@@ -249,10 +249,9 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     public AstScriptNode visit(AstReadValueNode node, State state) throws Exception {
         switch (state.writeState) {
         case CONFIG_ONLY:
-            AstFlushNode flush = new AstFlushNode();
+            AstWriteFlushNode flush = new AstWriteFlushNode();
             flush.setRegionInfo(node.getRegionInfo());
-            state.streamables.add(flush);
-            state.writeState = ReadWriteState.CONFIG_OR_VALUE;
+            visit(flush, state);
             break;
         default:
             break;
@@ -290,10 +289,9 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     public AstScriptNode visit(AstReadConfigNode node, State state) throws Exception {
         switch (state.writeState) {
         case CONFIG_ONLY:
-            AstFlushNode flush = new AstFlushNode();
+            AstWriteFlushNode flush = new AstWriteFlushNode();
             flush.setRegionInfo(node.getRegionInfo());
-            state.streamables.add(flush);
-            state.writeState = ReadWriteState.CONFIG_OR_VALUE;
+            visit(flush, state);
             break;
         default:
             break;
@@ -340,7 +338,7 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     }
 
     @Override
-    public AstScriptNode visit(AstFlushNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteFlushNode node, State state) throws Exception {
         state.streamables.add(node);
         state.writeState = ReadWriteState.CONFIG_OR_VALUE;
         return null;

@@ -117,6 +117,6 @@ public class NamedGroupPattern {
 
     @Override
     public String toString() {
-        return String.format("/%s/", pattern);
+        return pattern.toString();
     }
 }

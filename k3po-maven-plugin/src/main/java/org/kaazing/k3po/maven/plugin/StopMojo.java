@@ -27,32 +27,32 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.kaazing.k3po.driver.RobotServer;
 
 /**
- * Stop the Robot
+ * Stop K3PO
  *
  * @goal stop
  * @phase post-integration-test
  *
  * @requiresDependencyResolution test
  */
-public class RobotStopMojo extends AbstractRobotMojo {
+public class StopMojo extends AbstractMojo {
 
     protected void executeImpl() throws MojoExecutionException {
 
         RobotServer server = getServer();
         if (server == null) {
-            getLog().error(format("Robot not running"));
+            getLog().error(format("K3PO not running"));
         }
 
         try {
             long checkpoint = currentTimeMillis();
             server.stop();
             float duration = (currentTimeMillis() - checkpoint) / 1000.0f;
-            getLog().debug(format("Robot [%08x] stopped in %.3fsec", identityHashCode(server), duration));
+            getLog().debug(format("K3PO [%08x] stopped in %.3fsec", identityHashCode(server), duration));
 
             setServer(null);
         }
         catch (Exception e) {
-            throw new MojoExecutionException(format("Robot [%08x] failed to stop", identityHashCode(server)), e);
+            throw new MojoExecutionException(format("K3PO [%08x] failed to stop", identityHashCode(server)), e);
         }
     }
 }

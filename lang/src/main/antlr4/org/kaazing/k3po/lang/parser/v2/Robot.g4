@@ -85,6 +85,7 @@ streamableNode
 
 commandNode
     : writeNode
+    | writeFlushNode
     | writeCloseNode
     | closeNode
     | writeHttpHeaderNode
@@ -121,6 +122,9 @@ barrierNode
 closeNode
     : k=CloseKeyword
     ;
+
+writeFlushNode: 
+    k=WriteKeyword FlushKeyword;
 
 writeCloseNode: 
     k=WriteKeyword CloseKeyword;
@@ -387,6 +391,10 @@ DisconnectKeyword
 
 DisconnectedKeyword
     : 'disconnected'
+    ;
+
+FlushKeyword
+    : 'flush'
     ;
 
 NotifyKeyword

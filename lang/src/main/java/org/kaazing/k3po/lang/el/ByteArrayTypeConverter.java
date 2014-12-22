@@ -39,6 +39,18 @@ public class ByteArrayTypeConverter extends TypeConverterImpl {
         if (type == byte[].class) {
             return (T) coerceToByteArray(value);
         }
+        else if (value instanceof byte[]) {
+            return coerceFromByteArray((byte[]) value, type);
+        }
+
+        return super.convert(value, type);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T coerceFromByteArray(byte[] value, Class<T> type) {
+        if (type == String.class) {
+            return (T) new String(value, UTF_8);
+        }
 
         return super.convert(value, type);
     }

@@ -19,7 +19,6 @@
 
 package org.kaazing.k3po.maven.plugin;
 
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
@@ -28,7 +27,7 @@ import org.kaazing.k3po.driver.RobotServer;
 /**
  * Abstract base class for Robot goals
  */
-public abstract class AbstractRobotMojo extends AbstractMojo {
+public abstract class AbstractMojo extends org.apache.maven.plugin.AbstractMojo {
 
     private static final ThreadLocal<RobotServer> ROBOT_SERVER = new ThreadLocal<RobotServer>();
 

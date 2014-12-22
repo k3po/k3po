@@ -31,7 +31,7 @@ public abstract class AstNode extends AstRegion {
         R visit(AstAcceptableNode node, P parameter) throws Exception;
         R visit(AstConnectNode node, P parameter) throws Exception;
 
-        R visit(AstFlushNode node, P parameter) throws Exception;
+        R visit(AstWriteFlushNode node, P parameter) throws Exception;
         R visit(AstWriteValueNode node, P parameter) throws Exception;
         R visit(AstWriteCloseNode node, P parameter) throws Exception;
         R visit(AstDisconnectNode node, P parameter) throws Exception;

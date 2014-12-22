@@ -19,7 +19,7 @@
 
 package org.kaazing.k3po.lang.ast;
 
-public class AstFlushNode extends AstCommandNode {
+public class AstWriteFlushNode extends AstCommandNode {
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
@@ -32,12 +32,12 @@ public class AstFlushNode extends AstCommandNode {
 
     @Override
     protected boolean equalTo(AstRegion that) {
-        return that instanceof AstFlushNode;
+        return that instanceof AstWriteFlushNode;
     }
 
     @Override
     protected void describe(StringBuilder buf) {
         super.describe(buf);
-        buf.append("flush\n");
+        buf.append("write flush\n");
     }
 }

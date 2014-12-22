@@ -33,7 +33,7 @@ import org.kaazing.k3po.lang.ast.AstConnectNode;
 import org.kaazing.k3po.lang.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.ast.AstDisconnectNode;
 import org.kaazing.k3po.lang.ast.AstDisconnectedNode;
-import org.kaazing.k3po.lang.ast.AstFlushNode;
+import org.kaazing.k3po.lang.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.ast.AstNode;
 import org.kaazing.k3po.lang.ast.AstOpenedNode;
 import org.kaazing.k3po.lang.ast.AstPropertyNode;
@@ -154,11 +154,20 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
 
             acceptable.accept(this, state);
 
-            if (state.readState != StreamState.CLOSED) {
+            switch (state.readState) {
+            case REQUEST:
+            case HEADERS_COMPLETE:
+            case CLOSED:
+                break;
+            default:
                 throw new IllegalStateException(String.format("Http read was left in state: %s", state.readState));
             }
 
-            if (state.writeState != StreamState.CLOSED) {
+            switch (state.writeState) {
+            case HEADERS_COMPLETE:
+            case CLOSED:
+                break;
+            default:
                 throw new IllegalStateException(String.format("Http write was left in state: %s", state.writeState));
             }
         }
@@ -189,11 +198,20 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
             streamable.accept(this, state);
         }
 
-        if (state.readState != StreamState.CLOSED) {
+        switch (state.readState) {
+        case RESPONSE:
+        case HEADERS_COMPLETE:
+        case CLOSED:
+            break;
+        default:
             throw new IllegalStateException(String.format("Http read was left in state: %s", state.readState));
         }
 
-        if (state.writeState != StreamState.CLOSED) {
+        switch (state.writeState) {
+        case HEADERS_COMPLETE:
+        case CLOSED:
+            break;
+        default:
             throw new IllegalStateException(String.format("Http write was left in state: %s", state.writeState));
         }
 
@@ -309,7 +327,7 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
     }
 
     @Override
-    public AstScriptNode visit(AstFlushNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteFlushNode node, State state) throws Exception {
 
         switch (state.writeState) {
         case OPEN:

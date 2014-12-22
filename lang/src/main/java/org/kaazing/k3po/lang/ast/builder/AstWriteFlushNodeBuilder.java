@@ -19,17 +19,17 @@
 
 package org.kaazing.k3po.lang.ast.builder;
 
-import org.kaazing.k3po.lang.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.ast.AstStreamNode;
+import org.kaazing.k3po.lang.ast.AstWriteFlushNode;
 
-public class AstFlushNodeBuilder extends
+public class AstWriteFlushNodeBuilder extends
         AbstractAstStreamableNodeBuilder<AstWriteFlushNode, AstWriteFlushNode> {
 
-    public AstFlushNodeBuilder() {
+    public AstWriteFlushNodeBuilder() {
         this(new AstWriteFlushNode());
     }
 
-    private AstFlushNodeBuilder(AstWriteFlushNode node) {
+    private AstWriteFlushNodeBuilder(AstWriteFlushNode node) {
         super(node, node);
     }
 

@@ -1,40 +1,43 @@
 grammar Regex;
 
 literal
-  : ForwardSlash regex=pattern ForwardSlash 
+  : regex=pattern 
   ;
 
 pattern
-  : '^'? expression '$'?
+  : expression
   ;
 
 expression
   : sequence ( '|' sequence )*
   ;
-  
+
 sequence
-  : group+
+  : '^'? group+ '$'?
   ;
 
 group
   : PatternNonGroup
   | group0
   ;
-  
+
 group0
-  : LeftParen groupN RightParen PatternQuantifiers?
+  : LeftParen groupN RightParenWithOptionalPatternQuantifiers
   ;
-  
+
 groupN
   : expression
   | PatternNonCapturing expression
   | capture=PatternCapturing expression
   ;
 
-ForwardSlash: '/';
+RightParenWithOptionalPatternQuantifiers
+  : RightParen PatternQuantifiers?
+  ;
 
 LeftParen: '(';
 
+fragment
 RightParen: ')';
 
 PatternNonGroup
@@ -137,7 +140,9 @@ PatternCharacter
   | ':'
   | '-'
   | ' '
-  | '\\/'
+  | '+'
+  | '/'
+  | '='
   | '\\0' Digit ( Digit ( Digit )? )?
   | '\\x' HexDigit HexDigit
   | '\\u' HexDigit HexDigit HexDigit HexDigit
@@ -148,7 +153,12 @@ PatternCharacter
   | '\\a'
   | '\\e'
   | '\\c' Letter
+  | '\\:'
+  | '\\-'
   | '\\.'
+  | '\\+'
+  | '\\/'
+  | '\\='
   | '\\['
   | '\\('
   | '\\|'
@@ -260,6 +270,7 @@ PatternCharacterClass
 //  ;
 //
 
+fragment
 PatternQuantifiers
   : '?'
   | '??'
@@ -286,7 +297,7 @@ Digit: '0'..'9';
 
 fragment
 HexDigit: Digit | 'a'..'f' | 'A'..'F';
-  
+
 fragment
 CR: '\r';
 

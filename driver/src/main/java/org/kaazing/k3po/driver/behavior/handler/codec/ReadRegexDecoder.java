@@ -51,7 +51,7 @@ public class ReadRegexDecoder extends MessageDecoder {
 
     @Override
     public String toString() {
-        return pattern.toString();
+        return format("/%s/", pattern);
     }
 
     @Override

@@ -35,6 +35,6 @@ public class FlushHandler extends AbstractCommandHandler {
 
     @Override
     public String toString() {
-        return "flush";
+        return "write flush";
     }
 }
