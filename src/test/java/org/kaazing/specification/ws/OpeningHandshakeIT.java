@@ -28,6 +28,10 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Robotic;
 import org.kaazing.k3po.junit.rules.RobotRule;
 
+/**
+ * RFC-6455, section 4.1 "Client-Side Requirements"
+ * RFC-6455, section 4.2 "Server-Side Requirements"
+ */
 public class OpeningHandshakeIT {
 
     private final RobotRule robot = new RobotRule().setScriptRoot("org/kaazing/specification/ws/opening");
@@ -38,31 +42,16 @@ public class OpeningHandshakeIT {
     public final TestRule chain = outerRule(robot).around(timeout);
 
     // TODO:
-    // one-handshake-per-target-IP-address-even-different-host-names
     // proxy => HTTP CONNECT w/ optional authorization, auto-configuration via ws://, wss://
     // TLS (not SSL) w/ SNI for wss://
-    //
-    // 101 status code OK, others follow HTTP semantics (not required to process)
-    // Upgrade: websocket (case-insensitive)
-    // Connection: Upgrade (case-insensitive)
-    // Sec-WebSocket-Accept: [calculated]
-    // Sec-WebSocket-Extensions: unrequested server extensions not permitted
-    // Sec-WebSocket-Protocol: unrequested server protocol not permitted
 
-    /**
-     * RFC-6455, section 4.1 "Client-Side Requirements"
-     * RFC-6455, section 4.2 "Server-Side Requirements"
-     */
     @Test
-    @Robotic({"connection.established/handshake.request", "connection.established/handshake.response" })
+    @Robotic({"connection.established/handshake.request",
+              "connection.established/handshake.response" })
     public void shouldEstablishConnection() throws Exception {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.1 "Client-Side Requirements"
-     * RFC-6455, section 4.2 "Server-Side Requirements"
-     */
     @Test
     @Robotic({"request.header.origin/handshake.request",
               "request.header.origin/handshake.response" })
@@ -70,10 +59,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.1 "Client-Side Requirements"
-     * RFC-6455, section 4.2 "Server-Side Requirements"
-     */
     @Test
     @Robotic({"request.header.sec.websocket.protocol/handshake.request",
               "request.header.sec.websocket.protocol/handshake.response" })
@@ -81,10 +66,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.1 "Client-Side Requirements"
-     * RFC-6455, section 4.2 "Server-Side Requirements"
-     */
     @Test
     @Robotic({"request.header.sec.websocket.extensions/handshake.request",
               "request.header.sec.websocket.extensions/handshake.response" })
@@ -92,9 +73,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.2 "Server-Side Requirements"
-     */
     @Test
     @Robotic({"request.method.not.get/handshake.request",
               "request.method.not.get/handshake.response" })
@@ -102,9 +80,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.2 "Server-Side Requirements"
-     */
     @Test
     @Robotic({"request.version.not.http.1.1/handshake.request",
               "request.version.not.http.1.1/handshake.response" })
@@ -112,9 +87,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.2 "Server-Side Requirements"
-     */
     @Test
     @Ignore("Requires fail on 'missing' header K3PO language feature")
     @Robotic({"request.header.host.missing/handshake.request",
@@ -123,9 +95,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.2 "Server-Side Requirements"
-     */
     @Test
     @Ignore("Requires fail on 'missing' header K3PO language feature")
     @Robotic({"request.header.upgrade.missing/handshake.request",
@@ -134,9 +103,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.2 "Server-Side Requirements"
-     */
     @Test
     @Robotic({"request.header.upgrade.not.websocket/handshake.request",
               "request.header.upgrade.not.websocket/handshake.response" })
@@ -144,9 +110,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.2 "Server-Side Requirements"
-     */
     @Test
     @Ignore("Requires fail on 'missing' header K3PO language feature")
     @Robotic({"request.header.connection.missing/handshake.request",
@@ -155,9 +118,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.2 "Server-Side Requirements"
-     */
     @Test
     @Robotic({"request.header.connection.not.upgrade/handshake.request",
               "request.header.connection.not.upgrade/handshake.response" })
@@ -165,9 +125,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.2 "Server-Side Requirements"
-     */
     @Test
     @Ignore("Requires fail on 'missing' header K3PO language feature")
     @Robotic({"request.header.sec.websocket.key.missing/handshake.request",
@@ -176,9 +133,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.2 "Server-Side Requirements"
-     */
     @Test
     @Robotic({"request.header.sec.websocket.key.not.16bytes.base64/handshake.request",
               "request.header.sec.websocket.key.not.16bytes.base64/handshake.response" })
@@ -186,9 +140,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.4 "Handling Multiple Versions of WebSocket Protocol"
-     */
     @Test
     @Robotic({"request.header.sec.websocket.version.not.13/handshake.request",
               "request.header.sec.websocket.version.not.13/handshake.response" })
@@ -196,9 +147,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.1 "Client-Side Requirements"
-     */
     @Test
     @Robotic({"response.header.connection.not.upgrade/handshake.request",
               "response.header.connection.not.upgrade/handshake.response" })
@@ -206,9 +154,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.1 "Client-Side Requirements"
-     */
     @Test
     @Ignore("Requires fail on 'missing' header K3PO language feature")
     @Robotic({"response.header.connection.missing/handshake.request",
@@ -217,9 +162,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.1 "Client-Side Requirements"
-     */
     @Test
     @Robotic({"response.header.upgrade.not.websocket/handshake.request",
               "response.header.upgrade.not.websocket/handshake.response" })
@@ -227,9 +169,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.1 "Client-Side Requirements"
-     */
     @Test
     @Ignore("Requires fail on 'missing' header K3PO language feature")
     @Robotic({"response.header.upgrade.missing/handshake.request",
@@ -238,9 +177,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.1 "Client-Side Requirements"
-     */
     @Test
     @Robotic({"response.header.sec.websocket.accept.not.hashed/handshake.request",
               "response.header.sec.websocket.accept.not.hashed/handshake.response" })
@@ -248,9 +184,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.1 "Client-Side Requirements"
-     */
     @Test
     @Ignore("Requires fail on 'missing' header K3PO language feature")
     @Robotic({"response.header.sec.websocket.accept.missing/handshake.request",
@@ -259,9 +192,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.1 "Client-Side Requirements"
-     */
     @Test
     @Robotic({"response.header.sec.websocket.extensions.not.negotiated/handshake.request",
               "response.header.sec.websocket.extensions.not.negotiated/handshake.response" })
@@ -269,9 +199,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.1 "Client-Side Requirements"
-     */
     @Test
     @Robotic({"response.header.sec.websocket.protocol.not.negotiated/handshake.request",
               "response.header.sec.websocket.protocol.not.negotiated/handshake.response" })
@@ -279,9 +206,6 @@ public class OpeningHandshakeIT {
         robot.join();
     }
 
-    /**
-     * RFC-6455, section 4.1 "Client-Side Requirements"
-     */
     @Test
     @Robotic({"multiple.connections.established/handshake.requests",
               "multiple.connections.established/handshake.responses" })
