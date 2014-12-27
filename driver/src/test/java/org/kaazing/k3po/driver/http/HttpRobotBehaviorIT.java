@@ -21,6 +21,7 @@ package org.kaazing.k3po.driver.http;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -70,6 +71,20 @@ public class HttpRobotBehaviorIT {
 
         server.close();
         robot.destroy();
+    }
+
+    @Test
+    public void shouldNotAcceptHeaderWhenExpectedMissing() throws Exception {
+
+        String script = combineScripts("http.accept.header.missing.rpt",
+                "http.connect.header.missing.rpt");
+
+        String expected = script;
+
+        robot.prepareAndStart(script).await();
+        robot.finish().await();
+
+        assertNotEquals(expected, robot.getObservedScript());
     }
 
     @Test

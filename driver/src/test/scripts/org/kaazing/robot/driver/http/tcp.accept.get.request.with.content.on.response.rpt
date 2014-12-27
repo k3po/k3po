@@ -5,8 +5,7 @@
 accept tcp://localhost:8000
 accepted
 connected
-read "get / HTTP/1.1\r\n"
-read "Host: localhost:8000\r\n"
+read "get http://localhost:8000/ HTTP/1.1\r\n"
 read "some: header\r\n"
 read "\r\n"
 write "HTTP/1.1 200 OK\r\n"

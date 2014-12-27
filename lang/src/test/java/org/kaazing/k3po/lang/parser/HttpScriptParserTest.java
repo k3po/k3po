@@ -93,6 +93,24 @@ public class HttpScriptParserTest {
     }
 
     @Test
+    public void shouldParseReadHttpHeaderMissing() throws Exception {
+
+        String scriptFragment = "read header \"Connection\" missing";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadConfigNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_HEADER);
+
+        // @formatter:off
+        AstReadConfigNode expected = new AstReadConfigNodeBuilder()
+            .setType("header missing")
+            .setValueExactText("name", "Connection")
+        .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void shouldParseReadHttpHeaderExactText() throws Exception {
 
         String scriptFragment = "read header \"Host\" \"localhost:8000\"";

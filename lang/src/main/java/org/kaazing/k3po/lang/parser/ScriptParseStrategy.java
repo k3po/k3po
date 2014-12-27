@@ -2011,7 +2011,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             childInfos().add(value.getRegionInfo());
 
             node = new AstReadConfigNode();
-            node.setType("header");
+            node.setType(ctx.HttpMissingKeyword() != null ? "header missing" : "header");
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setValue("name", value);
 

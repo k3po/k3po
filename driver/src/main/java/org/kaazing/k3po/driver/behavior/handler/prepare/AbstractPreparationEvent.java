@@ -20,7 +20,7 @@
 package org.kaazing.k3po.driver.behavior.handler.prepare;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -35,7 +35,7 @@ public abstract class AbstractPreparationEvent implements PreparationEvent {
     public AbstractPreparationEvent(Channel channel, ChannelFuture future) {
         this.channel = channel;
         this.future = future;
-        this.pipelineFutures = new HashSet<ChannelFuture>();
+        this.pipelineFutures = new LinkedHashSet<ChannelFuture>();
     }
 
     @Override

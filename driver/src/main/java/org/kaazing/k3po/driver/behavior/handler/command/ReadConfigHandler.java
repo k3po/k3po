@@ -33,6 +33,7 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.kaazing.k3po.driver.behavior.handler.codec.ConfigDecoder;
+import org.kaazing.k3po.driver.behavior.handler.prepare.PreparationEvent;
 
 //
 // Reading the configuration requires the channel to be readable as an indication that
