@@ -6,6 +6,7 @@ connect http://localhost:8000/
 connected
 
 write method "POST"
+write header host
 write header "Date" "Fri, 31 Dec 1999 23:59:59 GMT"
 write header "Content-Type" "text/plain"
 write header "Transfer-Encoding" "chunked"

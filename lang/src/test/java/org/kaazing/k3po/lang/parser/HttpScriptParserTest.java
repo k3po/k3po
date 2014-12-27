@@ -30,8 +30,10 @@ import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_CLOSE;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_FLUSH;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_CONTENT_LENGTH;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_HEADER;
+import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_HOST;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_METHOD;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_PARAMETER;
+import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_REQUEST;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_STATUS;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_VERSION;
 import static org.kaazing.k3po.lang.test.junit.Assert.assertEquals;
@@ -53,6 +55,42 @@ import org.kaazing.k3po.lang.ast.builder.AstWriteConfigNodeBuilder;
 import org.kaazing.k3po.lang.ast.builder.AstWriteFlushNodeBuilder;
 
 public class HttpScriptParserTest {
+
+    @Test
+    public void shouldParseWriteHttpRequestOriginForm() throws Exception {
+
+        String scriptFragment = "write request \"origin-form\"";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_REQUEST);
+
+        // @formatter:off
+        AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
+            .setType("request")
+            .setValue("form", "origin-form")
+        .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseWriteHttpRequestAbsoluteForm() throws Exception {
+
+        String scriptFragment = "write request \"absolute-form\"";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_REQUEST);
+
+        // @formatter:off
+        AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
+            .setType("request")
+            .setValue("form", "absolute-form")
+        .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+    }
 
     @Test
     public void shouldParseReadHttpHeaderExactText() throws Exception {
@@ -103,6 +141,23 @@ public class HttpScriptParserTest {
         // @formatter:off
         AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
             .setType("content-length")
+        .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseWriteHttpHost() throws Exception {
+
+        String scriptFragment = "write header host";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_HOST);
+
+        // @formatter:off
+        AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
+            .setType("host")
         .done();
         // @formatter:on
 

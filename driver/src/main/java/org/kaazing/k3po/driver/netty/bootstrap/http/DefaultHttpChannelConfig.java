@@ -32,6 +32,7 @@ public class DefaultHttpChannelConfig extends DefaultChannelConfig implements Ht
 
     private HttpVersion version;
     private HttpMethod method;
+    private HttpRequestForm requestForm;
     private HttpResponseStatus status;
     private HttpHeaders readHeaders;
     private HttpHeaders writeHeaders;
@@ -57,6 +58,16 @@ public class DefaultHttpChannelConfig extends DefaultChannelConfig implements Ht
     @Override
     public HttpVersion getVersion() {
         return version;
+    }
+
+    @Override
+    public void setRequestForm(HttpRequestForm requestForm) {
+        this.requestForm = requestForm;
+    }
+
+    @Override
+    public HttpRequestForm getRequestForm() {
+        return requestForm;
     }
 
     @Override
@@ -124,5 +135,4 @@ public class DefaultHttpChannelConfig extends DefaultChannelConfig implements Ht
     public QueryStringEncoder getWriteQuery() {
         return writeQuery;
     }
-
 }

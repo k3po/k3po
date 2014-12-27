@@ -43,7 +43,7 @@ import org.kaazing.k3po.driver.Robot;
 public class HttpRobotBehaviorIT {
 
     @Rule
-    public TestRule timeout = new DisableOnDebug(new Timeout(2, SECONDS));
+    public TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
     private Robot robot;
     private Socket client;

@@ -140,8 +140,8 @@ public class HttpChildChannelSource extends HttpChannelHandler {
     protected void httpMessageReceived(ChannelHandlerContext ctx, MessageEvent e, HttpRequest httpRequest) throws Exception {
 
         HttpVersion version = httpRequest.getProtocolVersion();
-        String host = getHost(httpRequest);
-        if (host == null) {
+        URI httpLocation = getEffectiveURI(httpRequest);
+        if (httpLocation == null) {
             // see RFC-7230 section 5.4 Host
             HttpResponse httpResponse = new DefaultHttpResponse(version, BAD_REQUEST);
             ChannelFuture future = future(ctx.getChannel());
@@ -149,10 +149,7 @@ public class HttpChildChannelSource extends HttpChannelHandler {
             return;
         }
 
-        String uri = httpRequest.getUri();
-        URI httpLocation = URI.create(format("http://%s%s", host, uri));
-
-        Entry<URI, HttpServerChannel> httpBinding = (host != null) ? httpBindings.floorEntry(httpLocation) : null;
+        Entry<URI, HttpServerChannel> httpBinding = httpBindings.floorEntry(httpLocation);
 
         if (httpBinding == null) {
             HttpResponse httpResponse = new DefaultHttpResponse(version, NOT_FOUND);
@@ -260,6 +257,16 @@ public class HttpChildChannelSource extends HttpChannelHandler {
             // after 101 switching protocols
             fireMessageReceived(httpChildChannel, message);
         }
+    }
+
+    private static URI getEffectiveURI(HttpRequest httpRequest) {
+        URI requestURI = URI.create(httpRequest.getUri());
+        if (requestURI.isAbsolute()) {
+            return requestURI;
+        }
+
+        String host = getHost(httpRequest);
+        return (host != null) ? URI.create(format("http://%s%s", host, requestURI)) : null;
     }
 
 }
