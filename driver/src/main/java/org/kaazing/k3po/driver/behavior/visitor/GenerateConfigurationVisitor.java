@@ -72,6 +72,7 @@ import org.kaazing.k3po.driver.behavior.handler.codec.WriteTextEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpContentLengthEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpHeaderDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpHeaderEncoder;
+import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpHeaderMissingDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpHostEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpMethodDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpMethodEncoder;
@@ -861,6 +862,20 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             handler.setRegionInfo(node.getRegionInfo());
             Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
             String handlerName = String.format("readConfig#%d (http header)", pipelineAsMap.size() + 1);
+            pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
+        case "header missing": {
+            AstLiteralTextValue name = (AstLiteralTextValue) node.getValue("name");
+            requireNonNull(name);
+
+            HttpHeaderMissingDecoder decoder = new HttpHeaderMissingDecoder(name.getValue());
+            decoder.setRegionInfo(node.getRegionInfo());
+            ReadConfigHandler handler = new ReadConfigHandler(decoder);
+
+            handler.setRegionInfo(node.getRegionInfo());
+            Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+            String handlerName = String.format("readConfig#%d (http header missing)", pipelineAsMap.size() + 1);
             pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }

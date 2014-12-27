@@ -88,6 +88,11 @@ public class ExecutionHandler extends SimplePrepareUpstreamHandler implements Li
             public Channel getChannel() {
                 return ctx.getChannel();
             }
+
+            @Override
+            public String toString() {
+                return ExecutionHandler.this.toString();
+            }
         };
 
         handlerFuture.addListener(new ChannelFutureListener() {

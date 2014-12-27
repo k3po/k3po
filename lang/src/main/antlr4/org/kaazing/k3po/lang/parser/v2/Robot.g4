@@ -199,7 +199,7 @@ writeNotifyNode
     ;
 
 readHttpHeaderNode
-    : k=ReadKeyword HttpHeaderKeyword name=literalText matcher+
+    : k=ReadKeyword HttpHeaderKeyword name=literalText (HttpMissingKeyword | matcher+)
     ;
 
 writeHttpHeaderNode
@@ -249,7 +249,6 @@ writeHttpRequestNode
 writeHttpStatusNode
     : k=WriteKeyword HttpStatusKeyword code=writeValue reason=writeValue
     ;
-
 
 matcher
     : exactTextMatcher
@@ -449,6 +448,10 @@ HttpHostKeyword
 
 HttpMethodKeyword
     : 'method'
+    ;
+
+HttpMissingKeyword
+    : 'missing'
     ;
 
 HttpParameterKeyword

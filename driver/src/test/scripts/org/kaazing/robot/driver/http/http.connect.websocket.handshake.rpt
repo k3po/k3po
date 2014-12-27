@@ -5,6 +5,7 @@
 connect http://localhost:8001/echo
 connected
 write method "GET"
+write header host
 write header "Upgrade" "websocket" 
 write header "Connection" "Upgrade" 
 write header "Origin" "http://localhost:8001" 
