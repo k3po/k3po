@@ -320,25 +320,13 @@ public class HttpClientChannelSink extends AbstractChannelSink {
             HttpChannelConfig httpClientConfig = httpClientChannel.getConfig();
             HttpVersion version = httpClientConfig.getVersion();
             HttpMethod method = httpClientConfig.getMethod();
-            QueryStringEncoder query = httpClientConfig.getWriteQuery();
             HttpHeaders headers = httpClientConfig.getWriteHeaders();
-            ChannelAddress httpRemoteAddress = httpClientChannel.getRemoteAddress();
-            URI httpRemoteURI = (query != null) ? query.toUri() : httpRemoteAddress.getLocation();
 
-            String requestPath = httpRemoteURI.getPath();
-            String requestQuery = httpRemoteURI.getQuery();
-            String requestURI = (requestQuery != null) ? format("%s?%s", requestPath, requestQuery) : requestPath;
-            String authority = httpRemoteURI.getAuthority();
-
-            HttpRequest httpRequest = new DefaultHttpRequest(version, method, requestURI);
+            String targetURI = getTargetURI(httpClientChannel);
+            HttpRequest httpRequest = new DefaultHttpRequest(version, method, targetURI);
             HttpHeaders httpRequestHeaders = httpRequest.headers();
 
-            // TODO: provide HttpConfig option to disable automatic Host header
-            if (!headers.contains(Names.HOST)) {
-                httpRequestHeaders.set(Names.HOST, authority);
-            }
-
-            if (headers != null) {
+            if (httpClientConfig.hasWriteHeaders()) {
                 httpRequestHeaders.add(headers);
             }
 
