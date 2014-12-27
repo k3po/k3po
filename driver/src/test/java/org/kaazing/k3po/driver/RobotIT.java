@@ -54,7 +54,7 @@ import org.kaazing.k3po.lang.parser.ScriptParseException;
 public class RobotIT {
 
     @Rule
-    public TestRule timeout = new DisableOnDebug(new Timeout(2, SECONDS));
+    public TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
     private Robot robot;
     private Socket client;

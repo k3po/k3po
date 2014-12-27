@@ -88,12 +88,14 @@ commandNode
     | writeFlushNode
     | writeCloseNode
     | closeNode
-    | writeHttpHeaderNode
     | writeHttpContentLengthNode
+    | writeHttpHeaderNode
+    | writeHttpHostNode
     | writeHttpMethodNode
     | writeHttpParameterNode
-    | writeHttpVersionNode
+    | writeHttpRequestNode
     | writeHttpStatusNode
+    | writeHttpVersionNode
     ;
 
 eventNode
@@ -208,6 +210,10 @@ writeHttpContentLengthNode
     : k=WriteKeyword HttpHeaderKeyword HttpContentLengthKeyword
     ;
 
+writeHttpHostNode
+    : k=WriteKeyword HttpHeaderKeyword HttpHostKeyword
+    ;
+
 readHttpMethodNode
     : k=ReadKeyword HttpMethodKeyword method=matcher
     ;
@@ -234,6 +240,10 @@ writeHttpVersionNode
 
 readHttpStatusNode
     : k=ReadKeyword HttpStatusKeyword code=matcher reason=matcher
+    ;
+
+writeHttpRequestNode
+    : k=WriteKeyword HttpRequestKeyword form=writeValue
     ;
 
 writeHttpStatusNode
@@ -425,12 +435,16 @@ WriteKeyword
     : 'write'
     ;
 
+HttpContentLengthKeyword
+    : 'content-length'
+    ;
+
 HttpHeaderKeyword
     : 'header'
     ;
     
-HttpContentLengthKeyword
-    : 'content-length'
+HttpHostKeyword
+    : 'host'
     ;
 
 HttpMethodKeyword
@@ -441,20 +455,20 @@ HttpParameterKeyword
     : 'parameter'
     ;
 
-HttpVersionKeyword
-    : 'version'
-    ;
-
-HttpStatusKeyword
-    : 'status'
+HttpRequestKeyword
+    : 'request'
     ;
 
 HttpResponseKeyword
     : 'response'
     ;
 
-HttpRequestKeyword
-    : 'request'
+HttpStatusKeyword
+    : 'status'
+    ;
+
+HttpVersionKeyword
+    : 'version'
     ;
 
 // URI cannot begin with any of our data type delimiters, and MUST contain a colon.

@@ -72,10 +72,12 @@ import org.kaazing.k3po.driver.behavior.handler.codec.WriteTextEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpContentLengthEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpHeaderDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpHeaderEncoder;
+import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpHostEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpMethodDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpMethodEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpParameterDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpParameterEncoder;
+import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpRequestFormEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpStatusDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpStatusEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpVersionDecoder;
@@ -116,7 +118,6 @@ import org.kaazing.k3po.lang.ast.AstConnectNode;
 import org.kaazing.k3po.lang.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.ast.AstDisconnectNode;
 import org.kaazing.k3po.lang.ast.AstDisconnectedNode;
-import org.kaazing.k3po.lang.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.ast.AstNode;
 import org.kaazing.k3po.lang.ast.AstOpenedNode;
 import org.kaazing.k3po.lang.ast.AstPropertyNode;
@@ -134,6 +135,7 @@ import org.kaazing.k3po.lang.ast.AstUnboundNode;
 import org.kaazing.k3po.lang.ast.AstWriteAwaitNode;
 import org.kaazing.k3po.lang.ast.AstWriteCloseNode;
 import org.kaazing.k3po.lang.ast.AstWriteConfigNode;
+import org.kaazing.k3po.lang.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.ast.AstWriteNotifyNode;
 import org.kaazing.k3po.lang.ast.AstWriteOptionNode;
 import org.kaazing.k3po.lang.ast.AstWriteValueNode;
@@ -917,6 +919,17 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstWriteConfigNode node, State state) throws Exception {
         switch (node.getType()) {
+        case "request": {
+            AstValue form = (AstLiteralTextValue) node.getValue("form");
+            MessageEncoder formEncoder = form.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+
+            WriteConfigHandler handler = new WriteConfigHandler(new HttpRequestFormEncoder(formEncoder));
+
+            handler.setRegionInfo(node.getRegionInfo());
+            String handlerName = String.format("writeConfig#%d (http request)", state.pipelineAsMap.size() + 1);
+            state.pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
         case "header": {
             AstValue name = node.getName("name");
             MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
@@ -937,6 +950,13 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             WriteConfigHandler handler = new WriteConfigHandler(new HttpContentLengthEncoder());
             handler.setRegionInfo(node.getRegionInfo());
             String handlerName = String.format("writeConfig#%d (http content length)", state.pipelineAsMap.size() + 1);
+            state.pipelineAsMap.put(handlerName, handler);
+            return null;
+        }
+        case "host": {
+            WriteConfigHandler handler = new WriteConfigHandler(new HttpHostEncoder());
+            handler.setRegionInfo(node.getRegionInfo());
+            String handlerName = String.format("writeConfig#%d (http host)", state.pipelineAsMap.size() + 1);
             state.pipelineAsMap.put(handlerName, handler);
             return null;
         }

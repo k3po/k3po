@@ -140,8 +140,10 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteCloseNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteFlushNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpContentLengthNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpHeaderNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpHostNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpMethodNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpParameterNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpRequestNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpStatusNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpVersionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteNodeContext;
@@ -378,6 +380,16 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         }
     };
 
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_HOST = new ScriptParseStrategy<AstWriteConfigNode>() {
+        @Override
+        public AstWriteConfigNode parse(RobotParser parser,
+                                                   ExpressionFactory elFactory,
+                                                   ExpressionContext elContext) throws RecognitionException {
+            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser
+                    .writeHttpHostNode());
+        }
+    };
+
     public static final ScriptParseStrategy<AstReadConfigNode> READ_HTTP_METHOD = new ScriptParseStrategy<AstReadConfigNode>() {
         @Override
         public AstReadConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
@@ -391,6 +403,16 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
                 throws RecognitionException {
             return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpMethodNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_REQUEST = new ScriptParseStrategy<AstWriteConfigNode>() {
+        @Override
+        public AstWriteConfigNode parse(RobotParser parser,
+                                        ExpressionFactory elFactory,
+                                        ExpressionContext elContext) throws RecognitionException {
+            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser
+                    .writeHttpRequestNode());
         }
     };
 
@@ -1228,6 +1250,18 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         // HTTP commands
 
         @Override
+        public AstWriteConfigNode visitWriteHttpRequestNode(WriteHttpRequestNodeContext ctx) {
+
+            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(elFactory, elContext);
+            AstWriteConfigNode writeHttpRequestNode = visitor.visitWriteHttpRequestNode(ctx);
+            if (writeHttpRequestNode != null) {
+                childInfos().add(writeHttpRequestNode.getRegionInfo());
+            }
+
+            return writeHttpRequestNode;
+        }
+
+        @Override
         public AstWriteConfigNode visitWriteHttpHeaderNode(WriteHttpHeaderNodeContext ctx) {
 
             AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(elFactory, elContext);
@@ -1249,6 +1283,18 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             }
 
             return writeHttpContentLengthNode;
+        }
+
+        @Override
+        public AstWriteConfigNode visitWriteHttpHostNode(WriteHttpHostNodeContext ctx) {
+
+            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(elFactory, elContext);
+            AstWriteConfigNode writeHttpHostNode = visitor.visitWriteHttpHostNode(ctx);
+            if (writeHttpHostNode != null) {
+                childInfos().add(writeHttpHostNode.getRegionInfo());
+            }
+
+            return writeHttpHostNode;
         }
 
         @Override
@@ -2043,6 +2089,20 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
+        public AstWriteConfigNode visitWriteHttpRequestNode(WriteHttpRequestNodeContext ctx) {
+
+            AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
+            AstValue value = visitor.visit(ctx.form);
+
+            node = new AstWriteConfigNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            node.setType("request");
+            node.setValue("form", value);
+
+            return node;
+        }
+
+        @Override
         public AstWriteConfigNode visitWriteHttpHeaderNode(WriteHttpHeaderNodeContext ctx) {
 
             AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
@@ -2064,6 +2124,16 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             node = new AstWriteConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setType("content-length");
+
+            return node;
+        }
+
+        @Override
+        public AstWriteConfigNode visitWriteHttpHostNode(WriteHttpHostNodeContext ctx) {
+
+            node = new AstWriteConfigNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            node.setType("host");
 
             return node;
         }

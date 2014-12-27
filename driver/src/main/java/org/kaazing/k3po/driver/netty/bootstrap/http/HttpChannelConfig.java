@@ -60,4 +60,8 @@ public interface HttpChannelConfig extends ChannelConfig {
     void setWriteQuery(QueryStringEncoder writeQuery);
 
     QueryStringEncoder getWriteQuery();
+
+    void setRequestForm(HttpRequestForm requestForm);
+
+    HttpRequestForm getRequestForm();
 }
