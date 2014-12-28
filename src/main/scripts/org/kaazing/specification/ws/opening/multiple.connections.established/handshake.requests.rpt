@@ -3,7 +3,7 @@ connected
 
 write method "GET"
 write version "HTTP/1.1"
-write header "Host" "localhost:8080"
+write header host
 write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
@@ -23,7 +23,7 @@ connected
 write await FIRST_CONNECTION_ESTABLISHED
 write method "GET"
 write version "HTTP/1.1"
-write header "Host" "localhost:8080"
+write header host
 write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="

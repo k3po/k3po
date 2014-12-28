@@ -19,7 +19,6 @@ package org.kaazing.specification.ws;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -88,7 +87,6 @@ public class OpeningHandshakeIT {
     }
 
     @Test
-    @Ignore("Requires fail on 'missing' header K3PO language feature")
     @Robotic({"request.header.host.missing/handshake.request",
               "request.header.host.missing/handshake.response" })
     public void shouldFailHandshakeWhenRequestHeaderHostMissing() throws Exception {
@@ -96,7 +94,6 @@ public class OpeningHandshakeIT {
     }
 
     @Test
-    @Ignore("Requires fail on 'missing' header K3PO language feature")
     @Robotic({"request.header.upgrade.missing/handshake.request",
               "request.header.upgrade.missing/handshake.response" })
     public void shouldFailHandshakeWhenRequestHeaderUpgradeMissing() throws Exception {
@@ -111,7 +108,6 @@ public class OpeningHandshakeIT {
     }
 
     @Test
-    @Ignore("Requires fail on 'missing' header K3PO language feature")
     @Robotic({"request.header.connection.missing/handshake.request",
               "request.header.connection.missing/handshake.response" })
     public void shouldFailHandshakeWhenRequestHeaderConnectionMissing() throws Exception {
@@ -126,7 +122,6 @@ public class OpeningHandshakeIT {
     }
 
     @Test
-    @Ignore("Requires fail on 'missing' header K3PO language feature")
     @Robotic({"request.header.sec.websocket.key.missing/handshake.request",
               "request.header.sec.websocket.key.missing/handshake.response" })
     public void shouldFailHandshakeWhenRequestHeaderSecWebSocketKeyMissing() throws Exception {
@@ -155,7 +150,6 @@ public class OpeningHandshakeIT {
     }
 
     @Test
-    @Ignore("Requires fail on 'missing' header K3PO language feature")
     @Robotic({"response.header.connection.missing/handshake.request",
               "response.header.connection.missing/handshake.response" })
     public void shouldFailConnectionWhenResponseHeaderConnectionMissing() throws Exception {
@@ -170,7 +164,6 @@ public class OpeningHandshakeIT {
     }
 
     @Test
-    @Ignore("Requires fail on 'missing' header K3PO language feature")
     @Robotic({"response.header.upgrade.missing/handshake.request",
               "response.header.upgrade.missing/handshake.response" })
     public void shouldFailConnectionWhenResponseHeaderUpgradeMissing() throws Exception {
@@ -185,7 +178,6 @@ public class OpeningHandshakeIT {
     }
 
     @Test
-    @Ignore("Requires fail on 'missing' header K3PO language feature")
     @Robotic({"response.header.sec.websocket.accept.missing/handshake.request",
               "response.header.sec.websocket.accept.missing/handshake.response" })
     public void shouldFailConnectionWhenResponseHeaderSecWebSocketAcceptMissing() throws Exception {

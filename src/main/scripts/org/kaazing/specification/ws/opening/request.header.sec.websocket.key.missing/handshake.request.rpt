@@ -1,9 +1,9 @@
 connect http://localhost:8080/path?query
 connected
 
-write method "POST"
+write method "GET"
 write version "HTTP/1.1"
-write header "Host" "localhost:8080"
+write header host
 write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Version" "13"

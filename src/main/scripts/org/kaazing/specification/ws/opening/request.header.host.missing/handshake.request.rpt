@@ -1,9 +1,8 @@
 connect http://localhost:8080/path?query
 connected
 
-write method "POST"
+write method "GET"
 write version "HTTP/1.1"
-# TODO disable defaulting of Host header
 write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
