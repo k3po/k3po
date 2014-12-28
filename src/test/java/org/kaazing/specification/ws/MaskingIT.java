@@ -24,33 +24,35 @@ import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
-import org.kaazing.k3po.junit.annotation.Robotic;
-import org.kaazing.k3po.junit.rules.RobotRule;
+import org.kaazing.k3po.junit.annotation.Specification;
+import org.kaazing.k3po.junit.rules.K3poRule;
 
 /**
  * RFC-6455, section 5.3 "Client-to-Server Masking"
  */
 public class MaskingIT {
 
-    private final RobotRule robot = new RobotRule().setScriptRoot("org/kaazing/specification/ws/masking");
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/ws/masking");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
     @Rule
-    public final TestRule chain = outerRule(robot).around(timeout);
+    public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Robotic({"send.text.payload.not.masked/handshake.request.and.frame",
-              "send.text.payload.not.masked/handshake.response.and.frame" })
+    @Specification({
+        "send.text.payload.not.masked/handshake.request.and.frame",
+        "send.text.payload.not.masked/handshake.response.and.frame" })
     public void shouldFailWebSocketConnectionWhenSendTextFrameNotMasked() throws Exception {
-        robot.join();
+        k3po.join();
     }
 
     @Test
-    @Robotic({"send.binary.payload.not.masked/handshake.request.and.frame",
-              "send.binary.payload.not.masked/handshake.response.and.frame" })
+    @Specification({
+        "send.binary.payload.not.masked/handshake.request.and.frame",
+        "send.binary.payload.not.masked/handshake.response.and.frame" })
     public void shouldFailWebSocketConnectionWhenSendBinaryFrameNotMasked() throws Exception {
-        robot.join();
+        k3po.join();
     }
 
 }
