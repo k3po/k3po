@@ -24,7 +24,6 @@ import static org.kaazing.k3po.driver.behavior.handler.codec.Masker.IDENTITY_MAS
 import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.kaazing.k3po.lang.el.ExpressionContext;
 
 public final class Maskers {
