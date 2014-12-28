@@ -20,26 +20,31 @@
 package org.kaazing.k3po.driver.behavior.handler.command;
 
 import static java.lang.String.format;
+import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
 import static org.jboss.netty.channel.Channels.write;
+import static org.kaazing.k3po.driver.behavior.handler.codec.Masker.IDENTITY_MASKER;
 
 import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.kaazing.k3po.driver.behavior.handler.codec.Masker;
 import org.kaazing.k3po.driver.behavior.handler.codec.MessageEncoder;
 
 public class WriteHandler extends AbstractCommandHandler {
 
     private final List<MessageEncoder> encoders;
+    private final Masker masker;
 
-    public WriteHandler(List<MessageEncoder> encoders) {
+    public WriteHandler(List<MessageEncoder> encoders, Masker masker) {
         if (encoders == null) {
             throw new NullPointerException("encoders");
         } else if (encoders.size() == 0) {
             throw new IllegalArgumentException("must have at least one encoder");
         }
         this.encoders = encoders;
+        this.masker = masker;
     }
 
     @Override
@@ -50,7 +55,17 @@ public class WriteHandler extends AbstractCommandHandler {
             buffers[idx] = encoder.encode();
             idx++;
         }
-        write(ctx, getHandlerFuture(), wrappedBuffer(buffers));
+
+        if (masker == IDENTITY_MASKER) {
+            // avoid unnecessary copy when masking disabled
+            ChannelBuffer bytes = wrappedBuffer(buffers);
+            write(ctx, getHandlerFuture(), bytes);
+        }
+        else {
+            ChannelBuffer bytes = copiedBuffer(buffers);
+            ChannelBuffer maskedBytes = masker.applyMask(bytes);
+            write(ctx, getHandlerFuture(), maskedBytes);
+        }
     }
 
     @Override

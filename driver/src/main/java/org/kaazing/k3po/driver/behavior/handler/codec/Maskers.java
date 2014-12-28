@@ -19,30 +19,39 @@
 
 package org.kaazing.k3po.driver.behavior.handler.codec;
 
+import static org.kaazing.k3po.driver.behavior.handler.codec.Masker.IDENTITY_MASKER;
+
 import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.kaazing.k3po.lang.el.ExpressionContext;
 
-public final class MaskingDecoders {
+public final class Maskers {
 
-    public static MaskingDecoder newMaskingDecoder(byte[] maskingKey) {
-        return new ExactBytesMaskingDecoder(maskingKey);
+    public static Masker newMasker(byte[] maskingKey) {
+        for (int i = 0; i < maskingKey.length; i++) {
+            if (maskingKey[i] != 0x00) {
+                return new ExactBytesMasker(maskingKey);
+            }
+        }
+
+        return IDENTITY_MASKER;
     }
 
-    public static MaskingDecoder newMaskingDecoder(ValueExpression expression, ExpressionContext environment) {
-        return new ExpressionMaskingDecoder(expression, environment);
+    public static Masker newMasker(ValueExpression expression, ExpressionContext environment) {
+        return new ExpressionMasker(expression, environment);
     }
 
-    private MaskingDecoders() {
+    private Maskers() {
         // utility class
     }
 
-    private static class ExactBytesMaskingDecoder extends AbstractMaskingDecoder {
+    private static class ExactBytesMasker extends AbstractMasker {
 
         private final byte[] maskingKey;
 
-        public ExactBytesMaskingDecoder(byte[] maskingKey) {
+        public ExactBytesMasker(byte[] maskingKey) {
             this.maskingKey = maskingKey;
         }
 
@@ -57,12 +66,12 @@ public final class MaskingDecoders {
         }
     }
 
-    private static class ExpressionMaskingDecoder extends AbstractMaskingDecoder {
+    private static class ExpressionMasker extends AbstractMasker {
 
         private final ValueExpression expression;
         private final ExpressionContext environment;
 
-        public ExpressionMaskingDecoder(ValueExpression expression, ExpressionContext environment) {
+        public ExpressionMasker(ValueExpression expression, ExpressionContext environment) {
             this.expression = expression;
             this.environment = environment;
         }
@@ -80,7 +89,7 @@ public final class MaskingDecoders {
         }
     }
 
-    private abstract static class AbstractMaskingDecoder extends MaskingDecoder {
+    private abstract static class AbstractMasker extends Masker {
 
         private int offset;
 

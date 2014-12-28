@@ -39,17 +39,17 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.UpstreamMessageEvent;
 import org.kaazing.k3po.driver.behavior.ScriptProgressException;
-import org.kaazing.k3po.driver.behavior.handler.codec.MaskingDecoder;
+import org.kaazing.k3po.driver.behavior.handler.codec.Masker;
 import org.kaazing.k3po.driver.behavior.handler.codec.MessageDecoder;
 
 public class ReadHandler extends AbstractEventHandler {
 
     private final List<MessageDecoder> decoders;
-    private final MaskingDecoder unmasker;
+    private final Masker unmasker;
 
     private final List<MessageDecoder> consumedDecoders;
 
-    public ReadHandler(List<MessageDecoder> decoders, MaskingDecoder unmasker) {
+    public ReadHandler(List<MessageDecoder> decoders, Masker unmasker) {
         super(of(ChannelEventKind.MESSAGE));
         if (decoders == null) {
             throw new NullPointerException("decoders");

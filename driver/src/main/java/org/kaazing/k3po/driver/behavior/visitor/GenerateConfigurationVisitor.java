@@ -38,7 +38,6 @@ import java.util.concurrent.ConcurrentMap;
 import javax.el.ELResolver;
 import javax.el.ValueExpression;
 
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -52,8 +51,8 @@ import org.kaazing.k3po.driver.behavior.handler.FailureHandler;
 import org.kaazing.k3po.driver.behavior.handler.barrier.AwaitBarrierDownstreamHandler;
 import org.kaazing.k3po.driver.behavior.handler.barrier.AwaitBarrierUpstreamHandler;
 import org.kaazing.k3po.driver.behavior.handler.barrier.NotifyBarrierHandler;
-import org.kaazing.k3po.driver.behavior.handler.codec.MaskingDecoder;
-import org.kaazing.k3po.driver.behavior.handler.codec.MaskingDecoders;
+import org.kaazing.k3po.driver.behavior.handler.codec.Masker;
+import org.kaazing.k3po.driver.behavior.handler.codec.Maskers;
 import org.kaazing.k3po.driver.behavior.handler.codec.MessageDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.MessageEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.ReadByteArrayBytesDecoder;
@@ -164,8 +163,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(GenerateConfigurationVisitor.class);
 
-    private static final MaskingDecoder DEFAULT_READ_UNMASKER = new DefaultReadUnmasker();
-
     private final ChannelAddressFactory addressFactory;
     private final BootstrapFactory bootstrapFactory;
 
@@ -173,8 +170,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         private final ConcurrentMap<String, Barrier> barriersByName;
         private Configuration configuration;
 
-        // the read unmasker is reset per stream
-        private MaskingDecoder readUnmasker;
+        // the read / write maskers are reset per stream
+        private Masker readUnmasker;
+        private Masker writeMasker;
 
         /* The pipelineAsMap is built by each node that is visited. */
         private Map<String, ChannelHandler> pipelineAsMap;
@@ -208,20 +206,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 return pipeline;
             }
         }
-    }
-
-    private static final class DefaultReadUnmasker extends MaskingDecoder {
-
-        @Override
-        public ChannelBuffer applyMask(ChannelBuffer buffer) throws Exception {
-            return buffer;
-        }
-
-        @Override
-        public ChannelBuffer undoMask(ChannelBuffer buffer) throws Exception {
-            return buffer;
-        }
-
     }
 
     public GenerateConfigurationVisitor(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory) {
@@ -283,7 +267,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstAcceptableNode acceptedNode, State state) throws Exception {
 
         // masking is a no-op by default for each stream
-        state.readUnmasker = DEFAULT_READ_UNMASKER;
+        state.readUnmasker = Masker.IDENTITY_MASKER;
+        state.writeMasker = Masker.IDENTITY_MASKER;
         state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
 
         for (AstStreamableNode streamable : acceptedNode.getStreamables()) {
@@ -306,7 +291,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         Map<String, ChannelHandler> savedPipelineAsMap = state.pipelineAsMap;
 
         // masking is a no-op by default for each stream
-        state.readUnmasker = DEFAULT_READ_UNMASKER;
+        state.readUnmasker = Masker.IDENTITY_MASKER;
+        state.writeMasker = Masker.IDENTITY_MASKER;
 
         URI acceptURI = acceptNode.getLocation();
 
@@ -364,7 +350,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         URI connectURI = connectNode.getLocation();
         // masking is a no-op by default for each stream
-        state.readUnmasker = DEFAULT_READ_UNMASKER;
+        state.readUnmasker = Masker.IDENTITY_MASKER;
+        state.writeMasker = Masker.IDENTITY_MASKER;
 
         Map<String, Object> connectOptions = connectNode.getOptions();
 
@@ -501,7 +488,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         for (AstValue val : node.getValues()) {
             messageEncoders.add(val.accept(new GenerateWriteEncoderVisitor(), state.configuration));
         }
-        WriteHandler handler = new WriteHandler(messageEncoders);
+        WriteHandler handler = new WriteHandler(messageEncoders, state.writeMasker);
         handler.setRegionInfo(node.getRegionInfo());
         String handlerName = String.format("write#%d", state.pipelineAsMap.size() + 1);
         state.pipelineAsMap.put(handlerName, handler);
@@ -1072,60 +1059,65 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         AstValue optionValue = node.getOptionValue();
 
         assert "mask".equals(optionName);
-        state.readUnmasker = optionValue.accept(new GenerateReadMaskOptionValueVisitor(), state);
+        state.readUnmasker = optionValue.accept(new GenerateMaskOptionValueVisitor(), state);
 
         return state.configuration;
     }
 
-    private static final class GenerateReadMaskOptionValueVisitor implements AstValue.Visitor<MaskingDecoder, State> {
+    @Override
+    public Configuration visit(AstWriteOptionNode node, State state) throws Exception {
+
+        String optionName = node.getOptionName();
+        AstValue optionValue = node.getOptionValue();
+
+        assert "mask".equals(optionName);
+        state.writeMasker = optionValue.accept(new GenerateMaskOptionValueVisitor(), state);
+
+        return state.configuration;
+    }
+
+    private static final class GenerateMaskOptionValueVisitor implements AstValue.Visitor<Masker, State> {
 
         @Override
-        public MaskingDecoder visit(AstExpressionValue value, State state) throws Exception {
+        public Masker visit(AstExpressionValue value, State state) throws Exception {
 
             ValueExpression expression = value.getValue();
             ExpressionContext environment = state.configuration.getExpressionContext();
 
-            return MaskingDecoders.newMaskingDecoder(expression, environment);
+            return Maskers.newMasker(expression, environment);
         }
 
         @Override
-        public MaskingDecoder visit(AstLiteralTextValue value, State state) throws Exception {
+        public Masker visit(AstLiteralTextValue value, State state) throws Exception {
 
             String literalText = value.getValue();
             byte[] literalTextAsBytes = literalText.getBytes(UTF_8);
 
             for (int i = 0; i < literalTextAsBytes.length; i++) {
                 if (literalTextAsBytes[i] != 0x00) {
-                    return MaskingDecoders.newMaskingDecoder(literalTextAsBytes);
+                    return Maskers.newMasker(literalTextAsBytes);
                 }
             }
 
             // no need to unmask for all-zeros masking key
-            return GenerateConfigurationVisitor.DEFAULT_READ_UNMASKER;
+            return Masker.IDENTITY_MASKER;
         }
 
         @Override
-        public MaskingDecoder visit(AstLiteralBytesValue value, State state) throws Exception {
+        public Masker visit(AstLiteralBytesValue value, State state) throws Exception {
 
             byte[] literalBytes = value.getValue();
 
             for (int i = 0; i < literalBytes.length; i++) {
                 if (literalBytes[i] != 0x00) {
-                    return MaskingDecoders.newMaskingDecoder(literalBytes);
+                    return Maskers.newMasker(literalBytes);
                 }
             }
 
             // no need to unmask for all-zeros masking key
-            return GenerateConfigurationVisitor.DEFAULT_READ_UNMASKER;
+            return Masker.IDENTITY_MASKER;
         }
 
-    }
-
-
-    @Override
-    public Configuration visit(AstWriteOptionNode node, State parameter) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }
