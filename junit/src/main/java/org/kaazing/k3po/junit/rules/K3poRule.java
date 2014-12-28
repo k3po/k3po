@@ -32,10 +32,10 @@ import org.junit.rules.Verifier;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runners.model.Statement;
-import org.kaazing.k3po.junit.annotation.Robotic;
+import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.net.URLFactory;
 
-public final class RobotRule extends Verifier {
+public class K3poRule extends Verifier {
 
     /*
      * For some reason earlier versions of Junit will cause tests to either hang
@@ -63,20 +63,20 @@ public final class RobotRule extends Verifier {
         }
     }
 
-    private final RoboticLatch latch;
+    private final Latch latch;
     private String scriptRoot;
     private URL controlURL;
 
-    public RobotRule() {
-        latch = new RoboticLatch();
+    public K3poRule() {
+        latch = new Latch();
     }
 
-    public RobotRule setScriptRoot(String scriptRoot) {
+    public K3poRule setScriptRoot(String scriptRoot) {
         this.scriptRoot = scriptRoot;
         return this;
     }
 
-    public RobotRule setControlURI(URI controlURI) {
+    public K3poRule setControlURI(URI controlURI) {
         this.controlURL = createURL(controlURI.toString());
         return this;
     }
@@ -84,8 +84,10 @@ public final class RobotRule extends Verifier {
     @Override
     public Statement apply(Statement statement, final Description description) {
 
-        Robotic note = description.getAnnotation(Robotic.class);
-        if (note != null) {
+        Specification specification = description.getAnnotation(Specification.class);
+        String[] scripts = (specification != null) ? specification.value() : null;
+
+        if (scripts != null) {
             // decorate with Robotic behavior only if @Robotic annotation is present
             String packagePath = this.scriptRoot;
             if (packagePath == null) {
@@ -95,7 +97,6 @@ public final class RobotRule extends Verifier {
             }
 
             // script is a required attribute on @Robotic
-            String[] scripts = note.value();
             List<String> scriptNames = new LinkedList<>();
             for (int i = 0; i < scripts.length; i++) {
                 // strict compatibility (relax to support fully qualified paths later)
@@ -113,15 +114,15 @@ public final class RobotRule extends Verifier {
                 controlURL = createURL("tcp://localhost:11642");
             }
 
-            statement = new RoboticStatement(statement, controlURL, scriptNames, latch);
+            statement = new SpecificationStatement(statement, controlURL, scriptNames, latch);
         }
 
         return super.apply(statement, description);
     }
 
     public void join() throws Exception {
-        // script should already be prepared before @Robotic test can execute
-        assertTrue("Did you call join() from outside @Robotic test?", latch.isPrepared());
+        // script should already be prepared before annotated test can execute
+        assertTrue(format("Did you call join() from outside @%s test?", Specification.class.getSimpleName()), latch.isPrepared());
 
         // notify script to start
         latch.notifyStartable();

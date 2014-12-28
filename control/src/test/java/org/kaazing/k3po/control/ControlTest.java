@@ -40,7 +40,7 @@ import org.jmock.lib.legacy.ClassImposteriser;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.kaazing.k3po.control.RobotControl;
+import org.kaazing.k3po.control.Control;
 import org.kaazing.k3po.control.command.AbortCommand;
 import org.kaazing.k3po.control.command.PrepareCommand;
 import org.kaazing.k3po.control.command.StartCommand;
@@ -51,11 +51,11 @@ import org.kaazing.k3po.control.event.PreparedEvent;
 import org.kaazing.k3po.control.event.StartedEvent;
 
 // TODO: convert to RobotControlIT using RobotRule (shaded, specific version) with robotic.control scripts
-public class RobotControlTest {
+public class ControlTest {
 
     private static final Charset UTF_8 = Charset.forName("UTF-8");
 
-    private RobotControl control;
+    private Control control;
 
     @Rule
     public JUnitRuleMockery mockery = new JUnitRuleMockery() {
@@ -72,7 +72,7 @@ public class RobotControlTest {
     public void setupControl() throws Exception {
         input = mockery.mock(InputStream.class);
         output = mockery.mock(OutputStream.class);
-        control = new RobotControl(new URL(null, "test://internal", new URLStreamHandler() {
+        control = new Control(new URL(null, "test://internal", new URLStreamHandler() {
             @Override
             protected URLConnection openConnection(URL location) throws IOException {
                 return new URLConnection(location) {

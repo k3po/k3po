@@ -23,13 +23,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.kaazing.k3po.examples.ListedEventClient;
 import org.kaazing.k3po.examples.ListedEventClientBuilder;
-import org.kaazing.k3po.junit.annotation.Robotic;
-import org.kaazing.k3po.junit.rules.RobotRule;
+import org.kaazing.k3po.junit.annotation.Specification;
+import org.kaazing.k3po.junit.rules.K3poRule;
 
 public class TcpIT {
 
     @Rule
-    public RobotRule robot = new RobotRule();
+    public K3poRule k3po = new K3poRule();
 
     private ListedEventClient helloWorldClient = new ListedEventClientBuilder()
                 .connect("localhost", 8001)
@@ -39,9 +39,9 @@ public class TcpIT {
             .done();
 
     @Test
-    @Robotic("helloWorld")
+    @Specification("helloWorld")
     public void testHelloWorld() throws Exception {
         helloWorldClient.run();
-        robot.join();
+        k3po.join();
     }
 }
