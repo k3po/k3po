@@ -81,11 +81,11 @@ final class SpecificationStatement extends Statement {
 
                     try {
                         // wait at most 5sec for the observed script (due to the abort case)
-                        // should take less than a second for the Robot to complete
+                        // should take less than a second for K3PO to complete
                         ScriptPair scripts = scriptFuture.get(5, SECONDS);
 
                         try {
-                            assertEquals("Robotic behavior did not match", scripts.getExpectedScript(), scripts.getObservedScript());
+                            assertEquals("Specified behavior did not match", scripts.getExpectedScript(), scripts.getObservedScript());
                             // Throw the original exception if we are equal
                             throw cause;
                         } catch (ComparisonFailure f) {
@@ -106,12 +106,12 @@ final class SpecificationStatement extends Statement {
             }
 
             // note: statement MUST call join() to ensure wrapped Rule(s) do not complete early
-            // and to allow Robot script to make progress
+            // and to allow Specification script(s) to make progress
             assertTrue(format("Did you call %s.join()?", K3poRule.class.getSimpleName()), latch.isStartable());
 
             ScriptPair scripts = scriptFuture.get();
 
-            assertEquals("Robotic behavior did not match expected", scripts.getExpectedScript(), scripts.getObservedScript());
+            assertEquals("Specified behavior did not match", scripts.getExpectedScript(), scripts.getObservedScript());
         } finally {
             // clean up the task if it is still running
             scriptFuture.cancel(true);
