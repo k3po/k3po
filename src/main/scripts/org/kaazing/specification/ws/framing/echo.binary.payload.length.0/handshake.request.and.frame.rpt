@@ -1,4 +1,7 @@
-connect http://localhost:8080/path?query
+property key ${ws:handshakeKey()}
+property writeMask ${ws:randomBytes(4)}
+
+connect http://localhost:8080/echo
 connected
 
 write method "GET"
@@ -6,13 +9,15 @@ write version "HTTP/1.1"
 write header host
 write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
-write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
+write header "Sec-WebSocket-Key" ${key}
 write header "Sec-WebSocket-Version" "13"
 
 read status "101" /.+/
 read version "HTTP/1.1"
 read header "Upgrade" /(?i:websocket)/
 read header "Connection" /(?i:Upgrade)/
-read header "Sec-WebSocket-Accept" "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
+read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
 
-# connection established
+write [0x82 0x80] ${writeMask}
+
+read [0x82 0x00]

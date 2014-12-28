@@ -1,4 +1,4 @@
-accept http://localhost:8080/path?query
+accept http://localhost:8080/echo
 accepted
 connected
 
@@ -15,6 +15,10 @@ write version "HTTP/1.1"
 write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
-write flush
 
-# connection established
+read [0x82 0xfe 0x00 0x80] ([0..4] :readMask)
+read option mask ${readMask}
+read ([0..128] :server128)
+read option mask [0x00 0x00 0x00 0x00]
+
+write [0x82 0x7e 0x00 0x80] ${server128}

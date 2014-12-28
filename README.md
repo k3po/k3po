@@ -3,10 +3,10 @@ This project uses [K3PO Protocol Droid](http://github.com/kaazing/k3po) to provi
 
 The tests fall into the following categories:
  * Opening Handshake
- * Data Framing
+ * Base Framing
  * Masking
  * Fragmentation
  * Control Frames (Ping, Pong)
- * Payload Frames (Text, Binary)
- * Reserved Bits
+ * Data Frames (Text, Binary)
+ * Extensibility
  * Closing Handshake
