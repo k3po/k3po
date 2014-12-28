@@ -58,7 +58,7 @@ public final class Functions {
     @Function
     public static byte[] randomBytesUTF8(int length) {
         byte[] bytes = new byte[length];
-        for (int offset = 0; offset < bytes.length; ) {
+        for (int offset = 0; offset < bytes.length;) {
             int remaining = bytes.length - offset;
             int width = Math.min(RANDOM.nextInt(5) + 1, remaining);
 
