@@ -916,16 +916,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
     }
 
-    // Not needed as of now as very similar to StreamableNodeVisitor except for unsupported features
-    // private static class AstServerStreamableNodeVisitor extends AstNodeVisitor<AstStreamableNode> {
-    //
-    // public AstServerStreamableNodeVisitor(ExpressionFactory elFactory,
-    // ExpressionContext elContext) {
-    // super(elFactory, elContext);
-    // }
-    //
-    // }
-
     private static class AstOptionNodeVisitor extends AstNodeVisitor<AstOptionNode> {
 
         public AstOptionNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {

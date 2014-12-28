@@ -20,6 +20,8 @@
 package org.kaazing.k3po.driver.behavior.handler.event;
 
 import static java.lang.System.currentTimeMillis;
+import static java.util.Arrays.asList;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.channel.ChannelState.BOUND;
 import static org.jboss.netty.channel.ChannelState.INTEREST_OPS;
@@ -38,10 +40,12 @@ import static org.jboss.netty.handler.timeout.IdleState.ALL_IDLE;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.kaazing.k3po.driver.behavior.handler.codec.Maskers.newMasker;
 import static org.kaazing.k3po.lang.RegionInfo.newSequential;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
@@ -65,18 +69,24 @@ import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.jboss.netty.channel.local.LocalAddress;
 import org.jboss.netty.handler.timeout.DefaultIdleStateEvent;
 import org.jboss.netty.handler.timeout.IdleStateEvent;
+import org.jmock.lib.concurrent.Synchroniser;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.Ignore;
+import org.junit.rules.DisableOnDebug;
+import org.junit.rules.TestRule;
+import org.junit.rules.Timeout;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.kaazing.k3po.driver.behavior.handler.TestChannelEvent;
-import org.kaazing.k3po.driver.behavior.handler.codec.MaskingDecoder;
+import org.kaazing.k3po.driver.behavior.handler.codec.Masker;
 import org.kaazing.k3po.driver.behavior.handler.codec.MessageDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.ReadByteArrayBytesDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.ReadExactBytesDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.ReadExactTextDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.ReadExpressionDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.ReadVariableLengthBytesDecoder;
-import org.kaazing.k3po.driver.behavior.handler.event.ReadHandler;
 import org.kaazing.k3po.driver.behavior.handler.prepare.PreparationEvent;
 import org.kaazing.k3po.driver.jmock.Expectations;
 import org.kaazing.k3po.driver.jmock.Mockery;
@@ -84,28 +94,48 @@ import org.kaazing.k3po.lang.RegionInfo;
 import org.kaazing.k3po.lang.el.ExpressionContext;
 import org.kaazing.k3po.lang.el.ExpressionFactoryUtils;
 
+@RunWith(Parameterized.class)
 public class ReadHandlerTest {
+
+    @Parameters
+    public static Iterable<byte[]> maskingKeys() {
+        byte[] identityKey = new byte[] { 0x00, 0x00, 0x00, 0x00 };
+        byte[] maskingKey = new byte[4];
+        new Random().nextBytes(maskingKey);
+
+        return asList(identityKey, maskingKey);
+    }
+
+    @Rule
+    public TestRule timeout = new DisableOnDebug(new Timeout(1, SECONDS));
+
+    private final byte[] maskingKey;
 
     private Mockery context;
     private ChannelUpstreamHandler upstream;
     private ChannelPipeline pipeline;
     private ChannelFactory channelFactory;
-    private ReadHandler handler;
     private boolean blockChannelOpen = true;
-    private ExpressionFactory expressionFactory;
     private ExpressionContext environment;
+    private ReadHandler handler;
+    private Masker masker;
+
+    public ReadHandlerTest(byte[] maskingKey) {
+        this.maskingKey = maskingKey;
+    }
 
     @Before
     public void setUp() throws Exception {
         context = new Mockery() {
             {
                 setThrowFirstErrorOnAssertIsSatisfied(true);
+                setThreadingPolicy(new Synchroniser());
             }
         };
 
         upstream = context.mock(ChannelUpstreamHandler.class);
 
-        expressionFactory = ExpressionFactoryUtils.newExpressionFactory();
+        ExpressionFactory expressionFactory = ExpressionFactoryUtils.newExpressionFactory();
         environment = new ExpressionContext();
 
         List<MessageDecoder> decoders = new ArrayList<MessageDecoder>();
@@ -122,19 +152,8 @@ public class ReadHandlerTest {
         decoders.add(new ReadVariableLengthBytesDecoder(regionInfo, expression, environment));
         decoders.add(new ReadExactTextDecoder(regionInfo, "The last decoder", UTF_8));
 
-        handler = new ReadHandler(decoders, new MaskingDecoder() {
-            
-            @Override
-            public ChannelBuffer undoMask(ChannelBuffer buffer) throws Exception {
-                return buffer;
-            }
-            
-            @Override
-            public ChannelBuffer applyMask(ChannelBuffer buffer) throws Exception {
-                return buffer;
-            }
-        });
-        handler.setRegionInfo(newSequential(0, 0));
+        masker = newMasker(maskingKey);
+        handler = new ReadHandler(decoders, newMasker(maskingKey));
 
         pipeline = pipeline(new SimpleChannelHandler() {
             @Override
@@ -372,26 +391,26 @@ public class ReadHandlerTest {
         Channel channel = channelFactory.newChannel(pipeline);
         ChannelFuture handlerFuture = handler.getHandlerFuture();
 
-        fireMessageReceived(channel, copiedBuffer("Hello", UTF_8));
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer("Hello", UTF_8)));
         assertFalse(handlerFuture.isDone());
 
-        fireMessageReceived(channel, copiedBuffer(new byte[] { 0x01, 0x02, 0x03 }));
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer(new byte[] { 0x01, 0x02, 0x03 })));
         assertFalse(handlerFuture.isDone());
 
-        fireMessageReceived(channel, copiedBuffer(new byte[] { 0x01, 0x02, 0x03 }));
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer(new byte[] { 0x01, 0x02, 0x03 })));
         assertFalse(handlerFuture.isDone());
 
         // TODO: Add when Regex's work
-        // fireMessageReceived(channel, copiedBuffer("Hello\n", UTF_8));
+        // fireMessageReceived(channel, masker.applyMask(copiedBuffer("Hello\n", UTF_8)));
         // assertFalse(handlerFuture.isDone());
 
-        fireMessageReceived(channel, copiedBuffer(new byte[] { 0x01, 0x02, 0x03 }));
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer(new byte[] { 0x01, 0x02, 0x03 })));
         assertFalse(handlerFuture.isDone());
 
-        fireMessageReceived(channel, copiedBuffer(new byte[] { 0x01, 0x02, 0x03 }));
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer(new byte[] { 0x01, 0x02, 0x03 })));
         assertFalse(handlerFuture.isDone());
 
-        fireMessageReceived(channel, copiedBuffer("The last decoder", UTF_8));
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer("The last decoder", UTF_8)));
 
         assertTrue(handlerFuture.isSuccess());
 
@@ -422,8 +441,7 @@ public class ReadHandlerTest {
 
         // TODO: Add Regex's when they are working
 
-        fireMessageReceived(channel, copiedBuffer(text, bytes, last));
-
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer(text, bytes, last)));
 
         assertTrue(handlerFuture.isSuccess());
 
@@ -441,7 +459,7 @@ public class ReadHandlerTest {
 
         Channel channel = channelFactory.newChannel(pipeline);
         ChannelFuture handlerFuture = handler.getHandlerFuture();
-        fireMessageReceived(channel, copiedBuffer("Goodbye", UTF_8));
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer("Goodbye", UTF_8)));
 
         assertTrue(handlerFuture.isDone());
         assertFalse(handlerFuture.isSuccess());
@@ -467,21 +485,20 @@ public class ReadHandlerTest {
         Channel channel = channelFactory.newChannel(pipeline);
         ChannelFuture handlerFuture = handler.getHandlerFuture();
 
-        fireMessageReceived(channel, copiedBuffer("Hello", UTF_8));
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer("Hello", UTF_8)));
         assertFalse(handlerFuture.isDone());
 
-        fireMessageReceived(channel, copiedBuffer(new byte[] { 0x01, 0x02, 0x03 }));
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer(new byte[] { 0x01, 0x02, 0x03 })));
         assertFalse(handlerFuture.isDone());
 
-        fireMessageReceived(channel, copiedBuffer(new byte[] { 0x01, 0x02, 0x04 }));
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer(new byte[] { 0x01, 0x02, 0x04 })));
         assertTrue(handlerFuture.isDone());
         assertFalse(handlerFuture.isSuccess());
 
         context.assertIsSatisfied();
     }
 
-    @Ignore("DPW to fix")
-    @Test(timeout = 1000)
+    @Test
     public void shouldConsumeUpstreamMessageEventWithNonMatchingLastDecoderBytes() throws Exception {
 
         context.checking(new Expectations() {
@@ -499,27 +516,27 @@ public class ReadHandlerTest {
         Channel channel = channelFactory.newChannel(pipeline);
         ChannelFuture handlerFuture = handler.getHandlerFuture();
 
-        fireMessageReceived(channel, copiedBuffer("Hello", UTF_8));
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer("Hello", UTF_8)));
         assertFalse(handlerFuture.isDone());
 
-        fireMessageReceived(channel, copiedBuffer(new byte[] { 0x01, 0x02, 0x03 }));
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer(new byte[] { 0x01, 0x02, 0x03 })));
         assertFalse(handlerFuture.isDone());
 
-        fireMessageReceived(channel, copiedBuffer(new byte[] { 0x01, 0x02, 0x03 }));
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer(new byte[] { 0x01, 0x02, 0x03 })));
         assertFalse(handlerFuture.isDone());
 
         // TODO: Add when Regex's work
-        // fireMessageReceived(channel, copiedBuffer("Hello\n", UTF_8));
+        // fireMessageReceived(channel, masker.applyMask(copiedBuffer("Hello\n", UTF_8)));
         // assertFalse(handlerFuture.isDone());
 
-        fireMessageReceived(channel, copiedBuffer(new byte[] { 0x01, 0x02, 0x03 }));
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer(new byte[] { 0x01, 0x02, 0x03 })));
         assertFalse(handlerFuture.isDone());
 
         // Expecting 4 bytes ... only sending three.
-        fireMessageReceived(channel, copiedBuffer(new byte[] { 0x01, 0x02, 0x03 }));
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer(new byte[] { 0x01, 0x02, 0x03 })));
         assertFalse(handlerFuture.isDone());
 
-        fireMessageReceived(channel, copiedBuffer("The first decoder", UTF_8));
+        fireMessageReceived(channel, masker.applyMask(copiedBuffer("The first decoder", UTF_8)));
         assertTrue(handlerFuture.isDone());
         assertFalse(handlerFuture.isSuccess());
 
@@ -529,11 +546,22 @@ public class ReadHandlerTest {
     @Test
     public void shouldPropagateUpstreamMessageEventWhenMatchingBytesLeaveRemainingBytes() throws Exception {
 
+        ChannelBuffer text = copiedBuffer("Hello", UTF_8);
+        ChannelBuffer bytes =
+                copiedBuffer(new byte[] { 0x01, 0x02, 0x03, 0x01, 0x02, 0x03, 0x01, 0x02, 0x03, 0x01, 0x02, 0x03 });
+        ChannelBuffer last = copiedBuffer("The last decoder. But with remaining bytes.", UTF_8);
+        // TODO: Add Regex's when they are working
+        ChannelBuffer buffer = copiedBuffer(text, bytes, last);
+        ChannelBuffer maskedBuffer = masker.applyMask(buffer);
+        final ChannelBuffer maskedRemainingBuffer = copiedBuffer(maskedBuffer);
+        int remainingBytes = copiedBuffer(". But with remaining bytes.", UTF_8).readableBytes();
+        maskedRemainingBuffer.readerIndex(maskedRemainingBuffer.writerIndex() - remainingBytes);
+
         context.checking(new Expectations() {
             {
                 oneOf(upstream).handleUpstream(with(any(ChannelHandlerContext.class)), with(any(PreparationEvent.class)));
                 oneOf(upstream).handleUpstream(with(any(ChannelHandlerContext.class)),
-                        with(message(copiedBuffer(". But with remaining bytes.", UTF_8))));
+                        with(message(maskedRemainingBuffer)));
             }
         });
         environment.getELResolver().setValue(environment, null, "variable", new byte[] { 0x01, 0x02, 0x03 });
@@ -545,14 +573,7 @@ public class ReadHandlerTest {
         Channel channel = channelFactory.newChannel(pipeline);
         ChannelFuture handlerFuture = handler.getHandlerFuture();
 
-        ChannelBuffer text = copiedBuffer("Hello", UTF_8);
-        ChannelBuffer bytes =
-                copiedBuffer(new byte[] { 0x01, 0x02, 0x03, 0x01, 0x02, 0x03, 0x01, 0x02, 0x03, 0x01, 0x02, 0x03 });
-        ChannelBuffer last = copiedBuffer("The last decoder. But with remaining bytes.", UTF_8);
-
-        // TODO: Add Regex's when they are working
-
-        fireMessageReceived(channel, copiedBuffer(text, bytes, last));
+        fireMessageReceived(channel, maskedBuffer);
 
         assertTrue(handlerFuture.isSuccess());
 

@@ -21,7 +21,26 @@ package org.kaazing.k3po.driver.behavior.handler.codec;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-public abstract class MaskingDecoder {
+public abstract class Masker {
+
+    public static final Masker IDENTITY_MASKER = new Masker() {
+
+        @Override
+        public ChannelBuffer applyMask(ChannelBuffer buffer) throws Exception {
+            return buffer;
+        }
+
+        @Override
+        public ChannelBuffer undoMask(ChannelBuffer buffer) throws Exception {
+            return buffer;
+        }
+
+        @Override
+        public String toString() {
+            return "IDENTITY_MASKER";
+        }
+
+    };
 
     public abstract ChannelBuffer applyMask(ChannelBuffer buffer) throws Exception;
 

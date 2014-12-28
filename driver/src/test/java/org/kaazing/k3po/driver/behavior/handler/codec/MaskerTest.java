@@ -19,7 +19,7 @@
 
 package org.kaazing.k3po.driver.behavior.handler.codec;
 
-import static org.kaazing.k3po.driver.behavior.handler.codec.MaskingDecoders.newMaskingDecoder;
+import static org.kaazing.k3po.driver.behavior.handler.codec.Maskers.newMasker;
 import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
 import static org.junit.Assert.assertEquals;
 
@@ -28,14 +28,14 @@ import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.junit.Test;
-import org.kaazing.k3po.driver.behavior.handler.codec.MaskingDecoder;
+import org.kaazing.k3po.driver.behavior.handler.codec.Masker;
 import org.kaazing.k3po.lang.el.ExpressionContext;
 
 
-public class MaskingDecoderTest {
+public class MaskerTest {
     @Test
     public void shouldMaskExactMultipleBuffer() throws Exception {
-        MaskingDecoder decoder = newMaskingDecoder(new byte[] {0x01, 0x02, 0x03, 0x04});
+        Masker decoder = newMasker(new byte[] {0x01, 0x02, 0x03, 0x04});
         ChannelBuffer originalBuf = wrappedBuffer(new byte[] {0x11, 0x12, 0x13, 0x14, 0x21, 0x22, 0x23, 0x24});
         ChannelBuffer maskedBuf = decoder.applyMask(originalBuf);
 
@@ -44,7 +44,7 @@ public class MaskingDecoderTest {
 
     @Test
     public void shouldMaskFragmentedExactMultipleBuffer() throws Exception {
-        MaskingDecoder decoder = newMaskingDecoder(new byte[] {0x01, 0x02, 0x03, 0x04});
+        Masker decoder = newMasker(new byte[] {0x01, 0x02, 0x03, 0x04});
         ChannelBuffer originalBuf1 = wrappedBuffer(new byte[] {0x11, 0x12, 0x13, 0x14});
         ChannelBuffer maskedBuf1 = decoder.applyMask(originalBuf1);
         ChannelBuffer originalBuf2 = wrappedBuffer(new byte[] {0x21, 0x22, 0x23, 0x24});
@@ -56,7 +56,7 @@ public class MaskingDecoderTest {
 
     @Test
     public void shouldMaskFragmentedNonMultipleBuffer() throws Exception {
-        MaskingDecoder decoder = newMaskingDecoder(new byte[] {0x01, 0x02, 0x03, 0x04});
+        Masker decoder = newMasker(new byte[] {0x01, 0x02, 0x03, 0x04});
         ChannelBuffer originalBuf1 = wrappedBuffer(new byte[] {0x11, 0x12, 0x13, 0x14, 0x11});
         ChannelBuffer maskedBuf1 = decoder.applyMask(originalBuf1);
         ChannelBuffer originalBuf2 = wrappedBuffer(new byte[] {0x22, 0x23, 0x24, 0x21});
@@ -72,7 +72,7 @@ public class MaskingDecoderTest {
         ExpressionFactory factory = ExpressionFactory.newInstance();
         ValueExpression expression = factory.createValueExpression(new byte[] {0x01, 0x02, 0x03, 0x04}, byte[].class);
 
-        MaskingDecoder decoder = newMaskingDecoder(expression, environment);
+        Masker decoder = newMasker(expression, environment);
         ChannelBuffer originalBuf = wrappedBuffer(new byte[] {0x11, 0x12, 0x13, 0x14, 0x21, 0x22, 0x23, 0x24});
         ChannelBuffer maskedBuf = decoder.applyMask(originalBuf);
 
@@ -85,7 +85,7 @@ public class MaskingDecoderTest {
         ExpressionFactory factory = ExpressionFactory.newInstance();
         ValueExpression expression = factory.createValueExpression(new byte[] {0x01, 0x02, 0x03, 0x04}, byte[].class);
 
-        MaskingDecoder decoder = newMaskingDecoder(expression, environment);
+        Masker decoder = newMasker(expression, environment);
         ChannelBuffer originalBuf1 = wrappedBuffer(new byte[] {0x11, 0x12, 0x13, 0x14});
         ChannelBuffer maskedBuf1 = decoder.applyMask(originalBuf1);
         ChannelBuffer originalBuf2 = wrappedBuffer(new byte[] {0x21, 0x22, 0x23, 0x24});
@@ -101,7 +101,7 @@ public class MaskingDecoderTest {
         ExpressionFactory factory = ExpressionFactory.newInstance();
         ValueExpression expression = factory.createValueExpression(new byte[] {0x01, 0x02, 0x03, 0x04}, byte[].class);
 
-        MaskingDecoder decoder = newMaskingDecoder(expression, environment);
+        Masker decoder = newMasker(expression, environment);
         ChannelBuffer originalBuf1 = wrappedBuffer(new byte[] {0x11, 0x12, 0x13, 0x14, 0x11});
         ChannelBuffer maskedBuf1 = decoder.applyMask(originalBuf1);
         ChannelBuffer originalBuf2 = wrappedBuffer(new byte[] {0x22, 0x23, 0x24, 0x21});
