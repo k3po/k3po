@@ -38,8 +38,8 @@ import org.kaazing.net.URLFactory;
 public class K3poRule extends Verifier {
 
     /*
-     * For some reason earlier versions of Junit will cause tests to either hang
-     * or succeed incorrectly without ever talking to the Robot. I'm not sure
+     * For some reason earlier versions of JUnit will cause tests to either hang
+     * or succeed incorrectly without ever talking to the K3PO. I'm not sure
      * why but the apply method does not seem to be called. So we need to
      * require version 4.10 (I know 4.7 has the problem ... not sure about 4.8
      * and 4.9 but 4.10 works).
@@ -58,7 +58,7 @@ public class K3poRule extends Verifier {
         }
         if (versionsInt[0] < 5) {
             if (versionsInt.length == 1 || versionsInt[0] < 4 || versionsInt[1] < 10) {
-                throw new AssertionError("Robot Junit library requires at least version 4.10. Found version " + version);
+                throw new AssertionError("JUnit library 4.10+ required. Found version " + version);
             }
         }
     }
@@ -88,7 +88,7 @@ public class K3poRule extends Verifier {
         String[] scripts = (specification != null) ? specification.value() : null;
 
         if (scripts != null) {
-            // decorate with Robotic behavior only if @Robotic annotation is present
+            // decorate with K3PO behavior only if @Specification annotation is present
             String packagePath = this.scriptRoot;
             if (packagePath == null) {
                 Class<?> testClass = description.getTestClass();
@@ -96,7 +96,6 @@ public class K3poRule extends Verifier {
                 packagePath = packageName.replaceAll("\\.", "/");
             }
 
-            // script is a required attribute on @Robotic
             List<String> scriptNames = new LinkedList<>();
             for (int i = 0; i < scripts.length; i++) {
                 // strict compatibility (relax to support fully qualified paths later)
