@@ -41,8 +41,19 @@ public class ReadExactTextDecoder extends MessageDecoder {
         this.charset = charset;
     }
 
+    protected Object decodeBufferLast(ChannelBuffer buffer) throws Exception {
+
+        if (buffer.readableBytes() < expected.readableBytes()) {
+            String observedText = buffer.toString(charset);
+            throw new ScriptProgressException(getRegionInfo(), format("\"%s\"", observedText));
+        }
+
+        return super.decodeBufferLast(buffer);
+    }
+
     @Override
     protected Object decodeBuffer(ChannelBuffer buffer) throws Exception {
+
         if (buffer.readableBytes() < expected.readableBytes()) {
             // TODO: compare readable bytes aggressively to fail fast?
             return null;
