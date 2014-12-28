@@ -22,6 +22,7 @@ package org.kaazing.k3po.driver.behavior.handler.codec;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.kaazing.k3po.lang.RegionInfo;
 import org.kaazing.k3po.lang.el.ExpressionContext;
+import org.kaazing.k3po.lang.parser.ScriptParseException;
 
 public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
 
@@ -45,6 +46,22 @@ public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
 
     public int getLength() {
         return length;
+    }
+
+    @Override
+    protected Object decodeBufferLast(ChannelBuffer buffer) throws Exception {
+
+        if (buffer.readableBytes() < length) {
+            throw new ScriptParseException("Not enough bytes");
+        }
+
+        if (captureName == null) {
+            buffer.readSlice(length);
+        } else {
+            T value = readBuffer(buffer);
+            environment.getELResolver().setValue(environment, null, captureName, value);
+        }
+        return buffer;
     }
 
     @Override
