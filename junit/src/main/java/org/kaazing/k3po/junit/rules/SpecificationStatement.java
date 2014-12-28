@@ -32,14 +32,14 @@ import java.util.concurrent.FutureTask;
 import org.junit.ComparisonFailure;
 import org.junit.runners.model.Statement;
 
-final class RoboticStatement extends Statement {
+final class SpecificationStatement extends Statement {
 
     private final Statement statement;
     private final URL controlURL;
     private final List<String> scriptNames;
-    private final RoboticLatch latch;
+    private final Latch latch;
 
-    RoboticStatement(Statement statement, URL controlURL, List<String> scriptNames, RoboticLatch latch) {
+    SpecificationStatement(Statement statement, URL controlURL, List<String> scriptNames, Latch latch) {
         this.statement = statement;
         this.controlURL = controlURL;
         this.scriptNames = scriptNames;
@@ -107,7 +107,7 @@ final class RoboticStatement extends Statement {
 
             // note: statement MUST call join() to ensure wrapped Rule(s) do not complete early
             // and to allow Robot script to make progress
-            assertTrue(format("Did you call %s.join()?", RobotRule.class.getSimpleName()), latch.isStartable());
+            assertTrue(format("Did you call %s.join()?", K3poRule.class.getSimpleName()), latch.isStartable());
 
             ScriptPair scripts = scriptFuture.get();
 

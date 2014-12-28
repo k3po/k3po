@@ -21,7 +21,7 @@ package org.kaazing.k3po.junit.rules;
 
 import java.util.concurrent.CountDownLatch;
 
-class RoboticLatch {
+class Latch {
 
     static enum State { INIT, PREPARED, STARTABLE, FINISHED }
 
@@ -32,7 +32,7 @@ class RoboticLatch {
     private final CountDownLatch startable;
     private final CountDownLatch finished;
 
-    RoboticLatch() {
+    Latch() {
         state = State.INIT;
 
         prepared = new CountDownLatch(1);

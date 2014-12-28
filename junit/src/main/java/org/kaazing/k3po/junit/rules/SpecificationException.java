@@ -19,19 +19,19 @@
 
 package org.kaazing.k3po.junit.rules;
 
-class RoboticException extends RuntimeException {
+class SpecificationException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    public RoboticException() {
+    public SpecificationException() {
         super();
     }
 
-    public RoboticException(String msg) {
+    public SpecificationException(String msg) {
         super(msg);
     }
 
-    public RoboticException(Throwable cause) {
+    public SpecificationException(Throwable cause) {
         super(cause);
     }
 }

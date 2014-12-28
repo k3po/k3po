@@ -52,7 +52,7 @@ import org.kaazing.k3po.control.event.FinishedEvent;
 import org.kaazing.k3po.control.event.PreparedEvent;
 import org.kaazing.k3po.control.event.StartedEvent;
 
-public final class RobotControl {
+public final class Control {
 
     private static final String FINISHED_EVENT = "FINISHED";
     private static final String ERROR_EVENT = "ERROR";
@@ -66,7 +66,7 @@ public final class RobotControl {
     private URLConnection connection;
     BufferedReader textIn;
 
-    public RobotControl(URL location) {
+    public Control(URL location) {
         this.location = location;
     }
 

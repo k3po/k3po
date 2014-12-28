@@ -25,10 +25,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Robotic annotation names the test scripts to execute.
+ * {@code Specification} annotation names the test scripts to execute.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })
-public @interface Robotic {
+public @interface Specification {
     String[] value() default { };
 }

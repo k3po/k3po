@@ -28,7 +28,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.kaazing.k3po.control.RobotControl;
+import org.kaazing.k3po.control.Control;
 import org.kaazing.k3po.control.command.AbortCommand;
 import org.kaazing.k3po.control.command.PrepareCommand;
 import org.kaazing.k3po.control.command.StartCommand;
@@ -39,13 +39,13 @@ import org.kaazing.k3po.control.event.PreparedEvent;
 
 final class ScriptRunner implements Callable<ScriptPair> {
 
-    private final RobotControl controller;
+    private final Control controller;
     private final List<String> names;
-    private final RoboticLatch latch;
+    private final Latch latch;
 
     private volatile boolean abortScheduled;
 
-    ScriptRunner(URL controlURL, List<String> names, RoboticLatch latch) throws Exception {
+    ScriptRunner(URL controlURL, List<String> names, Latch latch) throws Exception {
 
         if (names == null) {
             throw new NullPointerException("names");
@@ -55,7 +55,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
             throw new NullPointerException("latch");
         }
 
-        this.controller = new RobotControl(controlURL);
+        this.controller = new Control(controlURL);
         this.names = names;
         this.latch = latch;
     }
@@ -114,7 +114,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
                         break;
                     case ERROR:
                         ErrorEvent error = (ErrorEvent) event;
-                        throw new RoboticException(format("%s:%s", error.getSummary(), error.getDescription()));
+                        throw new SpecificationException(format("%s:%s", error.getSummary(), error.getDescription()));
                     case FINISHED:
                         FinishedEvent finished = (FinishedEvent) event;
                         // note: observed script is possibly incomplete
@@ -136,7 +136,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
                 }
             }
         } catch (ConnectException e) {
-            Exception exception = new Exception("Failed to connect. Is the Robot running?", e);
+            Exception exception = new Exception("Failed to connect. Is K3PO ready?", e);
             exception.fillInStackTrace();
             latch.notifyException(exception);
             throw e;
