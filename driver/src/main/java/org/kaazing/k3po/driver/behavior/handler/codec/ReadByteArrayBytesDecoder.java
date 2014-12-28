@@ -40,7 +40,7 @@ public class ReadByteArrayBytesDecoder extends ReadFixedLengthBytesDecoder<byte[
     public byte[] readBuffer(final ChannelBuffer buffer) {
         int len = getLength();
         byte[] matched = new byte[len];
-        buffer.readBytes(matched, 0, len);
+        buffer.readBytes(matched);
         return matched;
     }
 
