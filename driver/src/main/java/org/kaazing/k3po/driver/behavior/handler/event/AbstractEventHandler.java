@@ -103,8 +103,9 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
         } else {
             ChannelFuture pipelineFuture = getPipelineFuture();
             if (!pipelineFuture.isSuccess()) {
-                handlerFuture.setFailure(new ChannelException("Expected event arrived too early").fillInStackTrace());
-
+                // expected event arrived too early
+                Exception exception = new ScriptProgressException(getRegionInfo(), format("%s", this));
+                handlerFuture.setFailure(exception.fillInStackTrace());
             } else {
                 super.handleUpstream1(ctx, evt);
             }

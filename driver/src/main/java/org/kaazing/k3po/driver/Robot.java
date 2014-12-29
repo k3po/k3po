@@ -19,6 +19,7 @@
 
 package org.kaazing.k3po.driver;
 
+import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.jboss.netty.channel.Channels.pipelineFactory;
@@ -497,9 +498,17 @@ public class Robot {
 
         @Override
         public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-            // close channel and avoid warning logged by default exceptionCaught implementation
-            Channel channel = ctx.getChannel();
-            channel.close();
+            // avoid stack overflow when exception happens on close
+            if (TRUE != ctx.getAttachment()) {
+                ctx.setAttachment(TRUE);
+                // close channel and avoid warning logged by default exceptionCaught implementation
+                Channel channel = ctx.getChannel();
+                channel.close();
+            }
+            else {
+                // log exception during close
+                super.exceptionCaught(ctx, e);
+            }
         }
     }
 
