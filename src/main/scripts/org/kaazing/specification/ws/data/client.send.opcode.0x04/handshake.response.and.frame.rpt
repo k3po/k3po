@@ -16,9 +16,6 @@ write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
 
-write [0x8c 0x00]
+read [0x84 0x80] [0..4]
 
-read [0x88 0x82] ([0..4] :readMask)
-read option mask ${readMask}
-read [0x03 0xea]
-read option mask [0x00 0x00 0x00 0x00]
+write [0x88 0x02 0x03 0xea]

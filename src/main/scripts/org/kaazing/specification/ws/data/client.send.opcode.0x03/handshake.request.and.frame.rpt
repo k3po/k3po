@@ -18,6 +18,6 @@ read header "Upgrade" /(?i:websocket)/
 read header "Connection" /(?i:Upgrade)/
 read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
 
-write [0x8e 0x80] ${writeMask}
+write [0x83 0x80] ${writeMask}
 
 read [0x88 0x02 0x03 0xea]

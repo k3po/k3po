@@ -39,12 +39,86 @@ public class DataFramingIT {
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
 
-//    @Test
-//    @Specification({
-//        "send.continuation.payload.length.125.not.fragmented/handshake.request.and.frame",
-//        "send.continuation.payload.length.125.not.fragmented/handshake.response.and.frame" })
-//    public void shouldFailWebSocketConnectionWhenSendContinuationFrameWithPayloadNotFragmented() throws Exception {
-//        k3po.join();
-//    }
+    // TODO: invalid UTF-8 in text frame (opcode 0x01) RFC-6455, section 8.1
+
+    @Test
+    @Specification({
+        "client.send.opcode.0x03/handshake.request.and.frame",
+        "client.send.opcode.0x03/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenClientSendOpcode3Frame() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "client.send.opcode.0x04/handshake.request.and.frame",
+        "client.send.opcode.0x04/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenClientSendOpcode4Frame() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "client.send.opcode.0x05/handshake.request.and.frame",
+        "client.send.opcode.0x05/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenClientSendOpcode5Frame() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "client.send.opcode.0x06/handshake.request.and.frame",
+        "client.send.opcode.0x06/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenClientSendOpcode6Frame() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "client.send.opcode.0x07/handshake.request.and.frame",
+        "client.send.opcode.0x07/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenClientSendOpcode7Frame() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.opcode.0x03/handshake.request.and.frame",
+        "server.send.opcode.0x03/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenServerSendOpcode3Frame() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.opcode.0x04/handshake.request.and.frame",
+        "server.send.opcode.0x04/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenServerSendOpcode4Frame() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.opcode.0x05/handshake.request.and.frame",
+        "server.send.opcode.0x05/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenServerSendOpcode5Frame() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.opcode.0x06/handshake.request.and.frame",
+        "server.send.opcode.0x06/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenServerSendOpcode6Frame() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.opcode.0x07/handshake.request.and.frame",
+        "server.send.opcode.0x07/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenServerSendOpcode7Frame() throws Exception {
+        k3po.join();
+    }
 
 }

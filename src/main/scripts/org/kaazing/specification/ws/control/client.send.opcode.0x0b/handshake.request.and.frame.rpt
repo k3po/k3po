@@ -1,6 +1,5 @@
 property key ${ws:handshakeKey()}
 property writeMask ${ws:randomBytes(4)}
-property client124 ${ws:randomBytesUTF8(124)}
 
 connect http://localhost:8080/echo
 connected
