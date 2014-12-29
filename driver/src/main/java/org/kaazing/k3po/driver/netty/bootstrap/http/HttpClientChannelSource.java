@@ -19,6 +19,7 @@
 
 package org.kaazing.k3po.driver.netty.bootstrap.http;
 
+import static java.lang.String.format;
 import static org.jboss.netty.channel.Channels.fireChannelClosed;
 import static org.jboss.netty.channel.Channels.fireChannelDisconnected;
 import static org.jboss.netty.channel.Channels.fireChannelInterestChanged;
@@ -31,11 +32,13 @@ import static org.kaazing.k3po.driver.netty.channel.Channels.fireInputShutdown;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelException;
+import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
 import org.jboss.netty.handler.codec.http.HttpResponse;
@@ -62,13 +65,18 @@ public class HttpClientChannelSource extends HttpChannelHandler {
         if (httpResponse.getStatus().getCode() == SWITCHING_PROTOCOLS.getCode()) {
             Channel transport = ctx.getChannel();
             ChannelPipeline pipeline = transport.getPipeline();
-            pipeline.remove(HttpResponseDecoder.class);
             pipeline.remove(HttpRequestEncoder.class);
+
             boolean readable = httpClientChannel.isReadable();
             if (!readable) {
                 httpClientChannel.setReadable(true);
                 fireChannelInterestChanged(httpClientChannel);
             }
+
+            // propagate any remaining bytes out of replaying decoder (after channel is marked as readable)
+            ChannelHandlerContext httpDecoderCtx = pipeline.getContext(HttpResponseDecoder.class);
+            HttpResponseDecoder httpDecoder = (HttpResponseDecoder) httpDecoderCtx.getHandler();
+            httpDecoder.replace(format("%s.noop", httpDecoderCtx.getName()), NOOP_HANDLER);
         }
         else {
             ChannelBuffer content = httpResponse.getContent();
@@ -165,4 +173,9 @@ public class HttpClientChannelSource extends HttpChannelHandler {
         }
     }
 
+    @Sharable
+    private static class NoopChannelHandler extends SimpleChannelHandler {
+    }
+
+    private static final ChannelHandler NOOP_HANDLER = new NoopChannelHandler();
 }

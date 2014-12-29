@@ -204,6 +204,21 @@ public class HttpRobotBehaviorIT {
     }
 
     @Test
+    public void shouldAcceptWebsocketHandshakeThenServerClose() throws Exception {
+
+        String script = combineScripts("http.accept.websocket.handshake.then.server.close.rpt",
+                "http.connect.websocket.handshake.then.server.close.rpt");
+
+        String expected = script;
+
+        robot.prepareAndStart(script).await();
+        robot.finish().await();
+
+        assertEquals(expected, robot.getObservedScript());
+
+    }
+
+    @Test
     public void shouldConnectWebsocketHandshake() throws Exception {
 
         String script = combineScripts("http.connect.websocket.handshake.rpt", "tcp.accept.websocket.handshake.rpt");
