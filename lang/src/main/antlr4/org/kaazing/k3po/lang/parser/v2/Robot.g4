@@ -10,7 +10,7 @@ grammar Robot;
 // handle scripts which are comprised of nothing but empty lines and comments.
 
 scriptNode
-    : propertyNode* streamNode* EOF
+    : (propertyNode | streamNode)* EOF
     ;
 
 propertyNode
