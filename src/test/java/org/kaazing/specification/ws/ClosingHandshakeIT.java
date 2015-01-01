@@ -20,11 +20,9 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
-import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
 /**
@@ -39,12 +37,10 @@ public class ClosingHandshakeIT {
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
 
-//    @Test
-//    @Specification({
-//        "send.continuation.payload.length.125.not.fragmented/handshake.request.and.frame",
-//        "send.continuation.payload.length.125.not.fragmented/handshake.response.and.frame" })
-//    public void shouldFailWebSocketConnectionWhenSendContinuationFrameWithPayloadNotFragmented() throws Exception {
-//        k3po.join();
-//    }
-
+    // TODO
+    // {client-initiated, server-initiated} x {empty, code, reason}
+    // abrupt close connection without receiving close (1006)
+    // invalid UTF-8 reason
+    // code 1005, 1006, 1015 must not be sent
+    // 
 }
