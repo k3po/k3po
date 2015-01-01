@@ -42,5 +42,5 @@ public class ClosingHandshakeIT {
     // abrupt close connection without receiving close (1006)
     // invalid UTF-8 reason
     // code 1005, 1006, 1015 must not be sent
-    // 
+    //
 }
