@@ -1,7 +1,9 @@
-This project uses [K3PO Protocol Droid](http://github.com/kaazing/k3po) to provide the WebSocket Protocol 
-([RFC-6455](https://tools.ietf.org/html/rfc6455)) Specification as an executable test suite.
+This project uses [K3PO Protocol Droid](http://github.com/kaazing/k3po) to define a set of integration tests describing the WebSocket Protocol 
+([RFC-6455](https://tools.ietf.org/html/rfc6455)) Specification.
 
-The tests fall into the following categories:
+WebSocket Protocol implementations can use these integration tests to help them meet the necessary requirements.
+
+The integration tests fall into the following categories:
  * Opening Handshake
  * Base Framing
  * Masking
