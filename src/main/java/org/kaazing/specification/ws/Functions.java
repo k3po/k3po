@@ -64,6 +64,15 @@ public final class Functions {
     }
 
     @Function
+    public static byte[] randomBytesInvalidUTF8(int length) {
+        // TODO: make invalid UTF-8 bytes less like valid UTF-8 (!)
+        byte[] bytes = new byte[length];
+        bytes[0] = (byte) 0x80;
+        randomBytesUTF8(bytes, 1, length - 1);
+        return bytes;
+    }
+
+    @Function
     public static byte[] randomBytesUnalignedUTF8(int length, int unalignAt) {
         assert unalignAt < length;
 

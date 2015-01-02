@@ -20,9 +20,11 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
+import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
 /**
@@ -37,10 +39,131 @@ public class ClosingHandshakeIT {
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
 
-    // TODO
-    // {client-initiated, server-initiated} x {empty, code, reason}
-    // abrupt close connection without receiving close (1006)
-    // invalid UTF-8 reason
-    // code 1005, 1006, 1015 must not be sent
-    //
+    @Test
+    @Specification({
+        "client.send.empty.close.frame/handshake.request.and.frame",
+        "client.send.empty.close.frame/handshake.response.and.frame" })
+    public void shouldCompleteCloseHandshakeWhenClientSendEmptyCloseFrame() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "client.send.close.frame.with.code.1000/handshake.request.and.frame",
+        "client.send.close.frame.with.code.1000/handshake.response.and.frame" })
+    public void shouldCompleteCloseHandshakeWhenClientSendCloseFrameWithCode1000() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "client.send.close.frame.with.code.1000.and.reason/handshake.request.and.frame",
+        "client.send.close.frame.with.code.1000.and.reason/handshake.response.and.frame" })
+    public void shouldCompleteCloseHandshakeWhenClientSendCloseFrameWithCode1000AndReason() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "client.send.close.frame.with.code.1000.and.invalid.utf8.reason/handshake.request.and.frame",
+        "client.send.close.frame.with.code.1000.and.invalid.utf8.reason/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenClientSendCloseFrameWithCode1000AndInvalidUTF8Reason() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "client.send.close.frame.with.code.1001/handshake.request.and.frame",
+        "client.send.close.frame.with.code.1001/handshake.response.and.frame" })
+    public void shouldCompleteCloseHandshakeWhenClientSendCloseFrameWithCode1001() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "client.send.close.frame.with.code.1005/handshake.request.and.frame",
+        "client.send.close.frame.with.code.1005/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenClientSendCloseFrameWithCode1005() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "client.send.close.frame.with.code.1006/handshake.request.and.frame",
+        "client.send.close.frame.with.code.1006/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenClientSendCloseFrameWithCode1006() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "client.send.close.frame.with.code.1015/handshake.request.and.frame",
+        "client.send.close.frame.with.code.1015/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenClientSendCloseFrameWithCode1015() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.empty.close.frame/handshake.request.and.frame",
+        "server.send.empty.close.frame/handshake.response.and.frame" })
+    public void shouldCompleteCloseHandshakeWhenServerSendEmptyCloseFrame() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.close.frame.with.code.1000/handshake.request.and.frame",
+        "server.send.close.frame.with.code.1000/handshake.response.and.frame" })
+    public void shouldCompleteCloseHandshakeWhenServerSendCloseFrameWithCode1000() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.close.frame.with.code.1000.and.reason/handshake.request.and.frame",
+        "server.send.close.frame.with.code.1000.and.reason/handshake.response.and.frame" })
+    public void shouldCompleteCloseHandshakeWhenServerSendCloseFrameWithCode1000AndReason() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.close.frame.with.code.1000.and.invalid.utf8.reason/handshake.request.and.frame",
+        "server.send.close.frame.with.code.1000.and.invalid.utf8.reason/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenServerSendCloseFrameWithCode1000AndInvalidUTF8Reason() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.close.frame.with.code.1001/handshake.request.and.frame",
+        "server.send.close.frame.with.code.1001/handshake.response.and.frame" })
+    public void shouldCompleteCloseHandshakeWhenServerSendCloseFrameWithCode1001() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.close.frame.with.code.1005/handshake.request.and.frame",
+        "server.send.close.frame.with.code.1005/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenServerSendCloseFrameWithCode1005() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.close.frame.with.code.1006/handshake.request.and.frame",
+        "server.send.close.frame.with.code.1006/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenServerSendCloseFrameWithCode1006() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.close.frame.with.code.1015/handshake.request.and.frame",
+        "server.send.close.frame.with.code.1015/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenServerSendCloseFrameWithCode1015() throws Exception {
+        k3po.join();
+    }
 }
