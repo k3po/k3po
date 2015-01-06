@@ -90,6 +90,21 @@ public final class Functions {
         return Arrays.copyOfRange(original, from, to);
     }
 
+    @Function
+    public static String randomCase(String string) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < string.length(); i++) {
+            char c = string.charAt(i);
+            if (RANDOM.nextBoolean()) {
+                c = Character.toUpperCase(c);
+            } else {
+                c = Character.toLowerCase(c);
+            }
+            result.append(c);
+        }
+        return result.toString();
+    }
+
     private static void randomBytesUTF8(byte[] bytes, int start, int end) {
         for (int offset = start; offset < end;) {
             int remaining = end - offset;
