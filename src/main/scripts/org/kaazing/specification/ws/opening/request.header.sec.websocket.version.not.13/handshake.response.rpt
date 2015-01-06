@@ -12,7 +12,7 @@ read header "Sec-WebSocket-Key" /[a-zA-Z0-9+\/=]{24}/
 read header "Sec-WebSocket-Version" /(?!13)/
 read closed
 
-write status "400" "Bad Request"
+write status "426" "Upgrade Required"
 write header "Sec-WebSocket-Version" "13"
 write header content-length
 write close
