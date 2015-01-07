@@ -1,5 +1,5 @@
 # K3PO Protocol Droid
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/kaazing/k3po?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Gitter](https://badges.gitter.im/JoinChat.svg)](https://gitter.im/k3po/k3po?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 The K3PO Protocol Droid is a Network Protocol Testing Tool
 
