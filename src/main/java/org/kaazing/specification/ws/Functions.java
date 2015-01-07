@@ -105,6 +105,16 @@ public final class Functions {
         return result.toString();
     }
 
+    @Function
+    public static String randomHeaderValueOfNotCaseInsensitive(String text) {
+        String result;
+        do {
+            int randomHeaderLength = RANDOM.nextInt(200) + 1;
+            result = new String(randomBytes(randomHeaderLength)).replace("\n", "").replace("\r", "");
+        } while (result.equalsIgnoreCase(text));
+        return result;
+    }
+
     private static void randomBytesUTF8(byte[] bytes, int start, int end) {
         for (int offset = start; offset < end;) {
             int remaining = end - offset;
