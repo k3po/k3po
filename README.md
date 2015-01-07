@@ -1,5 +1,7 @@
 # Robot a.k.a. K3PO
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/k3po/k3po?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 The K3PO Robot is a Network Protocol Testing Tool
 
 The Robot provides a network scripting language that allows authoring of network protocol tests.  These test are programming language agnostic.  Test Frameworks are then provided to run these tests for different programming languages.
