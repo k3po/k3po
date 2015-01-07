@@ -91,10 +91,10 @@ public final class Functions {
     }
 
     @Function
-    public static String randomCase(String string) {
+    public static String randomCase(String text) {
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < string.length(); i++) {
-            char c = string.charAt(i);
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
             if (RANDOM.nextBoolean()) {
                 c = Character.toUpperCase(c);
             } else {
