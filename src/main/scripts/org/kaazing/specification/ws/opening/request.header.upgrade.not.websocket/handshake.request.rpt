@@ -4,7 +4,7 @@ connected
 write method "GET"
 write version "HTTP/1.1"
 write header "Host" "localhost:8080"
-write header "Upgrade" "not websocket"
+write header "Upgrade" ${ws:randomHeaderValueOfNotCaseInsensitive("websocket")}
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
 write header "Sec-WebSocket-Version" "13"
