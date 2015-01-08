@@ -28,7 +28,9 @@ import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
 /**
- * RFC-6455, section 5.3 "Client-to-Server Masking"
+ * RFC-6455
+ * section 5.1 "Overview"
+ * section 5.3 "Client-to-Server Masking"
  */
 public class MaskingIT {
 
@@ -38,6 +40,22 @@ public class MaskingIT {
 
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
+
+    @Test
+    @Specification({
+        "server.send.masked.text/handshake.request.and.frame",
+        "server.send.masked.text/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenServerSendsMaskWithTextFrame() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.masked.binary/handshake.request.and.frame",
+        "server.send.masked.binary/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenServerSendsMaskWithBinaryFrame() throws Exception {
+        k3po.join();
+    }
 
     @Test
     @Specification({
