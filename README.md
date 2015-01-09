@@ -1,4 +1,4 @@
-# specification.amqp_1_0.jms
+# specification.amqp_1_0.jms [![TravisCI](https://travis-ci.org/k3po/specification.amqp_1_0.jms.svg?branch=develop)](https://travis-ci.org/k3po/specification.amqp_1_0.jms)
 
 # About this Project
 
