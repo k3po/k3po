@@ -39,6 +39,8 @@ Copyright (c) 2008 Kaazing Corporation. All rights reserved.
   * [Command Frames](#command-frames)
   * [Control Frames](#control-frames)
   * [Closing Handshake](#closing-handshake)
+    * [Client Close Requirements](#client-close-requirements)
+    * [Server Close Requirements](#server-close-requirements)
   * [Browser Considerations](#browser-considerations)
     * [Content Type Sniffing](#content-type-sniffing)
     * [Binary as Text](#binary-as-text)
@@ -87,7 +89,8 @@ required to install any browser plug-ins, instead the emulated WebSocket API sho
 JavaScript, perhaps using an HTML `<script>` tag.
 
 The WebSocket Emulation protocol overhead is kept to a minimum such that performance and scalability can be considered 
-approximately equivalent when compared to the WebSocket protocol defined by [RFC 6455](https://tools.ietf.org/html/rfc6455).
+approximately equivalent when compared to the WebSocket protocol defined by [RFC 6455](https://tools.ietf.org/html/rfc6455),
+especially when the majority of data transfer flows from server-to-client.
 
 ### Security Model
 
@@ -100,9 +103,10 @@ when used from browser clients.
 
 _This section is non-normative._
 
-The client can request that the server use a specific subprotocol by including the `X-WebSocket-Protocol` field in its handshake.
-If it is specified, the server needs to include the same field and one of the selected subprotocol values in its response for
-the connection to be established.
+The client can request that the server use a specific subprotocol by including the `X-WebSocket-Protocol` HTTP header in its 
+handshake. If the `X-WebSocket-Protocol` HTTP header is specified by the client, the server needs to include the same HTTP
+header with one of the selected subprotocol values in the handshake response for the emulated WebSocket connection to be 
+established.
 
 These subprotocol names should follow the guidelines described by the WebSocket protocol in 
 [RFC 6455, Section 1.9, paragraphs 2 and 3](https://tools.ietf.org/html/rfc6455#section-1.9). 
@@ -125,7 +129,8 @@ To establish an emulated WebSocket connection, a client makes an HTTP handshake 
 
 * the HTTP handshake request uri scheme MUST be derived from the WebSocket URL by changing `ws` to `http`, or `wss` to `https`. 
 * the HTTP handshake request method MUST be `POST` 
-* the HTTP handshake request uri path MUST be derived from the WebSocket URL by appending a suitable create encoding path suffix
+* the HTTP handshake request uri path MUST be derived from the WebSocket URL by appending a suitable handshake encoding path 
+suffix
   * `/;e/cb` for binary encoding
   * `/;e/ct` for text encoding  (see [Binary as Text](#binary-as-text))
   * `/;e/cte` for escaped text encoding  (see [Binary as Escaped Text](#binary-as-escaped-text)) 
@@ -157,17 +162,20 @@ Content-Length: 0
 X-WebSocket-Version: wseb-1.1
 X-WebSocket-Protocol: x,y,z
 X-Accept-Commands: ping
-
 ```
 
 When the handshake request is sent, the emulated WebSocket is in the `CONNECTING` state.
 
+__Note:__ the HTTP client runtime MAY have automatically processed an HTTP redirect (status code `3xx`) or an HTTP authorization
+challenge (status code `401`) before the application sees the effective HTTP handshake response.  Processing these status codes
+is considered outside the scope of this specification.
+
 A successful WebSocket Emulation handshake response has status code `201` and the response body with content type 
 `text/plain;charset=utf-8` consisting of two lines separated by a `\n` linefeed character.
 
-The first line is an HTTP(S) URL for upstream data transfer of the emulated WebSocket connection.
+The first line is an `http` or `https` URL for upstream data transfer of the emulated WebSocket connection.
 
-The second line is an HTTP(S) URL for upstream data transfer of the emulated WebSocket connection.
+The second line is an `http` or `https`  URL for upstream data transfer of the emulated WebSocket connection.
 
 The upstream and downstream data transfer URLs MAY use different ports than the original WebSocket URL, and they MAY each 
 optionally include query parameters.
@@ -186,10 +194,25 @@ the client MUST fail the emulated WebSocket connection.
 For an upstream data transfer URL scheme other than `http` or `https`, the client MUST fail the emulated WebSocket 
 connection.
 
+For an upstream data transfer URL scheme other than `https` when the original handshake URL uses `https`, the client MUST fail 
+the emulated WebSocket connection.
+
 For an upstream data transfer URL host not matching the host of the original WebSocket URL, the client MUST fail the emulated 
 WebSocket connection.
 
 For an upstream data transfer URL path not prefixed by the path of the original WebSocket URL, the client MUST fail the emulated 
+WebSocket connection.
+
+For a downstream data transfer URL scheme other than `http` or `https`, the client MUST fail the emulated WebSocket 
+connection.
+
+For a downstream data transfer URL scheme other than `https` when the original handshake URL uses `https`, the client MUST fail 
+the emulated WebSocket connection.
+
+For a downstream data transfer URL host not matching the host of the original WebSocket URL, the client MUST fail the emulated 
+WebSocket connection.
+
+For a downstream data transfer URL path not prefixed by the path of the original WebSocket URL, the client MUST fail the emulated 
 WebSocket connection.
 
 ```
@@ -227,7 +250,11 @@ The server SHOULD ignore any request body and MAY choose to enforce a maximum ha
 
 If any of the above conditions are not met, the server MUST reject the handshake request with a `400 Bad Request` status code.
 
-Otherwise, the server MUST generate an HTTP handshake response with the following characteristics.
+Otherwise, the server processes the HTTP handshake request and generates an HTTP handshake response as follows.
+
+__Note:__ the server MAY send an HTTP redirect (status code `3xx`) or an HTTP authorization challenge (status code `401`) before the generating the final HTTP handshake response.  Responding with these status codes is considered outside the scope of this 
+specification.
+
 * the HTTP handshake response status MUST be `201`
 * the HTTP handshake response header `X-WebSocket-Version` MUST have the value `wseb-1.1`
 * the HTTP handshake response header `Content-Type` MUST have the value `text/plain;charset=utf-8`
@@ -241,8 +268,8 @@ The first URL in the response body is the upstream data transfer URL.
 
 The second URL in the response body is the downstream data transfer URL.
 
-Each URL may change the handshake HTTP request scheme from `http` to `https` and select a different port number, but the host
-MUST remain the same as the host for the HTTP handshake request.
+Each URL MAY change the handshake HTTP request scheme from `http` to `https` and MAY select a different port number, but the 
+host MUST remain the same as the host for the HTTP handshake request.
 
 If a `;` is present in the original handshake request URL path then each URL MUST consist of a unique path prefixed by the 
 original handshake request URL path, up to but not including the `;`.
@@ -257,6 +284,7 @@ original handshake request URL path.
 Once the emulated WebSocket connection is established, the client MUST send an HTTP request for downstream data
 transfer.
 * the HTTP downstream request method MUST be `GET` 
+* the HTTP downstream request `Origin` header MUST be present with the source origin for browser clients
 
 The downstream request associates a continuously streaming HTTP response to the emulated WebSocket connection.
 
@@ -266,13 +294,12 @@ For example, with a downstream data transfer URL `https://host.example.com:8443/
 GET /path/kwebfbkjwehkdsfa HTTP/1.1
 Host: host.example.com:8443
 Origin: [source-origin]
-
 ```
 
-Receiving a downstream response status code of `200`, complete with all HTTP headers, indicates that the downstream response is 
-ready to deliver emulated WebSocket frames to the client.
+When the receives a downstream HTTP response status code of `200`, complete with all HTTP headers, this indicates to the client
+that the downstream HTTP response is ready to deliver emulated WebSocket frames to the client.
 
-For any downstream response status code other than `200`, the client MUST fail the emulated WebSocket connection.
+For any downstream HTTP response status code other than `200`, the client MUST fail the emulated WebSocket connection.
 
 For any binary downstream response content type other than `application/octet-stream`, the client MUST fail the emulated 
 WebSocket connection.
@@ -394,9 +421,11 @@ The text-based command frame has frame type `0x01`, which masks to `0x00` indica
 The content of each command frame is a sequence of bytes encoded as hex.  For example, the bytes `5` `B` (`0x35 0x42`) decode to 
 the hypothetical command hex code `0x5B`. 
 
-Command hex code `0x00` (`0x30 0x30`) indicates padding and heart beat and is therefore ignored.
-Command hex code `0x01` (`0x30 0x31`) is the reconnect command used for controlled reconnect.
-Command hex code `0x02` (`0x30 0x32`) is the close command.
+| Hex Code | Text Payload | Text as Bytes | Description                 |
+|----------|--------------|---------------|-----------------------------|
+| 0x00     | "00"         | 0x30 0x30     | NOP (padding and heartbeat) |
+| 0x01     | "01"         | 0x30 0x31     | RECONNECT                   |
+| 0x02     | "02"         | 0x30 0x32     | CLOSE                       |
 
 ## Control Frames
 
@@ -406,10 +435,10 @@ The frames used by an emulated WebSocket connection for upstream and downstream 
 These control frames have the leading bit set, which in [Draft-76](http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76)
 indicates a binary frame payload.
 
-The `PING` control frame code is `0x89`. This is the same frame code as `PING` in [RFC 6455](http://tools.ietf.org/html/rfc6455))
+The `PING` control frame code is `0x89`. This is the same frame code as `PING` in [RFC 6455](http://tools.ietf.org/html/rfc6455)
 but only supports a zero length payload.
 
-The `PONG` control frame code is `0x8A`. This is the same frame code as `PONG` in [RFC 6455](http://tools.ietf.org/html/rfc6455))
+The `PONG` control frame code is `0x8A`. This is the same frame code as `PONG` in [RFC 6455](http://tools.ietf.org/html/rfc6455)
 but only supports a zero length payload.
 
 If a client does not include the HTTP `X-Accept-Commands` header with a value of `ping` in the handshake request, then the 
@@ -426,8 +455,8 @@ To start the closing handshake, the client MUST send a `CLOSE` command frame on 
 to mark the end of the upstream request body.
 
 ```
-0x01 0x02
-0x01 0x01
+0x01 "02"
+0x01 "01"
 ```
 
 The client's emulated WebSocket connection is now in the `CLOSING` state.
@@ -448,8 +477,8 @@ To start the closing handshake, the server MUST send a `CLOSE` command frame on 
 `Connection` with a value of `close`, the downstream HTTP response is completed by terminating the underlying transport.
 
 ```
-0x01 0x02
-0x01 0x01
+0x01 "02"
+0x01 "01"
 ```
 
 When the server receives a `CLOSE` command frame followed by a `RECONNECT` command frame, the server MUST consider the emulated
@@ -560,7 +589,6 @@ POST /path/;e/ct HTTP/1.1
 Host: host.example.com:8080
 Origin: [source-origin]
 Content-Length: 0
-
 ```
 Here, the handshake request location path uses `/;e/ct` instead
 
@@ -579,7 +607,6 @@ The binary-as-text downstream HTTP response MUST have content type `text/plain;c
 GET /path/kwebfbkjwehkdsfa HTTP/1.1
 Host: host.example.com:8443
 Origin: [source-origin]
-
 ```
 ```
 HTTP/1.1 200 OK
@@ -615,7 +642,6 @@ POST /path/;e/cte HTTP/1.1
 Host: host.example.com:8080
 Origin: [source-origin]
 Content-Length: 0
-
 ```
 Here, the handshake request location path uses `/;e/cte` instead
 ```
@@ -633,7 +659,6 @@ The binary-as-escaped-text downstream HTTP response MUST have content type `text
 GET /path/kwebfbkjwehkdsfa HTTP/1.1
 Host: host.example.com:8443
 Origin: [source-origin]
-
 ```
 ```
 HTTP/1.1 200 OK
@@ -654,7 +679,6 @@ POST /path/;e/ctm HTTP/1.1
 Host: host.example.com:8080
 Origin: [source-origin]
 Content-Length: 0
-
 ```
 Here, the handshake request location path uses `/;e/ctm` instead
 ```
@@ -672,7 +696,6 @@ The binary-as-mixed-text downstream HTTP response MUST have content type `text/p
 GET /path/kwebfbkjwehkdsfa HTTP/1.1
 Host: host.example.com:8443
 Origin: [source-origin]
-
 ```
 ```
 HTTP/1.1 200 OK
