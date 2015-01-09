@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kaazing.specification.wseb;
+package org.kaazing.specification.wse;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
