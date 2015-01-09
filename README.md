@@ -1,4 +1,4 @@
-# specification.mqtt_3_1_1
+# specification.mqtt_3_1_1 [![TravisCI](https://travis-ci.org/k3po/specification.mqtt_3_1_1.svg?branch=develop)](https://travis-ci.org/k3po/specification.mqtt_3_1_1)
 
 # About this Project
 
