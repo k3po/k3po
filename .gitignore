@@ -82,3 +82,4 @@ DerivedData
 *.x86_64
 *.hex
 
+*.md.html
