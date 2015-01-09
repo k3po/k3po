@@ -7,7 +7,7 @@ write header "Host" "localhost:8080"
 write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
-write header "Sec-WebSocket-Version" ${ws:randomHeaderValueOfNotCaseInsensitive("13")}
+write header "Sec-WebSocket-Version" ${ws:randomHeaderNot("13")}
 write close
 
 read status /(?!101)/ /.+/

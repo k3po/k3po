@@ -21,7 +21,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 import org.kaazing.k3po.lang.el.Function;
@@ -92,8 +91,14 @@ public final class Functions {
         return Arrays.copyOfRange(original, from, to);
     }
 
+    /**
+     * Takes a string and randomizes which letters in the text are upper or
+     * lower case
+     * @param text
+     * @return
+     */
     @Function
-    public static String randomCase(String text) {
+    public static String randomizeLetterCase(String text) {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
@@ -108,7 +113,7 @@ public final class Functions {
     }
 
     @Function
-    public static String randomHeaderValueOfNotCaseInsensitive(String header) {
+    public static String randomHeaderNot(String header) {
         // random strings from bytes can generate random bad chars like \n \r \f \v etc which are not allowed
         // except under special conditions, and will crash the http pipeline
         String commonHeaderChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"

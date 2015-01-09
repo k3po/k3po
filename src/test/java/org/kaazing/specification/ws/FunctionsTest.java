@@ -24,7 +24,6 @@ import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.kaazing.k3po.lang.el.ExpressionContext;
@@ -56,7 +55,7 @@ public class FunctionsTest {
         String orig = "changeMyCase";
         String result;
         do {
-            result = Functions.randomCase(orig);
+            result = Functions.randomizeLetterCase(orig);
         } while (result.equals(orig));
         assertTrue(result.equalsIgnoreCase(orig));
     }

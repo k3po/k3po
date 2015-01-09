@@ -5,7 +5,7 @@ write method "GET"
 write version "HTTP/1.1"
 write header host
 write header "Upgrade" "websocket"
-write header "Connection" ${ws:randomHeaderValueOfNotCaseInsensitive("upgrade")}
+write header "Connection" ${ws:randomHeaderNot("upgrade")}
 write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
 write header "Sec-WebSocket-Version" "13"
 
