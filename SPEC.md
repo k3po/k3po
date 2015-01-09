@@ -17,34 +17,38 @@ Copyright (c) 2007 Kaazing Corporation. All rights reserved.
 ## Table of Contents
 
   * [Introduction](#introduction)
-    * [Background](#background) 
-    * [Protocol Overview](#protocol-overview) 
-    * [Design Philosophy](#design-philosophy) 
-    * [Security Model](#security-model) 
-    * [Relationship to TCP and HTTP](#relationship-to-tcp-and-http) 
-    * [Establishing a Connection](#establishing-a-connection) 
-    * [Subprotocols using the WebSocket Emulation Protocol](#subprotocols-using-the-websocket-emulation-protocol) 
+    * [Background](#background)
+    * [Protocol Overview](#protocol-overview)
+    * [Design Philosophy](#design-philosophy)
+    * [Security Model](#security-model)
+    * [Relationship to TCP and HTTP](#relationship-to-tcp-and-http)
+    * [Establishing a Connection](#establishing-a-connection)
+    * [Subprotocols using the WebSocket Emulation Protocol](#subprotocols-using-the-websocket-emulation-protocol)
   * [Conformance Requirements](#conformance-requirements)
   * [WebSocket Emulation URIs](#websocket-emulation)
-  * [Opening Handshake](#opening-handshake) 
-    * [Client Requirements](#client-requirements)
-    * [Server Requirements](#server-requirements)
-  * [Data Frames](#data-frames) 
-  * [Control Frames](#control-frames) 
-  * [Closing Handshake](#closing-handshake) 
-  * [Error Handling](#error-handling) 
-  * [Extensions](#extensions) 
+  * [Opening Handshake](#opening-handshake)
+    * [Client Handshake Requirements](#client-handshake-requirements)
+    * [Server Handshake Requirements](#server-handshake-requirements)
+  * [Attaching the Downstream Response](#attaching-the-downstream-response)
+    * [Client Downstream Requirements](#client-downstream-requirements)
+    * [Server Downstream Requirements](#server-downstream-requirements)
+  * [Sending the Upstream Request](#sending-the-upstream-request)
+    * [Client Upstream Requirements](#client-upstream-requirements)
+    * [Server Upstream Requirements](#server-upstream-requirements)
+  * [Data Frames](#data-frames)
+  * [Command Frames](#command-frames)
+  * [Control Frames](#control-frames)
+  * [Closing Handshake](#closing-handshake)
   * [Browser Considerations](#browser-considerations)
     * [Content Type Sniffing](#content-type-sniffing)
-    * [Binary as Text](#binary-as-text) 
-    * [Binary as Escaped Text](#binary-as-escaped-text) 
-    * [Binary as Mixed Text](#binary-as-mixed-text) 
+    * [Binary as Text](#binary-as-text)
+    * [Binary as Escaped Text](#binary-as-escaped-text)
+    * [Binary as Mixed Text](#binary-as-mixed-text)
     * [Garbage Collection](#garbage-collection)
   * [Proxy Considerations](#proxy-considerations)
     * [Buffering Proxies](#buffering-proxies)
     * [Destructive Proxies](#destructive-proxies)
-  * [Security Considerations](#security-considerations) 
-  * [References](#references) 
+  * [References](#references)
 
 ## Introduction
 
@@ -52,13 +56,15 @@ Copyright (c) 2007 Kaazing Corporation. All rights reserved.
 
 _This section is non-normative._
 
-Although all major browser vendors have endorsed the WebSocket specification, deployment of Web applications requires a 
-solution for older browsers that have yet to be upgraded.  In addition, plug-in technologies such as Flash, Silverlight 
-and Java did not initially support WebSocket.  It is anticipated that native support will be made available for all of these 
-technologies in future.  This situation presents adoption problems for WebSocket until all end-users have upgraded accordingly.
+When the W3C WebSocket API and corresponding network protocol was first defined by W3C in the HTML5 specification in 2008, even 
+though all major browser vendors endorsed the specification, practical deployment of WebSocket applications required a 
+strategy to support all browsers, whether or not those browsers already supported the WebSocket specification.
 
-The WebSocket Emulation protocol addresses these adoption issues by defining a protocol that depends only on typical application
-usage of HTTP with solutions for common limitations of HTTP client implementations.
+In addition, plug-in technologies such as Flash, Silverlight and Java did not initially support WebSocket either.
+
+The WebSocket Emulation protocol addresses practical WebSocket deployment issues by defining a protocol that depends only on 
+typical application usage of HTTP, with solutions for the common limitations found in many commonly deployed HTTP client 
+implementations.
 
 ### Protocol Overview
 
@@ -73,7 +79,7 @@ _This section is non-normative._
 
 The WebSocket Emulation (WSE) protocol is designed to support a client-side WebSocket API with identical semantics
 when compared to a WebSocket API using the WebSocket protocol defined by [RFC 6455](https://tools.ietf.org/html/rfc6455) while
-making use of (perhaps limited) HTTP APIs only at the client, and a corresponding WebSocket Emulation server implementation.
+only making use of (perhaps limited) HTTP APIs at the client, and a corresponding WebSocket Emulation server implementation.
 
 For example, it should be possible to provide a compatible [W3C WebSocket API](http://www.w3.org/TR/websockets/) in JavaScript
 using only an HTML4 browser's HTTP APIs to implement the WebSocket Emulation protocol. Notably, the end-user should not be 
@@ -98,7 +104,7 @@ The client can request that the server use a specific subprotocol by including t
 If it is specified, the server needs to include the same field and one of the selected subprotocol values in its response for
 the connection to be established.
 
-These subprotocol names should following the guidelines described by the WebSocket protocol in 
+These subprotocol names should follow the guidelines described by the WebSocket protocol in 
 [RFC 6455, Section 1.9, paragraphs 2 and 3](https://tools.ietf.org/html/rfc6455#section-1.9). 
 
 ## Conformance Requirements
@@ -117,18 +123,24 @@ The WebSocket Emulation protocol uses WebSocket protocol URIs, as defined by
 
 To establish an emulated WebSocket connection, a client makes an HTTP handshake request.
 
-* the HTTP handshake request method MUST be `POST` 
 * the HTTP handshake request uri scheme MUST be derived from the WebSocket URL by changing `ws` to `http`, or `wss` to `https`. 
+* the HTTP handshake request method MUST be `POST` 
 * the HTTP handshake request uri path MUST be derived from the WebSocket URL by appending a suitable create encoding path suffix
   * `/;e/cb` for binary encoding
   * `/;e/ct` for text encoding  (see [Binary as Text](#binary-as-text))
-  * `/;e/cte` for text/escaped encoding  (see [Binary as Escaped Text](#binary-as-escaped-text)) 
-  * `/;e/ctm` for text/mixed encoding  (see [Binary as Mixed Text](#binary-as-mixed-text))
+  * `/;e/cte` for escaped text encoding  (see [Binary as Escaped Text](#binary-as-escaped-text)) 
+  * `/;e/ctm` for mixed text encoding  (see [Binary as Mixed Text](#binary-as-mixed-text))
 * the HTTP handshake request path query parameters MUST include all query parameters from the WebSocket URL
 
 Browser clients MUST sent the `Origin` HTTP header with the source origin.
 
 Clients MUST sent the `X-WebSocket-Version` HTTP header with the value `wseb-1.1`.
+
+Clients MAY send the `X-Websocket-Protocol` HTTP header with a list of alternative subprotocols to use over the emulated 
+WebSocket connection.
+
+Clients MAY send the `X-Websocket-Extensions` HTTP header with a list of extensions supported by the client for this emulated 
+WebSocket connection.
 
 Clients SHOULD send the `X-Accept-Commands` HTTP header with the value `ping` to indicate that both `PING` and `PONG` frames 
 are understood by the client.
@@ -143,6 +155,7 @@ Host: host.example.com:8080
 Origin: [source-origin]
 Content-Length: 0
 X-WebSocket-Version: wseb-1.1
+X-WebSocket-Protocol: x,y,z
 X-Accept-Commands: ping
 
 ```
@@ -159,26 +172,30 @@ The second line is an HTTP(S) URL for upstream data transfer of the emulated Web
 The upstream and downstream data transfer URLs MAY use different ports than the original WebSocket URL, and they MAY each 
 optionally include query parameters.
 
-For any handshake response status code other than `201`, clients MUST fail the emulated WebSocket connection.
+For any handshake response status code other than `201`, the client MUST fail the emulated WebSocket connection.
 
-For any handshake response content type other than `text/plain;charset=utf-8`, clients MUST fail the emulated WebSocket 
+For any handshake response content type other than `text/plain;charset=utf-8`, the client MUST fail the emulated WebSocket 
 connection.
 
 For any handshake response `X-WebSocket-Version` HTTP header value not matching the value sent in the handshake request, clients 
 MUST fail the emulated WebSocket connection.
 
-For an upstream data transfer URL scheme other than `http` or `https`, clients MUST fail the emulated WebSocket 
+For any handshake response `X-WebSocket-Protocol` HTTP header value not matching one of the values sent in the handshake request,
+the client MUST fail the emulated WebSocket connection.
+
+For an upstream data transfer URL scheme other than `http` or `https`, the client MUST fail the emulated WebSocket 
 connection.
 
-For an upstream data transfer URL host not matching the host of the original WebSocket URL, clients MUST fail the emulated 
+For an upstream data transfer URL host not matching the host of the original WebSocket URL, the client MUST fail the emulated 
 WebSocket connection.
 
-For an upstream data transfer URL path not prefixed by the path of the original WebSocket URL, clients MUST fail the emulated 
+For an upstream data transfer URL path not prefixed by the path of the original WebSocket URL, the client MUST fail the emulated 
 WebSocket connection.
 
 ```
 HTTP/1.1 201 Created
 X-WebSocket-Version: wseb-1.1
+X-WebSocket-Protocol: x
 Content-Type: text/plain;charset=utf-8
 Content-Length: 105
 
@@ -198,6 +215,10 @@ send an HTTP response with a `4xx` status code, such as `400 Bad Request`.
 
 * the HTTP handshake request method MUST be `POST` 
 * the HTTP handshake request header `X-WebSocket-Version` MUST have the value `wseb-1.1`
+* the HTTP handshake request header `X-WebSocket-Protocol` is OPTIONAL, and when present indicates a list of alternative 
+protocols to speak in client preference order
+* the HTTP handshake request header `X-WebSocket-Extensions` is OPTIONAL, and when present indicates a list of extensions
+supported by the client
 * the HTTP handshake request header `X-Accept-Commands` is OPTIONAL, and when present MUST have the value `ping`
 
 If the `X-Accept-Commands` HTTP header is present, then the server MAY send `PING` and `PONG` frames to the client.
@@ -206,10 +227,14 @@ The server SHOULD ignore any request body and MAY choose to enforce a maximum ha
 
 If any of the above conditions are not met, the server MUST reject the handshake request with a `400 Bad Request` status code.
 
-Otherwise, the server MUST generate a HTTP handshake response with the following characteristics.
+Otherwise, the server MUST generate an HTTP handshake response with the following characteristics.
 * the HTTP handshake response status MUST be `201`
 * the HTTP handshake response header `X-WebSocket-Version` MUST have the value `wseb-1.1`
 * the HTTP handshake response header `Content-Type` MUST have the value `text/plain;charset=utf-8`
+* the HTTP handshake response header `X-WebSocket-Protocol` MUST have one of the values negotiated by the client, if any were
+sent by the client
+* the HTTP handshake response header `X-WebSocket-Extensions` is OPTIONAL, with a list of client-supported extensions that are
+enabled by the server for this emulated WebSocket connection
 * the HTTP handshake response body must contain two URLs separated by a `\n` (LF) character
 
 The first URL in the response body is the upstream data transfer URL.
@@ -227,7 +252,7 @@ original handshake request URL path.
 
 ## Attaching the Downstream Response
 
-### Downstream Client Requirements
+### Client Downstream Requirements
 
 Once the emulated WebSocket connection is established, the client MUST send an HTTP request for downstream data
 transfer.
@@ -265,7 +290,13 @@ to the client.
 
 See [Buffering Proxies](#buffering-proxies) for further client requirements when attaching the downstream.
 
-### Downstream Server Requirements
+If the downstream HTTP response transfer is complete, or else complete but does not end in a `RECONNECT` command frame, then the 
+client should consider this as unexpected connection loss for the emulated WebSocket connection.
+
+If the client receives any frames on the HTTP downstream response after the `RECONNECT` frame, the client should fail the
+emulated WebSocket connection.
+
+### Server Downstream Requirements
 
 When processing a binary HTTP downstream request the server generates an HTTP downstream response for the emulated WebSocket.
 
@@ -292,9 +323,12 @@ The server MUST flush these HTTP response headers to the client even before data
 If the `.kp` parameter is present, see [Content-Type Sniffing](#content-type-sniffing) for further server requirements when 
 attaching the downstream.
 
+If the upstream HTTP request transfer is either incomplete or else complete but does not end in a `RECONNECT` command frame, 
+then the server should consider this as unexpected connection loss for the emulated WebSocket connection.
+
 ## Sending the Upstream Request
 
-### Upstream Client Requirements
+### Client Upstream Requirements
 
 Any upstream data frames are sent in the payload of a transient HTTP upstream request.
 * the HTTP upstream request method MUST be `POST`
@@ -318,7 +352,7 @@ For any upstream response status code other than `200`, the client MUST fail the
 
 The client MUST NOT send another upstream request before the previous upstream response has completed.
 
-### Upstream Server Requirements
+### Server Upstream Requirements
 
 When processing a binary HTTP upstream request the server generates an HTTP upstream response for the emulated WebSocket.
 
@@ -386,135 +420,96 @@ server SHOULD fail the emulated WebSocket connection if it receives a `PING` or 
 
 ## Closing Handshake
 
-### Client-initiated Close
-Client sends a text-based `CLOSE` command frame on the upstream and closes the stream. Client’s readyState is set to `CLOSING`.
+### Client Close Requirements
 
-The Gateway responds by closing the downstream.  The Gateway transmits an emulated text-based command frame on the downstream 
-with a `CLOSE` command (`0x02`) followed by a `RECONNECT` (`0x01`), then ends the stream.
+To start the closing handshake, the client MUST send a `CLOSE` command frame on the upstream, followed by a `RECONNECT` frame
+to mark the end of the upstream request body.
 
-The client verifies that the Gateway has responded with `CLOSE` followed by `RECONNECT` followed by termination of the stream. 
-Finally, the client fires a close event as defined by the WebSocket API.  Otherwise, it is a protocol violation, and an error 
-event is fired.
-
-Note that this section is extended by close code and reason, as described in the Close Handshake section below.
-
-### Server-initiated Close
-Server transmits a `CLOSE` command (`0x02`) followed by a `RECONNECT` (`0x01`), then ends the stream.
-
-The client verifies that the downstream `CLOSE` command followed by the `RECONNECT` command and end of stream, then the emulated
-WebSocket is in the `CLOSED` state.
-
-### Native WebSocket Protocol Close Frame Sample
-
-The following close handshake frame samples are captured with Chrome WebSocket
-
-#### Case #1: 
-
-Client called Close() without parameter, the frame is `0x88 0x80 0x16 0x8f 0x0c 0x0a`
-`0x88` - close frame
-`0x80` - mask bit (first bit = 1) + data length (equals to 0)
-`0x16 0x8f 0x0c 0x0a` - mask key (4 bytes random generated by client)
-
-Server responded with the same data without mask, the frame is `0x88 0x00`
-`0x88` - close frame
-`0x00` - mask bit (first bit = 0) + data length (equals to 0)
-
-Client fired CLOSE Event
-```javascript
-evt.wasClean = true;
-evt.code = 1005
-evt.reason = “”
+```
+0x01 0x02
+0x01 0x01
 ```
 
-#### Case #2: 
-Client called close with parameters, such as Close(1000, “abc”), the frame is `0x88 0x85 0x78 0x20 0xef 0x1c 0x7b 0xc8c 0x8e 0x7e 0xeb`
+The client's emulated WebSocket connection is now in the `CLOSING` state.
 
-`0x88` - close frame
-`0x85` - mask bit (first bit = 1) + data length (equals to 5)
-`0x78 0x20 0xef 0x1c` - mask key (4 bytes)
-`0x7b 0xc8` - first parameter [code] (unsigned short, equals to 1000 or range from 3000 to 4999)
-`0x8e 0x7e 0xeb` - second parameter [reason] (UTF-8 encoded, no longer than 123 bytes)
+When the client receives a `CLOSE` command frame from the server on the HTTP downstream response, the client's emulated 
+WebSocket connection transitions to the `CLOSED` state.
 
-Server responded with same data without mask, the frame is  `0x88 0x05 0x03 0xe8 0x61 0x62 0x63`
+The client SHOULD ignore any data frames received on the downstream HTTP response after the `CLOSE` command frame and before the
+`RECONNECT` command frame.
 
-`0x88` - close frame
-`0x05` - mask bit (first bit = 0, no mask) + data length (equals to 5)
-`0x03 0xe8` - code (value equals to 1000)
-`0x61 0x62 0x63` - reason (value equals to “abc”)
+When the client receives a `CLOSE` command frame followed by a `RECONNECT` command frame, the client SHOULD abort the downstream
+HTTP response if the downstream HTTP response has not already completed.
 
-Clent fired CLOSE event
-```javascript
-evt.wasClean = true
-evt.code = 1000
-evt.reason = “abc”
+### Server Close Requirements
+
+To start the closing handshake, the server MUST send a `CLOSE` command frame on the downstream HTTP response, followed by a 
+`RECONNECT` frame and then complete the downstream HTTP response.  When the downstream HTTP response uses HTTP header
+`Connection` with a value of `close`, the downstream HTTP response is completed by terminating the underlying transport.
+
+```
+0x01 0x02
+0x01 0x01
 ```
 
-## Error Handling
-
-### Client-initiated Error
-If the Client detects a protocol violation, then it will shutdown all outstanding requests, and fire events as required by 
-WebSocket API.
-
-### Server-initiated Error
-Server terminates the downstream with no `RECONNECT` or `CLOSE` frame.
-
-Alternatively, the server can respond with an HTTP error-code on any HTTP create, upstream or downstream request.
-
-### Connection Loss
-The semantics of connection loss for emulated WebSocket match those of native WebSocket.  The lifetime of the downstream 
-indicates the lifetime of the emulated WebSocket.  Note that the downstream can span more than one HTTP request due to either 
-a garbage collecting reconnect or buffering proxy detection.  If the downstream response completes without a “reconnect” command
-frame, then the WebSocket connection is closed.
-
-## Extensibility
-
-[TODO]
-`X-WebSocket-Protocol`
-`X-WebSocket-Extensions`
-same as RFC 6455, X-WebSocket-Extensions, no RSV bits
+When the server receives a `CLOSE` command frame followed by a `RECONNECT` command frame, the server MUST consider the emulated
+WebSocketd connection to be closed.
 
 ## Proxy Considerations
 
 ### Buffering Proxies
 Some HTTP intermediaries, such as transparent and explicit proxies, prevent HTTP responses from being successfully streamed to 
-the client.  Instead, such intermediaries may buffer the response introducing undesirable latency.  Once detected, there are two
-possible solutions; long-polling, and secure streaming.
+the client.  Instead, such intermediaries may buffer the response introducing undesirable latency for the downstream HTTP 
+response of an emulated WebSocket connection.  Once such downstream buffering is detected, there are two possible solutions; 
+long-polling, and secure streaming.
 
-We detect the presence of a buffering proxy by timing out the arrival of the status code and complete headers from the streaming 
-downstream HTTP response.  In this case some emulated WebSocket frames may be blocked at the proxy, so to avoid data loss, we 
-send a second overlapping downstream HTTP request, with the `.ki=p` query parameter to indicate the interaction mode is “proxy”.
+The client detects the presence of a buffering proxy by timing out the arrival of the status code and complete headers from the 
+streaming downstream HTTP response.  When such buffering is detected, some emulated WebSocket frames may be blocked at the proxy, 
+so to avoid data loss, the client sends a second overlapping downstream HTTP request, with the `.ki=p` query parameter to 
+indicate to the server that the `interaction mode` is `proxy`.
 
-In reaction to receiving this overlapping proxy mode downstream request for the same emulated WebSocket connection, the initial 
-downstream response is completed normally, automatically flushing the entire response through any buffering proxy.  Then, the 
-response to the second downstream request is to either redirect to an encrypted location for secure streaming, or fall back to 
-long-polling as a last resort.
+In reaction to receiving this overlapping `proxy` mode downstream HTTP request for the same emulated WebSocket connection, the 
+initial downstream HTTP response is completed normally with a `RECONNECT` command frame, automatically flushing the entire 
+response body through any buffering proxy.
 
-When long-polling, any frame sent to the client triggers a controlled reconnect in the same way as garbage collection.
+Then, the response to the second downstream request either redirects the client to an encrypted location for secure streaming, or 
+fall back to long-polling as a last resort.
+
+When long-polling, any frame sent to the client triggers a controlled reconnect in the same way as
+[Garbage Collection](#garbage-collection).  In this case, the `Content-Length` downstream HTTP response header SHOULD be
+calculated and used instead of the `Connection` downstream HTTP response header with value `close`, so that the long-polling
+TCP connection can be reused. 
+
+In extremely rare situations, where an SSL-terminating load balancer sitting in front of the emulated WebSocket server is acting 
+as a buffering intermediary, long-polling can still be used over SSL-terminated `https`.
 
 ### Destructive Proxies
 Some HTTP intermediaries, such as transparent and explicit proxies, attempt to reclaim resources for idle HTTP responses that are
 still incomplete after a timeout period.  A heartbeat command frame must be sent to the client at regular intervals to prevent 
 the downstream from being severed by the proxy.
 
-When long-polling, the heartbeat frame triggers a controlled reconnect.
+When long-polling, the heartbeat frame triggers the completion of the current downstream HTTP response, and the client then 
+performs an immediate reconnect of the downstream with another downstream HTTP request.
 
-Clients MAY request a shorter heartbeat interval by setting the `.kkt` query parameter. For example, `?.kkt=20` requests a 20 
-second interval. This is necessary on user agents that shut down HTTP requests after only 30 seconds.
+Clients MAY request a shorter heartbeat interval by setting the `.kkt` query parameter. For example, a query parameter of 
+`.kkt=20` requests a 20 second interval. This is necessary for either user agents or HTTP intermediaries that shut down in-flight
+HTTP requests after only 30 seconds.
 
 ## Browser Considerations
 
 ### Content-Type Sniffing
-The programmatic HTTP client runtime provided by many browser environments will attempt to determine the “real” content type of
-a response served with explicit content type `text/plain`.  
+During the early days of the Web when HTML files were served with the wrong content type, `text/plain`.
+Some browsers, such as Internet Explorer, determined it was best to infer the content type intended by the author.  Other
+browsers then followed the same approach, so as not to appear _broken_ when compared with Internet Explorer.
 
-The browsers achieve this by waiting for a certain amount of content to arrive for content type analysis before exposing any of
-the content to the client runtime.  This prevents delivery of any emulated WebSocket frames that happen to be smaller than the
-buffer size.  The exact buffer size can be determined by experimentation for different browser implementations.  In some cases 
-however it is not necessary.
+For HTTP responses served with content type `text/plain`, browsers can infer the implied response content type by buffering a 
+certain amount of the response body for analysis before exposing any of the response body to the application.  This prevents 
+delivery of any emulated WebSocket frames until the buffer size is exceeded. The exact buffer size can be determined by 
+experimentation for different browser implementations. In some cases however it is not necessary.
 
-Padding the beginning of the response with additional control frames to exceed the content sniffing buffer size allows immediate
-delivery of emulated WebSocket frames delivered to such clients.  The maximum amount of padding required is communicated in the
-request via the `.kp` query parameter.
+Padding the beginning of the downstream HTTP response with additional control frames to exceed the content sniffing buffer size 
+allows immediate delivery of emulated WebSocket frames to be delivered to such clients.  The maximum amount of padding required is
+communicated in the request via the `.kp` query parameter.
 ```
 GET /path/kwebfbkjwehkdsfa?.kp=256 HTTP/1.1
 Host: host.example.com:8443
@@ -531,7 +526,7 @@ X-Content-Type-Options: nosniff
 [emulated websocket frames]
 ```
 Even when padding the body with command frames, IE7 determines the downstream response content type to be 
-`application/octet-stream`, preventing programmatic access to the response text from JavaScript.
+`application/octet-stream`, preventing programmatic access to the downstream HTTP response text from JavaScript.
 
 This issue only comes up in a special case of HTTP request emulation [HTTPE], where response headers are promoted to the 
 beginning of the response body anyway, so setting a sufficiently long header with text value fills the content type sniffing 
@@ -562,7 +557,7 @@ responses accessible to JavaScript were described as strings.
 
 ```
 POST /path/;e/ct HTTP/1.1
-Host: host.example.com:8000
+Host: host.example.com:8080
 Origin: [source-origin]
 Content-Length: 0
 
@@ -617,7 +612,7 @@ Therefore, the server MUST escape these characters must as follows:
 For clients requiring escaped text responses, the initial handshake uses a different derived location path.
 ```
 POST /path/;e/cte HTTP/1.1
-Host: host.example.com:8000
+Host: host.example.com:8080
 Origin: [source-origin]
 Content-Length: 0
 
@@ -656,7 +651,7 @@ get the logical bytes transfered.
 For clients requiring mixed text responses, the initial handshake uses a different derived location path.
 ```
 POST /path/;e/ctm HTTP/1.1
-Host: host.example.com:8000
+Host: host.example.com:8080
 Origin: [source-origin]
 Content-Length: 0
 
@@ -690,7 +685,7 @@ Connection: close
 IE8+ `XDomainRequest` can distinguish all 256 byte-as-character-code values, for a downstream response body with content-type 
 `text/plain;charset=windows-1252`.
 
-However, the `XDomainRequest` `POST` request cannot specify content-type, and so `text/plain;charset=UTF-8` is assumed, and a
+However, the `XDomainRequest` `POST` request cannot specify content-type, and so `text/plain;charset=UTF-8` is assumed, but a
 bug remains where the `\0` (NUL) character cannot be included in the `POST` body since the text is then clipped at the `\0`.
 
 Rather than escaping the `\0` (NUL) byte-as-character-code, the client MUST use character code `256` to represent zero, so the
@@ -698,9 +693,6 @@ client MUST send a `\u0100` character for each `\u0000` character.
 
 The server MUST decode the binary-as-mixed-text upstream such that each character codepoint is computed `mod 0x0100` to determine 
 each originally intended byte value.
-
-*Note* This approach remains untested for IE6+ downstream scenario as an alternative to the escaping strategy above for `\0`, 
-`\r` and `\n`, but may very well be more efficient than what we have today.
 
 ### Garbage Collection
 Most HTTP client runtimes such as Flash, Silverlight and Java have a streaming capable HTTP response implementation, meaning that
@@ -711,30 +703,20 @@ data arrives in the response body, but the aggregated response text still builds
 the client, it is beneficial to let that response complete normally, letting the browser reclaim all memory associated with the 
 aggregated response, and then reconnect the downstream with a new HTTP request.
 
-The amount of data that the client is willing to build up between garbage collecting reconnects is defined in kilobytes by the 
-`.kb` query parameter in the corresponding request.
+The client MAY send the `.kb` downstream HTTP request query parameter indicated the amount of data (in kilobytes) that the client 
+is willing to build up between garbage collecting reconnects.
 ```
 GET /path/kwebfbkjwehkdsfa?.kb=512 HTTP/1.1
 Host: host.example.com:8443
 Origin: [source-origin]
 ```
-When the limit is exceeded, a `RECONNECT` command frame is sent by the server to complete the response.  The `RECONNECT` frame 
-MUST be the last frame on the downstream response during a reconnect, otherwise undetectable loss could occur for subsequent 
-frames.
+When the limit is exceeded, the server MUST send a `RECONNECT` command frame to complete the downstream HTTP response. 
 
-**enhancement**
-Client may choose not to supply the `.kb` parameter. Instead, client establishes a new downstream connection when it decides it 
-needs to (based on how much data has already been buffered on the current connection, and the network connect latency). When the
-server detects the new downstream connection, it will send a `RECONNECT` command on the current downstream connection, then close 
-it, and write all further data messages to the new downstream connection. 
-
-Note: no data frames, in fact no frames at all, will be sent after the `RECONNECT` frame.
-
-Note: the `.kb` parameter is still supported for backward compatibility.
-
-## Security Considerations
-
-[TODO]
+However, the client MAY choose not to supply the `.kb` parameter. Instead, the client establishes a new HTTP downstream request
+when it decides it needs to (based on how much data has already been buffered on the current HTTP downstream response, and the 
+network connect latency). When the server detects the new downstream HTTP request, it will send a `RECONNECT` command on the 
+current downstream HTTP response, then complete it normally, and write all further data messages to the new downstream 
+HTTP response. 
 
 ## References
 
