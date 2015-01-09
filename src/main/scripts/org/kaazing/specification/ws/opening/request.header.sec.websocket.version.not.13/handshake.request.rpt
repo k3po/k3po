@@ -10,6 +10,6 @@ write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
 write header "Sec-WebSocket-Version" "25"
 write close
 
-read status /(?!101)/ /.+/
+read status /4\d\d/ /.+/
 read header "Sec-WebSocket-Version" "13"
 read closed
