@@ -1,4 +1,4 @@
-# Binary Bidirectional Streams Over HTTP (BBOSH)
+# Binary Bidirectional Streams Over HTTP (BBOSH) [![TravisCI](https://travis-ci.org/k3po/specification.bbosh.svg?branch=develop)](https://travis-ci.org/k3po/specification.bbosh)
 The Bidirectional Streams Over HTTP (BOSH) transport protocol was initially designed to transmit XML text for XMPP.
 The BBOSH transport protocol extends BOSH by adding support for binary, such that it can be used to replace TCP where
 WebSocket is not available.  Although HTTP streaming is supported, just HTTP polling or long-polling is sufficient.
