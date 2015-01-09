@@ -43,6 +43,8 @@ public class OpeningHandshakeIT {
         k3po.join();
     }
     
+    
+    
     @Test
     @Specification({
         "request.header.websocket.protocol/handshake.request",
@@ -61,6 +63,14 @@ public class OpeningHandshakeIT {
     
     @Test
     @Specification({
+        "request.with.body/handshake.request",
+        "request.with.body/handshake.response" })
+    public void shouldEstablishConnectionWithNonEmptyRequestBody() throws Exception {
+    	k3po.join();
+    }
+    
+    @Test
+    @Specification({
     	"request.header.method.not.post/handshake.request",
     	"request.header.method.not.post/handshake.response" })
     public void shouldFailHandshakeWhenRequestMethodNotPost() throws Exception {
@@ -72,6 +82,14 @@ public class OpeningHandshakeIT {
     	"request.header.websocket.version.not.wseb-1.1/handshake.request",
     	"request.header.websocket.version.not.wseb-1.1/handshake.response" })
     public void shouldFailHandshakeWhenRequestHeaderWebSocketVersionNotWseb11() throws Exception {
+    	k3po.join();
+    }
+    
+    @Test
+    @Specification({
+    	"request.header.accept.commands.not.ping/handshake.request",
+    	"request.header.accept.commands.not.ping/handshake.response" })
+    public void shouldFailHandshakeWhenHeaderAcceptCommandsNotPing() throws Exception {
     	k3po.join();
     }
     
