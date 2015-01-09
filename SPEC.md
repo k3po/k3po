@@ -12,7 +12,7 @@ This memo is written in the style of an IETF RFC, but is _not_ an official IETF 
 
 ## Copyright Notice
 
-Copyright (c) 2007 Kaazing Corporation. All rights reserved.
+Copyright (c) 2008 Kaazing Corporation. All rights reserved.
 
 ## Table of Contents
 
@@ -63,7 +63,7 @@ strategy to support all browsers, whether or not those browsers already supporte
 In addition, plug-in technologies such as Flash, Silverlight and Java did not initially support WebSocket either.
 
 The WebSocket Emulation protocol addresses practical WebSocket deployment issues by defining a protocol that depends only on 
-typical application usage of HTTP, with solutions for the common limitations found in many commonly deployed HTTP client 
+typical application usage of HTTP, with solutions for the various limitations found in many commonly deployed HTTP client 
 implementations.
 
 ### Protocol Overview
