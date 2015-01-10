@@ -54,6 +54,22 @@ public class OpeningHandshakeIT {
 
     @Test
     @Specification({
+        "request.headers.random.case/handshake.request",
+        "request.headers.random.case/handshake.response" })
+    public void shouldEstablishConnectionWithRandomCaseRequestHeaders() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "response.headers.random.case/handshake.request",
+        "response.headers.random.case/handshake.response" })
+    public void shouldEstablishConnectionWithRandomCaseResponseHeaders() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
         "request.header.origin/handshake.request",
         "request.header.origin/handshake.response" })
     public void shouldEstablishConnectionWithRequestHeaderOrigin() throws Exception {

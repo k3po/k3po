@@ -31,6 +31,7 @@ public final class Functions {
     // See RFC-6455, section 1.3 Opening Handshake
     private static final byte[] WEBSOCKET_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11".getBytes(UTF_8);
     private static final Random RANDOM = new Random();
+    private static final int MAX_ACCEPTABLE_HEADER_LENGTH = 200;
 
     @Function
     public static byte[] handshakeKey() {
@@ -88,6 +89,53 @@ public final class Functions {
     @Function
     public static byte[] copyOfRange(byte[] original, int from, int to) {
         return Arrays.copyOfRange(original, from, to);
+    }
+
+    /**
+     * Takes a string and randomizes which letters in the text are upper or
+     * lower case
+     * @param text
+     * @return
+     */
+    @Function
+    public static String randomizeLetterCase(String text) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (RANDOM.nextBoolean()) {
+                c = Character.toUpperCase(c);
+            } else {
+                c = Character.toLowerCase(c);
+            }
+            result.append(c);
+        }
+        return result.toString();
+    }
+
+    @Function
+    public static String randomHeaderNot(String header) {
+        // random strings from bytes can generate random bad chars like \n \r \f \v etc which are not allowed
+        // except under special conditions, and will crash the http pipeline
+        String commonHeaderChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                + "1234567890!@#$%^&*()_+-=`~[]\\{}|;':\",./<>?";
+        StringBuilder result = new StringBuilder();
+        do {
+            int randomHeaderLength = RANDOM.nextInt(MAX_ACCEPTABLE_HEADER_LENGTH) + 1;
+            for (int i = 0; i < randomHeaderLength; i++) {
+                result.append(commonHeaderChars.charAt(RANDOM.nextInt(commonHeaderChars.length())));
+            }
+        } while (result.toString().equalsIgnoreCase(header));
+        return result.toString();
+    }
+
+    @Function
+    public static String randomMethodNot(String method) {
+        String[] methods = new String[]{"GET", "OPTIONS", "HEAD", "POST", "PUT", "DELETE", "TRACE", "CONNECT"};
+        String result;
+        do {
+            result = methods[RANDOM.nextInt(methods.length)];
+        } while (result.equalsIgnoreCase(method));
+        return result;
     }
 
     private static void randomBytesUTF8(byte[] bytes, int start, int end) {

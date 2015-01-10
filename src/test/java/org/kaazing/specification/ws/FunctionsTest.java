@@ -17,6 +17,7 @@
 package org.kaazing.specification.ws;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.kaazing.k3po.lang.el.ExpressionFactoryUtils.newExpressionFactory;
 
 import javax.el.ELContext;
@@ -47,5 +48,15 @@ public class FunctionsTest {
         String computedHash = (String) expression.getValue(ctx);
 
         assertEquals("Inconsistent handshake hash", "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=", computedHash);
+    }
+
+    @Test
+    public void shouldRandomizeString() {
+        String orig = "changeMyCase";
+        String result;
+        do {
+            result = Functions.randomizeLetterCase(orig);
+        } while (result.equals(orig));
+        assertTrue(result.equalsIgnoreCase(orig));
     }
 }
