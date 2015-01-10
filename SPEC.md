@@ -175,7 +175,7 @@ A successful WebSocket Emulation handshake response has status code `201` and th
 
 The first line is an `http` or `https` URL for upstream data transfer of the emulated WebSocket connection.
 
-The second line is an `http` or `https`  URL for upstream data transfer of the emulated WebSocket connection.
+The second line is an `http` or `https`  URL for downstream data transfer of the emulated WebSocket connection.
 
 The upstream and downstream data transfer URLs MAY use different ports than the original WebSocket URL, and they MAY each 
 optionally include query parameters.
