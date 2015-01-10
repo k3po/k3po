@@ -1,4 +1,4 @@
-[![TravisCI](https://travis-ci.org/k3po/specification.wseb.svg?branch=develop)](https://travis-ci.org/k3po/specification.wseb)
+[![TravisCI](https://travis-ci.org/k3po/specification.wse.svg?branch=develop)](https://travis-ci.org/k3po/specification.wse)
 
 WebSocket Emulation Protocol ([WSE](SPEC.md)) Specification
 
