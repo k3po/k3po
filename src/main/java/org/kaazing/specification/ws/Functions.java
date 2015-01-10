@@ -129,7 +129,7 @@ public final class Functions {
     }
 
     @Function
-    public static String randomHttpRequestMethodOfNot(String method) {
+    public static String randomMethodNot(String method) {
         String[] methods = new String[]{"GET", "OPTIONS", "HEAD", "POST", "PUT", "DELETE", "TRACE", "CONNECT"};
         String result;
         do {
