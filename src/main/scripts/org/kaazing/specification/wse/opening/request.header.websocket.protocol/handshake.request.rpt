@@ -16,6 +16,6 @@ read header "X-WebSocket-Version" "wseb-1.1"
 read header "X-WebSocket-Protocol" /primary|secondary/
 read header "Content-Type" "text/plain;charset=utf-8"
 
-read "http://host.example.com:8080/path/uofdbnreiodfkbqi"
-read "https://host.example.com:8443/path/kwebfbkjwehkdsfa"
+read "http://localhost:8080/path/uofdbnreiodfkbqi"
+read "https://localhost:8443/path/kwebfbkjwehkdsfa"
 read closed

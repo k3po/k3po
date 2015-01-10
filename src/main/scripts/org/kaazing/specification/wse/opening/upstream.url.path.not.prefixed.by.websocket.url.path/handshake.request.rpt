@@ -7,15 +7,13 @@ write header host
 write header "Origin" "http://localhost:8080"
 write header content-length
 write header "X-WebSocket-Version" "wseb-1.1"
-write header "X-WebSocket-Extensions" "primary, secondary"
 write close
 
 read status "201" /.+/
 read version "HTTP/1.1"
 read header "X-WebSocket-Version" "wseb-1.1"
-read header "X-WebSocket-Extensions" /primary|secondary/
 read header "Content-Type" "text/plain;charset=utf-8"
 
-read "http://localhost:8080/path/uofdbnreiodfkbqi"
+read "http://localhost:8080/upstreampath/uofdbnreiodfkbqi"
 read "https://localhost:8443/path/kwebfbkjwehkdsfa"
 read closed

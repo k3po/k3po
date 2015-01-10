@@ -6,10 +6,9 @@ read method "POST"
 read version "HTTP/1.1"
 read header "Origin" "http://localhost:8080"
 read header "X-WebSocket-Version" "wseb-1.1"
-read /.+/
 read closed
 
-write status "201" "Created" 
+write status "203" "Created" 
 write version "HTTP/1.1"
 write header "X-WebSocket-Version" "wseb-1.1"
 write header "Content-Type" "text/plain;charset=utf-8"

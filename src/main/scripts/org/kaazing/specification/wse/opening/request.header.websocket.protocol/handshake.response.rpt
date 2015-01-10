@@ -15,6 +15,6 @@ write header "X-WebSocket-Protocol" "primary"
 write header "Content-Type" "text/plain;charset=utf-8"
 write header content-length
 
-write "http://host.example.com:8080/path/uofdbnreiodfkbqi"
-write "https://host.example.com:8443/path/kwebfbkjwehkdsfa"
+write "http://localhost:8080/path/uofdbnreiodfkbqi"
+write "https://localhost:8443/path/kwebfbkjwehkdsfa"
 write close
