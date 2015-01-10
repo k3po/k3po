@@ -2,10 +2,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.kaazing</groupId>
-    <artifactId>specification.wseb</artifactId>
-    <name>WebSocket Emulation (Binary) Protocol Specification</name>
-    <description>Specification for WebSocket Emulation (Binary) protocol</description>
-    <url>https://github.com/kaazing/specification.wseb</url>
+    <artifactId>specification.wse</artifactId>
+    <name>WebSocket Emulation Protocol Specification</name>
+    <description>Specification for WebSocket Emulation protocol</description>
+    <url>https://github.com/kaazing/specification.wse</url>
     <packaging>jar</packaging>
     <version>1.0.0-alpha-1-SNAPSHOT</version>
 
@@ -19,8 +19,8 @@
     <inceptionYear>2014</inceptionYear>
 
     <scm>
-        <url>https://github.com/kaazing/specification.wseb.git</url>
-        <connection>scm:git:https://github.com/kaazing/specification.wseb.git</connection>
+        <url>https://github.com/kaazing/specification.wse.git</url>
+        <connection>scm:git:https://github.com/kaazing/specification.wse.git</connection>
     </scm>
 
     <properties>

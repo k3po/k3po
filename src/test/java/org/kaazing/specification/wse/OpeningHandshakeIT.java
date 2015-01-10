@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kaazing.specification.wseb;
+package org.kaazing.specification.wse;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
@@ -28,7 +28,7 @@ import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
 public class OpeningHandshakeIT {
-	private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/wseb/opening");
+	private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/wse/opening");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -42,8 +42,6 @@ public class OpeningHandshakeIT {
     public void shouldEstablishConnection() throws Exception {
         k3po.join();
     }
-    
-    
     
     @Test
     @Specification({
@@ -92,5 +90,7 @@ public class OpeningHandshakeIT {
     public void shouldFailHandshakeWhenHeaderAcceptCommandsNotPing() throws Exception {
     	k3po.join();
     }
+    
+    
     
 }
