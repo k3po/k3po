@@ -185,11 +185,14 @@ For any handshake response status code other than `201`, the client MUST fail th
 For any handshake response content type other than `text/plain;charset=utf-8`, the client MUST fail the emulated WebSocket 
 connection.
 
-For any handshake response `X-WebSocket-Version` HTTP header value not matching the value sent in the handshake request, clients 
-MUST fail the emulated WebSocket connection.
+For any handshake response `X-WebSocket-Version` HTTP header value not matching the value sent in the handshake request, 
+clients MUST fail the emulated WebSocket connection.
 
 For any handshake response `X-WebSocket-Protocol` HTTP header value not matching one of the values sent in the handshake
 request, the client MUST fail the emulated WebSocket connection.
+
+For any handshake response `X-WebSocket-Extensions` HTTP header value indicating the use of an extension not matching one of 
+the extensions sent in the handshake request, the client MUST fail the emulated WebSocket connection.
 
 For an upstream data transfer URL scheme other than `http` or `https`, the client MUST fail the emulated WebSocket 
 connection.
