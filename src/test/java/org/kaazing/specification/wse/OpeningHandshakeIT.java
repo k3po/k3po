@@ -145,6 +145,14 @@ public class OpeningHandshakeIT {
     
     @Test
     @Specification({
+    	"response.header.websocket.extensions.not.negotiated/handshake.request",
+    	"response.header.websocket.extensions.not.negotiated/handshake.response" })
+    public void shouldFailConnectionWhenWebSocketExtensionsNotNegotiated() throws Exception {
+    	k3po.join();
+    }
+    
+    @Test
+    @Specification({
     	"handshake.response.body.containing.one.url/handshake.request",
     	"handshake.response.body.containing.one.url/handshake.response" })
     public void shouldFailConnectionWhenHandshakeResponseBodyContainsOneUrl() throws Exception {
