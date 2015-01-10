@@ -1,4 +1,4 @@
-# WebSocket Emulation (WSE) Protocol
+# WebSocket Emulation Protocol (WSE)
 
 ## Abstract
 This document specifies the behavior of WebSocket protocol emulated via HTTP.  It can be used to enable full WebSocket 
@@ -79,7 +79,7 @@ The WebSocket Emulation protocol is layered on top of HTTP and has three parts: 
 
 _This section is non-normative._
 
-The WebSocket Emulation (WSE) protocol is designed to support a client-side WebSocket API with identical semantics
+The WebSocket Emulation Protocol (WSE) is designed to support a client-side WebSocket API with identical semantics
 when compared to a WebSocket API using the WebSocket protocol defined by [RFC 6455](https://tools.ietf.org/html/rfc6455) while
 only making use of (perhaps limited) HTTP APIs at the client, and a corresponding WebSocket Emulation server implementation.
 
@@ -175,7 +175,7 @@ A successful WebSocket Emulation handshake response has status code `201` and th
 
 The first line is an `http` or `https` URL for upstream data transfer of the emulated WebSocket connection.
 
-The second line is an `http` or `https`  URL for upstream data transfer of the emulated WebSocket connection.
+The second line is an `http` or `https`  URL for downstream data transfer of the emulated WebSocket connection.
 
 The upstream and downstream data transfer URLs MAY use different ports than the original WebSocket URL, and they MAY each 
 optionally include query parameters.
@@ -185,11 +185,14 @@ For any handshake response status code other than `201`, the client MUST fail th
 For any handshake response content type other than `text/plain;charset=utf-8`, the client MUST fail the emulated WebSocket 
 connection.
 
-For any handshake response `X-WebSocket-Version` HTTP header value not matching the value sent in the handshake request, clients 
-MUST fail the emulated WebSocket connection.
+For any handshake response `X-WebSocket-Version` HTTP header value not matching the value sent in the handshake request, 
+clients MUST fail the emulated WebSocket connection.
 
-For any handshake response `X-WebSocket-Protocol` HTTP header value not matching one of the values sent in the handshake request,
-the client MUST fail the emulated WebSocket connection.
+For any handshake response `X-WebSocket-Protocol` HTTP header value not matching one of the values sent in the handshake
+request, the client MUST fail the emulated WebSocket connection.
+
+For any handshake response `X-WebSocket-Extensions` HTTP header value indicating the use of an extension not matching one of 
+the extensions sent in the handshake request, the client MUST fail the emulated WebSocket connection.
 
 For an upstream data transfer URL scheme other than `http` or `https`, the client MUST fail the emulated WebSocket 
 connection.
