@@ -1,4 +1,4 @@
-# WebSocket Emulation (WSE) Protocol
+# WebSocket Emulation Protocol (WSE)
 
 ## Abstract
 This document specifies the behavior of WebSocket protocol emulated via HTTP.  It can be used to enable full WebSocket 
@@ -79,7 +79,7 @@ The WebSocket Emulation protocol is layered on top of HTTP and has three parts: 
 
 _This section is non-normative._
 
-The WebSocket Emulation (WSE) protocol is designed to support a client-side WebSocket API with identical semantics
+The WebSocket Emulation Protocol (WSE) is designed to support a client-side WebSocket API with identical semantics
 when compared to a WebSocket API using the WebSocket protocol defined by [RFC 6455](https://tools.ietf.org/html/rfc6455) while
 only making use of (perhaps limited) HTTP APIs at the client, and a corresponding WebSocket Emulation server implementation.
 
