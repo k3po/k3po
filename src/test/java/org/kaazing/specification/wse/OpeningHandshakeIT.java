@@ -81,6 +81,14 @@ public class OpeningHandshakeIT {
     
     @Test
     @Specification({
+    	"request.header.websocket.version.missing/handshake.request",
+    	"request.header.websocket.version.missing/handshake.response" })
+    public void shouldFailHandshakeWhenRequestHeaderWebSocketVersionMissing() throws Exception {
+    	k3po.join();
+    }
+    
+    @Test
+    @Specification({
     	"request.header.websocket.version.not.wseb-1.1/handshake.request",
     	"request.header.websocket.version.not.wseb-1.1/handshake.response" })
     public void shouldFailHandshakeWhenRequestHeaderWebSocketVersionNotWseb11() throws Exception {
@@ -132,6 +140,14 @@ public class OpeningHandshakeIT {
     	"response.header.websocket.protocol.not.negotiated/handshake.request",
     	"response.header.websocket.protocol.not.negotiated/handshake.response" })
     public void shouldFailConnectionWhenWebSocketProtocolNotNegotiated() throws Exception {
+    	k3po.join();
+    }
+    
+    @Test
+    @Specification({
+    	"handshake.response.body.containing.one.url/handshake.request",
+    	"handshake.response.body.containing.one.url/handshake.response" })
+    public void shouldFailConnectionWhenHandshakeResponseBodyContainsOneUrl() throws Exception {
     	k3po.join();
     }
     

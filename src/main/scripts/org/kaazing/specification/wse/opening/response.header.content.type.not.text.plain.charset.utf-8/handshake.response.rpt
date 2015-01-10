@@ -15,5 +15,6 @@ write header "Content-Type" "not-text/plain"
 write header content-length
 
 write "http://localhost:8080/path/uofdbnreiodfkbqi"
+write "\n"
 write "https://localhost:8443/path/kwebfbkjwehkdsfa"
 write close
