@@ -1,4 +1,15 @@
-# K3PO Protocol Droid [![TravisCI](https://travis-ci.org/k3po/k3po.svg?branch=develop)](https://travis-ci.org/k3po/k3po)
+# K3PO
+
+[![Build Status][build-status-image]][build-status]
+[![Issue Stats][pull-requests-image]][pull-requests]
+[![Issue Stats][issues-closed-image]][issues-closed]
+
+[build-status-image]: https://travis-ci.org/k3po/k3po.svg?branch=develop
+[build-status]: https://travis-ci.org/k3po/k3po
+[pull-requests-image]: http://www.issuestats.com/github/k3po/k3po/badge/pr
+[pull-requests]: http://www.issuestats.com/github/k3po/k3po
+[issues-closed-image]: http://www.issuestats.com/github/k3po/k3po/badge/issue
+[issues-closed]: http://www.issuestats.com/github/k3po/k3po
 
 [![Gitter](https://badges.gitter.im/JoinChat.svg)](https://gitter.im/k3po/k3po?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
