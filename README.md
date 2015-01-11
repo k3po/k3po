@@ -1,4 +1,4 @@
-# WebSocket Emulation Protocol Specification
+## WebSocket Emulation Protocol Specification
 
 [![Build Status][build-status-image]][build-status]
 [![Issue Stats][pull-requests-image]][pull-requests]
