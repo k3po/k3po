@@ -8,7 +8,7 @@
 [build-status]: https://travis-ci.org/k3po/k3po.java
 [pull-requests-image]: http://www.issuestats.com/github/k3po/k3po.java/badge/pr
 [pull-requests]: http://www.issuestats.com/github/k3po/k3po.java
-[issues-closed-image]: http://www.issuestats.com/github/k3po/k3po.java/badge/issue
+[issues-closed-image]: http://www.issuestats.com/github/k3po/k3po.java/badge/issue?
 [issues-closed]: http://www.issuestats.com/github/k3po/k3po.java
 
 - JUnit Extension for K3PO Protocol Droid
