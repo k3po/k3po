@@ -80,7 +80,7 @@ The WebSocket Emulation protocol is layered on top of HTTP and has three parts: 
 _This section is non-normative._
 
 The WebSocket Emulation Protocol (WSE) is designed to support a client-side WebSocket API with identical semantics
-when compared to a WebSocket API using the WebSocket protocol defined by [RFC 6455](https://tools.ietf.org/html/rfc6455) while
+when compared to a WebSocket API using the WebSocket protocol defined by [[RFC 6455]][RFC6455] while
 only making use of (perhaps limited) HTTP APIs at the client, and a corresponding WebSocket Emulation server implementation.
 
 For example, it should be possible to provide a compatible [W3C WebSocket API](http://www.w3.org/TR/websockets/) in JavaScript
@@ -89,8 +89,8 @@ required to install any browser plug-ins, instead the emulated WebSocket API sho
 JavaScript, perhaps using an HTML `<script>` tag.
 
 The WebSocket Emulation protocol overhead is kept to a minimum such that performance and scalability can be considered 
-approximately equivalent when compared to the WebSocket protocol defined by [RFC 6455](https://tools.ietf.org/html/rfc6455),
-especially when the majority of data transfer flows from server-to-client.
+approximately equivalent when compared to the WebSocket protocol defined by [[RFC 6455]][RFC6455], especially when the 
+majority of data transfer flows from server-to-client.
 
 ### Security Model
 
@@ -114,7 +114,7 @@ These subprotocol names should follow the guidelines described by the WebSocket 
 ## Conformance Requirements
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and 
-"OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://tools.ietf.org/html/rfc2119).
+"OPTIONAL" in this document are to be interpreted as described in [[RFC 6455]][RFC6455].
 
 ## WebSocket Emulatation URIs
 
@@ -127,10 +127,10 @@ The WebSocket Emulation protocol uses WebSocket protocol URIs, as defined by
 
 To establish an emulated WebSocket connection, a client makes an HTTP handshake request.
 
-* the HTTP handshake request uri scheme MUST be derived from the WebSocket URL by changing `ws` to `http`, or `wss` to `https`. 
+* the HTTP handshake request uri scheme MUST be derived from the WebSocket URL by changing `ws` to `http`, or `wss` to `https`
 * the HTTP handshake request method MUST be `POST` 
 * the HTTP handshake request uri path MUST be derived from the WebSocket URL by appending a suitable handshake encoding path 
-suffix
+  suffix
   * `/;e/cb` for binary encoding
   * `/;e/ct` for text encoding  (see [Binary as Text](#binary-as-text))
   * `/;e/cte` for escaped text encoding  (see [Binary as Escaped Text](#binary-as-escaped-text)) 
@@ -203,20 +203,20 @@ the emulated WebSocket connection.
 For an upstream data transfer URL host not matching the host of the original WebSocket URL, the client MUST fail the emulated 
 WebSocket connection.
 
-For an upstream data transfer URL path not prefixed by the path of the original WebSocket URL, the client MUST fail the emulated 
-WebSocket connection.
+For an upstream data transfer URL path not prefixed by the path of the original WebSocket URL, the client MUST fail the 
+emulated WebSocket connection.
 
 For a downstream data transfer URL scheme other than `http` or `https`, the client MUST fail the emulated WebSocket 
 connection.
 
-For a downstream data transfer URL scheme other than `https` when the original handshake URL uses `https`, the client MUST fail 
+For a downstream data transfer URL scheme other than `https` when the original handshake URL uses `https`, the client MUST fail
 the emulated WebSocket connection.
 
 For a downstream data transfer URL host not matching the host of the original WebSocket URL, the client MUST fail the emulated 
 WebSocket connection.
 
-For a downstream data transfer URL path not prefixed by the path of the original WebSocket URL, the client MUST fail the emulated 
-WebSocket connection.
+For a downstream data transfer URL path not prefixed by the path of the original WebSocket URL, the client MUST fail the 
+emulated WebSocket connection.
 
 ```
 HTTP/1.1 201 Created
@@ -233,8 +233,8 @@ The emulated WebSocket is now in the `CONNECTED` state.
 
 ### Server Handshake Requirements
 
-When a client starts an emulated WebSocket connection, it sends an HTTP handshake request.  The server must parse and and process
-the handshake request to generate a handshake response.
+When a client starts an emulated WebSocket connection, it sends an HTTP handshake request.  The server must parse and and 
+process the handshake request to generate a handshake response.
 
 If the server determines that any of the following conditions are not met by the HTTP handshake request, then the server MUST
 send an HTTP response with a `4xx` status code, such as `400 Bad Request`.
@@ -242,9 +242,9 @@ send an HTTP response with a `4xx` status code, such as `400 Bad Request`.
 * the HTTP handshake request method MUST be `POST` 
 * the HTTP handshake request header `X-WebSocket-Version` MUST have the value `wseb-1.1`
 * the HTTP handshake request header `X-WebSocket-Protocol` is OPTIONAL, and when present indicates a list of alternative 
-protocols to speak in client preference order
+  protocols to speak in client preference order
 * the HTTP handshake request header `X-WebSocket-Extensions` is OPTIONAL, and when present indicates a list of extensions
-supported by the client
+  supported by the client
 * the HTTP handshake request header `X-Accept-Commands` is OPTIONAL, and when present MUST have the value `ping`
 
 If the `X-Accept-Commands` HTTP header is present, then the server MAY send `PING` and `PONG` frames to the client.
@@ -438,11 +438,11 @@ The frames used by an emulated WebSocket connection for upstream and downstream 
 These control frames have the leading bit set, which in [Draft-76](http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76)
 indicates a binary frame payload.
 
-The `PING` control frame code is `0x89`. This is the same frame code as `PING` in [RFC 6455](http://tools.ietf.org/html/rfc6455)
-but only supports a zero length payload.
+The `PING` control frame code is `0x89`. This is the same frame code as `PING` in [[RFC 6455]][RFC6455] but only supports a
+zero length payload.
 
-The `PONG` control frame code is `0x8A`. This is the same frame code as `PONG` in [RFC 6455](http://tools.ietf.org/html/rfc6455)
-but only supports a zero length payload.
+The `PONG` control frame code is `0x8A`. This is the same frame code as `PONG` in [[RFC 6455]][RFC6455] but only supports a 
+zero length payload.
 
 If a client does not include the HTTP `X-Accept-Commands` header with a value of `ping` in the handshake request, then the 
 server MUST NOT send a `PING` or `PONG` frame to the client.
@@ -467,11 +467,11 @@ The client's emulated WebSocket connection is now in the `CLOSING` state.
 When the client receives a `CLOSE` command frame from the server on the HTTP downstream response, the client's emulated 
 WebSocket connection transitions to the `CLOSED` state.
 
-The client SHOULD ignore any data frames received on the downstream HTTP response after the `CLOSE` command frame and before the
-`RECONNECT` command frame.
+The client SHOULD ignore any data frames received on the downstream HTTP response after the `CLOSE` command frame and before 
+the `RECONNECT` command frame.
 
-When the client receives a `CLOSE` command frame followed by a `RECONNECT` command frame, the client SHOULD abort the downstream
-HTTP response if the downstream HTTP response has not already completed.
+When the client receives a `CLOSE` command frame followed by a `RECONNECT` command frame, the client SHOULD abort the 
+downstream HTTP response if the downstream HTTP response has not already completed.
 
 ### Server Close Requirements
 
@@ -495,37 +495,37 @@ the client.  Instead, such intermediaries may buffer the response introducing un
 response of an emulated WebSocket connection.  Once such downstream buffering is detected, there are two possible solutions; 
 long-polling, and secure streaming.
 
-The client detects the presence of a buffering proxy by timing out the arrival of the status code and complete headers from the 
-streaming downstream HTTP response.  When such buffering is detected, some emulated WebSocket frames may be blocked at the proxy, 
-so to avoid data loss, the client sends a second overlapping downstream HTTP request, with the `.ki=p` query parameter to 
-indicate to the server that the `interaction mode` is `proxy`.
+The client detects the presence of a buffering proxy by timing out the arrival of the status code and complete headers from the
+streaming downstream HTTP response.  When such buffering is detected, some emulated WebSocket frames may be blocked at the 
+proxy, so to avoid data loss, the client sends a second overlapping downstream HTTP request, with the `.ki=p` query parameter 
+to indicate to the server that the `interaction mode` is `proxy`.
 
 In reaction to receiving this overlapping `proxy` mode downstream HTTP request for the same emulated WebSocket connection, the 
 initial downstream HTTP response is completed normally with a `RECONNECT` command frame, automatically flushing the entire 
 response body through any buffering proxy.
 
-Then, the response to the second downstream request either redirects the client to an encrypted location for secure streaming, or 
-fall back to long-polling as a last resort.
+Then, the response to the second downstream request either redirects the client to an encrypted location for secure streaming, 
+or fall back to long-polling as a last resort.
 
 When long-polling, any frame sent to the client triggers a controlled reconnect in the same way as
 [Garbage Collection](#garbage-collection).  In this case, the `Content-Length` downstream HTTP response header SHOULD be
 calculated and used instead of the `Connection` downstream HTTP response header with value `close`, so that the long-polling
 TCP connection can be reused. 
 
-In extremely rare situations, where an SSL-terminating load balancer sitting in front of the emulated WebSocket server is acting 
-as a buffering intermediary, long-polling can still be used over SSL-terminated `https`.
+In extremely rare situations, where an SSL-terminating load balancer sitting in front of the emulated WebSocket server is 
+acting as a buffering intermediary, long-polling can still be used over SSL-terminated `https`.
 
 ### Destructive Proxies
-Some HTTP intermediaries, such as transparent and explicit proxies, attempt to reclaim resources for idle HTTP responses that are
-still incomplete after a timeout period.  A heartbeat command frame must be sent to the client at regular intervals to prevent 
-the downstream from being severed by the proxy.
+Some HTTP intermediaries, such as transparent and explicit proxies, attempt to reclaim resources for idle HTTP responses that 
+are still incomplete after a timeout period.  A heartbeat command frame must be sent to the client at regular intervals to 
+prevent the downstream from being severed by the proxy.
 
 When long-polling, the heartbeat frame triggers the completion of the current downstream HTTP response, and the client then 
 performs an immediate reconnect of the downstream with another downstream HTTP request.
 
 Clients MAY request a shorter heartbeat interval by setting the `.kkt` query parameter. For example, a query parameter of 
-`.kkt=20` requests a 20 second interval. This is necessary for either user agents or HTTP intermediaries that shut down in-flight
-HTTP requests after only 30 seconds.
+`.kkt=20` requests a 20 second interval. This is necessary for either user agents or HTTP intermediaries that shut down 
+in-flight HTTP requests after only 30 seconds.
 
 ## Browser Considerations
 
@@ -539,9 +539,9 @@ certain amount of the response body for analysis before exposing any of the resp
 delivery of any emulated WebSocket frames until the buffer size is exceeded. The exact buffer size can be determined by 
 experimentation for different browser implementations. In some cases however it is not necessary.
 
-Padding the beginning of the downstream HTTP response with additional control frames to exceed the content sniffing buffer size 
-allows immediate delivery of emulated WebSocket frames to be delivered to such clients.  The maximum amount of padding required is
-communicated in the request via the `.kp` query parameter.
+Padding the beginning of the downstream HTTP response with additional control frames to exceed the content sniffing buffer size
+allows immediate delivery of emulated WebSocket frames to be delivered to such clients.  The maximum amount of padding required
+is communicated in the request via the `.kp` query parameter.
 ```
 GET /path/kwebfbkjwehkdsfa?.kp=256 HTTP/1.1
 Host: host.example.com:8443
@@ -748,5 +748,6 @@ HTTP response.
 
 [RFC2616](http://tools.ietf.org/html/rfc2616)  "Hypertext Transfer Protocol -- HTTP/1.1"
 
-[RFC6455](http://tools.ietf.org/html/rfc6455)  "The WebSocket Protocol"
+[[RFC 6455]][RFC6455]  "The WebSocket Protocol"
 
+[RFC6455]: https://tools.ietf.org/html/rfc6455
