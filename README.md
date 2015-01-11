@@ -1,4 +1,4 @@
-# WebSocket Protocol Specification
+## WebSocket Protocol Specification
 
 [![Build Status][build-status-image]][build-status]
 [![Issue Stats][pull-requests-image]][pull-requests]
