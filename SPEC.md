@@ -83,7 +83,7 @@ The WebSocket Emulation Protocol (WSE) is designed to support a client-side WebS
 when compared to a WebSocket API using the WebSocket protocol defined by [[RFC 6455]][RFC6455] while
 only making use of (perhaps limited) HTTP APIs at the client, and a corresponding WebSocket Emulation server implementation.
 
-For example, it should be possible to provide a compatible [W3C WebSocket API](http://www.w3.org/TR/websockets/) in JavaScript
+For example, it should be possible to provide a compatible [[W3C WebSocket API][W3C WebSocket API]] in JavaScript
 using only an HTML4 browser's HTTP APIs to implement the WebSocket Emulation protocol. Notably, the end-user should not be 
 required to install any browser plug-ins, instead the emulated WebSocket API should be delivered as part of the Web application 
 JavaScript, perhaps using an HTML `<script>` tag.
@@ -618,10 +618,10 @@ Connection: close
 
 [emulated websocket frames]
 ```
-The charset `windows-1252` [Windows-1252](http://en.wikipedia.org/wiki/Windows-1252) allows bytes to be transferred by the server
-without modification because each character is represented by a single byte and exactly 256 distinct character codes are 
-available, and 224 of those character codes match their byte representations when processed by the client.  The remaining 
-character codes can be mapped to the corresponding binary representations accordingly.
+The charset `windows-1252` [[Windows-1252][Windows-1252]] allows bytes to be transferred by the server without modification
+because each character is represented by a single byte and exactly 256 distinct character codes are available, and 224 of those
+character codes match their byte representations when processed by the client.  The remaining character codes can be mapped to
+the corresponding binary representations accordingly.
 
 ### Binary as Escaped Text
 
@@ -746,8 +746,15 @@ HTTP response.
 
 ## References
 
-[RFC2616](http://tools.ietf.org/html/rfc2616)  "Hypertext Transfer Protocol -- HTTP/1.1"
+[[RFC 2616]][RFC2616]  "Hypertext Transfer Protocol -- HTTP/1.1"
 
 [[RFC 6455]][RFC6455]  "The WebSocket Protocol"
 
+[[W3C WebSocket API][W3C WebSocket API]] "The WebSocket API"
+
+[[Windows-1252][Windows-1252]] "The Windows-1252 Character Set"
+
+[RFC2616]: https://tools.ietf.org/html/rfc2616
 [RFC6455]: https://tools.ietf.org/html/rfc6455
+[W3C WebSocket API]: https://www.w3.org/TR/websockets/
+[Windows-1252]: http://en.wikipedia.org/wiki/Windows-1252
