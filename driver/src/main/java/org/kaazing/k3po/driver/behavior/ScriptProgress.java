@@ -34,6 +34,7 @@ public class ScriptProgress {
     private final String expectedScript;
     private final RegionInfo scriptInfo;
     private final Map<RegionInfo, String> failureInfos;
+    private String observeredScript;
 
     public ScriptProgress(RegionInfo scriptInfo, String expectedScript) {
         this.expectedScript = expectedScript;
@@ -58,19 +59,20 @@ public class ScriptProgress {
     }
 
     public String getObservedScript() {
-
-        if (failureInfos.size() == 0) {
-            // no failures
-            return expectedScript;
-        }
-        else {
-            StringBuilder builder = new StringBuilder();
-            processRegion(builder, scriptInfo, failureInfos);
-            if(!failureInfos.isEmpty()){
-                throw new RuntimeException("Script failure detected but not located");
+        if (observeredScript == null) {
+            if (failureInfos.size() == 0) {
+                // no failures
+                observeredScript =  expectedScript;
+            } else {
+                StringBuilder builder = new StringBuilder();
+                processRegion(builder, scriptInfo, failureInfos);
+                if (!failureInfos.isEmpty()) {
+                    throw new RuntimeException("Script failure detected but not located");
+                }
+                observeredScript = builder.toString();
             }
-            return builder.toString();
         }
+        return observeredScript;
     }
 
     private boolean processRegion(StringBuilder builder, RegionInfo regionInfo, Map<RegionInfo, String> failureInfos) {

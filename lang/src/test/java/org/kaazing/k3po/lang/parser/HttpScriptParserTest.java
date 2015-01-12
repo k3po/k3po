@@ -41,6 +41,7 @@ import static org.kaazing.k3po.lang.test.junit.Assert.assertEquals;
 import java.net.URI;
 
 import org.junit.Test;
+import org.kaazing.k3po.lang.RegionInfo;
 import org.kaazing.k3po.lang.ast.AstReadClosedNode;
 import org.kaazing.k3po.lang.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.ast.AstScriptNode;
@@ -309,6 +310,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
     }
 
     @Test

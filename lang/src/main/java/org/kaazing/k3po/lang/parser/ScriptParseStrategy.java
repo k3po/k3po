@@ -2034,6 +2034,8 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             AstValueMatcher codeMatcher = codeVisitor.visit(ctx.code);
             AstValueMatcher reasonMatcher = reasonVisitor.visit(ctx.reason);
 
+            childInfos().add(codeMatcher.getRegionInfo());
+            childInfos().add(reasonMatcher.getRegionInfo());
             node = new AstReadConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setType("status");
