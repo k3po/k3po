@@ -348,6 +348,18 @@ public class HttpRobotBehaviorIT {
         assertEquals(expected, robot.getObservedScript());
 
     }
+    
+    @Test
+    public void shouldValidateHttpStatusCode() throws Exception{
+        String script = combineScripts("http.write.status.100.rpt",
+                "http.do.not.read.status.100.rpt");
+        
+        String expected = script;
+        robot.prepareAndStart(script).await();
+        robot.finish().await();
+        System.out.println(robot.getObservedScript());
+        assertEquals(expected, robot.getObservedScript());
+    }
 
     private String SCRIPT_PATH = "/src/test/scripts/org/kaazing/robot/driver/http/";
 

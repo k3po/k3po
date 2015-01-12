@@ -66,13 +66,16 @@ public class ScriptProgress {
         else {
             StringBuilder builder = new StringBuilder();
             processRegion(builder, scriptInfo, failureInfos);
+            if(!failureInfos.isEmpty()){
+                throw new RuntimeException("Script failure detected but not located");
+            }
             return builder.toString();
         }
     }
 
     private boolean processRegion(StringBuilder builder, RegionInfo regionInfo, Map<RegionInfo, String> failureInfos) {
 
-        String failure = failureInfos.get(regionInfo);
+        String failure = failureInfos.remove(regionInfo);
         if (failure != null) {
             builder.append(failure);
             if (regionInfo.kind == RegionInfo.Kind.PARALLEL) {

@@ -2002,10 +2002,11 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             node = new AstReadConfigNode();
             node.setType(ctx.HttpMissingKeyword() != null ? "header missing" : "header");
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setValue("name", value);
+            super.visitReadHttpHeaderNode(ctx);
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
 
-            return super.visitReadHttpHeaderNode(ctx);
+            return node;
         }
 
         @Override
