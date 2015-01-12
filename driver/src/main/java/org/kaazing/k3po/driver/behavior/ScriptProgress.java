@@ -62,7 +62,7 @@ public class ScriptProgress {
         if (observeredScript == null) {
             if (failureInfos.size() == 0) {
                 // no failures
-                observeredScript =  expectedScript;
+                observeredScript = expectedScript;
             } else {
                 StringBuilder builder = new StringBuilder();
                 processRegion(builder, scriptInfo, failureInfos);
