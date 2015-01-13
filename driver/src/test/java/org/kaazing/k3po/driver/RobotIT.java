@@ -80,6 +80,9 @@ public class RobotIT {
         }
 
         server.close();
+        do {
+            robot.destroy();
+        } while (!robot.isDestroyed());
     }
 
     @Test
