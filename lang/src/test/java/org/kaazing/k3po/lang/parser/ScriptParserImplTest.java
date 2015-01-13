@@ -19,6 +19,7 @@
 
 package org.kaazing.k3po.lang.parser;
 
+import static org.junit.Assert.assertEquals;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.ACCEPT;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.CLOSE;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.CLOSED;
@@ -535,6 +536,7 @@ public class ScriptParserImplTest {
 				new AstShortLengthBytesMatcher("capture2")));
 
 		assertEquals(expected, actual);
+		assertEquals(2, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -551,6 +553,7 @@ public class ScriptParserImplTest {
 				new AstIntLengthBytesMatcher("capture"),
 				new AstIntLengthBytesMatcher("capture2")));
 		assertEquals(expected, actual);
+		assertEquals(2, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -567,6 +570,7 @@ public class ScriptParserImplTest {
 				new AstLongLengthBytesMatcher("capture"),
 				new AstLongLengthBytesMatcher("capture2")));
 		assertEquals(expected, actual);
+		assertEquals(2, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -582,6 +586,7 @@ public class ScriptParserImplTest {
 				new AstExactTextMatcher("Hello"), new AstExactTextMatcher(
 						"World")));
 		assertEquals(expected, actual);
+		assertEquals(2, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -603,6 +608,7 @@ public class ScriptParserImplTest {
 		// @formatter:on
 
 		assertEquals(expected, actual);
+		assertEquals(2, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -619,6 +625,8 @@ public class ScriptParserImplTest {
 						compile(".+\\r"))));
 
 		assertEquals(expected, actual);
+		assertEquals(2, actual.getRegionInfo().children.size());
+		assertEquals(2, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -642,6 +650,7 @@ public class ScriptParserImplTest {
 						value2)));
 
 		assertEquals(expected, actual);
+		assertEquals(2, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -657,6 +666,7 @@ public class ScriptParserImplTest {
 				new AstFixedLengthBytesMatcher(1024),
 				new AstFixedLengthBytesMatcher(4096)));
 		assertEquals(expected, actual);
+	    assertEquals(2, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -675,6 +685,7 @@ public class ScriptParserImplTest {
 				new AstFixedLengthBytesMatcher(64, "var2")));
 
 		assertEquals(expected, actual);
+		assertEquals(4, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -698,6 +709,7 @@ public class ScriptParserImplTest {
 				new AstVariableLengthBytesMatcher(value2)));
 
 		assertEquals(expected, actual);
+		assertEquals(2, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -722,6 +734,7 @@ public class ScriptParserImplTest {
 				new AstVariableLengthBytesMatcher(value2, "var2")));
 
 		assertEquals(expected, actual);
+	    assertEquals(2, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -736,6 +749,7 @@ public class ScriptParserImplTest {
 		expected.setValues(Arrays.<AstValue> asList(new AstLiteralTextValue(
 				"Hello"), new AstLiteralTextValue("World")));
 		assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -752,6 +766,7 @@ public class ScriptParserImplTest {
 				new AstLiteralBytesValue(
 						new byte[] { (byte) 0x03, (byte) 0x04 })));
 		assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -774,6 +789,7 @@ public class ScriptParserImplTest {
 				value1), new AstExpressionValue(value2)));
 
 		assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -795,6 +811,7 @@ public class ScriptParserImplTest {
 				(byte) 0x02 }), new AstExpressionValue(value1)));
 
 		assertEquals(expected, actual);
+		assertEquals(3, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -818,6 +835,7 @@ public class ScriptParserImplTest {
 		// @formatter:on
 
 		assertEquals(expected, actual);
+		assertEquals(3, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -908,7 +926,7 @@ public class ScriptParserImplTest {
 
 		AstConnectedNode expected = new AstConnectedNodeBuilder().done();
 
-		assertEquals(expected, actual);
+	    assertEquals(expected, actual);
 	}
 
 	@Test
@@ -925,6 +943,7 @@ public class ScriptParserImplTest {
 				.done();
 
 		assertEquals(expected, actual);
+	    assertEquals(1, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -941,7 +960,8 @@ public class ScriptParserImplTest {
 				.done();
 
 		assertEquals(expected, actual);
-	}
+		assertEquals(1, actual.getRegionInfo().children.size());
+    }
 
 	@Test
 	public void shouldParseReadExactShort() throws Exception {
@@ -957,6 +977,7 @@ public class ScriptParserImplTest {
 				.done();
 
 		assertEquals(expected, actual);
+		assertEquals(1, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -973,6 +994,7 @@ public class ScriptParserImplTest {
 				.addExactBytes(new byte[] { 0x00, 0x00, 0x00, 0x05 }).done();
 
 		assertEquals(expected, actual);
+		assertEquals(1, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -991,6 +1013,7 @@ public class ScriptParserImplTest {
 								0x05 }).done();
 
 		assertEquals(expected, actual);
+		assertEquals(1, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -1031,6 +1054,7 @@ public class ScriptParserImplTest {
 				.addExactBytes(new byte[] { 0x01, 0x02, (byte) 0xff }).done();
 
 		assertEquals(expected, actual);
+		assertEquals(1, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -1052,6 +1076,7 @@ public class ScriptParserImplTest {
 								byte[].class)).done();
 
 		assertEquals(expected, actual);
+		assertEquals(1, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -1069,6 +1094,7 @@ public class ScriptParserImplTest {
 				.done();
 
 		assertEquals(expected, actual);
+		assertEquals(1, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -1086,6 +1112,7 @@ public class ScriptParserImplTest {
 				.done();
 
 		assertEquals(expected, actual);
+		assertEquals(1, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -1101,6 +1128,7 @@ public class ScriptParserImplTest {
 				.addExactText("GET $foo").done();
 
 		assertEquals(expected, actual);
+		assertEquals(1, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -1141,6 +1169,7 @@ public class ScriptParserImplTest {
 				.addExactText("DON'T WORK").done();
 
 		assertEquals(expected, actual);
+		assertEquals(1, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -1193,6 +1222,7 @@ public class ScriptParserImplTest {
 				.setBarrierName("BARRIER").done();
 
 		assertEquals(expected, actual);
+		assertEquals(0, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -1208,6 +1238,7 @@ public class ScriptParserImplTest {
 				.setBarrierName("BARRIER").done();
 
 		assertEquals(expected, actual);
+		assertEquals(0, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -1223,6 +1254,7 @@ public class ScriptParserImplTest {
 				.setBarrierName("BARRIER").done();
 
 		assertEquals(expected, actual);
+		assertEquals(0, actual.getRegionInfo().children.size());
 	}
 
 	@Test
@@ -1238,6 +1270,7 @@ public class ScriptParserImplTest {
 				.setBarrierName("BARRIER").done();
 
 		assertEquals(expected, actual);
+		assertEquals(0, actual.getRegionInfo().children.size());
 	}
 
 	// @formatter:off
@@ -1427,7 +1460,6 @@ public class ScriptParserImplTest {
 		AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
 
 		AstScriptNode expected = new AstScriptNodeBuilder()
-		// 
 				.done();
 
 		assertEquals(expected, actual);

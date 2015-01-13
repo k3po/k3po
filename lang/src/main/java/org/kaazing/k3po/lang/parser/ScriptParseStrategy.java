@@ -2014,6 +2014,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             AstLiteralTextValueVisitor visitor = new AstLiteralTextValueVisitor(elFactory, elContext);
             AstLiteralTextValue value = visitor.visit(ctx.name);
+            childInfos().add(value.getRegionInfo());
 
             node = new AstReadConfigNode();
             node.setType("parameter");
@@ -2050,6 +2051,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             AstValueMatcherVisitor visitor = new AstValueMatcherVisitor(elFactory, elContext);
             AstValueMatcher value = visitor.visit(ctx.version);
+            childInfos().add(value.getRegionInfo());
 
             node = new AstReadConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
@@ -2086,6 +2088,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
             AstValue value = visitor.visit(ctx.form);
+            childInfos().add(value.getRegionInfo());
 
             node = new AstWriteConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
@@ -2100,6 +2103,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
             AstValue value = visitor.visit(ctx.name);
+            childInfos().add(value.getRegionInfo());
 
             node = new AstWriteConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
@@ -2148,6 +2152,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
             AstValue value = visitor.visit(ctx.name);
+            childInfos().add(value.getRegionInfo());
 
             node = new AstWriteConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
@@ -2176,8 +2181,12 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             AstValueVisitor codeVisitor = new AstValueVisitor(elFactory, elContext);
             AstValueVisitor reasonVisitor = new AstValueVisitor(elFactory, elContext);
+
             AstValue codeValue = codeVisitor.visit(ctx.code);
+            childInfos().add(codeValue.getRegionInfo());
+
             AstValue reasonValue = reasonVisitor.visit(ctx.reason);
+            childInfos().add(reasonValue.getRegionInfo());
 
             node = new AstWriteConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));

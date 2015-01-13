@@ -60,13 +60,17 @@ public class ScriptProgress {
 
     public String getObservedScript() {
         if (observeredScript == null) {
-            if (failureInfos.size() == 0) {
+            int numberOfFailures = failureInfos.size();
+            if (numberOfFailures == 0) {
                 // no failures
                 observeredScript = expectedScript;
             } else {
                 StringBuilder builder = new StringBuilder();
                 processRegion(builder, scriptInfo, failureInfos);
-                if (!failureInfos.isEmpty()) {
+                // Failures to unexpected events (e.g. channel close) are artificially added
+                // potentially resulting in multiple failures on the same line with only one
+                // being reported
+                if (numberOfFailures <= failureInfos.size()) {
                     throw new RuntimeException("Script failure detected but not located");
                 }
                 observeredScript = builder.toString();
