@@ -1,0 +1,34 @@
+accept http://localhost:8080/preflight
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8080"
+
+write status "200" "OK"
+write version "HTTP/1.1"
+write header "Set-Cookie" "SID=31d4d96e407aad42"
+write close
+
+accept http://localhost:8080/path?query
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8080"
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
+read header "Cookie" "SID=31d4d96e407aad42"
+read header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
+read header "Sec-WebSocket-Version" "13"
+
+write status "101" "Switching Protocols"
+write version "HTTP/1.1"
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
+write flush
+
+# connection established
