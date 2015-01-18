@@ -2002,10 +2002,11 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             node = new AstReadConfigNode();
             node.setType(ctx.HttpMissingKeyword() != null ? "header missing" : "header");
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setValue("name", value);
+            super.visitReadHttpHeaderNode(ctx);
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
 
-            return super.visitReadHttpHeaderNode(ctx);
+            return node;
         }
 
         @Override
@@ -2013,6 +2014,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             AstLiteralTextValueVisitor visitor = new AstLiteralTextValueVisitor(elFactory, elContext);
             AstLiteralTextValue value = visitor.visit(ctx.name);
+            childInfos().add(value.getRegionInfo());
 
             node = new AstReadConfigNode();
             node.setType("parameter");
@@ -2033,6 +2035,8 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             AstValueMatcher codeMatcher = codeVisitor.visit(ctx.code);
             AstValueMatcher reasonMatcher = reasonVisitor.visit(ctx.reason);
 
+            childInfos().add(codeMatcher.getRegionInfo());
+            childInfos().add(reasonMatcher.getRegionInfo());
             node = new AstReadConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setType("status");
@@ -2047,6 +2051,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             AstValueMatcherVisitor visitor = new AstValueMatcherVisitor(elFactory, elContext);
             AstValueMatcher value = visitor.visit(ctx.version);
+            childInfos().add(value.getRegionInfo());
 
             node = new AstReadConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
@@ -2083,6 +2088,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
             AstValue value = visitor.visit(ctx.form);
+            childInfos().add(value.getRegionInfo());
 
             node = new AstWriteConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
@@ -2097,6 +2103,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
             AstValue value = visitor.visit(ctx.name);
+            childInfos().add(value.getRegionInfo());
 
             node = new AstWriteConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
@@ -2145,6 +2152,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
             AstValue value = visitor.visit(ctx.name);
+            childInfos().add(value.getRegionInfo());
 
             node = new AstWriteConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
@@ -2173,8 +2181,12 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
             AstValueVisitor codeVisitor = new AstValueVisitor(elFactory, elContext);
             AstValueVisitor reasonVisitor = new AstValueVisitor(elFactory, elContext);
+
             AstValue codeValue = codeVisitor.visit(ctx.code);
+            childInfos().add(codeValue.getRegionInfo());
+
             AstValue reasonValue = reasonVisitor.visit(ctx.reason);
+            childInfos().add(reasonValue.getRegionInfo());
 
             node = new AstWriteConfigNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));

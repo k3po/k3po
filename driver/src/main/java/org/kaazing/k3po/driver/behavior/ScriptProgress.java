@@ -34,6 +34,7 @@ public class ScriptProgress {
     private final String expectedScript;
     private final RegionInfo scriptInfo;
     private final Map<RegionInfo, String> failureInfos;
+    private String observeredScript;
 
     public ScriptProgress(RegionInfo scriptInfo, String expectedScript) {
         this.expectedScript = expectedScript;
@@ -58,21 +59,29 @@ public class ScriptProgress {
     }
 
     public String getObservedScript() {
-
-        if (failureInfos.size() == 0) {
-            // no failures
-            return expectedScript;
+        if (observeredScript == null) {
+            int numberOfFailures = failureInfos.size();
+            if (numberOfFailures == 0) {
+                // no failures
+                observeredScript = expectedScript;
+            } else {
+                StringBuilder builder = new StringBuilder();
+                processRegion(builder, scriptInfo, failureInfos);
+                // Failures to unexpected events (e.g. channel close) are artificially added
+                // potentially resulting in multiple failures on the same line with only one
+                // being reported
+                if (numberOfFailures <= failureInfos.size()) {
+                    throw new RuntimeException("Script failure detected but not located");
+                }
+                observeredScript = builder.toString();
+            }
         }
-        else {
-            StringBuilder builder = new StringBuilder();
-            processRegion(builder, scriptInfo, failureInfos);
-            return builder.toString();
-        }
+        return observeredScript;
     }
 
     private boolean processRegion(StringBuilder builder, RegionInfo regionInfo, Map<RegionInfo, String> failureInfos) {
 
-        String failure = failureInfos.get(regionInfo);
+        String failure = failureInfos.remove(regionInfo);
         if (failure != null) {
             builder.append(failure);
             if (regionInfo.kind == RegionInfo.Kind.PARALLEL) {

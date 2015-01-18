@@ -19,6 +19,7 @@
 
 package org.kaazing.k3po.lang.parser;
 
+import static org.junit.Assert.assertEquals;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.READ_CLOSED;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.READ_HTTP_HEADER;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.READ_HTTP_METHOD;
@@ -72,6 +73,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -90,6 +92,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -108,6 +111,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -127,6 +131,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -146,6 +151,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -163,6 +169,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(0, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -180,6 +187,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(0, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -198,6 +206,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -216,6 +225,9 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        // Zero list region info because of WriteConfigNode parsing but perhaps we
+        // should change that
+        assertEquals(0, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -235,6 +247,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -254,6 +267,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -272,6 +286,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -290,6 +305,9 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        // Zero list region info because of WriteConfigNode parsing but perhaps we
+        // should change that
+        assertEquals(0, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -309,6 +327,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -328,6 +347,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -344,6 +364,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(0, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -360,6 +381,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(0, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -376,6 +398,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(0, actual.getRegionInfo().children.size());
     }
 
      @Test

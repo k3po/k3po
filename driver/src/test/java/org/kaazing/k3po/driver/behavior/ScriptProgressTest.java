@@ -77,7 +77,7 @@ public class ScriptProgressTest {
 
         ScriptProgress progress = new ScriptProgress(scriptInfo, script);
         progress.addScriptFailure(readAST.getRegionInfo(), "closed");
-;
+
         String observedScript = progress.getObservedScript();
         // @formatter:off
         String expectedScript =
@@ -1459,6 +1459,41 @@ public class ScriptProgressTest {
         // @formatter:on
 
         assertEquals(expectedScript, observedScript);
+    }
+
+    @Test
+    public void testCacheResultOk() throws Exception {
+        // @formatter:off
+        String script =
+                "connect tcp://localhost:8080\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
+        // @formatter:on
+        ScriptParser parser = new ScriptParserImpl();
+        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstStreamNode connectAST = scriptAST.getStreams().get(0);
+        AstRegion closedAST = connectAST.getStreamables().get(2);
+
+        RegionInfo scriptInfo = scriptAST.getRegionInfo();
+
+        ScriptProgress progress = new ScriptProgress(scriptInfo, script);
+        progress.addScriptFailure(closedAST.getRegionInfo(), "OPEN");
+
+        String observedScript = progress.getObservedScript();
+
+        String expectedScript =
+                "connect tcp://localhost:8080\n" +
+                "connected\n" +
+                "close\n" +
+                "OPEN\n";
+
+        assertEquals(expectedScript, observedScript);
+        // failed scripts aren't idempotent on internal implementation
+        // but should return the same observed script
+        observedScript = progress.getObservedScript();
+        assertEquals(expectedScript, observedScript);
+
     }
 
 }
