@@ -54,6 +54,14 @@ public class OpeningHandshakeIT {
 
     @Test
     @Specification({
+        "request.header.cookie/handshake.request",
+        "request.header.cookie/handshake.response" })
+    public void shouldEstablishConnectionWithCookieRequestHeader() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
         "request.headers.random.case/handshake.request",
         "request.headers.random.case/handshake.response" })
     public void shouldEstablishConnectionWithRandomCaseRequestHeaders() throws Exception {
