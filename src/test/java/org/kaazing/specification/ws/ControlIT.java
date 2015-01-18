@@ -49,6 +49,14 @@ public class ControlIT {
 
     @Test
     @Specification({
+            "client.send.close.payload.length.1/handshake.request.and.frame",
+            "client.send.close.payload.length.1/handshake.response.and.frame" })
+    public void shouldEchoClientCloseFrameWithPayloadSize1() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
         "client.send.close.payload.length.125/handshake.request.and.frame",
         "client.send.close.payload.length.125/handshake.response.and.frame" })
     public void shouldEchoClientCloseFrameWithPayload() throws Exception {
