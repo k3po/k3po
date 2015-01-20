@@ -1,20 +1,20 @@
-accept tcp://localhost:8080
-
+accept http://localhost:8080/path?query
+accepted
 connected
 
-write method "GET"
-write version "HTTP/1.1"
-write header host
-write header "Upgrade" "h2c"
-write header "Connection" "Upgrade, HTTP2-Settings"
+read method "GET"
+read version "HTTP/1.1"
+read header host
+read header "Upgrade" "h2c"
+read header "Connection" "Upgrade, HTTP2-Settings"
 
 # write the HTTP2-Settings header for the SETTINGS_HEADER_TABLE_SIZE
 #   setting set to 8192 octets (the default is 4096)
-write header "HTTP2-Settings" "AAEAACAA"
+read header "HTTP2-Settings" /(?<settings>[a-zA-Z0-9\-_=]{6})/
 
-read status "101" /.+/
-read version "HTTP/1.1"
-read header "Upgrade" "h2c"
-read header "Connection" "Upgrade"
+write status "101" /.+/
+write version "HTTP/1.1"
+write header "Upgrade" "h2c"
+write header "Connection" "Upgrade"
 
 # connection established
