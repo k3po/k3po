@@ -49,6 +49,14 @@ public class OpeningHandshakeIT {
     
     @Test
     @Specification({
+        "request.header.origin/handshake.request",
+        "request.header.origin/handshake.response" })
+    public void shouldEstablishConnectionWithRequestHeaderOrigin() throws Exception {
+        k3po.join();
+    }
+    
+    @Test
+    @Specification({
         "request.header.websocket.protocol/handshake.request",
         "request.header.websocket.protocol/handshake.response" })
     public void shouldEstablishConnectionWithRequestHeaderWebSocketProtocol() throws Exception {
@@ -73,8 +81,24 @@ public class OpeningHandshakeIT {
     
     @Test
     @Specification({
-    	"request.header.method.not.post/handshake.request",
-    	"request.header.method.not.post/handshake.response" })
+        "upstream.url.port.different.from.websocket.url.port/handshake.request",
+        "upstream.url.port.different.from.websocket.url.port/handshake.response" })
+    public void shouldEstablishConnectionWhenUpstreamUrlPortDifferentFromWebSocketUrlPort() throws Exception {
+    	k3po.join();
+    }
+    
+    @Test
+    @Specification({
+        "downstream.url.port.different.from.websocket.url.port/handshake.request",
+        "downstream.url.port.different.from.websocket.url.port/handshake.response" })
+    public void shouldEstablishConnectionWhenDownstreamUrlPortDifferentFromWebSocketUrlPort() throws Exception {
+    	k3po.join();
+    }
+    
+    @Test
+    @Specification({
+    	"request.method.not.post/handshake.request",
+    	"request.method.not.post/handshake.response" })
     public void shouldFailHandshakeWhenRequestMethodNotPost() throws Exception {
     	k3po.join();
     }

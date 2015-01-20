@@ -171,7 +171,7 @@ challenge (status code `401`) before the application sees the effective HTTP han
 is considered outside the scope of this specification.
 
 A successful WebSocket Emulation handshake response has status code `201` and the response body with content type 
-`text/plain;charset=utf-8` consisting of two lines separated by a `\n` linefeed character.
+`text/plain;charset=utf-8` consisting of two lines each followed by a `\n` linefeed character.
 
 The first line is an `http` or `https` URL for upstream data transfer of the emulated WebSocket connection.
 
@@ -265,7 +265,7 @@ specification.
 sent by the client
 * the HTTP handshake response header `X-WebSocket-Extensions` is OPTIONAL, with a list of client-supported extensions that are
 enabled by the server for this emulated WebSocket connection
-* the HTTP handshake response body must contain two URLs separated by a `\n` (LF) character
+* the HTTP handshake response body must contain two URLs each by a `\n` (LF) character
 
 The first URL in the response body is the upstream data transfer URL.
 

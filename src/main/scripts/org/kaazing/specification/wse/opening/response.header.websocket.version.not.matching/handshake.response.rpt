@@ -4,7 +4,6 @@ connected
 
 read method "POST"
 read version "HTTP/1.1"
-read header "Origin" "http://localhost:8080"
 read header "X-WebSocket-Version" "wseb-1.1"
 read closed
 
@@ -14,7 +13,24 @@ write header "X-WebSocket-Version" "wseb-1.2"
 write header "Content-Type" "text/plain;charset=utf-8"
 write header content-length
 
-write "http://localhost:8080/path/uofdbnreiodfkbqi"
-write "\n"
-write "https://localhost:8443/path/kwebfbkjwehkdsfa"
+write "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
+write "http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1\n"
+write notify CREATED
+write close
+
+accept http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh
+accepted
+connected
+
+read await CREATED
+read method "POST"
+read version "HTTP/1.1"
+read header "Content-Type" "application/octet-stream"
+
+read [0x01 0x30 0x32 0xFF]
+read closed
+
+write status "200" "OK"
+write version "HTTP/1.1"
+write header content-length
 write close

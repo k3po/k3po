@@ -4,7 +4,6 @@ connected
 
 read method "POST"
 read version "HTTP/1.1"
-read header "Origin" "http://localhost:8080"
 read closed
 
 write status "400" "Bad Request" 

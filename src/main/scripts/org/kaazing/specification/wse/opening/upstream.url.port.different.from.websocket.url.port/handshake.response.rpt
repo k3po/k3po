@@ -1,3 +1,6 @@
+property upstreamPath ${wse:uniqueId()}
+property downstreamPath ${wse:uniqueId()}
+
 accept http://localhost:8080/path/;e/cb?query
 accepted
 connected
@@ -5,7 +8,6 @@ connected
 read method "POST"
 read version "HTTP/1.1"
 read header "X-WebSocket-Version" "wseb-1.1"
-read /.+/
 read closed
 
 write status "201" "Created" 
@@ -14,6 +16,6 @@ write header "X-WebSocket-Version" "wseb-1.1"
 write header "Content-Type" "text/plain;charset=utf-8"
 write header content-length
 
-write "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
-write "http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1\n"
+write "http://localhost:8000/path/"  ${upstreamPath} "\n"
+write "http://localhost:8080/path/" ${downstreamPath} "\n"
 write close
