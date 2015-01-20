@@ -9,7 +9,7 @@ write header "Connection" "Upgrade, HTTP2-Settings"
 
 # write the HTTP2-Settings header for the SETTINGS_HEADER_TABLE_SIZE
 #   setting set to 8192 octets (the default is 4096)
-write header "HTTP2-Settings" ${http2:settingsWithHeaderTableSize8192}
+write header "HTTP2-Settings" ${http2:settingsWithHeaderTableSize8192()}
 
 read status "101" /.+/
 read version "HTTP/1.1"

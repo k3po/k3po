@@ -4,7 +4,7 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
-read header host
+read header "Host" "localhost:8080"
 read header "Upgrade" "h2c"
 read header "Connection" "Upgrade, HTTP2-Settings"
 
@@ -12,9 +12,10 @@ read header "Connection" "Upgrade, HTTP2-Settings"
 #   setting set to 8192 octets (the default is 4096)
 read header "HTTP2-Settings" /(?<settings>[a-zA-Z0-9\-_=]{6})/
 
-write status "101" /.+/
+write status "101" "Switching Protocols"
 write version "HTTP/1.1"
 write header "Upgrade" "h2c"
 write header "Connection" "Upgrade"
+write flush
 
 # connection established
