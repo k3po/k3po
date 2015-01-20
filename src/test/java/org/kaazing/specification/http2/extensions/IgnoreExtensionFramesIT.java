@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kaazing.specification.http2.extenstions;
+package org.kaazing.specification.http2.extensions;
 
 /**
  * HTTP 2 - draft 16, section 5.5 "Extending HTTP/2"

@@ -1,0 +1,20 @@
+accept tcp://localhost:8080
+
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "Upgrade" "h2c"
+write header "Connection" "Upgrade, HTTP2-Settings"
+
+# write the HTTP2-Settings header for the SETTINGS_HEADER_TABLE_SIZE
+#   setting set to 8192 octets (the default is 4096)
+write header "HTTP2-Settings" "AAEAACAA"
+
+read status "101" /.+/
+read version "HTTP/1.1"
+read header "Upgrade" "h2c"
+read header "Connection" "Upgrade"
+
+# connection established
