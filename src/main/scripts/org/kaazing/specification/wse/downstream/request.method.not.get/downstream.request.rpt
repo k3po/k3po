@@ -6,13 +6,11 @@ write version "HTTP/1.1"
 write header host
 write header content-length
 write header "X-WebSocket-Version" "wseb-1.1"
-write header "X-WebSocket-Extensions" "primary, secondary"
 write close
 
 read status "201" /.+/
 read version "HTTP/1.1"
 read header "X-WebSocket-Version" "wseb-1.1"
-read header "X-WebSocket-Extensions" /(?!primary|secondary)/
 read header "Content-Type" "text/plain;charset=utf-8"
 
 read "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
@@ -20,10 +18,26 @@ read "http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1\n"
 read notify CREATED
 read closed
 
-connect http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh
+# Downstream
+connect http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1
 connected
 
 write await CREATED
+write method "POST"
+write version "HTTP/1.1"
+write header host
+write header content-length
+write close
+
+read status /4\d\d/ /.+/
+read notify DOWNSTREAM_RESPONSE_RECEIVED
+read closed
+
+# Upstream
+connect http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh
+connected
+
+write await DOWNSTREAM_RESPONSE_RECEIVED
 write method "POST"
 write version "HTTP/1.1"
 write header host

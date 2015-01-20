@@ -1,5 +1,6 @@
 package org.kaazing.specification.wse;
 
+import java.nio.charset.Charset;
 import java.util.Random;
 
 import org.kaazing.k3po.lang.el.Function;

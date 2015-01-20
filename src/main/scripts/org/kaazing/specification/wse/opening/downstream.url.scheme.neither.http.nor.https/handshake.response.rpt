@@ -28,6 +28,7 @@ read version "HTTP/1.1"
 read header "Content-Type" "application/octet-stream"
 
 read [0x01 0x30 0x32 0xFF]
+read [0x01 0x30 0x31 0xFF]
 read closed
 
 write status "200" "OK"

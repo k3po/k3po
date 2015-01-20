@@ -28,6 +28,7 @@ write header host
 write header "Content-Type" "application/octet-stream"
 write header content-length
 write [0x01 0x30 0x32 0xFF]
+write [0x01 0x30 0x31 0xFF]
 write close
 
 read status "200" /.+/
