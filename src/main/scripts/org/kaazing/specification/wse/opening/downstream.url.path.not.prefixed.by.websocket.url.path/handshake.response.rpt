@@ -34,5 +34,3 @@ write status "200" "OK"
 write version "HTTP/1.1"
 write header content-length
 write close
-
-

@@ -16,4 +16,3 @@ read header "Content-Type" "text/plain;charset=utf-8"
 read /^http:\/\/localhost:8080\/(?!path\/).+?\n/
 read /http:\/\/localhost:8080\/path\/.+?\n/
 read closed
-

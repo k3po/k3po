@@ -15,6 +15,6 @@ read version "HTTP/1.1"
 read header "X-WebSocket-Version" "wseb-1.1"
 read header "Content-Type" "text/plain;charset=utf-8"
 
-read "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
-read "http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1\n"
+read /http:\/\/localhost:8080\/path\/.+?\n/
+read /http:\/\/localhost:8080\/path\/.+?\n/
 read closed
