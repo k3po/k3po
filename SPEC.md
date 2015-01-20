@@ -171,7 +171,7 @@ challenge (status code `401`) before the application sees the effective HTTP han
 is considered outside the scope of this specification.
 
 A successful WebSocket Emulation handshake response has status code `201` and the response body with content type 
-`text/plain;charset=utf-8` consisting of two lines separated by a `\n` linefeed character.
+`text/plain;charset=utf-8` consisting of two lines each followed by a `\n` linefeed character.
 
 The first line is an `http` or `https` URL for upstream data transfer of the emulated WebSocket connection.
 
@@ -265,7 +265,7 @@ specification.
 sent by the client
 * the HTTP handshake response header `X-WebSocket-Extensions` is OPTIONAL, with a list of client-supported extensions that are
 enabled by the server for this emulated WebSocket connection
-* the HTTP handshake response body must contain two URLs separated by a `\n` (LF) character
+* the HTTP handshake response body must contain two URLs each by a `\n` (LF) character
 
 The first URL in the response body is the upstream data transfer URL.
 
@@ -353,9 +353,6 @@ The server MUST flush these HTTP response headers to the client even before data
 If the `.kp` parameter is present, see [Content-Type Sniffing](#content-type-sniffing) for further server requirements when 
 attaching the downstream.
 
-If the upstream HTTP request transfer is either incomplete or else complete but does not end in a `RECONNECT` command frame, 
-then the server should consider this as unexpected connection loss for the emulated WebSocket connection.
-
 ## Sending the Upstream Request
 
 ### Client Upstream Requirements
@@ -405,6 +402,9 @@ response as follows.
 
 The server MAY choose to delay the HTTP upstream response until some or all of the emulated WebSocket frames from the upstream
 request body have been processed to throttle the emulated WebSocket upstream from the client.
+
+If the upstream HTTP request transfer is either incomplete or else complete but does not end in a `RECONNECT` command frame, 
+then the server should consider this as unexpected connection loss for the emulated WebSocket connection.
 
 ## Data Frames
 
