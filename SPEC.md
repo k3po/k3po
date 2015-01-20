@@ -353,9 +353,6 @@ The server MUST flush these HTTP response headers to the client even before data
 If the `.kp` parameter is present, see [Content-Type Sniffing](#content-type-sniffing) for further server requirements when 
 attaching the downstream.
 
-If the upstream HTTP request transfer is either incomplete or else complete but does not end in a `RECONNECT` command frame, 
-then the server should consider this as unexpected connection loss for the emulated WebSocket connection.
-
 ## Sending the Upstream Request
 
 ### Client Upstream Requirements
@@ -405,6 +402,9 @@ response as follows.
 
 The server MAY choose to delay the HTTP upstream response until some or all of the emulated WebSocket frames from the upstream
 request body have been processed to throttle the emulated WebSocket upstream from the client.
+
+If the upstream HTTP request transfer is either incomplete or else complete but does not end in a `RECONNECT` command frame, 
+then the server should consider this as unexpected connection loss for the emulated WebSocket connection.
 
 ## Data Frames
 
