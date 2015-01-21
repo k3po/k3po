@@ -16,8 +16,30 @@
 
 package org.kaazing.specification.http2.prioritization;
 
+import org.junit.Test;
+
 /**
  * HTTP 2 - draft 16, section 5.3 "Stream priority" (excluding stream dependencies)
  */
 public class SimpleStreamPrioritizationIT {
+    @Test
+    public void processPriorityFrame() {
+        // The PRIORITY frame (type=0x2) specifies the sender-advised priority
+        // of a stream (Section 5.3).  It can be sent at any time for any
+        // stream, including idle or closed streams.
+    }
+
+    @Test
+    public void rejectPriorityFrameForStreamZero() {
+        // The PRIORITY frame is associated with an existing stream.  If a
+        // PRIORITY frame is received with a stream identifier of 0x0, the
+        // recipient MUST respond with a connection error (Section 5.4.1) of
+        // type PROTOCOL_ERROR.
+    }
+
+    @Test
+    public void rejectPriorityFrameWithInvalidSize() {
+        // A PRIORITY frame with a length other than 5 octets MUST be treated as
+        // a stream error (Section 5.4.2) of type FRAME_SIZE_ERROR.
+    }
 }

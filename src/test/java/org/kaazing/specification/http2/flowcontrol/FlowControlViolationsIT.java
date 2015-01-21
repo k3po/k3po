@@ -16,8 +16,26 @@
 
 package org.kaazing.specification.http2.flowcontrol;
 
+import org.junit.Test;
+
 /**
  * HTTP 2 - draft 16, section 5.2 "Flow Control"
  */
 public class FlowControlViolationsIT {
+    // 5.2.1.  Flow Control Principles
+    //
+    // #3 [snip] A sender MUST respect flow control limits imposed by a receiver.
+    // Clients, servers and intermediaries all independently advertise
+    // their flow control window as a receiver and abide by the flow control
+    // limits set by their peer when sending.
+
+    // As a result of the above section in the spec, and due to Denial of Service concerns,
+    // a receiver MAY send a GOAWAY frame to a mis-behaving sender and close the connection.
+    // This test will assert that behavior.
+
+    @Test
+    public void shouldCloseConnectionThatViolatesFlowControl() {
+        // This test will establish a flow control window that is then violated by the
+        // client resulting in the server sending a GOAWAY frame and closing the connection.
+    }
 }

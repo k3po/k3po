@@ -16,8 +16,19 @@
 
 package org.kaazing.specification.http2.data;
 
+import org.junit.Test;
+
 /**
  * HTTP 2 - draft 16, sections 5.1 "Stream States" and 6.1 "DATA" (Frame Definitions)
  */
 public class ProcessMultiStreamDataIT {
+    @Test
+    public void shouldProcessMultipleStreamsOfDataFrames() {
+        // simple test that negotiates http2, gets data frame for
+        // initial response, then initiates multiple GET requests
+        // that result in streams with overlapping data frames (e.g.
+        // stream 2 sends a data frame without ES flag, stream 3 does likewise,
+        // stream 2 sends another, stream 4 sends a data frame without ES flag,
+        // stream 3 sends data frame, then 4, 3, 2, followed by 2-ES, 3-ES, 4-ES.
+    }
 }
