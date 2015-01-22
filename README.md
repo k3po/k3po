@@ -19,8 +19,8 @@ The integration tests fall into the following categories:
 
 * Establish Connection
   * No Authentication Required
-  * GSSAPI (Required)
-  * Username/Password (optional)
+  * GSSAPI (Required) -- see [RFC1961](https://tools.ietf.org/html/rfc1961)
+  * Username/Password (optional) -- see [RFC1929](https://tools.ietf.org/html/rfc1929)
   * negative tests (no acceptable authentication method)
 * Requests
   * Connect
