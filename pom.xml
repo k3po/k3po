@@ -25,7 +25,7 @@
     <version>1.0.0-alpha-1-SNAPSHOT</version>
 
     <name>HTTP 2.0 Protocol Specification</name>
-    <url>https://github.com/kaazing/specification.http2</url>
+    <url>https://github.com/k3po/specification.http2</url>
     <description>HTTP 2.0 Protocol specification</description>
     <packaging>jar</packaging>
 
