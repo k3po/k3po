@@ -39,8 +39,8 @@
     <inceptionYear>2014</inceptionYear>
 
     <scm>
-        <url>https://github.com/kaazing/specification.http2.git</url>
-        <connection>scm:git:https://github.com/kaazing/specification.http2.git</connection>
+        <url>https://github.com/k3po/specification.http2.git</url>
+        <connection>scm:git:https://github.com/k3po/specification.http2.git</connection>
     </scm>
 
     <properties>
