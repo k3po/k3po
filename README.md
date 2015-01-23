@@ -1,7 +1,5 @@
-## HTTP/1.1 Protocol Specification
-==================
+# HTTP/1.1 Protocol Specification
 [![Build Status][build-status-image]][build-status]
-
 [build-status-image]: https://travis-ci.org/k3po/specification.http.svg?branch=develop
 [build-status]: https://travis-ci.org/k3po/specification.http
 
