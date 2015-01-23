@@ -11,7 +11,7 @@
 [issues-closed-image]: http://www.issuestats.com/github/k3po/specification.socks5/badge/issue
 [issues-closed]: http://www.issuestats.com/github/k3po/specification.socks5
 
-This project uses [K3PO](http://github.com/k3po/k3po) to to help
+This project uses [K3PO](http://github.com/k3po/k3po) to help
 [SOCKS5](https://tools.ietf.org/html/rfc1928) implementations
 automate their verification of the necessary requirements.
 
