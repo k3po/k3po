@@ -110,4 +110,30 @@ public class ConnectWithGssApiIT {
 
 
 // more info at: http://docs.oracle.com/javase/7/docs/technotes/guides/security/jgss/tutorials/BasicClientServer.html#ExchangeMsgs
+    
+    // The final algorithm for the client will be
+    //    - create the GSSContext
+    //    - create a dummy token
+    //    - send the dummy token
+    //    - loop:
+    //        - read the real token back from server
+    //        - apply token to sec context
+    //        - write resulting token to server
+    //    - end loop: connection established
+    //    - send a message: e.g. a BIND request (verify MIC from server???)
+    //    - read a response: e.g. BIND established
+    //    - read any additional responses required (e.g. 2nd bind meaning a connection has been
+    //                                              made to the bind and is being proxied through)
+
+    // The final algorithm for the server will be
+    //    - create the GSSContext
+    //    - loop:
+    //        - read a token from client
+    //        - apply token to sec context
+    //        - write resulting token to client
+    //    - end loop: connection established
+    //    - read a message: e.g. a BIND request (send MIC to client???)
+    //    - send a response: e.g. BIND established
+    //    - send any additional responses required (e.g. 2nd bind meaning a connection has been
+    //                                              made to the bind and is being proxied through)
 }
