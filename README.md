@@ -11,7 +11,7 @@
 [issues-closed-image]: http://www.issuestats.com/github/k3po/specification.http2/badge/issue
 [issues-closed]: http://www.issuestats.com/github/k3po/specification.http2
 
-This project uses [K3PO](http://github.com/k3po/k3po) to to help
+This project uses [K3PO](http://github.com/k3po/k3po) to help
 [HTTP 2.0](https://tools.ietf.org/html/draft-ietf-httpbis-http2-16) implementations
 automate their verification of the necessary requirements.
 
