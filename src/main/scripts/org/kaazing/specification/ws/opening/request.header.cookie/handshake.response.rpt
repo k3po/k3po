@@ -5,10 +5,12 @@ connected
 read method "GET"
 read version "HTTP/1.1"
 read header "Host" "localhost:8080"
+read closed
 
 write status "200" "OK"
 write version "HTTP/1.1"
 write header "Set-Cookie" "SID=31d4d96e407aad42"
+write header content-length
 write close
 
 accept http://localhost:8080/path?query
