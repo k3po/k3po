@@ -55,7 +55,12 @@
 
         <dependency>
             <groupId>de.odysseus.juel</groupId>
-            <artifactId>juel</artifactId>
+            <artifactId>juel-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>de.odysseus.juel</groupId>
+            <artifactId>juel-impl</artifactId>
         </dependency>
     </dependencies>
 
