@@ -9,7 +9,7 @@ read closed
 
 write status "200" "OK"
 write version "HTTP/1.1"
-write header "Set-Cookie" "SID=31d4d96e407aad42"
+write header "Set-Cookie" "SID=31d4d96e407aad42; Domain=.local"
 write header content-length
 write close
 

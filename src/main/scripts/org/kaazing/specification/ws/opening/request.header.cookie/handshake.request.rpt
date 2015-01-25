@@ -8,7 +8,7 @@ write close
 
 read status "200" /.+/
 read version "HTTP/1.1"
-read header "Set-Cookie" "SID=31d4d96e407aad42"
+read header "Set-Cookie" "SID=31d4d96e407aad42; Domain=.local"
 read notify SET_COOKIE
 read closed
 
