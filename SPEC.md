@@ -33,7 +33,7 @@ Copyright (c) 2008 Kaazing Corporation. All rights reserved.
     * [Origin Request Headers](#origin-request-headers)
     * [Origin Query Parameter](#origin-query-parameter)
     * [Same-Origin Access Control Headers](#same-origin-access-control-headers)
-    * [Target Origin Resources](#target-origin-resources)
+    * [Target-Origin Resources](#target-origin-resources)
   * [References](#references)
 
 ## Introduction
@@ -595,7 +595,7 @@ If an HTTP client runtime requires the presence of `Access-Control-*` headers in
 then the client MUST include a `.kac=ex` query parameter to override the standard behavior and explicitly include the
 `Access-Control-*` headers, even if the request is same-origin.
 
-### Target Origin Resources
+### Target-Origin Resources
 Each client platform, such as JavaScript, Flash, Silverlight need additional resources to reach the target origin.  These fall 
 into one of two categories; bridge code executing in the target origin security sandbox, and out-of-band resources that grant 
 the client runtime access to the target origin.
@@ -609,7 +609,7 @@ being accessed._
 
 The following URLs describe client runtime authorization resources:
 
-| Client Technology        | Target Origin URL                                |
+| Client Technology        | Target-Origin URL                                |
 |--------------------------|--------------------------------------------------|
 | Silverlight              |`http://target.example.com/clientaccesspolicy.xml`|
 | Flash, Java, Silverlight |`http://target.example.com/crossdomain.xml`       |
