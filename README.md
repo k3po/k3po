@@ -1,4 +1,4 @@
-## HTTP Emulation Protocol Specification
+## HTTP Extension and Emulation Protocol Specification
 
 [![Build Status][build-status-image]][build-status]
 [![Issue Stats][pull-requests-image]][pull-requests]
@@ -11,7 +11,7 @@
 [issues-closed-image]: http://www.issuestats.com/github/k3po/specification.httpe/badge/issue
 [issues-closed]: http://www.issuestats.com/github/k3po/specification.httpe
 
-This project uses [K3PO](http://github.com/k3po/k3po) to to help HTTP Emulation Protocol ([HTTPE](SPEC.md)) implementations automate their verification of the necessary requirements.
+This project uses [K3PO](http://github.com/k3po/k3po) to to help HTTP Extension and Emulation Protocol ([HTTPXE](SPEC.md)) implementations automate their verification of the necessary requirements.
 
 The integration tests fall into the following categories:
  * [TODO]
