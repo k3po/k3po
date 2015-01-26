@@ -31,7 +31,7 @@ Copyright (c) 2008 Kaazing Corporation. All rights reserved.
     * [Response Headers](#response-headers)
     * [Response Bodies](#response-bodies)
   * [Origin Security](#origin-security)
-    * [Origin Request Headers](#origin-request=headers)
+    * [Origin Request Headers](#origin-request-headers)
     * [Origin Query Parameter](#origin-query-parameter)
     * [Same-Origin Access Control Headers](#same-origin-access-control-headers)
     * [Target Origin Resources](#target-origin-resources)
