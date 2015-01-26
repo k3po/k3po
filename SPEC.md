@@ -27,9 +27,8 @@ Copyright (c) 2008 Kaazing Corporation. All rights reserved.
     * [Method Definitions](#method-definitions)
     * [Request Headers](#request-headers)
   * [Response Requirements](#response-requirements)
-    * [Status Code Definitions](#status-code-definitions)
+    * [Response Status Codes](#response-status-codes)
     * [Response Headers](#response-headers)
-    * [Response Bodies](#response-bodies)
   * [Origin Security](#origin-security)
     * [Origin Request Headers](#origin-request-headers)
     * [Origin Query Parameter](#origin-query-parameter)
@@ -318,7 +317,13 @@ If responses to the extension method MUST NOT include any content, then the emul
 header with a value `0`.
 
 ### Request Headers
-The HTTP content-type for an HTTPXE request MUST be `application/x-message-http`.  This MUST either specified using the 
+The HTTP `X-Next-Protocol` header value for an HTTPXE request SHOULD be `httpxe/1.1`.  If the client HTTP runtime cannot specify
+such an HTTP header, then the `.knp` query parameter MUST be present with with value `httpxe/1.1`.
+
+**Note** for backwards compatibility, the next protocol may be inferred when neither `X-Next-Protocol` header nor `.knp` query
+parameter are present.  Clients relying on such inference are _not_ considered compliant with this specification.
+
+The HTTP content-type for an HTTPXE request MUST be `application/x-message-http`. This MUST either specified using the 
 `Content-Type` header, or the `Content-Type` MUST be omitted and the HTTP content-type MUST be specified in the value of 
 the `.kct` query parameter instead.
 
@@ -391,7 +396,30 @@ Content-Length: 6
 
 ## Response Requirements
 
-### Status Code Definitions
+Responses are generally enveloped as shown below: 
+```
+200 OK HTTP/1.1
+Content-Type: application/x-message-http
+Content-Length: ...
+
+201 Created HTTP/1.1
+Content-Type: ...
+Content-Length: 33
+
+```
+is treated equivalently to
+```
+201 Created HTTP/1.1
+Content-Type: ...
+Content-Length: 33
+
+```
+
+However, some status codes require that the responses are _not_ enveloped - 
+see [Response Status Codes](response-status-codes) and different content-types may be required in the response to handle
+the limitations of some HTTP clients - see [Response Headers](#response-headers).
+
+### Response Status Codes
 An HTTP client may not be able to represent status codes other than `200 OK`, `304 Not Modified` or `404 Not Found`, so status 
 codes may need to wrapped as the first part of the response body content.
 
@@ -430,7 +458,6 @@ _[Note: explicitly indicating whether the response is enveloped via a header wou
 how to parse the response rather than having to assume when enveloping has occurred.  Not sure if this is possible on all 
 platforms, such as Flash.]_
 
-### Response Bodies
 An HTTP client may not be able to receive specific content types, such as `text/xml`.  The response envelope content type 
 describes both the wrapped status code and headers in ASCII character set, and the original response body if present.
 
