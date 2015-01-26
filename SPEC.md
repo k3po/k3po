@@ -1,4 +1,4 @@
-# HTTP Emulation Protocol
+# HTTP Extension and Emulation Protocol
 
 ## Abstract
 
