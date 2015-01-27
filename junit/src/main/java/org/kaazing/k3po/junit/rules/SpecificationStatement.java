@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
+import org.junit.AssumptionViolatedException;
 import org.junit.ComparisonFailure;
 import org.junit.runners.model.Statement;
 
@@ -112,7 +113,8 @@ final class SpecificationStatement extends Statement {
             ScriptPair scripts = scriptFuture.get();
 
             assertEquals("Specified behavior did not match", scripts.getExpectedScript(), scripts.getObservedScript());
-        } finally {
+        }
+        finally {
             // clean up the task if it is still running
             scriptFuture.cancel(true);
         }
