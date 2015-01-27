@@ -16,9 +16,19 @@
 
 package org.kaazing.specification.httpxe;
 
+import org.junit.Test;
+import org.kaazing.k3po.junit.annotation.Specification;
+
 /**
  * 
  */
 public class ResponseStatusCodesIT {
 
+    @Test
+    @Specification({
+        "request",
+        "response"})
+    public void shouldPass() {
+        
+    }
 }
