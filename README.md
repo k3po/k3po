@@ -11,7 +11,7 @@
 [issues-closed-image]: http://www.issuestats.com/github/k3po/specification.wse/badge/issue
 [issues-closed]: http://www.issuestats.com/github/k3po/specification.wse
 
-This project uses [K3PO](http://github.com/k3po/k3po) to to help WebSocket Emulation Protocol ([WSE](SPEC.md)) implementations automate their verification of the necessary requirements.
+This project uses [K3PO](http://github.com/k3po/k3po) to help WebSocket Emulation Protocol ([WSE](SPEC.md)) implementations automate their verification of the necessary requirements.
 
 The integration tests fall into the following categories:
  * [TODO]

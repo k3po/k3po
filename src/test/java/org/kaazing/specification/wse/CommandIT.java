@@ -27,9 +27,10 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
-public class DownstreamIT {
+public class CommandIT {
+
     private final K3poRule k3po = new K3poRule()
-            .setScriptRoot("org/kaazing/specification/wse/downstream");
+            .setScriptRoot("org/kaazing/specification/wse/command");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -37,36 +38,21 @@ public class DownstreamIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({
-            "binary.downstream.response.content.type.not.application.octet.stream/downstream.request",
-            "binary.downstream.response.content.type.not.application.octet.stream/downstream.response" })
-    public void shouldCloseConnectionWhenBinaryDownstreamResponseContentTypeIsNotApplicationOctetstream()
-            throws Exception {
+    @Specification({ "server.send.nop/request", "server.send.nop/response" })
+    public void sholdReceiveNop() throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "response.status.code.not.200/downstream.request",
-            "response.status.code.not.200/downstream.response" })
-    public void shouldCloseConnectionWhenDownstreamResponseStatusCodeNot200()
-            throws Exception {
+    @Specification({ "server.send.reconnect/request",
+            "server.send.reconnect/response" })
+    public void sholdReceiveReconnect() throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({
-            "response.containing.frame.after.reconnect.frame/downstream.request",
-            "response.containing.frame.after.reconnect.frame/downstream.response" })
-    public void shouldCloseConnectionWhenDownstreamResponseContainsFrameAfterReconnectFrame()
-            throws Exception {
-        k3po.join();
-    }
-
-    @Test
-    @Specification({ "request.method.not.get/downstream.request",
-            "request.method.not.get/downstream.response" })
-    public void shouldRespondWithBadRequestWhenDownstreamRequestMethodNotGet()
-            throws Exception {
+    @Specification({ "server.send.close/request", "server.send.close/response" })
+    public void sholdReceiveClose() throws Exception {
         k3po.join();
     }
 

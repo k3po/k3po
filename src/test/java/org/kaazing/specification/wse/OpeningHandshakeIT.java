@@ -28,207 +28,222 @@ import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
 public class OpeningHandshakeIT {
-	private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/wse/opening");
+    private final K3poRule k3po = new K3poRule()
+            .setScriptRoot("org/kaazing/specification/wse/opening");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
-    
-    // TODO: 
-    // Upstream/Downstream URL Scheme other than HTTPS when original handshake URL uses HTTPS
-    
-    
+
+    // TODO:
+    // Upstream/Downstream URL Scheme other than HTTPS when original handshake
+    // URL uses HTTPS
+
     @Test
-    @Specification({
-        "connection.established/handshake.request",
-        "connection.established/handshake.response" })
+    @Specification({ "connection.established/handshake.request",
+            "connection.established/handshake.response" })
     public void shouldEstablishConnection() throws Exception {
         k3po.join();
     }
-    
+
     @Test
-    @Specification({
-        "request.header.origin/handshake.request",
-        "request.header.origin/handshake.response" })
-    public void shouldEstablishConnectionWithRequestHeaderOrigin() throws Exception {
+    @Specification({ "request.header.origin/handshake.request",
+            "request.header.origin/handshake.response" })
+    public void shouldEstablishConnectionWithRequestHeaderOrigin()
+            throws Exception {
         k3po.join();
     }
-    
+
     @Test
-    @Specification({
-        "request.header.websocket.protocol/handshake.request",
-        "request.header.websocket.protocol/handshake.response" })
-    public void shouldEstablishConnectionWithRequestHeaderWebSocketProtocol() throws Exception {
+    @Specification({ "request.header.websocket.protocol/handshake.request",
+            "request.header.websocket.protocol/handshake.response" })
+    public void shouldEstablishConnectionWithRequestHeaderWebSocketProtocol()
+            throws Exception {
         k3po.join();
     }
-    
+
     @Test
-    @Specification({
-        "request.header.websocket.extensions/handshake.request",
-        "request.header.websocket.extensions/handshake.response" })
-    public void shouldEstablishConnectionWithRequestHeaderWebSocketExtensions() throws Exception {
+    @Specification({ "request.header.websocket.extensions/handshake.request",
+            "request.header.websocket.extensions/handshake.response" })
+    public void shouldEstablishConnectionWithRequestHeaderWebSocketExtensions()
+            throws Exception {
         k3po.join();
     }
-    
+
     @Test
-    @Specification({
-        "request.with.body/handshake.request",
-        "request.with.body/handshake.response" })
-    public void shouldEstablishConnectionWithNonEmptyRequestBody() throws Exception {
-    	k3po.join();
+    @Specification({ "request.with.body/handshake.request",
+            "request.with.body/handshake.response" })
+    public void shouldEstablishConnectionWithNonEmptyRequestBody()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-        "upstream.url.port.different.from.websocket.url.port/handshake.request",
-        "upstream.url.port.different.from.websocket.url.port/handshake.response" })
-    public void shouldEstablishConnectionWhenUpstreamUrlPortDifferentFromWebSocketUrlPort() throws Exception {
-    	k3po.join();
+            "upstream.url.port.different.from.websocket.url.port/handshake.request",
+            "upstream.url.port.different.from.websocket.url.port/handshake.response" })
+    public void shouldEstablishConnectionWhenUpstreamUrlPortDifferentFromWebSocketUrlPort()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-        "downstream.url.port.different.from.websocket.url.port/handshake.request",
-        "downstream.url.port.different.from.websocket.url.port/handshake.response" })
-    public void shouldEstablishConnectionWhenDownstreamUrlPortDifferentFromWebSocketUrlPort() throws Exception {
-    	k3po.join();
+            "downstream.url.port.different.from.websocket.url.port/handshake.request",
+            "downstream.url.port.different.from.websocket.url.port/handshake.response" })
+    public void shouldEstablishConnectionWhenDownstreamUrlPortDifferentFromWebSocketUrlPort()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
-    @Specification({
-    	"request.method.not.post/handshake.request",
-    	"request.method.not.post/handshake.response" })
+    @Specification({ "request.method.not.post/handshake.request",
+            "request.method.not.post/handshake.response" })
     public void shouldFailHandshakeWhenRequestMethodNotPost() throws Exception {
-    	k3po.join();
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-    	"request.header.websocket.version.missing/handshake.request",
-    	"request.header.websocket.version.missing/handshake.response" })
-    public void shouldFailHandshakeWhenRequestHeaderWebSocketVersionMissing() throws Exception {
-    	k3po.join();
+            "request.header.websocket.version.missing/handshake.request",
+            "request.header.websocket.version.missing/handshake.response" })
+    public void shouldFailHandshakeWhenRequestHeaderWebSocketVersionMissing()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-    	"request.header.websocket.version.not.wseb-1.1/handshake.request",
-    	"request.header.websocket.version.not.wseb-1.1/handshake.response" })
-    public void shouldFailHandshakeWhenRequestHeaderWebSocketVersionNotWseb11() throws Exception {
-    	k3po.join();
+            "request.header.websocket.version.not.wseb-1.1/handshake.request",
+            "request.header.websocket.version.not.wseb-1.1/handshake.response" })
+    public void shouldFailHandshakeWhenRequestHeaderWebSocketVersionNotWseb11()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-    	"request.header.accept.commands.not.ping/handshake.request",
-    	"request.header.accept.commands.not.ping/handshake.response" })
-    public void shouldFailHandshakeWhenHeaderAcceptCommandsNotPing() throws Exception {
-    	k3po.join();
+            "request.header.accept.commands.not.ping/handshake.request",
+            "request.header.accept.commands.not.ping/handshake.response" })
+    public void shouldFailHandshakeWhenHeaderAcceptCommandsNotPing()
+            throws Exception {
+        k3po.join();
     }
-    
+
+    @Test
+    @Specification({ "response.status.code.not.201/handshake.request",
+            "response.status.code.not.201/handshake.response" })
+    public void shouldFailConnectionWhenResponseStatusCodeNot201()
+            throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({ "response.header.content.type.missing/handshake.request",
+            "response.header.content.type.missing/handshake.response" })
+    public void shouldFailConnectionWhenResponseHeaderContentTypeIsMissing()
+            throws Exception {
+        k3po.join();
+    }
+
     @Test
     @Specification({
-    	"response.status.code.not.201/handshake.request",
-    	"response.status.code.not.201/handshake.response" })
-    public void shouldFailConnectionWhenResponseStatusCodeNot201() throws Exception {
-    	k3po.join();
+            "response.header.content.type.not.text.plain.charset.utf-8/handshake.request",
+            "response.header.content.type.not.text.plain.charset.utf-8/handshake.response" })
+    public void shouldFailConnectionWhenResponseHeaderContentTypeNotTextPlainCharsetUTF8()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-    	"response.header.content.type.missing/handshake.request",
-    	"response.header.content.type.missing/handshake.response" })
-    public void shouldFailConnectionWhenResponseHeaderContentTypeIsMissing() throws Exception {
-    	k3po.join();
+            "response.header.websocket.version.not.matching/handshake.request",
+            "response.header.websocket.version.not.matching/handshake.response" })
+    public void shouldFailConnectionWhenResponseHeaderWebSocketVersionNotMatching()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-    	"response.header.content.type.not.text.plain.charset.utf-8/handshake.request",
-    	"response.header.content.type.not.text.plain.charset.utf-8/handshake.response" })
-    public void shouldFailConnectionWhenResponseHeaderContentTypeNotTextPlainCharsetUTF8() throws Exception {
-    	k3po.join();
+            "response.header.websocket.protocol.not.negotiated/handshake.request",
+            "response.header.websocket.protocol.not.negotiated/handshake.response" })
+    public void shouldFailConnectionWhenWebSocketProtocolNotNegotiated()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-    	"response.header.websocket.version.not.matching/handshake.request",
-    	"response.header.websocket.version.not.matching/handshake.response" })
-    public void shouldFailConnectionWhenResponseHeaderWebSocketVersionNotMatching() throws Exception {
-    	k3po.join();
+            "response.header.websocket.extensions.not.negotiated/handshake.request",
+            "response.header.websocket.extensions.not.negotiated/handshake.response" })
+    public void shouldFailConnectionWhenWebSocketExtensionsNotNegotiated()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-    	"response.header.websocket.protocol.not.negotiated/handshake.request",
-    	"response.header.websocket.protocol.not.negotiated/handshake.response" })
-    public void shouldFailConnectionWhenWebSocketProtocolNotNegotiated() throws Exception {
-    	k3po.join();
+            "handshake.response.body.containing.one.url/handshake.request",
+            "handshake.response.body.containing.one.url/handshake.response" })
+    public void shouldFailConnectionWhenHandshakeResponseBodyContainsOneUrl()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-    	"response.header.websocket.extensions.not.negotiated/handshake.request",
-    	"response.header.websocket.extensions.not.negotiated/handshake.response" })
-    public void shouldFailConnectionWhenWebSocketExtensionsNotNegotiated() throws Exception {
-    	k3po.join();
+            "upstream.url.scheme.neither.http.nor.https/handshake.request",
+            "upstream.url.scheme.neither.http.nor.https/handshake.response" })
+    public void shouldFailConnectionWhenUpstreamUrlSchemeNeitherHttpNorHttps()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-    	"handshake.response.body.containing.one.url/handshake.request",
-    	"handshake.response.body.containing.one.url/handshake.response" })
-    public void shouldFailConnectionWhenHandshakeResponseBodyContainsOneUrl() throws Exception {
-    	k3po.join();
+            "upstream.url.host.not.matching.websocket.url.host/handshake.request",
+            "upstream.url.host.not.matching.websocket.url.host/handshake.response" })
+    public void shouldFailConnectionWhenUpstreamUrlHostNotMatchingWebSocketUrlHost()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-    	"upstream.url.scheme.neither.http.nor.https/handshake.request",
-    	"upstream.url.scheme.neither.http.nor.https/handshake.response" })
-    public void shouldFailConnectionWhenUpstreamUrlSchemeNeitherHttpNorHttps() throws Exception {
-    	k3po.join();
+            "upstream.url.path.not.prefixed.by.websocket.url.path/handshake.request",
+            "upstream.url.path.not.prefixed.by.websocket.url.path/handshake.response" })
+    public void shouldFailConnectionWhenUpstreamUrlPathNotPrefixedByWebSocketUrlPath()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-    	"upstream.url.host.not.matching.websocket.url.host/handshake.request",
-    	"upstream.url.host.not.matching.websocket.url.host/handshake.response" })
-    public void shouldFailConnectionWhenUpstreamUrlHostNotMatchingWebSocketUrlHost() throws Exception {
-    	k3po.join();
+            "downstream.url.scheme.neither.http.nor.https/handshake.request",
+            "downstream.url.scheme.neither.http.nor.https/handshake.response" })
+    public void shouldFailConnectionWhenDownstreamUrlSchemeNeitherHttpNorHttps()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-    	"upstream.url.path.not.prefixed.by.websocket.url.path/handshake.request",
-    	"upstream.url.path.not.prefixed.by.websocket.url.path/handshake.response" })
-    public void shouldFailConnectionWhenUpstreamUrlPathNotPrefixedByWebSocketUrlPath() throws Exception {
-    	k3po.join();
+            "downstream.url.host.not.matching.websocket.url.host/handshake.request",
+            "downstream.url.host.not.matching.websocket.url.host/handshake.response" })
+    public void shouldFailConnectionWhenDownstreamUrlHostNotMatchingWebSocketUrlHost()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-    	"downstream.url.scheme.neither.http.nor.https/handshake.request",
-    	"downstream.url.scheme.neither.http.nor.https/handshake.response" })
-    public void shouldFailConnectionWhenDownstreamUrlSchemeNeitherHttpNorHttps() throws Exception {
-    	k3po.join();
+            "downstream.url.path.not.prefixed.by.websocket.url.path/handshake.request",
+            "downstream.url.path.not.prefixed.by.websocket.url.path/handshake.response" })
+    public void shouldFailConnectionWhenDownstreamUrlPathNotPrefixedByWebSocketUrlPath()
+            throws Exception {
+        k3po.join();
     }
-    
-    @Test
-    @Specification({
-    	"downstream.url.host.not.matching.websocket.url.host/handshake.request",
-    	"downstream.url.host.not.matching.websocket.url.host/handshake.response" })
-    public void shouldFailConnectionWhenDownstreamUrlHostNotMatchingWebSocketUrlHost() throws Exception {
-    	k3po.join();
-    }
-    
-    @Test
-    @Specification({
-    	"downstream.url.path.not.prefixed.by.websocket.url.path/handshake.request",
-    	"downstream.url.path.not.prefixed.by.websocket.url.path/handshake.response" })
-    public void shouldFailConnectionWhenDownstreamUrlPathNotPrefixedByWebSocketUrlPath() throws Exception {
-    	k3po.join();
-    }
-    
+
 }

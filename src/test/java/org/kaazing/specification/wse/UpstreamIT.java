@@ -27,9 +27,10 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
-public class DownstreamIT {
+public class UpstreamIT {
+
     private final K3poRule k3po = new K3poRule()
-            .setScriptRoot("org/kaazing/specification/wse/downstream");
+            .setScriptRoot("org/kaazing/specification/wse/upstream");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -37,36 +38,25 @@ public class DownstreamIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({
-            "binary.downstream.response.content.type.not.application.octet.stream/downstream.request",
-            "binary.downstream.response.content.type.not.application.octet.stream/downstream.response" })
-    public void shouldCloseConnectionWhenBinaryDownstreamResponseContentTypeIsNotApplicationOctetstream()
+    @Specification({ "request.method.not.post/upstream.request",
+            "request.method.not.post/upstream.response" })
+    public void shouldCloseConnectionWhenUpstreamRequestMethodNotPost()
             throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "response.status.code.not.200/downstream.request",
-            "response.status.code.not.200/downstream.response" })
-    public void shouldCloseConnectionWhenDownstreamResponseStatusCodeNot200()
+    @Specification({ "response.status.code.not.200/upstream.request",
+            "response.status.code.not.200/upstream.response" })
+    public void shouldCloseConnectionWhenUpstreamStatusCodeNot200()
             throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({
-            "response.containing.frame.after.reconnect.frame/downstream.request",
-            "response.containing.frame.after.reconnect.frame/downstream.response" })
-    public void shouldCloseConnectionWhenDownstreamResponseContainsFrameAfterReconnectFrame()
-            throws Exception {
-        k3po.join();
-    }
-
-    @Test
-    @Specification({ "request.method.not.get/downstream.request",
-            "request.method.not.get/downstream.response" })
-    public void shouldRespondWithBadRequestWhenDownstreamRequestMethodNotGet()
-            throws Exception {
+    @Specification({ "parallel.request/upstream.request",
+            "parallel.request/upstream.response" })
+    public void shouldRejectParallelUpstreamRequest() throws Exception {
         k3po.join();
     }
 

@@ -1,0 +1,37 @@
+connect http://localhost:8080/path/;e/cb?query
+connected
+
+write method "POST"
+write version "HTTP/1.1"
+write header host
+write header content-length
+write header "X-WebSocket-Version" "wseb-1.1"
+write header "X-Accept-Commands" "ping"
+write close
+
+read status "201" /.+/
+read version "HTTP/1.1"
+read header "X-WebSocket-Version" "wseb-1.1"
+read header "Content-Type" "text/plain;charset=utf-8"
+
+read "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
+read "http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1\n"
+read notify CREATED
+read closed
+
+# Downstream
+connect http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1
+connected
+
+write await CREATED
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header content-length
+write close
+
+read status "200" /.+/
+read header "Content-Type" "application/octet-stream"
+read header "Connection" "close"
+
+read [0x01 0x30 0x30 0xFF]
