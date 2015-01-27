@@ -30,6 +30,7 @@ import static org.jboss.netty.channel.Channels.fireExceptionCaught;
 import static org.jboss.netty.channel.Channels.fireMessageReceived;
 import static org.jboss.netty.channel.Channels.future;
 import static org.jboss.netty.channel.Channels.write;
+import static org.jboss.netty.handler.codec.http.HttpHeaders.getContentLength;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.getHost;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.isContentLengthSet;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.isTransferEncodingChunked;
@@ -181,12 +182,21 @@ public class HttpChildChannelSource extends HttpChannelHandler {
 
         this.httpChildChannel = httpChildChannel;
 
+        ChannelBuffer content = httpRequest.getContent();
+
         // update read state before firing channel events
         if (isTransferEncodingChunked(httpRequest)) {
             httpChildChannel.readState(HttpReadState.CONTENT_CHUNKED);
         }
         else if (isContentLengthSet(httpRequest)) {
-            httpChildChannel.readState(HttpReadState.CONTENT_COMPLETE);
+            long contentLength = getContentLength(httpRequest);
+            contentLength -= content.readableBytes();
+            if (contentLength > 0) {
+                httpChildChannel.readState(HttpReadState.CONTENT_CHUNKED);
+            }
+            else {
+                httpChildChannel.readState(HttpReadState.CONTENT_COMPLETE);
+            }
         }
         else {
             // see RFC-7230 section 3.3
@@ -204,7 +214,6 @@ public class HttpChildChannelSource extends HttpChannelHandler {
         httpChildChannel.setConnected();
         fireChannelConnected(httpChildChannel, httpRemoteAddress);
 
-        ChannelBuffer content = httpRequest.getContent();
         if (content.readable()) {
             fireMessageReceived(httpChildChannel, content);
         }
