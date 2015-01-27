@@ -2,10 +2,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.kaazing</groupId>
-    <artifactId>specification.httpe</artifactId>
-    <name>HTTP Emulation Protocol Specification</name>
-    <description>Specification for HTTP Emulation protocol</description>
-    <url>https://github.com/kaazing/specification.httpe</url>
+    <artifactId>specification.httpxe</artifactId>
+    <name>HTTP Extension and Emulation Protocol Specification</name>
+    <description>Specification for HTTP Extension and Emulation protocol</description>
+    <url>https://github.com/kaazing/specification.httpxe</url>
     <packaging>jar</packaging>
     <version>1.0.0-alpha-1-SNAPSHOT</version>
 
@@ -19,8 +19,8 @@
     <inceptionYear>2014</inceptionYear>
 
     <scm>
-        <url>https://github.com/kaazing/specification.httpe.git</url>
-        <connection>scm:git:https://github.com/kaazing/specification.httpe.git</connection>
+        <url>https://github.com/kaazing/specification.httpxe.git</url>
+        <connection>scm:git:https://github.com/kaazing/specification.httpxe.git</connection>
     </scm>
 
     <properties>
