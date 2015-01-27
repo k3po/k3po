@@ -29,7 +29,7 @@ public class HttpContentLengthEncoder implements ConfigEncoder {
 
     public HttpContentLengthEncoder() {
         // TODO: configure?
-        this.maximumBufferedContentLength = 8192;
+        this.maximumBufferedContentLength = Integer.MAX_VALUE;
     }
 
     @Override

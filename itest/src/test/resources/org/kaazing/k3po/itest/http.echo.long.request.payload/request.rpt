@@ -6,7 +6,7 @@ connected
 write method "POST"
 write header host
 write header "Content-Type" "application/octet-stream"
-write header "Content-Length" "65535"
+write header content-length
 write ${client65535}
 write close
 
