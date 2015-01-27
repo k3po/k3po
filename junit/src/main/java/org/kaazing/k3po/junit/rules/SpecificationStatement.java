@@ -63,7 +63,16 @@ final class SpecificationStatement extends Statement {
             try {
                 // note: JUnit timeout will trigger an exception
                 statement.evaluate();
-            } catch (Throwable cause) {
+            }
+            catch (AssumptionViolatedException e) {
+
+                if (!latch.isFinished()) {
+                    scriptRunner.abort();
+                }
+
+                throw e;
+            }
+            catch (Throwable cause) {
                 // any exception aborts the script (including timeout)
                 if (latch.hasException()) {
                     // propagate exception if the latch has an exception
