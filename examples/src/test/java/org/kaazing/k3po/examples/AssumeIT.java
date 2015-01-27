@@ -32,7 +32,7 @@ public class AssumeIT {
     public K3poRule k3po = new K3poRule();
 
     @Test
-    @Specification("empty")
+    @Specification("ignored")
     public void testEmptyAssumptionFailed() throws Exception {
         assumeFalse(true);
         k3po.join();
