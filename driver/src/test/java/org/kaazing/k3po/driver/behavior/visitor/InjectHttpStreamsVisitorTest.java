@@ -216,4 +216,29 @@ public class InjectHttpStreamsVisitorTest {
         inputScript.accept(injectEvents, new InjectHttpStreamsVisitor.State());
     }
 
+    @Test
+    public void shouldNotThrowErrorsOnNonHttpStreams() throws Exception{
+        // @formatter:off
+        AstScriptNode inputScript = new AstScriptNodeBuilder()
+        .addConnectStream().
+            setLocation(URI.create("tcp://localhost:8000"))
+                .addReadEvent()
+                    .addExactText("exact text")
+                .done()
+            .done()
+            .addAcceptStream()
+                .setLocation(URI.create("tcp://localhost:8000"))
+                .addAcceptedStream()
+                    .addReadEvent()
+                        .addExactText("exact text")
+                    .done()
+                .done()
+            .done()
+        .done();
+        // @formatter:on
+
+        InjectHttpStreamsVisitor injectEvents = new InjectHttpStreamsVisitor();
+        inputScript.accept(injectEvents, new InjectHttpStreamsVisitor.State());
+    }
+
 }
