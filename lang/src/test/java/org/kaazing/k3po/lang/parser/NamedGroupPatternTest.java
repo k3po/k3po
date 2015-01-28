@@ -1,20 +1,17 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright 2014, Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.kaazing.k3po.lang.parser;
@@ -94,7 +91,7 @@ public class NamedGroupPatternTest {
         Pattern jPattern = Pattern.compile(scriptText.substring(1, scriptText.length() - 1));
         Matcher jMatcher = jPattern.matcher(inputText);
         assertTrue(jMatcher.matches());
-        
+
         NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
         NamedGroupMatcher matcher = pattern.matcher(inputText);
 
@@ -156,7 +153,7 @@ public class NamedGroupPatternTest {
         Matcher jMatcher = jPattern.matcher(inputText);
         assertTrue(jMatcher.matches());
         assertEquals("Unauthorized", jMatcher.group(2));
-        
+
         NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
         NamedGroupMatcher matcher = pattern.matcher(inputText);
 
@@ -173,7 +170,7 @@ public class NamedGroupPatternTest {
         Pattern jPattern = Pattern.compile(scriptText);
         Matcher jMatcher = jPattern.matcher(inputText);
         assertTrue(jMatcher.matches());
-        
+
         NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
         NamedGroupMatcher matcher = pattern.matcher(inputText);
 
@@ -249,7 +246,8 @@ public class NamedGroupPatternTest {
         assertEquals("bar", matcher.group("right"));
     }
 
-    @Test(expected = PatternSyntaxException.class)
+    @Test(
+            expected = PatternSyntaxException.class)
     public void shouldFailGroupNamesMismatch() throws Exception {
         String scriptText = format("(?<left>.*)\\(:(.*)");
         NamedGroupPattern.compile(scriptText);
@@ -266,130 +264,112 @@ public class NamedGroupPatternTest {
         String scriptText = format("(?:.*)");
         NamedGroupPattern.compile(scriptText);
     }
-    
-	@Test
-	public void shouldParseReadRegexLiteral() throws Exception {
 
-		String scriptFragment = "read /hello\\:^foo.*\\n/";
+    @Test
+    public void shouldParseReadRegexLiteral() throws Exception {
 
-		ScriptParserImpl parser = new ScriptParserImpl();
+        String scriptFragment = "read /hello\\:^foo.*\\n/";
 
-		AstReadValueNode actual = parser
-				.parseWithStrategy(scriptFragment, READ);
+        ScriptParserImpl parser = new ScriptParserImpl();
 
-		// @formatter:off
-		AstReadValueNode expected = new AstReadNodeBuilder()
-				.addRegex(NamedGroupPattern.compile("hello\\:^foo.*\\n"))
-				.done();
-		// @formatter:on
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-		System.out.println(expected);
-		System.out.println(actual);
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	public void shouldParseRegexMatcher() throws Exception {
+        // @formatter:off
+        AstReadValueNode expected = new AstReadNodeBuilder()
+                .addRegex(NamedGroupPattern.compile("hello\\:^foo.*\\n"))
+                .done();
+        // @formatter:on
 
-		String scriptFragment = "/[a-f\\d]{8}(-[a-f\\d]{4}){3}-[a-f\\d]{12}/";
+        System.out.println(expected);
+        System.out.println(actual);
+        assertEquals(expected, actual);
+    }
 
-		ScriptParserImpl parser = new ScriptParserImpl();
-		AstRegexMatcher actual = parser.parseWithStrategy(scriptFragment,
-				REGEX_MATCHER);
+    @Test
+    public void shouldParseRegexMatcher() throws Exception {
 
-		NamedGroupPattern regex = NamedGroupPattern
-				.compile("[a-f\\d]{8}(-[a-f\\d]{4}){3}-[a-f\\d]{12}");
-		AstRegexMatcher expected = new AstRegexMatcher(regex);
+        String scriptFragment = "/[a-f\\d]{8}(-[a-f\\d]{4}){3}-[a-f\\d]{12}/";
 
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	public void shouldParseReadMult() throws Exception {
-		String scriptFragment = "read \"Hello\" [0x01 0x02 0x03] /.*\\n/ /(?<cap1>.*)\\n/ ${var}  [0..64] ([0..64]:cap2)"
-				+ "[0..${var}] [0..${var-1}] ([0..${var}]:cap3) ([0..${var-1}]:cap4) (byte:b) (short:s) (int:i) (long:l)";
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstRegexMatcher actual = parser.parseWithStrategy(scriptFragment, REGEX_MATCHER);
 
-		ScriptParserImpl parser = new ScriptParserImpl();
-		AstReadValueNode actual = parser
-				.parseWithStrategy(scriptFragment, READ);
+        NamedGroupPattern regex = NamedGroupPattern.compile("[a-f\\d]{8}(-[a-f\\d]{4}){3}-[a-f\\d]{12}");
+        AstRegexMatcher expected = new AstRegexMatcher(regex);
 
-		ExpressionFactory factory = parser.getExpressionFactory();
-		ExpressionContext context = parser.getExpressionContext();
+        assertEquals(expected, actual);
+    }
 
-		// @formatter:off
-		AstReadValueNode expected = new AstReadNodeBuilder()
-				.addExactText("Hello")
-				.addExactBytes(new byte[] { 0x01, (byte) 0x02, (byte) 0x03 })
-				.addRegex(NamedGroupPattern.compile(".*\\n"))
-				.addRegex(NamedGroupPattern.compile("(?<cap1>.*)\\n"))
-				.addExpression(
-						factory.createValueExpression(context, "${var}",
-								byte[].class))
-				.addFixedLengthBytes(64)
-				.addFixedLengthBytes(64, "cap2")
-				.addVariableLengthBytes(
-						factory.createValueExpression(context, "${var}",
-								Integer.class))
-				.addVariableLengthBytes(
-						factory.createValueExpression(context, "${var-1}",
-								Integer.class))
-				.addVariableLengthBytes(
-						factory.createValueExpression(context, "${var}",
-								Integer.class), "cap3")
-				.addVariableLengthBytes(
-						factory.createValueExpression(context, "${var-1}",
-								Integer.class), "cap4")
-				.addFixedLengthBytes(1, "b").addFixedLengthBytes(2, "s")
-				.addFixedLengthBytes(4, "i").addFixedLengthBytes(8, "l").done();
-		// @formatter:on
+    @Test
+    public void shouldParseReadMult() throws Exception {
+        String scriptFragment =
+                "read \"Hello\" [0x01 0x02 0x03] /.*\\n/ /(?<cap1>.*)\\n/ ${var}  [0..64] ([0..64]:cap2)"
+              + "[0..${var}] [0..${var-1}] ([0..${var}]:cap3) ([0..${var-1}]:cap4) (byte:b) (short:s) (int:i) (long:l)";
 
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	public void shouldParseMultAllMatcher() throws Exception {
-		String scriptFragment = "read \"Hello\" [0x01 0x02 0x03] /.*\\n/ /(?<cap1>.*)\\n/ ${var}  [0..64] ([0..64]:cap2)"
-				+ "[0..${var}] [0..${var-1}] ([0..${var}]:cap3) ([0..${var-1}]:cap4)"
-				+ "(byte:b) (short:s) (int:i) (long:l)";
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-		ScriptParserImpl parser = new ScriptParserImpl();
-		AstReadValueNode actual = parser
-				.parseWithStrategy(scriptFragment, READ);
+        ExpressionFactory factory = parser.getExpressionFactory();
+        ExpressionContext context = parser.getExpressionContext();
 
-		ExpressionFactory factory = parser.getExpressionFactory();
-		ExpressionContext context = parser.getExpressionContext();
-		ValueExpression value = factory.createValueExpression(context,
-				"${var}", byte[].class);
-		ValueExpression value2 = factory.createValueExpression(context,
-				"${var}", Integer.class);
-		ValueExpression value3 = factory.createValueExpression(context,
-				"${var-1}", Integer.class);
-		ValueExpression value4 = factory.createValueExpression(context,
-				"${var}", Integer.class);
-		ValueExpression value5 = factory.createValueExpression(context,
-				"${var-1}", Integer.class);
+        // @formatter:off
+        AstReadValueNode expected = new AstReadNodeBuilder()
+                .addExactText("Hello")
+                .addExactBytes(new byte[] { 0x01, (byte) 0x02, (byte) 0x03 })
+                .addRegex(NamedGroupPattern.compile(".*\\n"))
+                .addRegex(NamedGroupPattern.compile("(?<cap1>.*)\\n"))
+                .addExpression(
+                        factory.createValueExpression(context, "${var}",
+                                byte[].class))
+                .addFixedLengthBytes(64)
+                .addFixedLengthBytes(64, "cap2")
+                .addVariableLengthBytes(
+                        factory.createValueExpression(context, "${var}",
+                                Integer.class))
+                .addVariableLengthBytes(
+                        factory.createValueExpression(context, "${var-1}",
+                                Integer.class))
+                .addVariableLengthBytes(
+                        factory.createValueExpression(context, "${var}",
+                                Integer.class), "cap3")
+                .addVariableLengthBytes(
+                        factory.createValueExpression(context, "${var-1}",
+                                Integer.class), "cap4")
+                .addFixedLengthBytes(1, "b").addFixedLengthBytes(2, "s")
+                .addFixedLengthBytes(4, "i").addFixedLengthBytes(8, "l").done();
+        // @formatter:on
 
-		AstReadValueNode expected = new AstReadValueNode();
-		expected.setMatchers(Arrays.<AstValueMatcher> asList(
-				new AstExactTextMatcher("Hello"),
-				new AstExactBytesMatcher(new byte[] { 0x01, (byte) 0x02,
-						(byte) 0x03 }),
-				new AstRegexMatcher(NamedGroupPattern.compile(".*\\n")),
-				new AstRegexMatcher(NamedGroupPattern
-						.compile("(?<cap1>.*)\\n")),
-				new AstExpressionMatcher(value),
-				new AstFixedLengthBytesMatcher(64),
-				new AstFixedLengthBytesMatcher(64, "cap2"),
-				new AstVariableLengthBytesMatcher(value2),
-				new AstVariableLengthBytesMatcher(value3),
-				new AstVariableLengthBytesMatcher(value4, "cap3"),
-				new AstVariableLengthBytesMatcher(value5, "cap4"),
-				new AstByteLengthBytesMatcher("b"),
-				new AstShortLengthBytesMatcher("s"),
-				new AstIntLengthBytesMatcher("i"),
-				new AstLongLengthBytesMatcher("l")));
+        assertEquals(expected, actual);
+    }
 
-		assertEquals(expected, actual);
-	}
-	
+    @Test
+    public void shouldParseMultAllMatcher() throws Exception {
+        String scriptFragment =
+                "read \"Hello\" [0x01 0x02 0x03] /.*\\n/ /(?<cap1>.*)\\n/ ${var}  [0..64] ([0..64]:cap2)"
+                        + "[0..${var}] [0..${var-1}] ([0..${var}]:cap3) ([0..${var-1}]:cap4)"
+                        + "(byte:b) (short:s) (int:i) (long:l)";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
+
+        ExpressionFactory factory = parser.getExpressionFactory();
+        ExpressionContext context = parser.getExpressionContext();
+        ValueExpression value = factory.createValueExpression(context, "${var}", byte[].class);
+        ValueExpression value2 = factory.createValueExpression(context, "${var}", Integer.class);
+        ValueExpression value3 = factory.createValueExpression(context, "${var-1}", Integer.class);
+        ValueExpression value4 = factory.createValueExpression(context, "${var}", Integer.class);
+        ValueExpression value5 = factory.createValueExpression(context, "${var-1}", Integer.class);
+
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactTextMatcher("Hello"), new AstExactBytesMatcher(
+                new byte[]{0x01, (byte) 0x02, (byte) 0x03}), new AstRegexMatcher(NamedGroupPattern.compile(".*\\n")),
+                new AstRegexMatcher(NamedGroupPattern.compile("(?<cap1>.*)\\n")), new AstExpressionMatcher(value),
+                new AstFixedLengthBytesMatcher(64), new AstFixedLengthBytesMatcher(64, "cap2"),
+                new AstVariableLengthBytesMatcher(value2), new AstVariableLengthBytesMatcher(value3),
+                new AstVariableLengthBytesMatcher(value4, "cap3"), new AstVariableLengthBytesMatcher(value5, "cap4"),
+                new AstByteLengthBytesMatcher("b"), new AstShortLengthBytesMatcher("s"), new AstIntLengthBytesMatcher("i"),
+                new AstLongLengthBytesMatcher("l")));
+
+        assertEquals(expected, actual);
+    }
+
 }

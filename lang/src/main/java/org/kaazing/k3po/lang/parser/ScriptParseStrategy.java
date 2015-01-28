@@ -1,20 +1,17 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright 2014, Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.kaazing.k3po.lang.parser;
@@ -362,31 +359,29 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         }
     };
 
-    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_HEADER = new ScriptParseStrategy<AstWriteConfigNode>() {
-        @Override
-        public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
-                throws RecognitionException {
-            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpHeaderNode());
-        }
-    };
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_HEADER =
+            new ScriptParseStrategy<AstWriteConfigNode>() {
+                @Override
+                public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpHeaderNode());
+                }
+            };
 
-    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_CONTENT_LENGTH = new ScriptParseStrategy<AstWriteConfigNode>() {
-        @Override
-        public AstWriteConfigNode parse(RobotParser parser,
-                                                   ExpressionFactory elFactory,
-                                                   ExpressionContext elContext) throws RecognitionException {
-            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser
-                    .writeHttpContentLengthNode());
-        }
-    };
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_CONTENT_LENGTH =
+            new ScriptParseStrategy<AstWriteConfigNode>() {
+                @Override
+                public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpContentLengthNode());
+                }
+            };
 
     public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_HOST = new ScriptParseStrategy<AstWriteConfigNode>() {
         @Override
-        public AstWriteConfigNode parse(RobotParser parser,
-                                                   ExpressionFactory elFactory,
-                                                   ExpressionContext elContext) throws RecognitionException {
-            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser
-                    .writeHttpHostNode());
+        public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                throws RecognitionException {
+            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpHostNode());
         }
     };
 
@@ -398,41 +393,41 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         }
     };
 
-    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_METHOD = new ScriptParseStrategy<AstWriteConfigNode>() {
-        @Override
-        public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
-                throws RecognitionException {
-            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpMethodNode());
-        }
-    };
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_METHOD =
+            new ScriptParseStrategy<AstWriteConfigNode>() {
+                @Override
+                public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpMethodNode());
+                }
+            };
 
-    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_REQUEST = new ScriptParseStrategy<AstWriteConfigNode>() {
-        @Override
-        public AstWriteConfigNode parse(RobotParser parser,
-                                        ExpressionFactory elFactory,
-                                        ExpressionContext elContext) throws RecognitionException {
-            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser
-                    .writeHttpRequestNode());
-        }
-    };
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_REQUEST =
+            new ScriptParseStrategy<AstWriteConfigNode>() {
+                @Override
+                public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpRequestNode());
+                }
+            };
 
-    public static final ScriptParseStrategy<AstReadConfigNode> READ_HTTP_PARAMETER = new ScriptParseStrategy<AstReadConfigNode>() {
-        @Override
-        public AstReadConfigNode parse(RobotParser parser,
-                                       ExpressionFactory elFactory,
-                                       ExpressionContext elContext) throws RecognitionException {
-            return new AstReadHttpConfigNodeVisitor(elFactory, elContext).visit(parser.readHttpParameterNode());
-        }
-    };
+    public static final ScriptParseStrategy<AstReadConfigNode> READ_HTTP_PARAMETER =
+            new ScriptParseStrategy<AstReadConfigNode>() {
+                @Override
+                public AstReadConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstReadHttpConfigNodeVisitor(elFactory, elContext).visit(parser.readHttpParameterNode());
+                }
+            };
 
-    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_PARAMETER = new ScriptParseStrategy<AstWriteConfigNode>() {
-        @Override
-        public AstWriteConfigNode parse(RobotParser parser,
-                                               ExpressionFactory elFactory,
-                                               ExpressionContext elContext) throws RecognitionException {
-            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpParameterNode());
-        }
-    };
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_PARAMETER =
+            new ScriptParseStrategy<AstWriteConfigNode>() {
+                @Override
+                public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpParameterNode());
+                }
+            };
 
     public static final ScriptParseStrategy<AstReadConfigNode> READ_HTTP_VERSION = new ScriptParseStrategy<AstReadConfigNode>() {
         @Override
@@ -442,14 +437,14 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         }
     };
 
-    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_VERSION = new ScriptParseStrategy<AstWriteConfigNode>() {
-        @Override
-        public AstWriteConfigNode parse(RobotParser parser,
-                                             ExpressionFactory elFactory,
-                                             ExpressionContext elContext) throws RecognitionException {
-            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpVersionNode());
-        }
-    };
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_VERSION =
+            new ScriptParseStrategy<AstWriteConfigNode>() {
+                @Override
+                public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpVersionNode());
+                }
+            };
 
     public static final ScriptParseStrategy<AstReadConfigNode> READ_HTTP_STATUS = new ScriptParseStrategy<AstReadConfigNode>() {
         @Override
@@ -459,37 +454,35 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         }
     };
 
-    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_STATUS = new ScriptParseStrategy<AstWriteConfigNode>() {
-        @Override
-        public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
-                throws RecognitionException {
-            return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpStatusNode());
-        }
-    };
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_STATUS =
+            new ScriptParseStrategy<AstWriteConfigNode>() {
+                @Override
+                public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstWriteConfigNodeVisitor(elFactory, elContext).visit(parser.writeHttpStatusNode());
+                }
+            };
 
     public static final ScriptParseStrategy<AstWriteFlushNode> WRITE_FLUSH = new ScriptParseStrategy<AstWriteFlushNode>() {
         @Override
-        public AstWriteFlushNode parse(RobotParser parser,
-                                              ExpressionFactory elFactory,
-                                              ExpressionContext elContext) throws RecognitionException {
+        public AstWriteFlushNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                throws RecognitionException {
             return new AstWriteFlushNodeVisitor(elFactory, elContext).visit(parser.writeFlushNode());
         }
     };
 
     public static final ScriptParseStrategy<AstReadClosedNode> READ_CLOSED = new ScriptParseStrategy<AstReadClosedNode>() {
         @Override
-        public AstReadClosedNode parse(RobotParser parser,
-                                             ExpressionFactory elFactory,
-                                             ExpressionContext elContext) throws RecognitionException {
+        public AstReadClosedNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                throws RecognitionException {
             return new AstReadClosedNodeVisitor(elFactory, elContext).visit(parser.readClosedNode());
         }
     };
 
     public static final ScriptParseStrategy<AstWriteCloseNode> WRITE_CLOSE = new ScriptParseStrategy<AstWriteCloseNode>() {
         @Override
-        public AstWriteCloseNode parse(RobotParser parser,
-                                              ExpressionFactory elFactory,
-                                              ExpressionContext elContext) throws RecognitionException {
+        public AstWriteCloseNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                throws RecognitionException {
             return new AstWriteCloseNodeVisitor(elFactory, elContext).visit(parser.writeCloseNode());
         }
     };
@@ -542,21 +535,23 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         }
     };
 
-    public static final ScriptParseStrategy<AstExactTextMatcher> EXACT_TEXT_MATCHER = new ScriptParseStrategy<AstExactTextMatcher>() {
-        @Override
-        public AstExactTextMatcher parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
-                throws RecognitionException {
-            return new AstExactTextMatcherVisitor(elFactory, elContext).visit(parser.exactTextMatcher());
-        }
-    };
+    public static final ScriptParseStrategy<AstExactTextMatcher> EXACT_TEXT_MATCHER =
+            new ScriptParseStrategy<AstExactTextMatcher>() {
+                @Override
+                public AstExactTextMatcher parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstExactTextMatcherVisitor(elFactory, elContext).visit(parser.exactTextMatcher());
+                }
+            };
 
-    public static final ScriptParseStrategy<AstExactBytesMatcher> EXACT_BYTES_MATCHER = new ScriptParseStrategy<AstExactBytesMatcher>() {
-        @Override
-        public AstExactBytesMatcher parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
-                throws RecognitionException {
-            return new AstExactBytesMatcherVisitor(elFactory, elContext).visit(parser.exactBytesMatcher());
-        }
-    };
+    public static final ScriptParseStrategy<AstExactBytesMatcher> EXACT_BYTES_MATCHER =
+            new ScriptParseStrategy<AstExactBytesMatcher>() {
+                @Override
+                public AstExactBytesMatcher parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstExactBytesMatcherVisitor(elFactory, elContext).visit(parser.exactBytesMatcher());
+                }
+            };
 
     public static final ScriptParseStrategy<AstRegexMatcher> REGEX_MATCHER = new ScriptParseStrategy<AstRegexMatcher>() {
         @Override
@@ -566,32 +561,33 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         }
     };
 
-    public static final ScriptParseStrategy<AstExpressionMatcher> EXPRESSION_MATCHER = new ScriptParseStrategy<AstExpressionMatcher>() {
-        @Override
-        public AstExpressionMatcher parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
-                throws RecognitionException {
-            return new AstExpressionMatcherVisitor(elFactory, elContext).visit(parser.expressionMatcher());
-        }
-    };
+    public static final ScriptParseStrategy<AstExpressionMatcher> EXPRESSION_MATCHER =
+            new ScriptParseStrategy<AstExpressionMatcher>() {
+                @Override
+                public AstExpressionMatcher parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstExpressionMatcherVisitor(elFactory, elContext).visit(parser.expressionMatcher());
+                }
+            };
 
-    public static final ScriptParseStrategy<AstFixedLengthBytesMatcher> FIXED_LENGTH_BYTES_MATCHER = new ScriptParseStrategy<AstFixedLengthBytesMatcher>() {
-        @Override
-        public AstFixedLengthBytesMatcher parse(RobotParser parser,
-                                                ExpressionFactory elFactory,
-                                                ExpressionContext elContext) throws RecognitionException {
-            return new AstFixedLengthBytesMatcherVisitor(elFactory, elContext).visit(parser.fixedLengthBytesMatcher());
-        }
-    };
+    public static final ScriptParseStrategy<AstFixedLengthBytesMatcher> FIXED_LENGTH_BYTES_MATCHER =
+            new ScriptParseStrategy<AstFixedLengthBytesMatcher>() {
+                @Override
+                public AstFixedLengthBytesMatcher parse(RobotParser parser, ExpressionFactory elFactory,
+                    ExpressionContext elContext) throws RecognitionException {
+                    return new AstFixedLengthBytesMatcherVisitor(elFactory, elContext).visit(parser.fixedLengthBytesMatcher());
+                }
+            };
 
-    public static final ScriptParseStrategy<AstVariableLengthBytesMatcher> VARIABLE_LENGTH_BYTES_MATCHER = new ScriptParseStrategy<AstVariableLengthBytesMatcher>() {
-        @Override
-        public AstVariableLengthBytesMatcher parse(RobotParser parser,
-                                                   ExpressionFactory elFactory,
-                                                   ExpressionContext elContext) throws RecognitionException {
-            return new AstVariableLengthBytesMatcherVisitor(elFactory, elContext).visit(parser
-                    .variableLengthBytesMatcher());
-        }
-    };
+    public static final ScriptParseStrategy<AstVariableLengthBytesMatcher> VARIABLE_LENGTH_BYTES_MATCHER =
+            new ScriptParseStrategy<AstVariableLengthBytesMatcher>() {
+                @Override
+                public AstVariableLengthBytesMatcher parse(RobotParser parser, ExpressionFactory elFactory,
+                    ExpressionContext elContext) throws RecognitionException {
+                    return new AstVariableLengthBytesMatcherVisitor(elFactory, elContext).visit(parser
+                            .variableLengthBytesMatcher());
+                }
+            };
 
     public static final ScriptParseStrategy<AstValue> VALUE = new ScriptParseStrategy<AstValue>() {
         @Override
@@ -601,29 +597,32 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         }
     };
 
-    public static final ScriptParseStrategy<AstLiteralTextValue> LITERAL_TEXT_VALUE = new ScriptParseStrategy<AstLiteralTextValue>() {
-        @Override
-        public AstLiteralTextValue parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
-                throws RecognitionException {
-            return new AstLiteralTextValueVisitor(elFactory, elContext).visit(parser.literalText());
-        }
-    };
+    public static final ScriptParseStrategy<AstLiteralTextValue> LITERAL_TEXT_VALUE =
+            new ScriptParseStrategy<AstLiteralTextValue>() {
+                @Override
+                public AstLiteralTextValue parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstLiteralTextValueVisitor(elFactory, elContext).visit(parser.literalText());
+                }
+            };
 
-    public static final ScriptParseStrategy<AstLiteralBytesValue> LITERAL_BYTES_VALUE = new ScriptParseStrategy<AstLiteralBytesValue>() {
-        @Override
-        public AstLiteralBytesValue parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
-                throws RecognitionException {
-            return new AstLiteralBytesValueVisitor(elFactory, elContext).visit(parser.literalBytes());
-        }
-    };
+    public static final ScriptParseStrategy<AstLiteralBytesValue> LITERAL_BYTES_VALUE =
+            new ScriptParseStrategy<AstLiteralBytesValue>() {
+                @Override
+                public AstLiteralBytesValue parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstLiteralBytesValueVisitor(elFactory, elContext).visit(parser.literalBytes());
+                }
+            };
 
-    public static final ScriptParseStrategy<AstExpressionValue> EXPRESSION_VALUE = new ScriptParseStrategy<AstExpressionValue>() {
-        @Override
-        public AstExpressionValue parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
-                throws RecognitionException {
-            return new AstExpressionValueVisitor(elFactory, elContext).visit(parser.expressionValue());
-        }
-    };
+    public static final ScriptParseStrategy<AstExpressionValue> EXPRESSION_VALUE =
+            new ScriptParseStrategy<AstExpressionValue>() {
+                @Override
+                public AstExpressionValue parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstExpressionValueVisitor(elFactory, elContext).visit(parser.expressionValue());
+                }
+            };
 
     public static final ScriptParseStrategy<AstReadOptionNode> READ_OPTION = new ScriptParseStrategy<AstReadOptionNode>() {
         @Override
@@ -1782,8 +1781,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
         @Override
         public AstExpressionMatcher visitExpressionMatcher(ExpressionMatcherContext ctx) {
-            ValueExpression expression = elFactory.createValueExpression(elContext, ctx.expression.getText(),
-                    byte[].class);
+            ValueExpression expression = elFactory.createValueExpression(elContext, ctx.expression.getText(), byte[].class);
             AstExpressionMatcher matcher = new AstExpressionMatcher(expression);
             matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return matcher;

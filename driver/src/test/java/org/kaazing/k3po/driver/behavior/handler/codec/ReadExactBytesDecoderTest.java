@@ -1,20 +1,17 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright 2014, Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.kaazing.k3po.driver.behavior.handler.codec;
@@ -33,8 +30,6 @@ import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.kaazing.k3po.driver.behavior.ScriptProgressException;
-import org.kaazing.k3po.driver.behavior.handler.codec.MessageDecoder;
-import org.kaazing.k3po.driver.behavior.handler.codec.ReadExactBytesDecoder;
 
 public class ReadExactBytesDecoderTest {
 
@@ -48,41 +43,43 @@ public class ReadExactBytesDecoderTest {
 
     @Test
     public void completeMatchOK() throws Exception {
-        MessageDecoder decoder = new ReadExactBytesDecoder(new byte[] { 0x01, 0x02, 0x03 });
-        ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[] { 0x01, 0x02, 0x03 }));
+        MessageDecoder decoder = new ReadExactBytesDecoder(new byte[]{0x01, 0x02, 0x03});
+        ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[]{0x01, 0x02, 0x03}));
         assertNotNull(remainingBuffer);
         assertEquals(0, remainingBuffer.readableBytes());
     }
 
-    @Test(expected = ScriptProgressException.class)
+    @Test(
+            expected = ScriptProgressException.class)
     public void NoMatchOK() throws Exception {
-        MessageDecoder decoder = new ReadExactBytesDecoder(new byte[] { 0x01, 0x02, 0x03 });
-        decoder.decode(copiedBuffer(new byte[] { 0x01, 0x02, 0x04 }));
+        MessageDecoder decoder = new ReadExactBytesDecoder(new byte[]{0x01, 0x02, 0x03});
+        decoder.decode(copiedBuffer(new byte[]{0x01, 0x02, 0x04}));
     }
 
     @Test
     public void fragmentedMatchOK() throws Exception {
-        MessageDecoder decoder = new ReadExactBytesDecoder(new byte[] { 0x01, 0x02, 0x03 });
-        ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[] { 0x01, 0x02 }));
+        MessageDecoder decoder = new ReadExactBytesDecoder(new byte[]{0x01, 0x02, 0x03});
+        ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[]{0x01, 0x02}));
         assertNull(remainingBuffer);
-        remainingBuffer = decoder.decode(copiedBuffer(new byte[] { 0x03 }));
+        remainingBuffer = decoder.decode(copiedBuffer(new byte[]{0x03}));
         assertNotNull(remainingBuffer);
         assertEquals(0, remainingBuffer.readableBytes());
     }
 
-    @Test(expected = ScriptProgressException.class)
+    @Test(
+            expected = ScriptProgressException.class)
     public void onlyPartialMatchOK() throws Exception {
-        MessageDecoder decoder = new ReadExactBytesDecoder(new byte[] { 0x01, 0x02, 0x03 });
-        ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[] { 0x01, 0x02 }));
+        MessageDecoder decoder = new ReadExactBytesDecoder(new byte[]{0x01, 0x02, 0x03});
+        ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[]{0x01, 0x02}));
         assertNull(remainingBuffer);
-        decoder.decode(copiedBuffer(new byte[] { 0x04 }));
+        decoder.decode(copiedBuffer(new byte[]{0x04}));
     }
 
     @Test
     public void completeMatchWithBytesLeftOverOK() throws Exception {
-        MessageDecoder decoder = new ReadExactBytesDecoder(new byte[] { 0x01, 0x02, 0x03 });
-        ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05 }));
+        MessageDecoder decoder = new ReadExactBytesDecoder(new byte[]{0x01, 0x02, 0x03});
+        ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[]{0x01, 0x02, 0x03, 0x04, 0x05}));
         assertNotNull(remainingBuffer);
-        assertEquals(copiedBuffer(new byte[] { 0x04, 0x05 }), remainingBuffer);
+        assertEquals(copiedBuffer(new byte[]{0x04, 0x05}), remainingBuffer);
     }
 }

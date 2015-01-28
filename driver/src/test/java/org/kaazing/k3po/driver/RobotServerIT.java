@@ -1,20 +1,17 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright 2014, Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.kaazing.k3po.driver;
@@ -48,7 +45,6 @@ import org.junit.rules.DisableOnDebug;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
-import org.kaazing.k3po.driver.RobotServer;
 
 public class RobotServerIT {
 
@@ -66,7 +62,9 @@ public class RobotServerIT {
 
     @Before
     public void setupRobot() throws Exception {
-        robot = new RobotServer(URI.create("tcp://localhost:61234"), false, new URLClassLoader(new URL[] { new File("src/test/scripts").toURI().toURL() }));
+        robot =
+                new RobotServer(URI.create("tcp://localhost:61234"), false, new URLClassLoader(new URL[]{new File(
+                        "src/test/scripts").toURI().toURL()}));
         robot.start();
         control = new Socket();
         control.connect(new InetSocketAddress("localhost", 61234));
@@ -101,7 +99,7 @@ public class RobotServerIT {
         // @formatter:off
         String strPrepared = "PREPARED\n" +
                              "content-length:0\n" +
-                             "\n"; 
+                             "\n";
         String strExpected = "STARTED\n" +
                              "\n" +
                              "FINISHED\n" +
@@ -109,7 +107,7 @@ public class RobotServerIT {
                              "\n";
         // @formatter:on
         CharBuffer expectedPrepared = CharBuffer.wrap(strPrepared);
-        CharBuffer expectedStartedAndFinished = CharBuffer.wrap(strExpected);      
+        CharBuffer expectedStartedAndFinished = CharBuffer.wrap(strExpected);
 
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
@@ -119,15 +117,15 @@ public class RobotServerIT {
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
-        
+
         CharBuffer prepared = CharBuffer.allocate(strPrepared.length());
         while (prepared.hasRemaining()) {
             in.read(prepared);
         }
         prepared.flip();
-        
+
         assertEquals(expectedPrepared, prepared);
-        
+
         out.append("START\n");
         out.append("\n");
         out.flush();
@@ -156,11 +154,11 @@ public class RobotServerIT {
                                      "close\n" +
                                      "closed\n";
         String strExpectedStarted = "STARTED\n" +
-                                    "\n";    
+                                    "\n";
         // @formatter:on
         CharBuffer expectedPrepared = CharBuffer.wrap(strExpectedPrepared);
         CharBuffer expectedStarted = CharBuffer.wrap(strExpectedStarted);
-        
+
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
         out.append("version:2.0\n");
@@ -212,12 +210,12 @@ public class RobotServerIT {
                                      "accepted\n" +
                                      "connected\n" +
                                      "close\n" +
-                                     "closed\n"; 
+                                     "closed\n";
         // @formatter:on
         CharBuffer expectedPrepared = CharBuffer.wrap(strExpectedPrepared);
         CharBuffer expectedStarted = CharBuffer.wrap(strExpectedStarted);
         CharBuffer expectedFinished = CharBuffer.wrap(strExpectedFinished);
-        
+
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
         out.append("version:2.0\n");
@@ -247,7 +245,7 @@ public class RobotServerIT {
             in.read(started);
         }
         started.flip();
-        
+
         assertEquals(expectedStarted, started);
 
         CharBuffer finished = CharBuffer.allocate(strExpectedFinished.length());
@@ -289,7 +287,7 @@ public class RobotServerIT {
         CharBuffer expectedPrepared = CharBuffer.wrap(strExpectedPrepared);
         CharBuffer expectedStarted = CharBuffer.wrap(strExpectedStarted);
         CharBuffer expectedFinished = CharBuffer.wrap(strExpectedFinished);
-        
+
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
         out.append("version:2.0\n");
@@ -298,17 +296,17 @@ public class RobotServerIT {
         out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
-        
+
         CharBuffer prepared = CharBuffer.allocate(strExpectedPrepared.length());
-        while(prepared.hasRemaining()) {
+        while (prepared.hasRemaining()) {
             in.read(prepared);
         }
         prepared.flip();
-        
+
         assertEquals(expectedPrepared, prepared);
-        
+
         client.connect(new InetSocketAddress("localhost", 62345));
-        
+
         out.append("START\n");
         out.append("\n");
         out.flush();
@@ -360,18 +358,18 @@ public class RobotServerIT {
         CharBuffer expectedPrepared = CharBuffer.wrap(strExpectedPrepared);
         CharBuffer expectedStarted = CharBuffer.wrap(strExpectedStarted);
         CharBuffer expectedFinished = CharBuffer.wrap(strExpectedFinished);
-        
+
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
-        
+
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
         out.append("PREPARE\n");
         out.append("version:2.0\n");
         out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();
-        
+
         CharBuffer prepared = CharBuffer.allocate(strExpectedPrepared.length());
-        while(prepared.hasRemaining()) {
+        while (prepared.hasRemaining()) {
             in.read(prepared);
         }
         prepared.flip();
@@ -431,7 +429,7 @@ public class RobotServerIT {
         CharBuffer expectedPrepared = CharBuffer.wrap(strExpectedPrepared);
         CharBuffer expectedStarted = CharBuffer.wrap(strExpectedStarted);
         CharBuffer expectedFinished = CharBuffer.wrap(strExpectedFinished);
-        
+
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
         out.append("version:2.0\n");
@@ -514,7 +512,7 @@ public class RobotServerIT {
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
 
         CharBuffer prepared = CharBuffer.allocate(strExpectedPrepared.length());
-        while(prepared.hasRemaining()) {
+        while (prepared.hasRemaining()) {
             in.read(prepared);
         }
         prepared.flip();
@@ -588,7 +586,7 @@ public class RobotServerIT {
         BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
 
         CharBuffer prepared = CharBuffer.allocate(strExpectedPrepared.length());
-        while(prepared.hasRemaining()) {
+        while (prepared.hasRemaining()) {
             in.read(prepared);
         }
         prepared.flip();
@@ -625,16 +623,14 @@ public class RobotServerIT {
         // @formatter:on
         CharBuffer expectedPrepared = CharBuffer.wrap(strExpectedPrepared);
 
-        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
-                control.getOutputStream()));
+        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("PREPARE\n");
         out.append("version:2.0\n");
         out.append("name:" + path + "\n");
         out.append("\n");
         out.flush();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(
-                control.getInputStream()));
+        BufferedReader in = new BufferedReader(new InputStreamReader(control.getInputStream()));
 
         CharBuffer prepared = CharBuffer.allocate(strExpectedPrepared.length());
         while (prepared.hasRemaining()) {
