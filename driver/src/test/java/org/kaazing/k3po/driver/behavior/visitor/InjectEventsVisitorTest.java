@@ -328,36 +328,6 @@ public class InjectEventsVisitorTest {
     }
 
     @Test(expected = ScriptParseException.class)
-    public void shouldNotParseScriptWithUnclosedStream()
-        throws Exception {
-
-        String script =
-            "# tcp.client.connect-then-close\n" +
-            "connect tcp://localhost:7788\n" +
-            "connected\n";
-
-        ScriptParser parser = new Parser();
-        parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
-    }
-
-    @Test(expected = ScriptParseException.class)
-    public void shouldNotParseScriptWithMultiUnclosedStreams()
-        throws Exception {
-
-        String script =
-            "# tcp.client.connect-then-close\n" +
-            "connect tcp://localhost:7788\n" +
-            "connected\n" +
-            "connect tcp://localhost:7789\n" +
-            "connected\n" +
-            "close\n" +
-            "closed\n";
-
-        ScriptParser parser = new Parser();
-        parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
-    }
-
-    @Test(expected = ScriptParseException.class)
     public void shouldNotParseScriptWithMultiplyClosedStream()
         throws Exception {
 

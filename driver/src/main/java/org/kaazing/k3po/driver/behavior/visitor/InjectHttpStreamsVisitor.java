@@ -158,6 +158,7 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
             case REQUEST:
             case HEADERS_COMPLETE:
             case CLOSED:
+            case OPEN: // can only be OPEN if not http
                 break;
             default:
                 throw new IllegalStateException(String.format("Http read was left in state: %s", state.readState));
@@ -166,6 +167,7 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
             switch (state.writeState) {
             case HEADERS_COMPLETE:
             case CLOSED:
+            case OPEN: // can only be OPEN if not http
                 break;
             default:
                 throw new IllegalStateException(String.format("Http write was left in state: %s", state.writeState));
@@ -202,6 +204,7 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
         case RESPONSE:
         case HEADERS_COMPLETE:
         case CLOSED:
+        case OPEN: // can only be OPEN if not http
             break;
         default:
             throw new IllegalStateException(String.format("Http read was left in state: %s", state.readState));
@@ -210,6 +213,7 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
         switch (state.writeState) {
         case HEADERS_COMPLETE:
         case CLOSED:
+        case OPEN: // can only be OPEN if not http
             break;
         default:
             throw new IllegalStateException(String.format("Http write was left in state: %s", state.writeState));
