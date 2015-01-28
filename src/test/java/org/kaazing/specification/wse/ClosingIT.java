@@ -37,23 +37,25 @@ public class ClosingIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({ "client.send.close.frame/request",
-            "client.send.close.frame/response" })
+    @Specification({
+        "client.send.close.frame/request",
+        "client.send.close.frame/response" })
     public void shouldEchoClientCloseFrame() throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "server.send.close.frame/request",
-            "server.send.close.frame/response" })
+    @Specification({
+        "server.send.close.frame/request",
+        "server.send.close.frame/response" })
     public void shouldEchoServerCloseFrame() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-            "server.send.data.between.close.frame.and.reconnect.frame/request",
-            "server.send.data.between.close.frame.and.reconnect.frame/response" })
+        "server.send.data.between.close.frame.and.reconnect.frame/request",
+        "server.send.data.between.close.frame.and.reconnect.frame/response" })
     public void shouldIgnoreDataFromServerBetweenCloseAndReconnectFrame()
             throws Exception {
         k3po.join();

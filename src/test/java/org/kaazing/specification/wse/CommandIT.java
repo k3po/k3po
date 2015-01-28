@@ -38,22 +38,26 @@ public class CommandIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({ "server.send.nop/request", "server.send.nop/response" })
+    @Specification({
+        "server.send.nop/request",
+        "server.send.nop/response" })
     public void sholdReceiveNop() throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "server.send.reconnect/request",
-            "server.send.reconnect/response" })
+    @Specification({
+        "server.send.reconnect/request",
+        "server.send.reconnect/response" })
     public void sholdReceiveReconnect() throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "server.send.close/request", "server.send.close/response" })
+    @Specification({
+        "server.send.close/request",
+        "server.send.close/response" })
     public void sholdReceiveClose() throws Exception {
         k3po.join();
     }
-
 }

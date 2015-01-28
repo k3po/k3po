@@ -38,26 +38,28 @@ public class ProxyModeIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({ "client.send.overlapping.longpolling.request/request",
-            "client.send.overlapping.longpolling.request/response" })
+    @Specification({
+        "client.send.overlapping.longpolling.request/request",
+        "client.send.overlapping.longpolling.request/response" })
     public void shouldFlushAndCloseDownstreamUponReceivingOverlappingLongpollingRequest()
             throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "server.send.data.on.longpolling.request/request",
-            "server.send.data.on.longpolling.request/response" })
+    @Specification({
+        "server.send.data.on.longpolling.request/request",
+        "server.send.data.on.longpolling.request/response" })
     public void shouldReceiveDataFromServerOnLongpollingRequest()
             throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "client.request.heartbeat.interval/request",
-            "client.request.heartbeat.interval/response" })
+    @Specification({
+        "client.request.heartbeat.interval/request",
+        "client.request.heartbeat.interval/response" })
     public void shouldSendHeartbeatToClient() throws Exception {
         k3po.join();
     }
-
 }

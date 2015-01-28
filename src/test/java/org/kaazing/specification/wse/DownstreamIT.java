@@ -38,16 +38,17 @@ public class DownstreamIT {
 
     @Test
     @Specification({
-            "binary.downstream.response.content.type.not.application.octet.stream/downstream.request",
-            "binary.downstream.response.content.type.not.application.octet.stream/downstream.response" })
+        "binary.downstream.response.content.type.not.application.octet.stream/downstream.request",
+        "binary.downstream.response.content.type.not.application.octet.stream/downstream.response" })
     public void shouldCloseConnectionWhenBinaryDownstreamResponseContentTypeIsNotApplicationOctetstream()
             throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "response.status.code.not.200/downstream.request",
-            "response.status.code.not.200/downstream.response" })
+    @Specification({
+        "response.status.code.not.200/downstream.request",
+        "response.status.code.not.200/downstream.response" })
     public void shouldCloseConnectionWhenDownstreamResponseStatusCodeNot200()
             throws Exception {
         k3po.join();
@@ -55,19 +56,19 @@ public class DownstreamIT {
 
     @Test
     @Specification({
-            "response.containing.frame.after.reconnect.frame/downstream.request",
-            "response.containing.frame.after.reconnect.frame/downstream.response" })
+        "response.containing.frame.after.reconnect.frame/downstream.request",
+        "response.containing.frame.after.reconnect.frame/downstream.response" })
     public void shouldCloseConnectionWhenDownstreamResponseContainsFrameAfterReconnectFrame()
             throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "request.method.not.get/downstream.request",
-            "request.method.not.get/downstream.response" })
+    @Specification({
+        "request.method.not.get/downstream.request",
+        "request.method.not.get/downstream.response" })
     public void shouldRespondWithBadRequestWhenDownstreamRequestMethodNotGet()
             throws Exception {
         k3po.join();
     }
-
 }

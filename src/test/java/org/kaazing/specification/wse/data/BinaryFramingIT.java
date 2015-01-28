@@ -39,36 +39,41 @@ public class BinaryFramingIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({ "echo.payload.length.0/request",
-            "echo.payload.length.0/response" })
+    @Specification({
+        "echo.payload.length.0/request",
+        "echo.payload.length.0/response" })
     public void shouldEchoFrameWithPayloadLength0() throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "echo.payload.length.127/request",
-            "echo.payload.length.127/response" })
+    @Specification({
+        "echo.payload.length.127/request",
+        "echo.payload.length.127/response" })
     public void shouldEchoFrameWithPayloadLength127() throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "echo.payload.length.128/request",
-            "echo.payload.length.128/response" })
+    @Specification({
+        "echo.payload.length.128/request",
+        "echo.payload.length.128/response" })
     public void shouldEchoFrameWithPayloadLength128() throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "echo.payload.length.65535/request",
-            "echo.payload.length.65535/response" })
+    @Specification({
+        "echo.payload.length.65535/request",
+        "echo.payload.length.65535/response" })
     public void shouldEchoFrameWithPayloadLength65535() throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "echo.payload.length.65536/request",
-            "echo.payload.length.65536/response" })
+    @Specification({
+        "echo.payload.length.65536/request",
+        "echo.payload.length.65536/response" })
     public void shouldEchoFrameWithPayloadLength65536() throws Exception {
         k3po.join();
     }

@@ -38,26 +38,28 @@ public class UpstreamIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({ "request.method.not.post/upstream.request",
-            "request.method.not.post/upstream.response" })
+    @Specification({
+        "request.method.not.post/upstream.request",
+        "request.method.not.post/upstream.response" })
     public void shouldCloseConnectionWhenUpstreamRequestMethodNotPost()
             throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "response.status.code.not.200/upstream.request",
-            "response.status.code.not.200/upstream.response" })
+    @Specification({
+        "response.status.code.not.200/upstream.request",
+        "response.status.code.not.200/upstream.response" })
     public void shouldCloseConnectionWhenUpstreamStatusCodeNot200()
             throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "parallel.request/upstream.request",
-            "parallel.request/upstream.response" })
+    @Specification({
+        "parallel.request/upstream.request",
+        "parallel.request/upstream.response" })
     public void shouldRejectParallelUpstreamRequest() throws Exception {
         k3po.join();
     }
-
 }

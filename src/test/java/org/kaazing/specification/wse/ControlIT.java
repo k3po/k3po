@@ -38,56 +38,68 @@ public class ControlIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({ "client.send.ping/request", "client.send.ping/response" })
+    @Specification({
+        "client.send.ping/request",
+        "client.send.ping/response" })
     public void shouldReplyClientPingWithPong() throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "client.send.pong/request", "client.send.pong/response" })
+    @Specification({
+        "client.send.pong/request",
+        "client.send.pong/response" })
     public void shouldReceivePongFromClient() throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "server.send.ping/request", "server.send.ping/response" })
+    @Specification({
+        "server.send.ping/request",
+        "server.send.ping/response" })
     public void shouldReplyServerPingWithPong() throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "server.send.pong/request", "server.send.pong/response" })
+    @Specification({
+        "server.send.pong/request",
+        "server.send.pong/response" })
     public void shouldReceivePongFromServer() throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "client.send.invalid.ping.frame/request",
-            "client.send.invalid.ping.frame/response" })
+    @Specification({
+        "client.send.invalid.ping.frame/request",
+        "client.send.invalid.ping.frame/response" })
     public void shouldCloseConnectionOnReceivingInvalidPingFromClient()
             throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "client.send.invalid.pong.frame/request",
-            "client.send.invalid.pong.frame/response" })
+    @Specification({
+        "client.send.invalid.pong.frame/request",
+        "client.send.invalid.pong.frame/response" })
     public void shouldCloseConnectionOnReceivingInvalidPongFromClient()
             throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "server.send.invalid.ping.frame/request",
-            "server.send.invalid.ping.frame/response" })
+    @Specification({
+        "server.send.invalid.ping.frame/request",
+        "server.send.invalid.ping.frame/response" })
     public void shouldCloseConnectionOnReceivingInvalidPingFromServer()
             throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "server.send.invalid.pong.frame/request",
-            "server.send.invalid.pong.frame/response" })
+    @Specification({
+        "server.send.invalid.pong.frame/request",
+        "server.send.invalid.pong.frame/response" })
     public void shouldCloseConnectionOnReceivingInvalidPongFromServer()
             throws Exception {
         k3po.join();
@@ -95,8 +107,8 @@ public class ControlIT {
 
     @Test
     @Specification({
-            "client.exclude.accept.command.header.during.handshake.then.send.ping/request",
-            "client.exclude.accept.command.header.during.handshake.then.send.ping/response" })
+        "client.exclude.accept.command.header.during.handshake.then.send.ping/request",
+        "client.exclude.accept.command.header.during.handshake.then.send.ping/response" })
     public void shouldCloseConnectionOnReceivingPingFromClientWhenAcceptCommandsHeaderExcludedDuringHandshake()
             throws Exception {
         k3po.join();
@@ -104,8 +116,8 @@ public class ControlIT {
 
     @Test
     @Specification({
-            "client.exclude.accept.command.header.during.handshake.then.send.pong/request",
-            "client.exclude.accept.command.header.during.handshake.then.send.pong/response" })
+        "client.exclude.accept.command.header.during.handshake.then.send.pong/request",
+        "client.exclude.accept.command.header.during.handshake.then.send.pong/response" })
     public void shouldCloseConnectionOnReceivingPongFromClientWhenAcceptCommandsHeaderExcludedDuringHandshake()
             throws Exception {
         k3po.join();
