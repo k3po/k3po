@@ -1,20 +1,17 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright 2014, Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.kaazing.k3po.driver.behavior.handler.codec;
@@ -28,86 +25,84 @@ import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.junit.Test;
-import org.kaazing.k3po.driver.behavior.handler.codec.Masker;
 import org.kaazing.k3po.lang.el.ExpressionContext;
-
 
 public class MaskerTest {
     @Test
     public void shouldMaskExactMultipleBuffer() throws Exception {
-        Masker decoder = newMasker(new byte[] {0x01, 0x02, 0x03, 0x04});
-        ChannelBuffer originalBuf = wrappedBuffer(new byte[] {0x11, 0x12, 0x13, 0x14, 0x21, 0x22, 0x23, 0x24});
+        Masker decoder = newMasker(new byte[]{0x01, 0x02, 0x03, 0x04});
+        ChannelBuffer originalBuf = wrappedBuffer(new byte[]{0x11, 0x12, 0x13, 0x14, 0x21, 0x22, 0x23, 0x24});
         ChannelBuffer maskedBuf = decoder.applyMask(originalBuf);
 
-        assertEquals(wrappedBuffer(new byte[] {0x10, 0x10, 0x10, 0x10, 0x20, 0x20, 0x20, 0x20}), maskedBuf);
+        assertEquals(wrappedBuffer(new byte[]{0x10, 0x10, 0x10, 0x10, 0x20, 0x20, 0x20, 0x20}), maskedBuf);
     }
 
     @Test
     public void shouldMaskFragmentedExactMultipleBuffer() throws Exception {
-        Masker decoder = newMasker(new byte[] {0x01, 0x02, 0x03, 0x04});
-        ChannelBuffer originalBuf1 = wrappedBuffer(new byte[] {0x11, 0x12, 0x13, 0x14});
+        Masker decoder = newMasker(new byte[]{0x01, 0x02, 0x03, 0x04});
+        ChannelBuffer originalBuf1 = wrappedBuffer(new byte[]{0x11, 0x12, 0x13, 0x14});
         ChannelBuffer maskedBuf1 = decoder.applyMask(originalBuf1);
-        ChannelBuffer originalBuf2 = wrappedBuffer(new byte[] {0x21, 0x22, 0x23, 0x24});
+        ChannelBuffer originalBuf2 = wrappedBuffer(new byte[]{0x21, 0x22, 0x23, 0x24});
         ChannelBuffer maskedBuf2 = decoder.applyMask(originalBuf2);
 
-        assertEquals(wrappedBuffer(new byte[] {0x10, 0x10, 0x10, 0x10}), maskedBuf1);
-        assertEquals(wrappedBuffer(new byte[] {0x20, 0x20, 0x20, 0x20}), maskedBuf2);
+        assertEquals(wrappedBuffer(new byte[]{0x10, 0x10, 0x10, 0x10}), maskedBuf1);
+        assertEquals(wrappedBuffer(new byte[]{0x20, 0x20, 0x20, 0x20}), maskedBuf2);
     }
 
     @Test
     public void shouldMaskFragmentedNonMultipleBuffer() throws Exception {
-        Masker decoder = newMasker(new byte[] {0x01, 0x02, 0x03, 0x04});
-        ChannelBuffer originalBuf1 = wrappedBuffer(new byte[] {0x11, 0x12, 0x13, 0x14, 0x11});
+        Masker decoder = newMasker(new byte[]{0x01, 0x02, 0x03, 0x04});
+        ChannelBuffer originalBuf1 = wrappedBuffer(new byte[]{0x11, 0x12, 0x13, 0x14, 0x11});
         ChannelBuffer maskedBuf1 = decoder.applyMask(originalBuf1);
-        ChannelBuffer originalBuf2 = wrappedBuffer(new byte[] {0x22, 0x23, 0x24, 0x21});
+        ChannelBuffer originalBuf2 = wrappedBuffer(new byte[]{0x22, 0x23, 0x24, 0x21});
         ChannelBuffer maskedBuf2 = decoder.applyMask(originalBuf2);
 
-        assertEquals(wrappedBuffer(new byte[] {0x10, 0x10, 0x10, 0x10, 0x10}), maskedBuf1);
-        assertEquals(wrappedBuffer(new byte[] {0x20, 0x20, 0x20, 0x20}), maskedBuf2);
+        assertEquals(wrappedBuffer(new byte[]{0x10, 0x10, 0x10, 0x10, 0x10}), maskedBuf1);
+        assertEquals(wrappedBuffer(new byte[]{0x20, 0x20, 0x20, 0x20}), maskedBuf2);
     }
 
     @Test
     public void shouldMaskExactMultipleBufferWithExpressionKey() throws Exception {
         ExpressionContext environment = new ExpressionContext();
         ExpressionFactory factory = ExpressionFactory.newInstance();
-        ValueExpression expression = factory.createValueExpression(new byte[] {0x01, 0x02, 0x03, 0x04}, byte[].class);
+        ValueExpression expression = factory.createValueExpression(new byte[]{0x01, 0x02, 0x03, 0x04}, byte[].class);
 
         Masker decoder = newMasker(expression, environment);
-        ChannelBuffer originalBuf = wrappedBuffer(new byte[] {0x11, 0x12, 0x13, 0x14, 0x21, 0x22, 0x23, 0x24});
+        ChannelBuffer originalBuf = wrappedBuffer(new byte[]{0x11, 0x12, 0x13, 0x14, 0x21, 0x22, 0x23, 0x24});
         ChannelBuffer maskedBuf = decoder.applyMask(originalBuf);
 
-        assertEquals(wrappedBuffer(new byte[] {0x10, 0x10, 0x10, 0x10, 0x20, 0x20, 0x20, 0x20}), maskedBuf);
+        assertEquals(wrappedBuffer(new byte[]{0x10, 0x10, 0x10, 0x10, 0x20, 0x20, 0x20, 0x20}), maskedBuf);
     }
 
     @Test
     public void shouldMaskFragmentedExactMultipleBufferWithExpressionKey() throws Exception {
         ExpressionContext environment = new ExpressionContext();
         ExpressionFactory factory = ExpressionFactory.newInstance();
-        ValueExpression expression = factory.createValueExpression(new byte[] {0x01, 0x02, 0x03, 0x04}, byte[].class);
+        ValueExpression expression = factory.createValueExpression(new byte[]{0x01, 0x02, 0x03, 0x04}, byte[].class);
 
         Masker decoder = newMasker(expression, environment);
-        ChannelBuffer originalBuf1 = wrappedBuffer(new byte[] {0x11, 0x12, 0x13, 0x14});
+        ChannelBuffer originalBuf1 = wrappedBuffer(new byte[]{0x11, 0x12, 0x13, 0x14});
         ChannelBuffer maskedBuf1 = decoder.applyMask(originalBuf1);
-        ChannelBuffer originalBuf2 = wrappedBuffer(new byte[] {0x21, 0x22, 0x23, 0x24});
+        ChannelBuffer originalBuf2 = wrappedBuffer(new byte[]{0x21, 0x22, 0x23, 0x24});
         ChannelBuffer maskedBuf2 = decoder.applyMask(originalBuf2);
 
-        assertEquals(wrappedBuffer(new byte[] {0x10, 0x10, 0x10, 0x10}), maskedBuf1);
-        assertEquals(wrappedBuffer(new byte[] {0x20, 0x20, 0x20, 0x20}), maskedBuf2);
+        assertEquals(wrappedBuffer(new byte[]{0x10, 0x10, 0x10, 0x10}), maskedBuf1);
+        assertEquals(wrappedBuffer(new byte[]{0x20, 0x20, 0x20, 0x20}), maskedBuf2);
     }
 
     @Test
     public void shouldMaskFragmentedNonMultipleBufferWithExpressionKey() throws Exception {
         ExpressionContext environment = new ExpressionContext();
         ExpressionFactory factory = ExpressionFactory.newInstance();
-        ValueExpression expression = factory.createValueExpression(new byte[] {0x01, 0x02, 0x03, 0x04}, byte[].class);
+        ValueExpression expression = factory.createValueExpression(new byte[]{0x01, 0x02, 0x03, 0x04}, byte[].class);
 
         Masker decoder = newMasker(expression, environment);
-        ChannelBuffer originalBuf1 = wrappedBuffer(new byte[] {0x11, 0x12, 0x13, 0x14, 0x11});
+        ChannelBuffer originalBuf1 = wrappedBuffer(new byte[]{0x11, 0x12, 0x13, 0x14, 0x11});
         ChannelBuffer maskedBuf1 = decoder.applyMask(originalBuf1);
-        ChannelBuffer originalBuf2 = wrappedBuffer(new byte[] {0x22, 0x23, 0x24, 0x21});
+        ChannelBuffer originalBuf2 = wrappedBuffer(new byte[]{0x22, 0x23, 0x24, 0x21});
         ChannelBuffer maskedBuf2 = decoder.applyMask(originalBuf2);
 
-        assertEquals(wrappedBuffer(new byte[] {0x10, 0x10, 0x10, 0x10, 0x10}), maskedBuf1);
-        assertEquals(wrappedBuffer(new byte[] {0x20, 0x20, 0x20, 0x20}), maskedBuf2);
+        assertEquals(wrappedBuffer(new byte[]{0x10, 0x10, 0x10, 0x10, 0x10}), maskedBuf1);
+        assertEquals(wrappedBuffer(new byte[]{0x20, 0x20, 0x20, 0x20}), maskedBuf2);
     }
 }

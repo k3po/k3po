@@ -1,20 +1,17 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright 2014, Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.kaazing.k3po.driver.http;
@@ -76,8 +73,7 @@ public class HttpRobotBehaviorIT {
     @Test
     public void shouldNotAcceptHeaderWhenExpectedMissing() throws Exception {
 
-        String script = combineScripts("http.accept.header.missing.rpt",
-                "http.connect.header.missing.rpt");
+        String script = combineScripts("http.accept.header.missing.rpt", "http.connect.header.missing.rpt");
 
         String expected = script;
 
@@ -89,9 +85,9 @@ public class HttpRobotBehaviorIT {
 
     @Test
     public void shouldAcceptHeaderWithMultipleTokens() throws Exception {
-        
-        String script = combineScripts("http.accept.header.with.multiple.tokens.rpt",
-                "tcp.connect.header.with.multiple.tokens.rpt");
+
+        String script =
+                combineScripts("http.accept.header.with.multiple.tokens.rpt", "tcp.connect.header.with.multiple.tokens.rpt");
 
         String expected = script;
 
@@ -103,9 +99,10 @@ public class HttpRobotBehaviorIT {
 
     @Test
     public void shouldAcceptReadParameterWithMultipleTokens() throws Exception {
-        
-        String script = combineScripts("http.accept.read.parameter.with.multiple.tokens.rpt",
-                "tcp.connect.write.parameter.with.multiple.tokens.rpt");
+
+        String script =
+                combineScripts("http.accept.read.parameter.with.multiple.tokens.rpt",
+                        "tcp.connect.write.parameter.with.multiple.tokens.rpt");
 
         String expected = script;
 
@@ -114,12 +111,13 @@ public class HttpRobotBehaviorIT {
 
         assertEquals(expected, robot.getObservedScript());
     }
-    
+
     @Test
     public void shouldAcceptWriteParameterWithMultipleTokens() throws Exception {
-        
-        String script = combineScripts("http.connect.write.parameter.with.multiple.tokens.rpt",
-                "tcp.accept.read.parameter.with.multiple.tokens.rpt");
+
+        String script =
+                combineScripts("http.connect.write.parameter.with.multiple.tokens.rpt",
+                        "tcp.accept.read.parameter.with.multiple.tokens.rpt");
 
         String expected = script;
 
@@ -128,12 +126,13 @@ public class HttpRobotBehaviorIT {
 
         assertEquals(expected, robot.getObservedScript());
     }
-    
+
     @Test
     public void shouldReceiveGetRequestAndProvideResponse() throws Exception {
 
-        String script = combineScripts("http.accept.get.request.with.no.content.on.response.rpt",
-                "tcp.connect.get.request.with.no.content.on.response.rpt");
+        String script =
+                combineScripts("http.accept.get.request.with.no.content.on.response.rpt",
+                        "tcp.connect.get.request.with.no.content.on.response.rpt");
 
         String expected = script;
 
@@ -147,8 +146,9 @@ public class HttpRobotBehaviorIT {
     @Test
     public void shouldReceiveGetRequestAndProvideResponseWithContent() throws Exception {
 
-        String script = combineScripts("http.accept.get.request.with.content.on.response.rpt",
-                "tcp.connect.get.request.with.content.on.response.rpt");
+        String script =
+                combineScripts("http.accept.get.request.with.content.on.response.rpt",
+                        "tcp.connect.get.request.with.content.on.response.rpt");
 
         String expected = script;
 
@@ -162,8 +162,9 @@ public class HttpRobotBehaviorIT {
     @Test
     public void shouldSendGetRequestAndReceiveResponseWithNoContent() throws Exception {
 
-        String script = combineScripts("http.connect.get.request.with.no.content.on.response.rpt",
-                "tcp.accept.get.request.with.no.content.on.response.rpt");
+        String script =
+                combineScripts("http.connect.get.request.with.no.content.on.response.rpt",
+                        "tcp.accept.get.request.with.no.content.on.response.rpt");
 
         String expected = script;
 
@@ -177,8 +178,9 @@ public class HttpRobotBehaviorIT {
     @Test
     public void shouldSendGetRequestAndReceiveResponseWithContent() throws Exception {
 
-        String script = combineScripts("http.connect.get.request.with.content.on.response.rpt",
-                "tcp.accept.get.request.with.content.on.response.rpt");
+        String script =
+                combineScripts("http.connect.get.request.with.content.on.response.rpt",
+                        "tcp.accept.get.request.with.content.on.response.rpt");
 
         String expected = script;
 
@@ -206,8 +208,9 @@ public class HttpRobotBehaviorIT {
     @Test
     public void shouldAcceptWebsocketHandshakeThenServerClose() throws Exception {
 
-        String script = combineScripts("http.accept.websocket.handshake.then.server.close.rpt",
-                "http.connect.websocket.handshake.then.server.close.rpt");
+        String script =
+                combineScripts("http.accept.websocket.handshake.then.server.close.rpt",
+                        "http.connect.websocket.handshake.then.server.close.rpt");
 
         String expected = script;
 
@@ -263,8 +266,7 @@ public class HttpRobotBehaviorIT {
     @Test
     public void shouldAcceptResponseWithChunking() throws Exception {
 
-        String script = combineScripts("http.accept.response.with.chunking.rpt",
-                "tcp.connect.response.with.chunking.rpt");
+        String script = combineScripts("http.accept.response.with.chunking.rpt", "tcp.connect.response.with.chunking.rpt");
 
         String expected = script;
 
@@ -278,8 +280,7 @@ public class HttpRobotBehaviorIT {
     @Test
     public void shouldConnectResponseWithChunking() throws Exception {
 
-        String script = combineScripts("http.connect.response.with.chunking.rpt",
-                "tcp.accept.response.with.chunking.rpt");
+        String script = combineScripts("http.connect.response.with.chunking.rpt", "tcp.accept.response.with.chunking.rpt");
 
         String expected = script;
 
@@ -293,8 +294,7 @@ public class HttpRobotBehaviorIT {
     @Test
     public void shouldConnectConnectionCloseResponse() throws Exception {
 
-        String script = combineScripts("http.connect.connection.close.response.rpt",
-                "tcp.accept.connection.close.response.rpt");
+        String script = combineScripts("http.connect.connection.close.response.rpt", "tcp.accept.connection.close.response.rpt");
 
         String expected = script;
 
@@ -308,8 +308,7 @@ public class HttpRobotBehaviorIT {
     @Test
     public void shouldAcceptConnectionCloseResponse() throws Exception {
 
-        String script = combineScripts("http.accept.connection.close.response.rpt",
-                "tcp.connect.connection.close.response.rpt");
+        String script = combineScripts("http.accept.connection.close.response.rpt", "tcp.connect.connection.close.response.rpt");
 
         String expected = script;
 
@@ -323,8 +322,7 @@ public class HttpRobotBehaviorIT {
     @Test
     public void shouldAcceptMultipleHttpOnDifferentTcp() throws Exception {
 
-        String script = combineScripts("http.accept.two.http.200.rpt",
-                "tcp.connect.two.http.200.on.different.streams.rpt");
+        String script = combineScripts("http.accept.two.http.200.rpt", "tcp.connect.two.http.200.on.different.streams.rpt");
 
         String expected = script;
 
@@ -357,8 +355,9 @@ public class HttpRobotBehaviorIT {
             sb.append("#");
             sb.append(scriptName);
             sb.append("\n");
-            List<String> lines = Files.readAllLines(Paths.get(String.format("%s%s%s", Paths.get("").toAbsolutePath()
-                    .toString(), SCRIPT_PATH, scriptName)), StandardCharsets.UTF_8);
+            List<String> lines =
+                    Files.readAllLines(Paths.get(String.format("%s%s%s", Paths.get("").toAbsolutePath().toString(), SCRIPT_PATH,
+                            scriptName)), StandardCharsets.UTF_8);
             for (String line : lines) {
                 sb.append(line);
                 sb.append("\n");
