@@ -21,7 +21,7 @@
 package org.kaazing.specification.http;
 
 /**
- * Backwards compatibility with HTTP/1.0 
+ * Backwards compatibility with HTTP/1.0
  *
  */
 public class HttpBackwardCompatibility {

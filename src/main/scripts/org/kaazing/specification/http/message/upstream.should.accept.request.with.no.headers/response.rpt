@@ -11,4 +11,3 @@ write "Content-Length: 0\r\n"
 write "Content-Type: text/html\r\n"
 write "\r\n"
 
-closed

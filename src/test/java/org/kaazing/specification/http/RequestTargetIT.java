@@ -20,6 +20,7 @@
  */
 package org.kaazing.specification.http;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -28,31 +29,36 @@ import org.junit.Test;
  */
 public class RequestTargetIT {
 
-	@Test
-	public void upstreamMustAcceptOriginForm() {
-		// origin-form = absolute-path [ "?" query ]
-		// GET /where?q=now HTTP/1.1
-		// Host: www.example.org
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void upstreamMustAcceptOriginForm() {
+        // origin-form = absolute-path [ "?" query ]
+        // GET /where?q=now HTTP/1.1
+        // Host: www.example.org
+    }
 
-	@Test
-	public void upstreamMustAcceptAbsoluteForm() {
-		// GET http://www.example.org/pub/WWW/TheProject.html HTTP/1.1
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void upstreamMustAcceptAbsoluteForm() {
+        // GET http://www.example.org/pub/WWW/TheProject.html HTTP/1.1
+    }
 
-	@Test
-	public void intermediaryMustAcceptAuthorityFormOnConnectRequest() {
-		// CONNECT www.example.com:80 HTTP/1.1
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void intermediaryMustAcceptAuthorityFormOnConnectRequest() {
+        // CONNECT www.example.com:80 HTTP/1.1
+    }
 
-	@Test
-	public void upstreamMustAcceptAsterickFormOnOptionsRequest() {
-		// OPTIONS * HTTP/1.1
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void upstreamMustAcceptAsterickFormOnOptionsRequest() {
+        // OPTIONS * HTTP/1.1
+    }
 
-	@Test
-	public void lastProxyMustConvertOptionsInAbsoluteFormToAsterickForm() {
-		// OPTIONS * HTTP/1.1
-		// Host: www.example.org:8001
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void lastProxyMustConvertOptionsInAbsoluteFormToAsterickForm() {
+        // OPTIONS * HTTP/1.1
+        // Host: www.example.org:8001
+    }
 }

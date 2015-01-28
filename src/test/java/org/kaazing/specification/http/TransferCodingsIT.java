@@ -20,6 +20,7 @@
  */
 package org.kaazing.specification.http;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -28,50 +29,58 @@ import org.junit.Test;
  */
 public class TransferCodingsIT {
 
-	@Test
-	public void shouldProcessRequestTransferEncodingChunked() {
+    @Test
+    @Ignore("Not Implemented")
+    public void shouldProcessRequestTransferEncodingChunked() {
 
-	}
+    }
 
-	@Test
-	public void shouldProcessResponseTransferEncodingChunked() {
+    @Test
+    @Ignore("Not Implemented")
+    public void shouldProcessResponseTransferEncodingChunked() {
 
-	}
+    }
 
-	@Test
-	public void shouldProcessRequestTransferEncodingChunkedExtension() {
+    @Test
+    @Ignore("Not Implemented")
+    public void shouldProcessRequestTransferEncodingChunkedExtension() {
 
-	}
+    }
 
-	@Test
-	public void shouldProcessResponseTransferEncodingChunkedExtension() {
+    @Test
+    @Ignore("Not Implemented")
+    public void shouldProcessResponseTransferEncodingChunkedExtension() {
 
-	}
+    }
 
-	@Test
-	public void shouldProcessRequestTransferEncodingChunkedWithTrailer() {
+    @Test
+    @Ignore("Not Implemented")
+    public void shouldProcessRequestTransferEncodingChunkedWithTrailer() {
 
-	}
+    }
 
-	@Test
-	public void shouldProcessResponseTransferEncodingChunkedWithTrailer() {
+    @Test
+    @Ignore("Not Implemented")
+    public void shouldProcessResponseTransferEncodingChunkedWithTrailer() {
 
-	}
+    }
 
-	@Test
-	public void shouldProcessRequestTransferEncodingChunkedWithTrailerAndTrailerHeader() {
+    @Test
+    @Ignore("Not Implemented")
+    public void shouldProcessRequestTransferEncodingChunkedWithTrailerAndTrailerHeader() {
 
-	}
+    }
 
-	@Test
-	public void shouldProcessResponseTransferEncodingChunkedWithTrailerAndTrailerHeader() {
+    @Test
+    @Ignore("Not Implemented")
+    public void shouldProcessResponseTransferEncodingChunkedWithTrailerAndTrailerHeader() {
 
-	}
+    }
 
-	// TODO
-	// 4.2. Compression Codings
-	// 4.2.1. Compress Coding
-	// 4.2.2. Deflate Coding
-	// 4.2.3. Gzip Coding
-	// 4.3. TE Header
+    // TODO
+    // 4.2. Compression Codings
+    // 4.2.1. Compress Coding
+    // 4.2.2. Deflate Coding
+    // 4.2.3. Gzip Coding
+    // 4.3. TE Header
 }

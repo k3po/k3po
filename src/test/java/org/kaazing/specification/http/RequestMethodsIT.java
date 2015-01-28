@@ -20,6 +20,7 @@
  */
 package org.kaazing.specification.http;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -28,26 +29,30 @@ import org.junit.Test;
  */
 public class RequestMethodsIT {
 
-	@Test
-	public void serverMustRespondToUnknownMethodWith501() {
-		// When a request method is received
-		// that is unrecognized or not implemented by an origin server, the
-		// origin server SHOULD respond with the 501 (Not Implemented) status
-		// code.
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void serverMustRespondToUnknownMethodWith501() {
+        // When a request method is received
+        // that is unrecognized or not implemented by an origin server, the
+        // origin server SHOULD respond with the 501 (Not Implemented) status
+        // code.
+    }
 
-	@Test
-	public void serverShouldImplementGet() {
-		// General purpose servers should implement GET and HEAD
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void serverShouldImplementGet() {
+        // General purpose servers should implement GET and HEAD
+    }
 
-	@Test
-	public void serverShouldImplementHead() {
-		// General purpose servers should implement GET and HEAD
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void serverShouldImplementHead() {
+        // General purpose servers should implement GET and HEAD
+    }
 
-	@Test
-	public void serverShouldRespondWith405ToUnrecognizedMethods() {
-		// 405 (Method Not Allowed)
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void serverShouldRespondWith405ToUnrecognizedMethods() {
+        // 405 (Method Not Allowed)
+    }
 }

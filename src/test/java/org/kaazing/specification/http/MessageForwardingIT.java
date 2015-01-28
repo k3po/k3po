@@ -20,6 +20,7 @@
  */
 package org.kaazing.specification.http;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -28,46 +29,53 @@ import org.junit.Test;
  */
 public class MessageForwardingIT {
 
-	@Test
-	public void proxyMustAttachAppropriateViaHeader() {
+    @Test
+    @Ignore("Not Implemented")
+    public void proxyMustAttachAppropriateViaHeader() {
 
-	}
+    }
 
-	@Test
-	public void proxyMustAttachAppropriateViaHeadersEvenWhenOthers() {
+    @Test
+    @Ignore("Not Implemented")
+    public void proxyMustAttachAppropriateViaHeadersEvenWhenOthers() {
 
-	}
+    }
 
-	@Test
-	public void gatewayMustAttachAppropriateViaHeaderOnRequestAndMayAttachOnResponse() {
+    @Test
+    @Ignore("Not Implemented")
+    public void gatewayMustAttachAppropriateViaHeaderOnRequestAndMayAttachOnResponse() {
 
-	}
+    }
 
-	@Test
-	public void firewallIntermediaryShouldReplaceHostInViaHeaderWithPseudonym() {
+    @Test
+    @Ignore("Not Implemented")
+    public void firewallIntermediaryShouldReplaceHostInViaHeaderWithPseudonym() {
 
-	}
+    }
 
-	@Test
-	public void proxyMustNotTransformThePayloadOfARequestThatContainsANoTransformCacheControl() {
-		// A proxy MUST NOT transform the payload (Section 3.3 of [RFC7231]) of
-		// a message that contains a no-transform cache-control directive
-		// (Section 5.2 of [RFC7234]).
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void proxyMustNotTransformThePayloadOfARequestThatContainsANoTransformCacheControl() {
+        // A proxy MUST NOT transform the payload (Section 3.3 of [RFC7231]) of
+        // a message that contains a no-transform cache-control directive
+        // (Section 5.2 of [RFC7234]).
+    }
 
-	@Test
-	public void proxyMustNotTransformThePayloadOfAResponseThatContainsANoTransformCacheControl() {
-		// A proxy MUST NOT transform the payload (Section 3.3 of [RFC7231]) of
-		// a message that contains a no-transform cache-control directive
-		// (Section 5.2 of [RFC7234]).
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void proxyMustNotTransformThePayloadOfAResponseThatContainsANoTransformCacheControl() {
+        // A proxy MUST NOT transform the payload (Section 3.3 of [RFC7231]) of
+        // a message that contains a no-transform cache-control directive
+        // (Section 5.2 of [RFC7234]).
+    }
 
-	@Test
-	public void proxyMustNotModifyQueryOrAbsolutePathOfRequest() {
-		// A proxy MUST NOT modify the "absolute-path" and "query" parts of the
-		// received request-target when forwarding it to the next inbound
-		// server, except as noted above to replace an empty path with "/" or
-		// "*".
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void proxyMustNotModifyQueryOrAbsolutePathOfRequest() {
+        // A proxy MUST NOT modify the "absolute-path" and "query" parts of the
+        // received request-target when forwarding it to the next inbound
+        // server, except as noted above to replace an empty path with "/" or
+        // "*".
+    }
 
 }

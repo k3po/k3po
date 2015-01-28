@@ -20,6 +20,7 @@
  */
 package org.kaazing.specification.http;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -28,38 +29,45 @@ import org.junit.Test;
  */
 public class ProtocolVersioningIT {
 
-	@Test
-	public void downstreamMustSendHttpVersion() {
+    @Test
+    @Ignore("Not Implemented")
+    public void downstreamMustSendHttpVersion() {
 
-	}
+    }
 
-	@Test
-	public void upstreamShouldFailOnAnyLowerCaseHttpInVersion() {
-		// return 505 HTTP Version Not Supported
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void upstreamShouldFailOnAnyLowerCaseHttpInVersion() {
+        // return 505 HTTP Version Not Supported
+    }
 
-	@Test
-	public void upstreamMustFailOnVersionMissingDot() {
-		// return 505
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void upstreamMustFailOnVersionMissingDot() {
+        // return 505
+    }
 
-	@Test
-	public void upstreamMustFailOnVersionHavingTwoDots() {
-		// return 505
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void upstreamMustFailOnVersionHavingTwoDots() {
+        // return 505
+    }
 
-	@Test
-	public void upstreamMustFailOnUnparseableVersion() {
-		// return 505
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void upstreamMustFailOnUnparseableVersion() {
+        // return 505
+    }
 
-	@Test
-	public void upstreamShouldSucceedOnVersionOneSomethingAboveOneOne() {
-		// return response with 1.1
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void upstreamShouldSucceedOnVersionOneSomethingAboveOneOne() {
+        // return response with 1.1
+    }
 
-	@Test
-	public void originShouldFailOnMajorVersionNotEqualToOne() {
-		// return 505
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void originShouldFailOnMajorVersionNotEqualToOne() {
+        // return 505
+    }
 }

@@ -20,6 +20,7 @@
  */
 package org.kaazing.specification.http;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -28,20 +29,23 @@ import org.junit.Test;
  */
 public class ControlIT {
 
-	@Test
-	public void serverShouldRespondToMeetableExpectWith417() {
-		// A server that receives an Expect field-value other than 100-continue
-		// MAY respond with a 417 (Expectation Failed) status code to indicate
-		// that the unexpected expectation cannot be met.
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void serverShouldRespondToMeetableExpectWith417() {
+        // A server that receives an Expect field-value other than 100-continue
+        // MAY respond with a 417 (Expectation Failed) status code to indicate
+        // that the unexpected expectation cannot be met.
+    }
 
-	@Test
-	public void intermediaryMustDecrementMaxForwardHeaderOnOptionsOrTraceRequest() {
+    @Test
+    @Ignore("Not Implemented")
+    public void intermediaryMustDecrementMaxForwardHeaderOnOptionsOrTraceRequest() {
 
-	}
+    }
 
-	@Test
-	public void intermediaryThatReceivesMaxForwardOfZeroOnOptionsOrTraceMustRespondToRequest() {
+    @Test
+    @Ignore("Not Implemented")
+    public void intermediaryThatReceivesMaxForwardOfZeroOnOptionsOrTraceMustRespondToRequest() {
 
-	}
+    }
 }

@@ -20,6 +20,7 @@
  */
 package org.kaazing.specification.http;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -28,29 +29,34 @@ import org.junit.Test;
  */
 public class UniformResourceIdentifiersIT {
 
-	@Test
-	public void clientMustSendHostIdentifier() {
+    @Test
+    @Ignore("Not Implemented")
+    public void clientMustSendHostIdentifier() {
 
-	}
+    }
 
-	@Test
-	public void upstreamMustRejectMissingHostIdentifier() {
-		// 400 Bad Request
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void upstreamMustRejectMissingHostIdentifier() {
+        // 400 Bad Request
+    }
 
-	@Test
-	public void upstreamMustRejectInvalidHostIdentifier() {
-		// 400 Bad Request
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void upstreamMustRejectInvalidHostIdentifier() {
+        // 400 Bad Request
+    }
 
-	@Test
-	public void upstreamMustRejectRequestWithUserInfoOnURI() {
-		// ex http://localhost:8000@username:password
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void upstreamMustRejectRequestWithUserInfoOnURI() {
+        // ex http://localhost:8000@username:password
+    }
 
-	@Test
-	public void upstreamShouldAllowPercentCharsInURI() {
-		// equivalent %chars to normal chars ?
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void upstreamShouldAllowPercentCharsInURI() {
+        // equivalent %chars to normal chars ?
+    }
 
 }

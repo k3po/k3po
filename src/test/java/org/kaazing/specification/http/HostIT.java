@@ -20,6 +20,7 @@
  */
 package org.kaazing.specification.http;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -28,39 +29,45 @@ import org.junit.Test;
  */
 public class HostIT {
 
-	@Test
-	public void upstreamShouldAcceptRequestWithEmptyHostHeader() {
-		// host:
-		// occurs when host is missing or null
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void upstreamShouldAcceptRequestWithEmptyHostHeader() {
+        // host:
+        // occurs when host is missing or null
+    }
 
-	@Test
-	public void clientHostHeaderShouldFollowRequestLine() {
-		// in order
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void clientHostHeaderShouldFollowRequestLine() {
+        // in order
+    }
 
-	@Test
-	public void proxyShouldRewriteHostHeader() {
-		// When a proxy receives a request with an absolute-form of
-		// request-target, the proxy MUST ignore the received Host header field
-		// (if any) and instead replace it with the host information of the
-		// request-target. A proxy that forwards such a request MUST generate a
-		// new Host field-value based on the received request-target rather than
-		// forward the received Host field-value.
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void proxyShouldRewriteHostHeader() {
+        // When a proxy receives a request with an absolute-form of
+        // request-target, the proxy MUST ignore the received Host header field
+        // (if any) and instead replace it with the host information of the
+        // request-target. A proxy that forwards such a request MUST generate a
+        // new Host field-value based on the received request-target rather than
+        // forward the received Host field-value.
+    }
 
-	@Test
-	public void upstreamMustRejectRequestMissingHostHeader() {
-		// 400
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void upstreamMustRejectRequestMissingHostHeader() {
+        // 400
+    }
 
-	@Test
-	public void upstreamMustRejectRequestIfHostHeaderDoesNotMatchURI() {
-		// 400
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void upstreamMustRejectRequestIfHostHeaderDoesNotMatchURI() {
+        // 400
+    }
 
-	@Test
-	public void upstreamMustRejectRequestIfHostHeaderOccursMoreThanOnce() {
-		// 400
-	}
+    @Test
+    @Ignore("Not Implemented")
+    public void upstreamMustRejectRequestIfHostHeaderOccursMoreThanOnce() {
+        // 400
+    }
 }
