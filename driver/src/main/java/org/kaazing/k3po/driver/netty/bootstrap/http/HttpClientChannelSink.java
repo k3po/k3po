@@ -1,20 +1,17 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright 2014, Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.kaazing.k3po.driver.netty.bootstrap.http;
@@ -38,8 +35,11 @@ import static org.kaazing.k3po.driver.netty.bootstrap.http.HttpClientChannel.Htt
 import static org.kaazing.k3po.driver.netty.bootstrap.http.HttpClientChannel.HttpState.CONTENT_COMPLETE;
 import static org.kaazing.k3po.driver.netty.bootstrap.http.HttpClientChannel.HttpState.CONTENT_STREAMED;
 import static org.kaazing.k3po.driver.netty.bootstrap.http.HttpClientChannel.HttpState.UPGRADEABLE;
+import static org.kaazing.k3po.driver.netty.bootstrap.http.HttpRequestForm.ABSOLUTE_FORM;
+import static org.kaazing.k3po.driver.netty.bootstrap.http.HttpRequestForm.ORIGIN_FORM;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -174,24 +174,11 @@ public class HttpClientChannelSink extends AbstractChannelSink {
             HttpVersion version = httpClientConfig.getVersion();
             HttpMethod method = httpClientConfig.getMethod();
             HttpHeaders headers = httpClientConfig.getWriteHeaders();
-            QueryStringEncoder query = httpClientConfig.getWriteQuery();
-            ChannelAddress httpRemoteAddress = httpClientChannel.getRemoteAddress();
-            URI httpRemoteURI = query != null ? query.toUri() : httpRemoteAddress.getLocation();
-
-            String requestPath = httpRemoteURI.getPath();
-            String requestQuery = httpRemoteURI.getQuery();
-            String requestURI = (requestQuery != null) ? format("%s?%s", requestPath, requestQuery) : requestPath;
-            String authority = httpRemoteURI.getAuthority();
-
-            HttpRequest httpRequest = new DefaultHttpRequest(version, method, requestURI);
+            String targetURI = getTargetURI(httpClientChannel);
+            HttpRequest httpRequest = new DefaultHttpRequest(version, method, targetURI);
             HttpHeaders httpRequestHeaders = httpRequest.headers();
 
-            // TODO: provide HttpConfig option to disable automatic Host header
-            if (!headers.contains(Names.HOST)) {
-                httpRequestHeaders.set(Names.HOST, authority);
-            }
-
-            if (headers != null) {
+            if (httpClientConfig.hasWriteHeaders()) {
                 httpRequestHeaders.add(headers);
             }
 
@@ -330,25 +317,13 @@ public class HttpClientChannelSink extends AbstractChannelSink {
             HttpChannelConfig httpClientConfig = httpClientChannel.getConfig();
             HttpVersion version = httpClientConfig.getVersion();
             HttpMethod method = httpClientConfig.getMethod();
-            QueryStringEncoder query = httpClientConfig.getWriteQuery();
             HttpHeaders headers = httpClientConfig.getWriteHeaders();
-            ChannelAddress httpRemoteAddress = httpClientChannel.getRemoteAddress();
-            URI httpRemoteURI = (query != null) ? query.toUri() : httpRemoteAddress.getLocation();
 
-            String requestPath = httpRemoteURI.getPath();
-            String requestQuery = httpRemoteURI.getQuery();
-            String requestURI = (requestQuery != null) ? format("%s?%s", requestPath, requestQuery) : requestPath;
-            String authority = httpRemoteURI.getAuthority();
-
-            HttpRequest httpRequest = new DefaultHttpRequest(version, method, requestURI);
+            String targetURI = getTargetURI(httpClientChannel);
+            HttpRequest httpRequest = new DefaultHttpRequest(version, method, targetURI);
             HttpHeaders httpRequestHeaders = httpRequest.headers();
 
-            // TODO: provide HttpConfig option to disable automatic Host header
-            if (!headers.contains(Names.HOST)) {
-                httpRequestHeaders.set(Names.HOST, authority);
-            }
-
-            if (headers != null) {
+            if (httpClientConfig.hasWriteHeaders()) {
                 httpRequestHeaders.add(headers);
             }
 
@@ -411,6 +386,36 @@ public class HttpClientChannelSink extends AbstractChannelSink {
             break;
         default:
             break;
+        }
+    }
+
+    private static String getTargetURI(HttpClientChannel httpClientChannel) throws URISyntaxException {
+
+        HttpChannelConfig httpClientConfig = httpClientChannel.getConfig();
+        HttpRequestForm requestForm = httpClientConfig.getRequestForm();
+        if (requestForm == null) {
+            // See RFC-7230, section 5.3.1 origin-form and section 5.3.2 absolute-form
+            // default to origin-form when Host header present, otherwise absolute-form
+            if (httpClientConfig.hasWriteHeaders() && httpClientConfig.getWriteHeaders().contains(Names.HOST)) {
+                requestForm = ORIGIN_FORM;
+            }
+            else {
+                requestForm = ABSOLUTE_FORM;
+            }
+        }
+
+        QueryStringEncoder query = httpClientConfig.getWriteQuery();
+        ChannelAddress httpRemoteAddress = httpClientChannel.getRemoteAddress();
+        URI httpRemoteURI = query != null ? query.toUri() : httpRemoteAddress.getLocation();
+
+        switch (requestForm) {
+        case ORIGIN_FORM:
+            String requestPath = httpRemoteURI.getPath();
+            String requestQuery = httpRemoteURI.getQuery();
+            return (requestQuery != null) ? format("%s?%s", requestPath, requestQuery) : requestPath;
+        case ABSOLUTE_FORM:
+        default:
+            return httpRemoteURI.toString();
         }
     }
 }

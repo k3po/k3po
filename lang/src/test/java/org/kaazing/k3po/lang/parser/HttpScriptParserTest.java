@@ -1,24 +1,22 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright 2014, Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.kaazing.k3po.lang.parser;
 
+import static org.junit.Assert.assertEquals;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.READ_CLOSED;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.READ_HTTP_HEADER;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.READ_HTTP_METHOD;
@@ -27,10 +25,13 @@ import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.READ_HTTP_STATUS;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.READ_HTTP_VERSION;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.SCRIPT;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_CLOSE;
+import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_FLUSH;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_CONTENT_LENGTH;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_HEADER;
+import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_HOST;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_METHOD;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_PARAMETER;
+import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_REQUEST;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_STATUS;
 import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.WRITE_HTTP_VERSION;
 import static org.kaazing.k3po.lang.test.junit.Assert.assertEquals;
@@ -43,13 +44,72 @@ import org.kaazing.k3po.lang.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.ast.AstScriptNode;
 import org.kaazing.k3po.lang.ast.AstWriteCloseNode;
 import org.kaazing.k3po.lang.ast.AstWriteConfigNode;
+import org.kaazing.k3po.lang.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.ast.builder.AstReadClosedNodeBuilder;
 import org.kaazing.k3po.lang.ast.builder.AstReadConfigNodeBuilder;
 import org.kaazing.k3po.lang.ast.builder.AstScriptNodeBuilder;
 import org.kaazing.k3po.lang.ast.builder.AstWriteCloseNodeBuilder;
 import org.kaazing.k3po.lang.ast.builder.AstWriteConfigNodeBuilder;
+import org.kaazing.k3po.lang.ast.builder.AstWriteFlushNodeBuilder;
 
 public class HttpScriptParserTest {
+
+    @Test
+    public void shouldParseWriteHttpRequestOriginForm() throws Exception {
+
+        String scriptFragment = "write request \"origin-form\"";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_REQUEST);
+
+        // @formatter:off
+        AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
+            .setType("request")
+            .setValue("form", "origin-form")
+        .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseWriteHttpRequestAbsoluteForm() throws Exception {
+
+        String scriptFragment = "write request \"absolute-form\"";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_REQUEST);
+
+        // @formatter:off
+        AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
+            .setType("request")
+            .setValue("form", "absolute-form")
+        .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseReadHttpHeaderMissing() throws Exception {
+
+        String scriptFragment = "read header \"Connection\" missing";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadConfigNode actual = parser.parseWithStrategy(scriptFragment, READ_HTTP_HEADER);
+
+        // @formatter:off
+        AstReadConfigNode expected = new AstReadConfigNodeBuilder()
+            .setType("header missing")
+            .setValueExactText("name", "Connection")
+        .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
 
     @Test
     public void shouldParseReadHttpHeaderExactText() throws Exception {
@@ -68,6 +128,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -87,6 +148,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -104,6 +166,25 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(0, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseWriteHttpHost() throws Exception {
+
+        String scriptFragment = "write header host";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_HTTP_HOST);
+
+        // @formatter:off
+        AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
+            .setType("host")
+        .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+        assertEquals(0, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -122,6 +203,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -140,6 +222,9 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        // Zero list region info because of WriteConfigNode parsing but perhaps we
+        // should change that
+        assertEquals(0, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -159,6 +244,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -178,6 +264,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -196,6 +283,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -214,6 +302,9 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        // Zero list region info because of WriteConfigNode parsing but perhaps we
+        // should change that
+        assertEquals(0, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -233,6 +324,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -252,6 +344,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -268,6 +361,24 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(0, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseWriteFlush() throws Exception {
+
+        String scriptFragment = "write flush";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteFlushNode actual = parser.parseWithStrategy(scriptFragment, WRITE_FLUSH);
+
+        // @formatter:off
+        AstWriteFlushNode expected = new AstWriteFlushNodeBuilder()
+        .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+        assertEquals(0, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -284,6 +395,7 @@ public class HttpScriptParserTest {
         // @formatter:on
 
         assertEquals(expected, actual);
+        assertEquals(0, actual.getRegionInfo().children.size());
     }
 
      @Test

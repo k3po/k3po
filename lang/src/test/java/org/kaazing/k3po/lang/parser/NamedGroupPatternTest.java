@@ -1,20 +1,17 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright 2014, Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.kaazing.k3po.lang.parser;
@@ -56,35 +53,45 @@ public class NamedGroupPatternTest {
 
     @Test
     public void shouldCompileDotStar() {
-        NamedGroupPattern.compile("/what(.*)/");
+        NamedGroupPattern.compile("what(.*)");
     }
 
     @Test
     public void shouldCompileNamedGroup() {
-        NamedGroupPattern.compile("/(?<groupA>.*)/");
+        NamedGroupPattern.compile("(?<groupA>.*)");
     }
 
     @Test
     public void shouldCompilePlainText() {
-        NamedGroupPattern.compile("/plainText/");
+        NamedGroupPattern.compile("plainText");
     }
 
     @Test
     public void shouldParseDigitCharacterClass() {
-        NamedGroupPattern pattern = NamedGroupPattern.compile("/[0-9]/");
+        NamedGroupPattern pattern = NamedGroupPattern.compile("[0-9]");
         assertTrue(pattern.matcher("0").matches());
+    }
 
+    @Test
+    public void shouldCompileNegativeLookaheadWithStartAndEnd() {
+        NamedGroupPattern.compile("(?!^[a-zA-Z0-9+/=]{24}$).*");
+    }
+
+    @Test
+    public void shouldCompileNamedGroupWithPlusForwardSlashAndEquals() {
+        NamedGroupPattern pattern = NamedGroupPattern.compile("(?<handshakeKey>[a-zA-Z0-9+/=]{24})");
+        assertEquals("(?<handshakeKey>[a-zA-Z0-9+/=]{24})", pattern.toString());
     }
 
     @Test
     public void shouldParseSuccessfully() {
-        String scriptText = format("/^The quick brown fox (?<verb>[a-z]+) over the lazy dog$/");
+        String scriptText = format("^The quick brown fox (?<verb>[a-z]+) over the lazy dog$");
         String inputText = "The quick brown fox jumps over the lazy dog";
 
         Pattern jPattern = Pattern.compile(scriptText.substring(1, scriptText.length() - 1));
         Matcher jMatcher = jPattern.matcher(inputText);
         assertTrue(jMatcher.matches());
-        
+
         NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
         NamedGroupMatcher matcher = pattern.matcher(inputText);
 
@@ -94,10 +101,10 @@ public class NamedGroupPatternTest {
 
     @Test
     public void shouldParseNestedGroups() {
-        String scriptText = "/(?<name>[a-f\\d]{8}(?:-[a-f\\d]{4}){3}-[a-f\\d]{12})/";
+        String scriptText = "(?<name>[a-f\\d]{8}(?:-[a-f\\d]{4}){3}-[a-f\\d]{12})";
         String inputText = "f1b77305-8980-4d1c-b3d4-bb71256e11e9";
 
-        Pattern jPattern = Pattern.compile(scriptText.substring(1, scriptText.length() - 1));
+        Pattern jPattern = Pattern.compile(scriptText);
         Matcher jMatcher = jPattern.matcher(inputText);
         assertTrue(jMatcher.matches());
 
@@ -111,7 +118,7 @@ public class NamedGroupPatternTest {
     @Test
     public void shouldParseRegex2() throws Exception {
 
-        String scriptText = format("/(?<hello>\\p{javaWhitespace}{1,6})hello/");
+        String scriptText = format("(?<hello>\\p{javaWhitespace}{1,6})hello");
         String inputText = "      hello";
 
         NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
@@ -124,7 +131,7 @@ public class NamedGroupPatternTest {
     @Test
     public void shouldParseRegex3() throws Exception {
 
-        String scriptText = format("/(?<hello>\\d+)/");
+        String scriptText = format("(?<hello>\\d+)");
         String inputText = "12345";
 
         NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
@@ -139,14 +146,14 @@ public class NamedGroupPatternTest {
         ArrayList<String> groupNames = new ArrayList<String>(1);
         groupNames.add("hello");
         groupNames.add("reason");
-        String scriptText = format("/(?<hello>HTTP\\/1.1\\s401\\s(?<reason>.*)\\r\\n\\r\\n)/");
+        String scriptText = format("(?<hello>HTTP\\/1.1\\s401\\s(?<reason>.*)\\r\\n\\r\\n)");
         String inputText = "HTTP/1.1 401 Unauthorized\r\n\r\n";
 
-        Pattern jPattern = Pattern.compile(scriptText.substring(1, scriptText.length() - 1));
+        Pattern jPattern = Pattern.compile(scriptText);
         Matcher jMatcher = jPattern.matcher(inputText);
         assertTrue(jMatcher.matches());
         assertEquals("Unauthorized", jMatcher.group(2));
-        
+
         NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
         NamedGroupMatcher matcher = pattern.matcher(inputText);
 
@@ -157,13 +164,13 @@ public class NamedGroupPatternTest {
     @Test
     public void shouldParseRegex5() throws Exception {
 
-        String scriptText = format("/(?<hello>.*)/");
+        String scriptText = format("(?<hello>.*)");
         String inputText = "foo";
 
-        Pattern jPattern = Pattern.compile(scriptText.substring(1, scriptText.length() - 1));
+        Pattern jPattern = Pattern.compile(scriptText);
         Matcher jMatcher = jPattern.matcher(inputText);
         assertTrue(jMatcher.matches());
-        
+
         NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
         NamedGroupMatcher matcher = pattern.matcher(inputText);
 
@@ -174,7 +181,7 @@ public class NamedGroupPatternTest {
     @Test
     public void shouldParseRegex6() throws Exception {
 
-        String scriptText = format("/(?<hello>\\D+)(?<goodbye>\\d+)/");
+        String scriptText = format("(?<hello>\\D+)(?<goodbye>\\d+)");
         String inputText = "foo123";
 
         NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
@@ -188,7 +195,7 @@ public class NamedGroupPatternTest {
     @Test
     public void shouldParseRegexWithColon() throws Exception {
 
-        String scriptText = format("/(?<left>.*):(?<right>.*)/");
+        String scriptText = format("(?<left>.*):(?<right>.*)");
         String inputText = "foo:bar";
 
         NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
@@ -202,7 +209,7 @@ public class NamedGroupPatternTest {
     @Test
     public void shouldParseRegexWithLeftParen() throws Exception {
 
-        String scriptText = format("/(?<left>.*)\\((?<right>.*)/");
+        String scriptText = format("(?<left>.*)\\((?<right>.*)");
         String inputText = "foo(bar";
 
         NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
@@ -216,7 +223,7 @@ public class NamedGroupPatternTest {
     @Test
     public void shouldParseRegexWithEscapedChars() throws Exception {
 
-        String scriptText = format("/HTTP\\/1.1\\s401\\sAuthorization Required/");
+        String scriptText = format("HTTP\\/1.1\\s401\\sAuthorization Required");
         String inputText = "HTTP/1.1 401 Authorization Required";
 
         NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
@@ -228,7 +235,7 @@ public class NamedGroupPatternTest {
     @Test
     public void shouldParseRegexWithLeftParenAndColon() throws Exception {
 
-        String scriptText = format("/(?<left>.*)\\(:(?<right>.*)/");
+        String scriptText = format("(?<left>.*)\\(:(?<right>.*)");
         String inputText = "foo(:bar";
 
         NamedGroupPattern pattern = NamedGroupPattern.compile(scriptText);
@@ -239,147 +246,130 @@ public class NamedGroupPatternTest {
         assertEquals("bar", matcher.group("right"));
     }
 
-    @Test(expected = PatternSyntaxException.class)
+    @Test(
+            expected = PatternSyntaxException.class)
     public void shouldFailGroupNamesMismatch() throws Exception {
-        String scriptText = format("/(?<left>.*)\\(:(.*)/");
+        String scriptText = format("(?<left>.*)\\(:(.*)");
         NamedGroupPattern.compile(scriptText);
     }
 
     @Test
     public void shouldNotFailGroupsWithZeroNames() throws Exception {
-        String scriptText = format("/(.*)/");
+        String scriptText = format("(.*)");
         NamedGroupPattern.compile(scriptText);
     }
 
     @Test
     public void shouldNotFailNonCaptureGroup() throws Exception {
-        String scriptText = format("/(?:.*)/");
+        String scriptText = format("(?:.*)");
         NamedGroupPattern.compile(scriptText);
     }
-    
-	@Test
-	public void shouldParseReadRegexLiteral() throws Exception {
 
-		String scriptFragment = "read /hello\\:^foo.*\\n/";
+    @Test
+    public void shouldParseReadRegexLiteral() throws Exception {
 
-		ScriptParserImpl parser = new ScriptParserImpl();
+        String scriptFragment = "read /hello\\:^foo.*\\n/";
 
-		AstReadValueNode actual = parser
-				.parseWithStrategy(scriptFragment, READ);
+        ScriptParserImpl parser = new ScriptParserImpl();
 
-		// @formatter:off
-		AstReadValueNode expected = new AstReadNodeBuilder()
-				.addRegex(NamedGroupPattern.compile("/hello\\:^foo.*\\n/"))
-				.done();
-		// @formatter:on
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-		System.out.println(expected);
-		System.out.println(actual);
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	public void shouldParseRegexMatcher() throws Exception {
+        // @formatter:off
+        AstReadValueNode expected = new AstReadNodeBuilder()
+                .addRegex(NamedGroupPattern.compile("hello\\:^foo.*\\n"))
+                .done();
+        // @formatter:on
 
-		String scriptFragment = "/[a-f\\d]{8}(-[a-f\\d]{4}){3}-[a-f\\d]{12}/";
+        System.out.println(expected);
+        System.out.println(actual);
+        assertEquals(expected, actual);
+    }
 
-		ScriptParserImpl parser = new ScriptParserImpl();
-		AstRegexMatcher actual = parser.parseWithStrategy(scriptFragment,
-				REGEX_MATCHER);
+    @Test
+    public void shouldParseRegexMatcher() throws Exception {
 
-		NamedGroupPattern regex = NamedGroupPattern
-				.compile("/[a-f\\d]{8}(-[a-f\\d]{4}){3}-[a-f\\d]{12}/");
-		AstRegexMatcher expected = new AstRegexMatcher(regex);
+        String scriptFragment = "/[a-f\\d]{8}(-[a-f\\d]{4}){3}-[a-f\\d]{12}/";
 
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	public void shouldParseReadMult() throws Exception {
-		String scriptFragment = "read \"Hello\" [0x01 0x02 0x03] /.*\\n/ /(?<cap1>.*)\\n/ ${var}  [0..64] ([0..64]:cap2)"
-				+ "[0..${var}] [0..${var-1}] ([0..${var}]:cap3) ([0..${var-1}]:cap4) (byte:b) (short:s) (int:i) (long:l)";
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstRegexMatcher actual = parser.parseWithStrategy(scriptFragment, REGEX_MATCHER);
 
-		ScriptParserImpl parser = new ScriptParserImpl();
-		AstReadValueNode actual = parser
-				.parseWithStrategy(scriptFragment, READ);
+        NamedGroupPattern regex = NamedGroupPattern.compile("[a-f\\d]{8}(-[a-f\\d]{4}){3}-[a-f\\d]{12}");
+        AstRegexMatcher expected = new AstRegexMatcher(regex);
 
-		ExpressionFactory factory = parser.getExpressionFactory();
-		ExpressionContext context = parser.getExpressionContext();
+        assertEquals(expected, actual);
+    }
 
-		// @formatter:off
-		AstReadValueNode expected = new AstReadNodeBuilder()
-				.addExactText("Hello")
-				.addExactBytes(new byte[] { 0x01, (byte) 0x02, (byte) 0x03 })
-				.addRegex(NamedGroupPattern.compile("/.*\\n/"))
-				.addRegex(NamedGroupPattern.compile("/(?<cap1>.*)\\n/"))
-				.addExpression(
-						factory.createValueExpression(context, "${var}",
-								byte[].class))
-				.addFixedLengthBytes(64)
-				.addFixedLengthBytes(64, "cap2")
-				.addVariableLengthBytes(
-						factory.createValueExpression(context, "${var}",
-								Integer.class))
-				.addVariableLengthBytes(
-						factory.createValueExpression(context, "${var-1}",
-								Integer.class))
-				.addVariableLengthBytes(
-						factory.createValueExpression(context, "${var}",
-								Integer.class), "cap3")
-				.addVariableLengthBytes(
-						factory.createValueExpression(context, "${var-1}",
-								Integer.class), "cap4")
-				.addFixedLengthBytes(1, "b").addFixedLengthBytes(2, "s")
-				.addFixedLengthBytes(4, "i").addFixedLengthBytes(8, "l").done();
-		// @formatter:on
+    @Test
+    public void shouldParseReadMult() throws Exception {
+        String scriptFragment =
+                "read \"Hello\" [0x01 0x02 0x03] /.*\\n/ /(?<cap1>.*)\\n/ ${var}  [0..64] ([0..64]:cap2)"
+              + "[0..${var}] [0..${var-1}] ([0..${var}]:cap3) ([0..${var-1}]:cap4) (byte:b) (short:s) (int:i) (long:l)";
 
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	public void shouldParseMultAllMatcher() throws Exception {
-		String scriptFragment = "read \"Hello\" [0x01 0x02 0x03] /.*\\n/ /(?<cap1>.*)\\n/ ${var}  [0..64] ([0..64]:cap2)"
-				+ "[0..${var}] [0..${var-1}] ([0..${var}]:cap3) ([0..${var-1}]:cap4)"
-				+ "(byte:b) (short:s) (int:i) (long:l)";
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-		ScriptParserImpl parser = new ScriptParserImpl();
-		AstReadValueNode actual = parser
-				.parseWithStrategy(scriptFragment, READ);
+        ExpressionFactory factory = parser.getExpressionFactory();
+        ExpressionContext context = parser.getExpressionContext();
 
-		ExpressionFactory factory = parser.getExpressionFactory();
-		ExpressionContext context = parser.getExpressionContext();
-		ValueExpression value = factory.createValueExpression(context,
-				"${var}", byte[].class);
-		ValueExpression value2 = factory.createValueExpression(context,
-				"${var}", Integer.class);
-		ValueExpression value3 = factory.createValueExpression(context,
-				"${var-1}", Integer.class);
-		ValueExpression value4 = factory.createValueExpression(context,
-				"${var}", Integer.class);
-		ValueExpression value5 = factory.createValueExpression(context,
-				"${var-1}", Integer.class);
+        // @formatter:off
+        AstReadValueNode expected = new AstReadNodeBuilder()
+                .addExactText("Hello")
+                .addExactBytes(new byte[] { 0x01, (byte) 0x02, (byte) 0x03 })
+                .addRegex(NamedGroupPattern.compile(".*\\n"))
+                .addRegex(NamedGroupPattern.compile("(?<cap1>.*)\\n"))
+                .addExpression(
+                        factory.createValueExpression(context, "${var}",
+                                byte[].class))
+                .addFixedLengthBytes(64)
+                .addFixedLengthBytes(64, "cap2")
+                .addVariableLengthBytes(
+                        factory.createValueExpression(context, "${var}",
+                                Integer.class))
+                .addVariableLengthBytes(
+                        factory.createValueExpression(context, "${var-1}",
+                                Integer.class))
+                .addVariableLengthBytes(
+                        factory.createValueExpression(context, "${var}",
+                                Integer.class), "cap3")
+                .addVariableLengthBytes(
+                        factory.createValueExpression(context, "${var-1}",
+                                Integer.class), "cap4")
+                .addFixedLengthBytes(1, "b").addFixedLengthBytes(2, "s")
+                .addFixedLengthBytes(4, "i").addFixedLengthBytes(8, "l").done();
+        // @formatter:on
 
-		AstReadValueNode expected = new AstReadValueNode();
-		expected.setMatchers(Arrays.<AstValueMatcher> asList(
-				new AstExactTextMatcher("Hello"),
-				new AstExactBytesMatcher(new byte[] { 0x01, (byte) 0x02,
-						(byte) 0x03 }),
-				new AstRegexMatcher(NamedGroupPattern.compile("/.*\\n/")),
-				new AstRegexMatcher(NamedGroupPattern
-						.compile("/(?<cap1>.*)\\n/")),
-				new AstExpressionMatcher(value),
-				new AstFixedLengthBytesMatcher(64),
-				new AstFixedLengthBytesMatcher(64, "cap2"),
-				new AstVariableLengthBytesMatcher(value2),
-				new AstVariableLengthBytesMatcher(value3),
-				new AstVariableLengthBytesMatcher(value4, "cap3"),
-				new AstVariableLengthBytesMatcher(value5, "cap4"),
-				new AstByteLengthBytesMatcher("b"),
-				new AstShortLengthBytesMatcher("s"),
-				new AstIntLengthBytesMatcher("i"),
-				new AstLongLengthBytesMatcher("l")));
+        assertEquals(expected, actual);
+    }
 
-		assertEquals(expected, actual);
-	}
-	
+    @Test
+    public void shouldParseMultAllMatcher() throws Exception {
+        String scriptFragment =
+                "read \"Hello\" [0x01 0x02 0x03] /.*\\n/ /(?<cap1>.*)\\n/ ${var}  [0..64] ([0..64]:cap2)"
+                        + "[0..${var}] [0..${var-1}] ([0..${var}]:cap3) ([0..${var-1}]:cap4)"
+                        + "(byte:b) (short:s) (int:i) (long:l)";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
+
+        ExpressionFactory factory = parser.getExpressionFactory();
+        ExpressionContext context = parser.getExpressionContext();
+        ValueExpression value = factory.createValueExpression(context, "${var}", byte[].class);
+        ValueExpression value2 = factory.createValueExpression(context, "${var}", Integer.class);
+        ValueExpression value3 = factory.createValueExpression(context, "${var-1}", Integer.class);
+        ValueExpression value4 = factory.createValueExpression(context, "${var}", Integer.class);
+        ValueExpression value5 = factory.createValueExpression(context, "${var-1}", Integer.class);
+
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactTextMatcher("Hello"), new AstExactBytesMatcher(
+                new byte[]{0x01, (byte) 0x02, (byte) 0x03}), new AstRegexMatcher(NamedGroupPattern.compile(".*\\n")),
+                new AstRegexMatcher(NamedGroupPattern.compile("(?<cap1>.*)\\n")), new AstExpressionMatcher(value),
+                new AstFixedLengthBytesMatcher(64), new AstFixedLengthBytesMatcher(64, "cap2"),
+                new AstVariableLengthBytesMatcher(value2), new AstVariableLengthBytesMatcher(value3),
+                new AstVariableLengthBytesMatcher(value4, "cap3"), new AstVariableLengthBytesMatcher(value5, "cap4"),
+                new AstByteLengthBytesMatcher("b"), new AstShortLengthBytesMatcher("s"), new AstIntLengthBytesMatcher("i"),
+                new AstLongLengthBytesMatcher("l")));
+
+        assertEquals(expected, actual);
+    }
+
 }

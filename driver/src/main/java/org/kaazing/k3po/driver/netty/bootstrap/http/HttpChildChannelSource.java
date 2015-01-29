@@ -1,20 +1,17 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright 2014, Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.kaazing.k3po.driver.netty.bootstrap.http;
@@ -30,6 +27,7 @@ import static org.jboss.netty.channel.Channels.fireExceptionCaught;
 import static org.jboss.netty.channel.Channels.fireMessageReceived;
 import static org.jboss.netty.channel.Channels.future;
 import static org.jboss.netty.channel.Channels.write;
+import static org.jboss.netty.handler.codec.http.HttpHeaders.getContentLength;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.getHost;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.isContentLengthSet;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.isTransferEncodingChunked;
@@ -140,8 +138,8 @@ public class HttpChildChannelSource extends HttpChannelHandler {
     protected void httpMessageReceived(ChannelHandlerContext ctx, MessageEvent e, HttpRequest httpRequest) throws Exception {
 
         HttpVersion version = httpRequest.getProtocolVersion();
-        String host = getHost(httpRequest);
-        if (host == null) {
+        URI httpLocation = getEffectiveURI(httpRequest);
+        if (httpLocation == null) {
             // see RFC-7230 section 5.4 Host
             HttpResponse httpResponse = new DefaultHttpResponse(version, BAD_REQUEST);
             ChannelFuture future = future(ctx.getChannel());
@@ -149,10 +147,7 @@ public class HttpChildChannelSource extends HttpChannelHandler {
             return;
         }
 
-        String uri = httpRequest.getUri();
-        URI httpLocation = URI.create(format("http://%s%s", host, uri));
-
-        Entry<URI, HttpServerChannel> httpBinding = (host != null) ? httpBindings.floorEntry(httpLocation) : null;
+        Entry<URI, HttpServerChannel> httpBinding = httpBindings.floorEntry(httpLocation);
 
         if (httpBinding == null) {
             HttpResponse httpResponse = new DefaultHttpResponse(version, NOT_FOUND);
@@ -184,12 +179,21 @@ public class HttpChildChannelSource extends HttpChannelHandler {
 
         this.httpChildChannel = httpChildChannel;
 
+        ChannelBuffer content = httpRequest.getContent();
+
         // update read state before firing channel events
         if (isTransferEncodingChunked(httpRequest)) {
             httpChildChannel.readState(HttpReadState.CONTENT_CHUNKED);
         }
         else if (isContentLengthSet(httpRequest)) {
-            httpChildChannel.readState(HttpReadState.CONTENT_COMPLETE);
+            long contentLength = getContentLength(httpRequest);
+            contentLength -= content.readableBytes();
+            if (contentLength > 0) {
+                httpChildChannel.readState(HttpReadState.CONTENT_CHUNKED);
+            }
+            else {
+                httpChildChannel.readState(HttpReadState.CONTENT_COMPLETE);
+            }
         }
         else {
             // see RFC-7230 section 3.3
@@ -207,7 +211,6 @@ public class HttpChildChannelSource extends HttpChannelHandler {
         httpChildChannel.setConnected();
         fireChannelConnected(httpChildChannel, httpRemoteAddress);
 
-        ChannelBuffer content = httpRequest.getContent();
         if (content.readable()) {
             fireMessageReceived(httpChildChannel, content);
         }
@@ -260,6 +263,16 @@ public class HttpChildChannelSource extends HttpChannelHandler {
             // after 101 switching protocols
             fireMessageReceived(httpChildChannel, message);
         }
+    }
+
+    private static URI getEffectiveURI(HttpRequest httpRequest) {
+        URI requestURI = URI.create(httpRequest.getUri());
+        if (requestURI.isAbsolute()) {
+            return requestURI;
+        }
+
+        String host = getHost(httpRequest);
+        return (host != null) ? URI.create(format("http://%s%s", host, requestURI)) : null;
     }
 
 }

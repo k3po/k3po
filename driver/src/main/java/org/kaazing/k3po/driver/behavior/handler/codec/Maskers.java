@@ -1,48 +1,53 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright 2014, Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.kaazing.k3po.driver.behavior.handler.codec;
+
+import static org.kaazing.k3po.driver.behavior.handler.codec.Masker.IDENTITY_MASKER;
 
 import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.kaazing.k3po.lang.el.ExpressionContext;
 
-public final class MaskingDecoders {
+public final class Maskers {
 
-    public static MaskingDecoder newMaskingDecoder(byte[] maskingKey) {
-        return new ExactBytesMaskingDecoder(maskingKey);
+    public static Masker newMasker(byte[] maskingKey) {
+        for (int i = 0; i < maskingKey.length; i++) {
+            if (maskingKey[i] != 0x00) {
+                return new ExactBytesMasker(maskingKey);
+            }
+        }
+
+        return IDENTITY_MASKER;
     }
 
-    public static MaskingDecoder newMaskingDecoder(ValueExpression expression, ExpressionContext environment) {
-        return new ExpressionMaskingDecoder(expression, environment);
+    public static Masker newMasker(ValueExpression expression, ExpressionContext environment) {
+        return new ExpressionMasker(expression, environment);
     }
 
-    private MaskingDecoders() {
+    private Maskers() {
         // utility class
     }
 
-    private static class ExactBytesMaskingDecoder extends AbstractMaskingDecoder {
+    private static class ExactBytesMasker extends AbstractMasker {
 
         private final byte[] maskingKey;
 
-        public ExactBytesMaskingDecoder(byte[] maskingKey) {
+        public ExactBytesMasker(byte[] maskingKey) {
             this.maskingKey = maskingKey;
         }
 
@@ -57,12 +62,12 @@ public final class MaskingDecoders {
         }
     }
 
-    private static class ExpressionMaskingDecoder extends AbstractMaskingDecoder {
+    private static class ExpressionMasker extends AbstractMasker {
 
         private final ValueExpression expression;
         private final ExpressionContext environment;
 
-        public ExpressionMaskingDecoder(ValueExpression expression, ExpressionContext environment) {
+        public ExpressionMasker(ValueExpression expression, ExpressionContext environment) {
             this.expression = expression;
             this.environment = environment;
         }
@@ -80,7 +85,7 @@ public final class MaskingDecoders {
         }
     }
 
-    private abstract static class AbstractMaskingDecoder extends MaskingDecoder {
+    private abstract static class AbstractMasker extends Masker {
 
         private int offset;
 

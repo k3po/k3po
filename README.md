@@ -1,31 +1,41 @@
-# Robot a.k.a. K3PO
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/kaazing/robot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# K3PO
 
-The K3PO Robot is a Network Protocol Testing Tool
+[![Build Status][build-status-image]][build-status]
+[![Issue Stats][pull-requests-image]][pull-requests]
+[![Issue Stats][issues-closed-image]][issues-closed]
 
-The Robot provides a network scripting language that allows authoring of network protocol tests.  These test are programming language agnostic.  Test Frameworks are then provided to run these tests for different programming languages.
+[build-status-image]: https://travis-ci.org/k3po/k3po.svg?branch=develop
+[build-status]: https://travis-ci.org/k3po/k3po
+[pull-requests-image]: http://www.issuestats.com/github/k3po/k3po/badge/pr
+[pull-requests]: http://www.issuestats.com/github/k3po/k3po
+[issues-closed-image]: http://www.issuestats.com/github/k3po/k3po/badge/issue
+[issues-closed]: http://www.issuestats.com/github/k3po/k3po
 
-In a Robot script, you define the exact sequence of events that a network connection goes through in its lifetime.  If this exact sequence of events does not happen, the script is considered to have “failed”.  A Robot script thus defines a “behavior”.  Testing, then, is comprised of defining the expected behaviors, and then running the script against your code to see if those expectations are met.
+[![Gitter](https://badges.gitter.im/JoinChat.svg)](https://gitter.im/k3po/k3po?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+The K3PO Protocol Droid is a Network Protocol Testing Tool
+
+K3PO provides a network scripting language that allows authoring of network protocol tests.  These test are programming language agnostic.  Test Frameworks are then provided to run these tests for different programming languages.
+
+In a K3PO script, you define the exact sequence of events that a network connection goes through in its lifetime.  If this exact sequence of events does not happen, the script is considered to have “failed”.  A K3PO script thus defines a “behavior”.  Testing, then, is comprised of defining the expected behaviors, and then running the script against your code to see if those expectations are met.
 
 ## Links
 
-[C Client Test Framework](https://github.com/kaazing/robot.c)
+[C Client Test Framework](https://github.com/kaazing/k3po.c)
 
-[C# Client Test Framework](https://github.com/kaazing/robot.cs)
+[C# Client Test Framework](https://github.com/kaazing/k3po.dotnet)
 
-[IOS Client Test Framework](https://github.com/kaazing/robot.ios)
-
-[Websocket Utility Functions](https://github.com/kaazing/robot-websocket-functions)
+[IOS Client Test Framework](https://github.com/kaazing/k3po.ios)
 
 ## Java Quick Start
 
 The examples directory is setup as an example to test java client implementations.  Run "mvn clean install -pl examples" to see it work.
 
-## Robot Language
+## K3PO Language
 
-The robot language is a scripting language that defines the exact sequence of events in a network connection.
+The K3PO language is a scripting language that defines the exact sequence of events in a network connection.
 
-A Rupert script is considered a “session”.  Within a script, you will define a set of expectations for one or more network connections.  Each of these network connections (and their associated expectations) is considered a “channel”.  A session might be comprised of a single short-lived channel, or several interacting channels.
+A K3PO script is considered a “session”.  Within a script, you will define a set of expectations for one or more network connections.  Each of these network connections (and their associated expectations) is considered a “channel”.  A session might be comprised of a single short-lived channel, or several interacting channels.
 
 ##### Client Hello World
 
@@ -98,7 +108,7 @@ connected
 ##### close
 
 ```
-# The close keyword indicates that the robot should close the channel.
+# The close keyword indicates that K3PO should close the channel.
 close
 ```
 
@@ -161,7 +171,7 @@ write notify <barrier>
 
 ### Messages
 
-Robot allows reading/writing of messages as well as reading messages into variables to be written out latter
+K3PO allows reading/writing of messages as well as reading messages into variables to be written out latter
 
 ##### Text
 
@@ -263,12 +273,3 @@ write ${var-1}
 # The first write, will write out 2 bytes, the second one will write out 8.
 
 ```
-
-### Contact
-
-david.witherspoon@kaazing.com
-
-
-
-
-

@@ -1,20 +1,17 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright 2014, Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.kaazing.k3po.driver.behavior.visitor;
@@ -38,7 +35,6 @@ import java.util.concurrent.ConcurrentMap;
 import javax.el.ELResolver;
 import javax.el.ValueExpression;
 
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -52,8 +48,8 @@ import org.kaazing.k3po.driver.behavior.handler.FailureHandler;
 import org.kaazing.k3po.driver.behavior.handler.barrier.AwaitBarrierDownstreamHandler;
 import org.kaazing.k3po.driver.behavior.handler.barrier.AwaitBarrierUpstreamHandler;
 import org.kaazing.k3po.driver.behavior.handler.barrier.NotifyBarrierHandler;
-import org.kaazing.k3po.driver.behavior.handler.codec.MaskingDecoder;
-import org.kaazing.k3po.driver.behavior.handler.codec.MaskingDecoders;
+import org.kaazing.k3po.driver.behavior.handler.codec.Masker;
+import org.kaazing.k3po.driver.behavior.handler.codec.Maskers;
 import org.kaazing.k3po.driver.behavior.handler.codec.MessageDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.MessageEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.ReadByteArrayBytesDecoder;
@@ -72,10 +68,13 @@ import org.kaazing.k3po.driver.behavior.handler.codec.WriteTextEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpContentLengthEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpHeaderDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpHeaderEncoder;
+import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpHeaderMissingDecoder;
+import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpHostEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpMethodDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpMethodEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpParameterDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpParameterEncoder;
+import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpRequestFormEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpStatusDecoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpStatusEncoder;
 import org.kaazing.k3po.driver.behavior.handler.codec.http.HttpVersionDecoder;
@@ -116,7 +115,6 @@ import org.kaazing.k3po.lang.ast.AstConnectNode;
 import org.kaazing.k3po.lang.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.ast.AstDisconnectNode;
 import org.kaazing.k3po.lang.ast.AstDisconnectedNode;
-import org.kaazing.k3po.lang.ast.AstFlushNode;
 import org.kaazing.k3po.lang.ast.AstNode;
 import org.kaazing.k3po.lang.ast.AstOpenedNode;
 import org.kaazing.k3po.lang.ast.AstPropertyNode;
@@ -134,6 +132,7 @@ import org.kaazing.k3po.lang.ast.AstUnboundNode;
 import org.kaazing.k3po.lang.ast.AstWriteAwaitNode;
 import org.kaazing.k3po.lang.ast.AstWriteCloseNode;
 import org.kaazing.k3po.lang.ast.AstWriteConfigNode;
+import org.kaazing.k3po.lang.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.ast.AstWriteNotifyNode;
 import org.kaazing.k3po.lang.ast.AstWriteOptionNode;
 import org.kaazing.k3po.lang.ast.AstWriteValueNode;
@@ -161,8 +160,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(GenerateConfigurationVisitor.class);
 
-    private static final MaskingDecoder DEFAULT_READ_UNMASKER = new DefaultReadUnmasker();
-
     private final ChannelAddressFactory addressFactory;
     private final BootstrapFactory bootstrapFactory;
 
@@ -170,8 +167,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         private final ConcurrentMap<String, Barrier> barriersByName;
         private Configuration configuration;
 
-        // the read unmasker is reset per stream
-        private MaskingDecoder readUnmasker;
+        // the read / write maskers are reset per stream
+        private Masker readUnmasker;
+        private Masker writeMasker;
 
         /* The pipelineAsMap is built by each node that is visited. */
         private Map<String, ChannelHandler> pipelineAsMap;
@@ -205,20 +203,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 return pipeline;
             }
         }
-    }
-
-    private static final class DefaultReadUnmasker extends MaskingDecoder {
-
-        @Override
-        public ChannelBuffer applyMask(ChannelBuffer buffer) throws Exception {
-            return buffer;
-        }
-
-        @Override
-        public ChannelBuffer undoMask(ChannelBuffer buffer) throws Exception {
-            return buffer;
-        }
-
     }
 
     public GenerateConfigurationVisitor(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory) {
@@ -280,7 +264,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstAcceptableNode acceptedNode, State state) throws Exception {
 
         // masking is a no-op by default for each stream
-        state.readUnmasker = DEFAULT_READ_UNMASKER;
+        state.readUnmasker = Masker.IDENTITY_MASKER;
+        state.writeMasker = Masker.IDENTITY_MASKER;
         state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
 
         for (AstStreamableNode streamable : acceptedNode.getStreamables()) {
@@ -303,7 +288,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         Map<String, ChannelHandler> savedPipelineAsMap = state.pipelineAsMap;
 
         // masking is a no-op by default for each stream
-        state.readUnmasker = DEFAULT_READ_UNMASKER;
+        state.readUnmasker = Masker.IDENTITY_MASKER;
+        state.writeMasker = Masker.IDENTITY_MASKER;
 
         URI acceptURI = acceptNode.getLocation();
 
@@ -361,7 +347,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         URI connectURI = connectNode.getLocation();
         // masking is a no-op by default for each stream
-        state.readUnmasker = DEFAULT_READ_UNMASKER;
+        state.readUnmasker = Masker.IDENTITY_MASKER;
+        state.writeMasker = Masker.IDENTITY_MASKER;
 
         Map<String, Object> connectOptions = connectNode.getOptions();
 
@@ -498,7 +485,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         for (AstValue val : node.getValues()) {
             messageEncoders.add(val.accept(new GenerateWriteEncoderVisitor(), state.configuration));
         }
-        WriteHandler handler = new WriteHandler(messageEncoders);
+        WriteHandler handler = new WriteHandler(messageEncoders, state.writeMasker);
         handler.setRegionInfo(node.getRegionInfo());
         String handlerName = String.format("write#%d", state.pipelineAsMap.size() + 1);
         state.pipelineAsMap.put(handlerName, handler);
@@ -862,6 +849,20 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }
+        case "header missing": {
+            AstLiteralTextValue name = (AstLiteralTextValue) node.getValue("name");
+            requireNonNull(name);
+
+            HttpHeaderMissingDecoder decoder = new HttpHeaderMissingDecoder(name.getValue());
+            decoder.setRegionInfo(node.getRegionInfo());
+            ReadConfigHandler handler = new ReadConfigHandler(decoder);
+
+            handler.setRegionInfo(node.getRegionInfo());
+            Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+            String handlerName = String.format("readConfig#%d (http header missing)", pipelineAsMap.size() + 1);
+            pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
         case "parameter": {
             AstLiteralTextValue name = (AstLiteralTextValue) node.getValue("name");
             requireNonNull(name);
@@ -917,6 +918,17 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstWriteConfigNode node, State state) throws Exception {
         switch (node.getType()) {
+        case "request": {
+            AstValue form = (AstLiteralTextValue) node.getValue("form");
+            MessageEncoder formEncoder = form.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+
+            WriteConfigHandler handler = new WriteConfigHandler(new HttpRequestFormEncoder(formEncoder));
+
+            handler.setRegionInfo(node.getRegionInfo());
+            String handlerName = String.format("writeConfig#%d (http request)", state.pipelineAsMap.size() + 1);
+            state.pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
         case "header": {
             AstValue name = node.getName("name");
             MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
@@ -937,6 +949,13 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             WriteConfigHandler handler = new WriteConfigHandler(new HttpContentLengthEncoder());
             handler.setRegionInfo(node.getRegionInfo());
             String handlerName = String.format("writeConfig#%d (http content length)", state.pipelineAsMap.size() + 1);
+            state.pipelineAsMap.put(handlerName, handler);
+            return null;
+        }
+        case "host": {
+            WriteConfigHandler handler = new WriteConfigHandler(new HttpHostEncoder());
+            handler.setRegionInfo(node.getRegionInfo());
+            String handlerName = String.format("writeConfig#%d (http host)", state.pipelineAsMap.size() + 1);
             state.pipelineAsMap.put(handlerName, handler);
             return null;
         }
@@ -1020,7 +1039,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     }
 
     @Override
-    public Configuration visit(AstFlushNode node, State state) throws Exception {
+    public Configuration visit(AstWriteFlushNode node, State state) throws Exception {
         FlushHandler handler = new FlushHandler();
 
         handler.setRegionInfo(node.getRegionInfo());
@@ -1037,60 +1056,65 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         AstValue optionValue = node.getOptionValue();
 
         assert "mask".equals(optionName);
-        state.readUnmasker = optionValue.accept(new GenerateReadMaskOptionValueVisitor(), state);
+        state.readUnmasker = optionValue.accept(new GenerateMaskOptionValueVisitor(), state);
 
         return state.configuration;
     }
 
-    private static final class GenerateReadMaskOptionValueVisitor implements AstValue.Visitor<MaskingDecoder, State> {
+    @Override
+    public Configuration visit(AstWriteOptionNode node, State state) throws Exception {
+
+        String optionName = node.getOptionName();
+        AstValue optionValue = node.getOptionValue();
+
+        assert "mask".equals(optionName);
+        state.writeMasker = optionValue.accept(new GenerateMaskOptionValueVisitor(), state);
+
+        return state.configuration;
+    }
+
+    private static final class GenerateMaskOptionValueVisitor implements AstValue.Visitor<Masker, State> {
 
         @Override
-        public MaskingDecoder visit(AstExpressionValue value, State state) throws Exception {
+        public Masker visit(AstExpressionValue value, State state) throws Exception {
 
             ValueExpression expression = value.getValue();
             ExpressionContext environment = state.configuration.getExpressionContext();
 
-            return MaskingDecoders.newMaskingDecoder(expression, environment);
+            return Maskers.newMasker(expression, environment);
         }
 
         @Override
-        public MaskingDecoder visit(AstLiteralTextValue value, State state) throws Exception {
+        public Masker visit(AstLiteralTextValue value, State state) throws Exception {
 
             String literalText = value.getValue();
             byte[] literalTextAsBytes = literalText.getBytes(UTF_8);
 
             for (int i = 0; i < literalTextAsBytes.length; i++) {
                 if (literalTextAsBytes[i] != 0x00) {
-                    return MaskingDecoders.newMaskingDecoder(literalTextAsBytes);
+                    return Maskers.newMasker(literalTextAsBytes);
                 }
             }
 
             // no need to unmask for all-zeros masking key
-            return GenerateConfigurationVisitor.DEFAULT_READ_UNMASKER;
+            return Masker.IDENTITY_MASKER;
         }
 
         @Override
-        public MaskingDecoder visit(AstLiteralBytesValue value, State state) throws Exception {
+        public Masker visit(AstLiteralBytesValue value, State state) throws Exception {
 
             byte[] literalBytes = value.getValue();
 
             for (int i = 0; i < literalBytes.length; i++) {
                 if (literalBytes[i] != 0x00) {
-                    return MaskingDecoders.newMaskingDecoder(literalBytes);
+                    return Maskers.newMasker(literalBytes);
                 }
             }
 
             // no need to unmask for all-zeros masking key
-            return GenerateConfigurationVisitor.DEFAULT_READ_UNMASKER;
+            return Masker.IDENTITY_MASKER;
         }
 
-    }
-
-
-    @Override
-    public Configuration visit(AstWriteOptionNode node, State parameter) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }

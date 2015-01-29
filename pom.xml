@@ -1,121 +1,44 @@
-<!--
-  Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
-
-  This file is part of Robot.
-
-  Robot is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as
-  published by the Free Software Foundation, either version 3 of the
-  License, or (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with this program. If not, see <http://www.gnu.org/licenses />.
-  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.kaazing</groupId>
         <artifactId>community</artifactId>
-        <version>1.2</version>
+        <version>2.3</version>
     </parent>
 
     <artifactId>k3po.parent</artifactId>
-    <packaging>pom</packaging>
-    <version>2.0.0-alpha-6</version>
+    <version>2.0.0-alpha-8</version>
 
     <name>k3po/parent</name>
     <url>https://github.com/kaazing/k3po</url>
-    <description>
-        K3PO Protocol Droid. Testing the "I" in IoT.
-    </description>
-
-    <licenses>
-        <license>
-            <name>GNU AFFERO GENERAL PUBLIC LICENSE, Version 3</name>
-            <url>http://www.gnu.org/licenses/agpl.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <inceptionYear>2014</inceptionYear>
+    <description>K3PO Protocol Droid. Testing the "I" in IoT.</description>
+    <packaging>pom</packaging>
 
     <scm>
-        <connection>scm:git:git@github.com:kaazing/k3po.git</connection>
+        <url>https://github.com/k3po/k3po</url>
+        <connection>scm:git:https://github.com/k3po/k3po.git</connection>
         <developerConnection>${project.scm.connection}</developerConnection>
-        <url>git@github.com:kaazing/k3po</url>
     </scm>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <checkstyle.config.location>config/checkstyle/checkstyle.xml</checkstyle.config.location>
-        <jdoc.properties />
-    </properties>
 
     <modules>
         <module>lang</module>
         <module>driver</module>
         <module>k3po-maven-plugin</module>
-<!--        <module>all</module>  -->
+        <module>itest</module>
+        <!-- <module>all</module> -->
     </modules>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
-
-    <developers>
-        <developer>
-            <name>Kaazing Corporation</name>
-            <url>https://github.com/kaazing</url>
-            <organization>Kaazing Corporation</organization>
-            <organizationUrl>http://kaazing.org</organizationUrl>
-        </developer>
-    </developers>
+    <properties>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.testSource>1.7</maven.compiler.testSource>
+        <maven.compiler.testTarget>1.7</maven.compiler.testTarget>
+    </properties>
 
     <profiles>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.2</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <profile>
             <activation>
                 <jdk>1.8</jdk>
@@ -139,7 +62,7 @@
                 <artifactId>mockito-all</artifactId>
                 <version>1.9.5</version>
             </dependency>
-	
+
             <dependency>
                 <groupId>org.jmock</groupId>
                 <artifactId>jmock</artifactId>
@@ -172,16 +95,15 @@
 
             <dependency>
                 <groupId>de.odysseus.juel</groupId>
-                <artifactId>juel</artifactId>
-                <version>2.1.3</version>
+                <artifactId>juel-api</artifactId>
+                <version>2.2.7</version>
             </dependency>
 
             <dependency>
-                <groupId>jline</groupId>
-                <artifactId>jline</artifactId>
-                <version>2.11</version>
+                <groupId>de.odysseus.juel</groupId>
+                <artifactId>juel-impl</artifactId>
+                <version>2.2.7</version>
             </dependency>
-
             <dependency>
                 <groupId>org.kaazing</groupId>
                 <artifactId>net.api</artifactId>
@@ -240,50 +162,6 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.1</version>
-                    <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.17</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>integration-test</goal>
-                                <goal>verify</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>2.11</version>
-                    <executions>
-                        <execution>
-                            <id>validate</id>
-                            <phase>validate</phase>
-                            <configuration>
-                                <encoding>UTF-8</encoding>
-                                <!-- checkstyle doesn't like lambdas and 
-                                    exceptions and bails -->
-                                <consoleOutput>true</consoleOutput>
-                                <failsOnError>true</failsOnError>
-                                <failOnViolation>true</failOnViolation>
-                            </configuration>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>2.9.1</version>
                     <executions>
@@ -297,20 +175,6 @@
                                 <bottom><![CDATA[<i>Copyright &#169; 2014 Kaazing, Inc. All Rights Reserved.</i>]]></bottom>
                                 <additionalparam>${jdoc.properties}</additionalparam>
                             </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>2.2.1</version>
-                    <executions>
-                        <execution>
-                            <id>attach-sources</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>jar-no-fork</goal>
-                            </goals>
                         </execution>
                     </executions>
                 </plugin>
