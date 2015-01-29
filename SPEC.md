@@ -114,12 +114,12 @@ GET /path HTTP/1.1
 ```
 by the server.
 
-The request path may also be used to encode the request method.  A path-encoded `GET` method MUST be represented by a `GET` 
+The request path may also be used to encode the request method.  A path-encoded `GET` method MUST be represented by a `POST` 
 method.
 
-The following `GET` request
+The following `POST` request
 ```
-GET /;get/path HTTP/1.1
+POST /;get/path HTTP/1.1
 [headers]
 
 [body content]
