@@ -1,20 +1,17 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright 2014, Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.kaazing.k3po.lang.el.spi;
@@ -38,7 +35,8 @@ public class FunctionMapperSpiTest {
             return left + right;
         }
 
-        @Function(name = "add3")
+        @Function(
+                name = "add3")
         public static int add(int left, int middle, int right) {
             return left + middle + right;
         }
@@ -48,11 +46,13 @@ public class FunctionMapperSpiTest {
         // Since we annotated multiple methods with the same function name,
         // resolving this class should cause a problem.
 
-        @Function(name = "collision")
+        @Function(
+                name = "collision")
         public static void unstoppableForce() {
         }
 
-        @Function(name = "collision")
+        @Function(
+                name = "collision")
         public static void immovableObject() {
         }
     }
@@ -89,7 +89,8 @@ public class FunctionMapperSpiTest {
         assertEquals(1 + 2 + 3, add3.invoke(null, 1, 2, 3));
     }
 
-    @Test(expected = ELException.class)
+    @Test(
+            expected = ELException.class)
     public void shouldCollideOnDuplicateFunctionName() throws Exception {
 
         new FunctionMapperSpi.Reflective(FunctionsOfReality.class) {
@@ -101,11 +102,11 @@ public class FunctionMapperSpiTest {
 
         fail();
     }
-    
+
     @Test
     public void shouldRetainProperPackageName() throws Exception {
         String packageName = "package org.kaazing.k3po.lang.el.spi";
-        assertEquals("You may have broken the function mapper spi. This may also affect robot-websocket-functions",
-                packageName, this.getClass().getPackage().toString());
+        assertEquals("You may have broken the function mapper spi. This may also affect robot-websocket-functions", packageName,
+                this.getClass().getPackage().toString());
     }
 }

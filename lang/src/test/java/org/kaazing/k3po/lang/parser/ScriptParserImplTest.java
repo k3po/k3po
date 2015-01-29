@@ -1,20 +1,17 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright 2014, Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.kaazing.k3po.lang.parser;
@@ -116,15 +113,16 @@ public class ScriptParserImplTest {
     @Test
     public void shouldParseComplexLiteralText() throws Exception {
 
-        String scriptFragment = "\"GET / HTTP/1.1\\r\\nHost: localhost:8000\\r\\nUser-Agent: Mozilla/5.0 "
-                + "(Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\\r\\nAccept: text/html,"
-                + "application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\\r\\n\\r\\n\"";
+        String scriptFragment =
+                "\"GET / HTTP/1.1\\r\\nHost: localhost:8000\\r\\nUser-Agent: Mozilla/5.0 "
+                        + "(Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\\r\\nAccept: text/html,"
+                        + "application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\\r\\n\\r\\n\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstLiteralTextValue actual = parser.parseWithStrategy(scriptFragment, LITERAL_TEXT_VALUE);
 
-        AstLiteralTextValue expected = new AstLiteralTextValue(
-                "GET / HTTP/1.1\r\nHost: localhost:8000\r\nUser-Agent: Mozilla/5.0 "
+        AstLiteralTextValue expected =
+                new AstLiteralTextValue("GET / HTTP/1.1\r\nHost: localhost:8000\r\nUser-Agent: Mozilla/5.0 "
                         + "(Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\r\nAccept: text/html,"
                         + "application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\r\n\r\n");
 
@@ -134,19 +132,21 @@ public class ScriptParserImplTest {
     @Test
     public void shouldParseComplexLiteralText2() throws Exception {
 
-        String scriptFragment = "\"POST /index.html HTTP/1.1\\r\\nHost: localhost:8000\\r\\nUser-Agent: "
-                + "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\\r\\n"
-                + "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\\r\\n"
-                + "Content-Length: 43\\r\\n\\r\\nfirst_name=John&last_name=Doe&action=Submit\\r\\n\\r\\n\"";
+        String scriptFragment =
+                "\"POST /index.html HTTP/1.1\\r\\nHost: localhost:8000\\r\\nUser-Agent: "
+                        + "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\\r\\n"
+                        + "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\\r\\n"
+                        + "Content-Length: 43\\r\\n\\r\\nfirst_name=John&last_name=Doe&action=Submit\\r\\n\\r\\n\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstLiteralTextValue actual = parser.parseWithStrategy(scriptFragment, LITERAL_TEXT_VALUE);
 
-        AstLiteralTextValue expected = new AstLiteralTextValue("POST /index.html HTTP/1.1\r\nHost: "
-                + "localhost:8000\r\nUser-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) "
-                + "Gecko/20100101 Firefox/8.0\r\nAccept: text/html, application/xhtml+xml, "
-                + "application/xml;q=0.9,*/*;q=0.8\r\nContent-Length: 43\r\n\r\nfirst_name=John"
-                + "&last_name=Doe&action=Submit\r\n\r\n");
+        AstLiteralTextValue expected =
+                new AstLiteralTextValue("POST /index.html HTTP/1.1\r\nHost: "
+                        + "localhost:8000\r\nUser-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) "
+                        + "Gecko/20100101 Firefox/8.0\r\nAccept: text/html, application/xhtml+xml, "
+                        + "application/xml;q=0.9,*/*;q=0.8\r\nContent-Length: 43\r\n\r\nfirst_name=John"
+                        + "&last_name=Doe&action=Submit\r\n\r\n");
 
         assertEquals(expected, actual);
     }
@@ -289,8 +289,8 @@ public class ScriptParserImplTest {
         String scriptFragment = "[0..25]";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstFixedLengthBytesMatcher actual = parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER,
-                new ArrayList<ScriptParseException>());
+        AstFixedLengthBytesMatcher actual =
+                parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER, new ArrayList<ScriptParseException>());
 
         AstFixedLengthBytesMatcher expected = new AstFixedLengthBytesMatcher(25);
         assertEquals(expected, actual);
@@ -448,7 +448,7 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher> asList(new AstExactTextMatcher(expectedValue)));
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactTextMatcher(expectedValue)));
         assertEquals(expected, actual);
     }
 
@@ -461,7 +461,7 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher> asList(new AstExactTextMatcher(expectedValue)));
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactTextMatcher(expectedValue)));
         assertEquals(expected, actual);
     }
 
@@ -474,7 +474,7 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher> asList(new AstByteLengthBytesMatcher("capture"),
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstByteLengthBytesMatcher("capture"),
                 new AstByteLengthBytesMatcher("capture2")));
         assertEquals(expected, actual);
     }
@@ -488,7 +488,7 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher> asList(new AstShortLengthBytesMatcher("capture"),
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstShortLengthBytesMatcher("capture"),
                 new AstShortLengthBytesMatcher("capture2")));
 
         assertEquals(expected, actual);
@@ -504,7 +504,7 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher> asList(new AstIntLengthBytesMatcher("capture"),
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstIntLengthBytesMatcher("capture"),
                 new AstIntLengthBytesMatcher("capture2")));
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -519,7 +519,7 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher> asList(new AstLongLengthBytesMatcher("capture"),
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstLongLengthBytesMatcher("capture"),
                 new AstLongLengthBytesMatcher("capture2")));
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -533,8 +533,7 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher> asList(new AstExactTextMatcher("Hello"), new AstExactTextMatcher(
-                "World")));
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactTextMatcher("Hello"), new AstExactTextMatcher("World")));
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
     }
@@ -548,13 +547,8 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher> asList(
-		// @formatter:off
-				new AstExactBytesMatcher(new byte[] { 0x01, (byte) 0xff,
-						(byte) 0xfa }), new AstExactBytesMatcher(new byte[] {
-						0x00, (byte) 0xf0, (byte) 0x03, (byte) 0x05,
-						(byte) 0x08, (byte) 0x04 })));
-		// @formatter:on
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactBytesMatcher(new byte[]{0x01, (byte) 0xff, (byte) 0xfa}),
+                new AstExactBytesMatcher(new byte[]{0x00, (byte) 0xf0, (byte) 0x03, (byte) 0x05, (byte) 0x08, (byte) 0x04})));
 
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -568,8 +562,8 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher> asList(new AstRegexMatcher(compile(".*\\n")),
-                new AstRegexMatcher(compile(".+\\r"))));
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstRegexMatcher(compile(".*\\n")), new AstRegexMatcher(
+                compile(".+\\r"))));
 
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -589,8 +583,7 @@ public class ScriptParserImplTest {
         ValueExpression value2 = factory.createValueExpression(context, "${var2}", byte[].class);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher> asList(new AstExpressionMatcher(value), new AstExpressionMatcher(
-                value2)));
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExpressionMatcher(value), new AstExpressionMatcher(value2)));
 
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -604,8 +597,8 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher> asList(new AstFixedLengthBytesMatcher(1024),
-                new AstFixedLengthBytesMatcher(4096)));
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstFixedLengthBytesMatcher(1024), new AstFixedLengthBytesMatcher(
+                4096)));
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
     }
@@ -618,9 +611,8 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher> asList(new AstFixedLengthBytesMatcher(1024),
-                new AstFixedLengthBytesMatcher(64, "var1"), new AstFixedLengthBytesMatcher(4096),
-                new AstFixedLengthBytesMatcher(64, "var2")));
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstFixedLengthBytesMatcher(1024), new AstFixedLengthBytesMatcher(
+                64, "var1"), new AstFixedLengthBytesMatcher(4096), new AstFixedLengthBytesMatcher(64, "var2")));
 
         assertEquals(expected, actual);
         assertEquals(4, actual.getRegionInfo().children.size());
@@ -639,7 +631,7 @@ public class ScriptParserImplTest {
         ValueExpression value2 = factory.createValueExpression(context, "${len2}", Integer.class);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher> asList(new AstVariableLengthBytesMatcher(value),
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstVariableLengthBytesMatcher(value),
                 new AstVariableLengthBytesMatcher(value2)));
 
         assertEquals(expected, actual);
@@ -659,7 +651,7 @@ public class ScriptParserImplTest {
         ValueExpression value2 = factory.createValueExpression(context, "${len2}", Integer.class);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher> asList(new AstVariableLengthBytesMatcher(value, "var1"),
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstVariableLengthBytesMatcher(value, "var1"),
                 new AstVariableLengthBytesMatcher(value2, "var2")));
 
         assertEquals(expected, actual);
@@ -674,7 +666,7 @@ public class ScriptParserImplTest {
         AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
 
         AstWriteValueNode expected = new AstWriteValueNode();
-        expected.setValues(Arrays.<AstValue> asList(new AstLiteralTextValue("Hello"), new AstLiteralTextValue("World")));
+        expected.setValues(Arrays.<AstValue>asList(new AstLiteralTextValue("Hello"), new AstLiteralTextValue("World")));
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
     }
@@ -687,7 +679,7 @@ public class ScriptParserImplTest {
         AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
 
         AstWriteValueNode expected = new AstWriteValueNode();
-        expected.setValues(Arrays.<AstValue> asList(new AstLiteralBytesValue(new byte[]{(byte) 0x01, (byte) 0x02}),
+        expected.setValues(Arrays.<AstValue>asList(new AstLiteralBytesValue(new byte[]{(byte) 0x01, (byte) 0x02}),
                 new AstLiteralBytesValue(new byte[]{(byte) 0x03, (byte) 0x04})));
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -706,7 +698,7 @@ public class ScriptParserImplTest {
         ValueExpression value2 = factory.createValueExpression(context, "${var2}", byte[].class);
 
         AstWriteValueNode expected = new AstWriteValueNode();
-        expected.setValues(Arrays.<AstValue> asList(new AstExpressionValue(value1), new AstExpressionValue(value2)));
+        expected.setValues(Arrays.<AstValue>asList(new AstExpressionValue(value1), new AstExpressionValue(value2)));
 
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -724,8 +716,8 @@ public class ScriptParserImplTest {
         ValueExpression value1 = factory.createValueExpression(context, "${var1}", byte[].class);
 
         AstWriteValueNode expected = new AstWriteValueNode();
-        expected.setValues(Arrays.<AstValue> asList(new AstLiteralTextValue("Hello"), new AstLiteralBytesValue(
-                new byte[]{(byte) 0x01, (byte) 0x02}), new AstExpressionValue(value1)));
+        expected.setValues(Arrays.<AstValue>asList(new AstLiteralTextValue("Hello"), new AstLiteralBytesValue(new byte[]{
+                (byte) 0x01, (byte) 0x02}), new AstExpressionValue(value1)));
 
         assertEquals(expected, actual);
         assertEquals(3, actual.getRegionInfo().children.size());
@@ -741,14 +733,9 @@ public class ScriptParserImplTest {
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
 
-        // @formatter:off
-		AstWriteValueNode expected = new AstWriteNodeBuilder()
-				.addExactText("Hello")
-				.addExactBytes(new byte[] { 0x01, (byte) 0x02 })
-				.addExpression(
-						factory.createValueExpression(context, "${var1}",
-								byte[].class)).done();
-		// @formatter:on
+        AstWriteValueNode expected =
+                new AstWriteNodeBuilder().addExactText("Hello").addExactBytes(new byte[]{0x01, (byte) 0x02})
+                        .addExpression(factory.createValueExpression(context, "${var1}", byte[].class)).done();
 
         assertEquals(expected, actual);
         assertEquals(3, actual.getRegionInfo().children.size());
@@ -762,8 +749,7 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstAcceptNode actual = parser.parseWithStrategy(scriptFragment, ACCEPT);
 
-        AstAcceptNode expected = new AstAcceptNodeBuilder().setLocation(URI.create("http://localhost:8001/echo"))
-                .done();
+        AstAcceptNode expected = new AstAcceptNodeBuilder().setLocation(URI.create("http://localhost:8001/echo")).done();
 
         assertEquals(expected, actual);
     }
@@ -776,8 +762,8 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstAcceptNode actual = parser.parseWithStrategy(scriptFragment, ACCEPT);
 
-        AstAcceptNode expected = new AstAcceptNodeBuilder().setLocation(
-                URI.create("http://localhost:8001/echo?param=value")).done();
+        AstAcceptNode expected =
+                new AstAcceptNodeBuilder().setLocation(URI.create("http://localhost:8001/echo?param=value")).done();
 
         assertEquals(expected, actual);
     }
@@ -790,13 +776,14 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstAcceptNode actual = parser.parseWithStrategy(scriptFragment, ACCEPT);
 
-        AstAcceptNode expected = new AstAcceptNodeBuilder().setLocation(
-                URI.create("http://localhost:8001/echo/;e/ct?param=value")).done();
+        AstAcceptNode expected =
+                new AstAcceptNodeBuilder().setLocation(URI.create("http://localhost:8001/echo/;e/ct?param=value")).done();
 
         assertEquals(expected, actual);
     }
 
-    @Test(expected = ScriptParseException.class)
+    @Test(
+            expected = ScriptParseException.class)
     public void shouldNotParseAcceptedWithoutBehavior() throws Exception {
 
         String script = "accepted";
@@ -922,19 +909,21 @@ public class ScriptParserImplTest {
     // see http://jira.kaazing.wan/browse/NR-12
     public void shouldParseReadLiteralTextWithMuchPunctuation() throws Exception {
 
-        String scriptFragment = "read \"HTTP/1.1 404 Not Found\\r\\nServer: Kaazing Gateway\\r\\n"
-                + "Date: Thu, 03 May 2012 20:41:24 GMT\\r\\n\\r\\nContent-Type: text/html\\r\\n"
-                + "Content-length: 61 <html><head></head><body><h1>404 Not Found</h1></body></html>\"";
+        String scriptFragment =
+                "read \"HTTP/1.1 404 Not Found\\r\\nServer: Kaazing Gateway\\r\\n"
+                        + "Date: Thu, 03 May 2012 20:41:24 GMT\\r\\n\\r\\nContent-Type: text/html\\r\\n"
+                        + "Content-length: 61 <html><head></head><body><h1>404 Not Found</h1></body></html>\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-        AstReadValueNode expected = new AstReadNodeBuilder()
+        AstReadValueNode expected =
+                new AstReadNodeBuilder()
 
-        .addExactText(
-                "HTTP/1.1 404 Not Found\r\nServer: Kaazing Gateway\r\n"
-                        + "Date: Thu, 03 May 2012 20:41:24 GMT\r\n\r\nContent-Type: text/html\r\n"
-                        + "Content-length: 61 <html><head></head><body><h1>404 Not Found</h1></body></html>").done();
+                .addExactText(
+                        "HTTP/1.1 404 Not Found\r\nServer: Kaazing Gateway\r\n"
+                                + "Date: Thu, 03 May 2012 20:41:24 GMT\r\n\r\nContent-Type: text/html\r\n"
+                                + "Content-length: 61 <html><head></head><body><h1>404 Not Found</h1></body></html>").done();
 
         assertEquals(expected, actual);
     }
@@ -1022,20 +1011,20 @@ public class ScriptParserImplTest {
     // see http://jira.kaazing.wan/browse/NR-12
     public void shouldParseWriteLiteralTextWithMuchPunctuation() throws Exception {
 
-        String scriptFragment = "write \"GET / HTTP/1.1\\r\\nHost: localhost:8000\\r\\n"
-                + "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\\r\\n"
-                + "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\\r\\n\\r\\n\"";
+        String scriptFragment =
+                "write \"GET / HTTP/1.1\\r\\nHost: localhost:8000\\r\\n"
+                        + "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\\r\\n"
+                        + "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\\r\\n\\r\\n\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
 
-        AstWriteValueNode expected = new AstWriteNodeBuilder()
-
-                .addExactText(
+        AstWriteValueNode expected =
+                new AstWriteNodeBuilder().addExactText(
                         "GET / HTTP/1.1\r\nHost: localhost:8000\r\n"
-                                + "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\r\n"
-                                + "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\r\n\r\n")
-                .done();
+                                + "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) "
+                                + "Gecko/20100101 Firefox/8.0\r\n"
+                                + "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\r\n\r\n").done();
 
         assertEquals(expected, actual);
     }
@@ -1059,11 +1048,10 @@ public class ScriptParserImplTest {
     public void shouldParseWriteLongLiteralText() throws Exception {
 
         StringBuilder longLiteralTextBuilder = new StringBuilder();
-        longLiteralTextBuilder
-                .append("POST /index.html HTTP/1.1\\r\\nHost: localhost:8000\\r\\n"
-                        + "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\\r\\n"
-                        + "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\\r\\n"
-                        + "Content-Length: 99860\\r\\n\\r\\nfirst_name=Johnlast_nameDoeactionSubmitLoremipsumdolorsitametconsectetur");
+        longLiteralTextBuilder.append("POST /index.html HTTP/1.1\\r\\nHost: localhost:8000\\r\\n"
+                + "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\\r\\n"
+                + "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\\r\\n"
+                + "Content-Length: 99860\\r\\n\\r\\nfirst_name=Johnlast_nameDoeactionSubmitLoremipsumdolorsitametconsectetur");
         for (int i = 0; i < 3030; i++) {
             longLiteralTextBuilder.append("Loremipsumdolorsitametconsectetur");
         }
@@ -1075,11 +1063,10 @@ public class ScriptParserImplTest {
         AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
 
         longLiteralTextBuilder = new StringBuilder();
-        longLiteralTextBuilder
-                .append("POST /index.html HTTP/1.1\r\nHost: localhost:8000\r\n"
-                        + "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\r\n"
-                        + "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\r\n"
-                        + "Content-Length: 99860\r\n\r\nfirst_name=Johnlast_nameDoeactionSubmitLoremipsumdolorsitametconsectetur");
+        longLiteralTextBuilder.append("POST /index.html HTTP/1.1\r\nHost: localhost:8000\r\n"
+                + "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0\r\n"
+                + "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8\r\n"
+                + "Content-Length: 99860\r\n\r\nfirst_name=Johnlast_nameDoeactionSubmitLoremipsumdolorsitametconsectetur");
         for (int i = 0; i < 3030; i++) {
             longLiteralTextBuilder.append("Loremipsumdolorsitametconsectetur");
         }
@@ -1146,522 +1133,393 @@ public class ScriptParserImplTest {
         assertEquals(0, actual.getRegionInfo().children.size());
     }
 
-    // @formatter:off
-	@Test
-	public void shouldParseConnectScript() throws Exception {
-
-		String script = "# tcp.client.connect-then-close\n"
-				+ "connect tcp://localhost:7788\n" + "connected\n" + "close\n"
-				+ "closed\n";
-
-		ScriptParserImpl parser = new ScriptParserImpl();
-		AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
-
-		AstScriptNode expected = new AstScriptNodeBuilder().addConnectStream()
-				.setLocation(URI.create("tcp://localhost:7788"))
-				.addConnectedEvent().done()
-				.addCloseCommand().done()
-				.addClosedEvent().done().done().done();
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void shouldParseConnectScriptWithComments() throws Exception {
-
-		String script = "# tcp.client.connect-then-close\n"
-				+ "connect tcp://localhost:7788 # Comment 1\n"
-				+ "\t\t # Comment 2\n" + "connected\n" + "close\n" + "closed\n";
-
-		ScriptParserImpl parser = new ScriptParserImpl();
-		AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
-
-		AstScriptNode expected = new AstScriptNodeBuilder().addConnectStream()
-				.setLocation(URI.create("tcp://localhost:7788"))
-				.addConnectedEvent().done()
-				.addCloseCommand().done()
-				.addClosedEvent().done().done().done();
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void shouldParseAcceptScript() throws Exception {
-
-		String script = "# tcp.client.accept-then-close\n"
-				+ "accept tcp://localhost:7788\n" + "accepted\n"
-				+ "connected\n" + "close\n" + "closed\n";
-
-		ScriptParserImpl parser = new ScriptParserImpl();
-		AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
-
-		AstScriptNode expected = new AstScriptNodeBuilder().addAcceptStream()
-				.setLocation(URI.create("tcp://localhost:7788")).done()
-				.addAcceptedStream().addConnectedEvent()
-				.done().addCloseCommand()
-				.done().addClosedEvent()
-				.done().done().done();
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void shouldParseMultiConnectScript() throws Exception {
-
-		String script = "# tcp.client.echo-multi-conn.upstream\n"
-				+ "connect tcp://localhost:8785\n" + "connected\n"
-				+ "write \"Hello, world!\"\n" + "write notify BARRIER\n"
-				+ "close\n" + "closed\n"
-				+ "# tcp.client.echo-multi-conn.downstream\n"
-				+ "connect tcp://localhost:8783\n" + "connected\n"
-				+ "read await BARRIER\n" + "read \"Hello, world!\"\n"
-				+ "close\n" + "closed\n";
-
-		ScriptParserImpl parser = new ScriptParserImpl();
-		AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
-
-		AstScriptNode expected = new AstScriptNodeBuilder().addConnectStream()
-				.setLocation(URI.create("tcp://localhost:8785"))
-				.addConnectedEvent().done()
-				.addWriteCommand()
-				.addExactText("Hello, world!").done().addWriteNotifyBarrier()
-				.setBarrierName("BARRIER").done()
-				.addCloseCommand().done()
-				.addClosedEvent().done().done()
-				.addConnectStream()
-				.setLocation(URI.create("tcp://localhost:8783"))
-				.addConnectedEvent().done()
-				.addReadAwaitBarrier()
-				.setBarrierName("BARRIER").done().addReadEvent()
-				.addExactText("Hello, world!").done()
-				.addCloseCommand().done()
-				.addClosedEvent().done().done().done();
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void shouldParseMultiAcceptScript() throws Exception {
-
-		String script = "# tcp.server.echo-multi-conn.upstream\n"
-				+ "accept tcp://localhost:8783\n" + "accepted\n"
-				+ "connected\n" + "read await BARRIER\n"
-				+ "read \"Hello, world!\"\n" + "close\n" + "closed\n"
-				+ "# tcp.server.echo-multi-conn.downstream\n"
-				+ "accept tcp://localhost:8785\n" + "accepted\n"
-				+ "connected\n" + "write \"Hello, world!\"\n"
-				+ "write notify BARRIER\n" + "close\n" + "closed\n";
-
-		ScriptParserImpl parser = new ScriptParserImpl();
-		AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
-
-		AstScriptNode expected = new AstScriptNodeBuilder().addAcceptStream()
-				.setLocation(URI.create("tcp://localhost:8783")).done()
-				.addAcceptedStream().addConnectedEvent()
-				.done().addReadAwaitBarrier()
-				.setBarrierName("BARRIER").done()
-				.addReadEvent()
-				.addExactText("Hello, world!").done().addCloseCommand()
-				.done().addClosedEvent()
-				.done().done().addAcceptStream()
-				.setLocation(URI.create("tcp://localhost:8785")).done()
-				.addAcceptedStream().addConnectedEvent()
-				.done().addWriteCommand()
-				.addExactText("Hello, world!").done()
-				.addWriteNotifyBarrier()
-				.setBarrierName("BARRIER").done().addCloseCommand()
-				.done().addClosedEvent()
-				.done().done().done();
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void shouldParseAcceptAndConnectScript() throws Exception {
-
-		String script = "# tcp.server.accept-then-close\n"
-				+ "accept tcp://localhost:7788\n" + "accepted\n"
-				+ "connected\n" + "closed\n"
-				+ "# tcp.client.connect-then-close\n"
-				+ "connect tcp://localhost:7788\n" + "connected\n" + "close\n"
-				+ "closed\n";
-
-		ScriptParserImpl parser = new ScriptParserImpl();
-		AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
-		AstScriptNode expected;
-
-		expected = new AstScriptNodeBuilder().addAcceptStream()
-				.setLocation(URI.create("tcp://localhost:7788")).done()
-				.addAcceptedStream().addConnectedEvent()
-				.done().addClosedEvent()
-				.done().done().addConnectStream()
-				.setLocation(URI.create("tcp://localhost:7788"))
-				.addConnectedEvent().done()
-				.addCloseCommand().done()
-				.addClosedEvent().done().done().done();
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	// see http://jira.kaazing.wan/NR-35
-	public void shouldParseNonClosingConnectScript() throws Exception {
-
-		String script = "# tcp.client.non-closing\n"
-				+ "connect tcp://localhost:7788\n" + "connected\n"
-				+ "read \"foo\"\n" + "write [0x01 0x02 0xff]\n" + "closed\n";
-
-		ScriptParserImpl parser = new ScriptParserImpl();
-		AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
-
-		AstScriptNode expected = new AstScriptNodeBuilder().addConnectStream()
-				.setLocation(URI.create("tcp://localhost:7788"))
-				.addConnectedEvent().done()
-				.addReadEvent().addExactText("foo")
-				.done().addWriteCommand()
-				.addExactBytes(new byte[] { 0x01, 0x02, (byte) 0xff }).done()
-				.addClosedEvent().done().done().done();
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void shouldParseEmptyScript() throws Exception {
-
-		String script = "";
-
-		ScriptParserImpl parser = new ScriptParserImpl();
-		AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
-
-		AstScriptNode expected = new AstScriptNodeBuilder()
-				.done();
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void shouldParseScriptWithCommentsOnly() throws Exception {
-
-		String script = "# Comment 1\n" + "# Comment 2\n" + "# Comment 3\n";
-
-		ScriptParserImpl parser = new ScriptParserImpl();
-		AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
-
-		AstScriptNode expected = new AstScriptNode();
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void shouldParseScriptWithCommentsAndWhitespace() throws Exception {
-
-		String script = "# Comment 1\n" + "\t\n" + " # Comment 2\n" + "\r\n"
-				+ "# Comment 3\n";
-
-		ScriptParserImpl parser = new ScriptParserImpl();
-		AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
-
-		AstScriptNode expected = new AstScriptNode();
-
-		assertEquals(expected, actual);
-	}
-
-	@Ignore("Not implemented and perhaps not designed correctly.  Need to access the use and proper syntax for child channels - DPW")
-	@Test
-	public void shouldParseScript() throws Exception {
-
-		String script = "#\n" 
-				+ "# server\n" 
-				+ "#\n"
-				+ "accept tcp://localhost:8000 as ACCEPT\n" 
-				+ "opened\n"
-				+ "bound\n" 
-				+ "child opened\n" 
-				+ "child closed\n" 
-				+ "unbound\n"
-				+ "closed\n" 
-				+ "#\n" 
-				+ "# child\n" 
-				+ "#\n"
-				+ " accepted ACCEPT\n" 
-				+ "opened\n" 
-				+ " bound\n"
-				+ "connected\n" 
-				+ " read ([0..32]:input)\n"
-				+ "read notify BARRIER\n" 
-				+ "write await BARRIER\n"
-				+ "write [ 0x01 0xfe ]\n" 
-				+ "close\n" 
-				+ "disconnected\n"
-				+ "unbound\n" 
-				+ "closed\n" 
-				+ "#\n" 
-				+ "# client\n" 
-				+ "#\n"
-				+ "connect tcp://localhost:8000\n" 
-				+ " opened\n" 
-				+ "bound\n"
-				+ " connected\n" 
-				+ "write ${input}\n" 
-				+ " read [ 0x00 0xff ]\n"
-				+ "close\n" 
-				+ "disconnected\n" 
-				+ "unbound\n" 
-				+ "closed";
-
-		ExpressionFactory factory = ExpressionFactory.newInstance();
-		ExpressionContext context = new ExpressionContext();
-
-		ScriptParserImpl parser = new ScriptParserImpl(factory, context);
-		// parser.lex(new ByteArrayInputStream(script.getBytes(UTF_8)));
-		AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
-
-		AstScriptNode expected = new AstScriptNodeBuilder()
-				.addAcceptStream()
-				.setLocation(URI.create("tcp://localhost:8000"))
-				.setAcceptName("ACCEPT")
-				.addOpenedEvent()
-				
-				.done()
-				.addBoundEvent()
-				
-				.done()
-				.addChildOpenedEvent()
-				
-				.done()
-				.addChildClosedEvent()
-				
-				.done()
-				.addUnboundEvent()
-				
-				.done()
-				.addClosedEvent()
-				
-				.done()
-				.done()
-				.addAcceptedStream()
-				.setAcceptName("ACCEPT")
-				.addOpenedEvent()
-				
-				.done()
-				.addBoundEvent()
-				.done()
-				.addConnectedEvent()
-				
-				.done()
-				.addReadEvent()
-				.addFixedLengthBytes(32, "input")
-				.done()
-				.addReadNotifyBarrier()
-				
-				.setBarrierName("BARRIER")
-				.done()
-				.addWriteAwaitBarrier()
-				
-				.setBarrierName("BARRIER")
-				.done()
-				.addWriteCommand()
-				
-				.addExactBytes(new byte[] { 0x01, -0x02 })
-				.done()
-				.addCloseCommand()
-				
-				.done()
-				.addDisconnectedEvent()
-				
-				.done()
-				.addUnboundEvent()
-				
-				.done()
-				.addClosedEvent()
-				
-				.done()
-				.done()
-				.addConnectStream()
-				.setLocation(URI.create("tcp://localhost:8000"))
-				.addOpenedEvent()
-				.done()
-				.addBoundEvent()
-				
-				.done()
-				.addConnectedEvent()
-				.done()
-				.addWriteCommand()
-				
-				.addExpression(
-						factory.createValueExpression(context, "${input}",
-								byte[].class)).done().addReadEvent()
-				.addExactBytes(new byte[] { 0x00, -0x01 }).done()
-				.addCloseCommand().done()
-				.addDisconnectedEvent().done()
-				.addUnboundEvent().done()
-				.addClosedEvent().done().done().done();
-
-		assertEquals(expected, actual);
-	}
-
-	@Test(expected = ScriptParseException.class)
-	public void shouldNotParseScriptWithUnknownKeyword() throws Exception {
-
-		String script = "written\n";
-
-		ScriptParserImpl parser = new ScriptParserImpl();
-		parser.parseWithStrategy(script, SCRIPT);
-	}
-
-	@Test(expected = ScriptParseException.class)
-	public void shouldNotParseScriptWithReadBeforeConnect() throws Exception {
-
-		String script = "# tcp.client.connect-then-close\n"
-				+ "read [0x01 0x02 0x03]\n" + "connect tcp://localhost:7788\n"
-				+ "connected\n" + "close\n" + "closed\n";
-
-		ScriptParserImpl parser = new ScriptParserImpl();
-		parser.parseWithStrategy(script, SCRIPT);
-	}
-	
-	 @Test
-	    public void shouldParseReadOptionMask()
-	        throws Exception {
-
-	        String scriptFragment = "read option mask [0x01 0x02 0x03 0x04]";
-
-	        ScriptParserImpl parser = new ScriptParserImpl();
-	        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_OPTION);
-
-	        AstReadOptionNode expected = new AstReadOptionNodeBuilder()
-	            .setOptionName("mask")
-	            .setOptionValue(new byte[] { 0x01, 0x02, 0x03, 0x04 })
-	            .done();
-
-	        assertEquals(expected, actual);
-	    }
-
-	    @Test
-	    public void shouldParseReadOptionMaskExpression()
-	        throws Exception {
-
-	        String scriptFragment = "read option mask ${maskingKey}";
-
-	        ScriptParserImpl parser = new ScriptParserImpl();
-	        ExpressionFactory factory = parser.getExpressionFactory();
-	        ExpressionContext context = parser.getExpressionContext();
-
-	        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_OPTION);
-
-	        AstReadOptionNode expected = new AstReadOptionNodeBuilder()
-	            .setOptionName("mask")
-	            .setOptionValue(factory.createValueExpression(context, "${maskingKey}", byte[].class))
-	            .done();
-
-	        assertEquals(expected, actual);
-	    }
-
-	    @Test
-	    public void shouldParseWriteOptionMask()
-	        throws Exception {
-
-	        String scriptFragment = "write option mask [0x01 0x02 0x03 0x04]";
-
-	        ScriptParserImpl parser = new ScriptParserImpl();
-	        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_OPTION);
-
-	        AstWriteOptionNode expected = new AstWriteOptionNodeBuilder()
-	            .setOptionName("mask")
-	            .setOptionValue(new byte[] { 0x01, 0x02, 0x03, 0x04 })
-	            .done();
-
-	        assertEquals(expected, actual);
-	    }
-
-	    @Test
-	    public void shouldParseWriteOptionMaskExpression()
-	        throws Exception {
-
-	        String scriptFragment = "write option mask ${maskingKey}";
-
-	        ScriptParserImpl parser = new ScriptParserImpl();
-	        ExpressionFactory factory = parser.getExpressionFactory();
-	        ExpressionContext context = parser.getExpressionContext();
-
-	        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_OPTION);
-
-	        AstWriteOptionNode expected = new AstWriteOptionNodeBuilder()
-	            .setOptionName("mask")
-	            .setOptionValue(factory.createValueExpression(context, "${maskingKey}", byte[].class))
-	            .done();
-
-	        assertEquals(expected, actual);
-	    }
-	    
-	    @Test
-	    public void shouldParseCapturingFixedLengthBytesMatcher2() throws Exception {
-	        
-	        String scriptFragment = "[(:capture){5}]";
-
-	        ScriptParserImpl parser = new ScriptParserImpl();
-	        AstFixedLengthBytesMatcher actual = parser.parseWithStrategy(
-	                scriptFragment, FIXED_LENGTH_BYTES_MATCHER);
-
-	        AstFixedLengthBytesMatcher expected = new AstFixedLengthBytesMatcher(5,
-	                "capture");
-
-	        assertEquals(expected, actual);
-	    }
-
-	    @Test
-	    public void shouldParseNamedPropertyWithLiteralText() throws Exception {
-
-	        String scriptFragment = "property location \"tcp://localhost:8000\"";
-
-	        ScriptParserImpl parser = new ScriptParserImpl();
-
-	        AstPropertyNode actual = parser.parseWithStrategy(scriptFragment, PROPERTY_NODE);
-
-	        AstPropertyNode expected = new AstPropertyNodeBuilder()
-	                .setPropertyName("location")
-	                .setPropertyValue("tcp://localhost:8000")
-                .done();
-
-	        assertEquals(expected, actual);
-	    }
-
-        @Test
-        public void shouldParseNamedPropertyWithLiteralBytes() throws Exception {
-
-            String scriptFragment = "property location [0x00 0x01 0x02 0x03]";
-
-            ScriptParserImpl parser = new ScriptParserImpl();
-            AstPropertyNode actual = parser.parseWithStrategy(scriptFragment, PROPERTY_NODE);
-
-            AstPropertyNode expected = new AstPropertyNodeBuilder()
-                    .setPropertyName("location")
-                    .setPropertyValue(new byte[] { 0x00, 0x01, 0x02, 0x03 })
-                .done();
-
-            assertEquals(expected, actual);
-        }
-
-        @Test
-        public void shouldParseNamedPropertyWithExpression() throws Exception {
-
-            String scriptFragment = "property location ${expression}";
-
-            ScriptParserImpl parser = new ScriptParserImpl();
-
-            ExpressionFactory factory = parser.getExpressionFactory();
-            ExpressionContext context = parser.getExpressionContext();
-
-            AstPropertyNode actual = parser.parseWithStrategy(scriptFragment, PROPERTY_NODE);
-
-            ValueExpression expression = factory.createValueExpression(context, "${expression}", Object.class);
-
-            AstPropertyNode expected = new AstPropertyNodeBuilder()
-                    .setPropertyName("location")
-                    .setPropertyValue(expression)
-                .done();
-
-            assertEquals(expected, actual);
-        }
-
-	// @formatter:on
+    @Test
+    public void shouldParseConnectScript() throws Exception {
+
+        String script =
+                "# tcp.client.connect-then-close\n" + "connect tcp://localhost:7788\n" + "connected\n" + "close\n" + "closed\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+
+        AstScriptNode expected =
+                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("tcp://localhost:7788")).addConnectedEvent()
+                        .done().addCloseCommand().done().addClosedEvent().done().done().done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseConnectScriptWithComments() throws Exception {
+
+        String script =
+                "# tcp.client.connect-then-close\n" + "connect tcp://localhost:7788 # Comment 1\n" + "\t\t # Comment 2\n"
+                        + "connected\n" + "close\n" + "closed\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+
+        AstScriptNode expected =
+                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("tcp://localhost:7788")).addConnectedEvent()
+                        .done().addCloseCommand().done().addClosedEvent().done().done().done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseAcceptScript() throws Exception {
+
+        String script =
+                "# tcp.client.accept-then-close\n" + "accept tcp://localhost:7788\n" + "accepted\n" + "connected\n" + "close\n"
+                        + "closed\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+
+        AstScriptNode expected =
+                new AstScriptNodeBuilder().addAcceptStream().setLocation(URI.create("tcp://localhost:7788")).done()
+                        .addAcceptedStream().addConnectedEvent().done().addCloseCommand().done().addClosedEvent().done().done()
+                        .done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseMultiConnectScript() throws Exception {
+
+        String script =
+                "# tcp.client.echo-multi-conn.upstream\n" + "connect tcp://localhost:8785\n" + "connected\n"
+                        + "write \"Hello, world!\"\n" + "write notify BARRIER\n" + "close\n" + "closed\n"
+                        + "# tcp.client.echo-multi-conn.downstream\n" + "connect tcp://localhost:8783\n" + "connected\n"
+                        + "read await BARRIER\n" + "read \"Hello, world!\"\n" + "close\n" + "closed\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+
+        AstScriptNode expected =
+                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("tcp://localhost:8785")).addConnectedEvent()
+                        .done().addWriteCommand().addExactText("Hello, world!").done().addWriteNotifyBarrier()
+                        .setBarrierName("BARRIER").done().addCloseCommand().done().addClosedEvent().done().done()
+                        .addConnectStream().setLocation(URI.create("tcp://localhost:8783")).addConnectedEvent().done()
+                        .addReadAwaitBarrier().setBarrierName("BARRIER").done().addReadEvent().addExactText("Hello, world!")
+                        .done().addCloseCommand().done().addClosedEvent().done().done().done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseMultiAcceptScript() throws Exception {
+
+        String script =
+                "# tcp.server.echo-multi-conn.upstream\n" + "accept tcp://localhost:8783\n" + "accepted\n" + "connected\n"
+                        + "read await BARRIER\n" + "read \"Hello, world!\"\n" + "close\n" + "closed\n"
+                        + "# tcp.server.echo-multi-conn.downstream\n" + "accept tcp://localhost:8785\n" + "accepted\n"
+                        + "connected\n" + "write \"Hello, world!\"\n" + "write notify BARRIER\n" + "close\n" + "closed\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+
+        AstScriptNode expected =
+                new AstScriptNodeBuilder().addAcceptStream().setLocation(URI.create("tcp://localhost:8783")).done()
+                        .addAcceptedStream().addConnectedEvent().done().addReadAwaitBarrier().setBarrierName("BARRIER").done()
+                        .addReadEvent().addExactText("Hello, world!").done().addCloseCommand().done().addClosedEvent().done()
+                        .done().addAcceptStream().setLocation(URI.create("tcp://localhost:8785")).done().addAcceptedStream()
+                        .addConnectedEvent().done().addWriteCommand().addExactText("Hello, world!").done()
+                        .addWriteNotifyBarrier().setBarrierName("BARRIER").done().addCloseCommand().done().addClosedEvent()
+                        .done().done().done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseAcceptAndConnectScript() throws Exception {
+
+        String script =
+                "# tcp.server.accept-then-close\n" + "accept tcp://localhost:7788\n" + "accepted\n" + "connected\n" + "closed\n"
+                        + "# tcp.client.connect-then-close\n" + "connect tcp://localhost:7788\n" + "connected\n" + "close\n"
+                        + "closed\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+        AstScriptNode expected;
+
+        expected =
+                new AstScriptNodeBuilder().addAcceptStream().setLocation(URI.create("tcp://localhost:7788")).done()
+                        .addAcceptedStream().addConnectedEvent().done().addClosedEvent().done().done().addConnectStream()
+                        .setLocation(URI.create("tcp://localhost:7788")).addConnectedEvent().done().addCloseCommand().done()
+                        .addClosedEvent().done().done().done();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    // see http://jira.kaazing.wan/NR-35
+    public void shouldParseNonClosingConnectScript() throws Exception {
+
+        String script =
+                "# tcp.client.non-closing\n" + "connect tcp://localhost:7788\n" + "connected\n" + "read \"foo\"\n"
+                        + "write [0x01 0x02 0xff]\n" + "closed\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+
+        AstScriptNode expected =
+                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("tcp://localhost:7788")).addConnectedEvent()
+                        .done().addReadEvent().addExactText("foo").done().addWriteCommand()
+                        .addExactBytes(new byte[]{0x01, 0x02, (byte) 0xff}).done().addClosedEvent().done().done().done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseEmptyScript() throws Exception {
+
+        String script = "";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+
+        AstScriptNode expected = new AstScriptNodeBuilder().done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseScriptWithCommentsOnly() throws Exception {
+
+        String script = "# Comment 1\n" + "# Comment 2\n" + "# Comment 3\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+
+        AstScriptNode expected = new AstScriptNode();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseScriptWithCommentsAndWhitespace() throws Exception {
+
+        String script = "# Comment 1\n" + "\t\n" + " # Comment 2\n" + "\r\n" + "# Comment 3\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+
+        AstScriptNode expected = new AstScriptNode();
+
+        assertEquals(expected, actual);
+    }
+
+    @Ignore("Not implemented and perhaps not designed correctly.  "
+            + "Need to access the use and proper syntax for child channels - DPW")
+    @Test
+    public void shouldParseScript() throws Exception {
+
+        String script =
+                "#\n" + "# server\n" + "#\n" + "accept tcp://localhost:8000 as ACCEPT\n" + "opened\n" + "bound\n"
+                        + "child opened\n" + "child closed\n" + "unbound\n" + "closed\n" + "#\n" + "# child\n" + "#\n"
+                        + " accepted ACCEPT\n" + "opened\n" + " bound\n" + "connected\n" + " read ([0..32]:input)\n"
+                        + "read notify BARRIER\n" + "write await BARRIER\n" + "write [ 0x01 0xfe ]\n" + "close\n"
+                        + "disconnected\n" + "unbound\n" + "closed\n" + "#\n" + "# client\n" + "#\n"
+                        + "connect tcp://localhost:8000\n" + " opened\n" + "bound\n" + " connected\n" + "write ${input}\n"
+                        + " read [ 0x00 0xff ]\n" + "close\n" + "disconnected\n" + "unbound\n" + "closed";
+
+        ExpressionFactory factory = ExpressionFactory.newInstance();
+        ExpressionContext context = new ExpressionContext();
+
+        ScriptParserImpl parser = new ScriptParserImpl(factory, context);
+        // parser.lex(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+
+        AstScriptNode expected =
+                new AstScriptNodeBuilder().addAcceptStream().setLocation(URI.create("tcp://localhost:8000"))
+                        .setAcceptName("ACCEPT").addOpenedEvent()
+
+                        .done().addBoundEvent()
+
+                        .done().addChildOpenedEvent()
+
+                        .done().addChildClosedEvent()
+
+                        .done().addUnboundEvent()
+
+                        .done().addClosedEvent()
+
+                        .done().done().addAcceptedStream().setAcceptName("ACCEPT").addOpenedEvent()
+
+                        .done().addBoundEvent().done().addConnectedEvent()
+
+                        .done().addReadEvent().addFixedLengthBytes(32, "input").done().addReadNotifyBarrier()
+
+                        .setBarrierName("BARRIER").done().addWriteAwaitBarrier()
+
+                        .setBarrierName("BARRIER").done().addWriteCommand()
+
+                        .addExactBytes(new byte[]{0x01, -0x02}).done().addCloseCommand()
+
+                        .done().addDisconnectedEvent()
+
+                        .done().addUnboundEvent()
+
+                        .done().addClosedEvent()
+
+                        .done().done().addConnectStream().setLocation(URI.create("tcp://localhost:8000")).addOpenedEvent().done()
+                        .addBoundEvent()
+
+                        .done().addConnectedEvent().done().addWriteCommand()
+
+                        .addExpression(factory.createValueExpression(context, "${input}", byte[].class)).done().addReadEvent()
+                        .addExactBytes(new byte[]{0x00, -0x01}).done().addCloseCommand().done().addDisconnectedEvent().done()
+                        .addUnboundEvent().done().addClosedEvent().done().done().done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test(
+            expected = ScriptParseException.class)
+    public void shouldNotParseScriptWithUnknownKeyword() throws Exception {
+
+        String script = "written\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        parser.parseWithStrategy(script, SCRIPT);
+    }
+
+    @Test(
+            expected = ScriptParseException.class)
+    public void shouldNotParseScriptWithReadBeforeConnect() throws Exception {
+
+        String script =
+                "# tcp.client.connect-then-close\n" + "read [0x01 0x02 0x03]\n" + "connect tcp://localhost:7788\n"
+                        + "connected\n" + "close\n" + "closed\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        parser.parseWithStrategy(script, SCRIPT);
+    }
+
+    @Test
+    public void shouldParseReadOptionMask() throws Exception {
+
+        String scriptFragment = "read option mask [0x01 0x02 0x03 0x04]";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_OPTION);
+
+        AstReadOptionNode expected =
+                new AstReadOptionNodeBuilder().setOptionName("mask").setOptionValue(new byte[]{0x01, 0x02, 0x03, 0x04}).done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseReadOptionMaskExpression() throws Exception {
+
+        String scriptFragment = "read option mask ${maskingKey}";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        ExpressionFactory factory = parser.getExpressionFactory();
+        ExpressionContext context = parser.getExpressionContext();
+
+        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_OPTION);
+
+        AstReadOptionNode expected =
+                new AstReadOptionNodeBuilder().setOptionName("mask")
+                        .setOptionValue(factory.createValueExpression(context, "${maskingKey}", byte[].class)).done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseWriteOptionMask() throws Exception {
+
+        String scriptFragment = "write option mask [0x01 0x02 0x03 0x04]";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_OPTION);
+
+        AstWriteOptionNode expected =
+                new AstWriteOptionNodeBuilder().setOptionName("mask").setOptionValue(new byte[]{0x01, 0x02, 0x03, 0x04}).done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseWriteOptionMaskExpression() throws Exception {
+
+        String scriptFragment = "write option mask ${maskingKey}";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        ExpressionFactory factory = parser.getExpressionFactory();
+        ExpressionContext context = parser.getExpressionContext();
+
+        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_OPTION);
+
+        AstWriteOptionNode expected =
+                new AstWriteOptionNodeBuilder().setOptionName("mask")
+                        .setOptionValue(factory.createValueExpression(context, "${maskingKey}", byte[].class)).done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseCapturingFixedLengthBytesMatcher2() throws Exception {
+
+        String scriptFragment = "[(:capture){5}]";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstFixedLengthBytesMatcher actual = parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER);
+
+        AstFixedLengthBytesMatcher expected = new AstFixedLengthBytesMatcher(5, "capture");
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseNamedPropertyWithLiteralText() throws Exception {
+
+        String scriptFragment = "property location \"tcp://localhost:8000\"";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+
+        AstPropertyNode actual = parser.parseWithStrategy(scriptFragment, PROPERTY_NODE);
+
+        AstPropertyNode expected =
+                new AstPropertyNodeBuilder().setPropertyName("location").setPropertyValue("tcp://localhost:8000").done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseNamedPropertyWithLiteralBytes() throws Exception {
+
+        String scriptFragment = "property location [0x00 0x01 0x02 0x03]";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstPropertyNode actual = parser.parseWithStrategy(scriptFragment, PROPERTY_NODE);
+
+        AstPropertyNode expected =
+                new AstPropertyNodeBuilder().setPropertyName("location").setPropertyValue(new byte[]{0x00, 0x01, 0x02, 0x03})
+                        .done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseNamedPropertyWithExpression() throws Exception {
+
+        String scriptFragment = "property location ${expression}";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+
+        ExpressionFactory factory = parser.getExpressionFactory();
+        ExpressionContext context = parser.getExpressionContext();
+
+        AstPropertyNode actual = parser.parseWithStrategy(scriptFragment, PROPERTY_NODE);
+
+        ValueExpression expression = factory.createValueExpression(context, "${expression}", Object.class);
+
+        AstPropertyNode expected = new AstPropertyNodeBuilder().setPropertyName("location").setPropertyValue(expression).done();
+
+        assertEquals(expected, actual);
+    }
+
 }
