@@ -4,7 +4,7 @@
 	<parent>
         <groupId>org.kaazing</groupId>
         <artifactId>community</artifactId>
-        <version>1.2</version>
+        <version>2.4</version>
     </parent>
     
     <artifactId>specification.wse</artifactId>
@@ -117,7 +117,7 @@
             <plugin>
                 <groupId>org.kaazing</groupId>
                 <artifactId>k3po-maven-plugin</artifactId>
-                <version>2.0.0-alpha-8-SNAPSHOT</version>
+                <version>2.0.0-alpha-8</version>
                 <configuration>
                     <skipTests>${skipITs}</skipTests>
                 </configuration>
@@ -146,34 +146,9 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.12</version>
-                <executions>
-                    <execution>
-                        <id>check-style</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>validate</phase>
-                        <configuration>
-                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                            <consoleOutput>true</consoleOutput>
-                            <logViolationsToConsole>true</logViolationsToConsole>
-                            <failsOnError>true</failsOnError>
-                            <failOnViolation>true</failOnViolation>
-                            <configLocation>org/kaazing/code/quality/checkstyle.xml</configLocation>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.kaazing</groupId>
-                        <artifactId>code.quality</artifactId>
-                        <version>1.0</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
+            </plugin>        
         </plugins>
     </build>
-
 </project>
