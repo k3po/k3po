@@ -41,161 +41,313 @@ public class FragmentationIT {
 
     @Test
     @Specification({
-        "send.continuation.payload.length.125.not.fragmented/handshake.request.and.frame",
-        "send.continuation.payload.length.125.not.fragmented/handshake.response.and.frame" })
-    public void shouldFailWebSocketConnectionWhenSendContinuationFrameWithPayloadNotFragmented() throws Exception {
+        "client.send.continuation.payload.length.125.not.fragmented/handshake.request.and.frame",
+        "client.send.continuation.payload.length.125.not.fragmented/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenClientSendContinuationFrameWithPayloadNotFragmented() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "send.continuation.payload.length.125.fragmented/handshake.request.and.frames",
-        "send.continuation.payload.length.125.fragmented/handshake.response.and.frame" })
-    public void shouldFailWebSocketConnectionWhenSendContinuationFrameWithPayloadFragmented() throws Exception {
+        "client.send.continuation.payload.length.125.fragmented/handshake.request.and.frames",
+        "client.send.continuation.payload.length.125.fragmented/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenClientSendContinuationFrameWithPayloadFragmented() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "echo.text.payload.length.125.not.fragmented/handshake.request.and.frame",
-        "echo.text.payload.length.125.not.fragmented/handshake.response.and.frame" })
-    public void shouldEchoTextFrameWithPayloadNotFragmented() throws Exception {
+        "client.echo.text.payload.length.125.not.fragmented/handshake.request.and.frame",
+        "client.echo.text.payload.length.125.not.fragmented/handshake.response.and.frame" })
+    public void shouldEchoClientSendTextFrameWithPayloadNotFragmented() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "echo.text.payload.length.0.fragmented/handshake.request.and.frames",
-        "echo.text.payload.length.0.fragmented/handshake.response.and.frame" })
-    public void shouldEchoTextFrameWithEmptyPayloadFragmented() throws Exception {
+        "client.echo.text.payload.length.0.fragmented/handshake.request.and.frames",
+        "client.echo.text.payload.length.0.fragmented/handshake.response.and.frame" })
+    public void shouldEchoClientSendTextFrameWithEmptyPayloadFragmented() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "echo.text.payload.length.0.fragmented.with.injected.ping.pong/handshake.request.and.frames",
-        "echo.text.payload.length.0.fragmented.with.injected.ping.pong/handshake.response.and.frame" })
-    public void shouldEchoTextFrameWithEmptyPayloadFragmentedAndInjectedPingPong() throws Exception {
+        "client.echo.text.payload.length.0.fragmented.with.injected.ping.pong/handshake.request.and.frames",
+        "client.echo.text.payload.length.0.fragmented.with.injected.ping.pong/handshake.response.and.frame" })
+    public void shouldEchoClientSendTextFrameWithEmptyPayloadFragmentedAndInjectedPingPong() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "echo.text.payload.length.125.fragmented/handshake.request.and.frames",
-        "echo.text.payload.length.125.fragmented/handshake.response.and.frame" })
-    public void shouldEchoTextFrameWithPayloadFragmented() throws Exception {
+        "client.echo.text.payload.length.125.fragmented/handshake.request.and.frames",
+        "client.echo.text.payload.length.125.fragmented/handshake.response.and.frame" })
+    public void shouldEchoClientSendTextFrameWithPayloadFragmented() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "echo.text.payload.length.125.fragmented.with.some.empty.fragments/handshake.request.and.frames",
-        "echo.text.payload.length.125.fragmented.with.some.empty.fragments/handshake.response.and.frame" })
-    public void shouldEchoTextFrameWithPayloadFragmentedWithSomeEmptyFragments() throws Exception {
+        "client.echo.text.payload.length.125.fragmented.with.some.empty.fragments/handshake.request.and.frames",
+        "client.echo.text.payload.length.125.fragmented.with.some.empty.fragments/handshake.response.and.frame" })
+    public void shouldEchoClientSendTextFrameWithPayloadFragmentedWithSomeEmptyFragments() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "echo.text.payload.length.125.fragmented.but.not.utf8.aligned/handshake.request.and.frames",
-        "echo.text.payload.length.125.fragmented.but.not.utf8.aligned/handshake.response.and.frame" })
-    public void shouldEchoTextFrameWithPayloadFragmentedEvenWhenNotUTF8Aligned() throws Exception {
+        "client.echo.text.payload.length.125.fragmented.but.not.utf8.aligned/handshake.request.and.frames",
+        "client.echo.text.payload.length.125.fragmented.but.not.utf8.aligned/handshake.response.and.frame" })
+    public void shouldEchoClientSendTextFrameWithPayloadFragmentedEvenWhenNotUTF8Aligned() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "echo.text.payload.length.125.fragmented.with.injected.ping.pong/handshake.request.and.frames",
-        "echo.text.payload.length.125.fragmented.with.injected.ping.pong/handshake.response.and.frame" })
-    public void shouldEchoTextFrameWithPayloadFragmentedAndInjectedPingPong() throws Exception {
+        "client.echo.text.payload.length.125.fragmented.with.injected.ping.pong/handshake.request.and.frames",
+        "client.echo.text.payload.length.125.fragmented.with.injected.ping.pong/handshake.response.and.frame" })
+    public void shouldEchoClientSendTextFrameWithPayloadFragmentedAndInjectedPingPong() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "send.text.payload.length.125.fragmented.but.not.continued/handshake.request.and.frames",
-        "send.text.payload.length.125.fragmented.but.not.continued/handshake.response.and.frame" })
-    public void shouldFailWebSocketConnectionWhenSendTextFrameWithPayloadFragmentedButNotContinued() throws Exception {
+        "client.send.text.payload.length.125.fragmented.but.not.continued/handshake.request.and.frames",
+        "client.send.text.payload.length.125.fragmented.but.not.continued/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenClientSendTextFrameWithPayloadFragmentedButNotContinued() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "echo.binary.payload.length.125.not.fragmented/handshake.request.and.frame",
-        "echo.binary.payload.length.125.not.fragmented/handshake.response.and.frame" })
-    public void shouldEchoBinaryFrameWithPayloadNotFragmented() throws Exception {
+        "client.echo.binary.payload.length.125.not.fragmented/handshake.request.and.frame",
+        "client.echo.binary.payload.length.125.not.fragmented/handshake.response.and.frame" })
+    public void shouldEchoClientSendBinaryFrameWithPayloadNotFragmented() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "echo.binary.payload.length.0.fragmented/handshake.request.and.frames",
-        "echo.binary.payload.length.0.fragmented/handshake.response.and.frame" })
-    public void shouldEchoBinaryFrameWithEmptyPayloadFragmented() throws Exception {
+        "client.echo.binary.payload.length.0.fragmented/handshake.request.and.frames",
+        "client.echo.binary.payload.length.0.fragmented/handshake.response.and.frame" })
+    public void shouldEchoClientSendBinaryFrameWithEmptyPayloadFragmented() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "echo.binary.payload.length.0.fragmented.with.injected.ping.pong/handshake.request.and.frames",
-        "echo.binary.payload.length.0.fragmented.with.injected.ping.pong/handshake.response.and.frame" })
-    public void shouldEchoBinaryFrameWithEmptyPayloadFragmentedAndInjectedPingPong() throws Exception {
+        "client.echo.binary.payload.length.0.fragmented.with.injected.ping.pong/handshake.request.and.frames",
+        "client.echo.binary.payload.length.0.fragmented.with.injected.ping.pong/handshake.response.and.frame" })
+    public void shouldEchoClientSendBinaryFrameWithEmptyPayloadFragmentedAndInjectedPingPong() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "echo.binary.payload.length.125.fragmented/handshake.request.and.frames",
-        "echo.binary.payload.length.125.fragmented/handshake.response.and.frame" })
-    public void shouldEchoBinaryFrameWithPayloadFragmented() throws Exception {
+        "client.echo.binary.payload.length.125.fragmented/handshake.request.and.frames",
+        "client.echo.binary.payload.length.125.fragmented/handshake.response.and.frame" })
+    public void shouldEchoClientSendBinaryFrameWithPayloadFragmented() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "echo.binary.payload.length.125.fragmented.with.some.empty.fragments/handshake.request.and.frames",
-        "echo.binary.payload.length.125.fragmented.with.some.empty.fragments/handshake.response.and.frame" })
-    public void shouldEchoBinaryFrameWithPayloadFragmentedWithSomeEmptyFragments() throws Exception {
+        "client.echo.binary.payload.length.125.fragmented.with.some.empty.fragments/handshake.request.and.frames",
+        "client.echo.binary.payload.length.125.fragmented.with.some.empty.fragments/handshake.response.and.frame" })
+    public void shouldEchoClientSendBinaryFrameWithPayloadFragmentedWithSomeEmptyFragments() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "echo.binary.payload.length.125.fragmented.with.injected.ping.pong/handshake.request.and.frames",
-        "echo.binary.payload.length.125.fragmented.with.injected.ping.pong/handshake.response.and.frame" })
-    public void shouldEchoBinaryFrameWithPayloadFragmentedAndInjectedPingPong() throws Exception {
+        "client.echo.binary.payload.length.125.fragmented.with.injected.ping.pong/handshake.request.and.frames",
+        "client.echo.binary.payload.length.125.fragmented.with.injected.ping.pong/handshake.response.and.frame" })
+    public void shouldEchoClientSendBinaryFrameWithPayloadFragmentedAndInjectedPingPong() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "send.binary.payload.length.125.fragmented.but.not.continued/handshake.request.and.frames",
-        "send.binary.payload.length.125.fragmented.but.not.continued/handshake.response.and.frame" })
-    public void shouldFailWebSocketConnectionWhenSendBinaryFrameWithPayloadFragmentedButNotContinued() throws Exception {
+        "client.send.binary.payload.length.125.fragmented.but.not.continued/handshake.request.and.frames",
+        "client.send.binary.payload.length.125.fragmented.but.not.continued/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenClientSendBinaryFrameWithPayloadFragmentedButNotContinued() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "send.close.payload.length.2.fragmented/handshake.request.and.frames",
-        "send.close.payload.length.2.fragmented/handshake.response.and.frame" })
-    public void shouldFailWebSocketConnectionWhenSendCloseFrameWithPayloadFragmented() throws Exception {
+        "client.send.close.payload.length.2.fragmented/handshake.request.and.frames",
+        "client.send.close.payload.length.2.fragmented/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenClientSendCloseFrameWithPayloadFragmented() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "send.ping.payload.length.0.fragmented/handshake.request.and.frames",
-        "send.ping.payload.length.0.fragmented/handshake.response.and.frame" })
-    public void shouldFailWebSocketConnectionWhenSendPingFrameWithPayloadFragmented() throws Exception {
+        "client.send.ping.payload.length.0.fragmented/handshake.request.and.frames",
+        "client.send.ping.payload.length.0.fragmented/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenClientSendPingFrameWithPayloadFragmented() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "send.pong.payload.length.0.fragmented/handshake.request.and.frames",
-        "send.pong.payload.length.0.fragmented/handshake.response.and.frame" })
-    public void shouldFailWebSocketConnectionWhenSendPongFrameWithPayloadFragmented() throws Exception {
+        "client.send.pong.payload.length.0.fragmented/handshake.request.and.frames",
+        "client.send.pong.payload.length.0.fragmented/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenClientSendPongFrameWithPayloadFragmented() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.echo.binary.payload.length.0.fragmented/handshake.request.and.frame",
+        "server.echo.binary.payload.length.0.fragmented/handshake.response.and.frames" })
+    public void shouldEchoServerSendBinaryFrameWithEmptyPayloadFragmented() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.echo.binary.payload.length.0.fragmented.with.injected.ping.pong/handshake.request.and.frame",
+        "server.echo.binary.payload.length.0.fragmented.with.injected.ping.pong/handshake.response.and.frames" })
+    public void shouldEchoServerSendBinaryFrameWithEmptyPayloadFragmentedAndInjectedPingPong() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.echo.binary.payload.length.125.fragmented/handshake.request.and.frame",
+        "server.echo.binary.payload.length.125.fragmented/handshake.response.and.frames" })
+    public void shouldEchoServerSendBinaryFrameWithPayloadFragmented() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.echo.binary.payload.length.125.fragmented.with.injected.ping.pong/handshake.request.and.frame",
+        "server.echo.binary.payload.length.125.fragmented.with.injected.ping.pong/handshake.response.and.frames" })
+    public void shouldEchoServerSendBinaryFrameWithPayloadFragmentedAndInjectedPingPong() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.echo.binary.payload.length.125.fragmented.with.some.empty.fragments/handshake.request.and.frame",
+        "server.echo.binary.payload.length.125.fragmented.with.some.empty.fragments/handshake.response.and.frames" })
+    public void shouldEchoServerSendBinaryFrameWithPayloadFragmentedWithSomeEmptyFragments() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.echo.binary.payload.length.125.not.fragmented/handshake.request.and.frame",
+        "server.echo.binary.payload.length.125.not.fragmented/handshake.response.and.frame" })
+    public void shouldEchoServerSendBinaryFrameWithPayloadNotFragmented() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.echo.text.payload.length.0.fragmented/handshake.request.and.frame",
+        "server.echo.text.payload.length.0.fragmented/handshake.response.and.frames" })
+    public void shouldEchoServerSendTextFrameWithEmptyPayloadFragmented() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.echo.text.payload.length.0.fragmented.with.injected.ping.pong/handshake.request.and.frame",
+        "server.echo.text.payload.length.0.fragmented.with.injected.ping.pong/handshake.response.and.frames" })
+    public void shouldEchoServerSendTextFrameWithEmptyPayloadFragmentedAndInjectedPingPong() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.echo.text.payload.length.125.fragmented/handshake.request.and.frame",
+        "server.echo.text.payload.length.125.fragmented/handshake.response.and.frames" })
+    public void shouldEchoServerSendTextFrameWithPayloadFragmented() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.echo.text.payload.length.125.fragmented.but.not.utf8.aligned/handshake.request.and.frame",
+        "server.echo.text.payload.length.125.fragmented.but.not.utf8.aligned/handshake.response.and.frames" })
+    public void shouldEchoServerSendTextFrameWithPayloadFragmentedEvenWhenNotUTF8Aligned() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.echo.text.payload.length.125.fragmented.with.injected.ping.pong/handshake.request.and.frame",
+        "server.echo.text.payload.length.125.fragmented.with.injected.ping.pong/handshake.response.and.frames" })
+    public void shouldEchoServerSendTextFrameWithPayloadFragmentedAndInjectedPingPong() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.echo.text.payload.length.125.fragmented.with.some.empty.fragments/handshake.request.and.frame",
+        "server.echo.text.payload.length.125.fragmented.with.some.empty.fragments/handshake.response.and.frames" })
+    public void shouldEchoServerSendTextFrameWithPayloadFragmentedWithSomeEmptyFragments() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.echo.text.payload.length.125.not.fragmented/handshake.request.and.frame",
+        "server.echo.text.payload.length.125.not.fragmented/handshake.response.and.frame" })
+    public void shouldEchoServerSendTextFrameWithPayloadNotFragmented() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.binary.payload.length.125.fragmented.but.not.continued/handshake.request.and.frame",
+        "server.send.binary.payload.length.125.fragmented.but.not.continued/handshake.response.and.frames" })
+    public void shouldFailWebSocketConnectionWhenServerSendBinaryFrameWithPayloadFragmentedButNotContinued() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.close.payload.length.2.fragmented/handshake.request.and.frame",
+        "server.send.close.payload.length.2.fragmented/handshake.response.and.frames" })
+    public void shouldFailWebSocketConnectionWhenServerSendCloseFrameWithPayloadFragmented() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.continuation.payload.length.125.fragmented/handshake.request.and.frame",
+        "server.send.continuation.payload.length.125.fragmented/handshake.response.and.frames" })
+    public void shouldFailWebSocketConnectionWhenServerSendContinuationFrameWithPayloadFragmented() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.continuation.payload.length.125.not.fragmented/handshake.request.and.frame",
+        "server.send.continuation.payload.length.125.not.fragmented/handshake.response.and.frame" })
+    public void shouldFailWebSocketConnectionWhenServerSendContinuationFrameWithPayloadNotFragmented() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.ping.payload.length.0.fragmented/handshake.request.and.frame",
+        "server.send.ping.payload.length.0.fragmented/handshake.response.and.frames" })
+    public void shouldFailWebSocketConnectionWhenServerSendPingFrameWithPayloadFragmented() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.pong.payload.length.0.fragmented/handshake.request.and.frame",
+        "server.send.pong.payload.length.0.fragmented/handshake.response.and.frames" })
+    public void shouldFailWebSocketConnectionWhenServerSendPongFrameWithPayloadFragmented() throws Exception {
         k3po.join();
     }
 
