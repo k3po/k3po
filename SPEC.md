@@ -123,8 +123,8 @@ The emulated WebSocket is now in the `CONNECTED` state.
 ## Messages
 RTMP data events may contain serialized objects in Action Message Format version 0 or version 3 [AMF3]. WebSocket emulation messages must use AMF3 serialization. Both frame types from the WebSocket Protocol [WS] have analogs in WSR. The types are:
 
-Text (AMF3 UTF-8 String)
-Binary (AMF3 ByteArray)
+* Text (AMF3 UTF-8 String)
+* Binary (AMF3 ByteArray)
 
 WSR binary data messages must contain exactly one AMF3 encoded ByteArray and must be sent on a stream named `d`.
 
