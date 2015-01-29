@@ -12,9 +12,14 @@
 
     <name>k3po/driver</name>
     <url>https://github.com/kaazing/k3po</url>
+    <description>K3PO driver</description>
     <packaging>jar</packaging>
 
-    <description>K3PO driver</description>
+    <scm>
+        <url>https://github.com/k3po/k3po</url>
+        <connection>scm:git:https://github.com/k3po/k3po.git</connection>
+        <developerConnection>${project.scm.connection}</developerConnection>
+    </scm>
 
     <dependencies>
         <dependency>

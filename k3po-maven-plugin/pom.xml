@@ -12,9 +12,14 @@
 
     <name>k3po/k3po-maven-plugin</name>
     <url>https://github.com/kaazing/k3po</url>
+    <description>Robot Maven Plugin</description>
     <packaging>maven-plugin</packaging>
 
-    <description>Robot Maven Plugin</description>
+    <scm>
+        <url>https://github.com/k3po/k3po</url>
+        <connection>scm:git:https://github.com/k3po/k3po.git</connection>
+        <developerConnection>${project.scm.connection}</developerConnection>
+    </scm>
 
     <dependencies>
         <dependency>
