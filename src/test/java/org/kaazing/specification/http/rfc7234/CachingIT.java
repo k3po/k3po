@@ -20,7 +20,9 @@
  */
 
 /**
- *  Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7235">RFC 7235:
- *   Hypertext Transfer Protocol (HTTP/1.1): Authentication</a>.
+ *  Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7234">RFC 7234:
+ *   Hypertext Transfer Protocol (HTTP/1.1): Caching</a>.
  */
-package org.kaazing.specification.http.rfc7235;
+package org.kaazing.specification.http.rfc7234;
+
+// TODO

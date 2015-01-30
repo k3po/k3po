@@ -20,8 +20,9 @@
  */
 
 /**
- *  Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7231">RFC 7231:
- *   Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content</a>.
+ *  Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7233">RFC 7233:
+ *   Hypertext Transfer Protocol (HTTP/1.1): Range Requests</a>.
  */
-package org.kaazing.specification.http.rfc7231;
+package org.kaazing.specification.http.rfc7233;
 
+// TODO

@@ -20,7 +20,9 @@
  */
 
 /**
- *  Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7233">RFC 7233:
- *   Hypertext Transfer Protocol (HTTP/1.1): Range Requests</a>.
+ *  Test to validate behavior as specified in <a href="http://tools.ietf.org/html/rfc1945">RFC 1945:
+ *   Hypertext Transfer Protocol -- HTTP/1.0</a>.
  */
-package org.kaazing.specification.http.rfc7233;
+package org.kaazing.specification.http.rfc1945;
+
+// TODO
