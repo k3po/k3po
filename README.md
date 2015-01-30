@@ -251,7 +251,7 @@ write ${var}
 # byte/short/int/long directive).
 
 read ([...]:var)
-read ([0..$var]:capture)
+read ([0..${var}]:capture)
 
 # El expressions
 
