@@ -1137,14 +1137,20 @@ public class ScriptParserImplTest {
     public void shouldParseConnectScript() throws Exception {
 
         String script =
-                "# tcp.client.connect-then-close\n" + "connect tcp://localhost:7788\n" + "connected\n" + "close\n" + "closed\n";
+                "# tcp.client.connect-then-close\n" +
+                "connect http://localhost:8080/path?p1=v1&p2=v2\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
 
-        AstScriptNode expected =
-                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("tcp://localhost:7788")).addConnectedEvent()
-                        .done().addCloseCommand().done().addClosedEvent().done().done().done();
+        AstScriptNode expected = new AstScriptNodeBuilder()
+                .addConnectStream()
+                .setLocation(URI.create("http://localhost:8080/path?p1=v1&p2=v2"))
+                .addConnectedEvent().done().addCloseCommand().done()
+                .addClosedEvent().done().done().done();
 
         assertEquals(expected, actual);
     }
