@@ -18,47 +18,69 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kaazing.specification.http;
+package org.kaazing.specification.http.rfc7230;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * rfc7230#section-5.3
- *
+ * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7230#section-4">RFC 7230 section 4:
+ * Transfer Codings</a>.
  */
-public class RequestTargetIT {
+public class TransferCodingsIT {
 
     @Test
     @Ignore("Not Implemented")
-    public void upstreamMustAcceptOriginForm() {
-        // origin-form = absolute-path [ "?" query ]
-        // GET /where?q=now HTTP/1.1
-        // Host: www.example.org
+    public void shouldProcessRequestTransferEncodingChunked() {
+
     }
 
     @Test
     @Ignore("Not Implemented")
-    public void upstreamMustAcceptAbsoluteForm() {
-        // GET http://www.example.org/pub/WWW/TheProject.html HTTP/1.1
+    public void shouldProcessResponseTransferEncodingChunked() {
+
     }
 
     @Test
     @Ignore("Not Implemented")
-    public void intermediaryMustAcceptAuthorityFormOnConnectRequest() {
-        // CONNECT www.example.com:80 HTTP/1.1
+    public void shouldProcessRequestTransferEncodingChunkedExtension() {
+
     }
 
     @Test
     @Ignore("Not Implemented")
-    public void upstreamMustAcceptAsterickFormOnOptionsRequest() {
-        // OPTIONS * HTTP/1.1
+    public void shouldProcessResponseTransferEncodingChunkedExtension() {
+
     }
 
     @Test
     @Ignore("Not Implemented")
-    public void lastProxyMustConvertOptionsInAbsoluteFormToAsterickForm() {
-        // OPTIONS * HTTP/1.1
-        // Host: www.example.org:8001
+    public void shouldProcessRequestTransferEncodingChunkedWithTrailer() {
+
     }
+
+    @Test
+    @Ignore("Not Implemented")
+    public void shouldProcessResponseTransferEncodingChunkedWithTrailer() {
+
+    }
+
+    @Test
+    @Ignore("Not Implemented")
+    public void shouldProcessRequestTransferEncodingChunkedWithTrailerAndTrailerHeader() {
+
+    }
+
+    @Test
+    @Ignore("Not Implemented")
+    public void shouldProcessResponseTransferEncodingChunkedWithTrailerAndTrailerHeader() {
+
+    }
+
+    // TODO
+    // 4.2. Compression Codings
+    // 4.2.1. Compress Coding
+    // 4.2.2. Deflate Coding
+    // 4.2.3. Gzip Coding
+    // 4.3. TE Header
 }

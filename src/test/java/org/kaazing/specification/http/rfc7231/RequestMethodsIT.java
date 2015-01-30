@@ -18,69 +18,41 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kaazing.specification.http;
+package org.kaazing.specification.http.rfc7231;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * rfc7230#section-4
- *
+ * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7231#section-4">RFC 7231 section 4:
+ * Request Methods</a>.
  */
-public class TransferCodingsIT {
+public class RequestMethodsIT {
 
     @Test
     @Ignore("Not Implemented")
-    public void shouldProcessRequestTransferEncodingChunked() {
-
+    public void serverMustRespondToUnknownMethodWith501() {
+        // When a request method is received
+        // that is unrecognized or not implemented by an origin server, the
+        // origin server SHOULD respond with the 501 (Not Implemented) status
+        // code.
     }
 
     @Test
     @Ignore("Not Implemented")
-    public void shouldProcessResponseTransferEncodingChunked() {
-
+    public void serverShouldImplementGet() {
+        // General purpose servers should implement GET and HEAD
     }
 
     @Test
     @Ignore("Not Implemented")
-    public void shouldProcessRequestTransferEncodingChunkedExtension() {
-
+    public void serverShouldImplementHead() {
+        // General purpose servers should implement GET and HEAD
     }
 
     @Test
     @Ignore("Not Implemented")
-    public void shouldProcessResponseTransferEncodingChunkedExtension() {
-
+    public void serverShouldRespondWith405ToUnrecognizedMethods() {
+        // 405 (Method Not Allowed)
     }
-
-    @Test
-    @Ignore("Not Implemented")
-    public void shouldProcessRequestTransferEncodingChunkedWithTrailer() {
-
-    }
-
-    @Test
-    @Ignore("Not Implemented")
-    public void shouldProcessResponseTransferEncodingChunkedWithTrailer() {
-
-    }
-
-    @Test
-    @Ignore("Not Implemented")
-    public void shouldProcessRequestTransferEncodingChunkedWithTrailerAndTrailerHeader() {
-
-    }
-
-    @Test
-    @Ignore("Not Implemented")
-    public void shouldProcessResponseTransferEncodingChunkedWithTrailerAndTrailerHeader() {
-
-    }
-
-    // TODO
-    // 4.2. Compression Codings
-    // 4.2.1. Compress Coding
-    // 4.2.2. Deflate Coding
-    // 4.2.3. Gzip Coding
-    // 4.3. TE Header
 }

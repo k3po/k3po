@@ -18,34 +18,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kaazing.specification.http;
-
-import org.junit.Ignore;
-import org.junit.Test;
 
 /**
- * rfc7231#section-5
- *
+ *  Test to validate behavior as specified in <a href="http://tools.ietf.org/html/rfc1945">RFC 1945:
+ *   Hypertext Transfer Protocol -- HTTP/1.0</a>.
  */
-public class ControlIT {
+package org.kaazing.specification.http.rfc1945;
 
-    @Test
-    @Ignore("Not Implemented")
-    public void serverShouldRespondToMeetableExpectWith417() {
-        // A server that receives an Expect field-value other than 100-continue
-        // MAY respond with a 417 (Expectation Failed) status code to indicate
-        // that the unexpected expectation cannot be met.
-    }
-
-    @Test
-    @Ignore("Not Implemented")
-    public void intermediaryMustDecrementMaxForwardHeaderOnOptionsOrTraceRequest() {
-
-    }
-
-    @Test
-    @Ignore("Not Implemented")
-    public void intermediaryThatReceivesMaxForwardOfZeroOnOptionsOrTraceMustRespondToRequest() {
-
-    }
-}

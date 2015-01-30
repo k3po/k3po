@@ -18,41 +18,43 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kaazing.specification.http;
+package org.kaazing.specification.http.rfc7231;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * rfc7231#section-5
- *
+ * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7231#section-5">RFC 7231 section 5:
+ * Request Header Fields</a>.
  */
-public class RequestMethodsIT {
+public class RequestHeaderFieldsIT {
 
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc7231#section-5.1">RFC 7230 section 5.1: Controls</a>.
+     */
     @Test
     @Ignore("Not Implemented")
-    public void serverMustRespondToUnknownMethodWith501() {
-        // When a request method is received
-        // that is unrecognized or not implemented by an origin server, the
-        // origin server SHOULD respond with the 501 (Not Implemented) status
-        // code.
+    public void serverShouldRespondToMeetableExpectWith417() {
+        // A server that receives an Expect field-value other than 100-continue
+        // MAY respond with a 417 (Expectation Failed) status code to indicate
+        // that the unexpected expectation cannot be met.
     }
 
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc7231#section-5.1">RFC 7230 section 5.1: Controls</a>.
+     */
     @Test
     @Ignore("Not Implemented")
-    public void serverShouldImplementGet() {
-        // General purpose servers should implement GET and HEAD
+    public void intermediaryMustDecrementMaxForwardHeaderOnOptionsOrTraceRequest() {
+
     }
 
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc7231#section-5.1">RFC 7230 section 5.1: Controls</a>.
+     */
     @Test
     @Ignore("Not Implemented")
-    public void serverShouldImplementHead() {
-        // General purpose servers should implement GET and HEAD
-    }
+    public void intermediaryThatReceivesMaxForwardOfZeroOnOptionsOrTraceMustRespondToRequest() {
 
-    @Test
-    @Ignore("Not Implemented")
-    public void serverShouldRespondWith405ToUnrecognizedMethods() {
-        // 405 (Method Not Allowed)
     }
 }

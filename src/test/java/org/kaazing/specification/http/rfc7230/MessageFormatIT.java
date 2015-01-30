@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kaazing.specification.http;
+package org.kaazing.specification.http.rfc7230;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
@@ -33,55 +33,63 @@ import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
 /**
- * rfc7230#section-3
- *
+ * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7230#section-3">RFC 7230 section 3:
+ * Message Format</a>.
  */
 public class MessageFormatIT {
 
-    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/http/message");
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/http/rfc7230/message.format");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
 
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc7230#section-3">RFC 7230 section 3: Message Format</a>.
+     *
+     * @throws Exception when K3PO is not started
+     */
     @Test
-    @Specification({
-            "upstream.should.accept.request.with.no.headers/request",
-            "upstream.should.accept.request.with.no.headers/response"})
-    public void upstreamShouldAcceptNoHeaders() throws Exception {
+    @Specification({"inbound.should.accept.request.with.no.headers/request",
+            "inbound.should.accept.request.with.no.headers/response"
+        })
+    public void inboundShouldAcceptNoHeaders() throws Exception {
         k3po.join();
     }
 
     @Test
     @Ignore("Not Implemented")
-    public void upstreamShouldAcceptHeaders() {
+    public void inboundShouldAcceptHeaders() {
 
     }
 
     @Test
     @Ignore("Not Implemented")
-    public void downstreamShouldAcceptNoHeaders() {
+    public void outboundShouldAcceptNoHeaders() {
 
     }
 
     @Test
     @Ignore("Not Implemented")
-    public void downstreamShouldAcceptHeaders() {
+    public void outboundShouldAcceptHeaders() {
 
     }
 
     @Test
     @Ignore("Not Implemented")
-    public void upstreamShouldRejectRequestWithWhitespaceBetweenStartLineAndFirstHaeder() {
+    public void inboundShouldRejectRequestWithWhitespaceBetweenStartLineAndFirstHaeder() {
         // As per RFC, alternatively could process everything before whitespace,
         // but the better choice is to reject, so that is what is tested in this
         // SPEC
     }
 
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc7230#section-3.1">RFC 7230 section 3.1.1: Start Line</a>.
+     */
     @Test
     @Ignore("Not Implemented")
-    public void clientShouldSendRequestLineInStartLine() {
+    public void requestMustStartWithRequestLine() {
 
     }
 

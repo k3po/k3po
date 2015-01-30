@@ -18,12 +18,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kaazing.specification.http;
 
 /**
- * rfc7231#6.5
- *
+ * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7230">RFC 7230:
+ * Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing</a>.
  */
-public class ErrorCodesIT {
+package org.kaazing.specification.http.rfc7230;
 
-}

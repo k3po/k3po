@@ -18,12 +18,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kaazing.specification.http;
+package org.kaazing.specification.http.rfc7231;
 
 /**
- * rfc7233
- *
+ * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7231#section-3">RFC 7231 section 3:
+ * Content Negotiation</a>.
  */
-public class RangeRequestsIT {
+public class ContentNegotiationIT {
 
 }

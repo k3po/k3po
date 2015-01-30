@@ -18,12 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kaazing.specification.http;
 
 /**
- * Backwards compatibility with HTTP/1.0
- *
+ *  Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7233">RFC 7233:
+ *   Hypertext Transfer Protocol (HTTP/1.1): Range Requests</a>.
  */
-public class HttpBackwardCompatibility {
-
-}
+package org.kaazing.specification.http.rfc7233;

@@ -18,12 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kaazing.specification.http;
 
 /**
- * rfc7232
- *
+ *  Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7235">RFC 7235:
+ *   Hypertext Transfer Protocol (HTTP/1.1): Authentication</a>.
  */
-public class ConditionalRequestsIT {
-
-}
+package org.kaazing.specification.http.rfc7235;

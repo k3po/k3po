@@ -18,12 +18,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kaazing.specification.http;
 
 /**
- * rfc7234
- *
+ *  Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7231">RFC 7231:
+ *   Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content</a>.
  */
-public class CachingIT {
+package org.kaazing.specification.http.rfc7231;
 
-}

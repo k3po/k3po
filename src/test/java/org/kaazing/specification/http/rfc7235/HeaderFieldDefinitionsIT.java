@@ -18,16 +18,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kaazing.specification.http;
+package org.kaazing.specification.http.rfc7235;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * rfc7235
- *
+ * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7235#section-4">RFC 7235 section 4:
+ * Header Field Definitions</a>.
  */
-public class AuthenticationIT {
+public class HeaderFieldDefinitionsIT {
 
     @Test
     @Ignore("Not Implemented")

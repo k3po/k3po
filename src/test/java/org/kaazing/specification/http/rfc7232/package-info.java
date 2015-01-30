@@ -18,45 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kaazing.specification.http;
-
-import org.junit.Ignore;
-import org.junit.Test;
 
 /**
- * rfc7230#section-2.7
- *
+ *  Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7232">RFC 7232:
+ *   Hypertext Transfer Protocol (HTTP/1.1): Conditional Requests</a>.
  */
-public class UniformResourceIdentifiersIT {
-
-    @Test
-    @Ignore("Not Implemented")
-    public void clientMustSendHostIdentifier() {
-
-    }
-
-    @Test
-    @Ignore("Not Implemented")
-    public void upstreamMustRejectMissingHostIdentifier() {
-        // 400 Bad Request
-    }
-
-    @Test
-    @Ignore("Not Implemented")
-    public void upstreamMustRejectInvalidHostIdentifier() {
-        // 400 Bad Request
-    }
-
-    @Test
-    @Ignore("Not Implemented")
-    public void upstreamMustRejectRequestWithUserInfoOnURI() {
-        // ex http://localhost:8000@username:password
-    }
-
-    @Test
-    @Ignore("Not Implemented")
-    public void upstreamShouldAllowPercentCharsInURI() {
-        // equivalent %chars to normal chars ?
-    }
-
-}
+package org.kaazing.specification.http.rfc7232;

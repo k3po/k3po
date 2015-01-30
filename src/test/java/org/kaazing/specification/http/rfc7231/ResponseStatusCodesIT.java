@@ -18,12 +18,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kaazing.specification.http;
+package org.kaazing.specification.http.rfc7231;
 
 /**
- * rfc7231#3.4,5.3
- *
+ * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7231#section-6">RFC 7231 section 6:
+ * Response Status Codes</a>.
  */
-public class ContentNegotiationIT {
-
+public class ResponseStatusCodesIT {
+    // TODO
 }
