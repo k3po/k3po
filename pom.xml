@@ -34,11 +34,6 @@
             <version>[1.99.99.99,2.1.0.0)</version>
         </dependency>
         <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.6</version>
-        </dependency>
-        <dependency>
             <groupId>org.kaazing</groupId>
             <artifactId>k3po.junit</artifactId>
             <version>2.0.0-alpha-3</version>
