@@ -19,6 +19,7 @@ package org.kaazing.specification.wse;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -27,9 +28,10 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
-public class DownstreamIT {
+public class BrowsersIT {
+
     private final K3poRule k3po = new K3poRule()
-            .setScriptRoot("org/kaazing/specification/wse/downstream");
+            .setScriptRoot("org/kaazing/specification/wse/browsers");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -38,37 +40,21 @@ public class DownstreamIT {
 
     @Test
     @Specification({
-        "response.header.content.type.not.application.octet.stream/downstream.request",
-        "response.header.content.type.not.application.octet.stream/downstream.response" })
-    public void shouldCloseConnectionWhenBinaryDownstreamResponseContentTypeIsNotApplicationOctetstream()
+        "client.reconnect.downstream/request",
+        "client.reconnect.downstream/response" })
+    public void serverShouldSendReconnectFrameAfterDetectingNewDownstreamRequestFromClient()
             throws Exception {
         k3po.join();
     }
 
+    @Ignore("https://github.com/k3po/k3po/issues/118")
     @Test
     @Specification({
-        "response.status.code.not.200/downstream.request",
-        "response.status.code.not.200/downstream.response" })
-    public void shouldCloseConnectionWhenDownstreamResponseStatusCodeNot200()
+        "client.send.kb.parameter.in.downstream.request/request",
+        "client.send.kb.parameter.in.downstream.request/response" })
+    public void serverShouldSendReconnectFrameAfterRequestedClientBufferSizeIsExceeded()
             throws Exception {
         k3po.join();
     }
 
-    @Test
-    @Specification({
-        "server.send.frame.after.reconnect/downstream.request",
-        "server.send.frame.after.reconnect/downstream.response" })
-    public void shouldCloseConnectionWhenDownstreamResponseContainsFrameAfterReconnectFrame()
-            throws Exception {
-        k3po.join();
-    }
-
-    @Test
-    @Specification({
-        "request.method.not.get/downstream.request",
-        "request.method.not.get/downstream.response" })
-    public void shouldRespondWithBadRequestWhenDownstreamRequestMethodNotGet()
-            throws Exception {
-        k3po.join();
-    }
 }

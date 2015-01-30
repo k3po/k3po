@@ -27,10 +27,10 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
-public class ProxyModeIT {
+public class ProxiesIT {
 
     private final K3poRule k3po = new K3poRule()
-            .setScriptRoot("org/kaazing/specification/wse/proxy.consideration");
+            .setScriptRoot("org/kaazing/specification/wse/proxies");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -39,8 +39,8 @@ public class ProxyModeIT {
 
     @Test
     @Specification({
-        "client.send.overlapping.longpolling.request/request",
-        "client.send.overlapping.longpolling.request/response" })
+        "client.send.overlapping.downstream.request/request",
+        "client.send.overlapping.downstream.request/response" })
     public void shouldFlushAndCloseDownstreamUponReceivingOverlappingLongpollingRequest()
             throws Exception {
         k3po.join();

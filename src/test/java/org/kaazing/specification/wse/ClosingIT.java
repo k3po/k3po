@@ -38,25 +38,33 @@ public class ClosingIT {
 
     @Test
     @Specification({
-        "client.send.close.frame/request",
-        "client.send.close.frame/response" })
+        "client.send.close/request",
+        "client.send.close/response" })
     public void shouldEchoClientCloseFrame() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "server.send.close.frame/request",
-        "server.send.close.frame/response" })
+        "server.send.close/request",
+        "server.send.close/response" })
     public void shouldEchoServerCloseFrame() throws Exception {
         k3po.join();
     }
 
     @Test
     @Specification({
-        "server.send.data.between.close.frame.and.reconnect.frame/request",
-        "server.send.data.between.close.frame.and.reconnect.frame/response" })
-    public void shouldIgnoreDataFromServerBetweenCloseAndReconnectFrame()
+        "server.send.data.after.close/request",
+        "server.send.data.after.close/response" })
+    public void shouldIgnoreDataFromServerAfterCloseFrame() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "server.send.data.after.reconnect/request",
+        "server.send.data.after.reconnect/response" })
+    public void shouldIgnoreDataFromServerAfterReconnectFrame()
             throws Exception {
         k3po.join();
     }
