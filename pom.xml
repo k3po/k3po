@@ -139,7 +139,7 @@
             <plugin>
                 <groupId>org.kaazing</groupId>
                 <artifactId>k3po-maven-plugin</artifactId>
-                <version>2.0.0-alpha-7</version>
+                <version>develop-SNAPSHOT</version>
                 <configuration>
                     <skipTests>${skipITs}</skipTests>
                 </configuration>
@@ -149,6 +149,44 @@
                             <goal>start</goal>
                             <goal>stop</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build-docker-kdc</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <properties>
+                                <workingdir>${basedir}/docker-kdc</workingdir>
+                            </properties>
+                            <source>${basedir}/src/main/resources/groovy/buildDockerKDC.groovy</source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>cleanup-docker-kdc</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <properties>
+                                <workingdir>${basedir}/docker-kdc</workingdir>
+                            </properties>
+                            <source>${basedir}/src/main/resources/groovy/cleanupDockerKDC.groovy</source>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
