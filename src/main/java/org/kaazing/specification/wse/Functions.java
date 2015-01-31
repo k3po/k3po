@@ -41,6 +41,22 @@ public final class Functions {
         return bytes;
     }
 
+    @Function
+    public static byte[] padding(int size) {
+        if ((size & 1) != 0) {
+            size += 1;
+        }
+        byte[] padding = new byte[size + 2];
+        padding[0] = 0x01;
+        for (int i = 1; i < padding.length - 2; i += 2) {
+            padding[i] = 0x30;
+            padding[i + 1] = 0x30;
+        }
+
+        padding[padding.length - 1] = (byte) 0xFF;
+        return padding;
+    }
+
     public static class Mapper extends FunctionMapperSpi.Reflective {
 
         public Mapper() {

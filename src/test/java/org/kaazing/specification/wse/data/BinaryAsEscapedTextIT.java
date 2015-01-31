@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kaazing.specification.wse;
+package org.kaazing.specification.wse.data;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
@@ -27,10 +27,8 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
-public class UpstreamIT {
-
-    private final K3poRule k3po = new K3poRule()
-            .setScriptRoot("org/kaazing/specification/wse/upstream");
+public class BinaryAsEscapedTextIT {
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/wse/data/binary.as.escaped.text");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -39,27 +37,10 @@ public class UpstreamIT {
 
     @Test
     @Specification({
-        "request.method.not.post/upstream.request",
-        "request.method.not.post/upstream.response" })
-    public void shouldCloseConnectionWhenUpstreamRequestMethodNotPost()
-            throws Exception {
+        "echo.payload.length.0/request",
+        "echo.payload.length.0/response" })
+    public void shouldEchoFrameWithPayloadLength0() throws Exception {
         k3po.join();
     }
 
-    @Test
-    @Specification({
-        "response.status.code.not.200/upstream.request",
-        "response.status.code.not.200/upstream.response" })
-    public void shouldCloseConnectionWhenUpstreamStatusCodeNot200()
-            throws Exception {
-        k3po.join();
-    }
-
-    @Test
-    @Specification({
-        "client.send.overlapping.request/upstream.request",
-        "client.send.overlapping.request/upstream.response" })
-    public void shouldRejectParallelUpstreamRequest() throws Exception {
-        k3po.join();
-    }
 }

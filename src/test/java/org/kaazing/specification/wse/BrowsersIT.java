@@ -19,7 +19,6 @@ package org.kaazing.specification.wse;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -47,7 +46,6 @@ public class BrowsersIT {
         k3po.join();
     }
 
-    @Ignore("https://github.com/k3po/k3po/issues/118")
     @Test
     @Specification({
         "client.send.kb.parameter.in.downstream.request/request",
@@ -57,4 +55,11 @@ public class BrowsersIT {
         k3po.join();
     }
 
+    @Test
+    @Specification({
+        "client.request.padded.response/request",
+        "client.request.padded.response/response" })
+    public void serverShouldSendPaddingInDownstream() throws Exception {
+        k3po.join();
+    }
 }
