@@ -1,0 +1,185 @@
+#!/bin/bash
+#
+# Docker Containerized Kerberos KDC.
+#
+# This should be a pretty good start for building your own docker container
+# of a KDC.
+# Due to the fact that OSX docker is running in a VM, things get a bit
+# complicated.
+#
+# Latest version is located at: https://github.com/tillt/docker-kdc
+#
+
+# Kerberos "principal password".
+# TODO(tillt): Find a way to support default array oarameters.
+#KDC_PRINCIPALS=("tillt matilda" "foo bar" "apache rulez")
+KDC_PRINCIPALS=("test1 test1" "test2 test2" "joe welcome")
+# KDC hostname.
+KDC_HOST_NAME=${KDC_HOST_NAME:-'kdc'}
+# External KDC IP.
+#KDC_NATHOST=${KDC_NATHOST:-'127.0.0.1'}
+KDC_NATHOST=${KDC_NATHOST:-'[::1]'}
+# External KDC port.
+KDC_PORT=${KDC_PORT:-'48088'}
+# Kerberos domain name.
+#KDC_DOMAIN_NAME=${KDC_DOMAIN_NAME:-'example.com'}
+KDC_DOMAIN_NAME=${KDC_DOMAIN_NAME:-'km.test'}
+# Kerberos realm name.
+#KDC_REALM_NAME=${KDC_REALM_NAME:-'EXAMPLE.COM'}
+KDC_REALM_NAME=${KDC_REALM_NAME:-'KM.TEST'}
+
+DOCKERIMAGE='tillt/docker-kdc:latest'
+CONTAINER='docker'
+CONTROL_VM='VBoxManage controlvm boot2docker-vm'
+GET_KDC_HOST="echo $KDC_NATHOST"
+
+
+# Adjust container in case of OSX.
+if [[ $OSTYPE =~ darwin.+ ]]; then
+	CONTAINER='boot2docker'
+	GET_KDC_HOST="boot2docker ip"
+fi
+
+
+# Start boot2docker if not running and create port forwarding rules for OSX.
+function prepareDocker {
+	if [[ $CONTAINER == "boot2docker" ]]; then
+		boot2docker status &> /dev/null || boot2docker init
+		if [[ `boot2docker status` == "poweroff" ]]; then
+			boot2docker up
+			setupPortForward
+		fi
+		`$(boot2docker shellinit)`
+	fi
+}
+
+
+# Port forwarding setup for OSX.
+function setupPortForward {
+	$CONTROL_VM natpf1 delete "$KDC_PORT/tcp" &> /dev/null
+	$CONTROL_VM natpf1 delete "$KDC_PORT/udp" &> /dev/null
+	$CONTROL_VM natpf1 "$KDC_PORT/tcp,tcp,$KDC_NATHOST,$KDC_PORT,,$KDC_PORT"
+	$CONTROL_VM natpf1 "$KDC_PORT/udp,udp,$KDC_NATHOST,$KDC_PORT,,$KDC_PORT"
+}
+
+
+# Port forwarding teardown for OSX.
+function deletePortForward {
+	$CONTROL_VM natpf1 delete "$KDC_PORT/tcp" &> /dev/null
+	$CONTROL_VM natpf1 delete "$KDC_PORT/udp" &> /dev/null
+}
+
+
+# Start docker container.
+# Also renders a temporary KDC configuration file and exports the keytab.
+function startDocker {
+	echo "Kerberos KDC container starting..."
+	docker run -d -h $KDC_HOST_NAME					\
+		-p $KDC_PORT:10088	 					\
+		-p $KDC_PORT:10088/udp 					\
+		--name=$KDC_HOST_NAME 					\
+		$DOCKERIMAGE
+
+	KDC_HOST=`$GET_KDC_HOST`
+	echo ""
+	echo "Kerberos KDC now reachable at '$KDC_HOST:$KDC_PORT'"
+	echo ""
+
+	sed -e "s/HOST_NAME/$KDC_HOST:$KDC_PORT/g"			\
+		-e "s/DOMAIN_NAME/$KDC_DOMAIN_NAME/g" 			\
+		-e "s/REALM_NAME/$KDC_REALM_NAME/g"			\
+		templates/krb5.conf > krb5.conf
+
+	docker cp $KDC_HOST_NAME:/etc/docker-kdc/krb5.keytab .
+
+	echo "For using the KDC, make sure you use the following environment:"
+	echo "    export KRB5_CONFIG=$(pwd)/krb5.conf"
+	echo "    export KRB5_KTNAME=$(pwd)/krb5.keytab"
+	echo ""
+}
+
+
+# Stop docker container and remove the temporary KDC configuration file.
+function stopDocker {
+	docker stop $KDC_HOST_NAME &> /dev/null
+	docker rm $KDC_HOST_NAME &> /dev/null
+	if [[ $CONTAINER == "boot2docker" ]]; then
+		deletePortForward
+		[[ `boot2docker status` == "running" ]] && boot2docker down
+	fi
+	rm -f krb5.conf
+	rm -f krb5.keytab
+	echo "Kerberos KDC stopped and removed"
+}
+
+
+# Render docker container image.
+function buildImage {
+	RENDER_PRINCIPAL="RUN /bin/echo -e '\n\n\n\n\n\nPASSWORD\nPASSWORD\n' | kadmin -l add PRINCIPAL/HOST_NAME.DOMAIN_NAME"
+	EXPORT_KEYTAB="RUN kadmin -l ext_keytab -k /etc/docker-kdc/krb5.keytab"
+
+	# Use a temporary file for the add principal directives.
+	# TODO(tillt): This seems unclean - find a better way.
+	TEMP_PRINCIPALS="_principals.txt"
+	for principal in "${KDC_PRINCIPALS[@]}"
+	do
+		IFS=' ' read -ra principal <<< "$principal"
+		IFS=''
+
+		echo $(echo $RENDER_PRINCIPAL |		 		\
+		sed -e "s/PRINCIPAL/${principal[0]}/g"			\
+			-e "s/PASSWORD/${principal[1]}/g"		\
+			-e "s/HOST_NAME/$KDC_HOST_NAME/g"		\
+			-e "s/DOMAIN_NAME/$KDC_DOMAIN_NAME/g" 		\
+			-e "s/REALM_NAME/$KDC_REALM_NAME/g")		\
+		>>$TEMP_PRINCIPALS
+		EXPORT_KEYTAB+=$(echo " ${principal[0]}/$KDC_HOST_NAME.$KDC_DOMAIN_NAME@$KDC_REALM_NAME")
+	done
+
+	DOCKER_FILE=$(<templates/Dockerfile)
+	ADD_PRINCIPALS=$(<$TEMP_PRINCIPALS)
+	DOCKER_FILE=$(echo "${DOCKER_FILE//PRINCIPALS/$ADD_PRINCIPALS}")
+	DOCKER_FILE=$(echo "${DOCKER_FILE//EXPORT_KEYTAB/$EXPORT_KEYTAB}")
+	echo $DOCKER_FILE > Dockerfile
+
+	rm -f $TEMP_PRINCIPALS
+
+	sed -e "s/HOST_NAME/$KDC_HOST_NAME/g" 				\
+		-e "s/DOMAIN_NAME/$KDC_DOMAIN_NAME/g" 			\
+		-e "s/REALM_NAME/$KDC_REALM_NAME/g"			\
+		templates/krb5.conf > krb5.conf
+
+	docker build -t $DOCKERIMAGE .
+	rm -f Dockerfile
+	rm -f krb5.conf
+}
+
+
+case "$1" in
+	start)
+		prepareDocker
+		startDocker
+		;;
+	stop)
+		prepareDocker
+		stopDocker
+		;;
+	clean)
+		prepareDocker
+		docker rmi -f $DOCKERIMAGE
+		;;
+	build)
+		prepareDocker
+		buildImage
+		;;
+	shellinit)
+		if [[ $CONTAINER == "boot2docker" ]]; then
+			boot2docker shellinit
+		fi
+		echo "    export KRB5_CONFIG=$(pwd)/krb5.conf"
+		echo "    export KRB5_KTNAME=$(pwd)/krb5.keytab"
+		;;
+	*)
+		echo "Usage: $0 start|stop|build|clean|shellinit"
+		;;
+esac
