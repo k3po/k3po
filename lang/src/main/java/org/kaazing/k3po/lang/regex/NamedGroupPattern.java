@@ -27,24 +27,27 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.kaazing.k3po.lang.regex.RegexParser.GroupNContext;
 import org.kaazing.k3po.lang.regex.RegexParser.LiteralContext;
 
 public class NamedGroupPattern {
 
-    public static NamedGroupPattern compile(String regexWithGroupNames) {
+    public static NamedGroupPattern compile(final String regexWithGroupNames) {
         try {
             ByteArrayInputStream input = new ByteArrayInputStream(regexWithGroupNames.getBytes(UTF_8));
             CharStream ais = new ANTLRInputStream(input);
             Lexer lexer = new RegexLexer(ais);
             TokenStream tokens = new CommonTokenStream(lexer);
             RegexParser parser = new RegexParser(tokens);
+            parser.setErrorHandler(new BailErrorStrategy());
             final List<String> groupNames = new ArrayList<String>();
             parser.addParseListener(new RegexBaseListener() {
                 @Override
@@ -62,15 +65,26 @@ public class NamedGroupPattern {
             String regex = literal.regex.getText();
             return new NamedGroupPattern(Pattern.compile(regex), groupNames);
         }
-        catch (IOException e) {
+        catch (IOException ioe) {
             PatternSyntaxException pse = new PatternSyntaxException("I/O exception", regexWithGroupNames, 0);
-            pse.initCause(e);
+            pse.initCause(ioe);
             throw pse;
         }
-        catch (RecognitionException e) {
+        catch (ParseCancellationException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RecognitionException) {
+                RecognitionException re = (RecognitionException) cause;
+                PatternSyntaxException pse =
+                    new PatternSyntaxException("Unexpected type", regexWithGroupNames, re.getInputStream().index());
+                pse.initCause(re);
+                throw pse;
+            }
+            throw e;
+        }
+        catch (RecognitionException re) {
             PatternSyntaxException pse =
-                new PatternSyntaxException("Unexpected type", regexWithGroupNames, e.getInputStream().index());
-            pse.initCause(e);
+                new PatternSyntaxException("Unexpected type", regexWithGroupNames, re.getInputStream().index());
+            pse.initCause(re);
             throw pse;
         }
     }

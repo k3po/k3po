@@ -280,8 +280,6 @@ public class NamedGroupPatternTest {
                 .done();
         // @formatter:on
 
-        System.out.println(expected);
-        System.out.println(actual);
         assertEquals(expected, actual);
     }
 

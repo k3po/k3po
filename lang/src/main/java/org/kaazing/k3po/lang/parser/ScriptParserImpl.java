@@ -16,6 +16,7 @@
 
 package org.kaazing.k3po.lang.parser;
 
+import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.kaazing.k3po.lang.RegionInfo.newParallel;
 import static org.kaazing.k3po.lang.RegionInfo.newSequential;
@@ -25,19 +26,17 @@ import static org.kaazing.k3po.lang.parser.ScriptParseStrategy.SCRIPT;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.el.ExpressionFactory;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.InputMismatchException;
 import org.antlr.v4.runtime.NoViableAltException;
 import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.kaazing.k3po.lang.RegionInfo;
 import org.kaazing.k3po.lang.ast.AstRegion;
 import org.kaazing.k3po.lang.ast.AstScriptNode;
@@ -83,16 +82,7 @@ public class ScriptParserImpl implements ScriptParser {
                 new ByteArrayInputStream(input.getBytes(UTF_8)), strategy);
     }
 
-    <T extends AstRegion> T parseWithStrategy(String input, ScriptParseStrategy<T> strategy,
-                            final List<ScriptParseException> parseErrors)
-            throws ScriptParseException {
-        return parseWithStrategy(
-                new ByteArrayInputStream(input.getBytes(UTF_8)), strategy);
-    }
-
-    <T extends AstRegion> T parseWithStrategy(InputStream input, ScriptParseStrategy<T> strategy)
-            throws ScriptParseException {
-        final List<ScriptParseException> parseErrors = new ArrayList<ScriptParseException>();
+    <T extends AstRegion> T parseWithStrategy(InputStream input, ScriptParseStrategy<T> strategy) throws ScriptParseException {
         T result = null;
         try {
             int newStart = 0;
@@ -101,19 +91,8 @@ public class ScriptParserImpl implements ScriptParser {
             ANTLRInputStream ais = new ANTLRInputStream(input);
             RobotLexer lexer = new RobotLexer(ais);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
-            RobotParser parser = new RobotParser(tokens);
-
-            parser.addErrorListener(new BaseErrorListener() {
-
-                @Override
-                public void syntaxError(Recognizer<?, ?> recognizer,
-                                        Object offendingSymbol, int line,
-                                        int charPositionInLine, String msg,
-                                        RecognitionException e) {
-                    parseErrors.add(new ScriptParseException(
-                            "Syntax error while parsing: ", e));
-                }
-            });
+            final RobotParser parser = new RobotParser(tokens);
+            parser.setErrorHandler(new BailErrorStrategy());
 
             try {
                 result = strategy.parse(parser, factory, context);
@@ -128,42 +107,37 @@ public class ScriptParserImpl implements ScriptParser {
                     break;
                 }
 
-            } catch (IllegalArgumentException iae) {
-                Throwable cause = iae.getCause();
-                if (cause != null && cause instanceof RecognitionException) {
-                    throw createScriptParseException(parser,
-                            (RecognitionException) cause);
-                } else {
-                    throw iae;
+            }
+            catch (ParseCancellationException pce) {
+                Throwable cause = pce.getCause();
+                if (cause instanceof RecognitionException) {
+                    RecognitionException re = (RecognitionException) cause;
+                    throw createScriptParseException(parser, re);
                 }
 
-            } catch (RecognitionException re) {
+                throw pce;
+            }
+            catch (RecognitionException re) {
                 throw createScriptParseException(parser, re);
             }
 
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new ScriptParseException(e);
         }
-        if (parseErrors.size() > 0) {
-            throw parseErrors.get(0);
-        }
+
         return result;
     }
 
     private ScriptParseException createScriptParseException(RobotParser parser,
                                                             RecognitionException re) {
 
-        if (re instanceof InputMismatchException) {
-            return createScriptParseException(parser,
-                    (InputMismatchException) re);
-
-        } else if (re instanceof NoViableAltException) {
+        if (re instanceof NoViableAltException) {
             return createScriptParseException(parser, (NoViableAltException) re);
-
-        } else {
+        }
+        else {
             Token token = re.getOffendingToken();
-            String desc = String.format("line %d:%d: ", token.getLine(),
-                    token.getCharPositionInLine());
+            String desc = format("line %d:%d: ", token.getLine(), token.getCharPositionInLine());
 
             String tokenText = token.getText();
             String msg = null;
@@ -172,15 +146,14 @@ public class ScriptParserImpl implements ScriptParser {
                 msg = "error: end of input";
 
             } else {
-                desc = String.format("%s'%s'", desc, tokenText);
+                desc = format("%s'%s'", desc, tokenText);
 
                 @SuppressWarnings("unused")
                 String unexpectedTokenName = token.getType() != -1 ? parser
                         .getTokenNames()[token.getType()] : parser
                         .getTokenNames()[0];
 
-                msg = String
-                        .format("error: unexpected keyword '%s'", tokenText);
+                msg = format("error: unexpected keyword '%s'", tokenText);
             }
 
             return new ScriptParseException(msg, re);

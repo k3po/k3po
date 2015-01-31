@@ -42,7 +42,6 @@ import static org.kaazing.k3po.lang.test.junit.Assert.assertEquals;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.el.ExpressionFactory;
@@ -290,7 +289,7 @@ public class ScriptParserImplTest {
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstFixedLengthBytesMatcher actual =
-                parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER, new ArrayList<ScriptParseException>());
+                parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER);
 
         AstFixedLengthBytesMatcher expected = new AstFixedLengthBytesMatcher(25);
         assertEquals(expected, actual);
@@ -1380,8 +1379,7 @@ public class ScriptParserImplTest {
         assertEquals(expected, actual);
     }
 
-    @Test(
-            expected = ScriptParseException.class)
+    @Test(expected = ScriptParseException.class)
     public void shouldNotParseScriptWithUnknownKeyword() throws Exception {
 
         String script = "written\n";
@@ -1390,8 +1388,7 @@ public class ScriptParserImplTest {
         parser.parseWithStrategy(script, SCRIPT);
     }
 
-    @Test(
-            expected = ScriptParseException.class)
+    @Test(expected = ScriptParseException.class)
     public void shouldNotParseScriptWithReadBeforeConnect() throws Exception {
 
         String script =
