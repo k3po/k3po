@@ -21,7 +21,8 @@ package org.kaazing.specification.wse;
  */
 final class Base64 {
 
-    private static final byte[] INDEXED = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".getBytes();
+    private static final byte[] INDEXED = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+            .getBytes();
     private static final byte PADDING_BYTE = (byte) '=';
 
     public static byte[] encode(byte[] decodedArray) {
@@ -35,7 +36,8 @@ final class Base64 {
 
         int decodedArrayOffset = 0;
         int decodedArrayPosition = decodedArrayOffset + 0;
-        int decodedArrayLimit = decodedArrayOffset + decodedArray.length - decodedFragmentSize;
+        int decodedArrayLimit = decodedArrayOffset + decodedArray.length
+                - decodedFragmentSize;
 
         while (decodedArrayPosition < decodedArrayLimit) {
             int byte0 = decodedArray[decodedArrayPosition++] & 0xff;
@@ -43,8 +45,10 @@ final class Base64 {
             int byte2 = decodedArray[decodedArrayPosition++] & 0xff;
 
             encodedArray[encodedArrayPosition++] = INDEXED[(byte0 >> 2) & 0x3f];
-            encodedArray[encodedArrayPosition++] = INDEXED[((byte0 << 4) & 0x30) | ((byte1 >> 4) & 0x0f)];
-            encodedArray[encodedArrayPosition++] = INDEXED[((byte1 << 2) & 0x3c) | ((byte2 >> 6) & 0x03)];
+            encodedArray[encodedArrayPosition++] = INDEXED[((byte0 << 4) & 0x30)
+                    | ((byte1 >> 4) & 0x0f)];
+            encodedArray[encodedArrayPosition++] = INDEXED[((byte1 << 2) & 0x3c)
+                    | ((byte2 >> 6) & 0x03)];
             encodedArray[encodedArrayPosition++] = INDEXED[byte2 & 0x3f];
         }
 
@@ -55,13 +59,13 @@ final class Base64 {
             encodedArray[encodedArrayPosition++] = INDEXED[(byte0 << 4) & 0x30];
             encodedArray[encodedArrayPosition++] = PADDING_BYTE;
             encodedArray[encodedArrayPosition++] = PADDING_BYTE;
-        }
-        else if (decodedFragmentSize == 2) {
+        } else if (decodedFragmentSize == 2) {
             int byte0 = decodedArray[decodedArrayPosition++] & 0xff;
             int byte1 = decodedArray[decodedArrayPosition++] & 0xff;
 
             encodedArray[encodedArrayPosition++] = INDEXED[(byte0 >> 2) & 0x3f];
-            encodedArray[encodedArrayPosition++] = INDEXED[((byte0 << 4) & 0x30) | ((byte1 >> 4) & 0x0f)];
+            encodedArray[encodedArrayPosition++] = INDEXED[((byte0 << 4) & 0x30)
+                    | ((byte1 >> 4) & 0x0f)];
             encodedArray[encodedArrayPosition++] = INDEXED[(byte1 << 2) & 0x3c];
             encodedArray[encodedArrayPosition++] = PADDING_BYTE;
         }
@@ -152,4 +156,3 @@ final class Base64 {
         // utility
     }
 }
-

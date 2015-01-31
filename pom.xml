@@ -1,7 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>org.kaazing</groupId>
+	
+	<parent>
+        <groupId>org.kaazing</groupId>
+        <artifactId>community</artifactId>
+        <version>2.4</version>
+    </parent>
+    
     <artifactId>specification.wse</artifactId>
     <name>WebSocket Emulation Protocol Specification</name>
     <description>Specification for WebSocket Emulation protocol</description>
@@ -112,7 +117,7 @@
             <plugin>
                 <groupId>org.kaazing</groupId>
                 <artifactId>k3po-maven-plugin</artifactId>
-                <version>2.0.0-alpha-7</version>
+                <version>2.0.0-alpha-8</version>
                 <configuration>
                     <skipTests>${skipITs}</skipTests>
                 </configuration>
@@ -140,7 +145,10 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>        
         </plugins>
     </build>
-
 </project>

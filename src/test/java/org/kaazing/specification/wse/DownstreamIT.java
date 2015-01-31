@@ -28,44 +28,74 @@ import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
 public class DownstreamIT {
-	private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/wse/downstream");
+    private final K3poRule k3po = new K3poRule()
+            .setScriptRoot("org/kaazing/specification/wse/downstream");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
-    @Rule 
+    @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
-    
+
     @Test
     @Specification({
-        "binary.downstream.response.content.type.not.application.octet.stream/downstream.request",
-        "binary.downstream.response.content.type.not.application.octet.stream/downstream.response" })
-    public void shouldCloseConnectionWhenBinaryDownstreamResponseContentTypeIsNotApplicationOctetstream() throws Exception {
-    	k3po.join();
+        "binary/response.header.content.type.has.unexpected.value/downstream.request",
+        "binary/response.header.content.type.has.unexpected.value/downstream.response" })
+    public void shouldCloseConnectionWhenBinaryDownstreamResponseContentTypeHasUnexpectedValue()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-        "response.status.code.not.200/downstream.request",
-        "response.status.code.not.200/downstream.response" })
-    public void shouldCloseConnectionWhenDownstreamResponseStatusCodeNot200() throws Exception {
-    	k3po.join();
+        "binary/response.status.code.not.200/downstream.request",
+        "binary/response.status.code.not.200/downstream.response" })
+    public void shouldCloseConnectionWhenBinaryDownstreamResponseStatusCodeNot200()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-        "response.containing.frame.after.reconnect.frame/downstream.request",
-        "response.containing.frame.after.reconnect.frame/downstream.response" })
-    public void shouldCloseConnectionWhenDownstreamResponseContainsFrameAfterReconnectFrame() throws Exception {
-    	k3po.join();
+        "binary/server.send.frame.after.reconnect/downstream.request",
+        "binary/server.send.frame.after.reconnect/downstream.response" })
+    public void shouldCloseConnectionWhenBinaryDownstreamResponseContainsFrameAfterReconnectFrame()
+            throws Exception {
+        k3po.join();
     }
-    
+
     @Test
     @Specification({
-        "request.method.not.get/downstream.request",
-        "request.method.not.get/downstream.response" })
-    public void shouldRespondWithBadRequestWhenDownstreamRequestMethodNotGet() throws Exception {
-    	k3po.join();
+        "binary/request.method.not.get/downstream.request",
+        "binary/request.method.not.get/downstream.response" })
+    public void shouldRespondWithBadRequestWhenBinaryDownstreamRequestMethodNotGet()
+            throws Exception {
+        k3po.join();
     }
-    
-    
+
+    @Test
+    @Specification({
+        "binary.as.escaped.text/response.header.content.type.has.unexpected.value/downstream.request",
+        "binary.as.escaped.text/response.header.content.type.has.unexpected.value/downstream.response" })
+    public void shouldCloseConnectionWhenEscapedTextDownstreamResponseContentTypeHasUnexpectedValue()
+            throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "binary.as.mixed.text/response.header.content.type.has.unexpected.value/downstream.request",
+        "binary.as.mixed.text/response.header.content.type.has.unexpected.value/downstream.response" })
+    public void shouldCloseConnectionWhenMixedTextDownstreamResponseContentTypeHasUnexpectedValue()
+            throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "binary.as.text/response.header.content.type.has.unexpected.value/downstream.request",
+        "binary.as.text/response.header.content.type.has.unexpected.value/downstream.response" })
+    public void shouldCloseConnectionWhenTextDownstreamResponseContentTypeHasUnexpectedValue()
+            throws Exception {
+        k3po.join();
+    }
 }
