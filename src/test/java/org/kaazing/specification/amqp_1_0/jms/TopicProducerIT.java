@@ -24,12 +24,12 @@ import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
-import org.kaazing.robot.junit.annotation.Robotic;
-import org.kaazing.robot.junit.rules.RobotRule;
+import org.kaazing.k3po.junit.annotation.Specification;
+import org.kaazing.k3po.junit.rules.K3poRule;
 
 public class TopicProducerIT {
 
-    private final RobotRule robot = new RobotRule();
+    private final K3poRule robot = new K3poRule();
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -37,8 +37,9 @@ public class TopicProducerIT {
     public final TestRule chain = outerRule(robot).around(timeout);
 
     @Test
-    @Robotic({ "client/topic/producer/create.then.close",
-               "server/topic/producer/create.then.close" })
+    @Specification({
+        "client/topic/producer/create.then.close",
+        "server/topic/producer/create.then.close" })
     public void shouldCreateThenClose() throws Exception {
         robot.join();
     }
