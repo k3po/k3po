@@ -32,7 +32,7 @@ import org.kaazing.k3po.junit.rules.K3poRule;
  */
 public class TcpIT {
 
-    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/tcp/rfc2581");
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/tcp/rfc793");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 

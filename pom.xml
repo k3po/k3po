@@ -8,13 +8,13 @@
         <version>2.10</version>
     </parent>
 
-    <artifactId>specification.http</artifactId>
+    <artifactId>specification.tcp</artifactId>
     <version>develop-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>HTTP Protocol Specification</name>
-    <url>https://github.com/k3po/specification.http</url>
-    <description>Specification for HTTP protocol</description>
+    <name>TCP Protocol Specification</name>
+    <url>https://github.com/k3po/specification.tcp</url>
+    <description>Specification for TCP protocol</description>
 
     <scm>
         <url>https://github.com/k3po/specification.tcp</url>
