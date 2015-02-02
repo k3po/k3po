@@ -18,7 +18,7 @@ read header "Upgrade" /(?i:websocket)/
 read header "Connection" /(?i:Upgrade)/
 read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
 
-read [0x88 0x02 0x03 0xe8]
+read [0x88 0x02 0x03 0xe9]
 
 write [0x88 0x82] ${writeMask}
 write option mask ${writeMask}
