@@ -24,30 +24,32 @@ import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
-import org.kaazing.robot.junit.annotation.Robotic;
-import org.kaazing.robot.junit.rules.RobotRule;
+import org.kaazing.k3po.junit.annotation.Specification;
+import org.kaazing.k3po.junit.rules.K3poRule;
 
 public class TopicConsumerIT {
 
-    private final RobotRule robot = new RobotRule();
+    private final K3poRule k3po = new K3poRule();
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
     @Rule
-    public final TestRule chain = outerRule(robot).around(timeout);
+    public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Robotic({ "client/topic/consumer/create.durable.then.close.and.unsubscribe",
-               "server/topic/consumer/create.durable.then.close.and.unsubscribe" })
+    @Specification({
+        "client/topic/consumer/create.durable.then.close.and.unsubscribe",
+        "server/topic/consumer/create.durable.then.close.and.unsubscribe" })
     public void shouldCreateDurableThenCloseAndUnsubscribe() throws Exception {
-        robot.join();
+        k3po.join();
     }
 
     @Test
-    @Robotic({ "client/topic/consumer/create.then.close",
-               "server/topic/consumer/create.then.close" })
+    @Specification({
+        "client/topic/consumer/create.then.close",
+        "server/topic/consumer/create.then.close" })
     public void shouldCreateThenClose() throws Exception {
-        robot.join();
+        k3po.join();
     }
 
 }
