@@ -1,0 +1,5 @@
+connect tcp://localhost:8080
+connected
+close
+closed
+
