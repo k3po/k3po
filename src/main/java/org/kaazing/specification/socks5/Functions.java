@@ -171,7 +171,7 @@ public final class Functions {
             }
             return true;
         } catch (GSSException ex) {
-            throw new RuntimeException("Exception getting client token", ex);
+            throw new RuntimeException("Exception accepting client token", ex);
         }
     }
 
