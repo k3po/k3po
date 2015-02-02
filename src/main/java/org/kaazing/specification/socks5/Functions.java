@@ -85,17 +85,7 @@ public final class Functions {
                 // token is ignored on the first call
                 initialToken = context.initSecContext(initialToken, 0, initialToken.length);
 
-                byte[] token = new byte[initialToken.length + 4];
-
-                token[0] = (byte) ((initialToken.length >>> 24) & 0XFF);
-                token[1] = (byte) ((initialToken.length >>> 16) & 0XFF);
-                token[2] = (byte) ((initialToken.length >>> 8) & 0XFF);
-                token[3] = (byte) ((initialToken.length >>> 0) & 0XFF);
-
-                System.arraycopy(initialToken, 0, token, 4, initialToken.length);
-                System.out.println("...done with client token");
-
-                return token;
+                return getTokenWithLengthPrefix(initialToken);
             } catch (GSSException ex) {
                 throw new RuntimeException("Exception getting client token", ex);
             }
