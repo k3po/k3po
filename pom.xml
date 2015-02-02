@@ -8,7 +8,7 @@
     </parent>
 
     <artifactId>specification.amqp_1_0.jms</artifactId>
-    <version>develop-SNAPSHOT</version>
+    <version>0.1</version>
     <packaging>jar</packaging>
 
     <name>AMQP 1.0 JMS Protocol Specification</name>
