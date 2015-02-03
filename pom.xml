@@ -26,7 +26,7 @@
     </parent>
 
     <artifactId>specification.ws</artifactId>
-    <version>develop-SNAPSHOT</version>
+    <version>0.2</version>
     <packaging>jar</packaging>
 
     <name>Websocket Protocol (RFC-6455) Specification</name>
