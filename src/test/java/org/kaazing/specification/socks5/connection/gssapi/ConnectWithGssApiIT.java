@@ -19,6 +19,7 @@ package org.kaazing.specification.socks5.connection.gssapi;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -39,7 +40,7 @@ public class ConnectWithGssApiIT {
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
 
-    @Test
+    @Test @Ignore
     @Specification({ "socks.handshake.with.gssapi.authentication.request",
         "socks.handshake.with.gssapi.authentication.response" })
     public void shouldSucceedSOCKSHandshakeWithGSSAPIAuthentication() throws Exception {
