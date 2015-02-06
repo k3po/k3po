@@ -1,0 +1,153 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.kaazing</groupId>
+        <artifactId>community</artifactId>
+        <version>2.10</version>
+    </parent>
+
+    <artifactId>specification.sock5</artifactId>
+    <version>1.0.0-alpha-1-SNAPSHOT</version>
+
+    <name>SOCKS5 Protocol Specification</name>
+    <url>https://github.com/k3po/specification.socks5</url>
+    <description>SOCKS5 Protocol specification</description>
+    <packaging>jar</packaging>
+
+    <scm>
+        <url>https://github.com/k3po/specification.socks5.git</url>
+        <connection>scm:git:https://github.com/k3po/specification.socks5.git</connection>
+    </scm>
+
+    <properties>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <!-- Needed for EL only, not AST -->
+            <groupId>org.kaazing</groupId>
+            <artifactId>k3po.lang</artifactId>
+            <version>[1.99.99.99,2.1.0.0)</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kaazing</groupId>
+            <artifactId>k3po.junit</artifactId>
+            <version>2.0.0-alpha-3</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.kaazing</groupId>
+                <artifactId>k3po-maven-plugin</artifactId>
+                <version>2.0.0-alpha-8</version>
+                <configuration>
+                    <skipTests>${skipITs}</skipTests>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>start</goal>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+<!--
+     TODO: Travis does not allow the docker container to be launched.
+           The test(s) that use the KDC have been @Ignored for now
+           and figuring out a better strategy for an automated KDC
+           will be filed as a future task.  In the mean time, leaving
+           this in place as a starting point for the future work.
+ 
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build-docker-kdc</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <properties>
+                                <workingdir>${basedir}/docker-kdc</workingdir>
+                            </properties>
+                            <source>${basedir}/src/main/resources/groovy/buildDockerKDC.groovy</source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>cleanup-docker-kdc</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <properties>
+                                <workingdir>${basedir}/docker-kdc</workingdir>
+                            </properties>
+                            <source>${basedir}/src/main/resources/groovy/cleanupDockerKDC.groovy</source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+-->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.4.0</version>
+                <configuration>
+                    <effort>Default</effort>
+                    <threshold>Normal</threshold>
+                    <debug>true</debug>
+                    <xmlOutput>false</xmlOutput>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+</project>
