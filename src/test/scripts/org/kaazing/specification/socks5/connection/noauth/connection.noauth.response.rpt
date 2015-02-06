@@ -6,11 +6,11 @@ connected
 # version: SOCKS v5
 read [0x05]
 
-# number of method: 3
+# number of method: 1
 read [0x01]
 
-# methods: no authentication required, GSSAPI, username/password
-read [0x00 0x01 0x02]
+# method: no authentication required
+read [0x00]
 
 
 ## Write a success response

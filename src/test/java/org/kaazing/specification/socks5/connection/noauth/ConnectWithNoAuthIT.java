@@ -39,21 +39,28 @@ public class ConnectWithNoAuthIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({ "noauth/connection.noauth.request", "noauth/connection.noauth.response" })
+    @Specification({
+        "noauth/connection.noauth.request",
+        "noauth/connection.noauth.response"
+        })
     public void shouldConnectWithNoAuthRequired() throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "noauth/connection.noauth.with.multiple.methods.request",
-                     "noauth/connection.noauth.with.multiple.methods.response" })
+    @Specification({
+        "noauth/connection.noauth.with.multiple.methods.request",
+        "noauth/connection.noauth.with.multiple.methods.response"
+        })
     public void shouldConnectWithNoAuthRequiredAndMultipleMethods() throws Exception {
         k3po.join();
     }
 
     @Test
-    @Specification({ "noauth/connection.noauth.with.no.acceptable.methods.request",
-                     "noauth/connection.noauth.with.no.acceptable.methods.response" })
+    @Specification({
+        "noauth/connection.noauth.with.no.acceptable.methods.request",
+        "noauth/connection.noauth.with.no.acceptable.methods.response"
+        })
     public void shouldNotConnectWithNoAuthRequired() throws Exception {
         k3po.join();
     }

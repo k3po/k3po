@@ -30,6 +30,10 @@ import org.ietf.jgss.Oid;
 import org.kaazing.k3po.lang.el.Function;
 import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
 
+/**
+ * Functions that represent calls to the GSS-API authentication scheme such
+ * that robot scripts in this project can perform GSS-API authentication.
+ */
 public final class Functions {
     //
     // The OID of the Kerberos version 5 GSS-API mechanism as defined
@@ -54,6 +58,12 @@ public final class Functions {
         }
     }
 
+    /**
+     * Create a GSS Context from a clients point of view.
+     * @param server the name of the host for which the GSS Context is being created
+     * @return the GSS Context that a client can use to exchange security tokens for
+     *         a secure channel, then wrap()/unpack() messages.
+     */
     @Function
     public static GSSContext createClientGSSContext(String server) {
         try {
@@ -75,6 +85,14 @@ public final class Functions {
         }
     }
 
+    /**
+     * Create a token, from a clients point of view, for establishing a secure
+     * communication channel.  This is a client side token so it needs to bootstrap
+     * the token creation.
+     * @param context GSSContext for which a connection has been established to the remote peer
+     * @return a byte[] that represents the token a client can send to a server for
+     *         establishing a secure communication channel.
+     */
     @Function
     public static byte[] getClientToken(GSSContext context) {
         byte[] initialToken = new byte[0];
@@ -94,12 +112,27 @@ public final class Functions {
         return null;
     }
 
+    /**
+     * Utility method for creating a MessageProp object using the default
+     * Quality of Protection (0) and the given privacy setting.
+     * @param usePrivacy whether or not the messages being sent using this MessageProp
+     *        require privacy
+     * @return the newly created MessageProp object with default QoP
+     */
     @Function
     public static MessageProp createMessageProp(boolean usePrivacy) {
         // default Quality of Protection (0), use privacy (passed int)
         return new MessageProp(0, usePrivacy);
     }
 
+    /**
+     * Utility method to call GSSContext.wrap() on a message which will create a byte[]
+     * that can be sent to a remote peer.
+     * @param context GSSContext for which a connection has been established to the remote peer
+     * @param prop the MessageProp object that is used to provide Quality of Protection of the message
+     * @param message the bytes of the message to be sent to the remote peer
+     * @return the protected bytes of the message that can be sent to and unpacked by the remote peer
+     */
     @Function
     public static byte[] wrapMessage(GSSContext context, MessageProp prop, byte[] message) {
         try {
@@ -112,6 +145,15 @@ public final class Functions {
         }
     }
 
+    /**
+     * Verify a message integrity check sent by a peer.  If the MIC correctly identifies the
+     * message then the peer knows that the remote peer correctly received the message.
+     * @param context GSSContext for which a connection has been established to the remote peer
+     * @param prop the MessageProp that was used to wrap the original message
+     * @param message the bytes of the original message
+     * @param mic the bytes received from the remote peer that represent the MIC (like a checksum)
+     * @return a boolean whether or not the MIC was correctly verified
+     */
     @Function
     public static boolean verifyMIC(GSSContext context, MessageProp prop, byte[] message, byte[] mic) {
         try {
@@ -125,6 +167,11 @@ public final class Functions {
         }
     }
 
+    /**
+     * Create a GSS Context not tied to any server name.  Peers acting as a server
+     * create their context this way.
+     * @return the newly created GSS Context
+     */
     @Function
     public static GSSContext createServerGSSContext() {
         System.out.println("createServerGSSContext()...");
@@ -162,6 +209,15 @@ public final class Functions {
         }
     }
 
+    /**
+     * Accept a client token to establish a secure communication channel.
+     * @param context GSSContext for which a connection has been established to the remote peer
+     * @param token the client side token (client side, as in the token had
+     *        to be bootstrapped by the client and this peer uses that token
+     *        to update the GSSContext)
+     * @return a boolean to indicate whether the token was used to successfully
+     *         establish a communication channel
+     */
     @Function
     public static boolean acceptClientToken(GSSContext context, byte[] token) {
         try {
@@ -175,6 +231,14 @@ public final class Functions {
         }
     }
 
+    /**
+     * Generate a message integrity check for a given received message.
+     * @param context GSSContext for which a connection has been established to the remote peer
+     * @param prop the MessageProp used for exchanging messages
+     * @param message the bytes of the received message
+     * @return the bytes of the message integrity check (like a checksum) that is
+     *         sent to a peer for verifying that the message was received correctly
+     */
     @Function
     public static byte[] generateMIC(GSSContext context, MessageProp prop, byte[] message) {
         try {
@@ -187,20 +251,6 @@ public final class Functions {
         } catch (GSSException ex) {
             throw new RuntimeException("Exception generating MIC for message", ex);
         }
-    }
-
-    @Function
-    public static int decodeLength(byte[] encodedLength) {
-        if ((encodedLength == null) || (encodedLength.length != 4)) {
-            return 0;
-        }
-
-        int decodedLength = encodedLength[0] << 24;
-        decodedLength += encodedLength[1] << 16;
-        decodedLength += encodedLength[2] << 8;
-        decodedLength += encodedLength[3] << 0;
-
-        return decodedLength;
     }
 
     private static byte[] getTokenWithLengthPrefix(byte[] initialToken) {
@@ -216,8 +266,14 @@ public final class Functions {
         return token;
     }
 
+    /**
+     * Internal class that maps the functions to the socks5 namespace.
+     */
     public static class Mapper extends FunctionMapperSpi.Reflective {
 
+        /**
+         * Default constructor.
+         */
         public Mapper() {
             super(Functions.class);
         }
