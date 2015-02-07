@@ -23,6 +23,7 @@ import static java.nio.file.FileSystems.newFileSystem;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
@@ -112,51 +113,13 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             logger.debug("preparing script(s) " + scriptNames);
         }
 
-        List<String> scriptNamesWithExtension = new LinkedList<>();
-        for (String scriptName : scriptNames) {
-            String scriptNameWithExtension = format("%s.rpt", scriptName);
-            scriptNamesWithExtension.add(scriptNameWithExtension);
-        }
-
         robot = new Robot(addressFactory, bootstrapFactory);
         whenAbortedOrFinished = whenAbortedOrFinished(ctx);
 
         ChannelFuture prepareFuture;
         try {
-            final StringBuilder aggregatedScript = new StringBuilder();
 
-            for (String scriptNameWithExtension : scriptNamesWithExtension) {
-                Path scriptPath = Paths.get(scriptNameWithExtension);
-                String script = null;
-
-                assert !scriptPath.isAbsolute();
-
-                // resolve relative scripts in local file system
-                if (scriptLoader != null) {
-                    // resolve relative scripts from class loader to support
-                    // separated specification projects that include Robot scripts only
-                    URL resource = scriptLoader.getResource(scriptNameWithExtension);
-                    if (resource != null) {
-                        URI resourceURI = resource.toURI();
-                        if ("file".equals(resourceURI.getScheme())) {
-                            Path resourcePath = Paths.get(resourceURI);
-                            script = readScript(resourcePath);
-                        }
-                        else {
-                            try (FileSystem fileSystem = newFileSystem(resourceURI, EMPTY_ENVIRONMENT)) {
-                                Path resourcePath = Paths.get(resourceURI);
-                                script = readScript(resourcePath);
-                            }
-                        }
-                    }
-                }
-
-                if (script == null) {
-                    throw new RuntimeException("Script not found: " + scriptPath);
-                }
-
-                aggregatedScript.append(script);
-            }
+            final String aggregatedScript = aggregateScript(scriptNames, scriptLoader);
 
             if (scriptLoader != null) {
                 Thread currentThread = currentThread();
@@ -177,7 +140,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 @Override
                 public void operationComplete(final ChannelFuture f) {
                     PreparedMessage prepared = new PreparedMessage();
-                    prepared.setScript(aggregatedScript.toString());
+                    prepared.setScript(aggregatedScript);
                     Channels.write(ctx, Channels.future(null), prepared);
                 }
             });
@@ -187,7 +150,52 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         }
     }
 
-    private String readScript(Path scriptPath) throws IOException {
+    /*
+     * Public static because it is used in test utils
+     */
+    public static String aggregateScript(List<String> scriptNames, ClassLoader scriptLoader) throws URISyntaxException,
+            IOException {
+        List<String> scriptNamesWithExtension = new LinkedList<>();
+        final StringBuilder aggregatedScript = new StringBuilder();
+        for (String scriptName : scriptNames) {
+            String scriptNameWithExtension = format("%s.rpt", scriptName);
+            scriptNamesWithExtension.add(scriptNameWithExtension);
+        }
+        for (String scriptNameWithExtension : scriptNamesWithExtension) {
+            Path scriptPath = Paths.get(scriptNameWithExtension);
+            String script = null;
+
+            assert !scriptPath.isAbsolute();
+
+            // resolve relative scripts in local file system
+            if (scriptLoader != null) {
+                // resolve relative scripts from class loader to support
+                // separated specification projects that include Robot scripts only
+                URL resource = scriptLoader.getResource(scriptNameWithExtension);
+                if (resource != null) {
+                    URI resourceURI = resource.toURI();
+                    if ("file".equals(resourceURI.getScheme())) {
+                        Path resourcePath = Paths.get(resourceURI);
+                        script = readScript(resourcePath);
+                    } else {
+                        try (FileSystem fileSystem = newFileSystem(resourceURI, EMPTY_ENVIRONMENT)) {
+                            Path resourcePath = Paths.get(resourceURI);
+                            script = readScript(resourcePath);
+                        }
+                    }
+                }
+            }
+
+            if (script == null) {
+                throw new RuntimeException("Script not found: " + scriptPath);
+            }
+
+            aggregatedScript.append(script);
+        }
+        return aggregatedScript.toString();
+    }
+
+    private static String readScript(Path scriptPath) throws IOException {
         List<String> lines = Files.readAllLines(scriptPath, UTF_8);
         StringBuilder sb = new StringBuilder();
         for (String line: lines) {

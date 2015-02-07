@@ -6,7 +6,7 @@ accept http://localhost:8000/
 accepted
 connected
 read method "GET"
-read header "unexpected" missing
+read header "unexpected" "missing"
 read closed
 
 write close

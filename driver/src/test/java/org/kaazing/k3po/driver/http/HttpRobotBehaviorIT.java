@@ -81,6 +81,8 @@ public class HttpRobotBehaviorIT {
         robot.finish().await();
 
         assertNotEquals(expected, robot.getObservedScript());
+        System.out.println(expected);
+        System.out.println(robot.getObservedScript());
     }
 
     @Test

@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
+#
+
+accept http://localhost:8000/
+accepted
+connected
+
+read method "POST"
+read header "Date" "Fri, 31 Dec 1999 23:59:59 GMT"
+read header "Content-Type" "text/plain"
+read header "Transfer-Encoding" "chunked"
+read "Chunk A"
+read "Chunk B"
+read "Chunk C"
+read closed
+
+write status "200" "OK"
+write header content-length
+write "content"
+write close
