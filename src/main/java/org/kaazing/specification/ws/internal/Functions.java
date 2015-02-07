@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kaazing.specification.ws;
+package org.kaazing.specification.ws.internal;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
