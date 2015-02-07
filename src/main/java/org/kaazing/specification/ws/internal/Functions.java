@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kaazing.specification.ws;
+package org.kaazing.specification.ws.internal;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -141,7 +141,7 @@ public final class Functions {
     private static void randomBytesUTF8(byte[] bytes, int start, int end) {
         for (int offset = start; offset < end;) {
             int remaining = end - offset;
-            int width = Math.min(RANDOM.nextInt(5) + 1, remaining);
+            int width = Math.min(RANDOM.nextInt(4) + 1, remaining);
 
             offset = randomCharBytesUTF8(bytes, offset, width);
         }
@@ -153,16 +153,16 @@ public final class Functions {
             bytes[offset++] = (byte) RANDOM.nextInt(0x80);
             break;
         case 2:
-            bytes[offset++] = (byte) (0xc0 | RANDOM.nextInt(0x20));
+            bytes[offset++] = (byte) (0xc0 | RANDOM.nextInt(0x20) | 1 << RANDOM.nextInt(5));
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             break;
         case 3:
-            bytes[offset++] = (byte) (0xe0 | RANDOM.nextInt(0x10));
+            bytes[offset++] = (byte) (0xe0 | RANDOM.nextInt(0x10) | 1 << RANDOM.nextInt(4));
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             break;
         case 4:
-            bytes[offset++] = (byte) (0xf0 | RANDOM.nextInt(0x08));
+            bytes[offset++] = (byte) (0xf0 | RANDOM.nextInt(0x08) | 1 << RANDOM.nextInt(3));
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kaazing.specification.ws;
+package org.kaazing.specification.ws.internal;
 
 /**
  * Internal class. This class manages the Base64 encoding and decoding

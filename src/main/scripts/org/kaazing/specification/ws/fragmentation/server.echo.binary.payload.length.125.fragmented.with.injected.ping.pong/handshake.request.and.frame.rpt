@@ -1,4 +1,6 @@
 property key ${ws:handshakeKey()}
+property writeMaskA ${ws:randomBytes(4)}
+property writeMaskB ${ws:randomBytes(4)}
 
 connect http://localhost:8080/echo
 connected
@@ -27,7 +29,7 @@ read [0x00 0x19]
 read ([0..25] :client25c)
 
 read [0x89 0x00]
-write [0x8a 0x00]
+write [0x8a 0x80] ${writeMaskA}
 
 read [0x00 0x19]
 read ([0..25] :client25d)
@@ -35,5 +37,6 @@ read ([0..25] :client25d)
 read [0x80 0x19]
 read ([0..25] :client25e)
 
-write [0x82 0x7d] ${client25a} ${client25b} ${client25c} ${client25d} ${client25e}
-read [0x82 0x7d] ${client25a} ${client25b} ${client25c} ${client25d} ${client25e}
+write [0x82 0xfd] ${writeMaskB} ${client25a} ${client25b} ${client25c} ${client25d} ${client25e}
+read [0x82 0x7d]
+read ([0..125] :client125)
