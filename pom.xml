@@ -41,6 +41,8 @@
     <properties>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
+        <require.java.version>1.7+</require.java.version>
+        <animal.sniffer.signature.artifactId>java17</animal.sniffer.signature.artifactId>
     </properties>
 
     <dependencies>
