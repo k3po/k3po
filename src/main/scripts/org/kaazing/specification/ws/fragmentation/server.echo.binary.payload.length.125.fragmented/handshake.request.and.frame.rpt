@@ -1,4 +1,5 @@
 property key ${ws:handshakeKey()}
+property writeMask ${ws:randomBytes(4)}
 
 connect http://localhost:8080/echo
 connected
@@ -18,20 +19,23 @@ read header "Connection" /(?i:Upgrade)/
 read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
 
 
-read [0x02 0x99]
+read [0x02 0x19]
 read ([0..25] :client25a)
 
-read [0x00 0x99]
+read [0x00 0x19]
 read ([0..25] :client25b)
 
-read [0x00 0x99]
+read [0x00 0x19]
 read ([0..25] :client25c)
 
-read [0x00 0x99]
+read [0x00 0x19]
 read ([0..25] :client25d)
 
-read [0x80 0x99]
+read [0x80 0x19]
 read ([0..25] :client25e)
 
-write [0x82 0x7d] ${client25a} ${client25b} ${client25c} ${client25d} ${client25e}
-read [0x82 0x7d] ${client25a} ${client25b} ${client25c} ${client25d} ${client25e}
+write [0x82 0xfd] ${writeMask} ${client25a} ${client25b} ${client25c} ${client25d} ${client25e}
+
+read [0x82 0x7d]
+read ([0..125] :client125)
+
