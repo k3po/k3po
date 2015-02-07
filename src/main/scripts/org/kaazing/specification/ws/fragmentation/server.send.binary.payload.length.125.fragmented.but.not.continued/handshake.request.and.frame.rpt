@@ -1,5 +1,5 @@
 property key ${ws:handshakeKey()}
-property writeMaskA ${ws:randomBytes(4)}
+property writeMask ${ws:randomBytes(4)}
 
 connect http://localhost:8080/echo
 connected
@@ -24,8 +24,8 @@ read ([0..25] :client25a)
 read [0x02 0x19]
 read ([0..25] :client25b)
 
-write [0x88 0x82] ${writeMaskA}
-write option mask ${writeMaskA}
+write [0x88 0x82] ${writeMask}
+write option mask ${writeMask}
 write [0x03 0xea]
 write option mask [0x00 0x00 0x00 0x00]
 
