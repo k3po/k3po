@@ -17,12 +17,12 @@
 package org.kaazing.k3po.driver.http;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.rules.RuleChain.outerRule;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
 import org.kaazing.k3po.driver.test.utils.K3poTestRule;
@@ -35,7 +35,20 @@ public class HttpIT {
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
     @Rule
+    final public ExpectedException expectedExceptions = ExpectedException.none();
+
+    @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
+
+    @Test
+    @TestSpecification({
+        "http.accept.header.missing",
+        "http.connect.header.missing"
+    })
+    public void shouldNotAcceptHeaderWhenExpectedMissing() throws Exception {
+        k3po.join();
+        expectedExceptions.expect(AssertionError.class);
+    }
 
     @Test
     @TestSpecification({
@@ -48,10 +61,152 @@ public class HttpIT {
 
     @Test
     @TestSpecification({
-        "http.accept.header.missing",
-        "http.connect.header.missing"
-    })
-    public void shouldNotAcceptHeaderWhenExpectedMissing() throws Exception {
+        "http.accept.header.with.multiple.tokens", 
+        "tcp.connect.header.with.multiple.tokens" })
+    public void shouldAcceptHeaderWithMultipleTokens() throws Exception {
+
+        k3po.join();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.accept.read.parameter.with.multiple.tokens",
+        "tcp.connect.write.parameter.with.multiple.tokens" })
+    public void shouldAcceptReadParameterWithMultipleTokens() throws Exception {
+
+        k3po.join();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.connect.write.parameter.with.multiple.tokens",
+        "tcp.accept.read.parameter.with.multiple.tokens" })
+    public void shouldAcceptWriteParameterWithMultipleTokens() throws Exception {
+
+        k3po.join();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.accept.get.request.with.no.content.on.response",
+        "tcp.connect.get.request.with.no.content.on.response" })
+    public void shouldReceiveGetRequestAndProvideResponse() throws Exception {
+
+        k3po.join();
+
+    }
+
+    @Test
+    @TestSpecification({
+        "http.accept.get.request.with.content.on.response",
+        "tcp.connect.get.request.with.content.on.response" })
+    public void shouldReceiveGetRequestAndProvideResponseWithContent() throws Exception {
+
+        k3po.join();
+
+    }
+
+    @Test
+    @TestSpecification({
+        "http.connect.get.request.with.no.content.on.response",
+        "tcp.accept.get.request.with.no.content.on.response" })
+    public void shouldSendGetRequestAndReceiveResponseWithNoContent() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.connect.get.request.with.content.on.response",
+        "tcp.accept.get.request.with.content.on.response" })
+    public void shouldSendGetRequestAndReceiveResponseWithContent() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.accept.websocket.handshake",
+        "tcp.connect.websocket.handshake" })
+    public void shouldAcceptWebsocketHandshake() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.accept.websocket.handshake.then.server.close",
+        "http.connect.websocket.handshake.then.server.close" })
+    public void shouldAcceptWebsocketHandshakeThenServerClose() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.connect.websocket.handshake",
+        "tcp.accept.websocket.handshake" })
+    public void shouldConnectWebsocketHandshake() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.accept.post.with.chunking",
+        "tcp.connect.post.with.chunking" })
+    public void shouldAcceptPostMessageWithChunking() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.connect.post.with.chunking",
+        "tcp.accept.post.with.chunking" })
+    public void shouldConnectPostMessageWithChunking() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.accept.response.with.chunking",
+        "tcp.connect.response.with.chunking" })
+    public void shouldAcceptResponseWithChunking() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.connect.response.with.chunking",
+        "tcp.accept.response.with.chunking" })
+    public void shouldConnectResponseWithChunking() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.connect.connection.close.response",
+        "tcp.accept.connection.close.response" })
+    public void shouldConnectConnectionCloseResponse() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.accept.connection.close.response",
+        "tcp.connect.connection.close.response" })
+    public void shouldAcceptConnectionCloseResponse() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.accept.two.http.200",
+        "tcp.connect.two.http.200.on.different.streams" })
+    public void shouldAcceptMultipleHttpOnDifferentTcp() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.accept.two.http.200",
+        "tcp.connect.two.http.200.on.same.streams" })
+    public void shouldAcceptMultipleHttpOnSameTcp() throws Exception {
         k3po.join();
     }
 

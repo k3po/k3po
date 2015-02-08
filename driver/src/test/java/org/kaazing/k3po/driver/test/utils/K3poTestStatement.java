@@ -118,9 +118,6 @@ public class K3poTestStatement extends Statement {
             String expectedScript = scripts.getExpectedScript();
             String observedScript = scripts.getObservedScript();
             assertEquals("Specified behavior did not match", expectedScript, observedScript);
-            System.out.println("DPW - REMOVE ME" + expectedScript.equals(observedScript));
-            System.out.println("DPW - REMOVE ME ex:" + expectedScript);
-            System.out.println("DPW - REMOVE ME ob:" + observedScript);
         } finally {
             // clean up the task if it is still running
             scriptFuture.cancel(true);
