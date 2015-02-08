@@ -157,7 +157,8 @@ public final class Functions {
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             break;
         case 3:
-            bytes[offset++] = (byte) (0xe0 | RANDOM.nextInt(0x10) | 1 << RANDOM.nextInt(4));
+            // UTF-8 not legal for 0xD800 through 0xDFFF (see RFC 3269)
+            bytes[offset++] = (byte) (0xe0 | RANDOM.nextInt(0x08) | 1 << RANDOM.nextInt(4));
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             break;
