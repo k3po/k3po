@@ -1,4 +1,4 @@
-property server125A ${ws:randomBytes(125)}
+property server125 ${ws:randomBytes(125)}
 
 accept http://localhost:8080/echo
 accepted
@@ -19,11 +19,9 @@ write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
 
 write [0x82 0x7d]
-write ${server125A}
+write ${server125}
 
 read [0x82 0xfd] ([0..4] :readMask)
 read option mask ${readMask}
-read ([0..125] :server125B)
+read ${server125}
 read option mask [0x00 0x00 0x00 0x00]
-
-write [0x82 0x7d] ${server125B}
