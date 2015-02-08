@@ -1,0 +1,26 @@
+#
+# Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
+#
+
+connect tcp://localhost:8000
+connected
+
+write "POST / HTTP/1.1\r\n"
+write "Host: localhost:8000\r\n"
+write "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n"
+write "Content-Type: text/plain\r\n"
+write "Content-Length: 11\r\n"
+write "\r\n"
+write "Hello World"
+
+read "HTTP/1.1 200 OK\r\n"
+read "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n"
+read "Content-Type: text/plain\r\n"
+read "Connection: close\r\n"
+read "\r\n"
+read "Content A"
+read "Content B"
+read "Content C"
+
+close
+closed

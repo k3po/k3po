@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.kaazing</groupId>
         <artifactId>community</artifactId>
-        <version>2.1</version>
+        <version>2.3</version>
     </parent>
 
     <artifactId>k3po.parent</artifactId>
@@ -19,7 +19,7 @@
 
     <scm>
         <url>https://github.com/k3po/k3po</url>
-        <connection>scm:git:https://github.com/k3po/k3po</connection>
+        <connection>scm:git:https://github.com/k3po/k3po.git</connection>
         <developerConnection>${project.scm.connection}</developerConnection>
     </scm>
 
@@ -27,8 +27,6 @@
         <module>lang</module>
         <module>driver</module>
         <module>k3po-maven-plugin</module>
-        <module>itest</module>
-        <!-- <module>all</module> -->
     </modules>
 
     <properties>

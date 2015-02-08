@@ -1,0 +1,9 @@
+#
+# Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
+#
+
+connect http://localhost:8000/
+connected
+write method "GET"
+write header "unexpected" "not missing"
+write close

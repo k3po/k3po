@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kaazing.k3po.itest;
+package org.kaazing.k3po.driver.http;
 
 import java.util.Random;
 

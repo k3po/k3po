@@ -1,0 +1,35 @@
+#
+# Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
+#
+
+connect tcp://127.0.0.1:8001
+connected
+
+#Connection request
+write "GET /echo HTTP/1.1\r\n"
+write "Upgrade: websocket\r\n"
+write "Connection: Upgrade\r\n"
+write "Host: localhost:8001\r\n"
+write "Origin: http://localhost:8001\r\n"
+write "Sec-WebSocket-Key: uoH83mU2xzVTb+Gw6YWVJg==\r\n"
+write "Sec-WebSocket-Version: 13\r\n"
+write "\r\n"
+
+# 101 Upgrade Response
+read "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
+read "Connection: Upgrade\r\n"
+read "Date: Tue, 15 Apr 2014 01:13:18 GMT\r\n"
+read "Sec-WebSocket-Accept: TXCKJSpylVJ7v9ZGLGbt58vypzE=\r\n"
+read "Server: Kaazing Gateway\r\n"
+read "Upgrade: websocket\r\n"
+read "\r\n"
+
+# Request WS Connection Close
+write [0x88 0x02 0x03 0xE8] 
+
+# Response WS Connection Close
+read  [0x88 0x02 0x03 0xE8]
+
+close
+closed
+

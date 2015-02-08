@@ -30,4 +30,4 @@
 # limitations under the License.
 #
 
-org.kaazing.k3po.itest.Functions$Mapper
+org.kaazing.k3po.driver.http.Functions$Mapper
