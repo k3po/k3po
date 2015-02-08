@@ -39,7 +39,5 @@ write ${server25e}
 
 read [0x82 0xfd] ([0..4] :readMask)
 read option mask ${readMask}
-read ([0..125] :server125)
+read ${server25a} ${server25b} ${server25c} ${server25d} ${server25e}
 read option mask [0x00 0x00 0x00 0x00]
-
-write [0x82 0x7d] ${server125}

@@ -19,9 +19,9 @@ read header "Connection" /(?i:Upgrade)/
 read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
 
 read [0x82 0x7d]
-read ([0..125] :client125A)
+read ([0..125] :client125)
 
-write [0x82 0xfd] ${writeMask} ${client125A}
-
-read [0x82 0x7d]
-read ([0..125] :client125B)
+write [0x82 0xfd] ${writeMask}
+write option mask ${writeMask}
+write ${client125}
+write option mask [0x00 0x00 0x00 0x00]
