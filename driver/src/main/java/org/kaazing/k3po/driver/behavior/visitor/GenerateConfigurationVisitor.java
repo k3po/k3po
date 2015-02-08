@@ -16,6 +16,7 @@
 
 package org.kaazing.k3po.driver.behavior.visitor;
 
+import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
@@ -24,6 +25,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -237,6 +239,11 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         Object value = propertyValue.accept(new GeneratePropertyValueVisitor(), environment);
         ELResolver resolver = environment.getELResolver();
         resolver.setValue(environment, null, propertyName, value);
+
+        if (LOGGER.isDebugEnabled()) {
+            Object formatValue = (value instanceof byte[]) ? Arrays.toString((byte[]) value) : value;
+            LOGGER.debug(format("Setting value for ${%s} to %s", propertyName, formatValue));
+        }
 
         return state.configuration;
     }

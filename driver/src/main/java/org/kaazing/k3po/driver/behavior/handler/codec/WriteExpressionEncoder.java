@@ -18,7 +18,6 @@ package org.kaazing.k3po.driver.behavior.handler.codec;
 
 import static org.jboss.netty.buffer.ChannelBuffers.buffer;
 import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
-import static org.kaazing.k3po.driver.util.Utils.byteArrayToString;
 
 import javax.el.ValueExpression;
 
@@ -47,10 +46,6 @@ public class WriteExpressionEncoder implements MessageEncoder {
         final ChannelBuffer result;
 
         if (value != null) {
-            if (isDebugEnabled) {
-                LOGGER.debug("Encoding expression results. " + value.length + " bytes. Bytes: "
-                        + byteArrayToString(value));
-            }
             result = wrappedBuffer(value);
         } else {
             if (isDebugEnabled) {

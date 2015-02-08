@@ -19,6 +19,8 @@ package org.kaazing.k3po.driver.behavior.handler.codec;
 import static java.lang.String.format;
 import static org.kaazing.k3po.lang.RegionInfo.newSequential;
 
+import java.util.Arrays;
+
 import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -58,18 +60,20 @@ public class ReadVariableLengthBytesDecoder extends MessageDecoder {
         int resolvedLength = (Integer) length.getValue(environment);
 
         if (buffer.readableBytes() < resolvedLength) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("not enough bytes are ready to read. Expecting " + resolvedLength + " bytes. Read to read is "
-                        + buffer.readableBytes());
-            }
             return null;
         }
+
         if (captureName == null) {
             buffer.readSlice(resolvedLength);
-        } else {
+        }
+        else {
             byte[] bytes = new byte[resolvedLength];
             buffer.readBytes(bytes, 0, resolvedLength);
             environment.getELResolver().setValue(environment, null, captureName, bytes);
+
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(format("Setting value for ${%s} to %s", captureName, Arrays.toString(bytes)));
+            }
         }
         return buffer;
     }
