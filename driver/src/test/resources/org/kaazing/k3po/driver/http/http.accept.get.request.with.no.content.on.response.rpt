@@ -10,3 +10,4 @@ read header "some" "header"
 read closed
 write header "some" "header"
 write close
+

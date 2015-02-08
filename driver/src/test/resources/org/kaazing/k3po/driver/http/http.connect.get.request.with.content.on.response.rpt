@@ -9,3 +9,4 @@ write close
 read header "some" "header"
 read "content"
 read closed
+

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package org.kaazing.k3po.driver.test.utils;
 
 public class ScriptPair {
