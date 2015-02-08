@@ -79,7 +79,7 @@ public final class Functions {
 
         byte[] bytes = new byte[length];
         int straddleWidth = RANDOM.nextInt(3) + 2;
-        int straddleAt = unalignAt - straddleWidth;
+        int straddleAt = unalignAt - straddleWidth + 1;
         randomBytesUTF8(bytes, 0, straddleAt);
         int realignAt = randomCharBytesUTF8(bytes, straddleAt, straddleWidth);
         randomBytesUTF8(bytes, realignAt, length);
@@ -162,8 +162,9 @@ public final class Functions {
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             break;
         case 4:
-            bytes[offset++] = (byte) (0xf0 | RANDOM.nextInt(0x08) | 1 << RANDOM.nextInt(3));
-            bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
+            // UTF-8 ends at 0x10FFFF (see RFC 3269)
+            bytes[offset++] = (byte) (0xf0 | RANDOM.nextInt(0x04) | 1 << RANDOM.nextInt(2));
+            bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x10));
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             break;
