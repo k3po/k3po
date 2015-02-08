@@ -35,7 +35,7 @@ public class HttpIT {
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
     @Rule
-    final public ExpectedException expectedExceptions = ExpectedException.none();
+    public final ExpectedException expectedExceptions = ExpectedException.none();
 
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
@@ -61,7 +61,7 @@ public class HttpIT {
 
     @Test
     @TestSpecification({
-        "http.accept.header.with.multiple.tokens", 
+        "http.accept.header.with.multiple.tokens",
         "tcp.connect.header.with.multiple.tokens" })
     public void shouldAcceptHeaderWithMultipleTokens() throws Exception {
 

@@ -80,7 +80,7 @@ public class ScriptTestRunner implements Callable<ScriptPair> {
                     latch.notifyFinished();
                 }
             });
-            
+
             latch.awaitFinished();
             return new ScriptPair(expectedScript, robot.getObservedScript());
         } catch (Exception e) {
