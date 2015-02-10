@@ -31,6 +31,7 @@ class Latch {
     private final CountDownLatch prepared;
     private final CountDownLatch startable;
     private final CountDownLatch finished;
+    private volatile Thread testThread;
 
     Latch() {
         state = State.INIT;
@@ -131,5 +132,16 @@ class Latch {
         prepared.countDown();
         startable.countDown();
         finished.countDown();
+        if (testThread != null) {
+            testThread.interrupt();
+        }
     }
+
+    public void setTestThread(Thread testThread) {
+        this.testThread = testThread;
+        if (this.exception != null) {
+            testThread.interrupt();
+        }
+    }
+
 }

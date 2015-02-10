@@ -119,6 +119,11 @@ public class K3poRule extends Verifier {
         return super.apply(statement, description);
     }
 
+    /**
+     * @throws Exception
+     * @deprecated use start() and finish() instead
+     */
+    @Deprecated
     public void join() throws Exception {
         // script should already be prepared before annotated test can execute
         assertTrue(format("Did you call join() from outside @%s test?", Specification.class.getSimpleName()), latch.isPrepared());
@@ -127,6 +132,18 @@ public class K3poRule extends Verifier {
         latch.notifyStartable();
 
         // wait for script to finish
+        latch.awaitFinished();
+    }
+
+    public void start() {
+        // script should already be prepared before annotated test can execute
+        assertTrue(format("Did you call join() from outside @%s test?", Specification.class.getSimpleName()), latch.isPrepared());
+
+        // notify script to start
+        latch.notifyStartable();
+    }
+
+    public void finish() throws Exception {
         latch.awaitFinished();
     }
 

@@ -24,6 +24,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.management.ThreadInfo;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -49,6 +50,8 @@ final class SpecificationStatement extends Statement {
 
     @Override
     public void evaluate() throws Throwable {
+
+        latch.setTestThread(Thread.currentThread());
 
         ScriptRunner scriptRunner = new ScriptRunner(controlURL, scriptNames, latch);
         FutureTask<ScriptPair> scriptFuture = new FutureTask<ScriptPair>(scriptRunner);

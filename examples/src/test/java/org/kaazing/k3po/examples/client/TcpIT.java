@@ -40,8 +40,16 @@ public class TcpIT {
 
     @Test
     @Specification("helloWorld")
-    public void testHelloWorld() throws Exception {
+    public void testHelloWorldDeprecatedJoin() throws Exception {
         helloWorldClient.run();
         k3po.join();
+    }
+    
+    @Test
+    @Specification("helloWorld")
+    public void testHelloWorld() throws Exception {
+        helloWorldClient.run();
+        k3po.start();
+        k3po.finish();
     }
 }
