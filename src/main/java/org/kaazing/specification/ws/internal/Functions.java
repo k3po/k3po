@@ -153,7 +153,7 @@ public final class Functions {
             bytes[offset++] = (byte) RANDOM.nextInt(0x80);
             break;
         case 2:
-            bytes[offset++] = (byte) (0xc0 | RANDOM.nextInt(0x20) | 1 << RANDOM.nextInt(5));
+            bytes[offset++] = (byte) (0xc0 | RANDOM.nextInt(0x20) | 1 << (RANDOM.nextInt(4) + 1));
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             break;
         case 3:
