@@ -117,7 +117,9 @@ final class SpecificationStatement extends Statement {
 
             // note: statement MUST call join() to ensure wrapped Rule(s) do not complete early
             // and to allow Specification script(s) to make progress
-            assertTrue(format("Did you call %s.join()?", K3poRule.class.getSimpleName()), latch.isStartable());
+            String k3poSimpleName = K3poRule.class.getSimpleName();
+            assertTrue(format("Did you instantiate %s with a @Rule and call %s.join()?", k3poSimpleName, k3poSimpleName),
+                    latch.isStartable());
 
             ScriptPair scripts = scriptFuture.get();
 
