@@ -19,14 +19,13 @@ package org.kaazing.k3po.driver.behavior.handler.codec;
 import static java.lang.String.format;
 import static org.kaazing.k3po.lang.RegionInfo.newSequential;
 
-import java.util.Arrays;
-
 import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.lang.RegionInfo;
+import org.kaazing.k3po.lang.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.el.ExpressionContext;
 
 public class ReadVariableLengthBytesDecoder extends MessageDecoder {
@@ -72,7 +71,7 @@ public class ReadVariableLengthBytesDecoder extends MessageDecoder {
             environment.getELResolver().setValue(environment, null, captureName, bytes);
 
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(format("Setting value for ${%s} to %s", captureName, Arrays.toString(bytes)));
+                LOGGER.debug(format("Setting value for ${%s} to %s", captureName, AstLiteralBytesValue.toString(bytes)));
             }
         }
         return buffer;
