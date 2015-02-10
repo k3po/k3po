@@ -59,6 +59,16 @@ public final class AstLiteralBytesValue extends AstValue {
 
     @Override
     protected void describe(StringBuilder buf) {
+        describe(buf, value);
+    }
+
+    public static String toString(byte[] value) {
+        StringBuilder buf = new StringBuilder();
+        describe(buf, value);
+        return buf.toString();
+    }
+
+    private static void describe(StringBuilder buf, byte[] value) {
         if (value == null || value.length == 0) {
             buf.append("[]");
         }

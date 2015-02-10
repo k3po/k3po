@@ -25,7 +25,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -241,7 +240,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         resolver.setValue(environment, null, propertyName, value);
 
         if (LOGGER.isDebugEnabled()) {
-            Object formatValue = (value instanceof byte[]) ? Arrays.toString((byte[]) value) : value;
+            Object formatValue = (value instanceof byte[]) ? AstLiteralBytesValue.toString((byte[]) value) : value;
             LOGGER.debug(format("Setting value for ${%s} to %s", propertyName, formatValue));
         }
 

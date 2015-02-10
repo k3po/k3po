@@ -18,12 +18,11 @@ package org.kaazing.k3po.driver.behavior.handler.codec;
 
 import static java.lang.String.format;
 
-import java.util.Arrays;
-
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.lang.RegionInfo;
+import org.kaazing.k3po.lang.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.el.ExpressionContext;
 import org.kaazing.k3po.lang.parser.ScriptParseException;
 
@@ -67,7 +66,7 @@ public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
             environment.getELResolver().setValue(environment, null, captureName, value);
 
             if (LOGGER.isDebugEnabled()) {
-                Object formatValue = (value instanceof byte[]) ? Arrays.toString((byte[]) value) : value;
+                Object formatValue = (value instanceof byte[]) ? AstLiteralBytesValue.toString((byte[]) value) : value;
                 LOGGER.debug(format("Setting value for ${%s} to %s", captureName, formatValue));
             }
         }
@@ -87,7 +86,7 @@ public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
             environment.getELResolver().setValue(environment, null, captureName, value);
 
             if (LOGGER.isDebugEnabled()) {
-                Object formatValue = (value instanceof byte[]) ? Arrays.toString((byte[]) value) : value;
+                Object formatValue = (value instanceof byte[]) ? AstLiteralBytesValue.toString((byte[]) value) : value;
                 LOGGER.debug(format("Setting value for ${%s} to %s", captureName, formatValue));
             }
         }
