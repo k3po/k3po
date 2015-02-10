@@ -23,12 +23,10 @@ write header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
 write [0x01 0x19]
 write ${server25}
 
-write [0x00 0x64]
+write [0x80 0x64]
 write ${server100}
 
-read [0x88 0x82] ([0..4] :readMask)
+read [0x81 0xfd] ([0..4] :readMask)
 read option mask ${readMask}
-read ([0..2] :code)
+read ${server25} ${server100}
 read option mask [0x00 0x00 0x00 0x00]
-
-write [0x88 0x02 0x03 0xea]

@@ -20,6 +20,6 @@ read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
 
 read [0x8a 0x7d] ([0..125] :client125)
 
-write [0x88 0x80] ${writeMask}
-
 read [0x88 0x00]
+
+write [0x88 0x80] ${writeMask}

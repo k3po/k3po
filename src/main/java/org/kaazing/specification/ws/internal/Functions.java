@@ -79,7 +79,7 @@ public final class Functions {
 
         byte[] bytes = new byte[length];
         int straddleWidth = RANDOM.nextInt(3) + 2;
-        int straddleAt = unalignAt - straddleWidth;
+        int straddleAt = unalignAt - straddleWidth + 1;
         randomBytesUTF8(bytes, 0, straddleAt);
         int realignAt = randomCharBytesUTF8(bytes, straddleAt, straddleWidth);
         randomBytesUTF8(bytes, realignAt, length);
@@ -153,17 +153,19 @@ public final class Functions {
             bytes[offset++] = (byte) RANDOM.nextInt(0x80);
             break;
         case 2:
-            bytes[offset++] = (byte) (0xc0 | RANDOM.nextInt(0x20) | 1 << RANDOM.nextInt(5));
+            bytes[offset++] = (byte) (0xc0 | RANDOM.nextInt(0x20) | 1 << (RANDOM.nextInt(4) + 1));
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             break;
         case 3:
-            bytes[offset++] = (byte) (0xe0 | RANDOM.nextInt(0x10) | 1 << RANDOM.nextInt(4));
+            // UTF-8 not legal for 0xD800 through 0xDFFF (see RFC 3269)
+            bytes[offset++] = (byte) (0xe0 | RANDOM.nextInt(0x08) | 1 << RANDOM.nextInt(3));
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             break;
         case 4:
-            bytes[offset++] = (byte) (0xf0 | RANDOM.nextInt(0x08) | 1 << RANDOM.nextInt(3));
-            bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
+            // UTF-8 ends at 0x10FFFF (see RFC 3269)
+            bytes[offset++] = (byte) (0xf0 | RANDOM.nextInt(0x04) | 1 << RANDOM.nextInt(2));
+            bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x10));
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             bytes[offset++] = (byte) (0x80 | RANDOM.nextInt(0x40));
             break;

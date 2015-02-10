@@ -37,6 +37,8 @@ read ([0..25] :client25e)
 
 read [0x80 0x00]
 
-write [0x81 0xfd] ${writeMask} ${client25a} ${client25b} ${client25c} ${client25d} ${client25e}
-read [0x81 0x7d]
-read ([0..125] :client125)
+write [0x81 0xfd] ${writeMask}
+write option mask ${writeMask}
+write ${client25a} ${client25b} ${client25c} ${client25d} ${client25e}
+write option mask [0x00 0x00 0x00 0x00]
+
