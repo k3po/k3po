@@ -1,20 +1,22 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright (c) 2007-2014 Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package org.kaazing.k3po.examples;
@@ -26,7 +28,10 @@ import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
-
+/**
+ * A simple TCP client implementation that can be used as an example to run K3po tests against.
+ *
+ */
 public class ListedEventClient extends ListedEventRunnable {
 
     private Socket socket;
@@ -34,29 +39,29 @@ public class ListedEventClient extends ListedEventRunnable {
     private BufferedWriter out;
 
 
-    public ListedEventClient() {
+    ListedEventClient() {
         super();
     }
 
-    public void setSocket(Socket socket) {
+    void setSocket(Socket socket) {
         this.socket = socket;
     }
 
-    public BufferedReader getBufferedReader() throws IOException {
+    BufferedReader getBufferedReader() throws IOException {
         if (in == null) {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         }
         return in;
     }
 
-    public BufferedWriter getBufferedWriter() throws IOException {
+    BufferedWriter getBufferedWriter() throws IOException {
         if (out == null) {
             out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         }
         return out;
     }
 
-    public Socket getSocket() {
+    Socket getSocket() {
         return socket;
     }
 

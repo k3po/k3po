@@ -19,29 +19,8 @@
  * under the License.
  */
 
-package org.kaazing.k3po.control.command;
+package org.kaazing.k3po.examples;
 
-import java.util.Objects;
-
-/**
- * AbortCommand aborts the script execution.
- *
- */
-public final class AbortCommand extends Command {
-
-    @Override
-    public Kind getKind() {
-        return Kind.ABORT;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getKind());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o == this || o instanceof AbortCommand && equalTo((AbortCommand) o);
-    }
-
+public class TcpServerIT {
+    // TODO
 }

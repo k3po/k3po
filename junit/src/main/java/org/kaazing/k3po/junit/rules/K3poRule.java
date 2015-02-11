@@ -1,20 +1,22 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright (c) 2007-2014 Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package org.kaazing.k3po.junit.rules;
@@ -35,14 +37,16 @@ import org.junit.runners.model.Statement;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.net.URLFactory;
 
+/**
+ * A K3poRule specifies how a Test using k3po is executed.
+ *
+ */
 public class K3poRule extends Verifier {
 
     /*
-     * For some reason earlier versions of JUnit will cause tests to either hang
-     * or succeed incorrectly without ever talking to the K3PO. I'm not sure
-     * why but the apply method does not seem to be called. So we need to
-     * require version 4.10 (I know 4.7 has the problem ... not sure about 4.8
-     * and 4.9 but 4.10 works).
+     * For some reason earlier versions of JUnit will cause tests to either hang or succeed incorrectly without ever
+     * talking to the K3PO. I'm not sure why but the apply method does not seem to be called. So we need to require
+     * version 4.10 (I know 4.7 has the problem ... not sure about 4.8 and 4.9 but 4.10 works).
      */
     static {
         JUnitCore core = new JUnitCore();
@@ -67,15 +71,28 @@ public class K3poRule extends Verifier {
     private String scriptRoot;
     private URL controlURL;
 
+    /**
+     * Allocates a new K3poRule.
+     */
     public K3poRule() {
         latch = new Latch();
     }
 
+    /**
+     * Sets the ClassPath root of where to look for scripts when resolving them.
+     * @param scriptRoot is a directory/package name of where to resolve scripts from.
+     * @return an instance of K3poRule for convenience
+     */
     public K3poRule setScriptRoot(String scriptRoot) {
         this.scriptRoot = scriptRoot;
         return this;
     }
 
+    /**
+     * Sets the URI on which to communicate to the k3po driver.
+     * @param controlURI the URI on which to connect
+     * @return an instance of K3poRule for convenience
+     */
     public K3poRule setControlURI(URI controlURI) {
         this.controlURL = createURL(controlURI.toString());
         return this;
@@ -119,22 +136,38 @@ public class K3poRule extends Verifier {
         return super.apply(statement, description);
     }
 
-    public void join() throws Exception {
+    /**
+     * Starts the connects in the robot scripts.  The accepts are implicitly started just prior to the test logic in the
+     * Specification.
+     */
+    public void start() {
         // script should already be prepared before annotated test can execute
-        assertTrue(format("Did you call join() from outside @%s test?", Specification.class.getSimpleName()), latch.isPrepared());
+        assertTrue(format("Did you call start() from outside @%s test?", Specification.class.getSimpleName()),
+                latch.isPrepared());
 
         // notify script to start
         latch.notifyStartable();
+    }
+
+    /**
+     * Blocking call to await for the K3po threads to stop executing.  If the connects have not already been initiated via the
+     * start() method, they will be implicitly called.
+     * @throws Exception if an error has occurred in the execution of the tests.
+     */
+    public void finish() throws Exception {
+        assertTrue(format("Did you call finish() from outside @%s test?", Specification.class.getSimpleName()),
+                !latch.isInInitState());
 
         // wait for script to finish
+        latch.notifyStartable();
+
         latch.awaitFinished();
     }
 
     private static URL createURL(String location) {
         try {
             return URLFactory.createURL("tcp://localhost:11642");
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }

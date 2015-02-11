@@ -19,29 +19,36 @@
  * under the License.
  */
 
-package org.kaazing.k3po.control.command;
+package org.kaazing.k3po.junit.rules.internal;
 
-import java.util.Objects;
+public class ScriptPair {
 
-/**
- * AbortCommand aborts the script execution.
- *
- */
-public final class AbortCommand extends Command {
+    private String expectedScript;
+    private String observedScript;
 
-    @Override
-    public Kind getKind() {
-        return Kind.ABORT;
+    public ScriptPair() {
+        expectedScript = "";
+        observedScript = "";
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getKind());
+    public ScriptPair(String expectedScript, String observedScript) {
+        this.expectedScript = expectedScript;
+        this.observedScript = observedScript;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        return o == this || o instanceof AbortCommand && equalTo((AbortCommand) o);
+    public void setExpectedScript(String expectedScript) {
+        this.expectedScript = expectedScript;
     }
 
+    public String getExpectedScript() {
+        return expectedScript;
+    }
+
+    public void setObservedScript(String observedScript) {
+        this.observedScript = observedScript;
+    }
+
+    public String getObservedScript() {
+        return observedScript;
+    }
 }
