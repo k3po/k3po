@@ -151,24 +151,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
 
             acceptable.accept(this, state);
 
-            switch (state.readState) {
-            case REQUEST:
-            case HEADERS_COMPLETE:
-            case CLOSED:
-            case OPEN: // can only be OPEN if not http
-                break;
-            default:
-                throw new IllegalStateException(String.format("Http read was left in state: %s", state.readState));
-            }
-
-            switch (state.writeState) {
-            case HEADERS_COMPLETE:
-            case CLOSED:
-            case OPEN: // can only be OPEN if not http
-                break;
-            default:
-                throw new IllegalStateException(String.format("Http write was left in state: %s", state.writeState));
-            }
         }
         state.acceptables = null;
 
@@ -195,25 +177,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
         state.streamables = newConnectNode.getStreamables();
         for (AstStreamableNode streamable : connectNode.getStreamables()) {
             streamable.accept(this, state);
-        }
-
-        switch (state.readState) {
-        case RESPONSE:
-        case HEADERS_COMPLETE:
-        case CLOSED:
-        case OPEN: // can only be OPEN if not http
-            break;
-        default:
-            throw new IllegalStateException(String.format("Http read was left in state: %s", state.readState));
-        }
-
-        switch (state.writeState) {
-        case HEADERS_COMPLETE:
-        case CLOSED:
-        case OPEN: // can only be OPEN if not http
-            break;
-        default:
-            throw new IllegalStateException(String.format("Http write was left in state: %s", state.writeState));
         }
 
         state.streams.add(newConnectNode);

@@ -210,4 +210,12 @@ public class HttpIT {
         k3po.join();
     }
 
+    @Test
+    @TestSpecification({
+        "specify.only.part.of.http.response/request",
+        "specify.only.part.of.http.response/response" })
+    public void specifyOnlyPartOfHttpResponse() throws Exception {
+        k3po.join();
+    }
+
 }
