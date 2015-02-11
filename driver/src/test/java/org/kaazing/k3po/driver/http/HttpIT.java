@@ -210,4 +210,12 @@ public class HttpIT {
         k3po.join();
     }
 
+    @Test
+    @TestSpecification({
+        "inbound.must.send.version/request",
+        "inbound.must.send.version/response" })
+    public void intermediateParseOfResponse() throws Exception {
+        k3po.join();
+    }
+
 }
