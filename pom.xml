@@ -24,6 +24,8 @@
     <properties>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
+        <require.java.version>1.7+</require.java.version>
+        <animal.sniffer.signature.artifactId>java17</animal.sniffer.signature.artifactId>
     </properties>
 
     <dependencies>
@@ -52,6 +54,7 @@
                 <groupId>org.kaazing</groupId>
                 <artifactId>k3po-maven-plugin</artifactId>
                 <version>2.0.0-alpha-8</version>
+                <!-- <version>develop-SNAPSHOT</version> -->
                 <configuration>
                     <skipTests>${skipITs}</skipTests>
                 </configuration>
@@ -71,6 +74,24 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+            <!-- see MJAVADOC-329 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>empty-javadoc-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>javadoc</classifier>
+                            <classesDirectory>src/main/javadoc</classesDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

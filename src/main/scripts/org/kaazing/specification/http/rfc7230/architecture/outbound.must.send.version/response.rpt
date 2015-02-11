@@ -1,0 +1,7 @@
+accept http://localhost:8080/
+accepted
+connected
+read version "HTTP/1.1"
+write status "200" "OK"
+write version "HTTP/1.1"
+write flush

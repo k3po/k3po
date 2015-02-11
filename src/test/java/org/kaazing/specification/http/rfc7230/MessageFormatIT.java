@@ -51,9 +51,9 @@ public class MessageFormatIT {
      * @throws Exception when K3PO is not started
      */
     @Test
-    @Specification({"inbound.should.accept.request.with.no.headers/request",
-            "inbound.should.accept.request.with.no.headers/response"
-        })
+    @Specification({
+            "inbound.should.accept.request.with.no.headers/request",
+            "inbound.should.accept.request.with.no.headers/response" })
     public void inboundShouldAcceptNoHeaders() throws Exception {
         k3po.join();
     }

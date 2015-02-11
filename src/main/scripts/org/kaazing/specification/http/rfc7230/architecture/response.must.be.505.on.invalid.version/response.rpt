@@ -1,0 +1,4 @@
+accept http://localhost:8080/
+accepted
+connected
+write status "505" "HTTP Version Not Supported"
