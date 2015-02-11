@@ -212,9 +212,9 @@ public class HttpIT {
 
     @Test
     @TestSpecification({
-        "inbound.must.send.version/request",
-        "inbound.must.send.version/response" })
-    public void intermediateParseOfResponse() throws Exception {
+        "specify.only.part.of.http.response/request",
+        "specify.only.part.of.http.response/response" })
+    public void specifyOnlyPartOfHttpResponse() throws Exception {
         k3po.join();
     }
 
