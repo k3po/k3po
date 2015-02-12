@@ -23,6 +23,8 @@ package org.kaazing.specification.http.internal;
 
 import static org.kaazing.k3po.lang.el.ExpressionFactoryUtils.newExpressionFactory;
 
+import java.util.Random;
+
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;

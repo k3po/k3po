@@ -1,4 +1,7 @@
-accept http://localhost:8080/
+accept tcp://localhost:8080
 accepted
 connected
-read version /HTTP\/(\d+)\.(\d+)/
+read "GET"
+
+write "HTTP/1.1 505 HTTP Version Not Supported" "\r\n"
+write "\r\n"

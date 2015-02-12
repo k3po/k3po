@@ -1,5 +1,5 @@
 connect tcp://localhost:8080
 connected
-write "GET / HTTP/1.1\r\n"
+write "GET /Some%20Path HTTP/1.1\r\n"
 write "Host: Robot\r\n"
 write "\r\n"

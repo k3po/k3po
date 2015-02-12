@@ -37,26 +37,19 @@ public final class Functions {
         String randomVersion = null;
         Pattern validVersionPattern = Pattern.compile("HTTP/1\\.(\\d)+");
         Matcher validVersionMatcher = null;
+        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" + "1234567890!@#$%^&*()_+-=`~[]\\{}|;':\",./<>?";
+        StringBuilder result;
         do {
-            int randomSize = RANDOM.nextInt(30) + 1;
-            randomVersion = randomString(randomSize);
-            randomVersion.replaceAll("\\s+", "");
+            result = new StringBuilder();
+            int randomLength = RANDOM.nextInt(30) + 1;
+            for (int i = 0; i < randomLength; i++) {
+                result.append(chars.charAt(RANDOM.nextInt(chars.length())));
+            }
+            randomVersion = result.toString();
             validVersionMatcher = validVersionPattern.matcher(randomVersion);
         } while (randomVersion.length() > 1 && validVersionMatcher.matches());
+        System.out.println(randomVersion);
         return randomVersion;
-    }
-
-    private static String randomString(int length) {
-        StringBuffer sb = new StringBuffer(length);
-        while (sb.length() < length) {
-            char c = (char) (RANDOM.nextInt() & Character.MAX_VALUE);
-            if (Character.isDefined(c)) {
-                sb.append(c);
-                // DEBUG
-                System.out.println(Integer.toHexString(c));
-            }
-        }
-        return sb.toString();
     }
 
     public static class Mapper extends FunctionMapperSpi.Reflective {

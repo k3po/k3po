@@ -1,4 +1,0 @@
-accept http://localhost:8080/
-accepted
-connected
-read version /HTTP\/(\d+)\.(\d+)/

@@ -1,7 +1,7 @@
-connect http://localhost:8080/
+connect tcp://localhost:8080
 connected
-write method "GET"
-write version "HTTP/1.2"
-write header host
+write "GET / HTTP/1.2" "\r\n"
+write "HOST: Robot" "\r\n"
+write "\r\n"
 
-read version "HTTP/1.1"
+read "HTTP/1.1"
