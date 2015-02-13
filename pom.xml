@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>specification.tcp</artifactId>
-    <version>develop-SNAPSHOT</version>
+    <version>1.0.0-alpha-1</version>
     <packaging>jar</packaging>
 
     <name>TCP Protocol Specification</name>
