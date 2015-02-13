@@ -19,29 +19,21 @@
  * under the License.
  */
 
-package org.kaazing.k3po.control.command;
+package org.kaazing.k3po.junit.annotation;
 
-import java.util.Objects;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * AbortCommand aborts the script execution.
- *
+ * {@code Specification} annotation names the test scripts to execute.
  */
-public final class AbortCommand extends Command {
-
-    @Override
-    public Kind getKind() {
-        return Kind.ABORT;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getKind());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o == this || o instanceof AbortCommand && equalTo((AbortCommand) o);
-    }
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD })
+public @interface Specification {
+    /**
+     * Gets the value of the Specification which is an String[] of a script names to execute.
+     */
+    String[] value() default { };
 }

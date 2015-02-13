@@ -19,29 +19,29 @@
  * under the License.
  */
 
-package org.kaazing.k3po.control.command;
+package org.kaazing.k3po.examples;
 
-import java.util.Objects;
+import org.junit.Rule;
+import org.junit.Test;
+import org.kaazing.k3po.junit.annotation.Specification;
+import org.kaazing.k3po.junit.rules.K3poRule;
 
-/**
- * AbortCommand aborts the script execution.
- *
- */
-public final class AbortCommand extends Command {
+public class TcpClientIT {
 
-    @Override
-    public Kind getKind() {
-        return Kind.ABORT;
+    @Rule
+    public K3poRule k3po = new K3poRule();
+
+    private ListedEventClient helloWorldClient = new ListedEventClientBuilder()
+                .connect("localhost", 8001)
+                .write("hello world")
+                .read("hello client")
+                .close()
+            .done();
+
+    @Test
+    @Specification("server.hello.world")
+    public void testHelloWorld() throws Exception {
+        helloWorldClient.run();
+        k3po.finish();
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getKind());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o == this || o instanceof AbortCommand && equalTo((AbortCommand) o);
-    }
-
 }

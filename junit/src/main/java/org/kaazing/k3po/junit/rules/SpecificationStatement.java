@@ -1,20 +1,22 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright (c) 2007-2014 Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package org.kaazing.k3po.junit.rules;
@@ -29,17 +31,19 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
+import org.junit.AssumptionViolatedException;
 import org.junit.ComparisonFailure;
 import org.junit.runners.model.Statement;
+import org.kaazing.k3po.junit.rules.internal.ScriptPair;
 
-final class RoboticStatement extends Statement {
+final class SpecificationStatement extends Statement {
 
     private final Statement statement;
     private final URL controlURL;
     private final List<String> scriptNames;
-    private final RoboticLatch latch;
+    private final Latch latch;
 
-    RoboticStatement(Statement statement, URL controlURL, List<String> scriptNames, RoboticLatch latch) {
+    SpecificationStatement(Statement statement, URL controlURL, List<String> scriptNames, Latch latch) {
         this.statement = statement;
         this.controlURL = controlURL;
         this.scriptNames = scriptNames;
@@ -48,6 +52,8 @@ final class RoboticStatement extends Statement {
 
     @Override
     public void evaluate() throws Throwable {
+
+        latch.setInterruptOnException(Thread.currentThread());
 
         ScriptRunner scriptRunner = new ScriptRunner(controlURL, scriptNames, latch);
         FutureTask<ScriptPair> scriptFuture = new FutureTask<ScriptPair>(scriptRunner);
@@ -62,7 +68,16 @@ final class RoboticStatement extends Statement {
             try {
                 // note: JUnit timeout will trigger an exception
                 statement.evaluate();
-            } catch (Throwable cause) {
+            }
+            catch (AssumptionViolatedException e) {
+
+                if (!latch.isFinished()) {
+                    scriptRunner.abort();
+                }
+
+                throw e;
+            }
+            catch (Throwable cause) {
                 // any exception aborts the script (including timeout)
                 if (latch.hasException()) {
                     // propagate exception if the latch has an exception
@@ -81,11 +96,12 @@ final class RoboticStatement extends Statement {
 
                     try {
                         // wait at most 5sec for the observed script (due to the abort case)
-                        // should take less than a second for the Robot to complete
+                        // should take less than a second for K3PO to complete
                         ScriptPair scripts = scriptFuture.get(5, SECONDS);
 
                         try {
-                            assertEquals("Robotic behavior did not match", scripts.getExpectedScript(), scripts.getObservedScript());
+                            assertEquals("Specified behavior did not match", scripts.getExpectedScript(),
+                                    scripts.getObservedScript());
                             // Throw the original exception if we are equal
                             throw cause;
                         } catch (ComparisonFailure f) {
@@ -106,13 +122,16 @@ final class RoboticStatement extends Statement {
             }
 
             // note: statement MUST call join() to ensure wrapped Rule(s) do not complete early
-            // and to allow Robot script to make progress
-            assertTrue(format("Did you call %s.join()?", RobotRule.class.getSimpleName()), latch.isStartable());
+            // and to allow Specification script(s) to make progress
+            String k3poSimpleName = K3poRule.class.getSimpleName();
+            assertTrue(format("Did you instantiate %s with a @Rule and call %s.join()?", k3poSimpleName, k3poSimpleName),
+                    latch.isStartable());
 
             ScriptPair scripts = scriptFuture.get();
 
-            assertEquals("Robotic behavior did not match expected", scripts.getExpectedScript(), scripts.getObservedScript());
-        } finally {
+            assertEquals("Specified behavior did not match", scripts.getExpectedScript(), scripts.getObservedScript());
+        }
+        finally {
             // clean up the task if it is still running
             scriptFuture.cancel(true);
         }

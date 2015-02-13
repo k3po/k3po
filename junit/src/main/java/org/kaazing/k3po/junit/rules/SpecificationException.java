@@ -19,29 +19,21 @@
  * under the License.
  */
 
-package org.kaazing.k3po.control.command;
+package org.kaazing.k3po.junit.rules;
 
-import java.util.Objects;
+class SpecificationException extends RuntimeException {
 
-/**
- * AbortCommand aborts the script execution.
- *
- */
-public final class AbortCommand extends Command {
+    private static final long serialVersionUID = 1L;
 
-    @Override
-    public Kind getKind() {
-        return Kind.ABORT;
+    public SpecificationException() {
+        super();
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getKind());
+    public SpecificationException(String msg) {
+        super(msg);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        return o == this || o instanceof AbortCommand && equalTo((AbortCommand) o);
+    public SpecificationException(Throwable cause) {
+        super(cause);
     }
-
 }

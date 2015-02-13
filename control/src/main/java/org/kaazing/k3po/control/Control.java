@@ -1,20 +1,22 @@
 /*
- * Copyright (c) 2014 "Kaazing Corporation," (www.kaazing.com)
+ * Copyright (c) 2007-2014 Kaazing Corporation. All rights reserved.
  *
- * This file is part of Robot.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Robot is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package org.kaazing.k3po.control;
@@ -52,7 +54,11 @@ import org.kaazing.k3po.control.event.FinishedEvent;
 import org.kaazing.k3po.control.event.PreparedEvent;
 import org.kaazing.k3po.control.event.StartedEvent;
 
-public final class RobotControl {
+/**
+ * Control class for controlling the robot.
+ * This class establishes a tcp connection and can be fed commands to run.
+ */
+public final class Control {
 
     private static final String FINISHED_EVENT = "FINISHED";
     private static final String ERROR_EVENT = "ERROR";
@@ -66,10 +72,17 @@ public final class RobotControl {
     private URLConnection connection;
     BufferedReader textIn;
 
-    public RobotControl(URL location) {
+    /**
+     * @param location of k3po server to connect to.
+     */
+    public Control(URL location) {
         this.location = location;
     }
 
+    /**
+     * Connects to the k3po server.
+     * @throws Exception if fails to connect.
+     */
     public void connect() throws Exception {
         connection = location.openConnection();
         connection.connect();
@@ -78,6 +91,10 @@ public final class RobotControl {
         textIn = new BufferedReader(new InputStreamReader(bytesIn, decoder));
     }
 
+    /**
+     * Discoonects from the k3po server.
+     * @throws Exception if error in closing the connection.
+     */
     public void disconnect() throws Exception {
 
         if (connection != null) {
@@ -106,6 +123,11 @@ public final class RobotControl {
         }
     }
 
+    /**
+     * Writes a command to the wire.
+     * @param command to write to the wire
+     * @throws Exception if the command is not recognized
+     */
     public void writeCommand(Command command) throws Exception {
 
         checkConnected();
@@ -125,11 +147,23 @@ public final class RobotControl {
         }
     }
 
+    /**
+     * Reads a CommandEvent from the connection with K3po.
+     * @return CommandEvent
+     * @throws Exception if no event is available to be read.
+     */
     public CommandEvent readEvent() throws Exception {
         // defaults to infinite
         return readEvent(0, MILLISECONDS);
     }
 
+    /**
+     * Reads a command event from the wire.
+     * @param timeout is the time to read from the connection.
+     * @param unit of time for the timeout.
+     * @return the CommandEvent read from the wire.
+     * @throws Exception if no event is read before the timeout.
+     */
     public CommandEvent readEvent(int timeout, TimeUnit unit) throws Exception {
 
         checkConnected();
