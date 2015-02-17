@@ -1,0 +1,21 @@
+accept http://localhost:8080/
+accepted
+connected
+read method "GET"
+read closed
+write status "200" "OK"
+write close
+
+accepted
+connected
+read method "GET"
+read closed
+write status "200" "OK"
+write close
+
+accepted
+connected
+read method "GET"
+read closed
+write status "200" "OK"
+write close

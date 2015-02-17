@@ -1,0 +1,7 @@
+connect http://localhost:8080/
+connected
+write method "GET"
+write header "Upgrade" "WebSocket"
+write header "Connection" "Upgrade"
+write header "Host" "localhost:8080"
+read status "101" /.*/

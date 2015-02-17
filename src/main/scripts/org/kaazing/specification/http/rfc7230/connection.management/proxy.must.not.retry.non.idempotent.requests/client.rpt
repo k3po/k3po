@@ -1,0 +1,7 @@
+connect http://localhost:8080/intermediary
+connected
+write method "POST"
+write header content-length
+write "This is some data"
+write close
+read status "502" "Bad Gateway"

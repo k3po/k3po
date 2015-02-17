@@ -1,0 +1,13 @@
+accept tcp://localhost:8080
+accepted
+connected
+
+read "GET / HTTP/1.1\r\n"
+
+write "HTTP/1.1 200 OK\r\n"
+write "Content-Type: text/plain\r\n"
+write "Connection: close\r\n"
+write "\r\n"
+
+close
+closed
