@@ -34,15 +34,6 @@ public class MessageRoutingIT {
      */
     @Test
     @Ignore("Not Implemented")
-    public void inboundShouldAcceptRequestWithEmptyHostHeader() {
-
-    }
-
-    /**
-     * See <a href="https://tools.ietf.org/html/rfc7230#section-5.4">RFC 7230 section 5.4: Host</a>.
-     */
-    @Test
-    @Ignore("Not Implemented")
     public void outboundHostHeaderShouldFollowRequestLine() {
 
     }
@@ -116,6 +107,11 @@ public class MessageRoutingIT {
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc7230#section-5.7">RFC 7230 section 5.7: Message Forwarding</a>.
+     *
+     * An intermediary used as a portal through a network firewall SHOULD NOT forward the names and ports of hosts
+     * within the firewall region unless it is explicitly enabled to do so. If not enabled, such an intermediary SHOULD
+     * replace each received-by host of any host behind the firewall by an appropriate pseudonym for that host.
+     *
      */
     @Test
     @Ignore("Not Implemented")
@@ -125,13 +121,15 @@ public class MessageRoutingIT {
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc7230#section-5.7">RFC 7230 section 5.7: Message Forwarding</a>.
+     *
+     * A proxy MUST NOT transform the payload (Section 3.3 of [RFC7231]) of a message that contains a no-transform
+     * cache-control directive (Section 5.2 of [RFC7234]).
+     *
      */
     @Test
     @Ignore("Not Implemented")
     public void proxyMustNotTransformThePayloadOfARequestThatContainsANoTransformCacheControl() {
-        // A proxy MUST NOT transform the payload (Section 3.3 of [RFC7231]) of
-        // a message that contains a no-transform cache-control directive
-        // (Section 5.2 of [RFC7234]).
+
     }
 
     /**

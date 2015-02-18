@@ -1,0 +1,5 @@
+connect http://localhost:8080/
+connected
+write method "GET"
+write close
+read status "200" "OK"

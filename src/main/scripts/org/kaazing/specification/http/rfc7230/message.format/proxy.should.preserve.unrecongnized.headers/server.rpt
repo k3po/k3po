@@ -1,0 +1,10 @@
+accept http://localhost:8080/server
+accepted
+connected
+
+read header "secret" "header"
+read closed
+write status "200" "OK"
+write header "doubleSecret" "probation"
+write header content-length
+write close

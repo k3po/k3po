@@ -2,10 +2,9 @@ accept tcp://localhost:8080
 accepted
 connected
 
-read "GET / HTTP/1.1\r\n"
-read "\r\n"
+read /.*/
 
-write "HTTP/1.1 200 OK\r\n"
+write "HTTP/1.1 400 Bad Request\r\n"
 write "Server: k3po\r\n"
 write "Content-Length: 0\r\n"
 write "Content-Type: text/html\r\n"

@@ -1,0 +1,9 @@
+accept http://localhost:8080/
+accepted
+connected
+
+read method "BADMETHOD"
+read closed
+
+write status "501" "Not Implemented"
+write close

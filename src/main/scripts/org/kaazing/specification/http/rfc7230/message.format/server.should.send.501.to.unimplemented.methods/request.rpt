@@ -1,0 +1,6 @@
+connect http://localhost:8080/
+connected
+write method "BADMETHOD"
+write header "Content-Length" "0"
+write flush
+read status "501" "Not Implemented"

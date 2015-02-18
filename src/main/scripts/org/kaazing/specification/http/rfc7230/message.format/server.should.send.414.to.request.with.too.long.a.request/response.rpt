@@ -1,0 +1,11 @@
+accept tcp://localhost:8080
+accepted
+connected
+
+read  "GET http://localhost:8080/" [0..8001] " HTTP/1.1" "\r\n"
+
+write "HTTP/1.1 414 Request-URI Too Long\r\n"
+write "Server: k3po\r\n"
+write "Content-Length: 0\r\n"
+write "Content-Type: text/html\r\n"
+write "\r\n"

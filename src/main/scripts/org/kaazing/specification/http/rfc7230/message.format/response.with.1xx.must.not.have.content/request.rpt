@@ -1,0 +1,8 @@
+connect http://localhost:8080/
+connected
+
+write method "HEAD"
+write close
+
+read status "200" "OK"
+read closed
