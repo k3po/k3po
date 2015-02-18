@@ -8,4 +8,4 @@ write "Content-length: 200" "\r\n"
 write "\r\n"
 write "hello world"
 
-read status "400" /.*/
+read "HTTP/1.1 400"

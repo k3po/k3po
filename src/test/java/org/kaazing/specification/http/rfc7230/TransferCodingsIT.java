@@ -20,8 +20,17 @@
  */
 package org.kaazing.specification.http.rfc7230;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.rules.RuleChain.outerRule;
+
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.DisableOnDebug;
+import org.junit.rules.TestRule;
+import org.junit.rules.Timeout;
+import org.kaazing.k3po.junit.annotation.Specification;
+import org.kaazing.k3po.junit.rules.K3poRule;
 
 /**
  * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7230#section-4">RFC 7230 section 4:
@@ -29,58 +38,51 @@ import org.junit.Test;
  */
 public class TransferCodingsIT {
 
-    @Test
-    @Ignore("Not Implemented")
-    public void shouldProcessRequestTransferEncodingChunked() {
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/http/rfc7230/transfer.codings");
 
+    private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
+
+    @Rule
+    public final TestRule chain = outerRule(k3po).around(timeout);
+
+    @Test
+    @Specification({
+        "should.process.request.transfer.encoding.chunked/request",
+        "should.process.request.transfer.encoding.chunked/response" })
+    public void shouldProcessRequestTransferEncodingChunked() throws Exception {
+        k3po.join();
     }
 
     @Test
-    @Ignore("Not Implemented")
-    public void shouldProcessResponseTransferEncodingChunked() {
-
+    @Specification({
+        "should.process.response.transfer.encoding.chunked/request",
+        "should.process.response.transfer.encoding.chunked/response" })
+    public void shouldProcessResponseTransferEncodingChunked() throws Exception {
+        k3po.join();
     }
 
     @Test
-    @Ignore("Not Implemented")
-    public void shouldProcessRequestTransferEncodingChunkedExtension() {
-
+    @Ignore("requires enhancement https://github.com/k3po/k3po/issues/136")
+    public void shouldProcessRequestTransferEncodingChunkedExtension() throws Exception {
+        k3po.join();
     }
 
     @Test
-    @Ignore("Not Implemented")
-    public void shouldProcessResponseTransferEncodingChunkedExtension() {
-
+    @Ignore("requires enhancement https://github.com/k3po/k3po/issues/136")
+    public void shouldProcessResponseTransferEncodingChunkedExtension() throws Exception {
+        k3po.join();
     }
 
     @Test
-    @Ignore("Not Implemented")
-    public void shouldProcessRequestTransferEncodingChunkedWithTrailer() {
-
+    @Ignore("requires enhancement https://github.com/k3po/k3po/issues/136")
+    public void shouldProcessRequestTransferEncodingChunkedWithTrailer() throws Exception {
+        k3po.join();
     }
 
     @Test
-    @Ignore("Not Implemented")
-    public void shouldProcessResponseTransferEncodingChunkedWithTrailer() {
-
+    @Ignore("requires enhancement https://github.com/k3po/k3po/issues/136")
+    public void shouldProcessResponseTransferEncodingChunkedWithTrailer() throws Exception {
+        k3po.join();
     }
 
-    @Test
-    @Ignore("Not Implemented")
-    public void shouldProcessRequestTransferEncodingChunkedWithTrailerAndTrailerHeader() {
-
-    }
-
-    @Test
-    @Ignore("Not Implemented")
-    public void shouldProcessResponseTransferEncodingChunkedWithTrailerAndTrailerHeader() {
-
-    }
-
-    // TODO
-    // 4.2. Compression Codings
-    // 4.2.1. Compress Coding
-    // 4.2.2. Deflate Coding
-    // 4.2.3. Gzip Coding
-    // 4.3. TE Header
 }

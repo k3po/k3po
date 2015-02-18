@@ -360,10 +360,29 @@ public class MessageFormatIT {
      */
     @Test
     @Specification({
-            "response.with.1xx.must.not.have.content/request",
-            "response.with.1xx.must.not.have.content/response" })
-    public void responseWith1xxToHeadMustNotHaveContent() throws Exception {
-        // no header
+            "head.response.must.not.have.content/request",
+            "head.response.must.not.have.content/response" })
+    public void headResponseMustNotHaveContent() throws Exception {
+        k3po.join();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc7230#section-3">RFC 7230 section 3: Message Format</a>.
+     *
+     * Responses to the HEAD request method (Section 4.3.2 of [RFC7231]) never include a message body because the
+     * associated response header fields (e.g., Transfer-Encoding, Content-Length, etc.), if present, indicate only what
+     * their values would have been if the request method had been GET (Section 4.3.1 of [RFC7231]). 2xx (Successful)
+     * responses to a CONNECT request method (Section 4.3.6 of [RFC7231]) switch to tunnel mode instead of having a
+     * message body. All 1xx (Informational), 204 (No Content), and 304 (Not Modified) responses do not include a
+     * message body.
+     *
+     * @throws Exception when K3PO is not started
+     */
+    @Test
+    @Specification({
+            "head.response.must.not.have.content.though.may.have.content.length/request",
+            "head.response.must.not.have.content.though.may.have.content.length/response" })
+    public void headResponseMustNotHaveContentThoughMayHaveContentLength() throws Exception {
         k3po.join();
     }
 
