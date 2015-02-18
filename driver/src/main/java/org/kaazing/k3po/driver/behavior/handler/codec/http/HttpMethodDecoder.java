@@ -41,7 +41,7 @@ public class HttpMethodDecoder extends AbstractConfigDecoder {
         HttpMethod method = httpConfig.getMethod();
         String methodName = method.getName();
         ChannelBuffer buffer = copiedBuffer(methodName, UTF_8);
-        methodDecoder.decode(buffer);
+        methodDecoder.decodeLast(buffer);
     }
 
     @Override
