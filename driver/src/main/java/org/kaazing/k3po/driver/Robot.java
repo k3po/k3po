@@ -231,8 +231,6 @@ public class Robot {
 
     private ChannelFuture prepareConfiguration() {
 
-        ChannelFuture prepareAllFuture = prepareServers();
-
         List<ChannelFuture> completionFutures = new ArrayList<>();
         ChannelFutureListener streamCompletionListener = createStreamCompletionListener();
         for (ChannelPipeline pipeline : configuration.getClientAndServerPipelines()) {
@@ -246,7 +244,7 @@ public class Robot {
         ChannelFutureListener executionListener = createScriptCompletionListener();
         executionFuture.addListener(executionListener);
 
-        return prepareAllFuture;
+        return prepareServers();
     }
 
     private ChannelFuture prepareServers() {
