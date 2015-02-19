@@ -173,7 +173,7 @@ public class RobotIT {
 
         // @formatter:off
         String script =
-            "connect tcp://localhost:60001\n" +
+            "connect tcp://localhost:6000\n" +
             "connected\n" +
             "write \"Hello\\n\"\n" +
             "read [0..4]\n" +
@@ -181,12 +181,12 @@ public class RobotIT {
             "closed\n";
 
         String expected = "(?s)" +
-            "connect tcp://localhost:60001\n" +
+            "connect tcp://localhost:6000\n" +
             "connected\n" +
             ".*";
         // @formatter:on
 
-        server.bind(new InetSocketAddress("localhost", 60001));
+        server.bind(new InetSocketAddress("localhost", 6000));
 
         robot.prepareAndStart(script).await();
 
@@ -215,7 +215,7 @@ public class RobotIT {
 
         // @formatter:off
         String script =
-            "accept tcp://localhost:60002\n" +
+            "accept tcp://localhost:6002\n" +
             "accepted\n" +
             "connected\n" +
             "write \"Hello\\n\"\n" +
@@ -224,7 +224,7 @@ public class RobotIT {
             "closed\n";
 
         String expected =
-                "accept tcp://localhost:60002\n" +
+                "accept tcp://localhost:6002\n" +
                 "accepted\n" +
                 "connected\n" +
                 "write \"Hello\\n\"\n" +
@@ -233,7 +233,7 @@ public class RobotIT {
 
         robot.prepareAndStart(script).await();
 
-        client.connect(new InetSocketAddress("localhost", 60002));
+        client.connect(new InetSocketAddress("localhost", 6002));
 
         // ensure connection is accepted before abort
         BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
