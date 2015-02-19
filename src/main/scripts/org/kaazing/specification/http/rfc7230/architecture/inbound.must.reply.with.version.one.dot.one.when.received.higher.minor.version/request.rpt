@@ -1,7 +1,7 @@
 connect tcp://localhost:8080
 connected
 write "GET / HTTP/1.2" "\r\n"
-write "HOST: Robot" "\r\n"
+write "HOST: localhost:8080" "\r\n"
 write "\r\n"
 
 read "HTTP/1.1"

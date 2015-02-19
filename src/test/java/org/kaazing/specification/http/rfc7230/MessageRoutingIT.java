@@ -34,7 +34,7 @@ public class MessageRoutingIT {
      */
     @Test
     @Ignore("Not Implemented")
-    public void outboundHostHeaderShouldFollowRequestLine() {
+    public void inboundHostHeaderShouldFollowRequestLine() {
 
     }
 
