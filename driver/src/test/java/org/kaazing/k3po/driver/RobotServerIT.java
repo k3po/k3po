@@ -87,9 +87,6 @@ public class RobotServerIT {
         }
 
         server.close();
-
-        Thread.sleep(1000);
-
     }
 
     @Test
