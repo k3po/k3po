@@ -280,7 +280,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("completion#%d", pipelineAsMap.size() + 1);
-
         CompletionHandler handler = new CompletionHandler();
         handler.setRegionInfo(acceptedNode.getRegionInfo());
         pipelineAsMap.put(handlerName, handler);

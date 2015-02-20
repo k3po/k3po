@@ -17,7 +17,6 @@
 package org.kaazing.k3po.driver.behavior.handler.codec;
 
 import static java.lang.String.format;
-import static org.jboss.netty.util.CharsetUtil.UTF_8;
 import static org.kaazing.k3po.lang.RegionInfo.newSequential;
 
 import java.nio.charset.Charset;
@@ -27,7 +26,6 @@ import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.behavior.ScriptProgressException;
 import org.kaazing.k3po.lang.RegionInfo;
-import org.kaazing.k3po.lang.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.el.ExpressionContext;
 import org.kaazing.k3po.lang.regex.NamedGroupMatcher;
 import org.kaazing.k3po.lang.regex.NamedGroupPattern;
@@ -101,11 +99,10 @@ public class ReadRegexDecoder extends MessageDecoder {
     private void captureGroups(NamedGroupMatcher matcher) {
         for (String captureName : matcher.groupNames()) {
             String captured = matcher.group(captureName);
-            byte[] bytes = captured.getBytes(UTF_8);
-            environment.getELResolver().setValue(environment, null, captureName, bytes);
+            environment.getELResolver().setValue(environment, null, captureName, captured);
 
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(format("Setting value for ${%s} to %s", captureName, AstLiteralBytesValue.toString(bytes)));
+                LOGGER.debug(format("Setting value for ${%s} to %s", captureName, captured));
             }
         }
     }

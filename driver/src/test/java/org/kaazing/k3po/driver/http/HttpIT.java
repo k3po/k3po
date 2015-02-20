@@ -218,4 +218,12 @@ public class HttpIT {
         k3po.join();
     }
 
+    @Test
+    @TestSpecification({
+        "read.content.length.via.regex/request",
+        "read.content.length.via.regex/response" })
+    public void testReadContentLengthViaAVariable() throws Exception {
+        k3po.join();
+    }
+
 }

@@ -167,7 +167,7 @@ public class Robot {
 
     public ChannelFuture start() throws Exception {
 
-        if (preparedFuture == null || !preparedFuture.isSuccess()) {
+        if (preparedFuture == null || !preparedFuture.isDone()) {
             throw new IllegalStateException("Script has not been prepared or is still preparing");
         } else if (startedFuture.isDone()) {
             throw new IllegalStateException("Script has already been started");
@@ -231,8 +231,6 @@ public class Robot {
 
     private ChannelFuture prepareConfiguration() {
 
-        ChannelFuture prepareAllFuture = prepareServers();
-
         List<ChannelFuture> completionFutures = new ArrayList<>();
         ChannelFutureListener streamCompletionListener = createStreamCompletionListener();
         for (ChannelPipeline pipeline : configuration.getClientAndServerPipelines()) {
@@ -246,7 +244,7 @@ public class Robot {
         ChannelFutureListener executionListener = createScriptCompletionListener();
         executionFuture.addListener(executionListener);
 
-        return prepareAllFuture;
+        return prepareServers();
     }
 
     private ChannelFuture prepareServers() {
@@ -287,13 +285,7 @@ public class Robot {
             bindFuture.addListener(createBindCompleteListener(regionInfo));
         }
 
-        // What should prepared mean ... server channels have all completed binding or just that they started.
-        // Initially I was thinking that it should be when they are done. But I'm not so sure.
-        // In that case what should happen if a subset of the binds fail and a subset succeed? What should happen if they all
-        // fail? I think in either case the robot should generate an observed script with the exception events in place of
-        // the accept lines. This is why I choose to return a successful future rather than some composite of the bind
-        // futures.
-        return Channels.succeededFuture(channel);
+        return new CompositeChannelFuture<>(channel, bindFutures);
     }
 
     private void startConfiguration() {
