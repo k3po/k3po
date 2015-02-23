@@ -20,11 +20,6 @@ import static java.lang.String.format;
 
 public class AstByteLengthBytesMatcher extends AstFixedLengthBytesMatcher {
 
-    @Deprecated
-    public AstByteLengthBytesMatcher() {
-        super(Byte.SIZE / Byte.SIZE);
-    }
-
     public AstByteLengthBytesMatcher(String captureName) {
         super(Byte.SIZE / Byte.SIZE, captureName);
     }
