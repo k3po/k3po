@@ -1,4 +1,3 @@
-----------------------------------------
 TCPDUMP to PCAP Conversion
 
 1) Capturing 
@@ -13,11 +12,9 @@ TCPDUMP to PCAP Conversion
 
         note: You can save filtered wiresharks this way as well
 
-2) tcpdump to pdml (Will be done automatically in program)
+2) pcap to pdml
 
     tshark -T pdml -r <infile> -V | tee <outputfile.pdml> 
-
-    -w <outfile> has the following man page note...
 
     NOTE:   -w provides raw packet data, not text. If you want text output you 
             need to redirect stdout (e.g. using '>'), don't use the -w option
@@ -36,9 +33,13 @@ TCPDUMP to PCAP Conversion
 	    -T pdml,  says to save a pdml
 	    -d tcp.port==8000,http   tells tshark to interpret tcp.port 8000 traffic as if it was http
 
+3) Converting to pcap and pdml to rupert scripts
 
------------------------------------------
-MVN GOALS
+via jar after building project
+
+java -jar target/com.kaazing.k3po.pcap.converter-develop-SNAPSHOT-jar-with-dependencies.jar tcpDumpFile pdmlFile
+
+via mvn goals
 
 o convertTcpdumpToRupert:
     -parameters:

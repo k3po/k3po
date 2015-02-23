@@ -10,7 +10,7 @@
     <groupId>com.kaazing.k3po</groupId>
     <artifactId>com.kaazing.k3po.pcap.converter</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.0.22-SNAPSHOT</version>
+    <version>develop-SNAPSHOT</version>
 
     <name>K3po TCP Dump Converter</name>
     <url>https://github.com/kaazing/k3po.pcap.converter</url>
@@ -90,7 +90,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>org.kaazing.k3po.pcap.converter.tcpconverter.TcpdumpConverter</mainClass>
+                            <mainClass>org.kaazing.k3po.pcap.converter.PcapConverter</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
