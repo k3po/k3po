@@ -2,21 +2,30 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.kaazing.gateway.core</groupId>
-        <artifactId>com.kaazing.gateway.core.common</artifactId>
-        <version>1.0.0.30</version>
+        <groupId>org.kaazing</groupId>
+        <artifactId>community</artifactId>
+        <version>2.10</version>
     </parent>
 
-    <groupId>com.kaazing.robot</groupId>
-    <artifactId>com.kaazing.robot.tcpdump.converter</artifactId>
+    <groupId>com.kaazing.k3po</groupId>
+    <artifactId>com.kaazing.k3po.pcap.converter</artifactId>
     <packaging>jar</packaging>
     <version>1.0.0.22-SNAPSHOT</version>
-    <name>Robot TCP Dump Converter</name>
+
+    <name>K3po TCP Dump Converter</name>
+    <url>https://github.com/kaazing/k3po.pcap.converter</url>
 
     <scm>
-        <connection>scm:svn:http://svn.kaazing.wan/robot.tcpdump.converter/trunk</connection>
-        <url>http://fisheye.kaazing.wan/browse/KaazingSVN/robot.tcpdump.converter/trunk</url>
+        <url>https://github.com/kaazing/k3po.pcap.converter</url>
+        <connection>scm:git:https://github.com/kaazing/k3po.pcap.converter.git</connection>
     </scm>
+
+    <properties>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <require.java.version>1.7+</require.java.version>
+        <animal.sniffer.signature.artifactId>java17</animal.sniffer.signature.artifactId>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -43,10 +52,12 @@
         <dependency>
             <groupId>org.jmock</groupId>
             <artifactId>jmock</artifactId>
+            <version>2.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.jmock</groupId>
             <artifactId>jmock-legacy</artifactId>
+            <version>2.6.0</version>
         </dependency>
         <dependency>
             <groupId>pull-parser</groupId>
@@ -79,7 +90,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>org.kaazing.robot.tcpconverter.TcpdumpConverter</mainClass>
+                            <mainClass>org.kaazing.k3po.pcap.converter.tcpconverter.TcpdumpConverter</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
