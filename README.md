@@ -3,7 +3,7 @@
 A utility for converting [PCAP (Packet Captures)](http://en.wikipedia.org/wiki/Pcap) into k3po scripts
 
 ### Steps 
-1. Obtain a PCAP (There are many ways to do this)
+#### 1) Obtain a PCAP (There are many ways to do this)
 
 From Linux/Mac/Windows use wireshark
 
@@ -13,7 +13,7 @@ From Linux/Mac machine use tcpdump
 
 `tcpdump -i <interface> -s 0 -w <some-file>`
 
-2. Generate a pdml (Packet Details Markup Language) file from the pcap
+#### 2) Generate a pdml (Packet Details Markup Language) file from the pcap
 run  `tshark -T pdml -r <infile> -V | tee <outputfile.pdml> `
 tshark comes as a utility installed via wireshark
 
@@ -31,7 +31,7 @@ tshark comes as a utility installed via wireshark
 	-T pdml,  says to save a pdml
 	-d tcp.port==8000,http   tells tshark to interpret tcp.port 8000 traffic as if it was http
 
-3) Generate the K3po Script from the pdml and pcap.
+#### 3) Generate the K3po Script from the pdml and pcap.
 
 First build this project (mvn clean verify).  Then run
 
