@@ -304,7 +304,7 @@ public class Parser {
         //geninfo
         if ( attributes.checkIfEqual("name", "timestamp") ){
             try {
-                currentPacket.setTimeStamp(new SimpleDateFormat("MMM dd, yyyy HH:mm:ss.SSSSSSSSS z", Locale.ENGLISH)
+                currentPacket.setTimeStamp(new SimpleDateFormat("MMM dd, yyyy HH:mm:ss.SSSSSSSSS", Locale.ENGLISH)
                         .parse(attributes.get("show")));
             }
             catch (ParseException e) {

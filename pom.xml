@@ -23,8 +23,7 @@
         <version>2.10</version>
     </parent>
 
-    <groupId>com.kaazing.k3po</groupId>
-    <artifactId>com.kaazing.k3po.pcap.converter</artifactId>
+    <artifactId>k3po.pcap.converter</artifactId>
     <packaging>jar</packaging>
     <version>develop-SNAPSHOT</version>
 

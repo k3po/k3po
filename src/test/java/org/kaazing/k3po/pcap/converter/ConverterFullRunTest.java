@@ -175,7 +175,7 @@ public class ConverterFullRunTest {
         PcapConverter converter = new PcapConverter(new FileInputStream(captureFileLoc), new FileInputStream(pdmlFile));
         converter.convertTcpDumpToRpt();
     }
-    
+
     @Test
     public void shouldConvertDotNetClientRevalidatePackets() throws Exception {
         // get capture file
@@ -192,7 +192,24 @@ public class ConverterFullRunTest {
         PcapConverter converter = new PcapConverter(new FileInputStream(captureFileLoc), new FileInputStream(pdmlFile));
         converter.convertTcpDumpToRpt();
     }
-    
+
+    @Test
+    public void testParseEuropeanTimeZone() throws Exception {
+        // get capture file
+        Enumeration<URL> captureFileEnum = getClass().getClassLoader()
+                .getResources("tcpdumps/mic17feb2.pcap");
+        String captureFileLoc = captureFileEnum.nextElement().getPath();
+        Assert.assertEquals(captureFileLoc != null, true);
+
+        Enumeration<URL> pdmlFiles = getClass().getClassLoader()
+                .getResources("pdmls/mic17feb2.pdml");
+        String pdmlFile = pdmlFiles.nextElement().getPath();
+        Assert.assertEquals(pdmlFile != null, true);
+
+        PcapConverter converter = new PcapConverter(new FileInputStream(captureFileLoc), new FileInputStream(pdmlFile));
+        converter.convertTcpDumpToRpt();
+    }
+
 //    @Test
 //    public void testHelloRobotCap() throws Exception {
 //        try {
