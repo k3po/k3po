@@ -65,7 +65,7 @@ public class PacketTest {
 
     @Test
     public void testPacketTimeStamp() throws ParseException {
-        Date correctDate = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss.SS z", Locale.ENGLISH)
+        Date correctDate = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss.SS", Locale.ENGLISH)
                 .parse("Jan 21, 2013 10:57:28.425137000 PST");
         Assert.assertEquals(testPacket.getTimeStamp(), correctDate);
     }
