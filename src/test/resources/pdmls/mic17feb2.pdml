@@ -1,0 +1,752 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="pdml2html.xsl"?>
+<!-- You can find pdml2html.xsl in D:\Wireshark or at http://anonsvn.wireshark.org/trunk/wireshark/pdml2html.xsl. -->
+<pdml version="0" creator="wireshark/1.12.3" time="Tue Feb 24 15:54:12 2015" capture_file="mic17feb2.pcap">
+<packet>
+  <proto name="geninfo" pos="0" showname="General information" size="203">
+    <field name="num" pos="0" show="1" showname="Number" value="1" size="203"/>
+    <field name="len" pos="0" show="203" showname="Frame Length" value="cb" size="203"/>
+    <field name="caplen" pos="0" show="203" showname="Captured Length" value="cb" size="203"/>
+    <field name="timestamp" pos="0" show="Feb 17, 2015 19:39:16.819561000 GTB Standard Time" showname="Captured Time" value="1424194756.819561000" size="203"/>
+  </proto>
+  <proto name="frame" showname="Frame 1: 203 bytes on wire (1624 bits), 203 bytes captured (1624 bits) on interface 0" size="203" pos="0">
+    <field name="frame.interface_id" showname="Interface id: 0 (unknown)" size="0" pos="0" show="0"/>
+    <field name="frame.encap_type" showname="Encapsulation type: Raw IP (7)" size="0" pos="0" show="7"/>
+    <field name="frame.time" showname="Arrival Time: Feb 17, 2015 19:39:16.819561000 GTB Standard Time" size="0" pos="0" show="Feb 17, 2015 19:39:16.819561000 GTB Standard Time"/>
+    <field name="frame.offset_shift" showname="Time shift for this packet: 0.000000000 seconds" size="0" pos="0" show="0.000000000"/>
+    <field name="frame.time_epoch" showname="Epoch Time: 1424194756.819561000 seconds" size="0" pos="0" show="1424194756.819561000"/>
+    <field name="frame.time_delta" showname="Time delta from previous captured frame: 0.000000000 seconds" size="0" pos="0" show="0.000000000"/>
+    <field name="frame.time_delta_displayed" showname="Time delta from previous displayed frame: 0.000000000 seconds" size="0" pos="0" show="0.000000000"/>
+    <field name="frame.time_relative" showname="Time since reference or first frame: 0.000000000 seconds" size="0" pos="0" show="0.000000000"/>
+    <field name="frame.number" showname="Frame Number: 1" size="0" pos="0" show="1"/>
+    <field name="frame.len" showname="Frame Length: 203 bytes (1624 bits)" size="0" pos="0" show="203"/>
+    <field name="frame.cap_len" showname="Capture Length: 203 bytes (1624 bits)" size="0" pos="0" show="203"/>
+    <field name="frame.marked" showname="Frame is marked: False" size="0" pos="0" show="0"/>
+    <field name="frame.ignored" showname="Frame is ignored: False" size="0" pos="0" show="0"/>
+    <field name="frame.protocols" showname="Protocols in frame: raw:ip:tcp:http" size="0" pos="0" show="raw:ip:tcp:http"/>
+  </proto>
+  <proto name="raw" showname="Raw packet data" size="0" pos="0">
+    <field name="" show="No link information available" size="0" pos="0"/>
+  </proto>
+  <proto name="ip" showname="Internet Protocol Version 4, Src: 127.0.0.1 (127.0.0.1), Dst: 127.0.0.1 (127.0.0.1)" size="20" pos="0">
+    <field name="ip.version" showname="Version: 4" size="1" pos="0" show="4" value="45"/>
+    <field name="ip.hdr_len" showname="Header Length: 20 bytes" size="1" pos="0" show="20" value="45"/>
+    <field name="ip.dsfield" showname="Differentiated Services Field: 0x00 (DSCP 0x00: Default; ECN: 0x00: Not-ECT (Not ECN-Capable Transport))" size="1" pos="1" show="0" value="00">
+      <field name="ip.dsfield.dscp" showname="0000 00.. = Differentiated Services Codepoint: Default (0x00)" size="1" pos="1" show="0" value="0" unmaskedvalue="00"/>
+      <field name="ip.dsfield.ecn" showname=".... ..00 = Explicit Congestion Notification: Not-ECT (Not ECN-Capable Transport) (0x00)" size="1" pos="1" show="0" value="0" unmaskedvalue="00"/>
+    </field>
+    <field name="ip.len" showname="Total Length: 203" size="2" pos="2" show="203" value="00cb"/>
+    <field name="ip.id" showname="Identification: 0x1d4d (7501)" size="2" pos="4" show="7501" value="1d4d"/>
+    <field name="ip.flags" showname="Flags: 0x02 (Don&apos;t Fragment)" size="1" pos="6" show="2" value="40">
+      <field name="ip.flags.rb" showname="0... .... = Reserved bit: Not set" size="1" pos="6" show="0" value="40"/>
+      <field name="ip.flags.df" showname=".1.. .... = Don&apos;t fragment: Set" size="1" pos="6" show="1" value="40"/>
+      <field name="ip.flags.mf" showname="..0. .... = More fragments: Not set" size="1" pos="6" show="0" value="40"/>
+    </field>
+    <field name="ip.frag_offset" showname="Fragment offset: 0" size="2" pos="6" show="0" value="4000"/>
+    <field name="ip.ttl" showname="Time to live: 128" size="1" pos="8" show="128" value="80"/>
+    <field name="ip.proto" showname="Protocol: TCP (6)" size="1" pos="9" show="6" value="06"/>
+    <field name="ip.checksum" showname="Header checksum: 0x0000 [validation disabled]" size="2" pos="10" show="0" value="0000">
+      <field name="ip.checksum_good" showname="Good: False" size="2" pos="10" show="0" value="0000"/>
+      <field name="ip.checksum_bad" showname="Bad: False" size="2" pos="10" show="0" value="0000"/>
+    </field>
+    <field name="ip.src" showname="Source: 127.0.0.1 (127.0.0.1)" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.addr" showname="Source or Destination Address: 127.0.0.1 (127.0.0.1)" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.src_host" showname="Source Host: 127.0.0.1" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.host" showname="Source or Destination Host: 127.0.0.1" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.dst" showname="Destination: 127.0.0.1 (127.0.0.1)" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.addr" showname="Source or Destination Address: 127.0.0.1 (127.0.0.1)" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.dst_host" showname="Destination Host: 127.0.0.1" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.host" showname="Source or Destination Host: 127.0.0.1" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="" show="Source GeoIP: Unknown" size="4" pos="12" value="7f000001"/>
+    <field name="" show="Destination GeoIP: Unknown" size="4" pos="16" value="7f000001"/>
+  </proto>
+  <proto name="tcp" showname="Transmission Control Protocol, Src Port: 58143 (58143), Dst Port: 8080 (8080), Seq: 1, Ack: 1, Len: 163" size="20" pos="20">
+    <field name="tcp.srcport" showname="Source Port: 58143 (58143)" size="2" pos="20" show="58143" value="e31f"/>
+    <field name="tcp.dstport" showname="Destination Port: 8080 (8080)" size="2" pos="22" show="8080" value="1f90"/>
+    <field name="tcp.port" showname="Source or Destination Port: 58143" hide="yes" size="2" pos="20" show="58143" value="e31f"/>
+    <field name="tcp.port" showname="Source or Destination Port: 8080" hide="yes" size="2" pos="22" show="8080" value="1f90"/>
+    <field name="tcp.stream" showname="Stream index: 0" size="0" pos="20" show="0"/>
+    <field name="tcp.len" showname="TCP Segment Len: 163" size="1" pos="32" show="163" value="50"/>
+    <field name="tcp.seq" showname="Sequence number: 1    (relative sequence number)" size="4" pos="24" show="1" value="fa8d9bcc"/>
+    <field name="tcp.nxtseq" showname="Next sequence number: 164    (relative sequence number)" size="0" pos="20" show="164"/>
+    <field name="tcp.ack" showname="Acknowledgment number: 1    (relative ack number)" size="4" pos="28" show="1" value="21e7899b"/>
+    <field name="tcp.hdr_len" showname="Header Length: 20 bytes" size="1" pos="32" show="20" value="50"/>
+    <field name="tcp.flags" showname=".... 0000 0001 1000 = Flags: 0x018 (PSH, ACK)" size="2" pos="32" show="24" value="18" unmaskedvalue="5018">
+      <field name="tcp.flags.res" showname="000. .... .... = Reserved: Not set" size="1" pos="32" show="0" value="0" unmaskedvalue="50"/>
+      <field name="tcp.flags.ns" showname="...0 .... .... = Nonce: Not set" size="1" pos="32" show="0" value="0" unmaskedvalue="50"/>
+      <field name="tcp.flags.cwr" showname=".... 0... .... = Congestion Window Reduced (CWR): Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.ecn" showname=".... .0.. .... = ECN-Echo: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.urg" showname=".... ..0. .... = Urgent: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.ack" showname=".... ...1 .... = Acknowledgment: Set" size="1" pos="33" show="1" value="1" unmaskedvalue="18"/>
+      <field name="tcp.flags.push" showname=".... .... 1... = Push: Set" size="1" pos="33" show="1" value="1" unmaskedvalue="18"/>
+      <field name="tcp.flags.reset" showname=".... .... .0.. = Reset: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.syn" showname=".... .... ..0. = Syn: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.fin" showname=".... .... ...0 = Fin: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+    </field>
+    <field name="tcp.window_size_value" showname="Window size value: 32" size="2" pos="34" show="32" value="0020"/>
+    <field name="tcp.window_size" showname="Calculated window size: 32" size="2" pos="34" show="32" value="0020"/>
+    <field name="tcp.window_size_scalefactor" showname="Window size scaling factor: -1 (unknown)" size="2" pos="34" show="-1" value="0020"/>
+    <field name="tcp.checksum" showname="Checksum: 0x8d9e [validation disabled]" size="2" pos="36" show="36254" value="8d9e">
+      <field name="tcp.checksum_good" showname="Good Checksum: False" size="2" pos="36" show="0" value="8d9e"/>
+      <field name="tcp.checksum_bad" showname="Bad Checksum: False" size="2" pos="36" show="0" value="8d9e"/>
+    </field>
+    <field name="tcp.urgent_pointer" showname="Urgent pointer: 0" size="2" pos="38" show="0" value="0000"/>
+    <field name="tcp.analysis" showname="SEQ/ACK analysis" size="0" pos="20" show="" value="">
+      <field name="tcp.analysis.bytes_in_flight" showname="Bytes in flight: 163" size="0" pos="20" show="163"/>
+    </field>
+  </proto>
+  <proto name="http" showname="Hypertext Transfer Protocol" size="163" pos="40">
+    <field name="" show="GET /path?query HTTP/1.1\r\n" size="26" pos="40" value="474554202f706174683f717565727920485454502f312e310d0a">
+      <field name="_ws.expert" showname="Expert Info (Chat/Sequence): GET /path?query HTTP/1.1\r\n" size="0" pos="40">
+        <field name="http.chat" showname="GET /path?query HTTP/1.1\r\n" size="0" pos="0" show="" value=""/>
+        <field name="_ws.expert.message" showname="Message: GET /path?query HTTP/1.1\r\n" hide="yes" size="0" pos="0" show="GET /path?query HTTP/1.1\r\n"/>
+        <field name="_ws.expert.severity" showname="Severity level: Chat" size="0" pos="0" show="2097152"/>
+        <field name="_ws.expert.group" showname="Group: Sequence" size="0" pos="0" show="33554432"/>
+      </field>
+      <field name="http.request.method" showname="Request Method: GET" size="3" pos="40" show="GET" value="474554"/>
+      <field name="http.request.uri" showname="Request URI: /path?query" size="11" pos="44" show="/path?query" value="2f706174683f7175657279"/>
+      <field name="http.request.version" showname="Request Version: HTTP/1.1" size="8" pos="56" show="HTTP/1.1" value="485454502f312e31"/>
+    </field>
+    <field name="http.host" showname="Host: localhost:8080\r\n" size="22" pos="66" show="localhost:8080" value="486f73743a206c6f63616c686f73743a383038300d0a"/>
+    <field name="http.request.line" showname="Host: localhost:8080\r\n" hide="yes" size="22" pos="66" show="Host: localhost:8080\xd\xa" value="486f73743a206c6f63616c686f73743a383038300d0a"/>
+    <field name="http.upgrade" showname="Upgrade: wEbsOcket\r\n" size="20" pos="88" show="wEbsOcket" value="557067726164653a20774562734f636b65740d0a"/>
+    <field name="http.request.line" showname="Upgrade: wEbsOcket\r\n" hide="yes" size="20" pos="88" show="Upgrade: wEbsOcket\xd\xa" value="557067726164653a20774562734f636b65740d0a"/>
+    <field name="http.connection" showname="Connection: uPGradE\r\n" size="21" pos="108" show="uPGradE" value="436f6e6e656374696f6e3a20755047726164450d0a"/>
+    <field name="http.request.line" showname="Connection: uPGradE\r\n" hide="yes" size="21" pos="108" show="Connection: uPGradE\xd\xa" value="436f6e6e656374696f6e3a20755047726164450d0a"/>
+    <field name="http.sec_websocket_key" showname="Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n" size="45" pos="129" show="dGhlIHNhbXBsZSBub25jZQ==" value="5365632d576562536f636b65742d4b65793a206447686c49484e68625842735a5342756232356a5a513d3d0d0a"/>
+    <field name="http.request.line" showname="Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n" hide="yes" size="45" pos="129" show="Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\xd\xa" value="5365632d576562536f636b65742d4b65793a206447686c49484e68625842735a5342756232356a5a513d3d0d0a"/>
+    <field name="http.sec_websocket_version" showname="Sec-WebSocket-Version: 13\r\n" size="27" pos="174" show="13" value="5365632d576562536f636b65742d56657273696f6e3a2031330d0a"/>
+    <field name="http.request.line" showname="Sec-WebSocket-Version: 13\r\n" hide="yes" size="27" pos="174" show="Sec-WebSocket-Version: 13\xd\xa" value="5365632d576562536f636b65742d56657273696f6e3a2031330d0a"/>
+    <field name="" show="\r\n" size="2" pos="201" value="0d0a"/>
+    <field name="http.request.full_uri" showname="Full request URI: http://localhost:8080/path?query" size="0" pos="40" show="http://localhost:8080/path?query"/>
+    <field name="http.request" showname="Request: True" hide="yes" size="0" pos="40" show="1"/>
+    <field name="" show="HTTP request 1/1" size="0" pos="40"/>
+  </proto>
+</packet>
+
+
+<packet>
+  <proto name="geninfo" pos="0" showname="General information" size="241">
+    <field name="num" pos="0" show="2" showname="Number" value="2" size="241"/>
+    <field name="len" pos="0" show="241" showname="Frame Length" value="f1" size="241"/>
+    <field name="caplen" pos="0" show="241" showname="Captured Length" value="f1" size="241"/>
+    <field name="timestamp" pos="0" show="Feb 17, 2015 19:39:16.822560000 GTB Standard Time" showname="Captured Time" value="1424194756.822560000" size="241"/>
+  </proto>
+  <proto name="frame" showname="Frame 2: 241 bytes on wire (1928 bits), 241 bytes captured (1928 bits) on interface 0" size="241" pos="0">
+    <field name="frame.interface_id" showname="Interface id: 0 (unknown)" size="0" pos="0" show="0"/>
+    <field name="frame.encap_type" showname="Encapsulation type: Raw IP (7)" size="0" pos="0" show="7"/>
+    <field name="frame.time" showname="Arrival Time: Feb 17, 2015 19:39:16.822560000 GTB Standard Time" size="0" pos="0" show="Feb 17, 2015 19:39:16.822560000 GTB Standard Time"/>
+    <field name="frame.offset_shift" showname="Time shift for this packet: 0.000000000 seconds" size="0" pos="0" show="0.000000000"/>
+    <field name="frame.time_epoch" showname="Epoch Time: 1424194756.822560000 seconds" size="0" pos="0" show="1424194756.822560000"/>
+    <field name="frame.time_delta" showname="Time delta from previous captured frame: 0.002999000 seconds" size="0" pos="0" show="0.002999000"/>
+    <field name="frame.time_delta_displayed" showname="Time delta from previous displayed frame: 0.002999000 seconds" size="0" pos="0" show="0.002999000"/>
+    <field name="frame.time_relative" showname="Time since reference or first frame: 0.002999000 seconds" size="0" pos="0" show="0.002999000"/>
+    <field name="frame.number" showname="Frame Number: 2" size="0" pos="0" show="2"/>
+    <field name="frame.len" showname="Frame Length: 241 bytes (1928 bits)" size="0" pos="0" show="241"/>
+    <field name="frame.cap_len" showname="Capture Length: 241 bytes (1928 bits)" size="0" pos="0" show="241"/>
+    <field name="frame.marked" showname="Frame is marked: False" size="0" pos="0" show="0"/>
+    <field name="frame.ignored" showname="Frame is ignored: False" size="0" pos="0" show="0"/>
+    <field name="frame.protocols" showname="Protocols in frame: raw:ip:tcp:http" size="0" pos="0" show="raw:ip:tcp:http"/>
+  </proto>
+  <proto name="raw" showname="Raw packet data" size="0" pos="0">
+    <field name="" show="No link information available" size="0" pos="0"/>
+  </proto>
+  <proto name="ip" showname="Internet Protocol Version 4, Src: 127.0.0.1 (127.0.0.1), Dst: 127.0.0.1 (127.0.0.1)" size="20" pos="0">
+    <field name="ip.version" showname="Version: 4" size="1" pos="0" show="4" value="45"/>
+    <field name="ip.hdr_len" showname="Header Length: 20 bytes" size="1" pos="0" show="20" value="45"/>
+    <field name="ip.dsfield" showname="Differentiated Services Field: 0x00 (DSCP 0x00: Default; ECN: 0x00: Not-ECT (Not ECN-Capable Transport))" size="1" pos="1" show="0" value="00">
+      <field name="ip.dsfield.dscp" showname="0000 00.. = Differentiated Services Codepoint: Default (0x00)" size="1" pos="1" show="0" value="0" unmaskedvalue="00"/>
+      <field name="ip.dsfield.ecn" showname=".... ..00 = Explicit Congestion Notification: Not-ECT (Not ECN-Capable Transport) (0x00)" size="1" pos="1" show="0" value="0" unmaskedvalue="00"/>
+    </field>
+    <field name="ip.len" showname="Total Length: 241" size="2" pos="2" show="241" value="00f1"/>
+    <field name="ip.id" showname="Identification: 0x1d4f (7503)" size="2" pos="4" show="7503" value="1d4f"/>
+    <field name="ip.flags" showname="Flags: 0x02 (Don&apos;t Fragment)" size="1" pos="6" show="2" value="40">
+      <field name="ip.flags.rb" showname="0... .... = Reserved bit: Not set" size="1" pos="6" show="0" value="40"/>
+      <field name="ip.flags.df" showname=".1.. .... = Don&apos;t fragment: Set" size="1" pos="6" show="1" value="40"/>
+      <field name="ip.flags.mf" showname="..0. .... = More fragments: Not set" size="1" pos="6" show="0" value="40"/>
+    </field>
+    <field name="ip.frag_offset" showname="Fragment offset: 0" size="2" pos="6" show="0" value="4000"/>
+    <field name="ip.ttl" showname="Time to live: 128" size="1" pos="8" show="128" value="80"/>
+    <field name="ip.proto" showname="Protocol: TCP (6)" size="1" pos="9" show="6" value="06"/>
+    <field name="ip.checksum" showname="Header checksum: 0x0000 [validation disabled]" size="2" pos="10" show="0" value="0000">
+      <field name="ip.checksum_good" showname="Good: False" size="2" pos="10" show="0" value="0000"/>
+      <field name="ip.checksum_bad" showname="Bad: False" size="2" pos="10" show="0" value="0000"/>
+    </field>
+    <field name="ip.src" showname="Source: 127.0.0.1 (127.0.0.1)" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.addr" showname="Source or Destination Address: 127.0.0.1 (127.0.0.1)" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.src_host" showname="Source Host: 127.0.0.1" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.host" showname="Source or Destination Host: 127.0.0.1" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.dst" showname="Destination: 127.0.0.1 (127.0.0.1)" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.addr" showname="Source or Destination Address: 127.0.0.1 (127.0.0.1)" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.dst_host" showname="Destination Host: 127.0.0.1" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.host" showname="Source or Destination Host: 127.0.0.1" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="" show="Source GeoIP: Unknown" size="4" pos="12" value="7f000001"/>
+    <field name="" show="Destination GeoIP: Unknown" size="4" pos="16" value="7f000001"/>
+  </proto>
+  <proto name="tcp" showname="Transmission Control Protocol, Src Port: 8080 (8080), Dst Port: 58143 (58143), Seq: 1, Ack: 164, Len: 201" size="20" pos="20">
+    <field name="tcp.srcport" showname="Source Port: 8080 (8080)" size="2" pos="20" show="8080" value="1f90"/>
+    <field name="tcp.dstport" showname="Destination Port: 58143 (58143)" size="2" pos="22" show="58143" value="e31f"/>
+    <field name="tcp.port" showname="Source or Destination Port: 8080" hide="yes" size="2" pos="20" show="8080" value="1f90"/>
+    <field name="tcp.port" showname="Source or Destination Port: 58143" hide="yes" size="2" pos="22" show="58143" value="e31f"/>
+    <field name="tcp.stream" showname="Stream index: 0" size="0" pos="20" show="0"/>
+    <field name="tcp.len" showname="TCP Segment Len: 201" size="1" pos="32" show="201" value="50"/>
+    <field name="tcp.seq" showname="Sequence number: 1    (relative sequence number)" size="4" pos="24" show="1" value="21e7899b"/>
+    <field name="tcp.nxtseq" showname="Next sequence number: 202    (relative sequence number)" size="0" pos="20" show="202"/>
+    <field name="tcp.ack" showname="Acknowledgment number: 164    (relative ack number)" size="4" pos="28" show="164" value="fa8d9c6f"/>
+    <field name="tcp.hdr_len" showname="Header Length: 20 bytes" size="1" pos="32" show="20" value="50"/>
+    <field name="tcp.flags" showname=".... 0000 0001 1000 = Flags: 0x018 (PSH, ACK)" size="2" pos="32" show="24" value="18" unmaskedvalue="5018">
+      <field name="tcp.flags.res" showname="000. .... .... = Reserved: Not set" size="1" pos="32" show="0" value="0" unmaskedvalue="50"/>
+      <field name="tcp.flags.ns" showname="...0 .... .... = Nonce: Not set" size="1" pos="32" show="0" value="0" unmaskedvalue="50"/>
+      <field name="tcp.flags.cwr" showname=".... 0... .... = Congestion Window Reduced (CWR): Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.ecn" showname=".... .0.. .... = ECN-Echo: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.urg" showname=".... ..0. .... = Urgent: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.ack" showname=".... ...1 .... = Acknowledgment: Set" size="1" pos="33" show="1" value="1" unmaskedvalue="18"/>
+      <field name="tcp.flags.push" showname=".... .... 1... = Push: Set" size="1" pos="33" show="1" value="1" unmaskedvalue="18"/>
+      <field name="tcp.flags.reset" showname=".... .... .0.. = Reset: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.syn" showname=".... .... ..0. = Syn: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.fin" showname=".... .... ...0 = Fin: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+    </field>
+    <field name="tcp.window_size_value" showname="Window size value: 31" size="2" pos="34" show="31" value="001f"/>
+    <field name="tcp.window_size" showname="Calculated window size: 31" size="2" pos="34" show="31" value="001f"/>
+    <field name="tcp.window_size_scalefactor" showname="Window size scaling factor: -1 (unknown)" size="2" pos="34" show="-1" value="001f"/>
+    <field name="tcp.checksum" showname="Checksum: 0x58a8 [validation disabled]" size="2" pos="36" show="22696" value="58a8">
+      <field name="tcp.checksum_good" showname="Good Checksum: False" size="2" pos="36" show="0" value="58a8"/>
+      <field name="tcp.checksum_bad" showname="Bad Checksum: False" size="2" pos="36" show="0" value="58a8"/>
+    </field>
+    <field name="tcp.urgent_pointer" showname="Urgent pointer: 0" size="2" pos="38" show="0" value="0000"/>
+    <field name="tcp.analysis" showname="SEQ/ACK analysis" size="0" pos="20" show="" value="">
+      <field name="tcp.analysis.acks_frame" showname="This is an ACK to the segment in frame: 1" size="0" pos="20" show="1"/>
+      <field name="tcp.analysis.ack_rtt" showname="The RTT to ACK the segment was: 0.002999000 seconds" size="0" pos="20" show="0.002999000"/>
+      <field name="tcp.analysis.bytes_in_flight" showname="Bytes in flight: 201" size="0" pos="20" show="201"/>
+    </field>
+  </proto>
+  <proto name="http" showname="Hypertext Transfer Protocol" size="201" pos="40">
+    <field name="" show="HTTP/1.1 101 Web Socket Protocol Handshake\r\n" size="44" pos="40" value="485454502f312e31203130312057656220536f636b65742050726f746f636f6c2048616e647368616b650d0a">
+      <field name="_ws.expert" showname="Expert Info (Chat/Sequence): HTTP/1.1 101 Web Socket Protocol Handshake\r\n" size="0" pos="40">
+        <field name="http.chat" showname="HTTP/1.1 101 Web Socket Protocol Handshake\r\n" size="0" pos="0" show="" value=""/>
+        <field name="_ws.expert.message" showname="Message: HTTP/1.1 101 Web Socket Protocol Handshake\r\n" hide="yes" size="0" pos="0" show="HTTP/1.1 101 Web Socket Protocol Handshake\r\n"/>
+        <field name="_ws.expert.severity" showname="Severity level: Chat" size="0" pos="0" show="2097152"/>
+        <field name="_ws.expert.group" showname="Group: Sequence" size="0" pos="0" show="33554432"/>
+      </field>
+      <field name="http.request.version" showname="Request Version: HTTP/1.1" size="8" pos="40" show="HTTP/1.1" value="485454502f312e31"/>
+      <field name="http.response.code" showname="Status Code: 101" size="3" pos="49" show="101" value="313031"/>
+      <field name="http.response.phrase" showname="Response Phrase: Web Socket Protocol Handshake" size="29" pos="53" show="Web Socket Protocol Handshake" value="57656220536f636b65742050726f746f636f6c2048616e647368616b65"/>
+    </field>
+    <field name="http.connection" showname="Connection: Upgrade\r\n" size="21" pos="84" show="Upgrade" value="436f6e6e656374696f6e3a20557067726164650d0a"/>
+    <field name="http.response.line" showname="Connection: Upgrade\r\n" hide="yes" size="21" pos="84" show="Connection: Upgrade\xd\xa" value="436f6e6e656374696f6e3a20557067726164650d0a"/>
+    <field name="http.date" showname="Date: Tue, 17 Feb 2015 15:39:16 GMT\r\n" size="37" pos="105" show="Tue, 17 Feb 2015 15:39:16 GMT" value="446174653a205475652c2031372046656220323031352031353a33393a313620474d540d0a"/>
+    <field name="http.response.line" showname="Date: Tue, 17 Feb 2015 15:39:16 GMT\r\n" hide="yes" size="37" pos="105" show="Date: Tue, 17 Feb 2015 15:39:16 GMT\xd\xa" value="446174653a205475652c2031372046656220323031352031353a33393a313620474d540d0a"/>
+    <field name="http.sec_websocket_accept" showname="Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n" size="52" pos="142" show="s3pPLMBiTxaQ9kYGzzhZRbK+xOo=" value="5365632d576562536f636b65742d4163636570743a20733370504c4d426954786151396b59477a7a685a52624b2b784f6f3d0d0a"/>
+    <field name="http.response.line" showname="Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n" hide="yes" size="52" pos="142" show="Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\xd\xa" value="5365632d576562536f636b65742d4163636570743a20733370504c4d426954786151396b59477a7a685a52624b2b784f6f3d0d0a"/>
+    <field name="http.server" showname="Server: Kaazing Gateway\r\n" size="25" pos="194" show="Kaazing Gateway" value="5365727665723a204b61617a696e6720476174657761790d0a"/>
+    <field name="http.response.line" showname="Server: Kaazing Gateway\r\n" hide="yes" size="25" pos="194" show="Server: Kaazing Gateway\xd\xa" value="5365727665723a204b61617a696e6720476174657761790d0a"/>
+    <field name="http.upgrade" showname="Upgrade: websocket\r\n" size="20" pos="219" show="websocket" value="557067726164653a20776562736f636b65740d0a"/>
+    <field name="http.response.line" showname="Upgrade: websocket\r\n" hide="yes" size="20" pos="219" show="Upgrade: websocket\xd\xa" value="557067726164653a20776562736f636b65740d0a"/>
+    <field name="" show="\r\n" size="2" pos="239" value="0d0a"/>
+    <field name="http.response" showname="Response: True" hide="yes" size="0" pos="40" show="1"/>
+    <field name="" show="HTTP response 1/1" size="0" pos="40"/>
+    <field name="http.time" showname="Time since request: 0.002999000 seconds" size="0" pos="40" show="0.002999000"/>
+    <field name="http.request_in" showname="Request in frame: 1" size="0" pos="40" show="1"/>
+  </proto>
+</packet>
+
+
+<packet>
+  <proto name="geninfo" pos="0" showname="General information" size="247">
+    <field name="num" pos="0" show="3" showname="Number" value="3" size="247"/>
+    <field name="len" pos="0" show="247" showname="Frame Length" value="f7" size="247"/>
+    <field name="caplen" pos="0" show="247" showname="Captured Length" value="f7" size="247"/>
+    <field name="timestamp" pos="0" show="Feb 17, 2015 19:44:11.544382000 GTB Standard Time" showname="Captured Time" value="1424195051.544382000" size="247"/>
+  </proto>
+  <proto name="frame" showname="Frame 3: 247 bytes on wire (1976 bits), 247 bytes captured (1976 bits) on interface 0" size="247" pos="0">
+    <field name="frame.interface_id" showname="Interface id: 0 (unknown)" size="0" pos="0" show="0"/>
+    <field name="frame.encap_type" showname="Encapsulation type: Raw IP (7)" size="0" pos="0" show="7"/>
+    <field name="frame.time" showname="Arrival Time: Feb 17, 2015 19:44:11.544382000 GTB Standard Time" size="0" pos="0" show="Feb 17, 2015 19:44:11.544382000 GTB Standard Time"/>
+    <field name="frame.offset_shift" showname="Time shift for this packet: 0.000000000 seconds" size="0" pos="0" show="0.000000000"/>
+    <field name="frame.time_epoch" showname="Epoch Time: 1424195051.544382000 seconds" size="0" pos="0" show="1424195051.544382000"/>
+    <field name="frame.time_delta" showname="Time delta from previous captured frame: 294.721822000 seconds" size="0" pos="0" show="294.721822000"/>
+    <field name="frame.time_delta_displayed" showname="Time delta from previous displayed frame: 294.721822000 seconds" size="0" pos="0" show="294.721822000"/>
+    <field name="frame.time_relative" showname="Time since reference or first frame: 294.724821000 seconds" size="0" pos="0" show="294.724821000"/>
+    <field name="frame.number" showname="Frame Number: 3" size="0" pos="0" show="3"/>
+    <field name="frame.len" showname="Frame Length: 247 bytes (1976 bits)" size="0" pos="0" show="247"/>
+    <field name="frame.cap_len" showname="Capture Length: 247 bytes (1976 bits)" size="0" pos="0" show="247"/>
+    <field name="frame.marked" showname="Frame is marked: False" size="0" pos="0" show="0"/>
+    <field name="frame.ignored" showname="Frame is ignored: False" size="0" pos="0" show="0"/>
+    <field name="frame.protocols" showname="Protocols in frame: raw:ip:tcp:http" size="0" pos="0" show="raw:ip:tcp:http"/>
+  </proto>
+  <proto name="raw" showname="Raw packet data" size="0" pos="0">
+    <field name="" show="No link information available" size="0" pos="0"/>
+  </proto>
+  <proto name="ip" showname="Internet Protocol Version 4, Src: 127.0.0.1 (127.0.0.1), Dst: 127.0.0.1 (127.0.0.1)" size="20" pos="0">
+    <field name="ip.version" showname="Version: 4" size="1" pos="0" show="4" value="45"/>
+    <field name="ip.hdr_len" showname="Header Length: 20 bytes" size="1" pos="0" show="20" value="45"/>
+    <field name="ip.dsfield" showname="Differentiated Services Field: 0x00 (DSCP 0x00: Default; ECN: 0x00: Not-ECT (Not ECN-Capable Transport))" size="1" pos="1" show="0" value="00">
+      <field name="ip.dsfield.dscp" showname="0000 00.. = Differentiated Services Codepoint: Default (0x00)" size="1" pos="1" show="0" value="0" unmaskedvalue="00"/>
+      <field name="ip.dsfield.ecn" showname=".... ..00 = Explicit Congestion Notification: Not-ECT (Not ECN-Capable Transport) (0x00)" size="1" pos="1" show="0" value="0" unmaskedvalue="00"/>
+    </field>
+    <field name="ip.len" showname="Total Length: 247" size="2" pos="2" show="247" value="00f7"/>
+    <field name="ip.id" showname="Identification: 0x1f55 (8021)" size="2" pos="4" show="8021" value="1f55"/>
+    <field name="ip.flags" showname="Flags: 0x02 (Don&apos;t Fragment)" size="1" pos="6" show="2" value="40">
+      <field name="ip.flags.rb" showname="0... .... = Reserved bit: Not set" size="1" pos="6" show="0" value="40"/>
+      <field name="ip.flags.df" showname=".1.. .... = Don&apos;t fragment: Set" size="1" pos="6" show="1" value="40"/>
+      <field name="ip.flags.mf" showname="..0. .... = More fragments: Not set" size="1" pos="6" show="0" value="40"/>
+    </field>
+    <field name="ip.frag_offset" showname="Fragment offset: 0" size="2" pos="6" show="0" value="4000"/>
+    <field name="ip.ttl" showname="Time to live: 128" size="1" pos="8" show="128" value="80"/>
+    <field name="ip.proto" showname="Protocol: TCP (6)" size="1" pos="9" show="6" value="06"/>
+    <field name="ip.checksum" showname="Header checksum: 0x0000 [validation disabled]" size="2" pos="10" show="0" value="0000">
+      <field name="ip.checksum_good" showname="Good: False" size="2" pos="10" show="0" value="0000"/>
+      <field name="ip.checksum_bad" showname="Bad: False" size="2" pos="10" show="0" value="0000"/>
+    </field>
+    <field name="ip.src" showname="Source: 127.0.0.1 (127.0.0.1)" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.addr" showname="Source or Destination Address: 127.0.0.1 (127.0.0.1)" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.src_host" showname="Source Host: 127.0.0.1" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.host" showname="Source or Destination Host: 127.0.0.1" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.dst" showname="Destination: 127.0.0.1 (127.0.0.1)" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.addr" showname="Source or Destination Address: 127.0.0.1 (127.0.0.1)" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.dst_host" showname="Destination Host: 127.0.0.1" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.host" showname="Source or Destination Host: 127.0.0.1" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="" show="Source GeoIP: Unknown" size="4" pos="12" value="7f000001"/>
+    <field name="" show="Destination GeoIP: Unknown" size="4" pos="16" value="7f000001"/>
+  </proto>
+  <proto name="tcp" showname="Transmission Control Protocol, Src Port: 58210 (58210), Dst Port: 8080 (8080), Seq: 1, Ack: 1, Len: 207" size="20" pos="20">
+    <field name="tcp.srcport" showname="Source Port: 58210 (58210)" size="2" pos="20" show="58210" value="e362"/>
+    <field name="tcp.dstport" showname="Destination Port: 8080 (8080)" size="2" pos="22" show="8080" value="1f90"/>
+    <field name="tcp.port" showname="Source or Destination Port: 58210" hide="yes" size="2" pos="20" show="58210" value="e362"/>
+    <field name="tcp.port" showname="Source or Destination Port: 8080" hide="yes" size="2" pos="22" show="8080" value="1f90"/>
+    <field name="tcp.stream" showname="Stream index: 1" size="0" pos="20" show="1"/>
+    <field name="tcp.len" showname="TCP Segment Len: 207" size="1" pos="32" show="207" value="50"/>
+    <field name="tcp.seq" showname="Sequence number: 1    (relative sequence number)" size="4" pos="24" show="1" value="e60faed3"/>
+    <field name="tcp.nxtseq" showname="Next sequence number: 208    (relative sequence number)" size="0" pos="20" show="208"/>
+    <field name="tcp.ack" showname="Acknowledgment number: 1    (relative ack number)" size="4" pos="28" show="1" value="750ee01e"/>
+    <field name="tcp.hdr_len" showname="Header Length: 20 bytes" size="1" pos="32" show="20" value="50"/>
+    <field name="tcp.flags" showname=".... 0000 0001 1000 = Flags: 0x018 (PSH, ACK)" size="2" pos="32" show="24" value="18" unmaskedvalue="5018">
+      <field name="tcp.flags.res" showname="000. .... .... = Reserved: Not set" size="1" pos="32" show="0" value="0" unmaskedvalue="50"/>
+      <field name="tcp.flags.ns" showname="...0 .... .... = Nonce: Not set" size="1" pos="32" show="0" value="0" unmaskedvalue="50"/>
+      <field name="tcp.flags.cwr" showname=".... 0... .... = Congestion Window Reduced (CWR): Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.ecn" showname=".... .0.. .... = ECN-Echo: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.urg" showname=".... ..0. .... = Urgent: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.ack" showname=".... ...1 .... = Acknowledgment: Set" size="1" pos="33" show="1" value="1" unmaskedvalue="18"/>
+      <field name="tcp.flags.push" showname=".... .... 1... = Push: Set" size="1" pos="33" show="1" value="1" unmaskedvalue="18"/>
+      <field name="tcp.flags.reset" showname=".... .... .0.. = Reset: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.syn" showname=".... .... ..0. = Syn: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.fin" showname=".... .... ...0 = Fin: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+    </field>
+    <field name="tcp.window_size_value" showname="Window size value: 32" size="2" pos="34" show="32" value="0020"/>
+    <field name="tcp.window_size" showname="Calculated window size: 32" size="2" pos="34" show="32" value="0020"/>
+    <field name="tcp.window_size_scalefactor" showname="Window size scaling factor: -1 (unknown)" size="2" pos="34" show="-1" value="0020"/>
+    <field name="tcp.checksum" showname="Checksum: 0xe395 [validation disabled]" size="2" pos="36" show="58261" value="e395">
+      <field name="tcp.checksum_good" showname="Good Checksum: False" size="2" pos="36" show="0" value="e395"/>
+      <field name="tcp.checksum_bad" showname="Bad Checksum: False" size="2" pos="36" show="0" value="e395"/>
+    </field>
+    <field name="tcp.urgent_pointer" showname="Urgent pointer: 0" size="2" pos="38" show="0" value="0000"/>
+    <field name="tcp.analysis" showname="SEQ/ACK analysis" size="0" pos="20" show="" value="">
+      <field name="tcp.analysis.bytes_in_flight" showname="Bytes in flight: 207" size="0" pos="20" show="207"/>
+    </field>
+  </proto>
+  <proto name="http" showname="Hypertext Transfer Protocol" size="207" pos="40">
+    <field name="" show="GET /path?query HTTP/1.1\r\n" size="26" pos="40" value="474554202f706174683f717565727920485454502f312e310d0a">
+      <field name="_ws.expert" showname="Expert Info (Chat/Sequence): GET /path?query HTTP/1.1\r\n" size="0" pos="40">
+        <field name="http.chat" showname="GET /path?query HTTP/1.1\r\n" size="0" pos="0" show="" value=""/>
+        <field name="_ws.expert.message" showname="Message: GET /path?query HTTP/1.1\r\n" hide="yes" size="0" pos="0" show="GET /path?query HTTP/1.1\r\n"/>
+        <field name="_ws.expert.severity" showname="Severity level: Chat" size="0" pos="0" show="2097152"/>
+        <field name="_ws.expert.group" showname="Group: Sequence" size="0" pos="0" show="33554432"/>
+      </field>
+      <field name="http.request.method" showname="Request Method: GET" size="3" pos="40" show="GET" value="474554"/>
+      <field name="http.request.uri" showname="Request URI: /path?query" size="11" pos="44" show="/path?query" value="2f706174683f7175657279"/>
+      <field name="http.request.version" showname="Request Version: HTTP/1.1" size="8" pos="56" show="HTTP/1.1" value="485454502f312e31"/>
+    </field>
+    <field name="http.host" showname="Host: localhost:8080\r\n" size="22" pos="66" show="localhost:8080" value="486f73743a206c6f63616c686f73743a383038300d0a"/>
+    <field name="http.request.line" showname="Host: localhost:8080\r\n" hide="yes" size="22" pos="66" show="Host: localhost:8080\xd\xa" value="486f73743a206c6f63616c686f73743a383038300d0a"/>
+    <field name="http.upgrade" showname="Upgrade: websocket\r\n" size="20" pos="88" show="websocket" value="557067726164653a20776562736f636b65740d0a"/>
+    <field name="http.request.line" showname="Upgrade: websocket\r\n" hide="yes" size="20" pos="88" show="Upgrade: websocket\xd\xa" value="557067726164653a20776562736f636b65740d0a"/>
+    <field name="http.connection" showname="Connection: Upgrade\r\n" size="21" pos="108" show="Upgrade" value="436f6e6e656374696f6e3a20557067726164650d0a"/>
+    <field name="http.request.line" showname="Connection: Upgrade\r\n" hide="yes" size="21" pos="108" show="Connection: Upgrade\xd\xa" value="436f6e6e656374696f6e3a20557067726164650d0a"/>
+    <field name="http.sec_websocket_key" showname="Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n" size="45" pos="129" show="dGhlIHNhbXBsZSBub25jZQ==" value="5365632d576562536f636b65742d4b65793a206447686c49484e68625842735a5342756232356a5a513d3d0d0a"/>
+    <field name="http.request.line" showname="Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n" hide="yes" size="45" pos="129" show="Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\xd\xa" value="5365632d576562536f636b65742d4b65793a206447686c49484e68625842735a5342756232356a5a513d3d0d0a"/>
+    <field name="http.sec_websocket_version" showname="Sec-WebSocket-Version: 13\r\n" size="27" pos="174" show="13" value="5365632d576562536f636b65742d56657273696f6e3a2031330d0a"/>
+    <field name="http.request.line" showname="Sec-WebSocket-Version: 13\r\n" hide="yes" size="27" pos="174" show="Sec-WebSocket-Version: 13\xd\xa" value="5365632d576562536f636b65742d56657273696f6e3a2031330d0a"/>
+    <field name="http.sec_websocket_protocol" showname="Sec-WebSocket-Protocol: primary, secondary\r\n" size="44" pos="201" show="primary, secondary" value="5365632d576562536f636b65742d50726f746f636f6c3a207072696d6172792c207365636f6e646172790d0a"/>
+    <field name="http.request.line" showname="Sec-WebSocket-Protocol: primary, secondary\r\n" hide="yes" size="44" pos="201" show="Sec-WebSocket-Protocol: primary, secondary\xd\xa" value="5365632d576562536f636b65742d50726f746f636f6c3a207072696d6172792c207365636f6e646172790d0a"/>
+    <field name="" show="\r\n" size="2" pos="245" value="0d0a"/>
+    <field name="http.request.full_uri" showname="Full request URI: http://localhost:8080/path?query" size="0" pos="40" show="http://localhost:8080/path?query"/>
+    <field name="http.request" showname="Request: True" hide="yes" size="0" pos="40" show="1"/>
+    <field name="" show="HTTP request 1/1" size="0" pos="40"/>
+  </proto>
+</packet>
+
+
+<packet>
+  <proto name="geninfo" pos="0" showname="General information" size="241">
+    <field name="num" pos="0" show="4" showname="Number" value="4" size="241"/>
+    <field name="len" pos="0" show="241" showname="Frame Length" value="f1" size="241"/>
+    <field name="caplen" pos="0" show="241" showname="Captured Length" value="f1" size="241"/>
+    <field name="timestamp" pos="0" show="Feb 17, 2015 19:44:11.544382000 GTB Standard Time" showname="Captured Time" value="1424195051.544382000" size="241"/>
+  </proto>
+  <proto name="frame" showname="Frame 4: 241 bytes on wire (1928 bits), 241 bytes captured (1928 bits) on interface 0" size="241" pos="0">
+    <field name="frame.interface_id" showname="Interface id: 0 (unknown)" size="0" pos="0" show="0"/>
+    <field name="frame.encap_type" showname="Encapsulation type: Raw IP (7)" size="0" pos="0" show="7"/>
+    <field name="frame.time" showname="Arrival Time: Feb 17, 2015 19:44:11.544382000 GTB Standard Time" size="0" pos="0" show="Feb 17, 2015 19:44:11.544382000 GTB Standard Time"/>
+    <field name="frame.offset_shift" showname="Time shift for this packet: 0.000000000 seconds" size="0" pos="0" show="0.000000000"/>
+    <field name="frame.time_epoch" showname="Epoch Time: 1424195051.544382000 seconds" size="0" pos="0" show="1424195051.544382000"/>
+    <field name="frame.time_delta" showname="Time delta from previous captured frame: 0.000000000 seconds" size="0" pos="0" show="0.000000000"/>
+    <field name="frame.time_delta_displayed" showname="Time delta from previous displayed frame: 0.000000000 seconds" size="0" pos="0" show="0.000000000"/>
+    <field name="frame.time_relative" showname="Time since reference or first frame: 294.724821000 seconds" size="0" pos="0" show="294.724821000"/>
+    <field name="frame.number" showname="Frame Number: 4" size="0" pos="0" show="4"/>
+    <field name="frame.len" showname="Frame Length: 241 bytes (1928 bits)" size="0" pos="0" show="241"/>
+    <field name="frame.cap_len" showname="Capture Length: 241 bytes (1928 bits)" size="0" pos="0" show="241"/>
+    <field name="frame.marked" showname="Frame is marked: False" size="0" pos="0" show="0"/>
+    <field name="frame.ignored" showname="Frame is ignored: False" size="0" pos="0" show="0"/>
+    <field name="frame.protocols" showname="Protocols in frame: raw:ip:tcp:http" size="0" pos="0" show="raw:ip:tcp:http"/>
+  </proto>
+  <proto name="raw" showname="Raw packet data" size="0" pos="0">
+    <field name="" show="No link information available" size="0" pos="0"/>
+  </proto>
+  <proto name="ip" showname="Internet Protocol Version 4, Src: 127.0.0.1 (127.0.0.1), Dst: 127.0.0.1 (127.0.0.1)" size="20" pos="0">
+    <field name="ip.version" showname="Version: 4" size="1" pos="0" show="4" value="45"/>
+    <field name="ip.hdr_len" showname="Header Length: 20 bytes" size="1" pos="0" show="20" value="45"/>
+    <field name="ip.dsfield" showname="Differentiated Services Field: 0x00 (DSCP 0x00: Default; ECN: 0x00: Not-ECT (Not ECN-Capable Transport))" size="1" pos="1" show="0" value="00">
+      <field name="ip.dsfield.dscp" showname="0000 00.. = Differentiated Services Codepoint: Default (0x00)" size="1" pos="1" show="0" value="0" unmaskedvalue="00"/>
+      <field name="ip.dsfield.ecn" showname=".... ..00 = Explicit Congestion Notification: Not-ECT (Not ECN-Capable Transport) (0x00)" size="1" pos="1" show="0" value="0" unmaskedvalue="00"/>
+    </field>
+    <field name="ip.len" showname="Total Length: 241" size="2" pos="2" show="241" value="00f1"/>
+    <field name="ip.id" showname="Identification: 0x1f57 (8023)" size="2" pos="4" show="8023" value="1f57"/>
+    <field name="ip.flags" showname="Flags: 0x02 (Don&apos;t Fragment)" size="1" pos="6" show="2" value="40">
+      <field name="ip.flags.rb" showname="0... .... = Reserved bit: Not set" size="1" pos="6" show="0" value="40"/>
+      <field name="ip.flags.df" showname=".1.. .... = Don&apos;t fragment: Set" size="1" pos="6" show="1" value="40"/>
+      <field name="ip.flags.mf" showname="..0. .... = More fragments: Not set" size="1" pos="6" show="0" value="40"/>
+    </field>
+    <field name="ip.frag_offset" showname="Fragment offset: 0" size="2" pos="6" show="0" value="4000"/>
+    <field name="ip.ttl" showname="Time to live: 128" size="1" pos="8" show="128" value="80"/>
+    <field name="ip.proto" showname="Protocol: TCP (6)" size="1" pos="9" show="6" value="06"/>
+    <field name="ip.checksum" showname="Header checksum: 0x0000 [validation disabled]" size="2" pos="10" show="0" value="0000">
+      <field name="ip.checksum_good" showname="Good: False" size="2" pos="10" show="0" value="0000"/>
+      <field name="ip.checksum_bad" showname="Bad: False" size="2" pos="10" show="0" value="0000"/>
+    </field>
+    <field name="ip.src" showname="Source: 127.0.0.1 (127.0.0.1)" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.addr" showname="Source or Destination Address: 127.0.0.1 (127.0.0.1)" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.src_host" showname="Source Host: 127.0.0.1" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.host" showname="Source or Destination Host: 127.0.0.1" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.dst" showname="Destination: 127.0.0.1 (127.0.0.1)" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.addr" showname="Source or Destination Address: 127.0.0.1 (127.0.0.1)" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.dst_host" showname="Destination Host: 127.0.0.1" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.host" showname="Source or Destination Host: 127.0.0.1" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="" show="Source GeoIP: Unknown" size="4" pos="12" value="7f000001"/>
+    <field name="" show="Destination GeoIP: Unknown" size="4" pos="16" value="7f000001"/>
+  </proto>
+  <proto name="tcp" showname="Transmission Control Protocol, Src Port: 8080 (8080), Dst Port: 58210 (58210), Seq: 1, Ack: 208, Len: 201" size="20" pos="20">
+    <field name="tcp.srcport" showname="Source Port: 8080 (8080)" size="2" pos="20" show="8080" value="1f90"/>
+    <field name="tcp.dstport" showname="Destination Port: 58210 (58210)" size="2" pos="22" show="58210" value="e362"/>
+    <field name="tcp.port" showname="Source or Destination Port: 8080" hide="yes" size="2" pos="20" show="8080" value="1f90"/>
+    <field name="tcp.port" showname="Source or Destination Port: 58210" hide="yes" size="2" pos="22" show="58210" value="e362"/>
+    <field name="tcp.stream" showname="Stream index: 1" size="0" pos="20" show="1"/>
+    <field name="tcp.len" showname="TCP Segment Len: 201" size="1" pos="32" show="201" value="50"/>
+    <field name="tcp.seq" showname="Sequence number: 1    (relative sequence number)" size="4" pos="24" show="1" value="750ee01e"/>
+    <field name="tcp.nxtseq" showname="Next sequence number: 202    (relative sequence number)" size="0" pos="20" show="202"/>
+    <field name="tcp.ack" showname="Acknowledgment number: 208    (relative ack number)" size="4" pos="28" show="208" value="e60fafa2"/>
+    <field name="tcp.hdr_len" showname="Header Length: 20 bytes" size="1" pos="32" show="20" value="50"/>
+    <field name="tcp.flags" showname=".... 0000 0001 1000 = Flags: 0x018 (PSH, ACK)" size="2" pos="32" show="24" value="18" unmaskedvalue="5018">
+      <field name="tcp.flags.res" showname="000. .... .... = Reserved: Not set" size="1" pos="32" show="0" value="0" unmaskedvalue="50"/>
+      <field name="tcp.flags.ns" showname="...0 .... .... = Nonce: Not set" size="1" pos="32" show="0" value="0" unmaskedvalue="50"/>
+      <field name="tcp.flags.cwr" showname=".... 0... .... = Congestion Window Reduced (CWR): Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.ecn" showname=".... .0.. .... = ECN-Echo: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.urg" showname=".... ..0. .... = Urgent: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.ack" showname=".... ...1 .... = Acknowledgment: Set" size="1" pos="33" show="1" value="1" unmaskedvalue="18"/>
+      <field name="tcp.flags.push" showname=".... .... 1... = Push: Set" size="1" pos="33" show="1" value="1" unmaskedvalue="18"/>
+      <field name="tcp.flags.reset" showname=".... .... .0.. = Reset: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.syn" showname=".... .... ..0. = Syn: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.fin" showname=".... .... ...0 = Fin: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+    </field>
+    <field name="tcp.window_size_value" showname="Window size value: 31" size="2" pos="34" show="31" value="001f"/>
+    <field name="tcp.window_size" showname="Calculated window size: 31" size="2" pos="34" show="31" value="001f"/>
+    <field name="tcp.window_size_scalefactor" showname="Window size scaling factor: -1 (unknown)" size="2" pos="34" show="-1" value="001f"/>
+    <field name="tcp.checksum" showname="Checksum: 0xb509 [validation disabled]" size="2" pos="36" show="46345" value="b509">
+      <field name="tcp.checksum_good" showname="Good Checksum: False" size="2" pos="36" show="0" value="b509"/>
+      <field name="tcp.checksum_bad" showname="Bad Checksum: False" size="2" pos="36" show="0" value="b509"/>
+    </field>
+    <field name="tcp.urgent_pointer" showname="Urgent pointer: 0" size="2" pos="38" show="0" value="0000"/>
+    <field name="tcp.analysis" showname="SEQ/ACK analysis" size="0" pos="20" show="" value="">
+      <field name="tcp.analysis.acks_frame" showname="This is an ACK to the segment in frame: 3" size="0" pos="20" show="3"/>
+      <field name="tcp.analysis.bytes_in_flight" showname="Bytes in flight: 201" size="0" pos="20" show="201"/>
+    </field>
+  </proto>
+  <proto name="http" showname="Hypertext Transfer Protocol" size="201" pos="40">
+    <field name="" show="HTTP/1.1 101 Web Socket Protocol Handshake\r\n" size="44" pos="40" value="485454502f312e31203130312057656220536f636b65742050726f746f636f6c2048616e647368616b650d0a">
+      <field name="_ws.expert" showname="Expert Info (Chat/Sequence): HTTP/1.1 101 Web Socket Protocol Handshake\r\n" size="0" pos="40">
+        <field name="http.chat" showname="HTTP/1.1 101 Web Socket Protocol Handshake\r\n" size="0" pos="0" show="" value=""/>
+        <field name="_ws.expert.message" showname="Message: HTTP/1.1 101 Web Socket Protocol Handshake\r\n" hide="yes" size="0" pos="0" show="HTTP/1.1 101 Web Socket Protocol Handshake\r\n"/>
+        <field name="_ws.expert.severity" showname="Severity level: Chat" size="0" pos="0" show="2097152"/>
+        <field name="_ws.expert.group" showname="Group: Sequence" size="0" pos="0" show="33554432"/>
+      </field>
+      <field name="http.request.version" showname="Request Version: HTTP/1.1" size="8" pos="40" show="HTTP/1.1" value="485454502f312e31"/>
+      <field name="http.response.code" showname="Status Code: 101" size="3" pos="49" show="101" value="313031"/>
+      <field name="http.response.phrase" showname="Response Phrase: Web Socket Protocol Handshake" size="29" pos="53" show="Web Socket Protocol Handshake" value="57656220536f636b65742050726f746f636f6c2048616e647368616b65"/>
+    </field>
+    <field name="http.connection" showname="Connection: Upgrade\r\n" size="21" pos="84" show="Upgrade" value="436f6e6e656374696f6e3a20557067726164650d0a"/>
+    <field name="http.response.line" showname="Connection: Upgrade\r\n" hide="yes" size="21" pos="84" show="Connection: Upgrade\xd\xa" value="436f6e6e656374696f6e3a20557067726164650d0a"/>
+    <field name="http.date" showname="Date: Tue, 17 Feb 2015 15:44:11 GMT\r\n" size="37" pos="105" show="Tue, 17 Feb 2015 15:44:11 GMT" value="446174653a205475652c2031372046656220323031352031353a34343a313120474d540d0a"/>
+    <field name="http.response.line" showname="Date: Tue, 17 Feb 2015 15:44:11 GMT\r\n" hide="yes" size="37" pos="105" show="Date: Tue, 17 Feb 2015 15:44:11 GMT\xd\xa" value="446174653a205475652c2031372046656220323031352031353a34343a313120474d540d0a"/>
+    <field name="http.sec_websocket_accept" showname="Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n" size="52" pos="142" show="s3pPLMBiTxaQ9kYGzzhZRbK+xOo=" value="5365632d576562536f636b65742d4163636570743a20733370504c4d426954786151396b59477a7a685a52624b2b784f6f3d0d0a"/>
+    <field name="http.response.line" showname="Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n" hide="yes" size="52" pos="142" show="Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\xd\xa" value="5365632d576562536f636b65742d4163636570743a20733370504c4d426954786151396b59477a7a685a52624b2b784f6f3d0d0a"/>
+    <field name="http.server" showname="Server: Kaazing Gateway\r\n" size="25" pos="194" show="Kaazing Gateway" value="5365727665723a204b61617a696e6720476174657761790d0a"/>
+    <field name="http.response.line" showname="Server: Kaazing Gateway\r\n" hide="yes" size="25" pos="194" show="Server: Kaazing Gateway\xd\xa" value="5365727665723a204b61617a696e6720476174657761790d0a"/>
+    <field name="http.upgrade" showname="Upgrade: websocket\r\n" size="20" pos="219" show="websocket" value="557067726164653a20776562736f636b65740d0a"/>
+    <field name="http.response.line" showname="Upgrade: websocket\r\n" hide="yes" size="20" pos="219" show="Upgrade: websocket\xd\xa" value="557067726164653a20776562736f636b65740d0a"/>
+    <field name="" show="\r\n" size="2" pos="239" value="0d0a"/>
+    <field name="http.response" showname="Response: True" hide="yes" size="0" pos="40" show="1"/>
+    <field name="" show="HTTP response 1/1" size="0" pos="40"/>
+    <field name="http.time" showname="Time since request: 0.000000000 seconds" size="0" pos="40" show="0.000000000"/>
+    <field name="http.request_in" showname="Request in frame: 3" size="0" pos="40" show="3"/>
+  </proto>
+</packet>
+
+
+<packet>
+  <proto name="geninfo" pos="0" showname="General information" size="203">
+    <field name="num" pos="0" show="5" showname="Number" value="5" size="203"/>
+    <field name="len" pos="0" show="203" showname="Frame Length" value="cb" size="203"/>
+    <field name="caplen" pos="0" show="203" showname="Captured Length" value="cb" size="203"/>
+    <field name="timestamp" pos="0" show="Feb 17, 2015 19:46:58.348226000 GTB Standard Time" showname="Captured Time" value="1424195218.348226000" size="203"/>
+  </proto>
+  <proto name="frame" showname="Frame 5: 203 bytes on wire (1624 bits), 203 bytes captured (1624 bits) on interface 0" size="203" pos="0">
+    <field name="frame.interface_id" showname="Interface id: 0 (unknown)" size="0" pos="0" show="0"/>
+    <field name="frame.encap_type" showname="Encapsulation type: Raw IP (7)" size="0" pos="0" show="7"/>
+    <field name="frame.time" showname="Arrival Time: Feb 17, 2015 19:46:58.348226000 GTB Standard Time" size="0" pos="0" show="Feb 17, 2015 19:46:58.348226000 GTB Standard Time"/>
+    <field name="frame.offset_shift" showname="Time shift for this packet: 0.000000000 seconds" size="0" pos="0" show="0.000000000"/>
+    <field name="frame.time_epoch" showname="Epoch Time: 1424195218.348226000 seconds" size="0" pos="0" show="1424195218.348226000"/>
+    <field name="frame.time_delta" showname="Time delta from previous captured frame: 166.803844000 seconds" size="0" pos="0" show="166.803844000"/>
+    <field name="frame.time_delta_displayed" showname="Time delta from previous displayed frame: 166.803844000 seconds" size="0" pos="0" show="166.803844000"/>
+    <field name="frame.time_relative" showname="Time since reference or first frame: 461.528665000 seconds" size="0" pos="0" show="461.528665000"/>
+    <field name="frame.number" showname="Frame Number: 5" size="0" pos="0" show="5"/>
+    <field name="frame.len" showname="Frame Length: 203 bytes (1624 bits)" size="0" pos="0" show="203"/>
+    <field name="frame.cap_len" showname="Capture Length: 203 bytes (1624 bits)" size="0" pos="0" show="203"/>
+    <field name="frame.marked" showname="Frame is marked: False" size="0" pos="0" show="0"/>
+    <field name="frame.ignored" showname="Frame is ignored: False" size="0" pos="0" show="0"/>
+    <field name="frame.protocols" showname="Protocols in frame: raw:ip:tcp:http" size="0" pos="0" show="raw:ip:tcp:http"/>
+  </proto>
+  <proto name="raw" showname="Raw packet data" size="0" pos="0">
+    <field name="" show="No link information available" size="0" pos="0"/>
+  </proto>
+  <proto name="ip" showname="Internet Protocol Version 4, Src: 127.0.0.1 (127.0.0.1), Dst: 127.0.0.1 (127.0.0.1)" size="20" pos="0">
+    <field name="ip.version" showname="Version: 4" size="1" pos="0" show="4" value="45"/>
+    <field name="ip.hdr_len" showname="Header Length: 20 bytes" size="1" pos="0" show="20" value="45"/>
+    <field name="ip.dsfield" showname="Differentiated Services Field: 0x00 (DSCP 0x00: Default; ECN: 0x00: Not-ECT (Not ECN-Capable Transport))" size="1" pos="1" show="0" value="00">
+      <field name="ip.dsfield.dscp" showname="0000 00.. = Differentiated Services Codepoint: Default (0x00)" size="1" pos="1" show="0" value="0" unmaskedvalue="00"/>
+      <field name="ip.dsfield.ecn" showname=".... ..00 = Explicit Congestion Notification: Not-ECT (Not ECN-Capable Transport) (0x00)" size="1" pos="1" show="0" value="0" unmaskedvalue="00"/>
+    </field>
+    <field name="ip.len" showname="Total Length: 203" size="2" pos="2" show="203" value="00cb"/>
+    <field name="ip.id" showname="Identification: 0x20e2 (8418)" size="2" pos="4" show="8418" value="20e2"/>
+    <field name="ip.flags" showname="Flags: 0x02 (Don&apos;t Fragment)" size="1" pos="6" show="2" value="40">
+      <field name="ip.flags.rb" showname="0... .... = Reserved bit: Not set" size="1" pos="6" show="0" value="40"/>
+      <field name="ip.flags.df" showname=".1.. .... = Don&apos;t fragment: Set" size="1" pos="6" show="1" value="40"/>
+      <field name="ip.flags.mf" showname="..0. .... = More fragments: Not set" size="1" pos="6" show="0" value="40"/>
+    </field>
+    <field name="ip.frag_offset" showname="Fragment offset: 0" size="2" pos="6" show="0" value="4000"/>
+    <field name="ip.ttl" showname="Time to live: 128" size="1" pos="8" show="128" value="80"/>
+    <field name="ip.proto" showname="Protocol: TCP (6)" size="1" pos="9" show="6" value="06"/>
+    <field name="ip.checksum" showname="Header checksum: 0x0000 [validation disabled]" size="2" pos="10" show="0" value="0000">
+      <field name="ip.checksum_good" showname="Good: False" size="2" pos="10" show="0" value="0000"/>
+      <field name="ip.checksum_bad" showname="Bad: False" size="2" pos="10" show="0" value="0000"/>
+    </field>
+    <field name="ip.src" showname="Source: 127.0.0.1 (127.0.0.1)" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.addr" showname="Source or Destination Address: 127.0.0.1 (127.0.0.1)" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.src_host" showname="Source Host: 127.0.0.1" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.host" showname="Source or Destination Host: 127.0.0.1" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.dst" showname="Destination: 127.0.0.1 (127.0.0.1)" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.addr" showname="Source or Destination Address: 127.0.0.1 (127.0.0.1)" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.dst_host" showname="Destination Host: 127.0.0.1" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.host" showname="Source or Destination Host: 127.0.0.1" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="" show="Source GeoIP: Unknown" size="4" pos="12" value="7f000001"/>
+    <field name="" show="Destination GeoIP: Unknown" size="4" pos="16" value="7f000001"/>
+  </proto>
+  <proto name="tcp" showname="Transmission Control Protocol, Src Port: 58234 (58234), Dst Port: 8080 (8080), Seq: 1, Ack: 1, Len: 163" size="20" pos="20">
+    <field name="tcp.srcport" showname="Source Port: 58234 (58234)" size="2" pos="20" show="58234" value="e37a"/>
+    <field name="tcp.dstport" showname="Destination Port: 8080 (8080)" size="2" pos="22" show="8080" value="1f90"/>
+    <field name="tcp.port" showname="Source or Destination Port: 58234" hide="yes" size="2" pos="20" show="58234" value="e37a"/>
+    <field name="tcp.port" showname="Source or Destination Port: 8080" hide="yes" size="2" pos="22" show="8080" value="1f90"/>
+    <field name="tcp.stream" showname="Stream index: 2" size="0" pos="20" show="2"/>
+    <field name="tcp.len" showname="TCP Segment Len: 163" size="1" pos="32" show="163" value="50"/>
+    <field name="tcp.seq" showname="Sequence number: 1    (relative sequence number)" size="4" pos="24" show="1" value="9ab88414"/>
+    <field name="tcp.nxtseq" showname="Next sequence number: 164    (relative sequence number)" size="0" pos="20" show="164"/>
+    <field name="tcp.ack" showname="Acknowledgment number: 1    (relative ack number)" size="4" pos="28" show="1" value="08d60d90"/>
+    <field name="tcp.hdr_len" showname="Header Length: 20 bytes" size="1" pos="32" show="20" value="50"/>
+    <field name="tcp.flags" showname=".... 0000 0001 1000 = Flags: 0x018 (PSH, ACK)" size="2" pos="32" show="24" value="18" unmaskedvalue="5018">
+      <field name="tcp.flags.res" showname="000. .... .... = Reserved: Not set" size="1" pos="32" show="0" value="0" unmaskedvalue="50"/>
+      <field name="tcp.flags.ns" showname="...0 .... .... = Nonce: Not set" size="1" pos="32" show="0" value="0" unmaskedvalue="50"/>
+      <field name="tcp.flags.cwr" showname=".... 0... .... = Congestion Window Reduced (CWR): Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.ecn" showname=".... .0.. .... = ECN-Echo: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.urg" showname=".... ..0. .... = Urgent: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.ack" showname=".... ...1 .... = Acknowledgment: Set" size="1" pos="33" show="1" value="1" unmaskedvalue="18"/>
+      <field name="tcp.flags.push" showname=".... .... 1... = Push: Set" size="1" pos="33" show="1" value="1" unmaskedvalue="18"/>
+      <field name="tcp.flags.reset" showname=".... .... .0.. = Reset: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.syn" showname=".... .... ..0. = Syn: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.fin" showname=".... .... ...0 = Fin: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+    </field>
+    <field name="tcp.window_size_value" showname="Window size value: 32" size="2" pos="34" show="32" value="0020"/>
+    <field name="tcp.window_size" showname="Calculated window size: 32" size="2" pos="34" show="32" value="0020"/>
+    <field name="tcp.window_size_scalefactor" showname="Window size scaling factor: -1 (unknown)" size="2" pos="34" show="-1" value="0020"/>
+    <field name="tcp.checksum" showname="Checksum: 0x9a0d [validation disabled]" size="2" pos="36" show="39437" value="9a0d">
+      <field name="tcp.checksum_good" showname="Good Checksum: False" size="2" pos="36" show="0" value="9a0d"/>
+      <field name="tcp.checksum_bad" showname="Bad Checksum: False" size="2" pos="36" show="0" value="9a0d"/>
+    </field>
+    <field name="tcp.urgent_pointer" showname="Urgent pointer: 0" size="2" pos="38" show="0" value="0000"/>
+    <field name="tcp.analysis" showname="SEQ/ACK analysis" size="0" pos="20" show="" value="">
+      <field name="tcp.analysis.bytes_in_flight" showname="Bytes in flight: 163" size="0" pos="20" show="163"/>
+    </field>
+  </proto>
+  <proto name="http" showname="Hypertext Transfer Protocol" size="163" pos="40">
+    <field name="" show="GET /path?query HTTP/1.1\r\n" size="26" pos="40" value="474554202f706174683f717565727920485454502f312e310d0a">
+      <field name="_ws.expert" showname="Expert Info (Chat/Sequence): GET /path?query HTTP/1.1\r\n" size="0" pos="40">
+        <field name="http.chat" showname="GET /path?query HTTP/1.1\r\n" size="0" pos="0" show="" value=""/>
+        <field name="_ws.expert.message" showname="Message: GET /path?query HTTP/1.1\r\n" hide="yes" size="0" pos="0" show="GET /path?query HTTP/1.1\r\n"/>
+        <field name="_ws.expert.severity" showname="Severity level: Chat" size="0" pos="0" show="2097152"/>
+        <field name="_ws.expert.group" showname="Group: Sequence" size="0" pos="0" show="33554432"/>
+      </field>
+      <field name="http.request.method" showname="Request Method: GET" size="3" pos="40" show="GET" value="474554"/>
+      <field name="http.request.uri" showname="Request URI: /path?query" size="11" pos="44" show="/path?query" value="2f706174683f7175657279"/>
+      <field name="http.request.version" showname="Request Version: HTTP/1.1" size="8" pos="56" show="HTTP/1.1" value="485454502f312e31"/>
+    </field>
+    <field name="http.host" showname="Host: localhost:8080\r\n" size="22" pos="66" show="localhost:8080" value="486f73743a206c6f63616c686f73743a383038300d0a"/>
+    <field name="http.request.line" showname="Host: localhost:8080\r\n" hide="yes" size="22" pos="66" show="Host: localhost:8080\xd\xa" value="486f73743a206c6f63616c686f73743a383038300d0a"/>
+    <field name="http.upgrade" showname="Upgrade: wEBSockeT\r\n" size="20" pos="88" show="wEBSockeT" value="557067726164653a20774542536f636b65540d0a"/>
+    <field name="http.request.line" showname="Upgrade: wEBSockeT\r\n" hide="yes" size="20" pos="88" show="Upgrade: wEBSockeT\xd\xa" value="557067726164653a20774542536f636b65540d0a"/>
+    <field name="http.connection" showname="Connection: upgRAde\r\n" size="21" pos="108" show="upgRAde" value="436f6e6e656374696f6e3a20757067524164650d0a"/>
+    <field name="http.request.line" showname="Connection: upgRAde\r\n" hide="yes" size="21" pos="108" show="Connection: upgRAde\xd\xa" value="436f6e6e656374696f6e3a20757067524164650d0a"/>
+    <field name="http.sec_websocket_key" showname="Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n" size="45" pos="129" show="dGhlIHNhbXBsZSBub25jZQ==" value="5365632d576562536f636b65742d4b65793a206447686c49484e68625842735a5342756232356a5a513d3d0d0a"/>
+    <field name="http.request.line" showname="Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n" hide="yes" size="45" pos="129" show="Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\xd\xa" value="5365632d576562536f636b65742d4b65793a206447686c49484e68625842735a5342756232356a5a513d3d0d0a"/>
+    <field name="http.sec_websocket_version" showname="Sec-WebSocket-Version: 13\r\n" size="27" pos="174" show="13" value="5365632d576562536f636b65742d56657273696f6e3a2031330d0a"/>
+    <field name="http.request.line" showname="Sec-WebSocket-Version: 13\r\n" hide="yes" size="27" pos="174" show="Sec-WebSocket-Version: 13\xd\xa" value="5365632d576562536f636b65742d56657273696f6e3a2031330d0a"/>
+    <field name="" show="\r\n" size="2" pos="201" value="0d0a"/>
+    <field name="http.request.full_uri" showname="Full request URI: http://localhost:8080/path?query" size="0" pos="40" show="http://localhost:8080/path?query"/>
+    <field name="http.request" showname="Request: True" hide="yes" size="0" pos="40" show="1"/>
+    <field name="" show="HTTP request 1/1" size="0" pos="40"/>
+  </proto>
+</packet>
+
+
+<packet>
+  <proto name="geninfo" pos="0" showname="General information" size="241">
+    <field name="num" pos="0" show="6" showname="Number" value="6" size="241"/>
+    <field name="len" pos="0" show="241" showname="Frame Length" value="f1" size="241"/>
+    <field name="caplen" pos="0" show="241" showname="Captured Length" value="f1" size="241"/>
+    <field name="timestamp" pos="0" show="Feb 17, 2015 19:46:58.348226000 GTB Standard Time" showname="Captured Time" value="1424195218.348226000" size="241"/>
+  </proto>
+  <proto name="frame" showname="Frame 6: 241 bytes on wire (1928 bits), 241 bytes captured (1928 bits) on interface 0" size="241" pos="0">
+    <field name="frame.interface_id" showname="Interface id: 0 (unknown)" size="0" pos="0" show="0"/>
+    <field name="frame.encap_type" showname="Encapsulation type: Raw IP (7)" size="0" pos="0" show="7"/>
+    <field name="frame.time" showname="Arrival Time: Feb 17, 2015 19:46:58.348226000 GTB Standard Time" size="0" pos="0" show="Feb 17, 2015 19:46:58.348226000 GTB Standard Time"/>
+    <field name="frame.offset_shift" showname="Time shift for this packet: 0.000000000 seconds" size="0" pos="0" show="0.000000000"/>
+    <field name="frame.time_epoch" showname="Epoch Time: 1424195218.348226000 seconds" size="0" pos="0" show="1424195218.348226000"/>
+    <field name="frame.time_delta" showname="Time delta from previous captured frame: 0.000000000 seconds" size="0" pos="0" show="0.000000000"/>
+    <field name="frame.time_delta_displayed" showname="Time delta from previous displayed frame: 0.000000000 seconds" size="0" pos="0" show="0.000000000"/>
+    <field name="frame.time_relative" showname="Time since reference or first frame: 461.528665000 seconds" size="0" pos="0" show="461.528665000"/>
+    <field name="frame.number" showname="Frame Number: 6" size="0" pos="0" show="6"/>
+    <field name="frame.len" showname="Frame Length: 241 bytes (1928 bits)" size="0" pos="0" show="241"/>
+    <field name="frame.cap_len" showname="Capture Length: 241 bytes (1928 bits)" size="0" pos="0" show="241"/>
+    <field name="frame.marked" showname="Frame is marked: False" size="0" pos="0" show="0"/>
+    <field name="frame.ignored" showname="Frame is ignored: False" size="0" pos="0" show="0"/>
+    <field name="frame.protocols" showname="Protocols in frame: raw:ip:tcp:http" size="0" pos="0" show="raw:ip:tcp:http"/>
+  </proto>
+  <proto name="raw" showname="Raw packet data" size="0" pos="0">
+    <field name="" show="No link information available" size="0" pos="0"/>
+  </proto>
+  <proto name="ip" showname="Internet Protocol Version 4, Src: 127.0.0.1 (127.0.0.1), Dst: 127.0.0.1 (127.0.0.1)" size="20" pos="0">
+    <field name="ip.version" showname="Version: 4" size="1" pos="0" show="4" value="45"/>
+    <field name="ip.hdr_len" showname="Header Length: 20 bytes" size="1" pos="0" show="20" value="45"/>
+    <field name="ip.dsfield" showname="Differentiated Services Field: 0x00 (DSCP 0x00: Default; ECN: 0x00: Not-ECT (Not ECN-Capable Transport))" size="1" pos="1" show="0" value="00">
+      <field name="ip.dsfield.dscp" showname="0000 00.. = Differentiated Services Codepoint: Default (0x00)" size="1" pos="1" show="0" value="0" unmaskedvalue="00"/>
+      <field name="ip.dsfield.ecn" showname=".... ..00 = Explicit Congestion Notification: Not-ECT (Not ECN-Capable Transport) (0x00)" size="1" pos="1" show="0" value="0" unmaskedvalue="00"/>
+    </field>
+    <field name="ip.len" showname="Total Length: 241" size="2" pos="2" show="241" value="00f1"/>
+    <field name="ip.id" showname="Identification: 0x20e4 (8420)" size="2" pos="4" show="8420" value="20e4"/>
+    <field name="ip.flags" showname="Flags: 0x02 (Don&apos;t Fragment)" size="1" pos="6" show="2" value="40">
+      <field name="ip.flags.rb" showname="0... .... = Reserved bit: Not set" size="1" pos="6" show="0" value="40"/>
+      <field name="ip.flags.df" showname=".1.. .... = Don&apos;t fragment: Set" size="1" pos="6" show="1" value="40"/>
+      <field name="ip.flags.mf" showname="..0. .... = More fragments: Not set" size="1" pos="6" show="0" value="40"/>
+    </field>
+    <field name="ip.frag_offset" showname="Fragment offset: 0" size="2" pos="6" show="0" value="4000"/>
+    <field name="ip.ttl" showname="Time to live: 128" size="1" pos="8" show="128" value="80"/>
+    <field name="ip.proto" showname="Protocol: TCP (6)" size="1" pos="9" show="6" value="06"/>
+    <field name="ip.checksum" showname="Header checksum: 0x0000 [validation disabled]" size="2" pos="10" show="0" value="0000">
+      <field name="ip.checksum_good" showname="Good: False" size="2" pos="10" show="0" value="0000"/>
+      <field name="ip.checksum_bad" showname="Bad: False" size="2" pos="10" show="0" value="0000"/>
+    </field>
+    <field name="ip.src" showname="Source: 127.0.0.1 (127.0.0.1)" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.addr" showname="Source or Destination Address: 127.0.0.1 (127.0.0.1)" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.src_host" showname="Source Host: 127.0.0.1" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.host" showname="Source or Destination Host: 127.0.0.1" hide="yes" size="4" pos="12" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.dst" showname="Destination: 127.0.0.1 (127.0.0.1)" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.addr" showname="Source or Destination Address: 127.0.0.1 (127.0.0.1)" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.dst_host" showname="Destination Host: 127.0.0.1" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="ip.host" showname="Source or Destination Host: 127.0.0.1" hide="yes" size="4" pos="16" show="127.0.0.1" value="7f000001"/>
+    <field name="" show="Source GeoIP: Unknown" size="4" pos="12" value="7f000001"/>
+    <field name="" show="Destination GeoIP: Unknown" size="4" pos="16" value="7f000001"/>
+  </proto>
+  <proto name="tcp" showname="Transmission Control Protocol, Src Port: 8080 (8080), Dst Port: 58234 (58234), Seq: 1, Ack: 164, Len: 201" size="20" pos="20">
+    <field name="tcp.srcport" showname="Source Port: 8080 (8080)" size="2" pos="20" show="8080" value="1f90"/>
+    <field name="tcp.dstport" showname="Destination Port: 58234 (58234)" size="2" pos="22" show="58234" value="e37a"/>
+    <field name="tcp.port" showname="Source or Destination Port: 8080" hide="yes" size="2" pos="20" show="8080" value="1f90"/>
+    <field name="tcp.port" showname="Source or Destination Port: 58234" hide="yes" size="2" pos="22" show="58234" value="e37a"/>
+    <field name="tcp.stream" showname="Stream index: 2" size="0" pos="20" show="2"/>
+    <field name="tcp.len" showname="TCP Segment Len: 201" size="1" pos="32" show="201" value="50"/>
+    <field name="tcp.seq" showname="Sequence number: 1    (relative sequence number)" size="4" pos="24" show="1" value="08d60d90"/>
+    <field name="tcp.nxtseq" showname="Next sequence number: 202    (relative sequence number)" size="0" pos="20" show="202"/>
+    <field name="tcp.ack" showname="Acknowledgment number: 164    (relative ack number)" size="4" pos="28" show="164" value="9ab884b7"/>
+    <field name="tcp.hdr_len" showname="Header Length: 20 bytes" size="1" pos="32" show="20" value="50"/>
+    <field name="tcp.flags" showname=".... 0000 0001 1000 = Flags: 0x018 (PSH, ACK)" size="2" pos="32" show="24" value="18" unmaskedvalue="5018">
+      <field name="tcp.flags.res" showname="000. .... .... = Reserved: Not set" size="1" pos="32" show="0" value="0" unmaskedvalue="50"/>
+      <field name="tcp.flags.ns" showname="...0 .... .... = Nonce: Not set" size="1" pos="32" show="0" value="0" unmaskedvalue="50"/>
+      <field name="tcp.flags.cwr" showname=".... 0... .... = Congestion Window Reduced (CWR): Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.ecn" showname=".... .0.. .... = ECN-Echo: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.urg" showname=".... ..0. .... = Urgent: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.ack" showname=".... ...1 .... = Acknowledgment: Set" size="1" pos="33" show="1" value="1" unmaskedvalue="18"/>
+      <field name="tcp.flags.push" showname=".... .... 1... = Push: Set" size="1" pos="33" show="1" value="1" unmaskedvalue="18"/>
+      <field name="tcp.flags.reset" showname=".... .... .0.. = Reset: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.syn" showname=".... .... ..0. = Syn: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+      <field name="tcp.flags.fin" showname=".... .... ...0 = Fin: Not set" size="1" pos="33" show="0" value="0" unmaskedvalue="18"/>
+    </field>
+    <field name="tcp.window_size_value" showname="Window size value: 31" size="2" pos="34" show="31" value="001f"/>
+    <field name="tcp.window_size" showname="Calculated window size: 31" size="2" pos="34" show="31" value="001f"/>
+    <field name="tcp.window_size_scalefactor" showname="Window size scaling factor: -1 (unknown)" size="2" pos="34" show="-1" value="001f"/>
+    <field name="tcp.checksum" showname="Checksum: 0x63f4 [validation disabled]" size="2" pos="36" show="25588" value="63f4">
+      <field name="tcp.checksum_good" showname="Good Checksum: False" size="2" pos="36" show="0" value="63f4"/>
+      <field name="tcp.checksum_bad" showname="Bad Checksum: False" size="2" pos="36" show="0" value="63f4"/>
+    </field>
+    <field name="tcp.urgent_pointer" showname="Urgent pointer: 0" size="2" pos="38" show="0" value="0000"/>
+    <field name="tcp.analysis" showname="SEQ/ACK analysis" size="0" pos="20" show="" value="">
+      <field name="tcp.analysis.acks_frame" showname="This is an ACK to the segment in frame: 5" size="0" pos="20" show="5"/>
+      <field name="tcp.analysis.bytes_in_flight" showname="Bytes in flight: 201" size="0" pos="20" show="201"/>
+    </field>
+  </proto>
+  <proto name="http" showname="Hypertext Transfer Protocol" size="201" pos="40">
+    <field name="" show="HTTP/1.1 101 Web Socket Protocol Handshake\r\n" size="44" pos="40" value="485454502f312e31203130312057656220536f636b65742050726f746f636f6c2048616e647368616b650d0a">
+      <field name="_ws.expert" showname="Expert Info (Chat/Sequence): HTTP/1.1 101 Web Socket Protocol Handshake\r\n" size="0" pos="40">
+        <field name="http.chat" showname="HTTP/1.1 101 Web Socket Protocol Handshake\r\n" size="0" pos="0" show="" value=""/>
+        <field name="_ws.expert.message" showname="Message: HTTP/1.1 101 Web Socket Protocol Handshake\r\n" hide="yes" size="0" pos="0" show="HTTP/1.1 101 Web Socket Protocol Handshake\r\n"/>
+        <field name="_ws.expert.severity" showname="Severity level: Chat" size="0" pos="0" show="2097152"/>
+        <field name="_ws.expert.group" showname="Group: Sequence" size="0" pos="0" show="33554432"/>
+      </field>
+      <field name="http.request.version" showname="Request Version: HTTP/1.1" size="8" pos="40" show="HTTP/1.1" value="485454502f312e31"/>
+      <field name="http.response.code" showname="Status Code: 101" size="3" pos="49" show="101" value="313031"/>
+      <field name="http.response.phrase" showname="Response Phrase: Web Socket Protocol Handshake" size="29" pos="53" show="Web Socket Protocol Handshake" value="57656220536f636b65742050726f746f636f6c2048616e647368616b65"/>
+    </field>
+    <field name="http.connection" showname="Connection: Upgrade\r\n" size="21" pos="84" show="Upgrade" value="436f6e6e656374696f6e3a20557067726164650d0a"/>
+    <field name="http.response.line" showname="Connection: Upgrade\r\n" hide="yes" size="21" pos="84" show="Connection: Upgrade\xd\xa" value="436f6e6e656374696f6e3a20557067726164650d0a"/>
+    <field name="http.date" showname="Date: Tue, 17 Feb 2015 15:46:58 GMT\r\n" size="37" pos="105" show="Tue, 17 Feb 2015 15:46:58 GMT" value="446174653a205475652c2031372046656220323031352031353a34363a353820474d540d0a"/>
+    <field name="http.response.line" showname="Date: Tue, 17 Feb 2015 15:46:58 GMT\r\n" hide="yes" size="37" pos="105" show="Date: Tue, 17 Feb 2015 15:46:58 GMT\xd\xa" value="446174653a205475652c2031372046656220323031352031353a34363a353820474d540d0a"/>
+    <field name="http.sec_websocket_accept" showname="Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n" size="52" pos="142" show="s3pPLMBiTxaQ9kYGzzhZRbK+xOo=" value="5365632d576562536f636b65742d4163636570743a20733370504c4d426954786151396b59477a7a685a52624b2b784f6f3d0d0a"/>
+    <field name="http.response.line" showname="Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n" hide="yes" size="52" pos="142" show="Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\xd\xa" value="5365632d576562536f636b65742d4163636570743a20733370504c4d426954786151396b59477a7a685a52624b2b784f6f3d0d0a"/>
+    <field name="http.server" showname="Server: Kaazing Gateway\r\n" size="25" pos="194" show="Kaazing Gateway" value="5365727665723a204b61617a696e6720476174657761790d0a"/>
+    <field name="http.response.line" showname="Server: Kaazing Gateway\r\n" hide="yes" size="25" pos="194" show="Server: Kaazing Gateway\xd\xa" value="5365727665723a204b61617a696e6720476174657761790d0a"/>
+    <field name="http.upgrade" showname="Upgrade: websocket\r\n" size="20" pos="219" show="websocket" value="557067726164653a20776562736f636b65740d0a"/>
+    <field name="http.response.line" showname="Upgrade: websocket\r\n" hide="yes" size="20" pos="219" show="Upgrade: websocket\xd\xa" value="557067726164653a20776562736f636b65740d0a"/>
+    <field name="" show="\r\n" size="2" pos="239" value="0d0a"/>
+    <field name="http.response" showname="Response: True" hide="yes" size="0" pos="40" show="1"/>
+    <field name="" show="HTTP response 1/1" size="0" pos="40"/>
+    <field name="http.time" showname="Time since request: 0.000000000 seconds" size="0" pos="40" show="0.000000000"/>
+    <field name="http.request_in" showname="Request in frame: 5" size="0" pos="40" show="5"/>
+  </proto>
+</packet>
+
+
+</pdml>
