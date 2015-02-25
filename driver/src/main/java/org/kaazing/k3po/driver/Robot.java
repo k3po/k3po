@@ -225,8 +225,9 @@ public class Robot {
                 return false;
             }
         }
-        if (this.configuration != null) {
+        if (this.configuration != null && !this.preparedFuture.isDone()) {
             for (ServerBootstrap serverBootstrap : this.configuration.getServerBootstraps()) {
+                this.configuration.getServerBootstraps();
                 serverBootstrap.shutdown();
                 serverBootstrap.releaseExternalResources();
             }
