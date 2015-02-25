@@ -151,9 +151,8 @@ public class HttpClientBootstrapTest {
             break;
         }
         }
-        channel.write(copiedBuffer("Hello, world", UTF_8));
-        shutdownOutput(channel);
-
+        channel.write(copiedBuffer("Hello, world", UTF_8)).syncUninterruptibly();
+        shutdownOutput(channel).syncUninterruptibly();
         channel.getCloseFuture().syncUninterruptibly();
 
         String message;
@@ -162,6 +161,8 @@ public class HttpClientBootstrapTest {
         } while ((message = messageRef.get()) == null);
 
         assertEquals("Hello, world", message);
+
+        bootstrap.shutdown();
 
         verify(clientSpy, times(10)).handleUpstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
         verify(clientSpy, times(5)).handleDownstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
@@ -176,8 +177,8 @@ public class HttpClientBootstrapTest {
         InOrder childWrite = inOrder(clientSpy);
         childWrite.verify(clientSpy).writeRequested(any(ChannelHandlerContext.class), any(MessageEvent.class));
         childWrite.verify(clientSpy).shutdownOutputRequested(any(ChannelHandlerContext.class), any(ShutdownOutputEvent.class));
-        childWrite.verify(clientSpy).setInterestOpsRequested(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
         // asynchronous
+        verify(clientSpy, times(2)).setInterestOpsRequested(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
         verify(clientSpy).writeComplete(any(ChannelHandlerContext.class), any(WriteCompletionEvent.class));
 
         InOrder childRead = inOrder(clientSpy);

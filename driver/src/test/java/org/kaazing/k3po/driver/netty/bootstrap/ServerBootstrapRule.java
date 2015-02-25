@@ -55,8 +55,7 @@ public class ServerBootstrapRule implements TestRule {
                 bootstrap = bootstrapFactory.newServerBootstrap(transportName);
                 try {
                     base.evaluate();
-                }
-                finally {
+                } finally {
                     bootstrapFactory.shutdown();
                     bootstrapFactory.releaseExternalResources();
                 }
@@ -82,5 +81,9 @@ public class ServerBootstrapRule implements TestRule {
 
     public ChannelAddressFactory getAddressFactory() {
         return addressFactory;
+    }
+
+    public void shutdown() {
+        bootstrapFactory.shutdown();
     }
 }

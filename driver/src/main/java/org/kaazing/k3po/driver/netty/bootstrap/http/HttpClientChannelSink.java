@@ -152,8 +152,7 @@ public class HttpClientChannelSink extends AbstractChannelSink {
 
                     fireChannelConnected(httpConnectChannel, httpRemoteAddress);
                     httpConnectFuture.setSuccess();
-                }
-                else {
+                } else {
                     httpConnectFuture.setFailure(connectFuture.getCause());
                 }
             }
@@ -187,13 +186,11 @@ public class HttpClientChannelSink extends AbstractChannelSink {
                 ChannelFuture future = transport.write(httpRequest);
                 if (httpReadableBytes == getContentLength(httpRequest)) {
                     httpClientChannel.state(CONTENT_COMPLETE);
-                }
-                else {
+                } else {
                     httpClientChannel.state(CONTENT_STREAMED);
                 }
                 chainWriteCompletes(future, httpFuture, httpReadableBytes);
-            }
-            else if (isTransferEncodingChunked(httpRequest)) {
+            } else if (isTransferEncodingChunked(httpRequest)) {
                 httpRequest.setChunked(true);
                 transport.write(httpRequest);
                 httpClientChannel.state(CONTENT_CHUNKED);
@@ -201,21 +198,18 @@ public class HttpClientChannelSink extends AbstractChannelSink {
                 HttpChunk httpChunk = new DefaultHttpChunk(httpContent);
                 ChannelFuture future = transport.write(httpChunk);
                 chainWriteCompletes(future, httpFuture, httpReadableBytes);
-            }
-            else if (httpRequest.headers().contains(Names.UPGRADE)) {
+            } else if (httpRequest.headers().contains(Names.UPGRADE)) {
                 httpRequest.setContent(httpContent);
                 ChannelFuture future = transport.write(httpRequest);
                 httpClientChannel.state(UPGRADEABLE);
                 chainWriteCompletes(future, httpFuture, httpReadableBytes);
-            }
-            else if (httpClientConfig.getMaximumBufferedContentLength() >= httpReadableBytes) {
+            } else if (httpClientConfig.getMaximumBufferedContentLength() >= httpReadableBytes) {
                 // automatically calculate content-length
                 httpRequest.setContent(httpContent);
                 httpBufferedRequest = httpRequest;
                 httpClientChannel.state(CONTENT_BUFFERED);
                 httpFuture.setSuccess();
-            }
-            else {
+            } else {
                 throw new IllegalStateException("Missing Upgrade, Content-Length, Transfer-Encoding: chunked");
             }
             break;
@@ -225,8 +219,7 @@ public class HttpClientChannelSink extends AbstractChannelSink {
             if (httpClientConfig.getMaximumBufferedContentLength() >= httpBufferedBytes + httpReadableBytes) {
                 httpBufferedRequest.setContent(copiedBuffer(httpBufferedContent, httpContent));
                 httpFuture.setSuccess();
-            }
-            else {
+            } else {
                 throw new IllegalStateException("Exceeded maximum buffered content to calculate content length");
             }
             break;
@@ -331,39 +324,32 @@ public class HttpClientChannelSink extends AbstractChannelSink {
                 ChannelFuture future = transport.write(httpRequest);
                 if (getContentLength(httpRequest) == 0) {
                     httpClientChannel.state(CONTENT_COMPLETE);
-                }
-                else {
+                } else {
                     httpClientChannel.state(CONTENT_STREAMED);
                 }
                 chainFutures(future, httpFuture);
-            }
-            else if (isTransferEncodingChunked(httpRequest)) {
+            } else if (isTransferEncodingChunked(httpRequest)) {
                 httpRequest.setChunked(true);
                 ChannelFuture future = transport.write(httpRequest);
                 httpClientChannel.state(CONTENT_CHUNKED);
                 chainFutures(future, httpFuture);
-            }
-            else if (httpRequestHeaders.contains(Names.UPGRADE)) {
+            } else if (httpRequestHeaders.contains(Names.UPGRADE)) {
                 ChannelFuture future = transport.write(httpRequest);
                 httpClientChannel.state(UPGRADEABLE);
                 chainFutures(future, httpFuture);
-            }
-            else if ("GET".equalsIgnoreCase(method.getName()) ||
-                     "HEAD".equalsIgnoreCase(method.getName())) {
+            } else if ("GET".equalsIgnoreCase(method.getName()) || "HEAD".equalsIgnoreCase(method.getName())) {
 
                 // no content and no content-length
                 ChannelFuture future = transport.write(httpRequest);
                 httpClientChannel.state(CONTENT_COMPLETE);
                 chainFutures(future, httpFuture);
-            }
-            else if (httpClientConfig.getMaximumBufferedContentLength() > 0) {
+            } else if (httpClientConfig.getMaximumBufferedContentLength() > 0) {
                 // no content and content-length: 0
                 setContentLength(httpRequest, 0);
                 ChannelFuture future = transport.write(httpRequest);
                 httpClientChannel.state(CONTENT_COMPLETE);
                 chainFutures(future, httpFuture);
-            }
-            else {
+            } else {
                 throw new IllegalStateException("Missing Upgrade, Content-Length, or Transfer-Encoding: chunked");
             }
             break;
@@ -371,13 +357,14 @@ public class HttpClientChannelSink extends AbstractChannelSink {
         case CONTENT_BUFFERED: {
             HttpRequest httpBufferedRequest = this.httpBufferedRequest;
             this.httpBufferedRequest = null;
-
-            ChannelBuffer httpBufferedContent = httpBufferedRequest.getContent();
-            int httpReadableBytes = httpBufferedContent.readableBytes();
-            setContentLength(httpBufferedRequest, httpReadableBytes);
-            ChannelFuture future = transport.write(httpBufferedRequest);
-            httpClientChannel.state(CONTENT_COMPLETE);
-            chainWriteCompletes(future, httpFuture, httpReadableBytes);
+            if (httpBufferedRequest != null) {
+                ChannelBuffer httpBufferedContent = httpBufferedRequest.getContent();
+                int httpReadableBytes = httpBufferedContent.readableBytes();
+                setContentLength(httpBufferedRequest, httpReadableBytes);
+                ChannelFuture future = transport.write(httpBufferedRequest);
+                httpClientChannel.state(CONTENT_COMPLETE);
+                chainWriteCompletes(future, httpFuture, httpReadableBytes);
+            }
             break;
         }
         case UPGRADEABLE:
@@ -398,8 +385,7 @@ public class HttpClientChannelSink extends AbstractChannelSink {
             // default to origin-form when Host header present, otherwise absolute-form
             if (httpClientConfig.hasWriteHeaders() && httpClientConfig.getWriteHeaders().contains(Names.HOST)) {
                 requestForm = ORIGIN_FORM;
-            }
-            else {
+            } else {
                 requestForm = ABSOLUTE_FORM;
             }
         }

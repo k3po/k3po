@@ -225,6 +225,12 @@ public class Robot {
                 return false;
             }
         }
+        if (this.configuration != null) {
+            for (ServerBootstrap serverBootstrap : this.configuration.getServerBootstraps()) {
+                serverBootstrap.shutdown();
+                serverBootstrap.releaseExternalResources();
+            }
+        }
 
         return destroyed = true;
     }

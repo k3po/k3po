@@ -28,6 +28,7 @@ import java.util.concurrent.FutureTask;
 import org.junit.AssumptionViolatedException;
 import org.junit.ComparisonFailure;
 import org.junit.runners.model.Statement;
+import org.kaazing.k3po.driver.Robot;
 
 public class K3poTestStatement extends Statement {
 
@@ -45,7 +46,8 @@ public class K3poTestStatement extends Statement {
     @Override
     public void evaluate() throws Throwable {
 
-        ScriptTestRunner scriptRunner = new ScriptTestRunner(scriptNames, latch);
+        Robot robot = new Robot();
+        ScriptTestRunner scriptRunner = new ScriptTestRunner(scriptNames, latch, robot);
         FutureTask<ScriptPair> scriptFuture = new FutureTask<ScriptPair>(scriptRunner);
 
         try {
@@ -121,6 +123,7 @@ public class K3poTestStatement extends Statement {
         } finally {
             // clean up the task if it is still running
             scriptFuture.cancel(true);
+            robot.destroy();
         }
     }
 }

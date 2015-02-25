@@ -31,7 +31,7 @@ public class ScriptTestRunner implements Callable<ScriptPair> {
     private final Latch latch;
     private volatile Boolean aborted = false;
 
-    public ScriptTestRunner(List<String> scriptNames, Latch latch) {
+    public ScriptTestRunner(List<String> scriptNames, Latch latch, Robot robot) {
         if (scriptNames == null) {
             throw new NullPointerException("names");
         }
@@ -40,7 +40,7 @@ public class ScriptTestRunner implements Callable<ScriptPair> {
             throw new NullPointerException("latch");
         }
 
-        robot = new Robot();
+        this.robot = robot;
         this.scriptNames = scriptNames;
         this.latch = latch;
     }

@@ -191,6 +191,8 @@ public class HttpServerBootstrapTest {
         // wait for server channel to close
         binding.close().syncUninterruptibly();
 
+        server.shutdown();
+
         assertEquals("Hello, world", new String(buf, UTF_8));
 
         verify(parentSpy, times(6)).handleUpstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
