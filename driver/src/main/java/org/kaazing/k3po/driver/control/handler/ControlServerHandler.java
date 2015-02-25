@@ -113,7 +113,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             logger.debug("preparing script(s) " + scriptNames);
         }
 
-        robot = new Robot(addressFactory, bootstrapFactory);
+        robot = new Robot();
         whenAbortedOrFinished = whenAbortedOrFinished(ctx);
 
         ChannelFuture prepareFuture;
