@@ -4,14 +4,14 @@ connected
 read header "Connection" "aNeverImplementedClientConnectionHeader"
 write notify CLIENT_CONNECTION
 write await BACKEND_CONNECTION
-write header "Connection" "aNeverImplementedClientConnectionHeader"
+write header "Connection" "aNeverImplementedServerConnectionHeader"
 write flush
 
 connect http://localhost:8080/backend
 connected
 write method "GET"
+write header "Connection" "aNeverImplementedClientConnectionHeader"
 write await CLIENT_CONNECTION
-write header "Connection" "aNeverImplementedServerConnectionHeader"
 read header "Connection" "aNeverImplementedServerConnectionHeader"
 write notify BACKEND_CONNECTION
 write flush

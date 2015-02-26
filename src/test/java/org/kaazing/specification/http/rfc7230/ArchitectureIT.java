@@ -37,11 +37,11 @@ import org.kaazing.k3po.junit.rules.K3poRule;
  */
 public class ArchitectureIT {
 
-    @Rule
-    public final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/http/rfc7230/architecture");
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/http/rfc7230/architecture");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
+    @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     /**

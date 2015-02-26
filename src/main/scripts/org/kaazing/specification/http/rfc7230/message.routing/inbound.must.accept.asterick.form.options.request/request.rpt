@@ -1,9 +1,9 @@
 connect http://localhost:8080/
 connected
 
-write method "GET"
+write method "POST"
 write header host
+write header content-length
 write close
 
-read status "200" "OK"
-read header "some" "header"
+read status "200" /.*/

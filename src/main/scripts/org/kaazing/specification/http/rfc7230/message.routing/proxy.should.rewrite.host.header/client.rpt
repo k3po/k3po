@@ -1,0 +1,7 @@
+# CLIENT
+connect tcp://localhost:8080
+connected
+write "GET http://localhost:8080/backend/resource.html HTTP/1.1" "\r\n"
+write "host: reallybadhost:80\r\n"
+write "\r\n"
+

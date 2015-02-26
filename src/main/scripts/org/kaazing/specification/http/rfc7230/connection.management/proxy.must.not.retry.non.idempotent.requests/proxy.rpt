@@ -3,6 +3,7 @@ accepted
 connected
 
 read "POST" /.*/ "\r\n"
+read "Host:" /.*/ "\r\n"
 read "Content-Length: " "17" "\r\n"
 read "\r\n"
 read "This is some data"
@@ -16,6 +17,7 @@ connect tcp://localhost:8081
 connected
 write await CLIENT_REQUEST
 write "POST /backend\r\n"
+write "Host: localhost:8081\r\n"
 write "Content-Length: " "17" "\r\n"
 write "\r\n"
 write "This is some data"
@@ -23,3 +25,5 @@ write "This is some data"
 # Ideally this would be closed, notify
 write notify SERVER_FAILURE
 closed
+
+

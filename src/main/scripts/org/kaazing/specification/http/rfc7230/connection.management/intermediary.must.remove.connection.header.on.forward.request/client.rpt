@@ -3,4 +3,4 @@ connected
 write method "GET"
 write header "Connection" "aNeverImplementedClientConnectionHeader"
 write flush
-read header "Connection" "aNeverImplementedClientConnectionHeader"
+read header "Connection" "aNeverImplementedServerConnectionHeader"
