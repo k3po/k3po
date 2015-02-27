@@ -27,8 +27,8 @@ public abstract class LocationFactories {
         // no-op
     }
 
-    public static LocationFactory keepAuthorityOnly(String newScheme) {
-        return new KeepAuthorityOnlyTransportFactory(newScheme);
+    public static LocationFactory keepAuthorityOnly(String newScheme, String oldScheme) {
+        return new KeepAuthorityOnlyTransportFactory(newScheme, oldScheme);
     }
 
     public static LocationFactory changeSchemeOnly(String newScheme) {
@@ -38,14 +38,33 @@ public abstract class LocationFactories {
     private static final class KeepAuthorityOnlyTransportFactory extends LocationFactory {
 
         private final String newScheme;
+        private String oldScheme;
 
-        public KeepAuthorityOnlyTransportFactory(String newScheme) {
+        public KeepAuthorityOnlyTransportFactory(String newScheme, String oldScheme) {
             this.newScheme = newScheme;
+            this.oldScheme = oldScheme;
         }
 
         @Override
         public URI createURI(URI location) {
-            return URI.create(format("%s://%s", newScheme, location.getAuthority()));
+            URI result = null;
+            switch (oldScheme) {
+            case "http":
+                if (location.getPort() == -1) {
+                    result = URI.create(format("%s://%s:80", newScheme, location.getAuthority()));
+                }
+                break;
+            case "https":
+                if (location.getPort() == -1) {
+                    result = URI.create(format("%s://%s:443", newScheme, location.getAuthority()));
+                }
+                break;
+            default:
+            }
+            if (result == null) {
+                result = URI.create(format("%s://%s", newScheme, location.getAuthority()));
+            }
+            return result;
         }
     }
 
