@@ -42,8 +42,8 @@ public abstract class LocationFactories {
         public KeepAuthorityOnlyTransportFactory(String newScheme) {
             this.newScheme = newScheme;
         }
-        
-        private static final int getDefaultPortForScheme(String scheme){
+
+        private static int getDefaultPortForScheme(String scheme) {
             switch (scheme) {
             case "http":
                 return 80;
@@ -88,8 +88,7 @@ public abstract class LocationFactories {
 
             try {
                 return new URI(newScheme, authority, path, query, fragment);
-            }
-            catch (URISyntaxException x) {
+            } catch (URISyntaxException x) {
                 IllegalArgumentException y = new IllegalArgumentException();
                 y.initCause(x);
                 throw y;
