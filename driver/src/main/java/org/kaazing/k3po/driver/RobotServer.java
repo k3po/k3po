@@ -126,8 +126,6 @@ public class RobotServer {
                 }
 
                 ControlServerHandler controller = new ControlServerHandler();
-                controller.setAddressFactory(addressFactory);
-                controller.setBootstrapFactory(bootstrapFactory);
                 controller.setScriptLoader(scriptLoader);
                 pipeline.addLast("control.handler", controller);
 

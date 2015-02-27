@@ -27,8 +27,8 @@ public abstract class LocationFactories {
         // no-op
     }
 
-    public static LocationFactory keepAuthorityOnly(String newScheme, String oldScheme) {
-        return new KeepAuthorityOnlyTransportFactory(newScheme, oldScheme);
+    public static LocationFactory keepAuthorityOnly(String newScheme) {
+        return new KeepAuthorityOnlyTransportFactory(newScheme);
     }
 
     public static LocationFactory changeSchemeOnly(String newScheme) {
@@ -38,30 +38,29 @@ public abstract class LocationFactories {
     private static final class KeepAuthorityOnlyTransportFactory extends LocationFactory {
 
         private final String newScheme;
-        private String oldScheme;
 
-        public KeepAuthorityOnlyTransportFactory(String newScheme, String oldScheme) {
+        public KeepAuthorityOnlyTransportFactory(String newScheme) {
             this.newScheme = newScheme;
-            this.oldScheme = oldScheme;
+        }
+        
+        private static final int getDefaultPortForScheme(String scheme){
+            switch (scheme) {
+            case "http":
+                return 80;
+            case "https":
+                return 443;
+            default:
+                return -1;
+            }
         }
 
         @Override
         public URI createURI(URI location) {
-            URI result = null;
-            switch (oldScheme) {
-            case "http":
-                if (location.getPort() == -1) {
-                    result = URI.create(format("%s://%s:80", newScheme, location.getAuthority()));
-                }
-                break;
-            case "https":
-                if (location.getPort() == -1) {
-                    result = URI.create(format("%s://%s:443", newScheme, location.getAuthority()));
-                }
-                break;
-            default:
-            }
-            if (result == null) {
+            URI result;
+            if (location.getPort() == -1) {
+                int port = getDefaultPortForScheme(location.getScheme());
+                result = URI.create(format("%s://%s:%d", newScheme, location.getAuthority(), port));
+            } else {
                 result = URI.create(format("%s://%s", newScheme, location.getAuthority()));
             }
             return result;

@@ -364,6 +364,8 @@ public class HttpClientChannelSink extends AbstractChannelSink {
                 ChannelFuture future = transport.write(httpBufferedRequest);
                 httpClientChannel.state(CONTENT_COMPLETE);
                 chainWriteCompletes(future, httpFuture, httpReadableBytes);
+            } else {
+                throw new IllegalStateException("No buffered content");
             }
             break;
         }

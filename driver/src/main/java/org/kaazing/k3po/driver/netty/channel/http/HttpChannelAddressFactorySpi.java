@@ -28,7 +28,7 @@ import org.kaazing.k3po.driver.netty.channel.LocationFactory;
 
 public class HttpChannelAddressFactorySpi extends ChannelAddressFactorySpi {
 
-    private static final LocationFactory TRANSPORT_FACTORY = keepAuthorityOnly("tcp", "http");
+    private static final LocationFactory TRANSPORT_FACTORY = keepAuthorityOnly("tcp");
 
     @Override
     public String getSchemeName() {
