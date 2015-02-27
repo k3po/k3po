@@ -44,15 +44,10 @@ public class HttpChannelAddressFactorySpi extends ChannelAddressFactorySpi {
     protected ChannelAddress newChannelAddress0(URI location, ChannelAddress transport, Map<String, Object> options) {
 
         String host = location.getHost();
-        int port = location.getPort();
         String path = location.getPath();
 
         if (host == null) {
             throw new ChannelException(String.format("%s host missing", getSchemeName()));
-        }
-
-        if (port == -1) {
-            throw new ChannelException(String.format("%s port missing", getSchemeName()));
         }
 
         if (path == null || path.isEmpty()) {

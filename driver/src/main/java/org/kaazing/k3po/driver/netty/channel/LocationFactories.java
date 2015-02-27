@@ -43,9 +43,27 @@ public abstract class LocationFactories {
             this.newScheme = newScheme;
         }
 
+        private static int getDefaultPortForScheme(String scheme) {
+            switch (scheme) {
+            case "http":
+                return 80;
+            case "https":
+                return 443;
+            default:
+                return -1;
+            }
+        }
+
         @Override
         public URI createURI(URI location) {
-            return URI.create(format("%s://%s", newScheme, location.getAuthority()));
+            URI result;
+            if (location.getPort() == -1) {
+                int port = getDefaultPortForScheme(location.getScheme());
+                result = URI.create(format("%s://%s:%d", newScheme, location.getAuthority(), port));
+            } else {
+                result = URI.create(format("%s://%s", newScheme, location.getAuthority()));
+            }
+            return result;
         }
     }
 
@@ -70,8 +88,7 @@ public abstract class LocationFactories {
 
             try {
                 return new URI(newScheme, authority, path, query, fragment);
-            }
-            catch (URISyntaxException x) {
+            } catch (URISyntaxException x) {
                 IllegalArgumentException y = new IllegalArgumentException();
                 y.initCause(x);
                 throw y;

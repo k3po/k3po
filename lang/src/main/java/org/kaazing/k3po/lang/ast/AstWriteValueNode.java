@@ -42,14 +42,6 @@ public class AstWriteValueNode extends AstCommandNode {
         values.add(value);
     }
 
-    @Deprecated
-    public void setValue(AstValue value) {
-        if (values != null) {
-            throw new IllegalStateException("Can not setValue when there are already values");
-        }
-        addValue(value);
-    }
-
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
         return visitor.visit(this, parameter);

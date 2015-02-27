@@ -131,6 +131,8 @@ public class BBoshServerBootstrapTest {
 
         assertEquals("Hello, world", new String(buf, UTF_8));
 
+        server.shutdown();
+
         verify(parentSpy, times(6)).handleUpstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
         verify(parentSpy, times(2)).handleDownstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
 

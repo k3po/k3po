@@ -100,10 +100,6 @@ public class Robot {
              newBootstrapFactory(Collections.<Class<?>, Object>singletonMap(ChannelAddressFactory.class, addressFactory)), true);
     }
 
-    public Robot(ChannelAddressFactory addressFactory, BootstrapFactory bootstrapFactory) {
-        this(addressFactory, bootstrapFactory, false);
-    }
-
     private Robot(
             ChannelAddressFactory addressFactory,
             BootstrapFactory bootstrapFactory,

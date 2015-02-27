@@ -50,8 +50,6 @@ import org.kaazing.k3po.driver.control.FinishedMessage;
 import org.kaazing.k3po.driver.control.PrepareMessage;
 import org.kaazing.k3po.driver.control.PreparedMessage;
 import org.kaazing.k3po.driver.control.StartedMessage;
-import org.kaazing.k3po.driver.netty.bootstrap.BootstrapFactory;
-import org.kaazing.k3po.driver.netty.channel.ChannelAddressFactory;
 import org.kaazing.k3po.lang.parser.ScriptParseException;
 
 public class ControlServerHandler extends ControlUpstreamHandler {
@@ -65,17 +63,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     private final ChannelFuture channelClosedFuture = Channels.future(null);
 
-    private ChannelAddressFactory addressFactory;
-    private BootstrapFactory bootstrapFactory;
     private ClassLoader scriptLoader;
-
-    public void setAddressFactory(ChannelAddressFactory addressFactory) {
-        this.addressFactory = addressFactory;
-    }
-
-    public void setBootstrapFactory(BootstrapFactory bootstrapFactory) {
-        this.bootstrapFactory = bootstrapFactory;
-    }
 
     public void setScriptLoader(ClassLoader scriptLoader) {
         this.scriptLoader = scriptLoader;
@@ -113,7 +101,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             logger.debug("preparing script(s) " + scriptNames);
         }
 
-        robot = new Robot(addressFactory, bootstrapFactory);
+        robot = new Robot();
         whenAbortedOrFinished = whenAbortedOrFinished(ctx);
 
         ChannelFuture prepareFuture;
