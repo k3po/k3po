@@ -8,3 +8,4 @@ read closed
 write status "200" "OK"
 write header "some" "header"
 write close
+

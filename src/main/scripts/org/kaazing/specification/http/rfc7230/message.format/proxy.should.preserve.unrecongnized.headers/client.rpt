@@ -6,3 +6,4 @@ write header "secret" "header"
 write close
 read status "200" "OK"
 read header "doubleSecret" "probation"
+

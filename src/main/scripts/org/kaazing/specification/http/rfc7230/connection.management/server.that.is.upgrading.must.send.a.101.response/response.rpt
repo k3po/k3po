@@ -7,3 +7,4 @@ read header "Connection" "Upgrade"
 
 write status "101" "Some Upgrade Protocol"
 write flush
+

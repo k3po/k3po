@@ -7,4 +7,3 @@ write "This is some data"
 write close
 read status "502" "Bad Gateway"
 
-

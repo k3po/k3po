@@ -3,3 +3,4 @@ connected
 write method "GET"
 read status "426" "Upgrade Required"
 read header "Upgrade" /.*/
+

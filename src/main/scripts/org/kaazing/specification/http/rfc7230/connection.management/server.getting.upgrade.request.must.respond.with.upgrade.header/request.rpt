@@ -6,3 +6,4 @@ write header "Connection" "Upgrade"
 write header "Host" "localhost:8080"
 read status "101" /.*/
 read header "Upgrade" "WebSocket"
+

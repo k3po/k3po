@@ -8,3 +8,4 @@ read closed
 write status "100" "OK"
 write header "Content-Length" "100"
 write close
+

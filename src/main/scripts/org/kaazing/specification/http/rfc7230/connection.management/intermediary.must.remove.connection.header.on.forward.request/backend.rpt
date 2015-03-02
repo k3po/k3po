@@ -4,3 +4,4 @@ connected
 read header "Connection" "aNeverImplementedClientConnectionHeader"
 write header "Connection" "aNeverImplementedServerConnectionHeader"
 write flush
+
