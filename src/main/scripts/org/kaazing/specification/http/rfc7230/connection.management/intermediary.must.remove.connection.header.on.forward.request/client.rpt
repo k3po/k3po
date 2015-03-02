@@ -1,0 +1,7 @@
+connect http://localhost:8080/intermediary
+connected
+write method "GET"
+write header "Connection" "aNeverImplementedClientConnectionHeader"
+write flush
+read header "Connection" "aNeverImplementedServerConnectionHeader"
+

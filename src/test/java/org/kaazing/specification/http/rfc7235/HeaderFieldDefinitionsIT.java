@@ -31,7 +31,7 @@ public class HeaderFieldDefinitionsIT {
 
     @Test
     @Ignore("Not Implemented")
-    public void secureServerShould401ToAnyUnAuthorizedRequest() {
+    public void secureServerShouldSend401ToAnyUnAuthorizedRequest() {
         // this includes 101
 
         // A server generating a 401 (Unauthorized) response MUST send a

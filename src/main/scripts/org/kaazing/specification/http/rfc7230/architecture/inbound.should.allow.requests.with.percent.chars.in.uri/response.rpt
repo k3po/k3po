@@ -1,0 +1,7 @@
+accept http://localhost:8080/Some%20Path
+accepted
+connected
+read version /HTTP\/(\d+)\.(\d+)/
+write status "200" "OK"
+write flush
+

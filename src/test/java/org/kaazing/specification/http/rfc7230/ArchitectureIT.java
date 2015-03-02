@@ -20,8 +20,16 @@
  */
 package org.kaazing.specification.http.rfc7230;
 
-import org.junit.Ignore;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.rules.RuleChain.outerRule;
+
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.DisableOnDebug;
+import org.junit.rules.TestRule;
+import org.junit.rules.Timeout;
+import org.kaazing.k3po.junit.annotation.Specification;
+import org.kaazing.k3po.junit.rules.K3poRule;
 
 /**
  * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7230#section-2">RFC 7230 section 2:
@@ -29,115 +37,131 @@ import org.junit.Test;
  */
 public class ArchitectureIT {
 
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/http/rfc7230/architecture");
+
+    private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
+
+    @Rule
+    public final TestRule chain = outerRule(k3po).around(timeout);
+
     /**
      * See <a href="https://tools.ietf.org/html/rfc7230#section-2.6">RFC 7230 section 2.6: Protocol Versioning</a>.
+     * @throws Exception when K3PO is not started
      */
     @Test
-    @Ignore("Not Implemented")
-    public void downstreamMustSendHttpVersion() {
-
+    @Specification({
+        "outbound.must.send.version/request",
+        "outbound.must.send.version/response" })
+    public void outboundMustSendVersion() throws Exception {
+        k3po.finish();
     }
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc7230#section-2.6">RFC 7230 section 2.6: Protocol Versioning</a>.
+     * @throws Exception when K3PO is not started
      */
     @Test
-    @Ignore("Not Implemented")
-    public void upstreamShouldFailOnAnyLowerCaseHttpInVersion() {
-        // return 505 HTTP Version Not Supported
+    @Specification({
+        "inbound.must.send.version/request",
+        "inbound.must.send.version/response" })
+    public void inboundMustSendVersion() throws Exception {
+        k3po.finish();
     }
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc7230#section-2.6">RFC 7230 section 2.6: Protocol Versioning</a>.
+     * @throws Exception
      */
     @Test
-    @Ignore("Not Implemented")
-    public void upstreamMustFailOnVersionMissingDot() {
-        // return 505
+    @Specification({
+        "response.must.be.505.on.invalid.version/request",
+        "response.must.be.505.on.invalid.version/response" })
+    public void inboundMustSend505OnInvalidVersion() throws Exception {
+        k3po.finish();
     }
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc7230#section-2.6">RFC 7230 section 2.6: Protocol Versioning</a>.
+     * @throws Exception
      */
     @Test
-    @Ignore("Not Implemented")
-    public void upstreamMustFailOnVersionHavingTwoDots() {
-        // return 505
-    }
-
-    /**
-     * See <a href="https://tools.ietf.org/html/rfc7230#section-2.6">RFC 7230 section 2.6: Protocol Versioning</a>.
-     */
-    @Test
-    @Ignore("Not Implemented")
-    public void inboundMustSend505OnUnparseableVersion() {
-    }
-
-    /**
-     * See <a href="https://tools.ietf.org/html/rfc7230#section-2.6">RFC 7230 section 2.6: Protocol Versioning</a>.
-     */
-    @Test
-    @Ignore("Not Implemented")
-    public void inboundMustReplyWithVersionOneDotOneWhenReceivedVersionWithMajorVersionOneAndMinorVersionGreaterThanOne() {
+    @Specification({
+        "inbound.must.reply.with.version.one.dot.one.when.received.higher.minor.version/request",
+        "inbound.must.reply.with.version.one.dot.one.when.received.higher.minor.version/response" })
+    public void inboundMustReplyWithVersionOneDotOneWhenReceivedHigherMinorVersion() throws Exception {
         // return response with 1.1
+        k3po.finish();
     }
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc7230#section-2.6">RFC 7230 section 2.6: Protocol Versioning</a>.
+     * @throws Exception
      */
     @Test
-    @Ignore("Not Implemented")
-    public void originServerShouldSend505OnMajorVersionNotEqualToOne() {
-
+    @Specification({
+        "origin.server.should.send.505.on.major.version.not.equal.to.one/request",
+        "origin.server.should.send.505.on.major.version.not.equal.to.one/response" })
+    public void originServerShouldSend505OnMajorVersionNotEqualToOne() throws Exception {
+        k3po.finish();
     }
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc7230#section-2.7">RFC 7230 section 2.7: Uniform Resource
      * Identifiers</a>.
+     * @throws Exception
      */
     @Test
-    @Ignore("Not Implemented")
-    public void clientMustSendHostIdentifier() {
-
+    @Specification({
+        "client.must.send.host.identifier/request",
+        "client.must.send.host.identifier/response" })
+    public void clientMustSendHostIdentifier() throws Exception {
+        k3po.finish();
     }
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc7230#section-2.7">RFC 7230 section 2.7: Uniform Resource
      * Identifiers</a>.
+     * @throws Exception
      */
+    @Specification({
+        "inbound.must.reject.requests.missing.host.identifier/request",
+        "inbound.must.reject.requests.missing.host.identifier/response" })
     @Test
-    @Ignore("Not Implemented")
-    public void inboundMustRejectRequestsMissingHostIdentifier() {
+    public void inboundMustRejectRequestsMissingHostIdentifier() throws Exception {
         // 400 Bad Request
+        k3po.finish();
     }
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc7230#section-2.7">RFC 7230 section 2.7: Uniform Resource
      * Identifiers</a>.
+     *
+     * A sender MUST NOT generate the userinfo subcomponent (and its "@" delimiter) when an "http" URI reference is
+     * generated within a message as a request target or header field value. Before making use of an "http" URI
+     * reference received from an untrusted source, a recipient SHOULD parse for userinfo and treat its presence as an
+     * error; it is likely being used to obscure the authority for the sake of phishing attacks.
+     *
+     * @throws Exception
      */
     @Test
-    @Ignore("Not Implemented")
-    public void inboundMustRejectRequestsWithInvalidHostIdentifier() {
-        // 400 Bad Request
+    @Specification({
+        "inbound.must.reject.requests.with.user.info.on.uri/request",
+        "inbound.must.reject.requests.with.user.info.on.uri/response" })
+    public void inboundMustRejectRequestWithUserInfoOnURI() throws Exception {
+        k3po.finish();
     }
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc7230#section-2.7">RFC 7230 section 2.7: Uniform Resource
      * Identifiers</a>.
+     * @throws Exception
      */
     @Test
-    @Ignore("Not Implemented")
-    public void inboundMustRejectRequestWithUserInfoOnURI() {
-        // ex http://localhost:8000@username:password
-    }
-
-    /**
-     * See <a href="https://tools.ietf.org/html/rfc7230#section-2.7">RFC 7230 section 2.7: Uniform Resource
-     * Identifiers</a>.
-     */
-    @Test
-    @Ignore("Not Implemented")
-    public void inboundShouldAllowRequestsWithPercentCharsInURI() {
+    @Specification({
+        "inbound.should.allow.requests.with.percent.chars.in.uri/request",
+        "inbound.should.allow.requests.with.percent.chars.in.uri/response" })
+    public void inboundShouldAllowRequestsWithPercentCharsInURI() throws Exception {
         // equivalent %chars to normal chars ?
+        k3po.finish();
     }
 }
