@@ -16,6 +16,7 @@
 
 package org.kaazing.k3po.driver.behavior.visitor;
 
+import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
@@ -238,6 +239,11 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         ELResolver resolver = environment.getELResolver();
         resolver.setValue(environment, null, propertyName, value);
 
+        if (LOGGER.isDebugEnabled()) {
+            Object formatValue = (value instanceof byte[]) ? AstLiteralBytesValue.toString((byte[]) value) : value;
+            LOGGER.debug(format("Setting value for ${%s} to %s", propertyName, formatValue));
+        }
+
         return state.configuration;
     }
 
@@ -274,7 +280,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("completion#%d", pipelineAsMap.size() + 1);
-
         CompletionHandler handler = new CompletionHandler();
         handler.setRegionInfo(acceptedNode.getRegionInfo());
         pipelineAsMap.put(handlerName, handler);

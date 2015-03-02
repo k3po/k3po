@@ -42,7 +42,6 @@ import static org.kaazing.k3po.lang.test.junit.Assert.assertEquals;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.el.ExpressionFactory;
@@ -290,7 +289,7 @@ public class ScriptParserImplTest {
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstFixedLengthBytesMatcher actual =
-                parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER, new ArrayList<ScriptParseException>());
+                parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER);
 
         AstFixedLengthBytesMatcher expected = new AstFixedLengthBytesMatcher(25);
         assertEquals(expected, actual);
@@ -1137,14 +1136,20 @@ public class ScriptParserImplTest {
     public void shouldParseConnectScript() throws Exception {
 
         String script =
-                "# tcp.client.connect-then-close\n" + "connect tcp://localhost:7788\n" + "connected\n" + "close\n" + "closed\n";
+                "# tcp.client.connect-then-close\n" +
+                "connect http://localhost:8080/path?p1=v1&p2=v2\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
 
-        AstScriptNode expected =
-                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("tcp://localhost:7788")).addConnectedEvent()
-                        .done().addCloseCommand().done().addClosedEvent().done().done().done();
+        AstScriptNode expected = new AstScriptNodeBuilder()
+                .addConnectStream()
+                .setLocation(URI.create("http://localhost:8080/path?p1=v1&p2=v2"))
+                .addConnectedEvent().done().addCloseCommand().done()
+                .addClosedEvent().done().done().done();
 
         assertEquals(expected, actual);
     }
@@ -1374,8 +1379,7 @@ public class ScriptParserImplTest {
         assertEquals(expected, actual);
     }
 
-    @Test(
-            expected = ScriptParseException.class)
+    @Test(expected = ScriptParseException.class)
     public void shouldNotParseScriptWithUnknownKeyword() throws Exception {
 
         String script = "written\n";
@@ -1384,8 +1388,7 @@ public class ScriptParserImplTest {
         parser.parseWithStrategy(script, SCRIPT);
     }
 
-    @Test(
-            expected = ScriptParseException.class)
+    @Test(expected = ScriptParseException.class)
     public void shouldNotParseScriptWithReadBeforeConnect() throws Exception {
 
         String script =

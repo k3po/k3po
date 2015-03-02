@@ -21,8 +21,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.el.ValueExpression;
 
-public class VariableMapper
-    extends javax.el.VariableMapper {
+public class VariableMapper extends javax.el.VariableMapper {
 
     protected final ConcurrentMap<String, ValueExpression> variables;
 

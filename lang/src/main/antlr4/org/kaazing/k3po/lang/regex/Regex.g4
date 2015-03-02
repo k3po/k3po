@@ -46,47 +46,6 @@ PatternNonGroup
   | PatternFlags
   ;
 
-//fragment
-//PatternTerminal
-//  : PatternCharacters
-//  ;
-//
-//fragment
-//PatternNonTerminal
-//  : PatternQuantifiable ( PatternQuantifiers )?
-//  | PatternBoundaryMatchers
-//  | LeftParen ( PatternNonCapturing )? PatternNonTerminal RightParen
-//  ;
-//
-//fragment
-//PatternQuantifiable
-//  : PatternCharacterClasses
-//  | PatternBackReferences
-//  | PatternQuotedText
-//  ;
-//
-//fragment
-//PatternQuotedText
-//  : '\\Q' 
-//    (options {greedy=false;}
-//      : .* '\\E'
-//    )
-//  ;
-//
-//fragment
-//PatternBackReferences
-//  : '\\0'
-//  | '\\1'
-//  | '\\2'
-//  | '\\3'
-//  | '\\4'
-//  | '\\5'
-//  | '\\6'
-//  | '\\7'
-//  | '\\8'
-//  | '\\9'
-//  ;
-//
 PatternNonCapturing
   : '?:'
   | '?='
@@ -137,10 +96,14 @@ fragment
 PatternCharacter
   : Letter
   | Digit
+  | '^'
+  | '$'
   | ':'
+  | ';'
   | '-'
   | ' '
   | '+'
+  | '*'
   | '/'
   | '='
   | '\\0' Digit ( Digit ( Digit )? )?
@@ -153,9 +116,12 @@ PatternCharacter
   | '\\a'
   | '\\e'
   | '\\c' Letter
+  | '\\^'
+  | '\\$'
   | '\\:'
   | '\\-'
   | '\\.'
+  | '\\*'
   | '\\+'
   | '\\/'
   | '\\='
@@ -256,19 +222,6 @@ fragment
 PatternCharacterClass
   : PatternCharacter ( '-' PatternCharacter | PatternCharacter* )
   ;
-
-//fragment
-//PatternBoundaryMatchers
-//  : '^'
-//  | '$'
-//  | '\\b'
-//  | '\\B'
-//  | '\\A'
-//  | '\\G'
-//  | '\\Z'
-//  | '\\z'
-//  ;
-//
 
 fragment
 PatternQuantifiers

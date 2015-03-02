@@ -1,4 +1,4 @@
-connect tcp://localhost:62345
+connect tcp://localhost:8080
 connected
 read [0..4]
 close

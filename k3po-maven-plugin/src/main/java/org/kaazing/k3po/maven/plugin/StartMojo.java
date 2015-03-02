@@ -86,12 +86,18 @@ public class StartMojo extends AbstractMojo {
             long checkpoint = currentTimeMillis();
             server.start();
             float duration = (currentTimeMillis() - checkpoint) / 1000.0f;
-            getLog().debug(format("K3PO [%08x] started in %.3fsec", identityHashCode(server), duration));
+            if (getLog().isDebugEnabled()) {
+                getLog().debug(format("K3PO [%08x] started in %.3fsec", identityHashCode(server), duration));
+            } else {
+                getLog().info("K3PO started");
+            }
 
             setServer(server);
 
             if (!daemon) {
                 server.join();
+            } else {
+                getLog().info(format("K3PO will terminate when Maven process terminates"));
             }
         }
         catch (Exception e) {

@@ -61,4 +61,8 @@ public class ClientBootstrapRule implements TestRule {
         bootstrap.setPipeline(pipeline);
     }
 
+    public void shutdown() {
+        bootstrapFactory.shutdown();
+    }
+
 }

@@ -1,0 +1,18 @@
+#
+# Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
+#
+
+accept tcp://localhost:8000
+accepted
+connected
+read "GET http://localhost:8000/?field=value&field=value2&field=value3 HTTP/1.1\r\n"
+read "\r\n"
+write "HTTP/1.1 200 OK\r\n"
+write "some: header\r\n"
+write "Content-Length: 7\r\n"
+write "\r\n"
+write "content"
+
+close
+closed
+

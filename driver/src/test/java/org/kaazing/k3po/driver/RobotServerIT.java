@@ -63,11 +63,11 @@ public class RobotServerIT {
     @Before
     public void setupRobot() throws Exception {
         robot =
-                new RobotServer(URI.create("tcp://localhost:61234"), false, new URLClassLoader(new URL[]{new File(
+                new RobotServer(URI.create("tcp://localhost:9080"), false, new URLClassLoader(new URL[]{new File(
                         "src/test/scripts").toURI().toURL()}));
         robot.start();
         control = new Socket();
-        control.connect(new InetSocketAddress("localhost", 61234));
+        control.connect(new InetSocketAddress("localhost", 9080));
 
         client = new Socket();
 
@@ -87,9 +87,6 @@ public class RobotServerIT {
         }
 
         server.close();
-
-        Thread.sleep(1000);
-
     }
 
     @Test
@@ -146,9 +143,9 @@ public class RobotServerIT {
         String path = "org/kaazing/robot/driver/accept-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
-                                     "content-length:61\n" +
+                                     "content-length:60\n" +
                                      "\n" +
-                                     "accept tcp://localhost:62345\n" +
+                                     "accept tcp://localhost:8080\n" +
                                      "accepted\n" +
                                      "connected\n" +
                                      "close\n" +
@@ -194,9 +191,9 @@ public class RobotServerIT {
         String path = "org/kaazing/robot/driver/accept-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
-                                     "content-length:61\n" +
+                                     "content-length:60\n" +
                                      "\n" +
-                                     "accept tcp://localhost:62345\n" +
+                                     "accept tcp://localhost:8080\n" +
                                      "accepted\n" +
                                      "connected\n" +
                                      "close\n" +
@@ -204,9 +201,9 @@ public class RobotServerIT {
         String strExpectedStarted = "STARTED\n" +
                                     "\n";
         String strExpectedFinished = "FINISHED\n" +
-                                     "content-length:61\n" +
+                                     "content-length:60\n" +
                                      "\n" +
-                                     "accept tcp://localhost:62345\n" +
+                                     "accept tcp://localhost:8080\n" +
                                      "accepted\n" +
                                      "connected\n" +
                                      "close\n" +
@@ -234,7 +231,7 @@ public class RobotServerIT {
         assertEquals(expectedPrepared, prepared);
 
         // Connect before we START
-        client.connect(new InetSocketAddress("localhost", 62345));
+        client.connect(new InetSocketAddress("localhost", 8080));
 
         out.append("START\n");
         out.append("\n");
@@ -266,9 +263,9 @@ public class RobotServerIT {
         String path = "org/kaazing/robot/driver/accept-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
-                                     "content-length:61\n" +
+                                     "content-length:60\n" +
                                      "\n" +
-                                     "accept tcp://localhost:62345\n" +
+                                     "accept tcp://localhost:8080\n" +
                                      "accepted\n" +
                                      "connected\n" +
                                      "close\n" +
@@ -276,9 +273,9 @@ public class RobotServerIT {
         String strExpectedStarted = "STARTED\n" +
                                     "\n";
         String strExpectedFinished = "FINISHED\n" +
-                                     "content-length:61\n" +
+                                     "content-length:60\n" +
                                      "\n" +
-                                     "accept tcp://localhost:62345\n" +
+                                     "accept tcp://localhost:8080\n" +
                                      "accepted\n" +
                                      "connected\n" +
                                      "close\n" +
@@ -305,7 +302,7 @@ public class RobotServerIT {
 
         assertEquals(expectedPrepared, prepared);
 
-        client.connect(new InetSocketAddress("localhost", 62345));
+        client.connect(new InetSocketAddress("localhost", 8080));
 
         out.append("START\n");
         out.append("\n");
@@ -334,23 +331,23 @@ public class RobotServerIT {
     @Test
     public void shouldConnectThenCloseOK() throws Exception {
 
-        server.bind(new InetSocketAddress("localhost", 62345));
+        server.bind(new InetSocketAddress("localhost", 8080));
 
         String path = "org/kaazing/robot/driver/connect-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
-                                     "content-length:53\n" +
+                                     "content-length:52\n" +
                                      "\n" +
-                                     "connect tcp://localhost:62345\n" +
+                                     "connect tcp://localhost:8080\n" +
                                      "connected\n" +
                                      "close\n" +
                                      "closed\n";
         String strExpectedStarted = "STARTED\n" +
                                     "\n";
         String strExpectedFinished = "FINISHED\n" +
-                                     "content-length:53\n" +
+                                     "content-length:52\n" +
                                      "\n" +
-                                     "connect tcp://localhost:62345\n" +
+                                     "connect tcp://localhost:8080\n" +
                                      "connected\n" +
                                      "close\n" +
                                      "closed\n";
@@ -405,23 +402,23 @@ public class RobotServerIT {
     @Test
     public void shouldConnectThenCloseWithPrepareOK() throws Exception {
 
-        server.bind(new InetSocketAddress("localhost", 62345));
+        server.bind(new InetSocketAddress("localhost", 8080));
 
         String path = "org/kaazing/robot/driver/connect-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
-                                     "content-length:53\n" +
+                                     "content-length:52\n" +
                                      "\n" +
-                                     "connect tcp://localhost:62345\n" +
+                                     "connect tcp://localhost:8080\n" +
                                      "connected\n" +
                                      "close\n" +
                                      "closed\n";
         String strExpectedStarted = "STARTED\n" +
                                     "\n";
         String strExpectedFinished = "FINISHED\n" +
-                                     "content-length:53\n" +
+                                     "content-length:52\n" +
                                      "\n" +
-                                     "connect tcp://localhost:62345\n" +
+                                     "connect tcp://localhost:8080\n" +
                                      "connected\n" +
                                      "close\n" +
                                      "closed\n";
@@ -476,14 +473,14 @@ public class RobotServerIT {
     @Test
     public void shouldPrepareStartThenAbortOK() throws Exception {
 
-        server.bind(new InetSocketAddress("localhost", 62345));
+        server.bind(new InetSocketAddress("localhost", 8080));
 
         String path = "org/kaazing/robot/driver/shouldAbortOK";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
-                                     "content-length:65\n" +
+                                     "content-length:64\n" +
                                      "\n" +
-                                     "connect tcp://localhost:62345\n" +
+                                     "connect tcp://localhost:8080\n" +
                                      "connected\n" +
                                      "read [0..4]\n" +
                                      "close\n" +
@@ -491,9 +488,9 @@ public class RobotServerIT {
         String strExpectedStarted = "STARTED\n" +
                                     "\n";
         String strExpectedFinished = "FINISHED\n" +
-                                     "content-length:41\n" +
+                                     "content-length:40\n" +
                                      "\n" +
-                                     "connect tcp://localhost:62345\n" +
+                                     "connect tcp://localhost:8080\n" +
                                      "connected\n" +
                                      "\n";
 
@@ -560,9 +557,9 @@ public class RobotServerIT {
         String path = "org/kaazing/robot/driver/shouldAbortOK";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
-                                     "content-length:65\n" +
+                                     "content-length:64\n" +
                                      "\n" +
-                                     "connect tcp://localhost:62345\n" +
+                                     "connect tcp://localhost:8080\n" +
                                      "connected\n" +
                                      "read [0..4]\n" +
                                      "close\n" +
@@ -613,9 +610,9 @@ public class RobotServerIT {
         String path = "org/kaazing/robot/driver/accept-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
-                                     "content-length:61\n" +
+                                     "content-length:60\n" +
                                      "\n" +
-                                     "accept tcp://localhost:62345\n" +
+                                     "accept tcp://localhost:8080\n" +
                                      "accepted\n" +
                                     "connected\n" +
                                      "close\n" +
@@ -651,7 +648,7 @@ public class RobotServerIT {
         thrown.expectMessage("Connection refused");
 
         // Now this should fail ...
-        client.connect(new InetSocketAddress("localhost", 62345));
+        client.connect(new InetSocketAddress("localhost", 8080));
     }
 
     @Test

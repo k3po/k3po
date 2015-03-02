@@ -129,6 +129,7 @@ public class TcpServerBootstrapTest {
         }
 
         binding.close().syncUninterruptibly();
+        server.shutdown();
 
         assertEquals("Hello, world", new String(buf, UTF_8));
 

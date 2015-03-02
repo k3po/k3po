@@ -17,7 +17,6 @@
 package org.kaazing.k3po.driver.behavior.handler.codec;
 
 import static java.lang.String.format;
-import static org.jboss.netty.util.CharsetUtil.UTF_8;
 import static org.kaazing.k3po.lang.RegionInfo.newSequential;
 
 import java.nio.charset.Charset;
@@ -69,8 +68,6 @@ public class ReadRegexDecoder extends MessageDecoder {
 
     private Object decodeBuffer(final ChannelBuffer buffer, boolean isLast) throws Exception {
 
-        final boolean isDebugEnabled = LOGGER.isDebugEnabled();
-
         final ChannelBuffer observedBytes = buffer.slice();
         final String observed = observedBytes.toString(charset);
 
@@ -83,9 +80,6 @@ public class ReadRegexDecoder extends MessageDecoder {
 
         // We keep looking while we match or while we don't match but it is still possible to match
         if ((allInputMatched || !isLast) && noMatchMayMatchLater) {
-            if (isDebugEnabled) {
-                LOGGER.debug("Waiting for more data to match full regex");
-            }
             return null;
         }
 
@@ -99,18 +93,17 @@ public class ReadRegexDecoder extends MessageDecoder {
         // skip the bytes we actually matched
         buffer.skipBytes(matcher.end());
 
-        if (isDebugEnabled) {
-            LOGGER.debug(format("Regex handler read %d bytes, leaving buffer=%s", matcher.end(), buffer.toString(UTF_8)));
-        }
-
         return buffer;
     }
 
     private void captureGroups(NamedGroupMatcher matcher) {
         for (String captureName : matcher.groupNames()) {
             String captured = matcher.group(captureName);
-            byte[] bytes = captured.getBytes(UTF_8);
-            environment.getELResolver().setValue(environment, null, captureName, bytes);
+            environment.getELResolver().setValue(environment, null, captureName, captured);
+
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(format("Setting value for ${%s} to %s", captureName, captured));
+            }
         }
     }
 }
