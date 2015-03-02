@@ -53,7 +53,7 @@ public class ArchitectureIT {
         "outbound.must.send.version/request",
         "outbound.must.send.version/response" })
     public void outboundMustSendVersion() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -65,7 +65,7 @@ public class ArchitectureIT {
         "inbound.must.send.version/request",
         "inbound.must.send.version/response" })
     public void inboundMustSendVersion() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -77,7 +77,7 @@ public class ArchitectureIT {
         "response.must.be.505.on.invalid.version/request",
         "response.must.be.505.on.invalid.version/response" })
     public void inboundMustSend505OnInvalidVersion() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -90,7 +90,7 @@ public class ArchitectureIT {
         "inbound.must.reply.with.version.one.dot.one.when.received.higher.minor.version/response" })
     public void inboundMustReplyWithVersionOneDotOneWhenReceivedHigherMinorVersion() throws Exception {
         // return response with 1.1
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -102,7 +102,7 @@ public class ArchitectureIT {
         "origin.server.should.send.505.on.major.version.not.equal.to.one/request",
         "origin.server.should.send.505.on.major.version.not.equal.to.one/response" })
     public void originServerShouldSend505OnMajorVersionNotEqualToOne() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -115,7 +115,7 @@ public class ArchitectureIT {
         "client.must.send.host.identifier/request",
         "client.must.send.host.identifier/response" })
     public void clientMustSendHostIdentifier() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -129,7 +129,7 @@ public class ArchitectureIT {
     @Test
     public void inboundMustRejectRequestsMissingHostIdentifier() throws Exception {
         // 400 Bad Request
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -148,7 +148,7 @@ public class ArchitectureIT {
         "inbound.must.reject.requests.with.user.info.on.uri/request",
         "inbound.must.reject.requests.with.user.info.on.uri/response" })
     public void inboundMustRejectRequestWithUserInfoOnURI() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -162,6 +162,6 @@ public class ArchitectureIT {
         "inbound.should.allow.requests.with.percent.chars.in.uri/response" })
     public void inboundShouldAllowRequestsWithPercentCharsInURI() throws Exception {
         // equivalent %chars to normal chars ?
-        k3po.join();
+        k3po.finish();
     }
 }

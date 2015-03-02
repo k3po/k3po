@@ -1,9 +1,7 @@
-connect http://localhost:8080/
+connect tcp://localhost:8080
 connected
 
-write method "POST"
-write header host
-write header content-length
-write close
+write "GET / HTTP/1.1" "\r\n"
+write "\r\n"
 
-read status "200" /.*/
+read "HTTP/1.1 400"

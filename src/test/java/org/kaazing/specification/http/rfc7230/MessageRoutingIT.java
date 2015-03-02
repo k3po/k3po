@@ -54,7 +54,7 @@ public class MessageRoutingIT {
         "inbound.host.header.should.follow.request.line/request",
         "inbound.host.header.should.follow.request.line/response" })
     public void inboundHostHeaderShouldFollowRequestLine() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -73,7 +73,7 @@ public class MessageRoutingIT {
         "proxy.should.rewrite.host.header/proxy",
         "proxy.should.rewrite.host.header/server" })
     public void proxyShouldRewriteHostHeader() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -83,9 +83,8 @@ public class MessageRoutingIT {
     @Specification({
         "inbound.must.reject.request.with.400.if.missing.host.header/request",
         "inbound.must.reject.request.with.400.if.missing.host.header/response" })
-    @Ignore("Not Implemented")
     public void inboundMustRejectRequestWith400IfMissingHostHeader() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -95,9 +94,8 @@ public class MessageRoutingIT {
     @Specification({
         "inbound.must.reject.request.with.400.if.host.header.does.not.match.uri/request",
         "inbound.must.reject.request.with.400.if.host.header.does.not.match.uri/response" })
-    @Ignore("Not Implemented")
     public void inboundMustRejectRequestWith400IfHostHeaderDoesNotMatchURI() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -107,21 +105,25 @@ public class MessageRoutingIT {
     @Specification({
         "inbound.must.reject.request.with.400.if.host.header.occurs.more.than.once/request",
         "inbound.must.reject.request.with.400.if.host.header.occurs.more.than.once/response" })
-    @Ignore("Not Implemented")
     public void inboundMustRejectRequestWith400IfHostHeaderOccursMoreThanOnce() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
-     * See <a href="https://tools.ietf.org/html/rfc7230#section-5.7">RFC 7230 section 5.7: Message Forwarding</a>.
+     * See <a href="https://tools.ietf.org/html/rfc7230#section-5.7.1">RFC 7230 section 5.7: Message Forwarding</a>.
+     *
+     * A proxy MUST send an appropriate Via header field, as described below, in each message that it forwards. An
+     * HTTP-to-HTTP gateway MUST send an appropriate Via header field in each inbound request message and MAY send a Via
+     * header field in forwarded response messages.
+     *
      */
     @Test
     @Specification({
-        "proxy.must.attach.appropriate.via.header/request",
-        "proxy.must.attach.appropriate.via.header/response" })
-    @Ignore("Not Implemented")
+        "proxy.must.attach.appropriate.via.header/client",
+        "proxy.must.attach.appropriate.via.header/proxy",
+        "proxy.must.attach.appropriate.via.header/server" })
     public void proxyMustAttachAppropriateViaHeader() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -133,7 +135,7 @@ public class MessageRoutingIT {
         "proxy.must.attach.appropriate.via.headers.even.when.others/response" })
     @Ignore("Not Implemented")
     public void proxyMustAttachAppropriateViaHeadersEvenWhenOthers() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -145,7 +147,7 @@ public class MessageRoutingIT {
         "gateway.must.attach.appropriate.via.header.on.request.and.may.attach.on.response/response" })
     @Ignore("Not Implemented")
     public void gatewayMustAttachAppropriateViaHeaderOnRequestAndMayAttachOnResponse() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -162,7 +164,7 @@ public class MessageRoutingIT {
         "firewall.intermediary.should.replace.host.in.via.header.with.pseudonym/response" })
     @Ignore("Not Implemented")
     public void firewallIntermediaryShouldReplaceHostInViaHeaderWithPseudonym() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -178,7 +180,7 @@ public class MessageRoutingIT {
         "proxy.must.not.transform.the.payload.of.a.request.that.contains.a.no.transform.cache.control/response" })
     @Ignore("Not Implemented")
     public void proxyMustNotTransformThePayloadOfARequestThatContainsANoTransformCacheControl() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -193,7 +195,7 @@ public class MessageRoutingIT {
         "proxy.must.not.transform.the.payload.of.a.response.that.contains.a.no.transform.cache.control/response" })
     @Ignore("Not Implemented")
     public void proxyMustNotTransformThePayloadOfAResponseThatContainsANoTransformCacheControl() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -207,7 +209,7 @@ public class MessageRoutingIT {
         "proxy.must.not.modify.query.or.absolute.path.of.request/response" })
     @Ignore("Not Implemented")
     public void proxyMustNotModifyQueryOrAbsolutePathOfRequest() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -222,7 +224,7 @@ public class MessageRoutingIT {
         "inbound.must.accept.origin.form/response" })
     @Ignore("Not Implemented")
     public void inboundMustAcceptOriginForm() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -236,7 +238,7 @@ public class MessageRoutingIT {
         "inbound.must.accept.absolute.form/response" })
     @Ignore("Not Implemented")
     public void inboundMustAcceptAbsoluteForm() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -250,7 +252,7 @@ public class MessageRoutingIT {
         "intermediary.must.accept.authority.form.connect.request/response" })
     @Ignore("Not Implemented")
     public void intermediaryMustAcceptAuthorityFormConnectRequest() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -264,7 +266,7 @@ public class MessageRoutingIT {
         "inbound.must.accept.asterick.form.options.request/response" })
     @Ignore("Not Implemented")
     public void inboundMustAcceptAsterickFormOptionsRequest() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -278,7 +280,7 @@ public class MessageRoutingIT {
         "last.proxy.must.convert.options.in.absolute.form.to.asterick.form/response" })
     @Ignore("Not Implemented")
     public void lastProxyMustConvertOptionsInAbsoluteFormToAsterickForm() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
 }

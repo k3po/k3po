@@ -1,0 +1,11 @@
+#SERVER
+accept http://localhost:8081/resource
+accepted
+connected
+read method "GET"
+read header "Host" "localhost:8081"
+write header "via" "1.1 nameOfProxy"
+read closed
+write status "200" "OK"
+write header content-length
+write close

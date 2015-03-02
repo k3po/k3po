@@ -59,7 +59,7 @@ public class ConnectionManagementIT {
         "intermediary.must.remove.connection.header.on.forward.request/intermediary",
         "intermediary.must.remove.connection.header.on.forward.request/backend" })
     public void intermediaryMustRemoveConnectionHeaderOnForwardRequest() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -80,7 +80,7 @@ public class ConnectionManagementIT {
         "client.must.close.connection.after.request.with.connection.close/request",
         "client.must.close.connection.after.request.with.connection.close/response" })
     public void clientMustCloseConnectionAfterRequestWithConnectionClose() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -101,7 +101,7 @@ public class ConnectionManagementIT {
         "server.must.close.connection.after.response.with.connection.close/request",
         "server.must.close.connection.after.response.with.connection.close/response" })
     public void serverMustCloseConnectionAfterResponseWithConnectionClose() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -116,7 +116,7 @@ public class ConnectionManagementIT {
         "connections.should.persist.by.default/client",
         "connections.should.persist.by.default/backend" })
     public void connectionsShouldPersistByDefault() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -132,7 +132,7 @@ public class ConnectionManagementIT {
         "proxy.must.not.retry.non.idempotent.requests/proxy",
         "proxy.must.not.retry.non.idempotent.requests/server" })
     public void proxyMustNotRetryNonIdempotentRequests() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -147,7 +147,7 @@ public class ConnectionManagementIT {
         "server.should.accept.http.pipelining/request",
         "server.should.accept.http.pipelining/response" })
     public void serverShouldAcceptHttpPipelining() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -165,7 +165,7 @@ public class ConnectionManagementIT {
         "client.with.pipelining.must.not.retry.pipelining.immediately.after.failure/response" })
     @Ignore("Requires enhancement k3po/132")
     public void clientWithPipeliningMustNotRetryPipeliningImmediatelyAfterFailure() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -183,7 +183,7 @@ public class ConnectionManagementIT {
         "server.must.close.its.half.of.connection.after.sending.response.if.it.receives.a.close/response" })
     @Ignore("Requires enhancement k3po/132")
     public void serverMustCloseItsHalfOfConnectionAfterSendingResponseIfItReceivesAClose() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -200,7 +200,7 @@ public class ConnectionManagementIT {
         "client.must.stop.pipelining.requests.if.it.receives.a.close.in.a.response/response" })
     @Ignore("Requires enhancement k3po/132")
     public void clientMustStopPipeliningRequestsIfItReceivesACloseInAResponse() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -216,7 +216,7 @@ public class ConnectionManagementIT {
         "server.getting.upgrade.request.must.respond.with.upgrade.header/request",
         "server.getting.upgrade.request.must.respond.with.upgrade.header/response" })
     public void serverGettingUpgradeRequestMustRespondWithUpgradeHeader() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -231,7 +231,7 @@ public class ConnectionManagementIT {
         "server.that.sends.upgrade.required.must.include.upgrade.header/request",
         "server.that.sends.upgrade.required.must.include.upgrade.header/response" })
     public void serverThatSendsUpgradeRequiredMustIncludeUpgradeHeader() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -248,6 +248,6 @@ public class ConnectionManagementIT {
         "server.that.is.upgrading.must.send.a.101.response/request",
         "server.that.is.upgrading.must.send.a.101.response/response" })
     public void serverThatIsUpgradingMustSendA100Response() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 }

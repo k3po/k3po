@@ -1,10 +1,9 @@
-accept http://localhost:8080/
+accept tcp://localhost:8080
 accepted
 connected
 
-read method "POST"
-read header "Content-length" "0"
-read closed
+read "GET / HTTP/1.1" "\r\n"
+read "\r\n"
 
-write status "200" "OK"
-write close
+write "HTTP/1.1 400 BAD REQUEST" "\r\n"
+write "\r\n"

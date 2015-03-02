@@ -50,7 +50,7 @@ public class TransferCodingsIT {
         "should.process.request.transfer.encoding.chunked/request",
         "should.process.request.transfer.encoding.chunked/response" })
     public void shouldProcessRequestTransferEncodingChunked() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -58,31 +58,31 @@ public class TransferCodingsIT {
         "should.process.response.transfer.encoding.chunked/request",
         "should.process.response.transfer.encoding.chunked/response" })
     public void shouldProcessResponseTransferEncodingChunked() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
     @Ignore("requires enhancement https://github.com/k3po/k3po/issues/136")
     public void shouldProcessRequestTransferEncodingChunkedExtension() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
     @Ignore("requires enhancement https://github.com/k3po/k3po/issues/136")
     public void shouldProcessResponseTransferEncodingChunkedExtension() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
     @Ignore("requires enhancement https://github.com/k3po/k3po/issues/136")
     public void shouldProcessRequestTransferEncodingChunkedWithTrailer() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
     @Ignore("requires enhancement https://github.com/k3po/k3po/issues/136")
     public void shouldProcessResponseTransferEncodingChunkedWithTrailer() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
 }

@@ -59,7 +59,7 @@ public class MessageFormatIT {
             "inbound.should.accept.headers/request",
             "inbound.should.accept.headers/response" })
     public void inboundShouldAcceptHeaders() throws Exception {
-        k3po.join();
+        k3po.finish();
 
     }
 
@@ -78,7 +78,7 @@ public class MessageFormatIT {
             "outbound.should.accept.no.headers/request",
             "outbound.should.accept.no.headers/response" })
     public void outboundShouldAcceptNoHeaders() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -96,7 +96,7 @@ public class MessageFormatIT {
             "outbound.should.accept.headers/request",
             "outbound.should.accept.headers/response" })
     public void outboundShouldAcceptHeaders() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -117,7 +117,7 @@ public class MessageFormatIT {
     public void inboundShouldRejectRequestWithWhitespaceBetweenStartLineAndFirstHeader() throws Exception {
         // As per RFC, alternatively could process everything before whitespace,
         // but the better choice is to reject
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -130,7 +130,7 @@ public class MessageFormatIT {
             "request.must.start.with.request.line/request",
             "request.must.start.with.request.line/response" })
     public void requestMustStartWithRequestLine() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -144,7 +144,7 @@ public class MessageFormatIT {
             "inbound.should.reject.invalid.request.line/response" })
     public void inboundShouldRejectInvalidRequestLine() throws Exception {
         // responds with 400 Bad Request
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -158,7 +158,7 @@ public class MessageFormatIT {
             "server.should.send.501.to.unimplemented.methods/response" })
     public void serverShouldSend501ToUnImplementedMethods() throws Exception {
         // 501 (Not Implemented)
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -172,7 +172,7 @@ public class MessageFormatIT {
             "server.should.send.414.to.request.with.too.long.a.request/response" })
     public void serverShouldSend414ToRequestWithTooLongARequest() throws Exception {
         // 414 (URI Too Long) (rule of thumb is no more then 8000 octets)
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -185,7 +185,7 @@ public class MessageFormatIT {
             "server.should.send.status.line.in.start.line/request",
             "server.should.send.status.line.in.start.line/response" })
     public void serverShouldSendStatusLineInStartLine() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -199,7 +199,7 @@ public class MessageFormatIT {
             "proxy.should.preserve.unrecongnized.headers/server",
             "proxy.should.preserve.unrecongnized.headers/proxy" })
     public void proxyShouldPreserveUnrecognizedHeaders() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -218,7 +218,7 @@ public class MessageFormatIT {
             "server.must.reject.header.with.space.between.header.name.and.colon/request",
             "server.must.reject.header.with.space.between.header.name.and.colon/response" })
     public void serverMustRejectHeaderWithSpaceBetweenHeaderNameAndColon() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -238,7 +238,7 @@ public class MessageFormatIT {
             "on.response.proxy.must.remove.space.in.header.with.space.between.header.name.and.colon/server",
             "on.response.proxy.must.remove.space.in.header.with.space.between.header.name.and.colon/proxy" })
     public void onResponseProxyMustRemoveSpaceInHeaderWithSpaceBetweenHeaderNameAndColon() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -258,7 +258,7 @@ public class MessageFormatIT {
     public void serverShouldRejectOBSInHeaderValue() throws Exception {
         // header :value\nvalue
         // return 400 Bad request
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -278,7 +278,7 @@ public class MessageFormatIT {
     public void proxyOrGatewayMustRejectOBSInHeaderValue() throws Exception {
         // header :value\nvalue
         // return 502 Bad Gateway
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -291,7 +291,7 @@ public class MessageFormatIT {
             "inbound.on.receiving.field.with.length.larger.than.wanting.to.process.must.reply.with.4xx/request",
             "inbound.on.receiving.field.with.length.larger.than.wanting.to.process.must.reply.with.4xx/response" })
     public void inboundOnReceivingFieldWithLengthLargerThanWantingToProcessMustReplyWith4xx() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -304,7 +304,7 @@ public class MessageFormatIT {
             "server.should.send.501.to.unknown.transfer.encoding/request",
             "server.should.send.501.to.unknown.transfer.encoding/response" })
     public void serverShouldSend501ToUnknownTransferEncoding() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -317,7 +317,7 @@ public class MessageFormatIT {
             "outbound.should.process.response.with.content.length/request",
             "outbound.should.process.response.with.content.length/response" })
     public void outboundShouldProcessResponseWithContentLength() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -330,7 +330,7 @@ public class MessageFormatIT {
             "inbound.should.process.request.with.content.length/request",
             "inbound.should.process.request.with.content.length/response" })
     public void inboundShouldProcessRequestWithContentLength() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -343,7 +343,7 @@ public class MessageFormatIT {
             "client.should.send.content.length.header.in.post.even.if.no.content/request",
             "client.should.send.content.length.header.in.post.even.if.no.content/response" })
     public void clientShouldSendContentLengthHeaderInPostEvenIfNoContent() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -363,7 +363,7 @@ public class MessageFormatIT {
             "head.response.must.not.have.content/request",
             "head.response.must.not.have.content/response" })
     public void headResponseMustNotHaveContent() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -383,7 +383,7 @@ public class MessageFormatIT {
             "head.response.must.not.have.content.though.may.have.content.length/request",
             "head.response.must.not.have.content.though.may.have.content.length/response" })
     public void headResponseMustNotHaveContentThoughMayHaveContentLength() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -405,7 +405,7 @@ public class MessageFormatIT {
             "server.must.reject.request.with.multiple.different.content.length/response" })
     public void serverMustRejectRequestWithMultipleDifferentContentLength() throws Exception {
         // 400 Bad request
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -428,7 +428,7 @@ public class MessageFormatIT {
             "gateway.must.reject.request.with.multiple.different.content.length/response" })
     public void gatewayMustRejectResponseWithMultipleDifferentContentLength() throws Exception {
         // 502 Bad Gateway
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -444,7 +444,7 @@ public class MessageFormatIT {
             "robust.server.should.allow.extra.CRLF.after.request.line/request",
             "robust.server.should.allow.extra.CRLF.after.request.line/response" })
     public void robustServerShouldAllowExtraCRLFAfterRequestLine() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     /**
@@ -457,7 +457,7 @@ public class MessageFormatIT {
             "non.http.request.to.http.server.should.be.responded.to.with.400/request",
             "non.http.request.to.http.server.should.be.responded.to.with.400/response" })
     public void nonHttpRequestToHttpServerShouldBeRespondedToWith400() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
 }
