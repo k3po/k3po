@@ -53,6 +53,7 @@ A K3PO script is considered a “session”.  Within a script, you will define a
 # This is a tcp server helloworld which would be used to test a client
   accept tcp://localhost:9876
   accepted
+  connected
   write "hello world"
   closed
   
