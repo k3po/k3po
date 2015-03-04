@@ -8,11 +8,11 @@
         <version>develop-SNAPSHOT</version>
     </parent>
 
-    <artifactId>k3po.executable</artifactId>
+    <artifactId>k3po.launcher</artifactId>
 
-    <name>k3po/executable</name>
+    <name>k3po/launcher</name>
     <url>https://github.com/kaazing/k3po</url>
-    <description>K3PO executable</description>
+    <description>K3PO Server Launcher</description>
     <packaging>jar</packaging>
 
     <scm>
@@ -78,7 +78,7 @@
                         <appendAssemblyId>false</appendAssemblyId>
                         <archive>
                             <manifest>
-                                <mainClass>org.kaazing.k3po.executable.Main</mainClass>
+                                <mainClass>org.kaazing.k3po.executable.Launcher</mainClass>
                             </manifest>
                         </archive>
                     </configuration>
