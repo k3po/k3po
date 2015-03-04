@@ -78,7 +78,7 @@
                         <appendAssemblyId>false</appendAssemblyId>
                         <archive>
                             <manifest>
-                                <mainClass>org.kaazing.k3po.executable.Launcher</mainClass>
+                                <mainClass>org.kaazing.k3po.launcher.Launcher</mainClass>
                             </manifest>
                         </archive>
                     </configuration>

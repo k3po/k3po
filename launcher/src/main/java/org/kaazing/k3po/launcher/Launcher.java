@@ -52,6 +52,9 @@ public class Launcher {
                 controlURI = "tcp://localhost:11642";
             }
             
+            System.out.println("Script Path: " + scriptPath);
+            System.out.println("Control URI: " + controlURI);
+            
             URL scriptPathEntry = scriptEntryFilePath.toURI().toURL();
             URLClassLoader scriptLoader = new URLClassLoader(new URL[]{ scriptPathEntry });
             RobotServer server = new RobotServer(URI.create(controlURI), false, scriptLoader);
