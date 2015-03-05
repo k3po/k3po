@@ -27,6 +27,7 @@
         <module>lang</module>
         <module>driver</module>
         <module>k3po-maven-plugin</module>
+        <module>launcher</module>
     </modules>
 
     <properties>
