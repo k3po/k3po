@@ -288,6 +288,7 @@ Once the emulated WebSocket connection is established, the client MUST send an H
 transfer.
 * the HTTP downstream request method MUST be `GET` 
 * the HTTP downstream request `Origin` header MUST be present with the source origin for browser clients
+* the client MUST annotate the downstream request with sequence number. This is done via `X-Sequence-No` header which cannot exceed 2^53-1. The starting value of the header MUST be 0 and it MUST increase by 1 for every subsequent downstream request.
 
 The downstream request associates a continuously streaming HTTP response to the emulated WebSocket connection.
 
@@ -297,6 +298,7 @@ For example, with a downstream data transfer URL `https://host.example.com:8443/
 GET /path/kwebfbkjwehkdsfa HTTP/1.1
 Host: host.example.com:8443
 Origin: [source-origin]
+X-Sequence-No: 0
 ```
 
 When the receives a downstream HTTP response status code of `200`, complete with all HTTP headers, this indicates to the client
@@ -339,6 +341,15 @@ See [Binary as Mixed Text](#binary-as-mixed-text) for details of processing a mi
 If the emulated WebSocket cannot be located for the HTTP downstream request path, then the server MUST generate an HTTP response
 with a `404 Not Found` status code.
 
+If `X-Sequence-No` header is missing in downstream request, then the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
+
+If the sequence number received in `X-Sequence-No` header is out of order, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. 
+
+The downstream request is regarded out of order - 
+
+* if the sequence number of first downstream request is NOT 0
+* if the sequence number of a downstream request is NOT an increment of 1 compared to that of preceding downstream request
+
 If the `.ki` query parameter is present with value `p`, see [Buffering Proxies](#buffering-proxies) for further server 
 requirements when attaching the downstream.
 
@@ -360,12 +371,14 @@ attaching the downstream.
 Any upstream data frames are sent in the payload of a transient HTTP upstream request.
 * the HTTP upstream request method MUST be `POST`
 * the HTTP upstream request `Content-Type` HTTP header MUST be `application/octet-stream`
+* the client MUST annotate the upstream request with sequence number. This is done via `X-Sequence-No` header which cannot exceed 2^53-1. The starting value of the header MUST be 0 and it MUST increase by 1 for every subsequent upstream request.
 
 For example, with an upstream data transfer URL `http://host.example.com:8080/path/uofdbnreiodfkbqi`.
 ```
 POST /path/uofdbnreiodfkbqi HTTP/1.1
 Host: host.example.com:8080
 Origin: [source-origin]
+X-Sequence-No: 0
 Content-Type: application/octet-stream
 Content-Length: [size]
 
@@ -394,6 +407,15 @@ with a `404 Not Found` status code.
 
 If the emulated WebSocket is already processing an HTTP upstream request, then the server MUST generate an HTTP response
 with a `400 Bad Request` status code and fail the emulated WebSocket connection.
+
+If the sequence number received in `X-Sequence-No` header is out of order, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. 
+
+The upstream request is regarded out of order - 
+
+* if the sequence number of first upstream request is NOT 0
+* if the sequence number of a downstream request is NOT an increment of 1 compared to that of preceding upstream request
+
+If the sequence number received via `X-Sequence-No` header is out of order, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
 
 Otherwise, the server decodes the emulated WebSocket frames from the upstream request body and generates an HTTP upstream 
 response as follows.
