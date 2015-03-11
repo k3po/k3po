@@ -244,6 +244,7 @@ send an HTTP response with a `4xx` status code, such as `400 Bad Request`.
 
 * the HTTP handshake request method MUST be `POST` 
 * the HTTP handshake request header `X-WebSocket-Version` MUST have the value `wseb-1.1`
+* the HTTP handshake request header `X-Sequence-No` is missing
 * the HTTP handshake request header `X-Sequence-No` MUST be a `positive integer` and MUST not exceed 2^53 - 1
 * the HTTP handshake request header `X-WebSocket-Protocol` is OPTIONAL, and when present indicates a list of alternative 
   protocols to speak in client preference order
@@ -292,7 +293,7 @@ Once the emulated WebSocket connection is established, the client MUST send an H
 transfer.
 * the HTTP downstream request method MUST be `GET` 
 * the HTTP downstream request `Origin` header MUST be present with the source origin for browser clients
-* the client MUST annotate the downstream request with sequence number. This is done via `X-Sequence-No` header which cannot exceed 2^53-1. The starting value of the header MUST be the value specified during [Opening Handshake](#opening-handshake) and it MUST be incremented by 1 for every subsequent downstream.
+* the client MUST annotate the downstream request with sequence number. This is done via `X-Sequence-No` header which cannot exceed 2^53-1. The starting value of the header for downstream request MUST be increment of 1 from the value specified during [Opening Handshake](#opening-handshake)
 
 The downstream request associates a continuously streaming HTTP response to the emulated WebSocket connection.
 
@@ -302,7 +303,7 @@ For example, with a downstream data transfer URL `https://host.example.com:8443/
 GET /path/kwebfbkjwehkdsfa HTTP/1.1
 Host: host.example.com:8443
 Origin: [source-origin]
-X-Sequence-No: 5
+X-Sequence-No: 6
 ```
 
 When the receives a downstream HTTP response status code of `200`, complete with all HTTP headers, this indicates to the client
@@ -356,7 +357,7 @@ The sequence number is regarded invalid -
 
 The downstream request is regarded out of order - 
 
-* if the sequence number of first downstream request is NOT the value specified during [Opening Handshake](#opening-handshake)
+* if the sequence number of first downstream request is NOT an increment of 1 compared to the value specified during [Opening Handshake](#opening-handshake)
 * if the sequence number of a downstream request is NOT an increment of 1 compared to that of preceding downstream request
 
 If the `.ki` query parameter is present with value `p`, see [Buffering Proxies](#buffering-proxies) for further server 
@@ -380,14 +381,14 @@ attaching the downstream.
 Any upstream data frames are sent in the payload of a transient HTTP upstream request.
 * the HTTP upstream request method MUST be `POST`
 * the HTTP upstream request `Content-Type` HTTP header MUST be `application/octet-stream`
-* the client MUST annotate the upstream request with sequence number. This is done via `X-Sequence-No` header which cannot exceed 2^53-1. The starting value of the header MUST be the value specified during [Opening Handshake](#opening-handshake) and it MUST be incremented by 1 for every subsequent upstream.
+* the client MUST annotate the upstream request with sequence number. This is done via `X-Sequence-No` header which cannot exceed 2^53-1. The starting value of the header for upstream request MUST be increment of 1 from the value specified during [Opening Handshake](#opening-handshake)
 
 For example, with an upstream data transfer URL `http://host.example.com:8080/path/uofdbnreiodfkbqi`.
 ```
 POST /path/uofdbnreiodfkbqi HTTP/1.1
 Host: host.example.com:8080
 Origin: [source-origin]
-X-Sequence-No: 5
+X-Sequence-No: 6
 Content-Type: application/octet-stream
 Content-Length: [size]
 
@@ -426,7 +427,7 @@ The sequence number is regarded invalid -
 
 The upstream request is regarded out of order - 
 
-* if the sequence number of first upstream request is NOT the value specified during [Opening Handshake](#opening-handshake)
+* if the sequence number of first upstream request is NOT an increment of 1 compared to the value specified during [Opening Handshake](#opening-handshake)
 * if the sequence number of a upstream request is NOT an increment of 1 compared to that of preceding upstream request
 
 If the sequence number received via `X-Sequence-No` header is out of order, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
