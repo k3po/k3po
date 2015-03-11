@@ -137,9 +137,11 @@ To establish an emulated WebSocket connection, a client makes an HTTP handshake 
   * `/;e/ctm` for mixed text encoding  (see [Binary as Mixed Text](#binary-as-mixed-text))
 * the HTTP handshake request path query parameters MUST include all query parameters from the WebSocket URL
 
-Browser clients MUST sent the `Origin` HTTP header with the source origin.
+Browser clients MUST send the `Origin` HTTP header with the source origin.
 
-Clients MUST sent the `X-WebSocket-Version` HTTP header with the value `wseb-1.1`.
+Clients MUST send the `X-WebSocket-Version` HTTP header with the value `wseb-1.1`.
+
+Clients MUST send the `X-Sequence-No` HTTP header with the sequence number that will serve as a starting value for upstream and downstream sequencing during data transfer. The value MUST be a `positive integer`.
 
 Clients MAY send the `X-Websocket-Protocol` HTTP header with a list of alternative subprotocols to use over the emulated 
 WebSocket connection.
@@ -162,6 +164,7 @@ Content-Length: 0
 X-WebSocket-Version: wseb-1.1
 X-WebSocket-Protocol: x,y,z
 X-Accept-Commands: ping
+X-Sequence-Number: 5
 ```
 
 When the handshake request is sent, the emulated WebSocket is in the `CONNECTING` state.
@@ -241,6 +244,7 @@ send an HTTP response with a `4xx` status code, such as `400 Bad Request`.
 
 * the HTTP handshake request method MUST be `POST` 
 * the HTTP handshake request header `X-WebSocket-Version` MUST have the value `wseb-1.1`
+* the HTTP handshake request header `X-Sequence-No` MUST be a `positive integer`
 * the HTTP handshake request header `X-WebSocket-Protocol` is OPTIONAL, and when present indicates a list of alternative 
   protocols to speak in client preference order
 * the HTTP handshake request header `X-WebSocket-Extensions` is OPTIONAL, and when present indicates a list of extensions
@@ -288,7 +292,7 @@ Once the emulated WebSocket connection is established, the client MUST send an H
 transfer.
 * the HTTP downstream request method MUST be `GET` 
 * the HTTP downstream request `Origin` header MUST be present with the source origin for browser clients
-* the client MUST annotate the downstream request with sequence number. This is done via `X-Sequence-No` header which cannot exceed 2^53-1. The starting value of the header MUST be 0 and it MUST increase by 1 for every subsequent downstream request.
+* the client MUST annotate the downstream request with sequence number. This is done via `X-Sequence-No` header which cannot exceed 2^53-1. The starting value of the header MUST be the value specified during [Opening Handshake](#opening-handshake) and it MUST be incremented by 1 for every subsequent downstream.
 
 The downstream request associates a continuously streaming HTTP response to the emulated WebSocket connection.
 
@@ -298,7 +302,7 @@ For example, with a downstream data transfer URL `https://host.example.com:8443/
 GET /path/kwebfbkjwehkdsfa HTTP/1.1
 Host: host.example.com:8443
 Origin: [source-origin]
-X-Sequence-No: 0
+X-Sequence-No: 5
 ```
 
 When the receives a downstream HTTP response status code of `200`, complete with all HTTP headers, this indicates to the client
@@ -347,7 +351,7 @@ If the sequence number received in `X-Sequence-No` header is out of order, the s
 
 The downstream request is regarded out of order - 
 
-* if the sequence number of first downstream request is NOT 0
+* if the sequence number of first downstream request is NOT the value specified during [Opening Handshake](#opening-handshake)
 * if the sequence number of a downstream request is NOT an increment of 1 compared to that of preceding downstream request
 
 If the `.ki` query parameter is present with value `p`, see [Buffering Proxies](#buffering-proxies) for further server 
@@ -371,14 +375,14 @@ attaching the downstream.
 Any upstream data frames are sent in the payload of a transient HTTP upstream request.
 * the HTTP upstream request method MUST be `POST`
 * the HTTP upstream request `Content-Type` HTTP header MUST be `application/octet-stream`
-* the client MUST annotate the upstream request with sequence number. This is done via `X-Sequence-No` header which cannot exceed 2^53-1. The starting value of the header MUST be 0 and it MUST increase by 1 for every subsequent upstream request.
+* the client MUST annotate the upstream request with sequence number. This is done via `X-Sequence-No` header which cannot exceed 2^53-1. The starting value of the header MUST be the value specified during [Opening Handshake](#opening-handshake) and it MUST be incremented by 1 for every subsequent upstream.
 
 For example, with an upstream data transfer URL `http://host.example.com:8080/path/uofdbnreiodfkbqi`.
 ```
 POST /path/uofdbnreiodfkbqi HTTP/1.1
 Host: host.example.com:8080
 Origin: [source-origin]
-X-Sequence-No: 0
+X-Sequence-No: 5
 Content-Type: application/octet-stream
 Content-Length: [size]
 
@@ -412,8 +416,8 @@ If the sequence number received in `X-Sequence-No` header is out of order, the s
 
 The upstream request is regarded out of order - 
 
-* if the sequence number of first upstream request is NOT 0
-* if the sequence number of a downstream request is NOT an increment of 1 compared to that of preceding upstream request
+* if the sequence number of first upstream request is NOT the value specified during [Opening Handshake](#opening-handshake)
+* if the sequence number of a upstream request is NOT an increment of 1 compared to that of preceding upstream request
 
 If the sequence number received via `X-Sequence-No` header is out of order, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
 
