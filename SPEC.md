@@ -141,7 +141,7 @@ Browser clients MUST send the `Origin` HTTP header with the source origin.
 
 Clients MUST send the `X-WebSocket-Version` HTTP header with the value `wseb-1.1`.
 
-Clients MUST send the `X-Sequence-No` HTTP header with the sequence number that will serve as a starting value for upstream and downstream sequencing during data transfer. The value MUST be a `positive integer`.
+Clients MUST send the `X-Sequence-No` HTTP header with the sequence number that will serve as a starting value for upstream and downstream sequencing during data transfer. The sequence number MUST be a `positive integer` and cannot exceed 2^53 -1. It is recommended to choose the starting value such that the sequence number does not exceed the maximum value during data transfer. The sequence number MUST be maintained independently for upstream and downstream.
 
 Clients MAY send the `X-Websocket-Protocol` HTTP header with a list of alternative subprotocols to use over the emulated 
 WebSocket connection.
@@ -244,7 +244,7 @@ send an HTTP response with a `4xx` status code, such as `400 Bad Request`.
 
 * the HTTP handshake request method MUST be `POST` 
 * the HTTP handshake request header `X-WebSocket-Version` MUST have the value `wseb-1.1`
-* the HTTP handshake request header `X-Sequence-No` MUST be a `positive integer`
+* the HTTP handshake request header `X-Sequence-No` MUST be a `positive integer` and MUST not exceed 2^53 - 1
 * the HTTP handshake request header `X-WebSocket-Protocol` is OPTIONAL, and when present indicates a list of alternative 
   protocols to speak in client preference order
 * the HTTP handshake request header `X-WebSocket-Extensions` is OPTIONAL, and when present indicates a list of extensions
@@ -347,7 +347,12 @@ with a `404 Not Found` status code.
 
 If `X-Sequence-No` header is missing in downstream request, then the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
 
-If the sequence number received in `X-Sequence-No` header is out of order, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. 
+If the sequence number received in `X-Sequence-No` header is out of order or invalid, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. 
+
+The sequence number is regarded invalid - 
+
+* if it is not a positive integer
+* if the value exceeds 2^53 - 1
 
 The downstream request is regarded out of order - 
 
@@ -412,7 +417,12 @@ with a `404 Not Found` status code.
 If the emulated WebSocket is already processing an HTTP upstream request, then the server MUST generate an HTTP response
 with a `400 Bad Request` status code and fail the emulated WebSocket connection.
 
-If the sequence number received in `X-Sequence-No` header is out of order, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. 
+If the sequence number received in `X-Sequence-No` header is out of order or invalid, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. 
+
+The sequence number is regarded invalid - 
+
+* if it is not a positive integer
+* if the value exceeds 2^53 - 1
 
 The upstream request is regarded out of order - 
 
