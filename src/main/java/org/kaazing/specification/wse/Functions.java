@@ -57,21 +57,13 @@ public final class Functions {
     }
 
     @Function
-    public static byte[] sequenceNo() {
-        int sequenceNo = RANDOM.nextInt(100);
-        return String.valueOf(sequenceNo).getBytes();
+    public static int generateRandom(int upperBound) {
+        return RANDOM.nextInt(upperBound);
     }
 
     @Function
-    public static byte[] nextSequenceNo(byte[] current) {
-        int currentSequenceNo = Integer.valueOf(new String(current));
-        return String.valueOf(currentSequenceNo + 1).getBytes();
-    }
-
-    @Function
-    public static byte[] increment(byte[] current, int by) {
-        int currentSequenceNo = Integer.valueOf(new String(current));
-        return String.valueOf(currentSequenceNo + by).getBytes();
+    public static String asString(int value) {
+        return Integer.toString(value);
     }
 
     public static class Mapper extends FunctionMapperSpi.Reflective {

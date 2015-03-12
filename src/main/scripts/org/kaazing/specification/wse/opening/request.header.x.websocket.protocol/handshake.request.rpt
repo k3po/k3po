@@ -1,4 +1,4 @@
-property sequenceNo ${wse:sequenceNo()}
+property sequence ${wse:generateRandom(100)}
 
 connect http://localhost:8080/path/;e/cb?query
 connected
@@ -8,7 +8,7 @@ write version "HTTP/1.1"
 write header host
 write header content-length
 write header "X-WebSocket-Version" "wseb-1.1"
-write header "X-Sequence-No" ${sequenceNo}
+write header "X-Sequence-No" ${wse:asString(sequence)}
 write header "X-WebSocket-Protocol" "primary, secondary"
 write close
 
@@ -18,7 +18,6 @@ read header "X-WebSocket-Version" "wseb-1.1"
 read header "X-WebSocket-Protocol" /primary|secondary/
 read header "Content-Type" "text/plain;charset=utf-8"
 
-read "http://localhost:8080/path/uofdbnreiodfkbqi"
-read "\n"
-read "https://localhost:8443/path/kwebfbkjwehkdsfa"
+read "http://localhost:8080/path/uofdbnreiodfkbqi\n"
+read "https://localhost:8443/path/kwebfbkjwehkdsfa\n"
 read closed
