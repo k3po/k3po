@@ -1,3 +1,4 @@
+property clientStartingSequenceNo ${wse:sequenceNo()}
 property client256 ${wse:randomBytes(256)}
 
 connect http://localhost:8080/path/;e/cb?query
@@ -8,7 +9,7 @@ write version "HTTP/1.1"
 write header host
 write header content-length
 write header "X-WebSocket-Version" "wseb-1.1"
-write header "X-Sequence-No" "0"
+write header "X-Sequence-No" ${clientStartingSequenceNo}
 write close
 
 read status "201" /.+/
@@ -30,7 +31,7 @@ write await CREATED
 write method "GET"
 write version "HTTP/1.1"
 write header host
-write header "X-Sequence-No" "1"
+write header "X-Sequence-No" ${wse:increment(clientStartingSequenceNo, 1)}
 write header content-length
 write close
 
@@ -53,7 +54,7 @@ write method "POST"
 write version "HTTP/1.1"
 write header host
 write header "Content-Type" "application/octet-stream"
-write header "X-Sequence-No" "1"
+write header "X-Sequence-No" ${wse:increment(clientStartingSequenceNo, 1)}
 write header content-length
 
 write [0x80 0x82 0x00] ${client256}
@@ -73,7 +74,7 @@ write await RECONNECT_RECEIVED
 write method "GET"
 write version "HTTP/1.1"
 write header host
-write header "X-Sequence-No" "2"
+write header "X-Sequence-No" ${wse:increment(clientStartingSequenceNo, 2)}
 write header content-length
 write close
 

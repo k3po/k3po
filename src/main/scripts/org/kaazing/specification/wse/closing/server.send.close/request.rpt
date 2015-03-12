@@ -1,3 +1,7 @@
+property sequenceNo ${wse:sequenceNo()}
+property firstUpstreamSequenceNo ${wse:nextSequenceNo(sequenceNo)}
+property firstDownstreamSequenceNo ${wse:nextSequenceNo(sequenceNo)}
+
 connect http://localhost:8080/path/;e/cb?query
 connected
 
@@ -6,7 +10,7 @@ write version "HTTP/1.1"
 write header host
 write header content-length
 write header "X-WebSocket-Version" "wseb-1.1"
-write header "X-Sequence-No" "0"
+write header "X-Sequence-No" ${sequenceNo}
 write close
 
 read status "201" /.+/
@@ -27,7 +31,7 @@ write await CREATED
 write method "GET"
 write version "HTTP/1.1"
 write header host
-write header "X-Sequence-No" "1"
+write header "X-Sequence-No" ${firstDownstreamSequenceNo}
 write header content-length
 write close
 
@@ -50,7 +54,7 @@ write method "POST"
 write version "HTTP/1.1"
 write header host
 write header "Content-Type" "application/octet-stream"
-write header "X-Sequence-No" "1"
+write header "X-Sequence-No" ${firstUpstreamSequenceNo}
 write header content-length
 
 write [0x01 0x30 0x32 0xFF]

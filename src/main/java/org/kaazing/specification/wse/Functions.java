@@ -22,7 +22,6 @@ import org.kaazing.k3po.lang.el.Function;
 import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
 
 public final class Functions {
-
     private static final Random RANDOM = new Random();
 
     @Function
@@ -55,6 +54,24 @@ public final class Functions {
 
         padding[padding.length - 1] = (byte) 0xFF;
         return padding;
+    }
+
+    @Function
+    public static byte[] sequenceNo() {
+        int sequenceNo = RANDOM.nextInt(100);
+        return String.valueOf(sequenceNo).getBytes();
+    }
+
+    @Function
+    public static byte[] nextSequenceNo(byte[] current) {
+        int currentSequenceNo = Integer.valueOf(new String(current));
+        return String.valueOf(currentSequenceNo + 1).getBytes();
+    }
+
+    @Function
+    public static byte[] increment(byte[] current, int by) {
+        int currentSequenceNo = Integer.valueOf(new String(current));
+        return String.valueOf(currentSequenceNo + by).getBytes();
     }
 
     public static class Mapper extends FunctionMapperSpi.Reflective {

@@ -1,3 +1,5 @@
+property sequenceNo ${wse:sequenceNo()}
+
 connect http://localhost:8080/path/;e/cb?query
 connected
 
@@ -7,7 +9,7 @@ write header host
 write header "Origin" "http://localhost:8080"
 write header content-length
 write header "X-WebSocket-Version" "wseb-1.1"
-write header "X-Sequence-No" "0"
+write header "X-Sequence-No" ${sequenceNo}
 write close
 
 read status "201" /.+/
