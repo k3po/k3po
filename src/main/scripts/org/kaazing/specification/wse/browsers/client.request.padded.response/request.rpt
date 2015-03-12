@@ -39,4 +39,3 @@ read header "Content-Type" "application/octet-stream"
 read header "Connection" "close"
 
 read ${clientPadding}
-

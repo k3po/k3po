@@ -101,4 +101,3 @@ write close
 
 read status /4\d\d/ /.+/
 read closed
-
