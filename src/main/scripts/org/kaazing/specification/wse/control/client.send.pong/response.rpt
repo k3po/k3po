@@ -6,6 +6,7 @@ read method "POST"
 read version "HTTP/1.1"
 read header "X-WebSocket-Version" "wseb-1.1"
 read header "X-Accept-Commands" "ping"
+read header "X-Sequence-No" "0"
 read closed
 
 write status "201" "Created" 
@@ -27,6 +28,7 @@ connected
 read await CREATED
 read method "GET"
 read version "HTTP/1.1"
+read header "X-Sequence-No" "1"
 read closed
 
 write status "200" "OK"
@@ -44,6 +46,7 @@ read await CREATED
 read method "POST"
 read version "HTTP/1.1"
 read header "Content-Type" "application/octet-stream"
+read header "X-Sequence-No" "1"
 
 read [0x8A 0x00]
 read [0x01 0x30 0x31 0xFF]

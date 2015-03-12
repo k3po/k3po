@@ -1,0 +1,39 @@
+accept http://localhost:8080/path/;e/cb?query
+accepted
+connected
+
+read method "POST"
+read version "HTTP/1.1"
+read header "X-WebSocket-Version" "wseb-1.1"
+read header "X-Sequence-No" "0"
+read closed
+
+write status "201" "Created" 
+write version "HTTP/1.1"
+write header "X-WebSocket-Version" "wseb-1.1"
+write header "Content-Type" "text/plain;charset=utf-8"
+write header content-length
+
+write "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
+write "http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1\n"
+write notify CREATED
+write close
+
+# Upstream
+accept http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh
+accepted
+connected
+
+read await CREATED
+read method "POST"
+read version "HTTP/1.1"
+read header "Content-Type" "application/octet-stream"
+read header "X-Sequence-No" "2"
+
+read [0x80 0x05] [0..5]
+read [0x01 0x30 0x31 0xFF]
+read closed
+
+write status "400" "Bad Request" 
+write header content-length
+write close

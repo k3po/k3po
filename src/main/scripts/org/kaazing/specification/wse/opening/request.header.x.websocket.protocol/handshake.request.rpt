@@ -6,6 +6,7 @@ write version "HTTP/1.1"
 write header host
 write header content-length
 write header "X-WebSocket-Version" "wseb-1.1"
+write header "X-Sequence-No" "0"
 write header "X-WebSocket-Protocol" "primary, secondary"
 write close
 

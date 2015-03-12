@@ -6,6 +6,7 @@ write version "HTTP/1.1"
 write header host
 write header content-length
 write header "X-WebSocket-Version" "wseb-1.1"
+write header "X-Sequence-No" "0"
 write header "X-Accept-Commands" "ping"
 write close
 
@@ -27,6 +28,7 @@ write await CREATED
 write method "GET"
 write version "HTTP/1.1"
 write header host
+write header "X-Sequence-No" "1"
 write header content-length
 write close
 
@@ -48,6 +50,7 @@ write method "POST"
 write version "HTTP/1.1"
 write header host
 write header "Content-Type" "application/octet-stream"
+write header "X-Sequence-No" "1"
 write header content-length
 
 write [0x89 0x01]

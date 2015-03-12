@@ -112,6 +112,38 @@ public class OpeningIT {
 
     @Test
     @Specification({
+        "request.header.x.sequence.number.missing/handshake.request",
+        "request.header.x.sequence.number.missing/handshake.response" })
+    public void shouldFailHandshakeWhenRequestHeaderXSequenceNoIsMissing() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "request.header.x.sequence.number.negative/handshake.request",
+        "request.header.x.sequence.number.negative/handshake.response" })
+    public void shouldFailHandshakeWhenRequestHeaderXSequenceNoIsNegative() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "request.header.x.sequence.number.non.integer/handshake.request",
+        "request.header.x.sequence.number.non.integer/handshake.response" })
+    public void shouldFailHandshakeWhenRequestHeaderXSequenceNoIsNotInteger() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "request.header.x.sequence.number.out.of.range/handshake.request",
+        "request.header.x.sequence.number.out.of.range/handshake.response" })
+    public void shouldFailHandshakeWhenRequestHeaderXSequenceNoIsOutOfRange() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
         "request.header.x.websocket.version.missing/handshake.request",
         "request.header.x.websocket.version.missing/handshake.response" })
     public void shouldFailHandshakeWhenRequestHeaderXWebSocketVersionMissing()

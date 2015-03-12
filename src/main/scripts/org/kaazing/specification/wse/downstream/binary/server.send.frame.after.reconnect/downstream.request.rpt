@@ -6,6 +6,7 @@ write version "HTTP/1.1"
 write header host
 write header content-length
 write header "X-WebSocket-Version" "wseb-1.1"
+write header "X-Sequence-No" "0"
 write close
 
 read status "201" /.+/
@@ -26,6 +27,7 @@ write await CREATED
 write method "GET"
 write version "HTTP/1.1"
 write header host
+write header "X-Sequence-No" "1"
 write header content-length
 write close
 
@@ -49,6 +51,7 @@ write method "POST"
 write version "HTTP/1.1"
 write header host
 write header "Content-Type" "application/octet-stream"
+write header "X-Sequence-No" "1"
 write header content-length
 
 write [0x01 0x30 0x32 0xFF]

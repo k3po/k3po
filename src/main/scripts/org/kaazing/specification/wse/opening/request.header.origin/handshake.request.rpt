@@ -7,6 +7,7 @@ write header host
 write header "Origin" "http://localhost:8080"
 write header content-length
 write header "X-WebSocket-Version" "wseb-1.1"
+write header "X-Sequence-No" "0"
 write close
 
 read status "201" /.+/
