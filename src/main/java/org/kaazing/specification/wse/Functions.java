@@ -57,7 +57,7 @@ public final class Functions {
     }
 
     @Function
-    public static int generateRandom(int upperBound) {
+    public static int randomInt(int upperBound) {
         return RANDOM.nextInt(upperBound);
     }
 

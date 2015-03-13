@@ -762,14 +762,14 @@ current downstream HTTP response, then complete it normally, and write all furth
 HTTP response.
 
 ## Request Sequencing
-Every request (Create, Upstream & Downstream) in WSE connection MUST be annotated with sequence number. This is done via `X-Sequence-No` header. For platform which does not provide API support to add custom header to the HTTP request, sequencing can be achieved by using the query parameter `.kns`. The sequence number must be a `positive integer` and it cannot exceed 2 ^ 53 - 1. The sequence number of the subsequent request MUST be the increment of 1. The sequence number for Upstream and Downstream request diverge to increment independently once the WSE connection is established.
+Every request (Create, Upstream & Downstream) in WSE connection MUST be annotated with sequence number. This is done via `X-Sequence-No` header. For platform which does not provide API support to add custom header to the HTTP request, sequencing can be achieved by using the query parameter `.ksn`. The sequence number must be a `positive integer` and it cannot exceed 2 ^ 53 - 1. The sequence number of the subsequent request MUST be `one` greater than previous request. The sequence number for Upstream and Downstream requests diverge to increment independently once the WSE connection is established.
 
-A sequence number is regarded as invalid - 
+A sequence number is regarded as invalid if any of the following conditions are not met  - 
 
-* if it is not a positive integer
-* if the value exceeds 2 ^ 53 - 1
+* it MUST be a positive integer
+* it MUST NOT exceed 2 ^ 53 - 1
 
-A request is regarded `Out of Order` if the sequence number of the request is not `one` greater than previous request.
+A request is regarded `In Order` if the sequence number of the request is `one` greater than previous request. Otherwise, the request is treated as `Out of Order` request.
 
 If the sequence number of the Create request is 10, the sequence number of subsequent upstream and downstream request MUST be `11`. During data transfer, the sequence number of subsequent upstream and downstream request increment independently. The sequence number of a Downstream request MUST be `one` greater than the sequence number of the previous Create or Downstream request. Likewise, the sequence number of an Upstream request MUST be `one` greater than the sequence number of the previous Create or Upstream request.
 

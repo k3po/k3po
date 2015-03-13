@@ -1,4 +1,4 @@
-property sequence ${wse:generateRandom(100)}
+property sequence ${wse:randomInt(100)}
 property client127 ${wse:randomBytes(127)}
 
 connect http://localhost:8080/path/;e/cb?query
