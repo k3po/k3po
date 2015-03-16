@@ -504,7 +504,7 @@ PatternLiteral
     ;
 
 BytesLiteral
-    : '[' (' ')? (ByteLiteral (' ')?)+ ']'
+    : '[' (' ')? (ByteLiteral (' ')*)+ ']'
     ;
 
 ByteLiteral
