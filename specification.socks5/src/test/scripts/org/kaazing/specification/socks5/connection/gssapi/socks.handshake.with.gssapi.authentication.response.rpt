@@ -1,0 +1,33 @@
+property serverGSSContext ${socks5:createServerGSSContext()}
+
+accept tcp://localhost:1080
+accepted
+connected
+
+## Read the request bytes for connecting with no-authentication
+# version: SOCKS v5
+read [0x05]
+
+# number of method: 1
+read [0x01]
+
+# method: GSS-API
+read [0x01]
+
+
+## Write a success response
+# version: SOCKS v5
+write [0x05]
+
+# selected method: GSS-API
+write [0x01]
+
+# begin authentication sub-negotiation
+read (int:tokenLength)
+read ([0..${tokenLength}]:clientToken)
+
+property clientTokenAccepted ${socks5:acceptClientToken(serverGSSContext, clientToken)}
+
+# connection established
+
+closed
