@@ -50,9 +50,9 @@ public class StartMojo extends AbstractMojo {
     private boolean daemon;
 
     /**
-     * @parameter name="connect" default-value="tcp://localhost:11642"
+     * @parameter name="control" default-value="tcp://localhost:11642"
      */
-    private URI connectURI;
+    private URI controlURI;
 
     /**
      * @parameter default-value="src/test/scripts"
@@ -70,7 +70,7 @@ public class StartMojo extends AbstractMojo {
         try {
             ClassLoader scriptLoader = createScriptLoader();
 
-            RobotServer server = new RobotServer(connectURI, verbose, scriptLoader);
+            RobotServer server = new RobotServer(controlURI, verbose, scriptLoader);
 
             // TODO: detect Maven version to determine logger factory
             //         3.0 -> MavenLoggerFactory

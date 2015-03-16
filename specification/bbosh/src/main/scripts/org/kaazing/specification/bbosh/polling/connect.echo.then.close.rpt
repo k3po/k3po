@@ -5,14 +5,14 @@ write method "POST"
 write header "Accept" "application/octet-stream"
 write header content-length
 write header "X-Protocol" "bbosh/1.0"
-write header "X-Accept-Strategy" "long-polling;interval=30s;requests=5"
+write header "X-Accept-Strategy" "polling;interval=5s"
 write close
 
 read status "201" "Created"
 read header "Cache-Control" "no-cache"
 read header "Content-Type" "application/octet-stream"
 read header "Location" "/connections/ac32fb3844fe11e4a183164230d1df67"
-read header "X-Strategy" "long-polling;interval=30s;requests=2"
+read header "X-Strategy" "polling;interval=5s"
 read closed
 read notify CONNECT_ONE
 

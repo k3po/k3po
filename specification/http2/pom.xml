@@ -66,33 +66,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>check-style</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>validate</phase>
-                        <configuration>
-                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                            <consoleOutput>true</consoleOutput>
-                            <logViolationsToConsole>true</logViolationsToConsole>
-                            <failsOnError>true</failsOnError>
-                            <failOnViolation>true</failOnViolation>
-                            <configLocation>org/kaazing/code/quality/checkstyle.xml</configLocation>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.kaazing</groupId>
-                        <artifactId>code.quality</artifactId>
-                        <version>1.0</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-            <plugin>
                 <groupId>org.kaazing</groupId>
                 <artifactId>k3po-maven-plugin</artifactId>
                 <version>${project.version}</version>

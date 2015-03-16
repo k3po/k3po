@@ -237,9 +237,9 @@ public class ConnectionManagementIT {
     /**
      * See <a href="https://tools.ietf.org/html/rfc7230#section-6.7">RFC 7230 section 6.7: Upgrade</a>.
      *
-     * if the Upgrade header field is received in a GET request and the server decides to switch protocols, it first
-     * responds with a 101 (Switching Protocols) message in HTTP/1.1 and then immediately follows that with the new
-     * protocol's equivalent of a response to a GET on the target resource. </blockquote>
+     * <blockquote> if the Upgrade header field is received in a GET request and the server decides to switch protocols,
+     * it first responds with a 101 (Switching Protocols) message in HTTP/1.1 and then immediately follows that with the
+     * new protocol's equivalent of a response to a GET on the target resource. </blockquote>
      *
      * @throws Exception when K3PO is not started
      */

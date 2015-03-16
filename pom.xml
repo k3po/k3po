@@ -44,6 +44,7 @@
         <module>specification/tls</module>
         <module>specification/ws</module>
         <module>specification/wse</module>
+        <module>launcher</module>
     </modules>
 
     <properties>

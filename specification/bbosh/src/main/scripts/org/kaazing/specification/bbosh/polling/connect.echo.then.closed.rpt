@@ -5,7 +5,7 @@ write method "POST"
 write header "Accept" "application/octet-stream"
 write header content-length
 write header "X-Protocol" "bbosh/1.0"
-write header "X-Accept-Strategy" "long-polling;interval=30s;requests=5"
+write header "X-Accept-Strategy" "polling;interval=5s"
 write close
 
 read status "201" "Created"

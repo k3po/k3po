@@ -1,0 +1,104 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.kaazing</groupId>
+		<artifactId>k3po.parent</artifactId>
+		<version>develop-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>k3po.launcher</artifactId>
+
+	<name>k3po/launcher</name>
+	<url>https://github.com/kaazing/k3po</url>
+	<description>K3PO Server Launcher</description>
+	<packaging>jar</packaging>
+
+	<scm>
+		<url>https://github.com/k3po/k3po</url>
+		<connection>scm:git:https://github.com/k3po/k3po.git</connection>
+		<developerConnection>${project.scm.connection}</developerConnection>
+	</scm>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.kaazing</groupId>
+			<artifactId>k3po.lang</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.kaazing</groupId>
+			<artifactId>k3po.driver</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-cli</groupId>
+			<artifactId>commons-cli</artifactId>
+			<version>1.2</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+			</plugin>
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>2.4</version>
+					<configuration>
+						<descriptorRefs>
+							<descriptorRef>jar-with-dependencies</descriptorRef>
+						</descriptorRefs>
+						<appendAssemblyId>false</appendAssemblyId>
+						<archive>
+							<manifest>
+								<mainClass>org.kaazing.k3po.launcher.Launcher</mainClass>
+							</manifest>
+							<manifestSections>
+							    <manifestSection>
+							        <name>org/kaazing/k3po/launcher/</name>
+									<manifestEntries>
+										<Implementation-Version>${project.version}</Implementation-Version>
+									</manifestEntries>
+							    </manifestSection>
+							</manifestSections>
+						</archive>
+					</configuration>
+					<executions>
+						<execution>
+							<id>make-assembly</id>
+							<phase>package</phase>
+							<goals>
+								<goal>single</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>
