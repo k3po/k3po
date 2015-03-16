@@ -1,0 +1,35 @@
+connect http://localhost:8080/preflight
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write close
+
+read status "200" /.+/
+read version "HTTP/1.1"
+read header "Set-Cookie" "SID=31d4d96e407aad42; Domain=.local"
+read notify SET_COOKIE
+read closed
+
+connect http://localhost:8080/path?query
+connected
+
+write await SET_COOKIE
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Cookie" "SID=31d4d96e407aad42"
+write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
+write header "Sec-WebSocket-Version" "13"
+
+read status "101" /.+/
+read version "HTTP/1.1"
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
+read header "Sec-WebSocket-Accept" "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
+
+# connection established

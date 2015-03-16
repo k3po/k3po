@@ -1,0 +1,15 @@
+connect http://localhost:8080/path?query
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header "Host" "localhost:8080"
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
+write header "Sec-WebSocket-Version" "13"
+
+read status "101" /.+/
+read version "HTTP/1.1"
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/

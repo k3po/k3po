@@ -1,0 +1,47 @@
+property server25a ${ws:randomBytes(25)}
+property server25b ${ws:randomBytes(25)}
+property server25c ${ws:randomBytes(25)}
+property server25d ${ws:randomBytes(25)}
+property server25e ${ws:randomBytes(25)}
+
+accept http://localhost:8080/echo
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8080"
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
+read header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
+read header "Sec-WebSocket-Version" "13"
+
+write status "101" "Switching Protocols"
+write version "HTTP/1.1"
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
+
+write [0x02 0x00]
+
+write [0x00 0x19]
+write ${server25a}
+
+write [0x00 0x19]
+write ${server25b}
+
+write [0x00 0x19]
+write ${server25c}
+
+write [0x00 0x19]
+write ${server25d}
+
+write [0x00 0x19]
+write ${server25e}
+
+write [0x80 0x00]
+
+read [0x82 0xfd] ([0..4] :readMask)
+read option mask ${readMask}
+read ${server25a} ${server25b} ${server25c} ${server25d} ${server25e}
+read option mask [0x00 0x00 0x00 0x00]

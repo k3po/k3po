@@ -1,0 +1,44 @@
+property key ${ws:handshakeKey()}
+property writeMaskA ${ws:randomBytes(4)}
+property writeMaskB ${ws:randomBytes(4)}
+
+connect http://localhost:8080/echo
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Key" ${key}
+write header "Sec-WebSocket-Version" "13"
+
+read status "101" /.+/
+read version "HTTP/1.1"
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
+read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
+
+read [0x02 0x19]
+read ([0..25] :client25a)
+
+read [0x00 0x19]
+read ([0..25] :client25b)
+
+read [0x00 0x19]
+read ([0..25] :client25c)
+
+read [0x89 0x00]
+write [0x8a 0x80] ${writeMaskA}
+
+read [0x00 0x19]
+read ([0..25] :client25d)
+
+read [0x80 0x19]
+read ([0..25] :client25e)
+
+write [0x82 0xfd] ${writeMaskB}
+write option mask ${writeMaskB}
+write ${client25a} ${client25b} ${client25c} ${client25d} ${client25e}
+write option mask [0x00 0x00 0x00 0x00]
+
