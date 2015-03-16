@@ -554,6 +554,22 @@ public class ScriptParserImplTest {
     }
 
     @Test
+    public void shouldParseMultiExactBytesWithMultipleSpaces() throws Exception {
+
+        String scriptFragment = "read [0x01  0xff    0XFA]  [0x000xF0 0x03 0x05 0x080x04]";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
+
+        AstReadValueNode expected = new AstReadValueNode();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactBytesMatcher(new byte[]{0x01, (byte) 0xff, (byte) 0xfa}),
+                new AstExactBytesMatcher(new byte[]{0x00, (byte) 0xf0, (byte) 0x03, (byte) 0x05, (byte) 0x08, (byte) 0x04})));
+
+        assertEquals(expected, actual);
+        assertEquals(2, actual.getRegionInfo().children.size());
+    }
+
+    @Test
     public void shouldParseMultiRegex() throws Exception {
         String scriptFragment = "read /.*\\n/ /.+\\r/";
 
