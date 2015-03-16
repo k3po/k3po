@@ -1,0 +1,54 @@
+accept tcp://localhost:12345
+accepted
+connected
+
+read "PREPARE\n"
+read "version:2.0\n"
+read "name:path/to/script/server\n"
+read "name:path/to/script/client\n"
+read "\n"
+
+write "PREPARED\n"
+write "content-length:176\n"
+write "\n"
+write "# server\n"
+write "accept tcp://localhost:8000\n"
+write "accepted\n"
+write "connected\n"
+write "read \"echo\"\n"
+write "write \"echo\"\n"
+write "close\n"
+write "closed\n"
+write "# client\n"
+write "connect tcp://localhost:8000\n"
+write "connected\n"
+write "write \"echo\"\n"
+write "read \"echo\"\n"
+write "closed\n"
+
+read "START\n"
+read "\n"
+
+write "STARTED\n"
+write "\n"
+
+write "FINISHED\n"
+write "content-length:176\n"
+write "\n"
+write "# server\n"
+write "accept tcp://localhost:8000\n"
+write "accepted\n"
+write "connected\n"
+write "read \"echo\"\n"
+write "write \"echo\"\n"
+write "close\n"
+write "closed\n"
+write "# client\n"
+write "connect tcp://localhost:8000\n"
+write "connected\n"
+write "write \"echo\"\n"
+write "read \"echo\"\n"
+write "closed\n"
+
+close
+closed
