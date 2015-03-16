@@ -764,10 +764,7 @@ HTTP response.
 ## Request Sequencing
 Every request (Create, Upstream & Downstream) in WSE connection MUST be annotated with sequence number. This is done via `X-Sequence-No` header. For platform which does not provide API support to add custom header to the HTTP request, sequencing can be achieved by using the query parameter `.ksn`. The sequence number must be a `positive integer` and it cannot exceed 2 ^ 53 - 1. The sequence number of the subsequent request MUST be `one` greater than previous request. The sequence number for Upstream and Downstream requests diverge to increment independently once the WSE connection is established.
 
-A sequence number is regarded as invalid if any of the following conditions are not met  - 
-
-* it MUST be a positive integer
-* it MUST NOT exceed 2 ^ 53 - 1
+A sequence number is **valid** if it is a `positive integer` AND it is less than or equal to `2 ^ 53 - 1`. Otherwise, the sequence number is **invalid**.
 
 A request is regarded `In Order` if the sequence number of the request is `one` greater than previous request. Otherwise, the request is treated as `Out of Order` request.
 
