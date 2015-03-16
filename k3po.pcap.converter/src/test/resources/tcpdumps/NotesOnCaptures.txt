@@ -1,0 +1,10 @@
+====
+    Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
+====
+
+                    IP                  PORT
+-------------------------------------------------------
+EMPTY               -                   -
+ServerHelloRobot    127.0.0.1           7000
+ClientHelloRobot    127.0.0.1           7000
+Conversation        127.0.0.1           7000
