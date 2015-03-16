@@ -1,0 +1,46 @@
+# Script that sends the CONNECT control packet to MQTT 3.1.1 compliant server and expects 
+# CONNACK control packet from the server followed by sending the DISCONNECT 
+# control packet to the server and expects server to close the network connection
+
+connect tcp://127.0.0.1:1883
+connected
+
+# CONNECT
+write [0x10]             # MQTT Control Packet type(1)
+write [0x12]             # Remaining Length
+write [0x00 0x04]        # Protocol Name Length
+write "MQTT"             # Protocol Name
+write [0x04]             # The value of the Protocol Level field for the version 3.1.1 of the protocol is 4 (0x04)
+
+                         # Connect Flags
+                         # User Name Flag(0)
+                         # Password Flag(0)
+write [0x02]             # Will Retain(0)
+                         # Will QoS(00)
+                         # Will Flag(0)
+                         # Clean Session(1)
+                         # Reserved(0)
+
+write [0x00 0x00]        # Keep Alive
+
+                         # Payload
+write [0x00 0x07]        # Client Identifier Length
+write "client1"          # Client Identifier
+
+# CONNACK
+read [0x20]              # MQTT Control Packet type(2)
+read [0x02]              # Remaining Length
+
+                         # Connect Acknowledge Flags
+read [0x00]              # Session Present Flag(0)
+
+                         # Connect Return code
+read [0x00]              # Connection Accepted
+
+
+# DISCONNECT
+write [0xE0]             # MQTT Control Packet type(14)
+write [0x00]             # Remaining Length
+
+# Server MUST close the Network Connection
+closed
