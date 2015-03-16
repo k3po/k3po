@@ -1,0 +1,22 @@
+accept http://localhost:8080/path?query
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8080"
+read header "Upgrade" "h2c"
+read header "Connection" "Upgrade, HTTP2-Settings"
+
+# read the HTTP2-Settings header
+#     TODO: validate that it is SETTINGS_HEADER_TABLE_SIZE set to 8192 octets
+read header "HTTP2-Settings" /(?<settings>[a-zA-Z0-9\-_=]{6})/
+
+write status "101" "Switching Protocols"
+write version "HTTP/1.1"
+write header "Upgrade" "h2c"
+write header "Connection" "Upgrade"
+write flush
+
+# connection established
+
