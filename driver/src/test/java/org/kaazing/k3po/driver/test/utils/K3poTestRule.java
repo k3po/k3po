@@ -70,7 +70,7 @@ public class K3poTestRule extends Verifier {
         return super.apply(statement, description);
     }
 
-    public void join() throws Exception {
+    public void finish() throws Exception {
         assertTrue(format("Did you call join() from outside @%s test?", TestSpecification.class.getSimpleName()),
                 latch.isPrepared());
 

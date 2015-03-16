@@ -1,0 +1,63 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.kaazing</groupId>
+        <artifactId>k3po.parent</artifactId>
+        <version>develop-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>specification.amqp_1_0.jms</artifactId>
+    <packaging>jar</packaging>
+
+    <name>AMQP 1.0 JMS Protocol Specification</name>
+    <url>https://github.com/kaazing/specification.amqp_1_0.jms</url>
+    <description>Protocol specification to prove AMQP 1.0 JMS Compatibility</description>
+
+    <scm>
+        <url>https://github.com/kaazing/specification.amqp_1_0.jms</url>
+        <connection>scm:git:https://github.com/kaazing/specification.amqp_1_0.jms.git</connection>
+    </scm>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.kaazing</groupId>
+            <artifactId>k3po.junit</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/scripts</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.kaazing</groupId>
+                <artifactId>k3po-maven-plugin</artifactId>
+                <version>${project.version}</version>
+                <configuration>
+                    <skipTests>${skipITs}</skipTests>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>start</goal>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

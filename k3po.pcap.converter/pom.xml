@@ -1,46 +1,25 @@
-<!--
-  ~ Copyright 2014, Kaazing Corporation. All rights reserved.
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.kaazing</groupId>
-        <artifactId>community</artifactId>
-        <version>2.10</version>
+        <artifactId>k3po.parent</artifactId>
+        <version>develop-SNAPSHOT</version>
     </parent>
 
     <artifactId>k3po.pcap.converter</artifactId>
-    <packaging>jar</packaging>
-    <version>develop-SNAPSHOT</version>
 
     <name>K3po TCP Dump Converter</name>
     <url>https://github.com/kaazing/k3po.pcap.converter</url>
+    <description>Utility for converting pcap into k3po scripts</description>
+    <packaging>jar</packaging>
 
     <scm>
-        <url>https://github.com/kaazing/k3po.pcap.converter</url>
-        <connection>scm:git:https://github.com/kaazing/k3po.pcap.converter.git</connection>
+        <url>https://github.com/k3po/k3po</url>
+        <connection>scm:git:https://github.com/k3po/k3po.git</connection>
+        <developerConnection>${project.scm.connection}</developerConnection>
     </scm>
-
-    <properties>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-        <require.java.version>1.7+</require.java.version>
-        <animal.sniffer.signature.artifactId>java17</animal.sniffer.signature.artifactId>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -51,7 +30,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -67,12 +45,10 @@
         <dependency>
             <groupId>org.jmock</groupId>
             <artifactId>jmock</artifactId>
-            <version>2.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.jmock</groupId>
             <artifactId>jmock-legacy</artifactId>
-            <version>2.6.0</version>
         </dependency>
         <dependency>
             <groupId>pull-parser</groupId>
