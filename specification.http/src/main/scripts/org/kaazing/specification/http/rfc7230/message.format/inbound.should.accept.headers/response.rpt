@@ -1,0 +1,7 @@
+accept http://localhost:8080/
+accepted
+connected
+
+read method "GET"
+read header "some" "header"
+

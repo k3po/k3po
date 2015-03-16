@@ -1,0 +1,10 @@
+connect http://localhost:8080/
+connected
+
+write method "POST"
+write header host
+write header content-length
+write close
+
+read status "200" /.*/
+

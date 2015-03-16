@@ -1,0 +1,11 @@
+#SERVER
+accept http://localhost:8081/backend/resource.html
+accepted
+connected
+read method "GET"
+read header "Host" "localhost:8081"
+read closed
+write status "200" "OK"
+write header content-length
+write close
+
