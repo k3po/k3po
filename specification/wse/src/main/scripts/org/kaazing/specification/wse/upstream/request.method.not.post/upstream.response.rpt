@@ -45,7 +45,7 @@ accepted
 connected
 
 read await CREATED
-read method "POST"
+read method "PUT"
 read version "HTTP/1.1"
 read header "Content-Type" "application/octet-stream"
 

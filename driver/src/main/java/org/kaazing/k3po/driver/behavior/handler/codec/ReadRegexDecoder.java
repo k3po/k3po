@@ -99,7 +99,9 @@ public class ReadRegexDecoder extends MessageDecoder {
     private void captureGroups(NamedGroupMatcher matcher) {
         for (String captureName : matcher.groupNames()) {
             String captured = matcher.group(captureName);
-            environment.getELResolver().setValue(environment, null, captureName, captured);
+            synchronized (environment) {
+                environment.getELResolver().setValue(environment, null, captureName, captured);
+            }
 
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug(format("Setting value for ${%s} to %s", captureName, captured));

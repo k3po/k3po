@@ -23,6 +23,8 @@ import java.util.Arrays;
 import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.logging.InternalLogger;
+import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.behavior.ScriptProgressException;
 import org.kaazing.k3po.driver.util.Utils;
 import org.kaazing.k3po.lang.RegionInfo;
@@ -32,6 +34,7 @@ public class ReadExpressionDecoder extends MessageDecoder {
 
     private final ValueExpression expression;
     private final ExpressionContext environment;
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ReadExpressionDecoder.class);
 
     public ReadExpressionDecoder(RegionInfo regionInfo, ValueExpression expression, ExpressionContext environment) {
         super(regionInfo);
@@ -47,7 +50,14 @@ public class ReadExpressionDecoder extends MessageDecoder {
     @Override
     protected Object decodeBuffer(ChannelBuffer buffer) throws Exception {
 
-        byte[] expected = (byte[]) expression.getValue(environment);
+        final boolean isDebugEnabled = LOGGER.isDebugEnabled();
+        if (isDebugEnabled) {
+            LOGGER.debug("Getting value to read from " + environment);
+        }
+        final byte[] expected;
+        synchronized (environment) {
+            expected = (byte[]) expression.getValue(environment);
+        }
 
         if (buffer.readableBytes() < expected.length) {
             return null;

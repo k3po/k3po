@@ -47,7 +47,6 @@ public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
 
     protected abstract T readBuffer(ChannelBuffer buffer);
 
-
     public int getLength() {
         return length;
     }
@@ -63,7 +62,9 @@ public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
             buffer.readSlice(length);
         } else {
             T value = readBuffer(buffer);
-            environment.getELResolver().setValue(environment, null, captureName, value);
+            synchronized (environment) {
+                environment.getELResolver().setValue(environment, null, captureName, value);
+            }
 
             if (LOGGER.isDebugEnabled()) {
                 Object formatValue = (value instanceof byte[]) ? AstLiteralBytesValue.toString((byte[]) value) : value;
@@ -83,7 +84,9 @@ public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
             buffer.readSlice(length);
         } else {
             T value = readBuffer(buffer);
-            environment.getELResolver().setValue(environment, null, captureName, value);
+            synchronized (environment) {
+                environment.getELResolver().setValue(environment, null, captureName, value);
+            }
 
             if (LOGGER.isDebugEnabled()) {
                 Object formatValue = (value instanceof byte[]) ? AstLiteralBytesValue.toString((byte[]) value) : value;

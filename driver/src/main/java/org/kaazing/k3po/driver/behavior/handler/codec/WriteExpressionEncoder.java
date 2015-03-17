@@ -42,7 +42,13 @@ public class WriteExpressionEncoder implements MessageEncoder {
     public ChannelBuffer encode() {
 
         final boolean isDebugEnabled = LOGGER.isDebugEnabled();
-        final byte[] value = (byte[]) expression.getValue(context);
+        if (isDebugEnabled) {
+            LOGGER.debug("Getting expression value to write from " + context);
+        }
+        final byte[] value;
+        synchronized (context) {
+            value = (byte[]) expression.getValue(context);
+        }
         final ChannelBuffer result;
 
         if (value != null) {

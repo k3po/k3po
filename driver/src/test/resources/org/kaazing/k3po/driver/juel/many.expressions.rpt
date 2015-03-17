@@ -1,0 +1,92 @@
+property randA ${itest:randomBytes(4)}
+property randB ${itest:randomBytes(4)}
+property randC ${itest:randomBytes(4)}
+property randD ${itest:randomBytes(4)}
+property randE ${itest:randomBytes(4)}
+property randF ${itest:randomBytes(4)}
+property randG ${itest:randomBytes(4)}
+property randH ${itest:randomBytes(4)}
+property randI ${itest:randomBytes(4)}
+property randJ ${itest:randomBytes(4)}
+property randK ${itest:randomBytes(4)}
+property randL ${itest:randomBytes(4)}
+property randM ${itest:randomBytes(4)}
+property randN ${itest:randomBytes(4)}
+property randO ${itest:randomBytes(4)}
+property randP ${itest:randomBytes(4)}
+property randQ ${itest:randomBytes(4)}
+property randR ${itest:randomBytes(4)}
+property randS ${itest:randomBytes(4)}
+property randT ${itest:randomBytes(4)}
+property randU ${itest:randomBytes(4)}
+property randV ${itest:randomBytes(4)}
+property randW ${itest:randomBytes(4)}
+property randX ${itest:randomBytes(4)}
+property randY ${itest:randomBytes(4)}
+property randZ ${itest:randomBytes(4)}
+
+
+connect tcp://localhost:8080
+connected
+
+write ${randA}
+write ${randB}
+write ${randC}
+write ${randD}
+write ${randE}
+write ${randF}
+write ${randG}
+write ${randH}
+write ${randI}
+write ${randJ}
+write ${randK}
+write ${randL}
+write ${randM}
+write ${randN}
+write ${randO}
+write ${randP}
+write ${randQ}
+write ${randR}
+write ${randS}
+write ${randT}
+write ${randU}
+write ${randV}
+write ${randW}
+write ${randX}
+write ${randY}
+write ${randZ}
+write ${randA}
+close
+closed
+
+accept tcp://localhost:8080
+accepted
+connected
+read ${randA}
+read ${randB}
+read ${randC}
+read ${randD}
+read ${randE}
+read ${randF}
+read ${randG}
+read ${randH}
+read ${randI}
+read ${randJ}
+read ${randK}
+read ${randL}
+read ${randM}
+read ${randN}
+read ${randO}
+read ${randP}
+read ${randQ}
+read ${randR}
+read ${randS}
+read ${randT}
+read ${randU}
+read ${randV}
+read ${randW}
+read ${randX}
+read ${randY}
+read ${randZ}
+read ${randA}
+closed

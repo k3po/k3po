@@ -8,7 +8,6 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>org.kaazing</groupId>
     <artifactId>specification.k3po.control</artifactId>
     <name>Specification for K3PO control protocol</name>
     <description>Specification for K3PO control protocol</description>

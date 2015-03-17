@@ -236,7 +236,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         ExpressionContext environment = propertyNode.getExpressionContext();
         Object value = propertyValue.accept(new GeneratePropertyValueVisitor(), environment);
         ELResolver resolver = environment.getELResolver();
-        resolver.setValue(environment, null, propertyName, value);
+        synchronized (environment) {
+            resolver.setValue(environment, null, propertyName, value);
+        }
 
         if (LOGGER.isDebugEnabled()) {
             Object formatValue = (value instanceof byte[]) ? AstLiteralBytesValue.toString((byte[]) value) : value;
@@ -250,7 +252,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         @Override
         public Object visit(AstExpressionValue value, ExpressionContext environment) throws Exception {
-            return value.getValue().getValue(environment);
+            synchronized (environment) {
+                return value.getValue().getValue(environment);
+            }
         }
 
         @Override

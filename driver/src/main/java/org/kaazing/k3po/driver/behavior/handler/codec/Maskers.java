@@ -74,13 +74,19 @@ public final class Maskers {
 
         @Override
         public ChannelBuffer applyMask(ChannelBuffer buffer) throws Exception {
-            byte[] maskingKey = (byte[]) expression.getValue(environment);
+            final byte[] maskingKey;
+            synchronized (environment) {
+                maskingKey = (byte[]) expression.getValue(environment);
+            }
             return applyMask(buffer, maskingKey);
         }
 
         @Override
         public ChannelBuffer undoMask(ChannelBuffer buffer) throws Exception {
-            byte[] maskingKey = (byte[]) expression.getValue(environment);
+            final byte[] maskingKey;
+            synchronized (environment) {
+                maskingKey = (byte[]) expression.getValue(environment);
+            }
             return undoMask(buffer, maskingKey);
         }
     }
