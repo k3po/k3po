@@ -768,7 +768,7 @@ A sequence number is **valid** if it is a `positive integer` AND it is less than
 
 A request is regarded `In Order` if the sequence number of the request is `one` greater than previous request. Otherwise, the request is treated as `Out of Order` request.
 
-If the sequence number of the Create request is 10, the sequence number of subsequent upstream and downstream request MUST be `11`. During data transfer, the sequence number of subsequent upstream and downstream request increment independently. The sequence number of a Downstream request MUST be `one` greater than the sequence number of the previous Create or Downstream request. Likewise, the sequence number of an Upstream request MUST be `one` greater than the sequence number of the previous Create or Upstream request.
+For example, if the sequence number of the Create request is 10, the sequence number of subsequent upstream and downstream request MUST be `11`. During data transfer, the sequence number of subsequent upstream and downstream request increment independently. The sequence number of a Downstream request MUST be `one` greater than the sequence number of the previous Create or Downstream request. Likewise, the sequence number of an Upstream request MUST be `one` greater than the sequence number of the previous Create or Upstream request.
 
 ## References
 
