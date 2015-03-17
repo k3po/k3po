@@ -22,6 +22,7 @@ import org.kaazing.k3po.lang.ast.AstStreamNode;
 import org.kaazing.k3po.lang.ast.AstWriteOptionNode;
 import org.kaazing.k3po.lang.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.ast.value.AstLiteralBytesValue;
+import org.kaazing.k3po.lang.el.ExpressionContext;
 
 public class AstWriteOptionNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWriteOptionNode, AstWriteOptionNode> {
 
@@ -39,8 +40,8 @@ public class AstWriteOptionNodeBuilder extends AbstractAstStreamableNodeBuilder<
         return this;
     }
 
-    public AstWriteOptionNodeBuilder setOptionValue(ValueExpression expression) {
-        node.setOptionValue(new AstExpressionValue(expression));
+    public AstWriteOptionNodeBuilder setOptionValue(ValueExpression expression, ExpressionContext environment) {
+        node.setOptionValue(new AstExpressionValue(expression, environment));
         return this;
     }
 
@@ -70,8 +71,8 @@ public class AstWriteOptionNodeBuilder extends AbstractAstStreamableNodeBuilder<
             return this;
         }
 
-        public StreamNested<R> setOptionValue(ValueExpression expression) {
-            node.setOptionValue(new AstExpressionValue(expression));
+        public StreamNested<R> setOptionValue(ValueExpression expression, ExpressionContext environment) {
+            node.setOptionValue(new AstExpressionValue(expression, environment));
             return this;
         }
 

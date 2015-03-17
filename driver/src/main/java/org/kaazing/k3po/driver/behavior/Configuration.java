@@ -78,13 +78,6 @@ public class Configuration {
         return getSetExpressionContext().getByteArrayContext();
     }
 
-    public ExpressionContext getExpressionContext() {
-        if (expresionContext == null) {
-            expresionContext = new ExpressionContext();
-        }
-        return expresionContext;
-    }
-
     public ExpressionFactory getExpressionFactory() {
         if (factory == null) {
             factory = ExpressionFactory.newInstance();

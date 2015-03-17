@@ -19,17 +19,20 @@ package org.kaazing.k3po.lang.ast.matcher;
 import static org.kaazing.k3po.lang.ast.util.AstUtil.equivalent;
 
 import org.kaazing.k3po.lang.ast.AstRegion;
+import org.kaazing.k3po.lang.el.ExpressionContext;
 import org.kaazing.k3po.lang.regex.NamedGroupPattern;
 
 public class AstRegexMatcher extends AstValueMatcher {
 
     private final NamedGroupPattern pattern;
+    private final ExpressionContext environment;
 
-    public AstRegexMatcher(NamedGroupPattern pattern) {
+    public AstRegexMatcher(NamedGroupPattern pattern, ExpressionContext environment) {
         if (pattern == null) {
             throw new NullPointerException("pattern");
         }
         this.pattern = pattern;
+        this.environment = environment;
     }
 
     public NamedGroupPattern getValue() {
@@ -59,5 +62,9 @@ public class AstRegexMatcher extends AstValueMatcher {
     @Override
     protected void describe(StringBuilder buf) {
         buf.append('/').append(pattern.toString()).append('/');
+    }
+
+    public ExpressionContext getEnvironment() {
+        return environment;
     }
 }

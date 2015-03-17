@@ -233,8 +233,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         String propertyName = propertyNode.getPropertyName();
         AstValue propertyValue = propertyNode.getPropertyValue();
 
-        Configuration config = state.configuration;
-        ExpressionContext environment = config.getExpressionContext();
+        ExpressionContext environment = propertyNode.getExpressionContext();
         Object value = propertyValue.accept(new GeneratePropertyValueVisitor(), environment);
         ELResolver resolver = environment.getELResolver();
         resolver.setValue(environment, null, propertyName, value);
@@ -501,7 +500,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         @Override
         public MessageEncoder visit(AstExpressionValue value, Configuration config) throws Exception {
-            ExpressionContext environment = config.getExpressionContext();
+            ExpressionContext environment = value.getEnvironment();
             return new WriteExpressionEncoder(value.getValue(), environment);
         }
 
@@ -653,13 +652,12 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         return state.configuration;
     }
 
-    private static final class GenerateReadDecoderVisitor implements
-            AstValueMatcher.Visitor<MessageDecoder, Configuration> {
+    private static final class GenerateReadDecoderVisitor implements AstValueMatcher.Visitor<MessageDecoder, Configuration> {
 
         @Override
         public MessageDecoder visit(AstExpressionMatcher matcher, Configuration config) throws Exception {
             ValueExpression expression = matcher.getValue();
-            ExpressionContext environment = config.getExpressionContext();
+            ExpressionContext environment = matcher.getEnvironment();
             return new ReadExpressionDecoder(matcher.getRegionInfo(), expression, environment);
         }
 
@@ -668,10 +666,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
             int length = matcher.getLength();
             String captureName = matcher.getCaptureName();
-            ExpressionContext environment = config.getExpressionContext();
-            MessageDecoder decoder = (captureName != null)
-                    ? new ReadByteArrayBytesDecoder(matcher.getRegionInfo(), length, environment, captureName)
-                    : new ReadByteArrayBytesDecoder(matcher.getRegionInfo(), length);
+            ExpressionContext environment = matcher.getEnvironment();
+            MessageDecoder decoder =
+                    (captureName != null) ? new ReadByteArrayBytesDecoder(matcher.getRegionInfo(), length, environment,
+                            captureName) : new ReadByteArrayBytesDecoder(matcher.getRegionInfo(), length);
             return decoder;
         }
 
@@ -722,16 +720,16 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             String captureName = matcher.getCaptureName();
             RegionInfo regionInfo = matcher.getRegionInfo();
 
-            ExpressionContext environment = config.getExpressionContext();
-            @SuppressWarnings("unchecked") Constructor<MessageDecoder> constructor = (Constructor<MessageDecoder>) clazz
-                    .getConstructor(RegionInfo.class, ExpressionContext.class, String.class);
+            ExpressionContext environment = matcher.getEnvironment();
+            @SuppressWarnings("unchecked") Constructor<MessageDecoder> constructor =
+                    (Constructor<MessageDecoder>) clazz.getConstructor(RegionInfo.class, ExpressionContext.class, String.class);
             return constructor.newInstance(regionInfo, environment, captureName);
 
         }
 
         @Override
         public MessageDecoder visit(AstRegexMatcher matcher, Configuration config) throws Exception {
-            ExpressionContext environment = config.getExpressionContext();
+            ExpressionContext environment = matcher.getEnvironment();
             MessageDecoder result;
             result = new ReadRegexDecoder(matcher.getRegionInfo(), matcher.getValue(), UTF_8, environment);
             return result;
@@ -752,10 +750,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
             ValueExpression length = matcher.getLength();
             String captureName = matcher.getCaptureName();
-            ExpressionContext environment = config.getExpressionContext();
-            MessageDecoder decoder = (captureName != null)
-                    ? new ReadVariableLengthBytesDecoder(matcher.getRegionInfo(), length, environment, captureName)
-                    : new ReadVariableLengthBytesDecoder(matcher.getRegionInfo(), length, environment);
+            ExpressionContext environment = matcher.getEnvironment();
+            MessageDecoder decoder =
+                    (captureName != null) ? new ReadVariableLengthBytesDecoder(matcher.getRegionInfo(), length, environment,
+                            captureName) : new ReadVariableLengthBytesDecoder(matcher.getRegionInfo(), length, environment);
             return decoder;
         }
 
@@ -1054,8 +1052,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     }
 
     @Override
-    public Configuration visit(AstReadOptionNode node, State state)
-            throws Exception {
+    public Configuration visit(AstReadOptionNode node, State state) throws Exception {
 
         String optionName = node.getOptionName();
         AstValue optionValue = node.getOptionValue();
@@ -1084,7 +1081,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         public Masker visit(AstExpressionValue value, State state) throws Exception {
 
             ValueExpression expression = value.getValue();
-            ExpressionContext environment = state.configuration.getExpressionContext();
+            ExpressionContext environment = value.getEnvironment();
 
             return Maskers.newMasker(expression, environment);
         }

@@ -33,6 +33,7 @@ public class HttpIT {
     private final K3poTestRule k3po = new K3poTestRule();
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
+//    private final TestRule timeout = new Timeout(5, SECONDS);
 
     @Rule
     public final ExpectedException expectedExceptions = ExpectedException.none();

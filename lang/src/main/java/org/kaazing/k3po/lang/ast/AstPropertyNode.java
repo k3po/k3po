@@ -20,11 +20,13 @@ import static java.lang.String.format;
 import static org.kaazing.k3po.lang.ast.util.AstUtil.equivalent;
 
 import org.kaazing.k3po.lang.ast.value.AstValue;
+import org.kaazing.k3po.lang.el.ExpressionContext;
 
 public class AstPropertyNode extends AstNode {
 
     private String propertyName;
     private AstValue propertyValue;
+    private ExpressionContext expressionContext;
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
@@ -76,6 +78,14 @@ public class AstPropertyNode extends AstNode {
     protected void describe(StringBuilder buf) {
         super.describe(buf);
         buf.append(format("property %s %s\n", getPropertyName(), getPropertyValue()));
+    }
+
+    public ExpressionContext getExpressionContext() {
+        return expressionContext;
+    }
+
+    public void setExpressionContext(ExpressionContext expressionContext) {
+        this.expressionContext = expressionContext;
     }
 
 }

@@ -734,6 +734,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             node.setPropertyName(ctx.name.getText());
             node.setPropertyValue(value);
+            node.setExpressionContext(elContext);
 
             return node;
         }
@@ -1722,31 +1723,31 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstExactBytesMatcher visitExactBytesMatcher(ExactBytesMatcherContext ctx) {
             if (ctx.bytes != null) {
                 byte[] array = parseHexBytes(ctx.bytes.getText());
-                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
+                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array, elContext);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             } else if (ctx.byteLiteral != null) {
                 byte[] array = parseHexBytes(ctx.byteLiteral.getText());
-                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
+                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array, elContext);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             } else if (ctx.shortLiteral != null) {
                 byte[] array = parseHexBytes(ctx.shortLiteral.getText());
-                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
+                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array, elContext);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             } else if (ctx.longLiteral != null) {
                 ByteBuffer buf = ByteBuffer.allocate(Long.SIZE / 8);
                 buf.putLong(Long.parseLong(ctx.longLiteral.getText()));
                 byte[] array = buf.array();
-                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
+                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array, elContext);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             } else if (ctx.intLiteral != null) {
                 ByteBuffer buf = ByteBuffer.allocate(Integer.SIZE / 8);
                 buf.putInt(Integer.parseInt(ctx.intLiteral.getText()));
                 byte[] array = buf.array();
-                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
+                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array, elContext);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             }
@@ -1766,7 +1767,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstRegexMatcher visitRegexMatcher(RegexMatcherContext ctx) {
             String regex = ctx.regex.getText();
             String pattern = regex.substring(1, regex.length() - 1);
-            AstRegexMatcher matcher = new AstRegexMatcher(NamedGroupPattern.compile(pattern));
+            AstRegexMatcher matcher = new AstRegexMatcher(NamedGroupPattern.compile(pattern), elContext);
             matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return matcher;
         }
@@ -1782,7 +1783,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstExpressionMatcher visitExpressionMatcher(ExpressionMatcherContext ctx) {
             ValueExpression expression = elFactory.createValueExpression(elContext, ctx.expression.getText(), byte[].class);
-            AstExpressionMatcher matcher = new AstExpressionMatcher(expression);
+            AstExpressionMatcher matcher = new AstExpressionMatcher(expression, elContext);
             matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return matcher;
         }
@@ -1802,7 +1803,8 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
                 if (ctx.capture != null) {
                     String capture = ctx.capture.getText();
                     String captureName = capture.substring(1, capture.length());
-                    AstFixedLengthBytesMatcher matcher = new AstFixedLengthBytesMatcher(parseInt(lastIndex), captureName);
+                    AstFixedLengthBytesMatcher matcher =
+                            new AstFixedLengthBytesMatcher(parseInt(lastIndex), captureName, elContext);
                     matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                     return matcher;
                 } else {
@@ -1812,22 +1814,22 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
                 }
             } else if (ctx.byteCapture != null) {
                 String byteCapture = ctx.byteCapture.getText();
-                AstByteLengthBytesMatcher matcher = new AstByteLengthBytesMatcher(byteCapture.substring(1));
+                AstByteLengthBytesMatcher matcher = new AstByteLengthBytesMatcher(byteCapture.substring(1), elContext);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             } else if (ctx.shortCapture != null) {
                 String shortCapture = ctx.shortCapture.getText();
-                AstShortLengthBytesMatcher matcher = new AstShortLengthBytesMatcher(shortCapture.substring(1));
+                AstShortLengthBytesMatcher matcher = new AstShortLengthBytesMatcher(shortCapture.substring(1), elContext);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             } else if (ctx.intCapture != null) {
                 String intCapture = ctx.intCapture.getText();
-                AstIntLengthBytesMatcher matcher = new AstIntLengthBytesMatcher(intCapture.substring(1));
+                AstIntLengthBytesMatcher matcher = new AstIntLengthBytesMatcher(intCapture.substring(1), elContext);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             } else if (ctx.longCapture != null) {
                 String longCapture = ctx.longCapture.getText();
-                AstLongLengthBytesMatcher matcher = new AstLongLengthBytesMatcher(longCapture.substring(1));
+                AstLongLengthBytesMatcher matcher = new AstLongLengthBytesMatcher(longCapture.substring(1), elContext);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             }
@@ -1849,11 +1851,11 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             if (ctx.capture != null) {
                 String capture = ctx.capture.getText();
                 String captureName = capture.substring(1);
-                AstVariableLengthBytesMatcher matcher = new AstVariableLengthBytesMatcher(length, captureName);
+                AstVariableLengthBytesMatcher matcher = new AstVariableLengthBytesMatcher(length, captureName, elContext);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             } else {
-                AstVariableLengthBytesMatcher matcher = new AstVariableLengthBytesMatcher(length);
+                AstVariableLengthBytesMatcher matcher = new AstVariableLengthBytesMatcher(length, elContext);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             }
@@ -1961,7 +1963,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstExpressionValue visitExpressionValue(ExpressionValueContext ctx) {
             ValueExpression expression = elFactory.createValueExpression(elContext, ctx.expression.getText(), expectedType);
-            AstExpressionValue value = new AstExpressionValue(expression);
+            AstExpressionValue value = new AstExpressionValue(expression, elContext);
             value.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return value;
         }

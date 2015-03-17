@@ -51,6 +51,7 @@ import org.kaazing.k3po.lang.ast.builder.AstScriptNodeBuilder;
 import org.kaazing.k3po.lang.ast.builder.AstWriteCloseNodeBuilder;
 import org.kaazing.k3po.lang.ast.builder.AstWriteConfigNodeBuilder;
 import org.kaazing.k3po.lang.ast.builder.AstWriteFlushNodeBuilder;
+import org.kaazing.k3po.lang.el.ExpressionContext;
 
 public class HttpScriptParserTest {
 
@@ -440,7 +441,7 @@ public class HttpScriptParserTest {
                      .addMatcherExactText("websocket")
                  .done()
                  .addReadEvent()
-                     .addExactBytes(new byte[] {(byte) 0x82})
+                     .addExactBytes(new byte[] {(byte) 0x82}, new ExpressionContext())
                  .done()
                  .addReadCloseCommand()
                  .done()

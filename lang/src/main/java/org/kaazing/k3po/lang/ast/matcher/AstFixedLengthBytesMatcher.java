@@ -20,19 +20,22 @@ import static java.lang.String.format;
 import static org.kaazing.k3po.lang.ast.util.AstUtil.equivalent;
 
 import org.kaazing.k3po.lang.ast.AstRegion;
+import org.kaazing.k3po.lang.el.ExpressionContext;
 
 public class AstFixedLengthBytesMatcher extends AstValueMatcher {
 
     private final int length;
     private final String captureName;
+    private final ExpressionContext environment;
 
     public AstFixedLengthBytesMatcher(int length) {
-        this(length, null);
+        this(length, null, null);
     }
 
-    public AstFixedLengthBytesMatcher(int length, String captureName) {
+    public AstFixedLengthBytesMatcher(int length, String captureName, ExpressionContext environment) {
         this.length = length;
         this.captureName = captureName;
+        this.environment = environment;
     }
 
     public int getLength() {
@@ -80,5 +83,9 @@ public class AstFixedLengthBytesMatcher extends AstValueMatcher {
         else {
             buf.append(format("[0..%d}]", length));
         }
+    }
+
+    public ExpressionContext getEnvironment() {
+        return environment;
     }
 }

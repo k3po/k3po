@@ -173,7 +173,7 @@ public class ScriptParserImplTest {
 
         byte[] arr = {0x00, 0x05};
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
+        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr, parser.getExpressionContext());
 
         assertEquals(expected, actual);
     }
@@ -188,7 +188,7 @@ public class ScriptParserImplTest {
 
         byte[] arr = ByteBuffer.allocate(2).putShort((short) -5).array();
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
+        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr, parser.getExpressionContext());
 
         assertEquals(expected, actual);
     }
@@ -203,7 +203,7 @@ public class ScriptParserImplTest {
 
         byte[] arr = {(byte) -5};
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
+        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr, parser.getExpressionContext());
 
         assertEquals(expected, actual);
     }
@@ -218,7 +218,7 @@ public class ScriptParserImplTest {
 
         byte[] arr = {0x05};
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
+        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr, parser.getExpressionContext());
 
         assertEquals(expected, actual);
     }
@@ -233,7 +233,7 @@ public class ScriptParserImplTest {
 
         byte[] arr = {0x00, 0x00, 0x00, 0x05};
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
+        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr, parser.getExpressionContext());
 
         assertEquals(expected, actual);
     }
@@ -248,7 +248,7 @@ public class ScriptParserImplTest {
 
         byte[] arr = ByteBuffer.allocate(4).putInt(-5).array();
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
+        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr, parser.getExpressionContext());
 
         assertEquals(expected, actual);
     }
@@ -263,7 +263,7 @@ public class ScriptParserImplTest {
 
         byte[] arr = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05};
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
+        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr, parser.getExpressionContext());
 
         assertEquals(expected, actual);
     }
@@ -278,7 +278,7 @@ public class ScriptParserImplTest {
 
         byte[] arr = ByteBuffer.allocate(8).putLong(-5).array();
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
+        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr, parser.getExpressionContext());
         assertEquals(expected, actual);
     }
 
@@ -288,8 +288,7 @@ public class ScriptParserImplTest {
         String scriptFragment = "[0..25]";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstFixedLengthBytesMatcher actual =
-                parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER);
+        AstFixedLengthBytesMatcher actual = parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER);
 
         AstFixedLengthBytesMatcher expected = new AstFixedLengthBytesMatcher(25);
         assertEquals(expected, actual);
@@ -306,7 +305,8 @@ public class ScriptParserImplTest {
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
         ValueExpression length = factory.createValueExpression(context, "${len+2}", Integer.class);
-        AstVariableLengthBytesMatcher expected = new AstVariableLengthBytesMatcher(length);
+        ExpressionContext environment = parser.getExpressionContext();
+        AstVariableLengthBytesMatcher expected = new AstVariableLengthBytesMatcher(length, environment);
 
         assertEquals(expected, actual);
     }
@@ -339,7 +339,7 @@ public class ScriptParserImplTest {
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
         ValueExpression value = factory.createValueExpression(context, "${ byteArray }", byte[].class);
-        AstExpressionMatcher expected = new AstExpressionMatcher(value);
+        AstExpressionMatcher expected = new AstExpressionMatcher(value, parser.getExpressionContext());
 
         assertEquals(expected, actual);
     }
@@ -352,7 +352,7 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstFixedLengthBytesMatcher actual = parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER);
 
-        AstFixedLengthBytesMatcher expected = new AstFixedLengthBytesMatcher(1, "capture");
+        AstFixedLengthBytesMatcher expected = new AstFixedLengthBytesMatcher(1, "capture", parser.getExpressionContext());
 
         assertEquals(expected, actual);
     }
@@ -365,7 +365,7 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstFixedLengthBytesMatcher actual = parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER);
 
-        AstByteLengthBytesMatcher expected = new AstByteLengthBytesMatcher("capture");
+        AstByteLengthBytesMatcher expected = new AstByteLengthBytesMatcher("capture", parser.getExpressionContext());
 
         assertEquals(expected, actual);
     }
@@ -378,7 +378,7 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstFixedLengthBytesMatcher actual = parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER);
 
-        AstShortLengthBytesMatcher expected = new AstShortLengthBytesMatcher("capture");
+        AstShortLengthBytesMatcher expected = new AstShortLengthBytesMatcher("capture", parser.getExpressionContext());
 
         assertEquals(expected, actual);
     }
@@ -391,7 +391,7 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstFixedLengthBytesMatcher actual = parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER);
 
-        AstIntLengthBytesMatcher expected = new AstIntLengthBytesMatcher("capture");
+        AstIntLengthBytesMatcher expected = new AstIntLengthBytesMatcher("capture", parser.getExpressionContext());
 
         assertEquals(expected, actual);
     }
@@ -404,7 +404,7 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstFixedLengthBytesMatcher actual = parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER);
 
-        AstLongLengthBytesMatcher expected = new AstLongLengthBytesMatcher("capture");
+        AstLongLengthBytesMatcher expected = new AstLongLengthBytesMatcher("capture", parser.getExpressionContext());
 
         assertEquals(expected, actual);
     }
@@ -420,7 +420,8 @@ public class ScriptParserImplTest {
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
         ValueExpression length = factory.createValueExpression(context, "${len-45}", Integer.class);
-        AstVariableLengthBytesMatcher expected = new AstVariableLengthBytesMatcher(length, "capture");
+        AstVariableLengthBytesMatcher expected =
+                new AstVariableLengthBytesMatcher(length, "capture", parser.getExpressionContext());
 
         assertEquals(expected, actual);
     }
@@ -473,8 +474,9 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstByteLengthBytesMatcher("capture"),
-                new AstByteLengthBytesMatcher("capture2")));
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(
+                new AstByteLengthBytesMatcher("capture", parser.getExpressionContext()), new AstByteLengthBytesMatcher(
+                        "capture2", parser.getExpressionContext())));
         assertEquals(expected, actual);
     }
 
@@ -487,8 +489,9 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstShortLengthBytesMatcher("capture"),
-                new AstShortLengthBytesMatcher("capture2")));
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(
+                new AstShortLengthBytesMatcher("capture", parser.getExpressionContext()), new AstShortLengthBytesMatcher(
+                        "capture2", parser.getExpressionContext())));
 
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -503,8 +506,9 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstIntLengthBytesMatcher("capture"),
-                new AstIntLengthBytesMatcher("capture2")));
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(
+                new AstIntLengthBytesMatcher("capture", parser.getExpressionContext()), new AstIntLengthBytesMatcher("capture2",
+                        parser.getExpressionContext())));
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
     }
@@ -518,8 +522,9 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstLongLengthBytesMatcher("capture"),
-                new AstLongLengthBytesMatcher("capture2")));
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(
+                new AstLongLengthBytesMatcher("capture", parser.getExpressionContext()), new AstLongLengthBytesMatcher(
+                        "capture2", parser.getExpressionContext())));
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
     }
@@ -546,8 +551,9 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactBytesMatcher(new byte[]{0x01, (byte) 0xff, (byte) 0xfa}),
-                new AstExactBytesMatcher(new byte[]{0x00, (byte) 0xf0, (byte) 0x03, (byte) 0x05, (byte) 0x08, (byte) 0x04})));
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactBytesMatcher(new byte[]{0x01, (byte) 0xff, (byte) 0xfa},
+                parser.getExpressionContext()), new AstExactBytesMatcher(new byte[]{0x00, (byte) 0xf0, (byte) 0x03, (byte) 0x05,
+                (byte) 0x08, (byte) 0x04}, parser.getExpressionContext())));
 
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -562,8 +568,9 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactBytesMatcher(new byte[]{0x01, (byte) 0xff, (byte) 0xfa}),
-                new AstExactBytesMatcher(new byte[]{0x00, (byte) 0xf0, (byte) 0x03, (byte) 0x05, (byte) 0x08, (byte) 0x04})));
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactBytesMatcher(new byte[]{0x01, (byte) 0xff, (byte) 0xfa},
+                parser.getExpressionContext()), new AstExactBytesMatcher(new byte[]{0x00, (byte) 0xf0, (byte) 0x03, (byte) 0x05,
+                (byte) 0x08, (byte) 0x04}, parser.getExpressionContext())));
 
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -577,8 +584,9 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstRegexMatcher(compile(".*\\n")), new AstRegexMatcher(
-                compile(".+\\r"))));
+        ExpressionContext environment = parser.getExpressionContext();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstRegexMatcher(compile(".*\\n"), environment),
+                new AstRegexMatcher(compile(".+\\r"), environment)));
 
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -598,7 +606,9 @@ public class ScriptParserImplTest {
         ValueExpression value2 = factory.createValueExpression(context, "${var2}", byte[].class);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExpressionMatcher(value), new AstExpressionMatcher(value2)));
+        ExpressionContext environment = parser.getExpressionContext();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExpressionMatcher(value, environment),
+                new AstExpressionMatcher(value2, environment)));
 
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -612,8 +622,8 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstFixedLengthBytesMatcher(1024), new AstFixedLengthBytesMatcher(
-                4096)));
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstFixedLengthBytesMatcher(1024),
+                new AstFixedLengthBytesMatcher(4096)));
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
     }
@@ -626,8 +636,10 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstFixedLengthBytesMatcher(1024), new AstFixedLengthBytesMatcher(
-                64, "var1"), new AstFixedLengthBytesMatcher(4096), new AstFixedLengthBytesMatcher(64, "var2")));
+        ExpressionContext environment = parser.getExpressionContext();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstFixedLengthBytesMatcher(1024),
+                new AstFixedLengthBytesMatcher(64, "var1", environment), new AstFixedLengthBytesMatcher(4096),
+                new AstFixedLengthBytesMatcher(64, "var2", environment)));
 
         assertEquals(expected, actual);
         assertEquals(4, actual.getRegionInfo().children.size());
@@ -646,8 +658,9 @@ public class ScriptParserImplTest {
         ValueExpression value2 = factory.createValueExpression(context, "${len2}", Integer.class);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstVariableLengthBytesMatcher(value),
-                new AstVariableLengthBytesMatcher(value2)));
+        ExpressionContext environment = parser.getExpressionContext();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstVariableLengthBytesMatcher(value, environment),
+                new AstVariableLengthBytesMatcher(value2, environment)));
 
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -666,8 +679,9 @@ public class ScriptParserImplTest {
         ValueExpression value2 = factory.createValueExpression(context, "${len2}", Integer.class);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstVariableLengthBytesMatcher(value, "var1"),
-                new AstVariableLengthBytesMatcher(value2, "var2")));
+        ExpressionContext environment = parser.getExpressionContext();
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstVariableLengthBytesMatcher(value, "var1", environment),
+                new AstVariableLengthBytesMatcher(value2, "var2", environment)));
 
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -713,7 +727,8 @@ public class ScriptParserImplTest {
         ValueExpression value2 = factory.createValueExpression(context, "${var2}", byte[].class);
 
         AstWriteValueNode expected = new AstWriteValueNode();
-        expected.setValues(Arrays.<AstValue>asList(new AstExpressionValue(value1), new AstExpressionValue(value2)));
+        expected.setValues(Arrays.<AstValue>asList(new AstExpressionValue(value1, parser.getExpressionContext()),
+                new AstExpressionValue(value2, parser.getExpressionContext())));
 
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -732,7 +747,7 @@ public class ScriptParserImplTest {
 
         AstWriteValueNode expected = new AstWriteValueNode();
         expected.setValues(Arrays.<AstValue>asList(new AstLiteralTextValue("Hello"), new AstLiteralBytesValue(new byte[]{
-                (byte) 0x01, (byte) 0x02}), new AstExpressionValue(value1)));
+                (byte) 0x01, (byte) 0x02}), new AstExpressionValue(value1, parser.getExpressionContext())));
 
         assertEquals(expected, actual);
         assertEquals(3, actual.getRegionInfo().children.size());
@@ -749,8 +764,11 @@ public class ScriptParserImplTest {
         ExpressionContext context = parser.getExpressionContext();
 
         AstWriteValueNode expected =
-                new AstWriteNodeBuilder().addExactText("Hello").addExactBytes(new byte[]{0x01, (byte) 0x02})
-                        .addExpression(factory.createValueExpression(context, "${var1}", byte[].class)).done();
+                new AstWriteNodeBuilder()
+                        .addExactText("Hello")
+                        .addExactBytes(new byte[]{0x01, (byte) 0x02})
+                        .addExpression(factory.createValueExpression(context, "${var1}", byte[].class),
+                                parser.getExpressionContext()).done();
 
         assertEquals(expected, actual);
         assertEquals(3, actual.getRegionInfo().children.size());
@@ -798,7 +816,7 @@ public class ScriptParserImplTest {
     }
 
     @Test(
-            expected = ScriptParseException.class)
+        expected = ScriptParseException.class)
     public void shouldNotParseAcceptedWithoutBehavior() throws Exception {
 
         String script = "accepted";
@@ -868,7 +886,8 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-        AstReadValueNode expected = new AstReadNodeBuilder().addExactBytes(new byte[]{0x05}).done();
+        AstReadValueNode expected =
+                new AstReadNodeBuilder().addExactBytes(new byte[]{0x05}, parser.getExpressionContext()).done();
 
         assertEquals(expected, actual);
         assertEquals(1, actual.getRegionInfo().children.size());
@@ -882,7 +901,8 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
-        AstReadValueNode expected = new AstReadNodeBuilder().addExactBytes(new byte[]{0x00, 0x05}).done();
+        AstReadValueNode expected =
+                new AstReadNodeBuilder().addExactBytes(new byte[]{0x00, 0x05}, parser.getExpressionContext()).done();
 
         assertEquals(expected, actual);
         assertEquals(1, actual.getRegionInfo().children.size());
@@ -898,7 +918,7 @@ public class ScriptParserImplTest {
 
         AstReadValueNode expected = new AstReadNodeBuilder()
 
-        .addExactBytes(new byte[]{0x00, 0x00, 0x00, 0x05}).done();
+        .addExactBytes(new byte[]{0x00, 0x00, 0x00, 0x05}, parser.getExpressionContext()).done();
 
         assertEquals(expected, actual);
         assertEquals(1, actual.getRegionInfo().children.size());
@@ -914,7 +934,7 @@ public class ScriptParserImplTest {
 
         AstReadValueNode expected = new AstReadNodeBuilder()
 
-        .addExactBytes(new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05}).done();
+        .addExactBytes(new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05}, parser.getExpressionContext()).done();
 
         assertEquals(expected, actual);
         assertEquals(1, actual.getRegionInfo().children.size());
@@ -953,7 +973,7 @@ public class ScriptParserImplTest {
 
         AstReadValueNode expected = new AstReadNodeBuilder()
 
-        .addExactBytes(new byte[]{0x01, 0x02, (byte) 0xff}).done();
+        .addExactBytes(new byte[]{0x01, 0x02, (byte) 0xff}, parser.getExpressionContext()).done();
 
         assertEquals(expected, actual);
         assertEquals(1, actual.getRegionInfo().children.size());
@@ -972,7 +992,7 @@ public class ScriptParserImplTest {
 
         AstReadValueNode expected = new AstReadNodeBuilder()
 
-        .addExpression(factory.createValueExpression(context, "${hello}", byte[].class)).done();
+        .addExpression(factory.createValueExpression(context, "${hello}", byte[].class), parser.getExpressionContext()).done();
 
         assertEquals(expected, actual);
         assertEquals(1, actual.getRegionInfo().children.size());
@@ -1152,20 +1172,15 @@ public class ScriptParserImplTest {
     public void shouldParseConnectScript() throws Exception {
 
         String script =
-                "# tcp.client.connect-then-close\n" +
-                "connect http://localhost:8080/path?p1=v1&p2=v2\n" +
-                "connected\n" +
-                "close\n" +
-                "closed\n";
+                "# tcp.client.connect-then-close\n" + "connect http://localhost:8080/path?p1=v1&p2=v2\n" + "connected\n"
+                        + "close\n" + "closed\n";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
 
-        AstScriptNode expected = new AstScriptNodeBuilder()
-                .addConnectStream()
-                .setLocation(URI.create("http://localhost:8080/path?p1=v1&p2=v2"))
-                .addConnectedEvent().done().addCloseCommand().done()
-                .addClosedEvent().done().done().done();
+        AstScriptNode expected =
+                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("http://localhost:8080/path?p1=v1&p2=v2"))
+                        .addConnectedEvent().done().addCloseCommand().done().addClosedEvent().done().done().done();
 
         assertEquals(expected, actual);
     }
@@ -1181,8 +1196,8 @@ public class ScriptParserImplTest {
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
 
         AstScriptNode expected =
-                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("tcp://localhost:7788")).addConnectedEvent()
-                        .done().addCloseCommand().done().addClosedEvent().done().done().done();
+                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("tcp://localhost:7788"))
+                        .addConnectedEvent().done().addCloseCommand().done().addClosedEvent().done().done().done();
 
         assertEquals(expected, actual);
     }
@@ -1218,12 +1233,12 @@ public class ScriptParserImplTest {
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
 
         AstScriptNode expected =
-                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("tcp://localhost:8785")).addConnectedEvent()
-                        .done().addWriteCommand().addExactText("Hello, world!").done().addWriteNotifyBarrier()
-                        .setBarrierName("BARRIER").done().addCloseCommand().done().addClosedEvent().done().done()
-                        .addConnectStream().setLocation(URI.create("tcp://localhost:8783")).addConnectedEvent().done()
-                        .addReadAwaitBarrier().setBarrierName("BARRIER").done().addReadEvent().addExactText("Hello, world!")
-                        .done().addCloseCommand().done().addClosedEvent().done().done().done();
+                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("tcp://localhost:8785"))
+                        .addConnectedEvent().done().addWriteCommand().addExactText("Hello, world!").done()
+                        .addWriteNotifyBarrier().setBarrierName("BARRIER").done().addCloseCommand().done().addClosedEvent()
+                        .done().done().addConnectStream().setLocation(URI.create("tcp://localhost:8783")).addConnectedEvent()
+                        .done().addReadAwaitBarrier().setBarrierName("BARRIER").done().addReadEvent()
+                        .addExactText("Hello, world!").done().addCloseCommand().done().addClosedEvent().done().done().done();
 
         assertEquals(expected, actual);
     }
@@ -1284,8 +1299,8 @@ public class ScriptParserImplTest {
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
 
         AstScriptNode expected =
-                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("tcp://localhost:7788")).addConnectedEvent()
-                        .done().addReadEvent().addExactText("foo").done().addWriteCommand()
+                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("tcp://localhost:7788"))
+                        .addConnectedEvent().done().addReadEvent().addExactText("foo").done().addWriteCommand()
                         .addExactBytes(new byte[]{0x01, 0x02, (byte) 0xff}).done().addClosedEvent().done().done().done();
 
         assertEquals(expected, actual);
@@ -1369,7 +1384,8 @@ public class ScriptParserImplTest {
 
                         .done().addBoundEvent().done().addConnectedEvent()
 
-                        .done().addReadEvent().addFixedLengthBytes(32, "input").done().addReadNotifyBarrier()
+                        .done().addReadEvent().addFixedLengthBytes(32, "input", parser.getExpressionContext()).done()
+                        .addReadNotifyBarrier()
 
                         .setBarrierName("BARRIER").done().addWriteAwaitBarrier()
 
@@ -1383,19 +1399,20 @@ public class ScriptParserImplTest {
 
                         .done().addClosedEvent()
 
-                        .done().done().addConnectStream().setLocation(URI.create("tcp://localhost:8000")).addOpenedEvent().done()
-                        .addBoundEvent()
+                        .done().done().addConnectStream().setLocation(URI.create("tcp://localhost:8000")).addOpenedEvent()
+                        .done().addBoundEvent()
 
                         .done().addConnectedEvent().done().addWriteCommand()
 
-                        .addExpression(factory.createValueExpression(context, "${input}", byte[].class)).done().addReadEvent()
-                        .addExactBytes(new byte[]{0x00, -0x01}).done().addCloseCommand().done().addDisconnectedEvent().done()
-                        .addUnboundEvent().done().addClosedEvent().done().done().done();
+                        .addExpression(factory.createValueExpression(context, "${input}", byte[].class), context).done()
+                        .addReadEvent().addExactBytes(new byte[]{0x00, -0x01}, context).done().addCloseCommand().done()
+                        .addDisconnectedEvent().done().addUnboundEvent().done().addClosedEvent().done().done().done();
 
         assertEquals(expected, actual);
     }
 
-    @Test(expected = ScriptParseException.class)
+    @Test(
+        expected = ScriptParseException.class)
     public void shouldNotParseScriptWithUnknownKeyword() throws Exception {
 
         String script = "written\n";
@@ -1404,7 +1421,8 @@ public class ScriptParserImplTest {
         parser.parseWithStrategy(script, SCRIPT);
     }
 
-    @Test(expected = ScriptParseException.class)
+    @Test(
+        expected = ScriptParseException.class)
     public void shouldNotParseScriptWithReadBeforeConnect() throws Exception {
 
         String script =
@@ -1441,8 +1459,10 @@ public class ScriptParserImplTest {
         AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_OPTION);
 
         AstReadOptionNode expected =
-                new AstReadOptionNodeBuilder().setOptionName("mask")
-                        .setOptionValue(factory.createValueExpression(context, "${maskingKey}", byte[].class)).done();
+                new AstReadOptionNodeBuilder()
+                        .setOptionName("mask")
+                        .setOptionValue(factory.createValueExpression(context, "${maskingKey}", byte[].class),
+                                parser.getExpressionContext()).done();
 
         assertEquals(expected, actual);
     }
@@ -1473,8 +1493,10 @@ public class ScriptParserImplTest {
         AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_OPTION);
 
         AstWriteOptionNode expected =
-                new AstWriteOptionNodeBuilder().setOptionName("mask")
-                        .setOptionValue(factory.createValueExpression(context, "${maskingKey}", byte[].class)).done();
+                new AstWriteOptionNodeBuilder()
+                        .setOptionName("mask")
+                        .setOptionValue(factory.createValueExpression(context, "${maskingKey}", byte[].class),
+                                parser.getExpressionContext()).done();
 
         assertEquals(expected, actual);
     }
@@ -1487,7 +1509,7 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstFixedLengthBytesMatcher actual = parser.parseWithStrategy(scriptFragment, FIXED_LENGTH_BYTES_MATCHER);
 
-        AstFixedLengthBytesMatcher expected = new AstFixedLengthBytesMatcher(5, "capture");
+        AstFixedLengthBytesMatcher expected = new AstFixedLengthBytesMatcher(5, "capture", parser.getExpressionContext());
 
         assertEquals(expected, actual);
     }
@@ -1536,7 +1558,9 @@ public class ScriptParserImplTest {
 
         ValueExpression expression = factory.createValueExpression(context, "${expression}", Object.class);
 
-        AstPropertyNode expected = new AstPropertyNodeBuilder().setPropertyName("location").setPropertyValue(expression).done();
+        AstPropertyNode expected =
+                new AstPropertyNodeBuilder().setPropertyName("location")
+                        .setPropertyValue(expression, parser.getExpressionContext()).done();
 
         assertEquals(expected, actual);
     }
