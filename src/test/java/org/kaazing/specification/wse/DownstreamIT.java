@@ -74,6 +74,22 @@ public class DownstreamIT {
 
     @Test
     @Specification({
+        "binary/request.out.of.order/downstream.request",
+        "binary/request.out.of.order/downstream.response" })
+    public void shouldCloseConnectionWhenBinaryDownstreamRequestIsOutOfOrder() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "binary/subsequent.request.out.of.order/request",
+        "binary/subsequent.request.out.of.order/response" })
+    public void shouldCloseConnectionWhenSubsequentBinaryDownstreamRequestIsOutOfOrder() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
         "binary.as.escaped.text/response.header.content.type.has.unexpected.value/downstream.request",
         "binary.as.escaped.text/response.header.content.type.has.unexpected.value/downstream.response" })
     public void shouldCloseConnectionWhenEscapedTextDownstreamResponseContentTypeHasUnexpectedValue()

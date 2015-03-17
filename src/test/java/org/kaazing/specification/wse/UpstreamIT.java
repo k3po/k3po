@@ -62,4 +62,20 @@ public class UpstreamIT {
     public void shouldRejectParallelUpstreamRequest() throws Exception {
         k3po.join();
     }
+
+    @Test
+    @Specification({
+        "request.out.of.order/upstream.request",
+        "request.out.of.order/upstream.response" })
+    public void shouldRejectOutOfOrderUpstreamRequest() throws Exception {
+        k3po.join();
+    }
+
+    @Test
+    @Specification({
+        "subsequent.request.out.of.order/request",
+        "subsequent.request.out.of.order/response" })
+    public void shouldCloseConnectionWhenSubsequentUpstreamRequestIsOutOfOrder() throws Exception {
+        k3po.join();
+    }
 }

@@ -62,4 +62,12 @@ public class BrowsersIT {
     public void serverShouldSendPaddingInDownstream() throws Exception {
         k3po.join();
     }
+
+    @Test
+    @Specification({
+        "client.send.ksn.parameter/request",
+        "client.send.ksn.parameter/response" })
+    public void serverShouldReadRequestSequenceNumberFromQueryParameter() throws Exception {
+        k3po.join();
+    }
 }
