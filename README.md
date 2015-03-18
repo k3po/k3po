@@ -13,7 +13,7 @@
 
 [![Gitter](https://badges.gitter.im/JoinChat.svg)](https://gitter.im/k3po/k3po?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-K3PO is a network driver and language agnostic testing framework.  It is designed to be able to create arbitrary network traffic and behavior, and to certify whether a network endpoint behaves correctly when subject to that behavior.  
+K3PO is a network driver and language agnostic testing tool.  It is designed to be able to create arbitrary network traffic and behavior, and to certify whether a network endpoint behaves correctly when subject to that behavior.  
 
 The network behavior that the K3PO network driver creates is specified in a K3PO scripting language.  This language is described [here](https://github.com/k3po/k3po/wiki/Scripting-Language).  
 
