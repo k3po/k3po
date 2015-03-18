@@ -56,6 +56,7 @@ public class ReadVariableLengthBytesDecoder extends MessageDecoder {
     @Override
     protected Object decodeBuffer(ChannelBuffer buffer) throws Exception {
         final int resolvedLength;
+        // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
         synchronized (environment) {
             resolvedLength = (Integer) length.getValue(environment);
         }
@@ -69,6 +70,7 @@ public class ReadVariableLengthBytesDecoder extends MessageDecoder {
         } else {
             byte[] bytes = new byte[resolvedLength];
             buffer.readBytes(bytes, 0, resolvedLength);
+            // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
             synchronized (environment) {
                 environment.getELResolver().setValue(environment, null, captureName, bytes);
             }

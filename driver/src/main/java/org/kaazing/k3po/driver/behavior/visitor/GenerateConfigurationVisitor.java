@@ -236,6 +236,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         ExpressionContext environment = propertyNode.getExpressionContext();
         Object value = propertyValue.accept(new GeneratePropertyValueVisitor(), environment);
         ELResolver resolver = environment.getELResolver();
+        // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
         synchronized (environment) {
             resolver.setValue(environment, null, propertyName, value);
         }
@@ -252,6 +253,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         @Override
         public Object visit(AstExpressionValue value, ExpressionContext environment) throws Exception {
+            // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
             synchronized (environment) {
                 return value.getValue().getValue(environment);
             }

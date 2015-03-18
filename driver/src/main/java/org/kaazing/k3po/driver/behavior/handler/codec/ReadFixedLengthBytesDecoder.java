@@ -62,6 +62,7 @@ public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
             buffer.readSlice(length);
         } else {
             T value = readBuffer(buffer);
+            // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
             synchronized (environment) {
                 environment.getELResolver().setValue(environment, null, captureName, value);
             }
@@ -84,6 +85,7 @@ public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
             buffer.readSlice(length);
         } else {
             T value = readBuffer(buffer);
+            // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
             synchronized (environment) {
                 environment.getELResolver().setValue(environment, null, captureName, value);
             }

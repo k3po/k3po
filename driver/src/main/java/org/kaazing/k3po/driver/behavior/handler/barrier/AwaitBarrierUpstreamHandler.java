@@ -73,6 +73,7 @@ public class AwaitBarrierUpstreamHandler extends AbstractBarrierHandler implemen
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
                 if (future.isSuccess()) {
+                    // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
                     synchronized (ctx) {
                         Queue<ChannelEvent> pending = queue;
                         queue = null;
@@ -97,9 +98,10 @@ public class AwaitBarrierUpstreamHandler extends AbstractBarrierHandler implemen
         // while handler future not complete, queue channel events
         ChannelFuture handlerFuture = getHandlerFuture();
         /*
-         * Note that we are synchronizing on the channel context because there
-         * exists a race when de-queueing the events.
+         * Note that we are synchronizing on the channel context because there exists a race when de-queueing the
+         * events.
          */
+        // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
         synchronized (ctx) {
             if (!handlerFuture.isDone()) {
                 queue.add(evt);

@@ -55,6 +55,7 @@ public class ReadExpressionDecoder extends MessageDecoder {
             LOGGER.debug("Getting value to read from " + environment);
         }
         final byte[] expected;
+        // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
         synchronized (environment) {
             expected = (byte[]) expression.getValue(environment);
         }
