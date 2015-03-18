@@ -58,7 +58,7 @@ public class TcpClientIT {
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
         // send hello world
-        writer.write("hello");
+        writer.write("hello world");
         writer.flush();
 
         // read hello client or fail
