@@ -36,7 +36,6 @@ public class Configuration {
     private List<ClientBootstrap> clientBootstraps;
     private List<ChannelPipeline> pipelines;
     private Set<Barrier> barriers;
-    private org.kaazing.k3po.lang.el.SetExpressionValueContext setExpresionContext;
     private ExpressionFactory factory;
     private Map<RegionInfo, List<ChannelPipeline>> serverPipelinesByRegion;
 
