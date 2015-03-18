@@ -1,0 +1,9 @@
+accept http://localhost:8080/
+accepted
+connected
+read method "GET"
+
+write status "426" "Upgrade Required"
+write header "Upgrade" "WebSocket"
+write flush
+

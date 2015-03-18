@@ -1,0 +1,12 @@
+accept tcp://localhost:8081
+accepted
+connected
+read "POST /backend\r\n"
+read "Host: localhost:8081\r\n"
+read "Content-Length: " "17" "\r\n"
+read "\r\n"
+read "This is some data"
+close
+closed
+
+

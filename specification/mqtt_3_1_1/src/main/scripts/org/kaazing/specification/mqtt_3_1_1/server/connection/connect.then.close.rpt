@@ -1,0 +1,44 @@
+accept tcp://127.0.0.1:1883
+accepted
+connected
+
+# CONNECT
+read [0x10]                              # MQTT Control Packet type(1)
+read [0x12]                              # Remaining Length
+read [0x00 0x04]                         # Protocol Name Length
+read "MQTT"                              # Protocol Name
+read [0x04]                              # The value of the Protocol Level field for the version 3.1.1 of the protocol is 4 (0x04)
+
+                                         # Connect Flags
+                                         # User Name Flag(0)
+                                         # Password Flag(0)
+                                         # Will Retain(0)
+                                         # Will QoS(00)
+                                         # Will Flag(0)
+                                         # Clean Session(1)
+read [0x02]                              # Reserved(0)
+
+read short                               # Keep Alive
+
+                                         # Payload
+read (short:clientIdLen)                 # Client Identifier Length
+read ${clientIdLen}                      # Client Identifier
+
+# CONNACK
+write [0x20]                             # MQTT Control Packet type(2)
+write [0x02]                             # Remaining Length
+
+                                         # Connect Acknowledge Flags
+write [0x00]                             # Session Present Flag(0)
+
+                                         # Connect Return code
+write [0x00]                             # Connection Accepted
+
+
+# DISCONNECT
+read [0xE0]                              # MQTT Control Packet type(14)
+read [0x00]                              # Remaining Length
+
+# Server MUST close the Network Connection
+close
+closed

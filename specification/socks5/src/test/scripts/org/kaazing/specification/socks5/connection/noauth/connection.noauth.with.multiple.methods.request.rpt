@@ -1,0 +1,25 @@
+connect tcp://localhost:1080
+connected
+
+## Write the request bytes for connecting with no-authentication
+# version: SOCKS v5
+write [0x05]
+
+# number of method: 1
+write [0x01]
+
+# method: no authentication required, GSSAPI, username/password
+write [0x00 0x01 0x02]
+
+
+## Read the response, expect success
+# version: SOCKS v5
+read [0x05]
+
+# selected method: no authentication required
+read [0x00]
+
+# connection established
+
+close
+closed

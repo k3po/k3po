@@ -1,0 +1,11 @@
+accept tcp://localhost:8080
+accepted
+connected
+
+read "GET http://localhost:8080/ HTTP/1.1" "\r\n"
+read "Host: anotherhost:8080" "\r\n\"
+read "\r\n"
+
+write "HTTP/1.1 400 BAD REQUEST" "\r\n"
+write "\r\n"
+

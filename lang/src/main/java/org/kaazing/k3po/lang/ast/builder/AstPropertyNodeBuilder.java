@@ -23,6 +23,7 @@ import org.kaazing.k3po.lang.ast.AstScriptNode;
 import org.kaazing.k3po.lang.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.ast.value.AstLiteralTextValue;
+import org.kaazing.k3po.lang.el.ExpressionContext;
 
 public class AstPropertyNodeBuilder extends AbstractAstNodeBuilder<AstPropertyNode, AstPropertyNode> {
 
@@ -45,8 +46,8 @@ public class AstPropertyNodeBuilder extends AbstractAstNodeBuilder<AstPropertyNo
         return this;
     }
 
-    public AstPropertyNodeBuilder setPropertyValue(ValueExpression expression) {
-        node.setPropertyValue(new AstExpressionValue(expression));
+    public AstPropertyNodeBuilder setPropertyValue(ValueExpression expression, ExpressionContext environment) {
+        node.setPropertyValue(new AstExpressionValue(expression, environment));
         return this;
     }
 
@@ -81,8 +82,8 @@ public class AstPropertyNodeBuilder extends AbstractAstNodeBuilder<AstPropertyNo
             return this;
         }
 
-        public ScriptNested<R> setOptionValue(ValueExpression expression) {
-            node.setPropertyValue(new AstExpressionValue(expression));
+        public ScriptNested<R> setOptionValue(ValueExpression expression,  ExpressionContext environment) {
+            node.setPropertyValue(new AstExpressionValue(expression, environment));
             return this;
         }
 

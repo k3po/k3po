@@ -1,0 +1,12 @@
+connect tcp://localhost:8080
+connected
+
+write "POST / HTTP/1.1" "\r\n"
+write "Host: localhost:8080\r\n"
+write "Content-length: 11" "\r\n"
+write "Content-length: 200" "\r\n"
+write "\r\n"
+write "hello world"
+
+read "HTTP/1.1 400"
+

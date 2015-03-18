@@ -26,6 +26,7 @@ import org.kaazing.k3po.lang.ast.matcher.AstExpressionMatcher;
 import org.kaazing.k3po.lang.ast.matcher.AstFixedLengthBytesMatcher;
 import org.kaazing.k3po.lang.ast.matcher.AstRegexMatcher;
 import org.kaazing.k3po.lang.ast.matcher.AstVariableLengthBytesMatcher;
+import org.kaazing.k3po.lang.el.ExpressionContext;
 import org.kaazing.k3po.lang.regex.NamedGroupPattern;
 
 public class AstReadNodeBuilder extends AbstractAstStreamableNodeBuilder<AstReadValueNode, AstReadValueNode> {
@@ -34,8 +35,8 @@ public class AstReadNodeBuilder extends AbstractAstStreamableNodeBuilder<AstRead
         this(new AstReadValueNode());
     }
 
-    public AstReadNodeBuilder addExactBytes(byte[] exactBytes) {
-        node.addMatcher(new AstExactBytesMatcher(exactBytes));
+    public AstReadNodeBuilder addExactBytes(byte[] exactBytes, ExpressionContext environment) {
+        node.addMatcher(new AstExactBytesMatcher(exactBytes, environment));
         return this;
     }
 
@@ -44,8 +45,8 @@ public class AstReadNodeBuilder extends AbstractAstStreamableNodeBuilder<AstRead
         return this;
     }
 
-    public AstReadNodeBuilder addExpression(ValueExpression value) {
-        node.addMatcher(new AstExpressionMatcher(value));
+    public AstReadNodeBuilder addExpression(ValueExpression value, ExpressionContext environment) {
+        node.addMatcher(new AstExpressionMatcher(value, environment));
         return this;
     }
 
@@ -54,23 +55,23 @@ public class AstReadNodeBuilder extends AbstractAstStreamableNodeBuilder<AstRead
         return this;
     }
 
-    public AstReadNodeBuilder addFixedLengthBytes(int length, String captureName) {
-        node.addMatcher(new AstFixedLengthBytesMatcher(length, captureName));
+    public AstReadNodeBuilder addFixedLengthBytes(int length, String captureName, ExpressionContext environment) {
+        node.addMatcher(new AstFixedLengthBytesMatcher(length, captureName, environment));
         return this;
     }
 
-    public AstReadNodeBuilder addRegex(NamedGroupPattern pattern) {
-        node.addMatcher(new AstRegexMatcher(pattern));
+    public AstReadNodeBuilder addRegex(NamedGroupPattern pattern, ExpressionContext environment) {
+        node.addMatcher(new AstRegexMatcher(pattern, environment));
         return this;
     }
 
-    public AstReadNodeBuilder addVariableLengthBytes(ValueExpression length) {
-        node.addMatcher(new AstVariableLengthBytesMatcher(length));
+    public AstReadNodeBuilder addVariableLengthBytes(ValueExpression length, ExpressionContext environment) {
+        node.addMatcher(new AstVariableLengthBytesMatcher(length, environment));
         return this;
     }
 
-    public AstReadNodeBuilder addVariableLengthBytes(ValueExpression length, String captureName) {
-        node.addMatcher(new AstVariableLengthBytesMatcher(length, captureName));
+    public AstReadNodeBuilder addVariableLengthBytes(ValueExpression length, String captureName, ExpressionContext environment) {
+        node.addMatcher(new AstVariableLengthBytesMatcher(length, captureName, environment));
         return this;
     }
 
@@ -90,8 +91,8 @@ public class AstReadNodeBuilder extends AbstractAstStreamableNodeBuilder<AstRead
             super(new AstReadValueNode(), builder);
         }
 
-        public StreamNested<R> addExactBytes(byte[] exactBytes) {
-            node.addMatcher(new AstExactBytesMatcher(exactBytes));
+        public StreamNested<R> addExactBytes(byte[] exactBytes, ExpressionContext environment) {
+            node.addMatcher(new AstExactBytesMatcher(exactBytes, environment));
             return this;
         }
 
@@ -100,8 +101,8 @@ public class AstReadNodeBuilder extends AbstractAstStreamableNodeBuilder<AstRead
             return this;
         }
 
-        public StreamNested<R> addExpression(ValueExpression value) {
-            node.addMatcher(new AstExpressionMatcher(value));
+        public StreamNested<R> addExpression(ValueExpression value, ExpressionContext environment) {
+            node.addMatcher(new AstExpressionMatcher(value, environment));
             return this;
         }
 
@@ -110,23 +111,24 @@ public class AstReadNodeBuilder extends AbstractAstStreamableNodeBuilder<AstRead
             return this;
         }
 
-        public StreamNested<R> addFixedLengthBytes(int length, String captureName) {
-            node.addMatcher(new AstFixedLengthBytesMatcher(length, captureName));
+        public StreamNested<R> addFixedLengthBytes(int length, String captureName, ExpressionContext environment) {
+            node.addMatcher(new AstFixedLengthBytesMatcher(length, captureName, environment));
             return this;
         }
 
-        public StreamNested<R> addRegex(NamedGroupPattern pattern) {
-            node.addMatcher(new AstRegexMatcher(pattern));
+        public StreamNested<R> addRegex(NamedGroupPattern pattern, ExpressionContext environment) {
+            node.addMatcher(new AstRegexMatcher(pattern, environment));
             return this;
         }
 
-        public StreamNested<R> addVariableLengthBytes(ValueExpression length) {
-            node.addMatcher(new AstVariableLengthBytesMatcher(length));
+        public StreamNested<R> addVariableLengthBytes(ValueExpression length, ExpressionContext environment) {
+            node.addMatcher(new AstVariableLengthBytesMatcher(length, environment));
             return this;
         }
 
-        public StreamNested<R> addVariableLengthBytes(ValueExpression length, String captureName) {
-            node.addMatcher(new AstVariableLengthBytesMatcher(length, captureName));
+        public StreamNested<R> addVariableLengthBytes(ValueExpression length, String captureName, ExpressionContext environment)
+        {
+            node.addMatcher(new AstVariableLengthBytesMatcher(length, captureName, environment));
             return this;
         }
 

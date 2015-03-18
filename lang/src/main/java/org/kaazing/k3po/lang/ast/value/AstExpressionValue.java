@@ -22,20 +22,27 @@ import static org.kaazing.k3po.lang.ast.util.AstUtil.equivalent;
 import javax.el.ValueExpression;
 
 import org.kaazing.k3po.lang.ast.AstRegion;
+import org.kaazing.k3po.lang.el.ExpressionContext;
 
 public final class AstExpressionValue extends AstValue {
 
     private final ValueExpression value;
+    private final ExpressionContext environment;
 
-    public AstExpressionValue(ValueExpression value) {
+    public AstExpressionValue(ValueExpression value, ExpressionContext environment) {
         if (value == null) {
             throw new NullPointerException("value");
         }
         this.value = value;
+        this.environment = environment;
     }
 
     public ValueExpression getValue() {
         return value;
+    }
+
+    public ExpressionContext getEnvironment() {
+        return environment;
     }
 
     @Override
@@ -62,4 +69,5 @@ public final class AstExpressionValue extends AstValue {
     protected void describe(StringBuilder buf) {
         buf.append(format("(%s)%s", value.getExpectedType().getSimpleName(), value.getExpressionString()));
     }
+
 }

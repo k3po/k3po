@@ -247,7 +247,7 @@ public class NamedGroupPatternTest {
     }
 
     @Test(
-            expected = PatternSyntaxException.class)
+        expected = PatternSyntaxException.class)
     public void shouldFailGroupNamesMismatch() throws Exception {
         String scriptText = format("(?<left>.*)\\(:(.*)");
         NamedGroupPattern.compile(scriptText);
@@ -274,9 +274,10 @@ public class NamedGroupPatternTest {
 
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
+        ExpressionContext environment = new ExpressionContext();
         // @formatter:off
         AstReadValueNode expected = new AstReadNodeBuilder()
-                .addRegex(NamedGroupPattern.compile("hello\\:^foo.*\\n"))
+                .addRegex(NamedGroupPattern.compile("hello\\:^foo.*\\n"), environment)
                 .done();
         // @formatter:on
 
@@ -292,7 +293,8 @@ public class NamedGroupPatternTest {
         AstRegexMatcher actual = parser.parseWithStrategy(scriptFragment, REGEX_MATCHER);
 
         NamedGroupPattern regex = NamedGroupPattern.compile("[a-f\\d]{8}(-[a-f\\d]{4}){3}-[a-f\\d]{12}");
-        AstRegexMatcher expected = new AstRegexMatcher(regex);
+        ExpressionContext environment = new ExpressionContext();
+        AstRegexMatcher expected = new AstRegexMatcher(regex, environment);
 
         assertEquals(expected, actual);
     }
@@ -301,7 +303,8 @@ public class NamedGroupPatternTest {
     public void shouldParseReadMult() throws Exception {
         String scriptFragment =
                 "read \"Hello\" [0x01 0x02 0x03] /.*\\n/ /(?<cap1>.*)\\n/ ${var}  [0..64] ([0..64]:cap2)"
-              + "[0..${var}] [0..${var-1}] ([0..${var}]:cap3) ([0..${var-1}]:cap4) (byte:b) (short:s) (int:i) (long:l)";
+                        + "[0..${var}] [0..${var-1}] ([0..${var}]:cap3) ([0..${var-1}]:cap4)"
+                        + "(byte:b) (short:s) (int:i) (long:l)";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
@@ -309,31 +312,32 @@ public class NamedGroupPatternTest {
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
 
+        ExpressionContext environment = new ExpressionContext();
         // @formatter:off
         AstReadValueNode expected = new AstReadNodeBuilder()
                 .addExactText("Hello")
-                .addExactBytes(new byte[] { 0x01, (byte) 0x02, (byte) 0x03 })
-                .addRegex(NamedGroupPattern.compile(".*\\n"))
-                .addRegex(NamedGroupPattern.compile("(?<cap1>.*)\\n"))
+                .addExactBytes(new byte[] { 0x01, (byte) 0x02, (byte) 0x03 }, environment)
+                .addRegex(NamedGroupPattern.compile(".*\\n"), environment)
+                .addRegex(NamedGroupPattern.compile("(?<cap1>.*)\\n"), environment)
                 .addExpression(
                         factory.createValueExpression(context, "${var}",
-                                byte[].class))
+                                byte[].class), environment)
                 .addFixedLengthBytes(64)
-                .addFixedLengthBytes(64, "cap2")
+                .addFixedLengthBytes(64, "cap2", environment)
                 .addVariableLengthBytes(
                         factory.createValueExpression(context, "${var}",
-                                Integer.class))
+                                Integer.class), environment)
                 .addVariableLengthBytes(
                         factory.createValueExpression(context, "${var-1}",
-                                Integer.class))
+                                Integer.class), environment)
                 .addVariableLengthBytes(
                         factory.createValueExpression(context, "${var}",
-                                Integer.class), "cap3")
+                                Integer.class), "cap3", environment)
                 .addVariableLengthBytes(
                         factory.createValueExpression(context, "${var-1}",
-                                Integer.class), "cap4")
-                .addFixedLengthBytes(1, "b").addFixedLengthBytes(2, "s")
-                .addFixedLengthBytes(4, "i").addFixedLengthBytes(8, "l").done();
+                                Integer.class), "cap4", environment)
+                .addFixedLengthBytes(1, "b", environment).addFixedLengthBytes(2, "s", environment)
+                .addFixedLengthBytes(4, "i", environment).addFixedLengthBytes(8, "l", environment).done();
         // @formatter:on
 
         assertEquals(expected, actual);
@@ -358,14 +362,18 @@ public class NamedGroupPatternTest {
         ValueExpression value5 = factory.createValueExpression(context, "${var-1}", Integer.class);
 
         AstReadValueNode expected = new AstReadValueNode();
+        ExpressionContext environment = new ExpressionContext();
         expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactTextMatcher("Hello"), new AstExactBytesMatcher(
-                new byte[]{0x01, (byte) 0x02, (byte) 0x03}), new AstRegexMatcher(NamedGroupPattern.compile(".*\\n")),
-                new AstRegexMatcher(NamedGroupPattern.compile("(?<cap1>.*)\\n")), new AstExpressionMatcher(value),
-                new AstFixedLengthBytesMatcher(64), new AstFixedLengthBytesMatcher(64, "cap2"),
-                new AstVariableLengthBytesMatcher(value2), new AstVariableLengthBytesMatcher(value3),
-                new AstVariableLengthBytesMatcher(value4, "cap3"), new AstVariableLengthBytesMatcher(value5, "cap4"),
-                new AstByteLengthBytesMatcher("b"), new AstShortLengthBytesMatcher("s"), new AstIntLengthBytesMatcher("i"),
-                new AstLongLengthBytesMatcher("l")));
+                new byte[]{0x01, (byte) 0x02, (byte) 0x03}, environment), new AstRegexMatcher(
+                NamedGroupPattern.compile(".*\\n"), environment),
+                new AstRegexMatcher(NamedGroupPattern.compile("(?<cap1>.*)\\n"), environment), new AstExpressionMatcher(value,
+                        environment), new AstFixedLengthBytesMatcher(64),
+                new AstFixedLengthBytesMatcher(64, "cap2", environment), new AstVariableLengthBytesMatcher(value2, environment),
+                new AstVariableLengthBytesMatcher(value3, environment), new AstVariableLengthBytesMatcher(value4, "cap3",
+                        environment),
+                new AstVariableLengthBytesMatcher(value5, "cap4", environment), new AstByteLengthBytesMatcher("b", environment),
+                new AstShortLengthBytesMatcher("s", environment), new AstIntLengthBytesMatcher("i", environment),
+                new AstLongLengthBytesMatcher("l", environment)));
 
         assertEquals(expected, actual);
     }

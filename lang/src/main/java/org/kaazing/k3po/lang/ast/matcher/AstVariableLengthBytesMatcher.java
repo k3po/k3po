@@ -22,19 +22,22 @@ import static org.kaazing.k3po.lang.ast.util.AstUtil.equivalent;
 import javax.el.ValueExpression;
 
 import org.kaazing.k3po.lang.ast.AstRegion;
+import org.kaazing.k3po.lang.el.ExpressionContext;
 
 public class AstVariableLengthBytesMatcher extends AstValueMatcher {
 
     private final ValueExpression length;
     private final String captureName;
+    private final ExpressionContext environment;
 
-    public AstVariableLengthBytesMatcher(ValueExpression length) {
-        this(length, null);
+    public AstVariableLengthBytesMatcher(ValueExpression length, ExpressionContext environment) {
+        this(length, null, environment);
     }
 
-    public AstVariableLengthBytesMatcher(ValueExpression length, String captureName) {
+    public AstVariableLengthBytesMatcher(ValueExpression length, String captureName, ExpressionContext environment) {
         this.length = length;
         this.captureName = captureName;
+        this.environment = environment;
     }
 
     public ValueExpression getLength() {
@@ -80,9 +83,12 @@ public class AstVariableLengthBytesMatcher extends AstValueMatcher {
     protected void describe(StringBuilder buf) {
         if (captureName != null) {
             buf.append(format("([0..%s]:%s)", length.getExpressionString(), captureName));
-        }
-        else {
+        } else {
             buf.append(format("[0..%s]", length.getExpressionString()));
         }
+    }
+
+    public ExpressionContext getEnvironment() {
+        return environment;
     }
 }

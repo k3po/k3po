@@ -1,0 +1,58 @@
+connect http://localhost:8000/connections
+connected
+
+write method "POST"
+write header "Accept" "application/octet-stream"
+write header content-length
+write header "X-Protocol" "bbosh/1.0"
+write header "X-Accept-Strategy" "long-polling;interval=30s;requests=5"
+write close
+
+read status "201" "Created"
+read header "Cache-Control" "no-cache"
+read header "Content-Length" "0"
+read header "Content-Type" "application/octet-stream"
+read header "Location" "/connections/ac32fb3844fe11e4a183164230d1df67"
+read header "X-Strategy" "long-polling;interval=30s;requests=2"
+read closed
+read notify CONNECT_ONE
+
+connect http://localhost:8000/connections/ac32fb3844fe11e4a183164230d1df67
+connected
+
+write await CONNECT_ONE
+write method "PUT"
+write header "Accept" "application/octet-stream"
+write header "Content-Type" "application/octet-stream"
+write header content-length
+write header "X-Sequence-No" "1"
+write "Hello,"
+write close
+
+read status "200" "OK"
+# TODO: move this notify after write close above when we determine how to predictably sequence HTTP request *arrival*
+read notify CONNECT_TWO
+read header "Cache-Control" "no-cache"
+read header "Content-Type" "application/octet-stream"
+read header "Content-Length" "6"
+read "Hello,"
+read closed
+
+connect http://localhost:8000/connections/ac32fb3844fe11e4a183164230d1df67
+connected
+
+write await CONNECT_TWO
+write method "PUT"
+write header "Accept" "application/octet-stream"
+write header "Content-Type" "application/octet-stream"
+write header content-length
+write header "X-Sequence-No" "2"
+write " world"
+write close
+
+read status "404" "Closed"
+read header "Cache-Control" "no-cache"
+read header "Content-Type" "application/octet-stream"
+read header "Content-Length" "6"
+read " world"
+read closed

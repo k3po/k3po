@@ -18,10 +18,12 @@ package org.kaazing.k3po.lang.ast.matcher;
 
 import static java.lang.String.format;
 
+import org.kaazing.k3po.lang.el.ExpressionContext;
+
 public final class AstIntLengthBytesMatcher extends AstFixedLengthBytesMatcher {
 
-    public AstIntLengthBytesMatcher(String captureName) {
-        super(Integer.SIZE / Byte.SIZE, captureName);
+    public AstIntLengthBytesMatcher(String captureName, ExpressionContext environment) {
+        super(Integer.SIZE / Byte.SIZE, captureName, environment);
     }
 
     @Override

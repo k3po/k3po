@@ -46,7 +46,7 @@ public class HttpIT {
         "http.connect.header.missing"
     })
     public void shouldNotAcceptHeaderWhenExpectedMissing() throws Exception {
-        k3po.join();
+        k3po.finish();
         expectedExceptions.expect(AssertionError.class);
     }
 
@@ -56,7 +56,7 @@ public class HttpIT {
         "http.echo.long.request.payload/response"
     })
     public void shouldEchoLongRequestPayload() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -65,7 +65,7 @@ public class HttpIT {
         "tcp.connect.header.with.multiple.tokens" })
     public void shouldAcceptHeaderWithMultipleTokens() throws Exception {
 
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -74,7 +74,7 @@ public class HttpIT {
         "tcp.connect.write.parameter.with.multiple.tokens" })
     public void shouldAcceptReadParameterWithMultipleTokens() throws Exception {
 
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -83,7 +83,7 @@ public class HttpIT {
         "tcp.accept.read.parameter.with.multiple.tokens" })
     public void shouldAcceptWriteParameterWithMultipleTokens() throws Exception {
 
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -92,7 +92,7 @@ public class HttpIT {
         "tcp.connect.get.request.with.no.content.on.response" })
     public void shouldReceiveGetRequestAndProvideResponse() throws Exception {
 
-        k3po.join();
+        k3po.finish();
 
     }
 
@@ -102,7 +102,7 @@ public class HttpIT {
         "tcp.connect.get.request.with.content.on.response" })
     public void shouldReceiveGetRequestAndProvideResponseWithContent() throws Exception {
 
-        k3po.join();
+        k3po.finish();
 
     }
 
@@ -111,7 +111,7 @@ public class HttpIT {
         "http.connect.get.request.with.no.content.on.response",
         "tcp.accept.get.request.with.no.content.on.response" })
     public void shouldSendGetRequestAndReceiveResponseWithNoContent() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -119,7 +119,7 @@ public class HttpIT {
         "http.connect.get.request.with.content.on.response",
         "tcp.accept.get.request.with.content.on.response" })
     public void shouldSendGetRequestAndReceiveResponseWithContent() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -127,7 +127,7 @@ public class HttpIT {
         "http.accept.websocket.handshake",
         "tcp.connect.websocket.handshake" })
     public void shouldAcceptWebsocketHandshake() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -135,7 +135,7 @@ public class HttpIT {
         "http.accept.websocket.handshake.then.server.close",
         "http.connect.websocket.handshake.then.server.close" })
     public void shouldAcceptWebsocketHandshakeThenServerClose() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -143,7 +143,7 @@ public class HttpIT {
         "http.connect.websocket.handshake",
         "tcp.accept.websocket.handshake" })
     public void shouldConnectWebsocketHandshake() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -151,7 +151,7 @@ public class HttpIT {
         "http.accept.post.with.chunking",
         "tcp.connect.post.with.chunking" })
     public void shouldAcceptPostMessageWithChunking() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -159,7 +159,7 @@ public class HttpIT {
         "http.connect.post.with.chunking",
         "tcp.accept.post.with.chunking" })
     public void shouldConnectPostMessageWithChunking() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -167,7 +167,7 @@ public class HttpIT {
         "http.accept.response.with.chunking",
         "tcp.connect.response.with.chunking" })
     public void shouldAcceptResponseWithChunking() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -175,7 +175,7 @@ public class HttpIT {
         "http.connect.response.with.chunking",
         "tcp.accept.response.with.chunking" })
     public void shouldConnectResponseWithChunking() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -183,7 +183,7 @@ public class HttpIT {
         "http.connect.connection.close.response",
         "tcp.accept.connection.close.response" })
     public void shouldConnectConnectionCloseResponse() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -191,7 +191,7 @@ public class HttpIT {
         "http.accept.connection.close.response",
         "tcp.connect.connection.close.response" })
     public void shouldAcceptConnectionCloseResponse() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -199,7 +199,7 @@ public class HttpIT {
         "http.accept.two.http.200",
         "tcp.connect.two.http.200.on.different.streams" })
     public void shouldAcceptMultipleHttpOnDifferentTcp() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -207,7 +207,7 @@ public class HttpIT {
         "http.accept.two.http.200",
         "tcp.connect.two.http.200.on.same.streams" })
     public void shouldAcceptMultipleHttpOnSameTcp() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -215,7 +215,7 @@ public class HttpIT {
         "specify.only.part.of.http.response/request",
         "specify.only.part.of.http.response/response" })
     public void specifyOnlyPartOfHttpResponse() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
     @Test
@@ -223,7 +223,7 @@ public class HttpIT {
         "read.content.length.via.regex/request",
         "read.content.length.via.regex/response" })
     public void testReadContentLengthViaAVariable() throws Exception {
-        k3po.join();
+        k3po.finish();
     }
 
 }

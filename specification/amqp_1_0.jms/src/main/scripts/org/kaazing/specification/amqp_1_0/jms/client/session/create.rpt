@@ -1,0 +1,59 @@
+connect tcp://localhost:5672
+connected
+
+                                                 # Protocol-Header 1-0-0
+write "AMQP" [0x00 0x01 0x00 0x00]               # version: 1.0.0
+
+                                                 # open
+write [0x00 0x00 0x00 0x21]                      # length: 33
+write [0x02]                                     # data offset: 2
+write [0x00]                                     # type: AMQP (0)
+write [0x00 0x00]                                # channel: 0
+write [0x00 0x53 0x10]                           # performative: open
+write [0xc0 0x14 0x04]                           # arguments: size, count
+write [0xa1 0x08] "clientID"                     #   container-id type, length, "clientID"
+write [0x40]                                     #   hostname: null
+write [0x70 0x00 0x01 0x00 0x00]                 #   max-frame-size: 65536
+write [0x60 0x00 0xff]                           #   channel-max: unknown (255)
+
+                                                 # Protocol-Header 1-0-0
+read "AMQP" [0x00 0x01 0x00 0x00]                # version: 1.0.0
+
+                                                 # open
+read [0x00 0x00 0x00 0x17]                       # length: 23
+read [0x02]                                      # data offset: 2
+read [0x00]                                      # type: AMQP (0)
+read [0x00 0x00]                                 # channel: 0
+read [0x00 0x53 0x10]                            # performative: open
+read [0xc0 0x0a 0x03]                            # arguments: size, count
+read [0xa1 0x00]                                 #   container-id type, length, ""
+read [0xa1 0x00]                                 #   hostname: ""
+read [0x70 0x00 0x10 0x00 0x00]                  #   max-frame-size: 1048576
+
+                                                 # begin
+write [0x00 0x00 0x00 0x1f]                      # length: 31
+write [0x02]                                     # data offset: 2
+write [0x00]                                     # type: AMQP (0)
+write [0x00 0x00]                                # channel: 0
+write [0x00 0x53 0x11]                           # performative: begin
+write [0xc0 0x12 0x05]                           # arguments: size, count
+write [0x40]                                     #   remote channel: null
+write [0x43]                                     #   next-outgoing-id: 0
+write [0x70 0x00 0x00 0x08 0x00]                 #   incoming-window: 2048
+write [0x70 0x00 0x00 0x08 0x00]                 #   outgoing-window: 2048
+write [0x70 0xff 0xff 0xff 0xff]                 #   handle-max: 4294967295
+
+                                                 # begin
+read [0x00 0x00 0x00 0x1a]                       # length: 26
+read [0x02]                                      # data offset: 2
+read [0x00]                                      # type: AMQP (0)
+read [0x00 0x00]                                 # channel: 0
+read [0x00 0x53 0x11]                            # performative: begin
+read [0xc0 0x0d 0x05]                            # arguments: size, count
+read [0x00 0x00]                                 #   remote channel: 0
+read [0x52 0x40]                                 #   next-outgoing-id: 1
+read [0x43]                                      #   incoming-window: 0
+read [0x43]                                      #   outgoing-window: 0
+read [0x70 0x00 0x00 0x04 0x00]                  #   handle-max: 1024
+
+closed

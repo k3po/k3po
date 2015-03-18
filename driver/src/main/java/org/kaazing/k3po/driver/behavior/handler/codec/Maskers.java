@@ -74,13 +74,21 @@ public final class Maskers {
 
         @Override
         public ChannelBuffer applyMask(ChannelBuffer buffer) throws Exception {
-            byte[] maskingKey = (byte[]) expression.getValue(environment);
+            final byte[] maskingKey;
+            // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
+            synchronized (environment) {
+                maskingKey = (byte[]) expression.getValue(environment);
+            }
             return applyMask(buffer, maskingKey);
         }
 
         @Override
         public ChannelBuffer undoMask(ChannelBuffer buffer) throws Exception {
-            byte[] maskingKey = (byte[]) expression.getValue(environment);
+            final byte[] maskingKey;
+            // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
+            synchronized (environment) {
+                maskingKey = (byte[]) expression.getValue(environment);
+            }
             return undoMask(buffer, maskingKey);
         }
     }

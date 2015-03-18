@@ -65,7 +65,6 @@ public class ReadRegexDecoder extends MessageDecoder {
         this(newSequential(0, 0), pattern, charset, environment);
     }
 
-
     private Object decodeBuffer(final ChannelBuffer buffer, boolean isLast) throws Exception {
 
         final ChannelBuffer observedBytes = buffer.slice();
@@ -99,7 +98,10 @@ public class ReadRegexDecoder extends MessageDecoder {
     private void captureGroups(NamedGroupMatcher matcher) {
         for (String captureName : matcher.groupNames()) {
             String captured = matcher.group(captureName);
-            environment.getELResolver().setValue(environment, null, captureName, captured);
+            // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
+            synchronized (environment) {
+                environment.getELResolver().setValue(environment, null, captureName, captured);
+            }
 
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug(format("Setting value for ${%s} to %s", captureName, captured));

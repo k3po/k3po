@@ -1,0 +1,62 @@
+accept http://localhost:8080/path/;e/cb?query
+accepted
+connected
+
+read method "POST"
+read version "HTTP/1.1"
+read header "X-WebSocket-Version" "wseb-1.1"
+read header "X-Accept-Commands" "ping"
+read closed
+
+write status "201" "Created" 
+write version "HTTP/1.1"
+write header "X-WebSocket-Version" "wseb-1.1"
+write header "Content-Type" "text/plain;charset=utf-8"
+write header content-length
+
+write "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
+write "http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1\n"
+write notify CREATED
+write close
+
+# Downstream
+accept http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1
+accepted
+connected
+
+read await CREATED
+read method "GET"
+read version "HTTP/1.1"
+read closed
+
+write status "200" "OK"
+write version "HTTP/1.1"
+write header "Content-Type" "application/octet-stream"
+write header "Connection" "close"
+write flush
+
+write await INVALID_PING_RECEIVED
+write [0x01 0x30 0x32 0xFF]
+write [0x01 0x30 0x31 0xFF]
+write close
+
+
+# Upstream
+accept http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh
+accepted
+connected
+
+read await CREATED
+read method "POST"
+read version "HTTP/1.1"
+read header "Content-Type" "application/octet-stream"
+
+read [0x89 0x01]
+read notify INVALID_PING_RECEIVED
+read [0x01 0x30 0x31 0xFF]
+read closed
+
+write status "200" "OK"
+write version "HTTP/1.1"
+write header content-length
+write close

@@ -29,8 +29,6 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.kaazing.k3po.driver.netty.bootstrap.ClientBootstrap;
 import org.kaazing.k3po.driver.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.lang.RegionInfo;
-import org.kaazing.k3po.lang.el.ExpressionContext;
-import org.kaazing.k3po.lang.el.SetExpressionValueContext;
 
 public class Configuration {
 
@@ -39,7 +37,6 @@ public class Configuration {
     private List<ChannelPipeline> pipelines;
     private Set<Barrier> barriers;
     private org.kaazing.k3po.lang.el.SetExpressionValueContext setExpresionContext;
-    private org.kaazing.k3po.lang.el.ExpressionContext expresionContext;
     private ExpressionFactory factory;
     private Map<RegionInfo, List<ChannelPipeline>> serverPipelinesByRegion;
 
@@ -61,28 +58,6 @@ public class Configuration {
             serverPipelinesByRegion.put(regionInfo, serverPipelines);
         }
         return serverPipelines;
-    }
-
-    public SetExpressionValueContext getSetExpressionContext() {
-        if (setExpresionContext == null) {
-            setExpresionContext = new SetExpressionValueContext();
-        }
-        return setExpresionContext;
-    }
-
-    public ExpressionContext getIntExpressionContext() {
-        return getSetExpressionContext().getIntegerContext();
-    }
-
-    public ExpressionContext getByteArrayExpressionContext() {
-        return getSetExpressionContext().getByteArrayContext();
-    }
-
-    public ExpressionContext getExpressionContext() {
-        if (expresionContext == null) {
-            expresionContext = new ExpressionContext();
-        }
-        return expresionContext;
     }
 
     public ExpressionFactory getExpressionFactory() {

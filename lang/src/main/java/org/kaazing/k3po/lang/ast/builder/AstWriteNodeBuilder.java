@@ -23,6 +23,7 @@ import org.kaazing.k3po.lang.ast.AstWriteValueNode;
 import org.kaazing.k3po.lang.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.ast.value.AstLiteralTextValue;
+import org.kaazing.k3po.lang.el.ExpressionContext;
 
 public class AstWriteNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWriteValueNode, AstWriteValueNode> {
 
@@ -40,8 +41,8 @@ public class AstWriteNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWri
         return this;
     }
 
-    public AstWriteNodeBuilder addExpression(ValueExpression value) {
-        node.addValue(new AstExpressionValue(value));
+    public AstWriteNodeBuilder addExpression(ValueExpression value, ExpressionContext environment) {
+        node.addValue(new AstExpressionValue(value, environment));
         return this;
     }
 
@@ -71,8 +72,8 @@ public class AstWriteNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWri
             return this;
         }
 
-        public StreamNested<R> addExpression(ValueExpression value) {
-            node.addValue(new AstExpressionValue(value));
+        public StreamNested<R> addExpression(ValueExpression value, ExpressionContext environment) {
+            node.addValue(new AstExpressionValue(value, environment));
             return this;
         }
 

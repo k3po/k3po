@@ -47,7 +47,6 @@ public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
 
     protected abstract T readBuffer(ChannelBuffer buffer);
 
-
     public int getLength() {
         return length;
     }
@@ -63,7 +62,10 @@ public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
             buffer.readSlice(length);
         } else {
             T value = readBuffer(buffer);
-            environment.getELResolver().setValue(environment, null, captureName, value);
+            // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
+            synchronized (environment) {
+                environment.getELResolver().setValue(environment, null, captureName, value);
+            }
 
             if (LOGGER.isDebugEnabled()) {
                 Object formatValue = (value instanceof byte[]) ? AstLiteralBytesValue.toString((byte[]) value) : value;
@@ -83,7 +85,10 @@ public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
             buffer.readSlice(length);
         } else {
             T value = readBuffer(buffer);
-            environment.getELResolver().setValue(environment, null, captureName, value);
+            // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
+            synchronized (environment) {
+                environment.getELResolver().setValue(environment, null, captureName, value);
+            }
 
             if (LOGGER.isDebugEnabled()) {
                 Object formatValue = (value instanceof byte[]) ? AstLiteralBytesValue.toString((byte[]) value) : value;

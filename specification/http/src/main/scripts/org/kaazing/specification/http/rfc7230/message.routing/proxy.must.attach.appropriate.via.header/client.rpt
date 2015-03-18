@@ -1,0 +1,8 @@
+# CLIENT
+connect http://localhost:8080/resource
+connected
+write method "GET"
+write header host
+write close
+read header "via" "1.1 nameOfProxy"
+

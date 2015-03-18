@@ -1,0 +1,8 @@
+connect http://localhost:8080/
+connected
+write method "GET"
+write version "HTTP/1.1"
+write header host
+
+read version "HTTP/1.1"
+

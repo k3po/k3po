@@ -42,7 +42,14 @@ public class WriteExpressionEncoder implements MessageEncoder {
     public ChannelBuffer encode() {
 
         final boolean isDebugEnabled = LOGGER.isDebugEnabled();
-        final byte[] value = (byte[]) expression.getValue(context);
+        if (isDebugEnabled) {
+            LOGGER.debug("Getting expression value to write from " + context);
+        }
+        final byte[] value;
+        // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
+        synchronized (context) {
+            value = (byte[]) expression.getValue(context);
+        }
         final ChannelBuffer result;
 
         if (value != null) {

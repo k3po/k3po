@@ -1,0 +1,9 @@
+accept http://localhost:8080/
+accepted
+connected
+read header "Transfer-Encoding" "Unknown"
+read closed
+write status "501" "Not Implemented"
+write header content-length
+write close
+

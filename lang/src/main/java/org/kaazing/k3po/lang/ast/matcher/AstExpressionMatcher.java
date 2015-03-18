@@ -22,16 +22,19 @@ import static org.kaazing.k3po.lang.ast.util.AstUtil.equivalent;
 import javax.el.ValueExpression;
 
 import org.kaazing.k3po.lang.ast.AstRegion;
+import org.kaazing.k3po.lang.el.ExpressionContext;
 
 public final class AstExpressionMatcher extends AstValueMatcher {
 
     private final ValueExpression value;
+    private final ExpressionContext environment;
 
-    public AstExpressionMatcher(ValueExpression value) {
+    public AstExpressionMatcher(ValueExpression value, ExpressionContext environment) {
         if (value == null) {
             throw new NullPointerException("value");
         }
         this.value = value;
+        this.environment = environment;
     }
 
     public ValueExpression getValue() {
@@ -61,5 +64,9 @@ public final class AstExpressionMatcher extends AstValueMatcher {
     @Override
     protected void describe(StringBuilder buf) {
         buf.append(format("(%s)%s", value.getExpectedType().getSimpleName(), value.getExpressionString()));
+    }
+
+    public ExpressionContext getEnvironment() {
+        return environment;
     }
 }
