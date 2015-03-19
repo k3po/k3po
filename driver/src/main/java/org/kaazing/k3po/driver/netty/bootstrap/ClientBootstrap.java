@@ -40,7 +40,7 @@ public class ClientBootstrap extends org.jboss.netty.bootstrap.ClientBootstrap {
     @Override
     public ChannelFuture connect(final SocketAddress localAddress, final SocketAddress remoteAddress) {
 
-        Object barrier = getOption("barrier");
+        final Object barrier = getOption("barrier");
         if (barrier == null) {
             return super.connect(localAddress, remoteAddress);
         } else {
@@ -85,6 +85,8 @@ public class ClientBootstrap extends org.jboss.netty.bootstrap.ClientBootstrap {
                                 connectedFuture.setSuccess();
                             }
                         });
+                    } else {
+                        connectedFuture.setFailure(new Exception("Barrier: " + barrier + " never completed"));
                     }
                 }
             });
