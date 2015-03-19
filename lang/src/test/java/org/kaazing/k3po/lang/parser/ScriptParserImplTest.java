@@ -1191,7 +1191,8 @@ public class ScriptParserImplTest {
         // @formatter:off
         String script =
                 "# tcp.client.connect-then-close\n" +
-                "connect http://localhost:8080/path?p1=v1&p2=v2\n when BARRIER\n" +
+                "connect await BARRIER\r\n" +
+                "connect http://localhost:8080/path?p1=v1&p2=v2\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";

@@ -41,7 +41,7 @@ acceptableNode
     ;
 
 connectNode
-    : k=ConnectKeyword connectURI=location ( WhenKeyword barrier=Name )? streamableNode+
+    : k=ConnectKeyword (AwaitKeyword barrier=Name ConnectKeyword)? connectURI=location  streamableNode+
     ;
 
 serverStreamableNode

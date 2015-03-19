@@ -81,7 +81,7 @@ public class AstConnectNode extends AstStreamNode {
         if (barrier == null) {
             sb.append(String.format("connect %s\n", location));
         } else {
-            sb.append(String.format("connect %s when %s\n", location, barrier));
+            sb.append(String.format("connect await %s\nconnect %s\n", barrier, location));
         }
     }
 
