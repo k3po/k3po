@@ -16,12 +16,24 @@
 
 package org.kaazing.k3po.driver.netty.bootstrap.http;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.net.URI;
+
 import javax.annotation.Resource;
 
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelPipelineException;
+import org.jboss.netty.channel.Channels;
+import org.kaazing.k3po.driver.behavior.Barrier;
 import org.kaazing.k3po.driver.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.netty.bootstrap.BootstrapFactorySpi;
 import org.kaazing.k3po.driver.netty.bootstrap.ClientBootstrap;
 import org.kaazing.k3po.driver.netty.bootstrap.ServerBootstrap;
+import org.kaazing.k3po.driver.netty.channel.ChannelAddress;
 
 public class HttpBootstrapFactorySpi extends BootstrapFactorySpi {
 
@@ -77,4 +89,5 @@ public class HttpBootstrapFactorySpi extends BootstrapFactorySpi {
     public void releaseExternalResources() {
         // ignore
     }
+
 }

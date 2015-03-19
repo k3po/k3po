@@ -54,4 +54,11 @@ public class BehaviorIT {
         k3po.finish();
     }
 
+    @Test
+    @TestSpecification({
+        "delayed.http.connect" })
+    public void testDelayedHttpClientConnect() throws Exception {
+        k3po.finish();
+    }
+
 }
