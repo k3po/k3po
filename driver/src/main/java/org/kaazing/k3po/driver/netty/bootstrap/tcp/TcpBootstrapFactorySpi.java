@@ -25,8 +25,14 @@ import java.util.concurrent.Executor;
 
 import javax.annotation.Resource;
 
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelPipelineException;
+import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.DefaultChannelFuture;
 import org.jboss.netty.channel.socket.ClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.ServerSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioClientBossPool;
@@ -35,6 +41,7 @@ import org.jboss.netty.channel.socket.nio.NioServerBossPool;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioWorkerPool;
 import org.jboss.netty.util.ExternalResourceReleasable;
+import org.kaazing.k3po.driver.behavior.Barrier;
 import org.kaazing.k3po.driver.executor.ExecutorServiceFactory;
 import org.kaazing.k3po.driver.netty.bootstrap.BootstrapFactorySpi;
 import org.kaazing.k3po.driver.netty.bootstrap.ClientBootstrap;
@@ -68,8 +75,7 @@ public final class TcpBootstrapFactorySpi extends BootstrapFactorySpi implements
     }
 
     /**
-     * Returns the name of the transport provided by factories using this
-     * service provider.
+     * Returns the name of the transport provided by factories using this service provider.
      */
     @Override
     public String getTransportName() {
@@ -111,12 +117,95 @@ public final class TcpBootstrapFactorySpi extends BootstrapFactorySpi implements
 
         return new ClientBootstrap(clientChannelFactory) {
             @Override
-            public ChannelFuture connect(SocketAddress localAddress, SocketAddress remoteAddress) {
-                InetSocketAddress localChannelAddress = toInetSocketAddress((ChannelAddress) localAddress);
-                InetSocketAddress remoteChannelAddress = toInetSocketAddress((ChannelAddress) remoteAddress);
-                return super.connect(localChannelAddress, remoteChannelAddress);
+            public ChannelFuture connect(final SocketAddress localAddress, final SocketAddress remoteAddress) {
+                final InetSocketAddress localChannelAddress = toInetSocketAddress((ChannelAddress) localAddress);
+                final InetSocketAddress remoteChannelAddress = toInetSocketAddress((ChannelAddress) remoteAddress);
+
+                Object barrier = getOption("barrier");
+                if (barrier == null) {
+                    return super.connect(localChannelAddress, remoteChannelAddress);
+                } else {
+                    // pulled code from super.connect in order to get access to the channel but not actually connect
+                    // until later
+                    if (localChannelAddress == null) {
+                        throw new NullPointerException("localAddress");
+                    }
+
+                    ChannelPipeline pipeline;
+                    try {
+                        pipeline = getPipelineFactory().getPipeline();
+                    } catch (Exception e) {
+                        throw new ChannelPipelineException("Failed to initialize a pipeline.", e);
+                    }
+
+                    // Set the options.
+                    final Channel ch = getFactory().newChannel(pipeline);
+                    boolean success = false;
+                    try {
+                        ch.getConfig().setOptions(getOptions());
+                        success = true;
+                    } finally {
+                        if (!success) {
+                            ch.close();
+                        }
+                    }
+
+                    // Bind.
+                    if (remoteChannelAddress != null) {
+                        ch.bind(remoteChannelAddress);
+                    }
+
+                    final ChannelFuture connectedFuture = Channels.future(ch, true);
+                    ((Barrier) barrier).getFuture().addListener(new ChannelFutureListener() {
+                        @Override
+                        public void operationComplete(ChannelFuture future) throws Exception {
+                            if (!connectedFuture.isCancelled()) {
+                                ch.connect(localChannelAddress).addListener(new ChannelFutureListener() {
+                                    @Override
+                                    public void operationComplete(ChannelFuture future) throws Exception {
+                                        connectedFuture.setSuccess();
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    return connectedFuture;
+                }
             }
         };
+        // return new ClientBootstrap(clientChannelFactory) {
+        // @Override
+        // public ChannelFuture connect(final SocketAddress localAddress, final SocketAddress remoteAddress) {
+        // Object barrier = getOption("barrier");
+        //
+        // if (barrier == null) {
+        // return connect0(localAddress, remoteAddress);
+        // } else {
+        // final ChannelFuture future = Channels.future(null, true);
+        // ((Barrier) barrier).getFuture().addListener(new ChannelFutureListener() {
+        // @Override
+        // public void operationComplete(ChannelFuture future) throws Exception {
+        // if (!future.isCancelled()) {
+        // connect0(localAddress, remoteAddress).addListener(new ChannelFutureListener() {
+        //
+        // @Override
+        // public void operationComplete(ChannelFuture future) throws Exception {
+        // future.setSuccess();
+        // }
+        // });
+        // }
+        // }
+        // });
+        // return future;
+        // }
+        // }
+        //
+        // public ChannelFuture connect0(final SocketAddress localAddress, final SocketAddress remoteAddress) {
+        // final InetSocketAddress localChannelAddress = toInetSocketAddress((ChannelAddress) localAddress);
+        // final InetSocketAddress remoteChannelAddress = toInetSocketAddress((ChannelAddress) remoteAddress);
+        // return super.connect(localChannelAddress, remoteChannelAddress);
+        // }
+        // };
     }
 
     /**
@@ -151,8 +240,7 @@ public final class TcpBootstrapFactorySpi extends BootstrapFactorySpi implements
     private static InetSocketAddress toInetSocketAddress(final SocketAddress localAddress) {
         if (localAddress instanceof ChannelAddress) {
             return toInetSocketAddress((ChannelAddress) localAddress);
-        }
-        else {
+        } else {
             return (InetSocketAddress) localAddress;
         }
     }

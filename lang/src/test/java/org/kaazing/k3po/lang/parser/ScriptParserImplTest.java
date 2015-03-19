@@ -1186,6 +1186,39 @@ public class ScriptParserImplTest {
     }
 
     @Test
+    public void shouldParseConnectWhenScript() throws Exception {
+
+        // @formatter:off
+        String script =
+                "# tcp.client.connect-then-close\n" +
+                "connect http://localhost:8080/path?p1=v1&p2=v2\n when BARRIER\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
+        // @formatter:on
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+
+        // @formatter:off
+         AstScriptNode expected = new AstScriptNodeBuilder()
+                 .addConnectStream()
+                     .setLocation(URI.create("http://localhost:8080/path?p1=v1&p2=v2"))
+                     .setBarrier("BARRIER")
+                     .addConnectedEvent()
+                     .done()
+                     .addCloseCommand()
+                     .done()
+                     .addClosedEvent()
+                     .done()
+                 .done()
+             .done();
+
+        assertEquals(expected, actual);
+        // @formatter:on
+    }
+
+    @Test
     public void shouldParseConnectScriptWithComments() throws Exception {
 
         String script =
