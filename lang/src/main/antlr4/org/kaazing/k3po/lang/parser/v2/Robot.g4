@@ -41,7 +41,7 @@ acceptableNode
     ;
 
 connectNode
-    : k=ConnectKeyword connectURI=location streamableNode+
+    : k=ConnectKeyword (AwaitKeyword barrier=Name ConnectKeyword)? connectURI=location  streamableNode+
     ;
 
 serverStreamableNode
@@ -472,6 +472,10 @@ HttpStatusKeyword
 
 HttpVersionKeyword
     : 'version'
+    ;
+
+WhenKeyword
+    : 'when'
     ;
 
 // URI cannot begin with any of our data type delimiters, and MUST contain a colon.

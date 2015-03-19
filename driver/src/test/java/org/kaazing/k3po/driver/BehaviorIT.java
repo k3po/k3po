@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kaazing.k3po.driver.juel;
+package org.kaazing.k3po.driver;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
@@ -28,7 +28,7 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.driver.test.utils.K3poTestRule;
 import org.kaazing.k3po.driver.test.utils.TestSpecification;
 
-public class HttpIT {
+public class BehaviorIT {
 
     private final K3poTestRule k3po = new K3poTestRule();
 
@@ -42,8 +42,22 @@ public class HttpIT {
 
     @Test
     @TestSpecification({
-        "many.expressions" })
+        "many.juel.expressions" })
     public void testManyReadsAndWriteExpressions() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "delayed.connect" })
+    public void testDelayedClientConnect() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "delayed.http.connect" })
+    public void testDelayedHttpClientConnect() throws Exception {
         k3po.finish();
     }
 

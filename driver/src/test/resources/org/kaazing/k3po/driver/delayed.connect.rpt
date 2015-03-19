@@ -1,0 +1,24 @@
+connect await FIRST_CHANNEL_CONNECTED
+connect tcp://localhost:8080
+connected
+write "delayed channel"
+close
+closed
+
+connect tcp://localhost:8080
+connected
+write "first channel"
+close
+closed
+
+accept tcp://localhost:8080
+accepted
+connected
+read "first channel"
+read notify FIRST_CHANNEL_CONNECTED
+closed
+
+accepted
+connected
+read "delayed channel"
+closed

@@ -26,6 +26,7 @@ public class AstConnectNode extends AstStreamNode {
 
     private URI location;
     private Map<String, Object> options;
+    private String barrier;
 
     public URI getLocation() {
         return location;
@@ -77,6 +78,18 @@ public class AstConnectNode extends AstStreamNode {
     @Override
     protected void describeLine(StringBuilder sb) {
         super.describeLine(sb);
-        sb.append(String.format("connect %s\n", location));
+        if (barrier == null) {
+            sb.append(String.format("connect %s\n", location));
+        } else {
+            sb.append(String.format("connect await %s\nconnect %s\n", barrier, location));
+        }
+    }
+
+    public String getBarrier() {
+        return barrier;
+    }
+
+    public void setBarrier(String barrier) {
+        this.barrier = barrier;
     }
 }
