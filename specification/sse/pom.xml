@@ -21,12 +21,12 @@
     </scm>
 
     <dependencies>
-		<dependency>
-			<!-- Needed for EL only, not AST -->
-			<groupId>org.kaazing</groupId>
-			<artifactId>k3po.lang</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+        <dependency>
+            <!-- Needed for EL only, not AST -->
+            <groupId>org.kaazing</groupId>
+            <artifactId>k3po.lang</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.kaazing</groupId>
             <artifactId>k3po.junit</artifactId>

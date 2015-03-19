@@ -42,7 +42,7 @@ public class BehaviorIT {
 
     @Test
     @TestSpecification({
-        "many.juel.expressions" })
+        "many.el.expressions" })
     public void testManyReadsAndWriteExpressions() throws Exception {
         k3po.finish();
     }

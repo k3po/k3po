@@ -21,28 +21,23 @@
 
 package org.kaazing.specification.sse.internal;
 
-import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.kaazing.k3po.lang.el.Function;
 import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
 
 public final class Functions {
 
-	public static class Mapper extends FunctionMapperSpi.Reflective {
+    public static class Mapper extends FunctionMapperSpi.Reflective {
 
-		public Mapper() {
-			super(Functions.class);
-		}
+        public Mapper() {
+            super(Functions.class);
+        }
 
-		@Override
-		public String getPrefixName() {
-			return "wse";
-		}
-	}
+        @Override
+        public String getPrefixName() {
+            return "sse";
+        }
+    }
 
-	private Functions() {
-		// utility
-	}
+    private Functions() {
+        // utility
+    }
 }

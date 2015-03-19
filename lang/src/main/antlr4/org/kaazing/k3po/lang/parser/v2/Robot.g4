@@ -474,10 +474,6 @@ HttpVersionKeyword
     : 'version'
     ;
 
-WhenKeyword
-    : 'when'
-    ;
-
 // URI cannot begin with any of our data type delimiters, and MUST contain a colon.
 URILiteral
     : Letter (Letter | '+')+ ':'

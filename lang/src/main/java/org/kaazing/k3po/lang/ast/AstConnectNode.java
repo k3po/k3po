@@ -16,6 +16,7 @@
 
 package org.kaazing.k3po.lang.ast;
 
+import static java.lang.String.format;
 import static org.kaazing.k3po.lang.ast.util.AstUtil.equivalent;
 
 import java.net.URI;
@@ -79,9 +80,9 @@ public class AstConnectNode extends AstStreamNode {
     protected void describeLine(StringBuilder sb) {
         super.describeLine(sb);
         if (barrier == null) {
-            sb.append(String.format("connect %s\n", location));
+            sb.append(format("connect %s\n", location));
         } else {
-            sb.append(String.format("connect await %s\nconnect %s\n", barrier, location));
+            sb.append(format("connect await %s\nconnect %s\n", barrier, location));
         }
     }
 
