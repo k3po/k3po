@@ -118,10 +118,6 @@ public class Robot {
         return preparedFuture;
     }
 
-    public ChannelFuture getStartedFuture() {
-        return startedFuture;
-    }
-
     public ChannelFuture prepare(String expectedScript) throws Exception {
 
         if (preparedFuture != null) {
