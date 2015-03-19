@@ -77,5 +77,4 @@ public class HttpBootstrapFactorySpi extends BootstrapFactorySpi {
     public void releaseExternalResources() {
         // ignore
     }
-
 }
