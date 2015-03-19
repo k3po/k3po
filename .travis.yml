@@ -4,3 +4,5 @@ jdk:
   - openjdk7
 install: mvn -DskipTests -DskipITs verify
 script: mvn verify
+after_success:
+  - mvn clean cobertura:cobertura-integration-test coveralls:report
