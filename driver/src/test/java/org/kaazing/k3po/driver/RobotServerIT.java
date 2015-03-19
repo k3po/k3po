@@ -532,7 +532,8 @@ public class RobotServerIT {
         accepted = server.accept();
 
         // let the connect succeed before we abort
-        Thread.sleep(10);
+        // TODO: remove this sleep
+        Thread.sleep(100);
 
         out = new BufferedWriter(new OutputStreamWriter(control.getOutputStream()));
         out.append("ABORT\n");
@@ -542,6 +543,7 @@ public class RobotServerIT {
         CharBuffer finished = CharBuffer.allocate(strExpectedFinished.length());
         while (finished.hasRemaining()) {
             in.read(finished);
+            System.out.println("Read in data, still has " + finished.length() + " to read");
         }
         finished.flip();
 
