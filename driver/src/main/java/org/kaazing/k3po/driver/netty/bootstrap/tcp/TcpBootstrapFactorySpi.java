@@ -68,8 +68,7 @@ public final class TcpBootstrapFactorySpi extends BootstrapFactorySpi implements
     }
 
     /**
-     * Returns the name of the transport provided by factories using this
-     * service provider.
+     * Returns the name of the transport provided by factories using this service provider.
      */
     @Override
     public String getTransportName() {
@@ -111,9 +110,9 @@ public final class TcpBootstrapFactorySpi extends BootstrapFactorySpi implements
 
         return new ClientBootstrap(clientChannelFactory) {
             @Override
-            public ChannelFuture connect(SocketAddress localAddress, SocketAddress remoteAddress) {
-                InetSocketAddress localChannelAddress = toInetSocketAddress((ChannelAddress) localAddress);
-                InetSocketAddress remoteChannelAddress = toInetSocketAddress((ChannelAddress) remoteAddress);
+            public ChannelFuture connect(final SocketAddress localAddress, final SocketAddress remoteAddress) {
+                final InetSocketAddress localChannelAddress = toInetSocketAddress((ChannelAddress) localAddress);
+                final InetSocketAddress remoteChannelAddress = toInetSocketAddress((ChannelAddress) remoteAddress);
                 return super.connect(localChannelAddress, remoteChannelAddress);
             }
         };
@@ -151,8 +150,7 @@ public final class TcpBootstrapFactorySpi extends BootstrapFactorySpi implements
     private static InetSocketAddress toInetSocketAddress(final SocketAddress localAddress) {
         if (localAddress instanceof ChannelAddress) {
             return toInetSocketAddress((ChannelAddress) localAddress);
-        }
-        else {
+        } else {
             return (InetSocketAddress) localAddress;
         }
     }

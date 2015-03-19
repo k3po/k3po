@@ -15,14 +15,18 @@
     <url>https://github.com/kaazing/specification.sse</url>
     <packaging>jar</packaging>
 
-
     <scm>
         <url>https://github.com/kaazing/specification.sse.git</url>
         <connection>scm:git:https://github.com/kaazing/specification.sse.git</connection>
     </scm>
 
-
     <dependencies>
+        <dependency>
+            <!-- Needed for EL only, not AST -->
+            <groupId>org.kaazing</groupId>
+            <artifactId>k3po.lang</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.kaazing</groupId>
             <artifactId>k3po.junit</artifactId>

@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2007-2014 Kaazing Corporation. All rights reserved.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,16 +19,25 @@
  * under the License.
  */
 
-package org.kaazing.k3po.examples;
+package org.kaazing.specification.sse.internal;
 
-/**
- * A ListedEventServer which provides a simple server implementation to run example K3po tests againsts.
- */
-public class ListedEventServer extends ListedEventRunnable {
+import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
 
-    // TODO
-    @Override
-    protected void cleanUp() {
+public final class Functions {
 
+    public static class Mapper extends FunctionMapperSpi.Reflective {
+
+        public Mapper() {
+            super(Functions.class);
+        }
+
+        @Override
+        public String getPrefixName() {
+            return "sse";
+        }
+    }
+
+    private Functions() {
+        // utility
     }
 }

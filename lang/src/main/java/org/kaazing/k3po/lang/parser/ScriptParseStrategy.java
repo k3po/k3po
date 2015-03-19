@@ -852,6 +852,10 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             node.setLocation(URI.create(ctx.connectURI.getText()));
             super.visitConnectNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
+            Token barrier = ctx.barrier;
+            if (barrier != null) {
+                node.setBarrier(barrier.getText());
+            }
             return node;
         }
 

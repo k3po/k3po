@@ -1,0 +1,24 @@
+connect await FIRST_CHANNEL_CONNECTED
+connect http://localhost:8080/
+connected
+write method "GET"
+write header "delayed" "channel"
+write close
+
+connect http://localhost:8080/
+connected
+write method "GET"
+write header "first" "channel"
+write close
+
+accept tcp://localhost:8080
+accepted
+connected
+read "GET http://localhost:8080/ HTTP/1.1" "\r\n"
+read "first: channel" "\r\n"
+read notify FIRST_CHANNEL_CONNECTED
+
+accepted
+connected
+read "GET http://localhost:8080/ HTTP/1.1" "\r\n"
+read "delayed: channel" "\r\n"

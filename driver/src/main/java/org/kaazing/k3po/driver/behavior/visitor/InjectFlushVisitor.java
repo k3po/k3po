@@ -140,6 +140,7 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
         AstConnectNode newConnectNode = new AstConnectNode();
         newConnectNode.setRegionInfo(connectNode.getRegionInfo());
         newConnectNode.setLocation(connectNode.getLocation());
+        newConnectNode.setBarrier(connectNode.getBarrier());
 
         state.streamables = newConnectNode.getStreamables();
         for (AstStreamableNode streamable : connectNode.getStreamables()) {

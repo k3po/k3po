@@ -32,6 +32,11 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         return this;
     }
 
+    public AstConnectNodeBuilder setBarrier(String barrier) {
+        node.setBarrier(barrier);
+        return this;
+    }
+
     @Override
     public AstOpenedNodeBuilder.StreamNested<AstConnectNodeBuilder> addOpenedEvent() {
         return new AstOpenedNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);
@@ -160,6 +165,11 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
 
         public ScriptNested<R> setLocation(URI location) {
             node.setLocation(location);
+            return this;
+        }
+
+        public ScriptNested<R> setBarrier(String barrier) {
+            node.setBarrier(barrier);
             return this;
         }
 

@@ -361,6 +361,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         state.writeMasker = Masker.IDENTITY_MASKER;
 
         Map<String, Object> connectOptions = connectNode.getOptions();
+        String barrierName = connectNode.getBarrier();
 
         state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
 
@@ -404,6 +405,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         };
         clientBootstrap.setPipelineFactory(pipelineFactory);
         clientBootstrap.setOptions(connectOptions);
+        if (barrierName != null) {
+            Barrier barrier = state.lookupBarrier(barrierName);
+            clientBootstrap.setOption("barrier", barrier);
+        }
 
         state.configuration.getClientBootstraps().add(clientBootstrap);
 
