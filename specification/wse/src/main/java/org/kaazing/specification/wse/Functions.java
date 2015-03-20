@@ -22,7 +22,6 @@ import org.kaazing.k3po.lang.el.Function;
 import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
 
 public final class Functions {
-
     private static final Random RANDOM = new Random();
 
     @Function
@@ -55,6 +54,16 @@ public final class Functions {
 
         padding[padding.length - 1] = (byte) 0xFF;
         return padding;
+    }
+
+    @Function
+    public static int randomInt(int upperBound) {
+        return RANDOM.nextInt(upperBound);
+    }
+
+    @Function
+    public static String asString(int value) {
+        return Integer.toString(value);
     }
 
     public static class Mapper extends FunctionMapperSpi.Reflective {

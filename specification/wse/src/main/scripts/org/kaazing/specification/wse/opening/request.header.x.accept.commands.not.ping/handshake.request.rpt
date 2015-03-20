@@ -1,3 +1,5 @@
+property sequence ${wse:randomInt(100)}
+
 connect http://localhost:8080/path/;e/cb?query
 connected
 
@@ -7,6 +9,7 @@ write header host
 write header content-length
 write header "X-WebSocket-Version" "wseb-1.1"
 write header "X-Accept-Commands" "not-ping"
+write header "X-Sequence-No" ${wse:asString(sequence)}
 write close
 
 read status /4\d\d/ /.+/

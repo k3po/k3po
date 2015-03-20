@@ -5,6 +5,7 @@ connected
 read method "POST"
 read version "HTTP/1.1"
 read header "X-WebSocket-Version" "wseb-1.1"
+read header "X-Sequence-No" /(?<sequence>\b[0-9]{1,3}\b)/
 read closed
 
 write status "201" "Created" 
@@ -26,6 +27,7 @@ connected
 read await CREATED
 read method "GET"
 read version "HTTP/1.1"
+read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 read closed
 
 write status "200" "OK"
@@ -49,6 +51,7 @@ read await CLOSE_SENT
 read method "POST"
 read version "HTTP/1.1"
 read header "Content-Type" "application/octet-stream"
+read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
 read [0x01 0x30 0x32 0xFF]
 read [0x01 0x30 0x31 0xFF]
