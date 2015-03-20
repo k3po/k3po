@@ -5,6 +5,8 @@ connected
 read method "POST"
 read version "HTTP/1.1"
 read header "X-WebSocket-Version" "wseb-1.1"
+read header "X-Sequence-No" /(?<sequence>\b[0-9]{1,3}\b)/
+read header "X-WebSocket-Protocol" "primary, secondary"
 read closed
 
 write status "201" "Created" 
@@ -14,7 +16,6 @@ write header "X-WebSocket-Protocol" "primary"
 write header "Content-Type" "text/plain;charset=utf-8"
 write header content-length
 
-write "http://localhost:8080/path/uofdbnreiodfkbqi"
-write "\n"
-write "https://localhost:8443/path/kwebfbkjwehkdsfa"
+write "http://localhost:8080/path/uofdbnreiodfkbqi\n"
+write "https://localhost:8443/path/kwebfbkjwehkdsfa\n"
 write close
