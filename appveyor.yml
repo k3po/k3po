@@ -15,7 +15,7 @@ install:
   - cmd: mvn --version
   - cmd: java -version
 build_script:
-  - mvn clean install -B -Dmaven.test.skip=true
+  - mvn clean install -B -Dmaven.test.skip=true -DskipTests -DskipITs
 test_script:
   - mvn clean verify --batch-mode
 cache:
