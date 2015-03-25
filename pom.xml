@@ -28,6 +28,7 @@
         <module>driver</module>
         <module>k3po-maven-plugin</module>
         <module>control</module>
+        <module>launcher</module>
         <module>junit</module>
         <module>examples</module>
         <module>k3po.pcap.converter</module>
@@ -44,7 +45,7 @@
         <module>specification/tls</module>
         <module>specification/ws</module>
         <module>specification/wse</module>
-        <module>launcher</module>
+        <module>specification/wsr</module>
     </modules>
 
     <properties>
