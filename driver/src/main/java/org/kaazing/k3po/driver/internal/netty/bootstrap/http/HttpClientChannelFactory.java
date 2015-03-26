@@ -16,7 +16,7 @@
 
 package org.kaazing.k3po.driver.internal.netty.bootstrap.http;
 
-import static org.jboss.netty.handler.codec.http.HttpMethod.POST;
+import static org.jboss.netty.handler.codec.http.HttpMethod.GET;
 import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 import org.jboss.netty.channel.ChannelFactory;
@@ -36,7 +36,7 @@ public class HttpClientChannelFactory implements ChannelFactory {
 
         // default configuration
         HttpChannelConfig httpChannelConfig = httpChannel.getConfig();
-        httpChannelConfig.setMethod(POST);
+        httpChannelConfig.setMethod(GET);
         httpChannelConfig.setVersion(HTTP_1_1);
 
         // see HttpClientChannelSource for httpChannel.setReadable(true)
