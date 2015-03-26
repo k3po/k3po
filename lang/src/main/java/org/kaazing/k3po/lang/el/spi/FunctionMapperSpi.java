@@ -26,19 +26,29 @@ import javax.el.ELException;
 
 import org.kaazing.k3po.lang.el.Function;
 
+/**
+ * Extend this class to make a function available to the K3PO lang.
+ *
+ */
 public abstract class FunctionMapperSpi {
 
     /**
      * Returns the name of the prefix mapped by functions using this service provider.
+     * @return prefixName
      */
     public abstract String getPrefixName();
 
     /**
      * Returns a {@link Method} instance for the prefixed local name.
      * @param localName the local function name
+     * @return the Method / Function
      */
     public abstract Method resolveFunction(String localName);
 
+    /**
+     * Reflective FunctionMapper for convenience.
+     *
+     */
     public abstract static class Reflective extends FunctionMapperSpi {
         private final Map<String, Method> functions;
 

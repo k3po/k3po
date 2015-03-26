@@ -30,14 +30,14 @@ import java.net.URL;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.kaazing.k3po.control.Control;
-import org.kaazing.k3po.control.command.AbortCommand;
-import org.kaazing.k3po.control.command.PrepareCommand;
-import org.kaazing.k3po.control.command.StartCommand;
-import org.kaazing.k3po.control.event.CommandEvent;
-import org.kaazing.k3po.control.event.ErrorEvent;
-import org.kaazing.k3po.control.event.FinishedEvent;
-import org.kaazing.k3po.control.event.PreparedEvent;
+import org.kaazing.k3po.control.internal.Control;
+import org.kaazing.k3po.control.internal.command.AbortCommand;
+import org.kaazing.k3po.control.internal.command.PrepareCommand;
+import org.kaazing.k3po.control.internal.command.StartCommand;
+import org.kaazing.k3po.control.internal.event.CommandEvent;
+import org.kaazing.k3po.control.internal.event.ErrorEvent;
+import org.kaazing.k3po.control.internal.event.FinishedEvent;
+import org.kaazing.k3po.control.internal.event.PreparedEvent;
 import org.kaazing.k3po.junit.rules.internal.ScriptPair;
 
 final class ScriptRunner implements Callable<ScriptPair> {
