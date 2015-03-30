@@ -30,14 +30,23 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.Parser;
 import org.apache.commons.cli.PosixParser;
-import org.kaazing.k3po.driver.RobotServer;
+import org.kaazing.k3po.driver.internal.RobotServer;
 
+/**
+ * Launcher / CLI to run the K3PO.
+ *
+ */
 public final class Launcher {
 
     private Launcher() {
         // no instances
     }
 
+    /**
+     * Main entry point to running K3PO.
+     * @param args to run with
+     * @throws Exception if fails to run
+     */
     public static void main(String... args) throws Exception {
         Options options = createOptions();
 
