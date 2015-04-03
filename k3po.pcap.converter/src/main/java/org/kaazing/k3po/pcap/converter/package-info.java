@@ -15,6 +15,6 @@
  */
 
 /**
- * This project has no public api
+ * This project has no public api.
  */
 package org.kaazing.k3po.pcap.converter;
