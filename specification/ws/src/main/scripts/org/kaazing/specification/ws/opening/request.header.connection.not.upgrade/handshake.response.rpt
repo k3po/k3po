@@ -1,0 +1,11 @@
+accept http://localhost:8080/path?query
+
+accepted
+connected
+
+read header "Connection" /(?!(?i:Upgrade))/
+read closed
+
+write status "400" "Bad Request"
+write header content-length
+write close

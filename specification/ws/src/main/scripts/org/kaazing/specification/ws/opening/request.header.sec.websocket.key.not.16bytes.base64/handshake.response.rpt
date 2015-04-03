@@ -1,0 +1,11 @@
+accept http://localhost:8080/path?query
+
+accepted
+connected
+
+read header "Sec-WebSocket-Key" /(?!^[a-zA-Z0-9+\/=]{24}$).*/
+read closed
+
+write status "400" "Bad Request"
+write header content-length
+write close

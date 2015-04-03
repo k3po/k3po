@@ -1,0 +1,27 @@
+connect tcp://localhost:8081
+connected
+
+write await CLIENT_REQUEST
+write "GET / HTTP/1.1" "\r\n"
+write "Host: localhost:8080\r\n"
+write "\r\n"
+
+read "HTTP/1.1 200 OK\r\n"
+read "Content-length: 11" "\r\n"
+read "Content-length: 200" "\r\n"
+read "\r\n"
+read "Hello world"
+read notify SERVER_RESPONSE
+
+accept tcp://localhost:8080
+accepted
+connected
+read "GET / HTTP/1.1" "\r\n"
+read "Host: localhost:8080\r\n"
+read "\r\n"
+read notify CLIENT_REQUEST
+
+write await SERVER_RESPONSE
+write "HTTP/1.1 502 Bad Gateway\r\n"
+write "\r\n"
+

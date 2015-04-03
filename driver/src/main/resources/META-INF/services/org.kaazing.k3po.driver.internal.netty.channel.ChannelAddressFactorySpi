@@ -1,0 +1,4 @@
+org.kaazing.k3po.driver.internal.netty.channel.tcp.TcpChannelAddressFactorySpi
+org.kaazing.k3po.driver.internal.netty.channel.http.HttpChannelAddressFactorySpi
+org.kaazing.k3po.driver.internal.netty.channel.bbosh.BBoshChannelAddressFactorySpi
+

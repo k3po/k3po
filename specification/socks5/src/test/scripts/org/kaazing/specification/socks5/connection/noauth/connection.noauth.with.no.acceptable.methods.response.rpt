@@ -1,0 +1,26 @@
+accept tcp://localhost:1080
+accepted
+connected
+
+## Read the request bytes for connecting with no-authentication
+# version: SOCKS v5
+read [0x05]
+
+# number of method: 1
+read [0x01]
+
+# method: no authentication required
+read [0x00]
+
+
+## Write a success response
+# version: SOCKS v5
+write [0x05]
+
+# write error: no acceptable methods
+write [0xFF]
+
+# connection closed
+
+close
+closed

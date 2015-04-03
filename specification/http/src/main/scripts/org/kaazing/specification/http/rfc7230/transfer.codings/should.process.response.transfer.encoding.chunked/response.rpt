@@ -1,0 +1,16 @@
+accept http://localhost:8080/
+accepted
+connected
+
+read method "GET"
+read header "Content-Type" "text/plain"
+read closed
+
+write status "200" "OK"
+write header "Content-Type" "text/plain"
+write header "Transfer-Encoding" "chunked"
+write "Chunk A"
+write "Chunk B"
+write "Chunk C"
+write close
+
