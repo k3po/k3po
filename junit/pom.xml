@@ -90,6 +90,7 @@
                                     <shadedPattern>org.kaazing.k3po.junit.shaded.control</shadedPattern>
                                 </relocation>
                             </relocations>
+                            <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
                         </configuration>
                     </execution>
                 </executions>
