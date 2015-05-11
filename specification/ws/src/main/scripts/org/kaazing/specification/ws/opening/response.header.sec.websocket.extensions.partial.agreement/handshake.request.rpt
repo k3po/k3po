@@ -15,6 +15,6 @@ read version "HTTP/1.1"
 read header "Upgrade" /(?i:websocket)/
 read header "Connection" /(?i:Upgrade)/
 read header "Sec-WebSocket-Accept" "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
-read header "Sec-WebSocket-Protocol" "valid"
+read header "Sec-WebSocket-Extensions" "valid"
 
 # connection established

@@ -16,7 +16,7 @@ write version "HTTP/1.1"
 write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
-write header "Sec-WebSocket-Protocol" "secondary, primary"
+write header "Sec-WebSocket-Extensions" "secondary, primary"
 write flush
 
 # connection established
