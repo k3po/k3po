@@ -51,6 +51,8 @@ import org.kaazing.k3po.lang.ast.builder.AstScriptNodeBuilder;
 import org.kaazing.k3po.lang.ast.builder.AstWriteCloseNodeBuilder;
 import org.kaazing.k3po.lang.ast.builder.AstWriteConfigNodeBuilder;
 import org.kaazing.k3po.lang.ast.builder.AstWriteFlushNodeBuilder;
+import org.kaazing.k3po.lang.ast.value.AstUriLiteralValue;
+import org.kaazing.k3po.lang.ast.value.AstValue;
 import org.kaazing.k3po.lang.el.ExpressionContext;
 
 public class HttpScriptParserTest {
@@ -488,10 +490,12 @@ public class HttpScriptParserTest {
          ScriptParserImpl parser = new ScriptParserImpl();
          AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
 
+         AstValue locationValue = new AstUriLiteralValue(URI.create("http://somehost:8000/path"));
+
          // @formatter:off
          AstScriptNode expected = new AstScriptNodeBuilder()
              .addConnectStream()
-                 .setLocation(URI.create("http://somehost:8000/path"))
+                 .setLocation(locationValue)
                  .addConnectedEvent()
                  .done()
                  .addWriteConfigCommand()

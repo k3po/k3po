@@ -25,6 +25,10 @@ propertyValue
     : writeValue
     ;
 
+locationNode
+    : value=location
+    ;
+
 streamNode
     : acceptNode
     | acceptableNode
@@ -41,7 +45,7 @@ acceptableNode
     ;
 
 connectNode
-    : k=ConnectKeyword (AwaitKeyword barrier=Name ConnectKeyword)? connectURI=location  streamableNode+
+    : k=ConnectKeyword (AwaitKeyword barrier=Name ConnectKeyword)? connectURI=locationNode  streamableNode+
     ;
 
 serverStreamableNode
@@ -319,10 +323,16 @@ expressionValue
     : expression=ExpressionLiteral
     ;
 
-location
-    : URILiteral
-    | ExpressionLiteral
+uriValue
+    : uri=URILiteral
     ;
+
+location
+    : uriValue
+    | expressionValue
+    ;
+
+
 
 SignedDecimalLiteral
     :  Plus DecimalLiteral

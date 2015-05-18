@@ -21,6 +21,8 @@ import java.net.URI;
 import org.junit.Test;
 import org.kaazing.k3po.lang.ast.AstScriptNode;
 import org.kaazing.k3po.lang.ast.builder.AstScriptNodeBuilder;
+import org.kaazing.k3po.lang.ast.value.AstUriLiteralValue;
+import org.kaazing.k3po.lang.ast.value.AstValue;
 
 public class InjectHttpStreamsVisitorTest {
 
@@ -159,9 +161,10 @@ public class InjectHttpStreamsVisitorTest {
             expected = IllegalStateException.class)
     public void shouldNotAllowWriteConfigAfterWriteClose() throws Exception {
         // @formatter:off
+        AstValue locationValue = new AstUriLiteralValue(URI.create("http://localhost:8000/somepath"));
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addConnectStream()
-                .setLocation(URI.create("http://localhost:8000/somepath"))
+                .setLocation(locationValue)
                 .addOpenedEvent()
                 .done()
                 .addWriteCloseCommand()
@@ -218,9 +221,10 @@ public class InjectHttpStreamsVisitorTest {
     @Test
     public void shouldNotThrowErrorsOnNonHttpStreams() throws Exception {
         // @formatter:off
+        AstValue locationValue = new AstUriLiteralValue(URI.create("tcp://localhost:8000"));
         AstScriptNode inputScript = new AstScriptNodeBuilder()
         .addConnectStream().
-            setLocation(URI.create("tcp://localhost:8000"))
+            setLocation(locationValue)
                 .addReadEvent()
                     .addExactText("exact text")
                 .done()
