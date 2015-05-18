@@ -425,7 +425,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         return state.configuration;
     }
-
+    
+    // TODO: Experimental
     public static class GenerateURIVisitor implements AstValue.Visitor<URI, ExpressionContext> {
 
         @Override
