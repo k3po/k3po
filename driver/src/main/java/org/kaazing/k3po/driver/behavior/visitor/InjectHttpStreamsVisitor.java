@@ -19,7 +19,6 @@ package org.kaazing.k3po.driver.behavior.visitor;
 import java.net.URI;
 import java.util.List;
 
-import org.kaazing.k3po.driver.behavior.visitor.GenerateConfigurationVisitor.GenerateURIVisitor;
 import org.kaazing.k3po.lang.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.ast.AstAcceptableNode;
 import org.kaazing.k3po.lang.ast.AstBoundNode;
@@ -160,9 +159,8 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
 
     @Override
     public AstScriptNode visit(AstConnectNode connectNode, State state) throws Exception {
-        GenerateConfigurationVisitor.GenerateURIVisitor visitor = new GenerateConfigurationVisitor.GenerateURIVisitor();
-        URI location = connectNode.getLocation().accept(visitor, connectNode.getExpressionContext());
-        
+
+        URI location = connectNode.getLocation();
         if (location != null && "http".equals(location.getScheme())) {
             state.writeState = StreamState.REQUEST;
             state.readState = StreamState.RESPONSE;

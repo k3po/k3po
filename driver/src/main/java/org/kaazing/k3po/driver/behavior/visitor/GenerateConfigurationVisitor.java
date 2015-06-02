@@ -151,7 +151,6 @@ import org.kaazing.k3po.lang.ast.matcher.AstVariableLengthBytesMatcher;
 import org.kaazing.k3po.lang.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.ast.value.AstLiteralTextValue;
-import org.kaazing.k3po.lang.ast.value.AstUriLiteralValue;
 import org.kaazing.k3po.lang.ast.value.AstValue;
 import org.kaazing.k3po.lang.el.ExpressionContext;
 
@@ -246,6 +245,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             Object formatValue = (value instanceof byte[]) ? AstLiteralBytesValue.toString((byte[]) value) : value;
             LOGGER.debug(format("Setting value for ${%s} to %s", propertyName, formatValue));
         }
+
         return state.configuration;
     }
 
@@ -266,11 +266,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         @Override
         public Object visit(AstLiteralBytesValue value, ExpressionContext environment) throws Exception {
-            return value.getValue();
-        }
-
-        @Override
-        public Object visit(AstUriLiteralValue value, ExpressionContext parameter) throws Exception {
             return value.getValue();
         }
 
@@ -360,11 +355,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstConnectNode connectNode, State state) throws Exception {
 
-        AstValue locationValue = connectNode.getLocation();
-        ExpressionContext environment = connectNode.getExpressionContext();
-        URI value = locationValue.accept(new GenerateURIVisitor(), environment);
-        URI connectURI = value;
-
+        URI connectURI = connectNode.getLocation();
         // masking is a no-op by default for each stream
         state.readUnmasker = Masker.IDENTITY_MASKER;
         state.writeMasker = Masker.IDENTITY_MASKER;
@@ -424,41 +415,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         LOGGER.debug("Added client Bootstrap connecting to remoteAddress " + remoteAddress);
 
         return state.configuration;
-    }
-
-    public static class GenerateURIVisitor implements AstValue.Visitor<URI, ExpressionContext> {
-
-        @Override
-        public URI visit(AstExpressionValue value, ExpressionContext environment) throws Exception {
-            Object uriTextObj;
-            // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
-            synchronized (environment) {
-                uriTextObj = value.getValue().getValue(environment);
-            }
-            if (uriTextObj == null) {
-                throw new NullPointerException("Location expression result is null");
-            }
-
-            String uriText = uriTextObj.toString();
-            return URI.create(uriText);
-        }
-
-        @Override
-        public URI visit(AstLiteralTextValue value, ExpressionContext environment) throws Exception {
-            return URI.create(value.getValue());
-        }
-
-        @Override
-        public URI visit(AstLiteralBytesValue value, ExpressionContext environment) throws Exception {
-            String uriText = new String(value.getValue(), UTF_8);
-            return URI.create(uriText);
-        }
-
-        @Override
-        public URI visit(AstUriLiteralValue value, ExpressionContext environment) throws Exception {
-            return value.getValue();
-        }
-
     }
 
     @Override
@@ -568,12 +524,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         public MessageEncoder visit(AstLiteralBytesValue value, Configuration config) throws Exception {
             return new WriteBytesEncoder(value.getValue());
         }
-
-        @Override
-        public MessageEncoder visit(AstUriLiteralValue value, Configuration parameter) throws Exception {
-            return new WriteTextEncoder(value.getValue().toString(), UTF_8);
-        }
-
     }
 
     @Override
@@ -1171,21 +1121,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             for (int i = 0; i < literalBytes.length; i++) {
                 if (literalBytes[i] != 0x00) {
                     return Maskers.newMasker(literalBytes);
-                }
-            }
-
-            // no need to unmask for all-zeros masking key
-            return Masker.IDENTITY_MASKER;
-        }
-
-        @Override
-        public Masker visit(AstUriLiteralValue value, State state) throws Exception {
-            String uriLiteralText = value.getValue().toString();
-            byte[] uriLiteralTextAsBytes = uriLiteralText.getBytes(UTF_8);
-
-            for (int i = 0; i < uriLiteralTextAsBytes.length; i++) {
-                if (uriLiteralTextAsBytes[i] != 0x00) {
-                    return Maskers.newMasker(uriLiteralTextAsBytes);
                 }
             }
 

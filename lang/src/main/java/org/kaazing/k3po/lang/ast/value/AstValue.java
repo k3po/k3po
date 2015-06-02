@@ -29,7 +29,5 @@ public abstract class AstValue extends AstRegion {
         R visit(AstLiteralTextValue value, P parameter) throws Exception;
 
         R visit(AstLiteralBytesValue value, P parameter) throws Exception;
-
-        R visit(AstUriLiteralValue value, P parameter) throws Exception;
     }
 }

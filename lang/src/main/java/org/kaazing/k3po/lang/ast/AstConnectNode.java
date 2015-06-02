@@ -19,24 +19,21 @@ package org.kaazing.k3po.lang.ast;
 import static java.lang.String.format;
 import static org.kaazing.k3po.lang.ast.util.AstUtil.equivalent;
 
+import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.kaazing.k3po.lang.ast.value.AstValue;
-import org.kaazing.k3po.lang.el.ExpressionContext;
-
 public class AstConnectNode extends AstStreamNode {
 
-    private AstValue location;
+    private URI location;
     private Map<String, Object> options;
     private String barrier;
-    private ExpressionContext expressionContext;
 
-    public AstValue getLocation() {
+    public URI getLocation() {
         return location;
     }
 
-    public void setLocation(AstValue location) {
+    public void setLocation(URI location) {
         this.location = location;
     }
 
@@ -95,13 +92,5 @@ public class AstConnectNode extends AstStreamNode {
 
     public void setBarrier(String barrier) {
         this.barrier = barrier;
-    }
-
-    public ExpressionContext getExpressionContext() {
-        return expressionContext;
-    }
-
-    public void setExpressionContext(ExpressionContext expressionContext) {
-        this.expressionContext = expressionContext;
     }
 }

@@ -91,7 +91,6 @@ import org.kaazing.k3po.lang.ast.matcher.AstVariableLengthBytesMatcher;
 import org.kaazing.k3po.lang.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.ast.value.AstLiteralTextValue;
-import org.kaazing.k3po.lang.ast.value.AstUriLiteralValue;
 import org.kaazing.k3po.lang.ast.value.AstValue;
 import org.kaazing.k3po.lang.el.ExpressionContext;
 
@@ -1179,10 +1178,8 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
 
-        AstValue locationValue = new AstUriLiteralValue(URI.create("http://localhost:8080/path?p1=v1&p2=v2"));
-
         AstScriptNode expected =
-                new AstScriptNodeBuilder().addConnectStream().setLocation(locationValue)
+                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("http://localhost:8080/path?p1=v1&p2=v2"))
                         .addConnectedEvent().done().addCloseCommand().done().addClosedEvent().done().done().done();
 
         assertEquals(expected, actual);
@@ -1204,12 +1201,10 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
 
-        AstValue locationValue = new AstUriLiteralValue(URI.create("http://localhost:8080/path?p1=v1&p2=v2"));
-
         // @formatter:off
          AstScriptNode expected = new AstScriptNodeBuilder()
                  .addConnectStream()
-                     .setLocation(locationValue)
+                     .setLocation(URI.create("http://localhost:8080/path?p1=v1&p2=v2"))
                      .setBarrier("BARRIER")
                      .addConnectedEvent()
                      .done()
@@ -1234,10 +1229,8 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
 
-        AstValue locationValue = new AstUriLiteralValue(URI.create("tcp://localhost:7788"));
-
         AstScriptNode expected =
-                new AstScriptNodeBuilder().addConnectStream().setLocation(locationValue)
+                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("tcp://localhost:7788"))
                         .addConnectedEvent().done().addCloseCommand().done().addClosedEvent().done().done().done();
 
         assertEquals(expected, actual);
@@ -1272,13 +1265,12 @@ public class ScriptParserImplTest {
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
-        AstValue locationValue8785 = new AstUriLiteralValue(URI.create("tcp://localhost:8785"));
-        AstValue locationValue8783 = new AstUriLiteralValue(URI.create("tcp://localhost:8783"));
+
         AstScriptNode expected =
-                new AstScriptNodeBuilder().addConnectStream().setLocation(locationValue8785)
+                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("tcp://localhost:8785"))
                         .addConnectedEvent().done().addWriteCommand().addExactText("Hello, world!").done()
                         .addWriteNotifyBarrier().setBarrierName("BARRIER").done().addCloseCommand().done().addClosedEvent()
-                        .done().done().addConnectStream().setLocation(locationValue8783).addConnectedEvent()
+                        .done().done().addConnectStream().setLocation(URI.create("tcp://localhost:8783")).addConnectedEvent()
                         .done().addReadAwaitBarrier().setBarrierName("BARRIER").done().addReadEvent()
                         .addExactText("Hello, world!").done().addCloseCommand().done().addClosedEvent().done().done().done();
 
@@ -1317,14 +1309,14 @@ public class ScriptParserImplTest {
                         + "# tcp.client.connect-then-close\n" + "connect tcp://localhost:7788\n" + "connected\n" + "close\n"
                         + "closed\n";
 
-        AstValue locationValue7788 = new AstUriLiteralValue(URI.create("tcp://localhost:7788"));
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
         AstScriptNode expected;
+
         expected =
                 new AstScriptNodeBuilder().addAcceptStream().setLocation(URI.create("tcp://localhost:7788")).done()
                         .addAcceptedStream().addConnectedEvent().done().addClosedEvent().done().done().addConnectStream()
-                        .setLocation(locationValue7788).addConnectedEvent().done().addCloseCommand().done()
+                        .setLocation(URI.create("tcp://localhost:7788")).addConnectedEvent().done().addCloseCommand().done()
                         .addClosedEvent().done().done().done();
         assertEquals(expected, actual);
     }
@@ -1336,12 +1328,12 @@ public class ScriptParserImplTest {
         String script =
                 "# tcp.client.non-closing\n" + "connect tcp://localhost:7788\n" + "connected\n" + "read \"foo\"\n"
                         + "write [0x01 0x02 0xff]\n" + "closed\n";
-        AstValue locationValue7788 = new AstUriLiteralValue(URI.create("tcp://localhost:7788"));
+
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
 
         AstScriptNode expected =
-                new AstScriptNodeBuilder().addConnectStream().setLocation(locationValue7788)
+                new AstScriptNodeBuilder().addConnectStream().setLocation(URI.create("tcp://localhost:7788"))
                         .addConnectedEvent().done().addReadEvent().addExactText("foo").done().addWriteCommand()
                         .addExactBytes(new byte[]{0x01, 0x02, (byte) 0xff}).done().addClosedEvent().done().done().done();
 
@@ -1404,7 +1396,6 @@ public class ScriptParserImplTest {
         ExpressionFactory factory = ExpressionFactory.newInstance();
         ExpressionContext context = new ExpressionContext();
 
-        AstValue locationValue8000 = new AstUriLiteralValue(URI.create("tcp://localhost:8000"));
         ScriptParserImpl parser = new ScriptParserImpl(factory, context);
         // parser.lex(new ByteArrayInputStream(script.getBytes(UTF_8)));
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
@@ -1442,7 +1433,7 @@ public class ScriptParserImplTest {
 
                         .done().addClosedEvent()
 
-                        .done().done().addConnectStream().setLocation(locationValue8000).addOpenedEvent()
+                        .done().done().addConnectStream().setLocation(URI.create("tcp://localhost:8000")).addOpenedEvent()
                         .done().addBoundEvent()
 
                         .done().addConnectedEvent().done().addWriteCommand()
