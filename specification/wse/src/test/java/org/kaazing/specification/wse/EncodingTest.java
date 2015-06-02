@@ -18,6 +18,7 @@ package org.kaazing.specification.wse;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.kaazing.specification.wse.internal.Encoding;
 
 public class EncodingTest {
 

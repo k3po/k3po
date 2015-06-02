@@ -26,6 +26,10 @@ import javax.el.ELException;
 
 import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
 
+/**
+ * Spi for Function in the K3PO Language.
+ *
+ */
 public final class FunctionMapper extends javax.el.FunctionMapper {
 
     private final Map<String, FunctionMapperSpi> functionMapperSpis;
@@ -34,6 +38,10 @@ public final class FunctionMapper extends javax.el.FunctionMapper {
         this.functionMapperSpis = functionMapperSpis;
     }
 
+    /**
+     * Creates a new Function Mapper.
+     * @return returns an instance of the FunctionMapper
+     */
     public static FunctionMapper newFunctionMapper() {
         ServiceLoader<FunctionMapperSpi> loader = loadFunctionMapperSpi();
 
@@ -50,6 +58,12 @@ public final class FunctionMapper extends javax.el.FunctionMapper {
         return new FunctionMapper(functionMappers);
     }
 
+    /**
+     * Resolves a Function via prefix and local name.
+     * @param prefix of the function
+     * @param localName of the function
+     * @return an instance of a Method
+     */
     public Method resolveFunction(String prefix, String localName) {
         FunctionMapperSpi functionMapperSpi = findFunctionMapperSpi(prefix);
         return functionMapperSpi.resolveFunction(localName);

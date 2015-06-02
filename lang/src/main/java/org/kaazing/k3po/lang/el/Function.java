@@ -21,8 +21,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotation for a Method in the @see FunctionMapperSpi.
+ *
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Function {
+    /**
+     * Name of the method.
+     */
     String name() default "";
 }

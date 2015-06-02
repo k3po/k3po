@@ -21,7 +21,7 @@
 
 package org.kaazing.specification.http.internal;
 
-import static org.kaazing.k3po.lang.el.ExpressionFactoryUtils.newExpressionFactory;
+import static org.kaazing.k3po.lang.internal.el.ExpressionFactoryUtils.newExpressionFactory;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
@@ -29,7 +29,7 @@ import javax.el.ValueExpression;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.kaazing.k3po.lang.el.ExpressionContext;
+import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
 public class FunctionsTest {
 
