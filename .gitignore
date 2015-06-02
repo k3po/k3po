@@ -27,4 +27,4 @@ out
 *.sublime-project
 *.sublime-workspace
 build-local.properties
-.checkstyle
+
