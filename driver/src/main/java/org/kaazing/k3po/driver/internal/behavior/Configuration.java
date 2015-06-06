@@ -27,6 +27,7 @@ import javax.el.ExpressionFactory;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
+import org.kaazing.k3po.driver.internal.netty.bootstrap.LazyClientBootstrap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 
@@ -34,6 +35,7 @@ public class Configuration {
 
     private List<ServerBootstrap> serverBootstraps;
     private List<ClientBootstrap> clientBootstraps;
+    private List<LazyClientBootstrap> lazyClientBootstraps;
     private List<ChannelPipeline> pipelines;
     private Set<Barrier> barriers;
     private ExpressionFactory factory;
@@ -81,6 +83,14 @@ public class Configuration {
         }
 
         return clientBootstraps;
+    }
+
+    public List<LazyClientBootstrap> getLazyClientBootstraps() {
+        if (lazyClientBootstraps == null) {
+            lazyClientBootstraps = new ArrayList<LazyClientBootstrap>();
+        }
+
+        return lazyClientBootstraps;
     }
 
     public Set<Barrier> getBarriers() {

@@ -15,8 +15,8 @@ write header "Content-Type" "text/plain;charset=utf-8"
 write header content-length
 
 write "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
-write "tcp://localhost:8080/path/" ${wse:uniqueId()} "\n"
-write notify CREATED
+write "tcp://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1\n"
+write notify CREATE_COMPLETED
 write close
 
 # upstream
@@ -24,7 +24,7 @@ accept http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh
 accepted
 connected
 
-read await CREATED
+read await CREATE_COMPLETED
 read method "POST"
 read version "HTTP/1.1"
 read header "Content-Type" "application/octet-stream"

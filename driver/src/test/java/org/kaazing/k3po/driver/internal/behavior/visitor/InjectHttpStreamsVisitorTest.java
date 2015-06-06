@@ -21,6 +21,7 @@ import java.net.URI;
 import org.junit.Test;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.builder.AstScriptNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.value.AstUriLiteralValue;
 
 public class InjectHttpStreamsVisitorTest {
 
@@ -161,7 +162,7 @@ public class InjectHttpStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addConnectStream()
-                .setLocation(URI.create("http://localhost:8000/somepath"))
+                .setLocation(new AstUriLiteralValue(URI.create("http://localhost:8000/somepath")))
                 .addOpenedEvent()
                 .done()
                 .addWriteCloseCommand()
@@ -220,7 +221,7 @@ public class InjectHttpStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
         .addConnectStream().
-            setLocation(URI.create("tcp://localhost:8000"))
+            setLocation(new AstUriLiteralValue(URI.create("tcp://localhost:8000")))
                 .addReadEvent()
                     .addExactText("exact text")
                 .done()

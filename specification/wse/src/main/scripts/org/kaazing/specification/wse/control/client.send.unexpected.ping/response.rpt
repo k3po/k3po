@@ -16,7 +16,6 @@ write header content-length
 
 write "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
 write "http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1\n"
-write notify CREATED
 write close
 
 # Downstream
@@ -24,7 +23,6 @@ accept http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1
 accepted
 connected
 
-read await CREATED
 read method "GET"
 read version "HTTP/1.1"
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
@@ -47,7 +45,6 @@ accept http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh
 accepted
 connected
 
-read await CREATED
 read method "POST"
 read version "HTTP/1.1"
 read header "Content-Type" "application/octet-stream"

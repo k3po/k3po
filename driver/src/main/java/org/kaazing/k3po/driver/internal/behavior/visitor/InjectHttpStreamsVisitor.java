@@ -16,7 +16,6 @@
 
 package org.kaazing.k3po.driver.internal.behavior.visitor;
 
-import java.net.URI;
 import java.util.List;
 
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
@@ -55,15 +54,9 @@ import org.kaazing.k3po.lang.internal.ast.AstWriteValueNode;
 // Note: this is no longer injecting, just validating, as injection is now generalized
 public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, InjectHttpStreamsVisitor.State> {
 
-    // READ_OPEN  -> [READ_START  -> READ_HEADERS_COMPLETE  -> READ_CONTENT_COMPLETE]  -> READ_CLOSED
-    // WRITE_OPEN -> [WRITE_START -> WRITE_HEADERS_COMPLETE -> WRITE_CONTENT_COMPLETE] -> WRITE_CLOSED
     public static enum StreamState {
         // @formatter:off
         OPEN,
-        REQUEST,
-        RESPONSE,
-        HEADERS_COMPLETE,
-        CONTENT_COMPLETE,
         CLOSED,
         // @formatter:on
     }
@@ -139,16 +132,8 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
 
         state.acceptables = newAcceptNode.getAcceptables();
         for (AstAcceptableNode acceptable : acceptNode.getAcceptables()) {
-            URI location = acceptNode.getLocation();
-            if (location != null && "http".equals(location.getScheme())) {
-                state.readState = StreamState.REQUEST;
-                state.writeState = StreamState.RESPONSE;
-            }
-            else {
-                state.readState = StreamState.OPEN;
-                state.writeState = StreamState.OPEN;
-            }
-
+            state.readState = StreamState.OPEN;
+            state.writeState = StreamState.OPEN;
             acceptable.accept(this, state);
 
         }
@@ -160,19 +145,13 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
     @Override
     public AstScriptNode visit(AstConnectNode connectNode, State state) throws Exception {
 
-        URI location = connectNode.getLocation();
-        if (location != null && "http".equals(location.getScheme())) {
-            state.writeState = StreamState.REQUEST;
-            state.readState = StreamState.RESPONSE;
-        }
-        else {
-            state.writeState = StreamState.OPEN;
-            state.readState = StreamState.OPEN;
-        }
+        state.writeState = StreamState.OPEN;
+        state.readState = StreamState.OPEN;
 
         AstConnectNode newConnectNode = new AstConnectNode();
         newConnectNode.setRegionInfo(connectNode.getRegionInfo());
         newConnectNode.setLocation(connectNode.getLocation());
+        newConnectNode.setExpressionContext(connectNode.getExpressionContext());
         newConnectNode.setBarrier(connectNode.getBarrier());
 
         state.streamables = newConnectNode.getStreamables();
@@ -189,8 +168,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
     public AstScriptNode visit(AstReadConfigNode node, State state) throws Exception {
 
         switch (state.readState) {
-        case REQUEST:
-        case RESPONSE:
         case OPEN:
             break;
         default:
@@ -205,8 +182,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
     public AstScriptNode visit(AstWriteConfigNode node, State state) throws Exception {
 
         switch (state.writeState) {
-        case REQUEST:
-        case RESPONSE:
         case OPEN:
             break;
         default:
@@ -221,10 +196,7 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
     public AstScriptNode visit(AstReadClosedNode node, State state) throws Exception {
 
         switch (state.readState) {
-        case REQUEST:
-        case RESPONSE:
-        case HEADERS_COMPLETE:
-        case CONTENT_COMPLETE:
+        case OPEN:
             state.readState = StreamState.CLOSED;
             break;
         default:
@@ -238,10 +210,7 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
     public AstScriptNode visit(AstWriteCloseNode node, State state) throws Exception {
 
         switch (state.writeState) {
-        case REQUEST:
-        case RESPONSE:
-        case HEADERS_COMPLETE:
-        case CONTENT_COMPLETE:
+        case OPEN:
             state.writeState = StreamState.CLOSED;
             break;
         default:
@@ -257,13 +226,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
         switch (state.readState) {
         case OPEN:
             break;
-        case REQUEST:
-        case RESPONSE:
-            // TODO: -> OPEN for Upgrade / 101 Switching Protocols
-            state.readState = StreamState.HEADERS_COMPLETE;
-            break;
-        case HEADERS_COMPLETE:
-            break;
         default:
             throw new IllegalStateException(unexpectedReadEvent(node, state));
         }
@@ -277,13 +239,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
         switch (state.writeState) {
         case OPEN:
             break;
-        case REQUEST:
-        case RESPONSE:
-            // TODO: -> OPEN for Upgrade / 101 Switching Protocols
-            state.writeState = StreamState.HEADERS_COMPLETE;
-            break;
-        case HEADERS_COMPLETE:
-            break;
         default:
             throw new IllegalStateException(unexpectedWriteEvent(node, state));
         }
@@ -296,13 +251,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
 
         switch (state.writeState) {
         case OPEN:
-            break;
-        case REQUEST:
-        case RESPONSE:
-            // TODO: -> OPEN for Upgrade / 101 Switching Protocols
-            state.writeState = StreamState.HEADERS_COMPLETE;
-            break;
-        case HEADERS_COMPLETE:
             break;
         default:
             throw new IllegalStateException(unexpectedWriteEvent(node, state));
@@ -396,10 +344,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
     public AstScriptNode visit(AstClosedNode node, State state) throws Exception {
         switch (state.readState) {
         case OPEN:
-        case REQUEST:
-        case RESPONSE:
-        case HEADERS_COMPLETE:
-        case CONTENT_COMPLETE:
             state.readState = StreamState.CLOSED;
             break;
         case CLOSED:
@@ -410,10 +354,6 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
 
         switch (state.writeState) {
         case OPEN:
-        case REQUEST:
-        case RESPONSE:
-        case HEADERS_COMPLETE:
-        case CONTENT_COMPLETE:
             state.writeState = StreamState.CLOSED;
             break;
         case CLOSED:
@@ -463,12 +403,12 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
     }
 
     private String unexpectedReadEvent(AstNode node, State state) {
-        return String.format("Unexpected http event (%s) while reading in state %s", node
+        return String.format("Unexpected event (%s) while reading in state %s", node
                 .toString().trim(), state.readState);
     }
 
     private String unexpectedWriteEvent(AstNode node, State state) {
-        return String.format("Unexpected http command (%s) while writing in state %s", node
+        return String.format("Unexpected command (%s) while writing in state %s", node
                 .toString().trim(), state.writeState);
     }
 

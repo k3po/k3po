@@ -101,6 +101,7 @@ import org.kaazing.k3po.driver.internal.behavior.handler.event.UnboundHandler;
 import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor.State;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
+import org.kaazing.k3po.driver.internal.netty.bootstrap.LazyClientBootstrap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
@@ -355,7 +356,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstConnectNode connectNode, State state) throws Exception {
 
-        URI connectURI = connectNode.getLocation();
+        // URI connectURI = connectNode.getLocation();
         // masking is a no-op by default for each stream
         state.readUnmasker = Masker.IDENTITY_MASKER;
         state.writeMasker = Masker.IDENTITY_MASKER;
@@ -375,16 +376,17 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         completionHandler.setRegionInfo(connectNode.getRegionInfo());
         state.pipelineAsMap.put(handlerName, completionHandler);
 
-        ChannelAddress remoteAddress = addressFactory.newChannelAddress(connectURI);
-        connectOptions.put("remoteAddress", remoteAddress);
+        // ChannelAddress remoteAddress = addressFactory.newChannelAddress(connectURI);
+        // connectOptions.put("remoteAddress", remoteAddress);
         connectOptions.put("regionInfo", connectNode.getRegionInfo());
-
-        ClientBootstrap clientBootstrap = bootstrapFactory.newClientBootstrap(connectURI.getScheme());
+        connectOptions.put("location", connectNode.getLocation());
+        connectOptions.put("environment", connectNode.getExpressionContext());
+        if (barrierName != null) {
+            Barrier barrier = state.lookupBarrier(barrierName);
+            connectOptions.put("barrier", barrier);
+        }
 
         final ChannelPipeline pipeline = pipelineFromMap(state.pipelineAsMap);
-
-        // retain pipelines for tear down
-        state.configuration.getClientAndServerPipelines().add(pipeline);
 
         /*
          * TODO. This is weird. I will only have one pipeline per connect. But if I don't set a factory When a connect
@@ -403,16 +405,21 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 return pipeline;
             }
         };
-        clientBootstrap.setPipelineFactory(pipelineFactory);
-        clientBootstrap.setOptions(connectOptions);
-        if (barrierName != null) {
-            Barrier barrier = state.lookupBarrier(barrierName);
-            clientBootstrap.setOption("barrier", barrier);
-        }
 
-        state.configuration.getClientBootstraps().add(clientBootstrap);
+        // ClientBootstrap clientBootstrap = bootstrapFactory.newClientBootstrap(connectURI.getScheme());
+        LazyClientBootstrap lazyClientBootstrap = new LazyClientBootstrap(bootstrapFactory, addressFactory,
+                pipelineFactory, connectOptions);
 
-        LOGGER.debug("Added client Bootstrap connecting to remoteAddress " + remoteAddress);
+        // retain pipelines for tear down
+        state.configuration.getClientAndServerPipelines().add(pipeline);
+
+        // clientBootstrap.setPipelineFactory(pipelineFactory);
+        // clientBootstrap.setOptions(connectOptions);
+
+        // state.configuration.getClientBootstraps().add(clientBootstrap);
+        state.configuration.getLazyClientBootstraps().add(lazyClientBootstrap);
+
+        // LOGGER.debug("Added client Bootstrap connecting to remoteAddress " + remoteAddress);
 
         return state.configuration;
     }

@@ -16,15 +16,14 @@ write header content-length
 
 write "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
 write "http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1\n"
-write notify CREATED
 write close
 
 # Downstream
-accept http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1?.kr=1
+accept http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1
 accepted
 connected
 
-# read parameter ".kb" "256"
+read parameter ".kb" "256"
 read method "GET"
 read version "HTTP/1.1"
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
@@ -39,7 +38,6 @@ write flush
 write await DATA_RECEIVED
 write [0x80 0x82 0x00] ${server256}
 write [0x01 0x30 0x31 0xFF]
-write notify RECONNECT_SENT
 write close
 
 # Upstream
@@ -63,20 +61,3 @@ write version "HTTP/1.1"
 write header content-length
 write close
 
-
-# Downstream Reconnect
-accept http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1?.kr=2
-accepted
-connected
-
-# read parameter ".kb" "256"
-read method "GET"
-read version "HTTP/1.1"
-read header "X-Sequence-No" ${wse:asString(sequence + 2)}
-read closed
-
-write status "200" "OK"
-write version "HTTP/1.1"
-write header "Content-Type" "application/octet-stream"
-write header "Connection" "close"
-write flush

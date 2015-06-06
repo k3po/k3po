@@ -48,6 +48,7 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
+import org.kaazing.k3po.driver.internal.behavior.Barrier;
 import org.kaazing.k3po.driver.internal.behavior.Configuration;
 import org.kaazing.k3po.driver.internal.behavior.ScriptProgress;
 import org.kaazing.k3po.driver.internal.behavior.ScriptProgressException;
@@ -56,6 +57,7 @@ import org.kaazing.k3po.driver.internal.behavior.parser.Parser;
 import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
+import org.kaazing.k3po.driver.internal.netty.bootstrap.LazyClientBootstrap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
 import org.kaazing.k3po.driver.internal.netty.channel.CompositeChannelFuture;
@@ -284,23 +286,43 @@ public class Robot {
         return new CompositeChannelFuture<>(channel, bindFutures);
     }
 
-    private void startConfiguration() {
+    private void startConfiguration() throws Exception {
         /* Connect to any clients */
-        for (ClientBootstrap client : configuration.getClientBootstraps()) {
+        for (final LazyClientBootstrap lazyClientBootstrap : configuration.getLazyClientBootstraps()) {
+            Object barrierObj = lazyClientBootstrap.getOptions().get("barrier");
+            if (barrierObj != null) {
+                final Barrier barrier = (Barrier) barrierObj;
+                System.out.println("Connect AWAIT " + barrier);
+                barrier.getFuture().addListener(new ChannelFutureListener() {
 
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("[id:           ] connect " + client.getOption("remoteAddress"));
+                    @Override
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        System.out.println("Barrier Notified - " + barrier);
+                        // TODO: check if script is already aborted or script execution has failed
+                        connectClient(lazyClientBootstrap);
+                    }
+                });
             }
-
-            final RegionInfo regionInfo = (RegionInfo) client.getOption("regionInfo");
-            ChannelFuture connectFuture = client.connect();
-            connectFutures.add(connectFuture);
-            clientChannels.add(connectFuture.getChannel());
-            connectFuture.addListener(createConnectCompleteListener(regionInfo));
+            else {
+                connectClient(lazyClientBootstrap);
+            }
         }
     }
 
-    private void stopConfiguration() {
+    private void connectClient(LazyClientBootstrap clientBootstrap) throws Exception {
+        ClientBootstrap client = clientBootstrap.getClientBootstrap();
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("[id:           ] connect " + client.getOption("remoteAddress"));
+        }
+
+        final RegionInfo regionInfo = (RegionInfo) client.getOption("regionInfo");
+        ChannelFuture connectFuture = client.connect();
+        connectFutures.add(connectFuture);
+        clientChannels.add(connectFuture.getChannel());
+        connectFuture.addListener(createConnectCompleteListener(regionInfo));
+    }
+
+    private void stopConfiguration() throws Exception {
 
         if (configuration == null) {
             // abort received but script not prepared, therefore entire script failed
@@ -318,7 +340,8 @@ public class Robot {
             for (ServerBootstrap server : configuration.getServerBootstraps()) {
                 server.setPipelineFactory(pipelineFactory(pipeline(closeOnExceptionHandler)));
             }
-            for (ClientBootstrap bootstrap : configuration.getClientBootstraps()) {
+            for (LazyClientBootstrap lazyBootstrap : configuration.getLazyClientBootstraps()) {
+                ClientBootstrap bootstrap = lazyBootstrap.getClientBootstrap();
                 bootstrap.setPipelineFactory(pipelineFactory(pipeline(closeOnExceptionHandler)));
             }
 

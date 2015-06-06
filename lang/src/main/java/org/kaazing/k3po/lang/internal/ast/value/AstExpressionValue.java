@@ -47,7 +47,6 @@ public final class AstExpressionValue extends AstValue {
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
-
         return visitor.visit(this, parameter);
     }
 
