@@ -22,7 +22,6 @@ import org.kaazing.k3po.driver.internal.behavior.visitor.AssociateStreamsVisitor
 import org.kaazing.k3po.driver.internal.behavior.visitor.InjectBarriersVisitor;
 import org.kaazing.k3po.driver.internal.behavior.visitor.InjectEventsVisitor;
 import org.kaazing.k3po.driver.internal.behavior.visitor.InjectFlushVisitor;
-import org.kaazing.k3po.driver.internal.behavior.visitor.InjectHttpStreamsVisitor;
 import org.kaazing.k3po.driver.internal.behavior.visitor.ValidateBarriersVisitor;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.parser.ScriptParseException;
@@ -58,10 +57,6 @@ public class Parser implements ScriptParser {
 
             ValidateBarriersVisitor validateBarriers = new ValidateBarriersVisitor();
             script.accept(validateBarriers, new ValidateBarriersVisitor.State());
-
-            InjectHttpStreamsVisitor injectHttpEvents = new InjectHttpStreamsVisitor();
-            InjectHttpStreamsVisitor.State injectHttpEventsState = new InjectHttpStreamsVisitor.State();
-            script = script.accept(injectHttpEvents, injectHttpEventsState);
 
             return script;
 

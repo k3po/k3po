@@ -18,6 +18,7 @@ package org.kaazing.k3po.driver.internal.resolver;
 
 import java.net.URI;
 
+import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor;
 import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
@@ -26,6 +27,14 @@ import org.kaazing.k3po.lang.internal.ast.value.AstLocationLiteral;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
+/**
+ * The class is used to defer the resolution of location value such as
+ * accept/connect uri in {@link GenerateConfigurationVisitor}. In scenarios when
+ * accept/connect takes expression value which only gets resolved during the
+ * script execution, it is necessary to defer the resolution of accept/connect
+ * uri.
+ *
+ */
 public class LocationResolver {
 
     private final AstValue location;

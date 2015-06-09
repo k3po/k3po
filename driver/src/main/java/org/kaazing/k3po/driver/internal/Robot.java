@@ -296,7 +296,6 @@ public class Robot {
 
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {
-                        // TODO: check if script is already aborted or script execution has failed
                         connectClient(clientBootstrapResolver);
                     }
                 });

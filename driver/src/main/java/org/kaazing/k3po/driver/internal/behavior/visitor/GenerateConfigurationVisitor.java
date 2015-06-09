@@ -336,6 +336,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         Map<String, Object> acceptOptions = acceptNode.getOptions();
         acceptOptions.put("regionInfo", acceptInfo);
+
+        // Now that accept supports expression value, accept uri may not be available at this point.
+        // To defer the resolution of accept uri and create ServerBootstrap, LocationResolver and ServerBootstrapResolver
+        // are created with information necessary create ClientBootstrap when the accept uri is available.
         LocationResolver locationResolver = new LocationResolver(acceptNode.getLocation(), acceptNode.getEnvironment());
         ServerBootstrapResolver serverBootstrapResolver = new ServerBootstrapResolver(bootstrapFactory, addressFactory,
                 pipelineFactory, locationResolver, acceptOptions);
@@ -393,6 +397,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 return pipeline;
             }
         };
+
+        // Now that connect supports barrier and expression value, connect uri may not be available at this point.
+        // To defer the resolution of connect uri and create ClientBootstrap, LocationResolver and ClientBootstrapResolver
+        // are created with information necessary create ClientBootstrap when the connect uri is available.
         LocationResolver locationResolver = new LocationResolver(connectNode.getLocation(), connectNode.getEnvironment());
         ClientBootstrapResolver clientBootstrapResolver = new ClientBootstrapResolver(bootstrapFactory, addressFactory,
                 pipelineFactory, locationResolver, barrier, connectNode.getRegionInfo());

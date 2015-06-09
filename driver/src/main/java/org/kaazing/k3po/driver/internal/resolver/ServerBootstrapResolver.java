@@ -27,6 +27,9 @@ import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
 
+/**
+ * The class is used to defer the initialization of {@link ServerBootstrap}.
+ */
 public class ServerBootstrapResolver {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ClientBootstrapResolver.class);
