@@ -100,11 +100,12 @@ import org.kaazing.k3po.driver.internal.behavior.handler.event.ReadHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.UnboundHandler;
 import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor.State;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.LazyClientBootstrap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
+import org.kaazing.k3po.driver.internal.resolver.ClientBootstrapResolver;
+import org.kaazing.k3po.driver.internal.resolver.LocationResolver;
+import org.kaazing.k3po.driver.internal.resolver.ServerBootstrapResolver;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
@@ -302,8 +303,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         state.readUnmasker = Masker.IDENTITY_MASKER;
         state.writeMasker = Masker.IDENTITY_MASKER;
 
-        URI acceptURI = acceptNode.getLocation();
-
         /* Create a list of pipelines, for each acceptable */
         final List<ChannelPipeline> pipelines = new ArrayList<ChannelPipeline>();
         state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
@@ -336,15 +335,12 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         };
 
         Map<String, Object> acceptOptions = acceptNode.getOptions();
-        ChannelAddress localAddress = addressFactory.newChannelAddress(acceptURI, acceptOptions);
+        acceptOptions.put("regionInfo", acceptInfo);
+        LocationResolver locationResolver = new LocationResolver(acceptNode.getLocation(), acceptNode.getEnvironment());
+        ServerBootstrapResolver serverBootstrapResolver = new ServerBootstrapResolver(bootstrapFactory, addressFactory,
+                pipelineFactory, locationResolver, acceptOptions);
 
-        ServerBootstrap serverBootstrap = bootstrapFactory.newServerBootstrap(acceptURI.getScheme());
-        serverBootstrap.setOptions(acceptOptions);
-        serverBootstrap.setPipelineFactory(pipelineFactory);
-        serverBootstrap.setOption("localAddress", localAddress);
-        serverBootstrap.setOption("regionInfo", acceptInfo);
-
-        state.configuration.getServerBootstraps().add(serverBootstrap);
+        state.configuration.getServerBootstrapResolvers().add(serverBootstrapResolver);
 
         return state.configuration;
     }
@@ -356,13 +352,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstConnectNode connectNode, State state) throws Exception {
 
-        // URI connectURI = connectNode.getLocation();
         // masking is a no-op by default for each stream
         state.readUnmasker = Masker.IDENTITY_MASKER;
         state.writeMasker = Masker.IDENTITY_MASKER;
-
-        Map<String, Object> connectOptions = connectNode.getOptions();
-        String barrierName = connectNode.getBarrier();
 
         state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
 
@@ -376,14 +368,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         completionHandler.setRegionInfo(connectNode.getRegionInfo());
         state.pipelineAsMap.put(handlerName, completionHandler);
 
-        // ChannelAddress remoteAddress = addressFactory.newChannelAddress(connectURI);
-        // connectOptions.put("remoteAddress", remoteAddress);
-        connectOptions.put("regionInfo", connectNode.getRegionInfo());
-        connectOptions.put("location", connectNode.getLocation());
-        connectOptions.put("environment", connectNode.getExpressionContext());
+        String barrierName = connectNode.getBarrier();
+        Barrier barrier = null;
         if (barrierName != null) {
-            Barrier barrier = state.lookupBarrier(barrierName);
-            connectOptions.put("barrier", barrier);
+            barrier = state.lookupBarrier(barrierName);
         }
 
         final ChannelPipeline pipeline = pipelineFromMap(state.pipelineAsMap);
@@ -405,22 +393,14 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 return pipeline;
             }
         };
-
-        // ClientBootstrap clientBootstrap = bootstrapFactory.newClientBootstrap(connectURI.getScheme());
-        LazyClientBootstrap lazyClientBootstrap = new LazyClientBootstrap(bootstrapFactory, addressFactory,
-                pipelineFactory, connectOptions);
+        LocationResolver locationResolver = new LocationResolver(connectNode.getLocation(), connectNode.getEnvironment());
+        ClientBootstrapResolver clientBootstrapResolver = new ClientBootstrapResolver(bootstrapFactory, addressFactory,
+                pipelineFactory, locationResolver, barrier, connectNode.getRegionInfo());
 
         // retain pipelines for tear down
         state.configuration.getClientAndServerPipelines().add(pipeline);
 
-        // clientBootstrap.setPipelineFactory(pipelineFactory);
-        // clientBootstrap.setOptions(connectOptions);
-
-        // state.configuration.getClientBootstraps().add(clientBootstrap);
-        state.configuration.getLazyClientBootstraps().add(lazyClientBootstrap);
-
-        // LOGGER.debug("Added client Bootstrap connecting to remoteAddress " + remoteAddress);
-
+        state.configuration.getClientBootstrapResolvers().add(clientBootstrapResolver);
         return state.configuration;
     }
 

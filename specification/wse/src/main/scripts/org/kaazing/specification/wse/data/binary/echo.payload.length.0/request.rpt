@@ -39,7 +39,6 @@ read header "Connection" "close"
 
 read [0x80 0x00]
 
-
 # Upstream
 connect await CREATED
 connect ${upstream}

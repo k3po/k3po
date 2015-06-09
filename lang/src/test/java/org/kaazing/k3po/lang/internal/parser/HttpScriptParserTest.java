@@ -51,7 +51,7 @@ import org.kaazing.k3po.lang.internal.ast.builder.AstScriptNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteCloseNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteConfigNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteFlushNodeBuilder;
-import org.kaazing.k3po.lang.internal.ast.value.AstUriLiteralValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLocationLiteral;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
@@ -425,7 +425,7 @@ public class HttpScriptParserTest {
          // @formatter:off
          AstScriptNode expected = new AstScriptNodeBuilder()
              .addAcceptStream()
-                 .setLocation(URI.create("http://somehost:8000/path"))
+                 .setLocation(new AstLocationLiteral(URI.create("http://somehost:8000/path")))
              .done()
              .addAcceptedStream()
                  .addReadConfigEvent()
@@ -489,7 +489,7 @@ public class HttpScriptParserTest {
 
          ScriptParserImpl parser = new ScriptParserImpl();
          AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
-         AstValue location = new AstUriLiteralValue(URI.create("http://somehost:8000/path"));
+         AstValue location = new AstLocationLiteral(URI.create("http://somehost:8000/path"));
 
          // @formatter:off
          AstScriptNode expected = new AstScriptNodeBuilder()
@@ -558,7 +558,7 @@ public class HttpScriptParserTest {
          // @formatter:off
          AstScriptNode expected = new AstScriptNodeBuilder()
              .addAcceptStream()
-                 .setLocation(URI.create("http://somehost:8000/path"))
+                 .setLocation(new AstLocationLiteral(URI.create("http://somehost:8000/path")))
              .done()
              .addAcceptedStream()
                  .addReadConfigEvent()

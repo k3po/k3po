@@ -66,6 +66,11 @@ public final class Functions {
         return Integer.toString(value);
     }
 
+    @Function
+    public static String uniqueUri(String origin) {
+        return origin + new String(uniqueId());
+    }
+
     public static class Mapper extends FunctionMapperSpi.Reflective {
 
         public Mapper() {

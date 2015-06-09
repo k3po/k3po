@@ -71,7 +71,7 @@ public class K3poTestRule extends Verifier {
     }
 
     public void finish() throws Exception {
-        assertTrue(format("Did you call join() from outside @%s test?", TestSpecification.class.getSimpleName()),
+        assertTrue(format("Did you call finish() from outside @%s test?", TestSpecification.class.getSimpleName()),
                 latch.isPrepared());
 
         // notify script to start

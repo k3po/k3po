@@ -1,0 +1,13 @@
+property url "tcp://localhost:8080"
+
+connect ${url}
+connected
+write "Hello"
+close
+closed
+
+accept tcp://localhost:8080
+accepted
+connected
+read "Hello"
+closed

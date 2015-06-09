@@ -32,7 +32,7 @@ public abstract class AstLocation extends AstValue {
 
     public interface LocationVisitor<R, P> extends Visitor<R, P> {
 
-        R visit(AstUriLiteralValue value, P parameter) throws Exception;
+        R visit(AstLocationLiteral value, P parameter) throws Exception;
 
     }
 

@@ -21,19 +21,19 @@ import java.net.URI;
 import org.kaazing.k3po.lang.internal.ast.AstRegion;
 import org.kaazing.k3po.lang.internal.ast.util.AstUtil;
 
-public class AstUriLiteralValue extends AstLocation {
+public class AstLocationLiteral extends AstLocation {
 
-    private final URI uri;
+    private final URI value;
 
-    public AstUriLiteralValue(URI value) {
+    public AstLocationLiteral(URI value) {
         if (value == null) {
             throw new IllegalArgumentException("value cannot be null");
         }
-        uri = value;
+        this.value = value;
     }
 
     public URI getValue() {
-        return uri;
+        return value;
     }
 
     @Override
@@ -43,16 +43,16 @@ public class AstUriLiteralValue extends AstLocation {
 
     @Override
     protected int hashTo() {
-        return uri.hashCode();
+        return value.hashCode();
     }
 
     @Override
     protected boolean equalTo(AstRegion that) {
-        return (that instanceof AstUriLiteralValue) && equalTo((AstUriLiteralValue) that);
+        return (that instanceof AstLocationLiteral) && equalTo((AstLocationLiteral) that);
     }
 
-    protected boolean equalTo(AstUriLiteralValue that) {
-        return AstUtil.equivalent(this.uri, that.uri);
+    protected boolean equalTo(AstLocationLiteral that) {
+        return AstUtil.equivalent(this.value, that.value);
     }
 
 

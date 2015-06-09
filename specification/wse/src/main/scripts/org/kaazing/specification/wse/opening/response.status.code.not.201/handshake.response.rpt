@@ -1,3 +1,6 @@
+property upstream ${wse:uniqueUri("http://localhost:8080/path/")}
+property downstream ${wse:uniqueUri("http://localhost:8080/path/")}
+
 accept http://localhost:8080/path/;e/cb?query
 accepted
 connected
@@ -8,18 +11,19 @@ read header "X-WebSocket-Version" "wseb-1.1"
 read header "X-Sequence-No" /(?<sequence>[0-9]{1,3})/
 read closed
 
+write status "301" "Created" 
 write version "HTTP/1.1"
 write header "X-WebSocket-Version" "wseb-1.1"
 write header "Content-Type" "text/plain;charset=utf-8"
 write header content-length
 
-write "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
-write "http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1\n"
+write ${upstream} "\n"
+write ${downstream} "\n"
 write notify CREATE_COMPLETED
 write close
 
 # upstream
-accept http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh
+accept ${upstream}
 accepted
 connected
 

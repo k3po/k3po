@@ -31,7 +31,7 @@ public class AstConnectNode extends AstStreamNode {
     private String barrier;
 
     private AstValue location;
-    private ExpressionContext expressionContext;
+    private ExpressionContext environment;
 
     public Map<String, Object> getOptions() {
         if (options == null) {
@@ -48,6 +48,11 @@ public class AstConnectNode extends AstStreamNode {
         if (location != null) {
             hashCode <<= 4;
             hashCode ^= location.hashCode();
+        }
+
+        if (environment != null) {
+            hashCode <<= 4;
+            hashCode ^= environment.hashCode();
         }
 
         if (options != null) {
@@ -98,11 +103,11 @@ public class AstConnectNode extends AstStreamNode {
         this.location = location;
     }
 
-    public ExpressionContext getExpressionContext() {
-        return expressionContext;
+    public ExpressionContext getEnvironment() {
+        return environment;
     }
 
-    public void setExpressionContext(ExpressionContext expressionContext) {
-        this.expressionContext = expressionContext;
+    public void setEnvironment(ExpressionContext expressionContext) {
+        this.environment = expressionContext;
     }
 }

@@ -26,16 +26,15 @@ import java.util.Set;
 import javax.el.ExpressionFactory;
 
 import org.jboss.netty.channel.ChannelPipeline;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.LazyClientBootstrap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
+import org.kaazing.k3po.driver.internal.resolver.ClientBootstrapResolver;
+import org.kaazing.k3po.driver.internal.resolver.ServerBootstrapResolver;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 
 public class Configuration {
 
-    private List<ServerBootstrap> serverBootstraps;
-    private List<ClientBootstrap> clientBootstraps;
-    private List<LazyClientBootstrap> lazyClientBootstraps;
+    private List<ServerBootstrapResolver> serverBootstrapResolvers;
+    private List<ClientBootstrapResolver> clientBootstrapResolvers;
     private List<ChannelPipeline> pipelines;
     private Set<Barrier> barriers;
     private ExpressionFactory factory;
@@ -69,28 +68,20 @@ public class Configuration {
         return factory;
     }
 
-    public List<ServerBootstrap> getServerBootstraps() {
-        if (serverBootstraps == null) {
-            serverBootstraps = new ArrayList<ServerBootstrap>();
+    public List<ServerBootstrapResolver> getServerBootstrapResolvers() {
+        if (serverBootstrapResolvers == null) {
+            serverBootstrapResolvers = new ArrayList<ServerBootstrapResolver>();
         }
 
-        return serverBootstraps;
+        return serverBootstrapResolvers;
     }
 
-    public List<ClientBootstrap> getClientBootstraps() {
-        if (clientBootstraps == null) {
-            clientBootstraps = new ArrayList<ClientBootstrap>();
+    public List<ClientBootstrapResolver> getClientBootstrapResolvers() {
+        if (clientBootstrapResolvers == null) {
+            clientBootstrapResolvers = new ArrayList<ClientBootstrapResolver>();
         }
 
-        return clientBootstraps;
-    }
-
-    public List<LazyClientBootstrap> getLazyClientBootstraps() {
-        if (lazyClientBootstraps == null) {
-            lazyClientBootstraps = new ArrayList<LazyClientBootstrap>();
-        }
-
-        return lazyClientBootstraps;
+        return clientBootstrapResolvers;
     }
 
     public Set<Barrier> getBarriers() {

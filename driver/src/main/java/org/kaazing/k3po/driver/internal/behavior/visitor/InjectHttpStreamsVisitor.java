@@ -122,6 +122,7 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
         newAcceptNode.setRegionInfo(acceptNode.getRegionInfo());
         newAcceptNode.setAcceptName(acceptNode.getAcceptName());
         newAcceptNode.setLocation(acceptNode.getLocation());
+        newAcceptNode.setEnvironment(acceptNode.getEnvironment());
 
         state.streamables = newAcceptNode.getStreamables();
         state.streams.add(newAcceptNode);
@@ -151,7 +152,7 @@ public class InjectHttpStreamsVisitor implements AstNode.Visitor<AstScriptNode, 
         AstConnectNode newConnectNode = new AstConnectNode();
         newConnectNode.setRegionInfo(connectNode.getRegionInfo());
         newConnectNode.setLocation(connectNode.getLocation());
-        newConnectNode.setExpressionContext(connectNode.getExpressionContext());
+        newConnectNode.setEnvironment(connectNode.getEnvironment());
         newConnectNode.setBarrier(connectNode.getBarrier());
 
         state.streamables = newConnectNode.getStreamables();

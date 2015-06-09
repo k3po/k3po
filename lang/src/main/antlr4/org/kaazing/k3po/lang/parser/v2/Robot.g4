@@ -25,10 +25,6 @@ propertyValue
     : writeValue
     ;
 
-locationNode
-    : value=location
-    ;
-
 streamNode
     : acceptNode
     | acceptableNode
@@ -45,7 +41,7 @@ acceptableNode
     ;
 
 connectNode
-    : k=ConnectKeyword (AwaitKeyword barrier=Name ConnectKeyword)? connectURI=locationNode  streamableNode+
+    : k=ConnectKeyword (AwaitKeyword barrier=Name ConnectKeyword)? connectURI=location  streamableNode+
     ;
 
 serverStreamableNode

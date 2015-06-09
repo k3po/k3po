@@ -105,6 +105,7 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
         AstAcceptNode newAcceptNode = new AstAcceptNode();
         newAcceptNode.setRegionInfo(acceptNode.getRegionInfo());
         newAcceptNode.setLocation(acceptNode.getLocation());
+        newAcceptNode.setEnvironment(acceptNode.getEnvironment());
 
         String acceptName = acceptNode.getAcceptName();
         String newAcceptName = acceptName != null ? acceptName : String.format("~accept~%d", ++state.implicitAcceptCount);
@@ -162,7 +163,7 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
         AstConnectNode newConnectNode = new AstConnectNode();
         newConnectNode.setRegionInfo(connectNode.getRegionInfo());
         newConnectNode.setLocation(connectNode.getLocation());
-        newConnectNode.setExpressionContext(connectNode.getExpressionContext());
+        newConnectNode.setEnvironment(connectNode.getEnvironment());
         newConnectNode.setBarrier(connectNode.getBarrier());
 
         state.streamables = newConnectNode.getStreamables();

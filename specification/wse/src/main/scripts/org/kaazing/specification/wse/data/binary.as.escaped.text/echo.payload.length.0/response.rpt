@@ -1,3 +1,6 @@
+property upstream ${wse:uniqueUri("http://localhost:8080/path/")}
+property downstream ${wse:uniqueUri("http://localhost:8080/path/")}
+
 accept http://localhost:8080/path/;e/cte?query
 accepted
 connected
@@ -14,13 +17,13 @@ write header "X-WebSocket-Version" "wseb-1.1"
 write header "Content-Type" "text/plain;charset=utf-8"
 write header content-length
 
-write "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
-write "http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1\n"
+write ${upstream} "\n"
+write ${downstream} "\n"
 write notify CREATE_COMPLETED
 write close
 
 # Downstream
-accept http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1
+accept ${downstream}
 accepted
 connected
 
@@ -41,7 +44,7 @@ write [0x80 0x7F 0x3F]
 
 
 # Upstream
-accept http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh
+accept ${upstream}
 accepted
 connected
 

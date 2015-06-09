@@ -1,5 +1,5 @@
-property upstreamPath ${wse:uniqueId()}
-property downstreamPath ${wse:uniqueId()}
+property upstream ${wse:uniqueUri("http://localhost:8080/path/")}
+property downstream ${wse:uniqueUri("http://localhost:8080/path/")}
 
 accept http://localhost:8080/path/;e/cb?query
 accepted
@@ -19,6 +19,6 @@ write header "X-WebSocket-Extensions" "primary"
 write header "Content-Type" "text/plain;charset=utf-8"
 write header content-length
 
-write "http://localhost:8080/path/" ${upstreamPath} "\n"
-write "http://localhost:8080/path/" ${downstreamPath} "\n"
+write ${upstream} "\n"
+write ${downstream} "\n"
 write close
