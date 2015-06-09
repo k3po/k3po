@@ -19,7 +19,10 @@ package org.kaazing.k3po.driver.internal.resolver;
 import java.net.URI;
 
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.logging.InternalLogger;
+import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.behavior.Barrier;
+import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
@@ -27,6 +30,8 @@ import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 
 public class ClientBootstrapResolver {
+
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ClientBootstrapResolver.class);
 
     private final BootstrapFactory bootstrapFactory;
     private final ChannelAddressFactory addressFactory;
@@ -52,6 +57,7 @@ public class ClientBootstrapResolver {
         if (clientBootstrap == null) {
             URI connectUri = locationResolver.resolve();
             ChannelAddress remoteAddress = addressFactory.newChannelAddress(connectUri);
+            LOGGER.debug("Initializing client Bootstrap connecting to remoteAddress " + remoteAddress);
             ClientBootstrap clientBootstrapCandidate = bootstrapFactory.newClientBootstrap(connectUri.getScheme());
             clientBootstrapCandidate.setPipelineFactory(pipelineFactory);
             clientBootstrapCandidate.setOption("remoteAddress", remoteAddress);

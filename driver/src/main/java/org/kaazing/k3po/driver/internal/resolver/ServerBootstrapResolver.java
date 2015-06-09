@@ -20,13 +20,16 @@ import java.net.URI;
 import java.util.Map;
 
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.logging.InternalLogger;
+import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
-import org.kaazing.k3po.lang.internal.RegionInfo;
 
 public class ServerBootstrapResolver {
+
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ClientBootstrapResolver.class);
 
     private final BootstrapFactory bootstrapFactory;
     private final ChannelAddressFactory addressFactory;
@@ -49,6 +52,7 @@ public class ServerBootstrapResolver {
         if (bootstrap == null) {
             URI acceptURI = locationResolver.resolve();
             ChannelAddress localAddress = addressFactory.newChannelAddress(acceptURI, acceptOptions);
+            LOGGER.debug("Initializing server Bootstrap binding to address " + localAddress);
             ServerBootstrap serverBootstrapCandidate = bootstrapFactory.newServerBootstrap(acceptURI.getScheme());
             acceptOptions.put("localAddress", localAddress);
             serverBootstrapCandidate.setOptions(acceptOptions);

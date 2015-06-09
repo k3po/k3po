@@ -250,11 +250,10 @@ public class Robot {
 
         /* Accept's ... Robot acting as a server */
         for (ServerBootstrapResolver serverResolver : configuration.getServerBootstrapResolvers()) {
-
-//            if (LOGGER.isDebugEnabled()) {
-//                LOGGER.debug("Binding to address " + server.getOption("localAddress"));
-//            }
             ServerBootstrap server = serverResolver.resolve();
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Binding to address " + server.getOption("localAddress"));
+            }
 
             /* Keep track of the client channels */
             server.setParentHandler(new SimpleChannelHandler() {
@@ -311,6 +310,11 @@ public class Robot {
     private void connectClient(ClientBootstrapResolver clientBootstrapResolver) throws Exception {
         final RegionInfo regionInfo = clientBootstrapResolver.getRegionInfo();
         ClientBootstrap client = clientBootstrapResolver.resolve();
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("[id:           ] connect " + client.getOption("remoteAddress"));
+        }
+
         ChannelFuture connectFuture = client.connect();
         connectFutures.add(connectFuture);
         clientChannels.add(connectFuture.getChannel());
