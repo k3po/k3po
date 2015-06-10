@@ -1,6 +1,6 @@
-property url "tcp://localhost:8080"
+property location "tcp://localhost:8080"
 
-connect ${url}
+connect ${location}
 connected
 write "Hello"
 close

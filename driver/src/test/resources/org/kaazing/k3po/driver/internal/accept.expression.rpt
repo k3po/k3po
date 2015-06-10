@@ -1,4 +1,4 @@
-property url "tcp://localhost:8080"
+property location "tcp://localhost:8080"
 
 connect tcp://localhost:8080
 connected
@@ -6,7 +6,7 @@ write "Hello"
 close
 closed
 
-accept ${url}
+accept ${location}
 accepted
 connected
 read "Hello"

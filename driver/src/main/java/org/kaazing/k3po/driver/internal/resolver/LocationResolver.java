@@ -18,17 +18,16 @@ package org.kaazing.k3po.driver.internal.resolver;
 
 import java.net.URI;
 
+import javax.el.ValueExpression;
+
 import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor;
-import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
-import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
-import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
+import org.kaazing.k3po.lang.internal.ast.value.AstLocationExpression;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocationLiteral;
-import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
 /**
- * The class is used to defer the resolution of location value such as
+ * The class is used to defer the evaluation of location such as
  * accept/connect uri in {@link GenerateConfigurationVisitor}. In scenarios when
  * accept/connect takes expression value which only gets resolved during the
  * script execution, it is necessary to defer the resolution of accept/connect
@@ -37,31 +36,39 @@ import org.kaazing.k3po.lang.internal.el.ExpressionContext;
  */
 public class LocationResolver {
 
-    private final AstValue location;
+    private static final LocationVisitorImpl VISITOR = new LocationVisitorImpl();
+
+    private final AstLocation location;
     private final ExpressionContext environment;
 
-    private URI value;
+    private URI evaluatedURI;
 
-    public LocationResolver(AstValue location, ExpressionContext environment) {
+    public LocationResolver(AstLocation location, ExpressionContext environment) {
         this.location = location;
         this.environment = environment;
     }
 
     public URI resolve() throws Exception {
-        if (value == null) {
-            value = location.accept(new URIVisitor(), environment);
+        if (evaluatedURI == null) {
+            evaluatedURI = location.accept(VISITOR, environment);
         }
-        return value;
+        return evaluatedURI;
     }
 
-    private static class URIVisitor implements AstLocation.LocationVisitor<URI, ExpressionContext> {
+    private static class LocationVisitorImpl implements AstLocation.Visitor<URI, ExpressionContext> {
 
         @Override
-        public URI visit(AstExpressionValue value, ExpressionContext environment) throws Exception {
+        public URI visit(AstLocationLiteral value, ExpressionContext parameter) throws Exception {
+            return value.getValue();
+        }
+
+        @Override
+        public URI visit(AstLocationExpression value, ExpressionContext environment) throws Exception {
             Object uriLiteralObj;
 
             synchronized (environment) {
-                uriLiteralObj = value.getValue().getValue(environment);
+                ValueExpression expression = value.getValue();
+                uriLiteralObj = expression.getValue(environment);
             }
 
             if (uriLiteralObj == null) {
@@ -72,19 +79,5 @@ public class LocationResolver {
             return URI.create(uriLiteral);
         }
 
-        @Override
-        public URI visit(AstLocationLiteral value, ExpressionContext parameter) throws Exception {
-            return value.getValue();
-        }
-
-        @Override
-        public URI visit(AstLiteralTextValue value, ExpressionContext parameter) throws Exception {
-            return null;
-        }
-
-        @Override
-        public URI visit(AstLiteralBytesValue value, ExpressionContext parameter) throws Exception {
-            return null;
-        }
     }
 }

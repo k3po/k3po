@@ -20,6 +20,7 @@ import java.net.URI;
 
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
+import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 
 public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<AstAcceptNode> {
@@ -28,7 +29,7 @@ public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<Ast
         this(new AstAcceptNode());
     }
 
-    public AstAcceptNodeBuilder setLocation(AstValue location) {
+    public AstAcceptNodeBuilder setLocation(AstLocation location) {
         node.setLocation(location);
         return this;
     }
@@ -104,7 +105,7 @@ public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<Ast
             super(new AstAcceptNode(), builder);
         }
 
-        public ScriptNested<R> setLocation(AstValue location) {
+        public ScriptNested<R> setLocation(AstLocation location) {
             node.setLocation(location);
             return this;
         }

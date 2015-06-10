@@ -16,23 +16,17 @@
 
 package org.kaazing.k3po.lang.internal.ast.value;
 
-public abstract class AstLocation extends AstValue {
+import org.kaazing.k3po.lang.internal.ast.AstRegion;
 
-    public abstract <R, P> R accept(LocationVisitor<R, P> visitor, P parameter) throws Exception;
+public abstract class AstLocation extends AstRegion {
 
-    @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
-        if (visitor instanceof LocationVisitor) {
-            return accept((LocationVisitor<R, P>) visitor, parameter);
-        }
-        else {
-            return accept(visitor, parameter);
-        }
-    }
+    public abstract <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception;
 
-    public interface LocationVisitor<R, P> extends Visitor<R, P> {
+    public interface Visitor<R, P> {
 
         R visit(AstLocationLiteral value, P parameter) throws Exception;
+
+        R visit(AstLocationExpression value, P parameter) throws Exception;
 
     }
 

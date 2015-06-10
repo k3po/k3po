@@ -60,8 +60,8 @@ import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
 import org.kaazing.k3po.driver.internal.netty.channel.CompositeChannelFuture;
-import org.kaazing.k3po.driver.internal.resolver.ClientBootstrapResolver;
-import org.kaazing.k3po.driver.internal.resolver.ServerBootstrapResolver;
+import org.kaazing.k3po.driver.internal.resolver.ClientResolver;
+import org.kaazing.k3po.driver.internal.resolver.ServerResolver;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.parser.ScriptParser;
@@ -249,7 +249,7 @@ public class Robot {
     private ChannelFuture prepareServers() throws Exception {
 
         /* Accept's ... Robot acting as a server */
-        for (ServerBootstrapResolver serverResolver : configuration.getServerBootstrapResolvers()) {
+        for (ServerResolver serverResolver : configuration.getServerResolvers()) {
             ServerBootstrap server = serverResolver.resolve();
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Binding to address " + server.getOption("localAddress"));
@@ -289,26 +289,26 @@ public class Robot {
 
     private void startConfiguration() throws Exception {
         /* Connect to any clients */
-        for (final ClientBootstrapResolver clientBootstrapResolver : configuration.getClientBootstrapResolvers()) {
-            Barrier barrier = clientBootstrapResolver.getBarrier();
+        for (final ClientResolver clientResolver : configuration.getClientResolvers()) {
+            Barrier barrier = clientResolver.getBarrier();
             if (barrier != null) {
                 barrier.getFuture().addListener(new ChannelFutureListener() {
 
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {
-                        connectClient(clientBootstrapResolver);
+                        connectClient(clientResolver);
                     }
                 });
             }
             else {
-                connectClient(clientBootstrapResolver);
+                connectClient(clientResolver);
             }
         }
     }
 
-    private void connectClient(ClientBootstrapResolver clientBootstrapResolver) throws Exception {
-        final RegionInfo regionInfo = clientBootstrapResolver.getRegionInfo();
-        ClientBootstrap client = clientBootstrapResolver.resolve();
+    private void connectClient(ClientResolver clientResolver) throws Exception {
+        final RegionInfo regionInfo = clientResolver.getRegionInfo();
+        ClientBootstrap client = clientResolver.resolve();
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("[id:           ] connect " + client.getOption("remoteAddress"));
@@ -335,11 +335,11 @@ public class Robot {
             // to handle incomplete script that is being aborted by canceling the finish future
 
             // clear out the pipelines for new connections to avoid impacting the observed script
-            for (ServerBootstrapResolver serverResolver : configuration.getServerBootstrapResolvers()) {
+            for (ServerResolver serverResolver : configuration.getServerResolvers()) {
                 serverResolver.resolve().setPipelineFactory(pipelineFactory(pipeline(closeOnExceptionHandler)));
             }
-            for (ClientBootstrapResolver bootstrapResolver : configuration.getClientBootstrapResolvers()) {
-                bootstrapResolver.resolve().setPipelineFactory(pipelineFactory(pipeline(closeOnExceptionHandler)));
+            for (ClientResolver clientResolver : configuration.getClientResolvers()) {
+                clientResolver.resolve().setPipelineFactory(pipelineFactory(pipeline(closeOnExceptionHandler)));
             }
 
             // remove each handler from the configuration pipelines

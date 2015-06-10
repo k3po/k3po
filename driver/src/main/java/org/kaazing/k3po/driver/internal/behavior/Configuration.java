@@ -27,14 +27,14 @@ import javax.el.ExpressionFactory;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
-import org.kaazing.k3po.driver.internal.resolver.ClientBootstrapResolver;
-import org.kaazing.k3po.driver.internal.resolver.ServerBootstrapResolver;
+import org.kaazing.k3po.driver.internal.resolver.ClientResolver;
+import org.kaazing.k3po.driver.internal.resolver.ServerResolver;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 
 public class Configuration {
 
-    private List<ServerBootstrapResolver> serverBootstrapResolvers;
-    private List<ClientBootstrapResolver> clientBootstrapResolvers;
+    private List<ServerResolver> serverResolvers;
+    private List<ClientResolver> clientResolvers;
     private List<ChannelPipeline> pipelines;
     private Set<Barrier> barriers;
     private ExpressionFactory factory;
@@ -68,20 +68,20 @@ public class Configuration {
         return factory;
     }
 
-    public List<ServerBootstrapResolver> getServerBootstrapResolvers() {
-        if (serverBootstrapResolvers == null) {
-            serverBootstrapResolvers = new ArrayList<ServerBootstrapResolver>();
+    public List<ServerResolver> getServerResolvers() {
+        if (serverResolvers == null) {
+            serverResolvers = new ArrayList<ServerResolver>();
         }
 
-        return serverBootstrapResolvers;
+        return serverResolvers;
     }
 
-    public List<ClientBootstrapResolver> getClientBootstrapResolvers() {
-        if (clientBootstrapResolvers == null) {
-            clientBootstrapResolvers = new ArrayList<ClientBootstrapResolver>();
+    public List<ClientResolver> getClientResolvers() {
+        if (clientResolvers == null) {
+            clientResolvers = new ArrayList<ClientResolver>();
         }
 
-        return clientBootstrapResolvers;
+        return clientResolvers;
     }
 
     public Set<Barrier> getBarriers() {

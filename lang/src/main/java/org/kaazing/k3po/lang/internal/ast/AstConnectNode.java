@@ -22,6 +22,7 @@ import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
@@ -30,7 +31,7 @@ public class AstConnectNode extends AstStreamNode {
     private Map<String, Object> options;
     private String barrier;
 
-    private AstValue location;
+    private AstLocation location;
     private ExpressionContext environment;
 
     public Map<String, Object> getOptions() {
@@ -95,11 +96,11 @@ public class AstConnectNode extends AstStreamNode {
         this.barrier = barrier;
     }
 
-    public AstValue getLocation() {
+    public AstLocation getLocation() {
         return location;
     }
 
-    public void setLocation(AstValue location) {
+    public void setLocation(AstLocation location) {
         this.location = location;
     }
 

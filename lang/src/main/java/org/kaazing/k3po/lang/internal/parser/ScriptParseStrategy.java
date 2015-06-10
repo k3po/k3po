@@ -85,6 +85,8 @@ import org.kaazing.k3po.lang.internal.ast.matcher.AstVariableLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
+import org.kaazing.k3po.lang.internal.ast.value.AstLocationExpression;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocationLiteral;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
@@ -789,8 +791,8 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
         @Override
         public AstAcceptNode visitAcceptNode(AcceptNodeContext ctx) {
-            AstLocationValueVisitor valueVisitor = new AstLocationValueVisitor(elFactory, elContext);
-            AstValue location = valueVisitor.visit(ctx.location());
+            AstLocationVisitor locationVisitor = new AstLocationVisitor(elFactory, elContext);
+            AstLocation location = locationVisitor.visit(ctx.location());
             node = new AstAcceptNode();
             node.setLocation(location);
             node.setEnvironment(elContext);
@@ -853,10 +855,10 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
         @Override
         public AstConnectNode visitConnectNode(ConnectNodeContext ctx) {
-            AstLocationValueVisitor valueVisitor = new AstLocationValueVisitor(elFactory, elContext);
-            AstValue locationValue = valueVisitor.visit(ctx.location());
+            AstLocationVisitor locationVisitor = new AstLocationVisitor(elFactory, elContext);
+            AstLocation location = locationVisitor.visit(ctx.location());
             node = new AstConnectNode();
-            node.setLocation(locationValue);
+            node.setLocation(location);
             node.setEnvironment(elContext);
             super.visitConnectNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
@@ -1874,25 +1876,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         }
     }
 
-    private static class AstLocationValueVisitor extends AstValueVisitor {
-
-        public AstLocationValueVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
-            super(elFactory, elContext, String.class);
-        }
-
-        @Override
-        public AstValue visitUriValue(UriValueContext ctx) {
-            AstLocationLiteralVisitor visitor = new AstLocationLiteralVisitor(elFactory, elContext);
-            AstLocationLiteral value = visitor.visit(ctx);
-
-            if (value != null) {
-                childInfos().add(value.getRegionInfo());
-            }
-
-            return value;
-        }
-    }
-
     private static class AstLocationLiteralVisitor extends AstVisitor<AstLocationLiteral> {
 
         public AstLocationLiteralVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
@@ -1908,6 +1891,51 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             return value;
         }
 
+    }
+
+    private static class AstLocationExpressionVisitor extends AstVisitor<AstLocationExpression> {
+
+        protected AstLocationExpressionVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+            super(elFactory, elContext);
+        }
+
+        @Override
+        public AstLocationExpression visitExpressionValue(ExpressionValueContext ctx) {
+            ValueExpression expression = elFactory.createValueExpression(elContext, ctx.expression.getText(), String.class);
+            AstLocationExpression value = new AstLocationExpression(expression, elContext);
+            value.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return value;
+        }
+    }
+
+    private static class AstLocationVisitor extends AstVisitor<AstLocation> {
+
+        protected AstLocationVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+            super(elFactory, elContext);
+        }
+
+        @Override
+        public AstLocation visitUriValue(UriValueContext ctx) {
+            AstLocationLiteralVisitor visitor = new AstLocationLiteralVisitor(elFactory, elContext);
+            AstLocationLiteral value = visitor.visit(ctx);
+
+            if (value != null) {
+                childInfos().add(value.getRegionInfo());
+            }
+
+            return value;
+        }
+
+        @Override
+        public AstLocation visitExpressionValue(ExpressionValueContext ctx) {
+            AstLocationExpressionVisitor visitor = new AstLocationExpressionVisitor(elFactory, elContext);
+            AstLocationExpression value = visitor.visit(ctx);
+            if (value != null) {
+                childInfos().add(value.getRegionInfo());
+            }
+
+            return value;
+        }
     }
 
 

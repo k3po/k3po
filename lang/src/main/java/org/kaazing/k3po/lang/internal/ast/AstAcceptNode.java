@@ -18,13 +18,12 @@ package org.kaazing.k3po.lang.internal.ast;
 
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
-import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.kaazing.k3po.lang.internal.ast.value.AstValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
 public class AstAcceptNode extends AstStreamNode {
@@ -33,14 +32,14 @@ public class AstAcceptNode extends AstStreamNode {
     private String acceptName;
     private List<AstAcceptableNode> acceptables;
 
-    private AstValue location;
+    private AstLocation location;
     private ExpressionContext environment;
 
-    public AstValue getLocation() {
+    public AstLocation getLocation() {
         return location;
     }
 
-    public void setLocation(AstValue location) {
+    public void setLocation(AstLocation location) {
         this.location = location;
     }
 

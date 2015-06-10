@@ -16,24 +16,33 @@
 
 package org.kaazing.k3po.lang.internal.ast.value;
 
-import java.net.URI;
+import static java.lang.String.format;
+import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
+
+import javax.el.ValueExpression;
 
 import org.kaazing.k3po.lang.internal.ast.AstRegion;
-import org.kaazing.k3po.lang.internal.ast.util.AstUtil;
+import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
-public class AstLocationLiteral extends AstLocation {
+public class AstLocationExpression extends AstLocation {
 
-    private final URI value;
+    private final ValueExpression value;
+    private final ExpressionContext environment;
 
-    public AstLocationLiteral(URI value) {
+    public AstLocationExpression(ValueExpression value, ExpressionContext environment) {
         if (value == null) {
-            throw new IllegalArgumentException("value cannot be null");
+            throw new NullPointerException("value");
         }
         this.value = value;
+        this.environment = environment;
     }
 
-    public URI getValue() {
+    public ValueExpression getValue() {
         return value;
+    }
+
+    public ExpressionContext getEnvironment() {
+        return environment;
     }
 
     @Override
@@ -48,10 +57,15 @@ public class AstLocationLiteral extends AstLocation {
 
     @Override
     protected boolean equalTo(AstRegion that) {
-        return (that instanceof AstLocationLiteral) && equalTo((AstLocationLiteral) that);
+        return (that instanceof AstLocationExpression) && equalTo((AstLocationExpression) that);
     }
 
-    protected boolean equalTo(AstLocationLiteral that) {
-        return AstUtil.equivalent(this.value, that.value);
+    protected boolean equalTo(AstLocationExpression that) {
+        return equivalent(this.value, that.value);
+    }
+
+    @Override
+    protected void describe(StringBuilder buf) {
+        buf.append(format("(%s)%s", value.getExpectedType().getSimpleName(), value.getExpressionString()));
     }
 }
