@@ -338,8 +338,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         acceptOptions.put("regionInfo", acceptInfo);
 
         // Now that accept supports expression value, accept uri may not be available at this point.
-        // To defer the evaluation of accept uri and initialization of  ServerBootstrap, LocationResolver and 
-        // ServerResolver are created with information necessary create ClientBootstrap when the 
+        // To defer the evaluation of accept uri and initialization of  ServerBootstrap, LocationResolver and
+        // ServerResolver are created with information necessary create ClientBootstrap when the
         // accept uri is available.
         LocationResolver locationResolver = new LocationResolver(acceptNode.getLocation(), acceptNode.getEnvironment());
         ServerResolver serverResolver = new ServerResolver(bootstrapFactory, addressFactory,
@@ -400,8 +400,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         };
 
         // Now that connect supports barrier and expression value, connect uri may not be available at this point.
-        // To defer the evaluation of connect uri and initialization of ClientBootstrap, LocationResolver and 
-        // ClientResolver are created with information necessary create ClientBootstrap when the connect uri 
+        // To defer the evaluation of connect uri and initialization of ClientBootstrap, LocationResolver and
+        // ClientResolver are created with information necessary create ClientBootstrap when the connect uri
         // is available.
         LocationResolver locationResolver = new LocationResolver(connectNode.getLocation(), connectNode.getEnvironment());
         ClientResolver clientResolver = new ClientResolver(bootstrapFactory, addressFactory,
