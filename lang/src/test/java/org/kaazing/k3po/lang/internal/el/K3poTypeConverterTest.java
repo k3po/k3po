@@ -20,6 +20,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URI;
 import java.nio.ByteBuffer;
 
 import javax.el.ELException;
@@ -31,11 +32,30 @@ import org.junit.Test;
 import de.odysseus.el.misc.TypeConverter;
 import de.odysseus.el.util.SimpleContext;
 
-public class ByteArrayTypeConverterTest {
+public class K3poTypeConverterTest {
+
+    @Test
+    public void shouldConvertStringToURI() throws Exception {
+        TypeConverter converter = new K3poTypeConverter();
+        String uriString = "http://localhost:8001/path?query";
+        URI expectedURI = URI.create(uriString);
+        Object o = converter.convert(uriString, URI.class);
+
+        assertTrue(o instanceof URI);
+        assertTrue(expectedURI.equals(o));
+    }
+
+    @Test(expected = ELException.class)
+    public void shouldNotConvertToURI() throws Exception {
+        TypeConverter converter = new K3poTypeConverter();
+
+        converter.convert(converter, URI.class);
+    }
+
 
     @Test()
-    public void shouldConvertByteArray() throws Exception {
-        TypeConverter converter = new ByteArrayTypeConverter();
+    public void shouldConvertByteArrayToByteArray() throws Exception {
+        TypeConverter converter = new K3poTypeConverter();
         byte[] byteArr = { 1, 2, 3, 4, 5, 6 };
 
         Object o = converter.convert(byteArr, byte[].class);
@@ -46,8 +66,8 @@ public class ByteArrayTypeConverterTest {
     }
 
     @Test()
-    public void shouldConvertLong() throws Exception {
-        TypeConverter converter = new ByteArrayTypeConverter();
+    public void shouldConvertLongToByteArray() throws Exception {
+        TypeConverter converter = new K3poTypeConverter();
 
         long l = 4096L;
         byte[] expected = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(l).array();
@@ -67,8 +87,8 @@ public class ByteArrayTypeConverterTest {
     }
 
     @Test()
-    public void shouldConvertInteger() throws Exception {
-        TypeConverter converter = new ByteArrayTypeConverter();
+    public void shouldConvertIntegerToByteArray() throws Exception {
+        TypeConverter converter = new K3poTypeConverter();
 
         int l = 4096;
         byte[] expected = ByteBuffer.allocate(Integer.SIZE / Byte.SIZE).putInt(l).array();
@@ -88,8 +108,8 @@ public class ByteArrayTypeConverterTest {
     }
 
     @Test()
-    public void shouldConvertShort() throws Exception {
-        TypeConverter converter = new ByteArrayTypeConverter();
+    public void shouldConvertShortToByteArray() throws Exception {
+        TypeConverter converter = new K3poTypeConverter();
 
         short l = 4096;
         byte[] expected = ByteBuffer.allocate(Short.SIZE / Byte.SIZE).putShort(l).array();
@@ -109,8 +129,8 @@ public class ByteArrayTypeConverterTest {
     }
 
     @Test()
-    public void shouldConvertByte() throws Exception {
-        TypeConverter converter = new ByteArrayTypeConverter();
+    public void shouldConvertByteToByteArray() throws Exception {
+        TypeConverter converter = new K3poTypeConverter();
 
         byte l = 16;
         byte[] expected = ByteBuffer.allocate(Byte.SIZE / Byte.SIZE).put(l).array();
@@ -129,20 +149,20 @@ public class ByteArrayTypeConverterTest {
     }
 
     @Test()
-    public void shouldConvertAnObject() throws Exception {
-        TypeConverter converter = new ByteArrayTypeConverter();
+    public void shouldConvertAnObjectToCompatibleObject() throws Exception {
+        TypeConverter converter = new K3poTypeConverter();
 
         Object o = converter.convert(converter, TypeConverter.class);
 
         assertTrue(o instanceof TypeConverter);
-        assertTrue(o instanceof ByteArrayTypeConverter);
+        assertTrue(o instanceof K3poTypeConverter);
 
         assertEquals(converter, o);
     }
 
     @Test(expected = ELException.class)
     public void shouldNotConvertToByteArray() throws Exception {
-        TypeConverter converter = new ByteArrayTypeConverter();
+        TypeConverter converter = new K3poTypeConverter();
 
         converter.convert(converter, byte[].class);
 

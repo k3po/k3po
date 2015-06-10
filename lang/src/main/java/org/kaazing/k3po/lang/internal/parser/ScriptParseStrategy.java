@@ -1901,7 +1901,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
         @Override
         public AstLocationExpression visitExpressionValue(ExpressionValueContext ctx) {
-            ValueExpression expression = elFactory.createValueExpression(elContext, ctx.expression.getText(), String.class);
+            ValueExpression expression = elFactory.createValueExpression(elContext, ctx.expression.getText(), URI.class);
             AstLocationExpression value = new AstLocationExpression(expression, elContext);
             value.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return value;

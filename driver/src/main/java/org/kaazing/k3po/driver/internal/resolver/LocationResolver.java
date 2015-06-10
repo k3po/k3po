@@ -64,19 +64,18 @@ public class LocationResolver {
 
         @Override
         public URI visit(AstLocationExpression value, ExpressionContext environment) throws Exception {
-            Object uriLiteralObj;
+            Object uriObj;
 
             synchronized (environment) {
                 ValueExpression expression = value.getValue();
-                uriLiteralObj = expression.getValue(environment);
+                uriObj = expression.getValue(environment);
             }
 
-            if (uriLiteralObj == null) {
+            if (uriObj == null) {
                 throw new NullPointerException("Location expression result is null");
             }
 
-            String uriLiteral = uriLiteralObj.toString();
-            return URI.create(uriLiteral);
+            return (URI) uriObj;
         }
 
     }
