@@ -100,8 +100,6 @@ import org.kaazing.k3po.driver.internal.behavior.handler.event.ReadHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.UnboundHandler;
 import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor.State;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
-import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
 import org.kaazing.k3po.driver.internal.resolver.ClientResolver;
 import org.kaazing.k3po.driver.internal.resolver.LocationResolver;

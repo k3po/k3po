@@ -26,7 +26,6 @@ import java.util.Set;
 import javax.el.ExpressionFactory;
 
 import org.jboss.netty.channel.ChannelPipeline;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.driver.internal.resolver.ClientResolver;
 import org.kaazing.k3po.driver.internal.resolver.ServerResolver;
 import org.kaazing.k3po.lang.internal.RegionInfo;

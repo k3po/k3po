@@ -53,7 +53,6 @@ import org.kaazing.k3po.lang.internal.ast.builder.AstWriteConfigNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteFlushNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocationLiteral;
-import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
 public class HttpScriptParserTest {

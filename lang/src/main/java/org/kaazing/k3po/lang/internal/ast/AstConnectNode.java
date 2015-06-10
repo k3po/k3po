@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
-import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
 public class AstConnectNode extends AstStreamNode {
