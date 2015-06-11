@@ -16,8 +16,10 @@
 
 package org.kaazing.k3po.lang.internal.el;
 
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
@@ -27,6 +29,8 @@ import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 
+import org.hamcrest.core.IsInstanceOf;
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.odysseus.el.misc.TypeConverter;
@@ -41,8 +45,8 @@ public class TypeConverterImplTest {
         URI expected = URI.create(location);
         Object o = converter.convert(location, URI.class);
 
-        assertTrue(o instanceof URI);
-        assertTrue(expected.equals(o));
+        assertThat(o, instanceOf(URI.class));
+        assertEquals(expected, o);
     }
 
     @Test(expected = ELException.class)
