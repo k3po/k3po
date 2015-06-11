@@ -66,6 +66,15 @@ public final class Functions {
         return Integer.toString(value);
     }
 
+    @Function
+    public static String append(String... strings) {
+        StringBuilder result = new StringBuilder();
+        for (String string : strings) {
+            result.append(string);
+        }
+        return result.toString();
+    }
+
     public static class Mapper extends FunctionMapperSpi.Reflective {
 
         public Mapper() {

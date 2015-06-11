@@ -16,6 +16,8 @@
 
 package org.kaazing.k3po.lang.internal.parser;
 
+import static org.junit.Assert.assertSame;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -24,7 +26,6 @@ import java.io.InputStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.Token;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.kaazing.k3po.lang.parser.v2.RobotLexer;
@@ -57,8 +58,8 @@ public class RobotScriptLexerTest {
         lexer = new RobotLexer(ais);
         Token token = lexer.nextToken();
 
-        Assert.assertTrue(String.format("Expected EOF token, got %d (%s)", token.getType(), token),
-                token.getType() == RobotLexer.EOF);
+        assertSame(String.format("Expected EOF token, got %d (%s)", token.getType(), token), RobotLexer.EOF,
+                token.getType());
     }
 
     @Test
@@ -74,8 +75,9 @@ public class RobotScriptLexerTest {
 
         lexer = new RobotLexer(ais);
         Token token = lexer.nextToken();
-        Assert.assertTrue(String.format("Expected token type %d, got %d (%s)", Token.EOF, token.getType(), token.getText()),
-                token.getType() == Token.EOF);
+
+        assertSame(String.format("Expected token type %d, got %d (%s)", Token.EOF, token.getType(), token.getText()),
+                Token.EOF, token.getType());
     }
 
     @Test
@@ -92,7 +94,7 @@ public class RobotScriptLexerTest {
         lexer = new RobotLexer(ais);
         Token token = lexer.nextToken();
 
-        Assert.assertTrue(String.format("Expected keyword token, got type %d: %s", token.getType(), token.getText()),
-                token.getType() == RobotLexer.CloseKeyword);
+        assertSame(String.format("Expected keyword token, got type %d: %s", token.getType(), token.getText()),
+                RobotLexer.CloseKeyword, token.getType());
     }
 }

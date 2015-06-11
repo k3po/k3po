@@ -48,6 +48,7 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
+import org.kaazing.k3po.driver.internal.behavior.Barrier;
 import org.kaazing.k3po.driver.internal.behavior.Configuration;
 import org.kaazing.k3po.driver.internal.behavior.ScriptProgress;
 import org.kaazing.k3po.driver.internal.behavior.ScriptProgressException;
@@ -59,6 +60,8 @@ import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
 import org.kaazing.k3po.driver.internal.netty.channel.CompositeChannelFuture;
+import org.kaazing.k3po.driver.internal.resolver.ClientBootstrapResolver;
+import org.kaazing.k3po.driver.internal.resolver.ServerBootstrapResolver;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.parser.ScriptParser;
@@ -173,8 +176,13 @@ public class Robot {
         preparedFuture.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
-                startConfiguration();
-                startedFuture.setSuccess();
+                try {
+                    startConfiguration();
+                    startedFuture.setSuccess();
+                }
+                catch (Exception ex) {
+                    startedFuture.setFailure(ex);
+                }
             }
         });
 
@@ -225,7 +233,7 @@ public class Robot {
         return destroyed = true;
     }
 
-    private ChannelFuture prepareConfiguration() {
+    private ChannelFuture prepareConfiguration() throws Exception {
 
         List<ChannelFuture> completionFutures = new ArrayList<>();
         ChannelFutureListener streamCompletionListener = createStreamCompletionListener();
@@ -243,11 +251,11 @@ public class Robot {
         return prepareServers();
     }
 
-    private ChannelFuture prepareServers() {
+    private ChannelFuture prepareServers() throws Exception {
 
         /* Accept's ... Robot acting as a server */
-        for (ServerBootstrap server : configuration.getServerBootstraps()) {
-
+        for (ServerBootstrapResolver serverResolver : configuration.getServerResolvers()) {
+            ServerBootstrap server = serverResolver.resolve();
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Binding to address " + server.getOption("localAddress"));
             }
@@ -284,23 +292,40 @@ public class Robot {
         return new CompositeChannelFuture<>(channel, bindFutures);
     }
 
-    private void startConfiguration() {
+    private void startConfiguration() throws Exception {
         /* Connect to any clients */
-        for (ClientBootstrap client : configuration.getClientBootstraps()) {
+        for (final ClientBootstrapResolver clientResolver : configuration.getClientResolvers()) {
+            Barrier barrier = clientResolver.getBarrier();
+            if (barrier != null) {
+                barrier.getFuture().addListener(new ChannelFutureListener() {
 
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("[id:           ] connect " + client.getOption("remoteAddress"));
+                    @Override
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        connectClient(clientResolver);
+                    }
+                });
             }
-
-            final RegionInfo regionInfo = (RegionInfo) client.getOption("regionInfo");
-            ChannelFuture connectFuture = client.connect();
-            connectFutures.add(connectFuture);
-            clientChannels.add(connectFuture.getChannel());
-            connectFuture.addListener(createConnectCompleteListener(regionInfo));
+            else {
+                connectClient(clientResolver);
+            }
         }
     }
 
-    private void stopConfiguration() {
+    private void connectClient(ClientBootstrapResolver clientResolver) throws Exception {
+        final RegionInfo regionInfo = clientResolver.getRegionInfo();
+        ClientBootstrap client = clientResolver.resolve();
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("[id:           ] connect " + client.getOption("remoteAddress"));
+        }
+
+        ChannelFuture connectFuture = client.connect();
+        connectFutures.add(connectFuture);
+        clientChannels.add(connectFuture.getChannel());
+        connectFuture.addListener(createConnectCompleteListener(regionInfo));
+    }
+
+    private void stopConfiguration() throws Exception {
 
         if (configuration == null) {
             // abort received but script not prepared, therefore entire script failed
@@ -315,11 +340,13 @@ public class Robot {
             // to handle incomplete script that is being aborted by canceling the finish future
 
             // clear out the pipelines for new connections to avoid impacting the observed script
-            for (ServerBootstrap server : configuration.getServerBootstraps()) {
+            for (ServerBootstrapResolver serverResolver : configuration.getServerResolvers()) {
+                ServerBootstrap server = serverResolver.resolve();
                 server.setPipelineFactory(pipelineFactory(pipeline(closeOnExceptionHandler)));
             }
-            for (ClientBootstrap bootstrap : configuration.getClientBootstraps()) {
-                bootstrap.setPipelineFactory(pipelineFactory(pipeline(closeOnExceptionHandler)));
+            for (ClientBootstrapResolver clientResolver : configuration.getClientResolvers()) {
+                ClientBootstrap client = clientResolver.resolve();
+                client.setPipelineFactory(pipelineFactory(pipeline(closeOnExceptionHandler)));
             }
 
             // remove each handler from the configuration pipelines

@@ -41,7 +41,7 @@ public final class ExpressionFactoryUtils {
         // META-INF/services/javax.el.ExpressionFactory automatically
         Properties props = new Properties();
 
-        props.setProperty("de.odysseus.el.misc.TypeConverter", ByteArrayTypeConverter.class.getName());
+        props.setProperty("de.odysseus.el.misc.TypeConverter", TypeConverterImpl.class.getName());
 
         return ExpressionFactory.newInstance(props);
     }

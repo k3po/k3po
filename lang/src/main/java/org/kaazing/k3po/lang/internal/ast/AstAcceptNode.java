@@ -18,24 +18,29 @@ package org.kaazing.k3po.lang.internal.ast;
 
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
-import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.el.ELContext;
+
+import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
+
 public class AstAcceptNode extends AstStreamNode {
 
-    private URI location;
     private Map<String, Object> options;
     private String acceptName;
     private List<AstAcceptableNode> acceptables;
 
-    public URI getLocation() {
+    private AstLocation location;
+    private ELContext environment;
+
+    public AstLocation getLocation() {
         return location;
     }
 
-    public void setLocation(URI location) {
+    public void setLocation(AstLocation location) {
         this.location = location;
     }
 
@@ -55,6 +60,14 @@ public class AstAcceptNode extends AstStreamNode {
         return options;
     }
 
+    public ELContext getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(ELContext expressionContext) {
+        this.environment = expressionContext;
+    }
+
     public List<AstAcceptableNode> getAcceptables() {
         if (acceptables == null) {
             acceptables = new LinkedList<AstAcceptableNode>();
@@ -70,6 +83,11 @@ public class AstAcceptNode extends AstStreamNode {
         if (location != null) {
             hashCode <<= 4;
             hashCode ^= location.hashCode();
+        }
+
+        if (environment != null) {
+            hashCode <<= 4;
+            hashCode ^= environment.hashCode();
         }
 
         if (options != null) {
@@ -96,9 +114,10 @@ public class AstAcceptNode extends AstStreamNode {
     }
 
     protected boolean equalTo(AstAcceptNode that) {
-        return super.equalTo(that) && equivalent(this.location, that.location) && equivalent(this.options, that.options)
+        return super.equalTo(that) && equivalent(this.location, that.location)
+                && equivalent(this.options, that.options)
                 && equivalent(this.acceptName, that.acceptName) && equivalent(this.acceptables, that.acceptables);
-    }
+ }
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
@@ -130,5 +149,6 @@ public class AstAcceptNode extends AstStreamNode {
 
         sb.append('\n');
     }
+
 
 }

@@ -16,10 +16,12 @@
 
 package org.kaazing.k3po.lang.internal.el;
 
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 
+import java.net.URI;
 import java.nio.ByteBuffer;
 
 import javax.el.ELException;
@@ -31,30 +33,49 @@ import org.junit.Test;
 import de.odysseus.el.misc.TypeConverter;
 import de.odysseus.el.util.SimpleContext;
 
-public class ByteArrayTypeConverterTest {
+public class TypeConverterImplTest {
+
+    @Test
+    public void shouldConvertStringToURI() throws Exception {
+        TypeConverter converter = new TypeConverterImpl();
+        String location = "http://localhost:8001/path?query";
+        URI expected = URI.create(location);
+        Object o = converter.convert(location, URI.class);
+
+        assertThat(o, instanceOf(URI.class));
+        assertEquals(expected, o);
+    }
+
+    @Test(expected = ELException.class)
+    public void shouldNotConvertToURI() throws Exception {
+        TypeConverter converter = new TypeConverterImpl();
+
+        converter.convert(converter, URI.class);
+    }
+
 
     @Test()
-    public void shouldConvertByteArray() throws Exception {
-        TypeConverter converter = new ByteArrayTypeConverter();
+    public void shouldConvertByteArrayToByteArray() throws Exception {
+        TypeConverter converter = new TypeConverterImpl();
         byte[] byteArr = { 1, 2, 3, 4, 5, 6 };
 
         Object o = converter.convert(byteArr, byte[].class);
 
-        assertTrue(o instanceof byte[]);
+        assertThat(o, instanceOf(byte[].class));
 
         assertArrayEquals(byteArr, (byte[]) o);
     }
 
     @Test()
-    public void shouldConvertLong() throws Exception {
-        TypeConverter converter = new ByteArrayTypeConverter();
+    public void shouldConvertLongToByteArray() throws Exception {
+        TypeConverter converter = new TypeConverterImpl();
 
         long l = 4096L;
         byte[] expected = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(l).array();
 
         Object o = converter.convert(l, byte[].class);
 
-        assertTrue(o instanceof byte[]);
+        assertThat(o, instanceOf(byte[].class));
 
         assertArrayEquals(expected, (byte[]) o);
 
@@ -67,15 +88,15 @@ public class ByteArrayTypeConverterTest {
     }
 
     @Test()
-    public void shouldConvertInteger() throws Exception {
-        TypeConverter converter = new ByteArrayTypeConverter();
+    public void shouldConvertIntegerToByteArray() throws Exception {
+        TypeConverter converter = new TypeConverterImpl();
 
         int l = 4096;
         byte[] expected = ByteBuffer.allocate(Integer.SIZE / Byte.SIZE).putInt(l).array();
 
         Object o = converter.convert(l, byte[].class);
 
-        assertTrue(o instanceof byte[]);
+        assertThat(o, instanceOf(byte[].class));
 
         assertArrayEquals(expected, (byte[]) o);
 
@@ -88,15 +109,15 @@ public class ByteArrayTypeConverterTest {
     }
 
     @Test()
-    public void shouldConvertShort() throws Exception {
-        TypeConverter converter = new ByteArrayTypeConverter();
+    public void shouldConvertShortToByteArray() throws Exception {
+        TypeConverter converter = new TypeConverterImpl();
 
         short l = 4096;
         byte[] expected = ByteBuffer.allocate(Short.SIZE / Byte.SIZE).putShort(l).array();
 
         Object o = converter.convert(l, byte[].class);
 
-        assertTrue(o instanceof byte[]);
+        assertThat(o, instanceOf(byte[].class));
 
         assertArrayEquals(expected, (byte[]) o);
 
@@ -109,15 +130,15 @@ public class ByteArrayTypeConverterTest {
     }
 
     @Test()
-    public void shouldConvertByte() throws Exception {
-        TypeConverter converter = new ByteArrayTypeConverter();
+    public void shouldConvertByteToByteArray() throws Exception {
+        TypeConverter converter = new TypeConverterImpl();
 
         byte l = 16;
         byte[] expected = ByteBuffer.allocate(Byte.SIZE / Byte.SIZE).put(l).array();
 
         Object o = converter.convert(l, byte[].class);
 
-        assertTrue(o instanceof byte[]);
+        assertThat(o, instanceOf(byte[].class));
 
         assertArrayEquals(expected, (byte[]) o);
 
@@ -129,20 +150,20 @@ public class ByteArrayTypeConverterTest {
     }
 
     @Test()
-    public void shouldConvertAnObject() throws Exception {
-        TypeConverter converter = new ByteArrayTypeConverter();
+    public void shouldConvertAnObjectToCompatibleObject() throws Exception {
+        TypeConverter converter = new TypeConverterImpl();
 
         Object o = converter.convert(converter, TypeConverter.class);
 
-        assertTrue(o instanceof TypeConverter);
-        assertTrue(o instanceof ByteArrayTypeConverter);
+        assertThat(o, instanceOf(TypeConverter.class));
+        assertThat(o, instanceOf(TypeConverterImpl.class));
 
         assertEquals(converter, o);
     }
 
     @Test(expected = ELException.class)
     public void shouldNotConvertToByteArray() throws Exception {
-        TypeConverter converter = new ByteArrayTypeConverter();
+        TypeConverter converter = new TypeConverterImpl();
 
         converter.convert(converter, byte[].class);
 

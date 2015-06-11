@@ -18,14 +18,14 @@ package org.kaazing.k3po.lang.internal.el;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import java.net.URI;
 import java.nio.ByteBuffer;
 
 import javax.el.ELException;
 
 import de.odysseus.el.misc.LocalMessages;
-import de.odysseus.el.misc.TypeConverterImpl;
 
-public class ByteArrayTypeConverter extends TypeConverterImpl {
+public class TypeConverterImpl extends de.odysseus.el.misc.TypeConverterImpl {
 
     private static final long serialVersionUID = 2186717155880503427L;
 
@@ -33,7 +33,10 @@ public class ByteArrayTypeConverter extends TypeConverterImpl {
     @SuppressWarnings("unchecked")
     public <T> T convert(Object value, Class<T> type) throws ELException {
 
-        if (type == byte[].class) {
+        if (type == URI.class && value instanceof String) {
+            return (T) URI.create((String) value);
+        }
+        else if (type == byte[].class) {
             return (T) coerceToByteArray(value);
         }
         else if (value instanceof byte[]) {

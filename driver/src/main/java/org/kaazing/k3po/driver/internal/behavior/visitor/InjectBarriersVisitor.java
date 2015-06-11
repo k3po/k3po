@@ -96,6 +96,7 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
         newAcceptNode.setRegionInfo(acceptNode.getRegionInfo());
         newAcceptNode.setAcceptName(acceptNode.getAcceptName());
         newAcceptNode.setLocation(acceptNode.getLocation());
+        newAcceptNode.setEnvironment(acceptNode.getEnvironment());
 
         state.streamables = newAcceptNode.getStreamables();
         for (AstStreamableNode streamable : acceptNode.getStreamables()) {
@@ -138,6 +139,7 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
         AstConnectNode newConnectNode = new AstConnectNode();
         newConnectNode.setRegionInfo(connectNode.getRegionInfo());
         newConnectNode.setLocation(connectNode.getLocation());
+        newConnectNode.setEnvironment(connectNode.getEnvironment());
         newConnectNode.setBarrier(connectNode.getBarrier());
 
         state.streamables = newConnectNode.getStreamables();

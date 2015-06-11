@@ -21,15 +21,16 @@ import java.net.URI;
 import org.junit.Test;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.builder.AstScriptNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.value.AstLocationLiteral;
 
-public class InjectHttpStreamsVisitorTest {
+public class ValidateStreamsVisitorTest {
 
     @Test
     public void shouldAllowContentWithChunk() throws Exception {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(URI.create("http://localhost:8000/somepath"))
+                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
                 .addAcceptedStream()
                     .addReadConfigEvent()
                          .setType("method")
@@ -52,8 +53,8 @@ public class InjectHttpStreamsVisitorTest {
         .done();
         // @formatter:on
 
-        InjectHttpStreamsVisitor injectEvents = new InjectHttpStreamsVisitor();
-        inputScript.accept(injectEvents, new InjectHttpStreamsVisitor.State());
+        ValidateStreamsVisitor injectEvents = new ValidateStreamsVisitor();
+        inputScript.accept(injectEvents, new ValidateStreamsVisitor.State());
     }
 
     @Test
@@ -61,7 +62,7 @@ public class InjectHttpStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(URI.create("http://localhost:8000/somepath"))
+                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
                 .addAcceptedStream()
                     .addReadConfigEvent()
                          .setType("method")
@@ -82,8 +83,8 @@ public class InjectHttpStreamsVisitorTest {
         .done();
         // @formatter:on
 
-        InjectHttpStreamsVisitor injectEvents = new InjectHttpStreamsVisitor();
-        inputScript.accept(injectEvents, new InjectHttpStreamsVisitor.State());
+        ValidateStreamsVisitor injectEvents = new ValidateStreamsVisitor();
+        inputScript.accept(injectEvents, new ValidateStreamsVisitor.State());
     }
 
     @Test
@@ -91,7 +92,7 @@ public class InjectHttpStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(URI.create("http://localhost:8000/somepath"))
+                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
                 .addAcceptedStream()
                     .addReadConfigEvent()
                          .setType("method")
@@ -119,17 +120,16 @@ public class InjectHttpStreamsVisitorTest {
         .done();
         // @formatter:on
 
-        InjectHttpStreamsVisitor injectEvents = new InjectHttpStreamsVisitor();
-        inputScript.accept(injectEvents, new InjectHttpStreamsVisitor.State());
+        ValidateStreamsVisitor injectEvents = new ValidateStreamsVisitor();
+        inputScript.accept(injectEvents, new ValidateStreamsVisitor.State());
     }
 
-    @Test(
-            expected = IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldNotAllowWriteAfterRequestResponseWithoutSwitchingProtocols() throws Exception {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(URI.create("http://localhost:8000/somepath"))
+                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
                 .addAcceptedStream()
                     .addReadConfigEvent()
                          .setType("method")
@@ -151,17 +151,16 @@ public class InjectHttpStreamsVisitorTest {
         .done();
         // @formatter:on
 
-        InjectHttpStreamsVisitor injectEvents = new InjectHttpStreamsVisitor();
-        inputScript.accept(injectEvents, new InjectHttpStreamsVisitor.State());
+        ValidateStreamsVisitor injectEvents = new ValidateStreamsVisitor();
+        inputScript.accept(injectEvents, new ValidateStreamsVisitor.State());
     }
 
-    @Test(
-            expected = IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldNotAllowWriteConfigAfterWriteClose() throws Exception {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addConnectStream()
-                .setLocation(URI.create("http://localhost:8000/somepath"))
+                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
                 .addOpenedEvent()
                 .done()
                 .addWriteCloseCommand()
@@ -176,17 +175,16 @@ public class InjectHttpStreamsVisitorTest {
         .done();
         // @formatter:on
 
-        InjectHttpStreamsVisitor injectEvents = new InjectHttpStreamsVisitor();
-        inputScript.accept(injectEvents, new InjectHttpStreamsVisitor.State());
+        ValidateStreamsVisitor injectEvents = new ValidateStreamsVisitor();
+        inputScript.accept(injectEvents, new ValidateStreamsVisitor.State());
     }
 
-    @Test(
-            expected = IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldNotAllowReadConfigAfterReadClose() throws Exception {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(URI.create("http://localhost:8000/somepath"))
+                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
                 .addAcceptedStream()
                     .addReadConfigEvent()
                          .setType("method")
@@ -211,8 +209,8 @@ public class InjectHttpStreamsVisitorTest {
         .done();
         // @formatter:on
 
-        InjectHttpStreamsVisitor injectEvents = new InjectHttpStreamsVisitor();
-        inputScript.accept(injectEvents, new InjectHttpStreamsVisitor.State());
+        ValidateStreamsVisitor injectEvents = new ValidateStreamsVisitor();
+        inputScript.accept(injectEvents, new ValidateStreamsVisitor.State());
     }
 
     @Test
@@ -220,13 +218,13 @@ public class InjectHttpStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
         .addConnectStream().
-            setLocation(URI.create("tcp://localhost:8000"))
+            setLocation(new AstLocationLiteral(URI.create("tcp://localhost:8000")))
                 .addReadEvent()
                     .addExactText("exact text")
                 .done()
             .done()
             .addAcceptStream()
-                .setLocation(URI.create("tcp://localhost:8000"))
+                .setLocation(new AstLocationLiteral(URI.create("tcp://localhost:8000")))
                 .addAcceptedStream()
                     .addReadEvent()
                         .addExactText("exact text")
@@ -236,8 +234,8 @@ public class InjectHttpStreamsVisitorTest {
         .done();
         // @formatter:on
 
-        InjectHttpStreamsVisitor injectEvents = new InjectHttpStreamsVisitor();
-        inputScript.accept(injectEvents, new InjectHttpStreamsVisitor.State());
+        ValidateStreamsVisitor injectEvents = new ValidateStreamsVisitor();
+        inputScript.accept(injectEvents, new ValidateStreamsVisitor.State());
     }
 
 }

@@ -319,9 +319,13 @@ expressionValue
     : expression=ExpressionLiteral
     ;
 
+uriValue
+    : uri=URILiteral
+    ;
+
 location
-    : URILiteral
-    | ExpressionLiteral
+    : uriValue
+    | expressionValue
     ;
 
 SignedDecimalLiteral

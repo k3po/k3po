@@ -17,13 +17,14 @@ read version "HTTP/1.1"
 read header "X-WebSocket-Version" "wseb-1.1"
 read header "Content-Type" "text/plain;charset=utf-8"
 
-read "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
-read "http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1\n"
+read /(?<upstream>http:\/\/localhost:8080\/path\/.+)/ "\n"
+read /(?<downstream>http:\/\/localhost:8080\/path\/.+)/ "\n"
 read notify CREATED
 read closed
 
 # Downstream
-connect http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1
+connect await CREATED
+connect ${downstream}
 connected
 
 write await CREATED
@@ -46,7 +47,8 @@ read closed
 
 
 # Upstream
-connect http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh?.krn=1
+connect await CREATED
+connect ${upstream}
 connected
 
 write await CREATED
@@ -66,7 +68,8 @@ read version "HTTP/1.1"
 read closed
 
 # Out of Order Upstream
-connect http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh?.krn=2
+connect await CREATED
+connect ${upstream}
 connected
 
 write await FIRST_PONG_RECEIVED
