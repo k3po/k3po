@@ -1,5 +1,8 @@
-property upstream ${wse:uniqueUri("http://localhost:8080/path/")}
-property downstream ${wse:uniqueUri("http://localhost:8080/path/")}
+property upstreamId ${wse:uniqueId()}
+property downstreamId ${wse:uniqueId()}
+property upstream ${wse:append("http://localhost:8080/path/", upstreamId)}
+property downstream ${wse:append("http://localhost:8080/path/", downstreamId)}
+
 property data ${wse:randomBytes(127)}
 
 accept http://localhost:8080/path/;e/cb?query

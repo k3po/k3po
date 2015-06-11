@@ -18,13 +18,13 @@ package org.kaazing.k3po.driver.internal.resolver;
 
 import java.net.URI;
 
+import javax.el.ELContext;
 import javax.el.ValueExpression;
 
 import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocationExpression;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocationLiteral;
-import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
 /**
  * The class is used to defer the evaluation of location such as
@@ -39,11 +39,11 @@ public class LocationResolver {
     private static final LocationVisitorImpl VISITOR = new LocationVisitorImpl();
 
     private final AstLocation location;
-    private final ExpressionContext environment;
+    private final ELContext environment;
 
     private URI evaluatedURI;
 
-    public LocationResolver(AstLocation location, ExpressionContext environment) {
+    public LocationResolver(AstLocation location, ELContext environment) {
         this.location = location;
         this.environment = environment;
     }
@@ -55,27 +55,28 @@ public class LocationResolver {
         return evaluatedURI;
     }
 
-    private static class LocationVisitorImpl implements AstLocation.Visitor<URI, ExpressionContext> {
+    private static class LocationVisitorImpl implements AstLocation.Visitor<URI, ELContext> {
 
         @Override
-        public URI visit(AstLocationLiteral value, ExpressionContext parameter) throws Exception {
+        public URI visit(AstLocationLiteral value, ELContext parameter) throws Exception {
             return value.getValue();
         }
 
         @Override
-        public URI visit(AstLocationExpression value, ExpressionContext environment) throws Exception {
-            Object uriObj;
+        public URI visit(AstLocationExpression value, ELContext environment) throws Exception {
+            Object location;
 
+            // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
             synchronized (environment) {
                 ValueExpression expression = value.getValue();
-                uriObj = expression.getValue(environment);
+                location = expression.getValue(environment);
             }
 
-            if (uriObj == null) {
+            if (location == null) {
                 throw new NullPointerException("Location expression result is null");
             }
 
-            return (URI) uriObj;
+            return (URI) location;
         }
 
     }

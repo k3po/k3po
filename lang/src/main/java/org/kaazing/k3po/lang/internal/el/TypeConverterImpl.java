@@ -24,9 +24,8 @@ import java.nio.ByteBuffer;
 import javax.el.ELException;
 
 import de.odysseus.el.misc.LocalMessages;
-import de.odysseus.el.misc.TypeConverterImpl;
 
-public class K3poTypeConverter extends TypeConverterImpl {
+public class TypeConverterImpl extends de.odysseus.el.misc.TypeConverterImpl {
 
     private static final long serialVersionUID = 2186717155880503427L;
 

@@ -17,63 +17,52 @@
 package org.kaazing.k3po.driver.internal.resolver;
 
 import java.net.URI;
+import java.util.Map;
 
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-import org.kaazing.k3po.driver.internal.behavior.Barrier;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
-import org.kaazing.k3po.lang.internal.RegionInfo;
 
 /**
  * The class is used to defer the initialization of {@link ServerBootstrap}.
  */
-public class ClientResolver {
+public class ServerBootstrapResolver {
 
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ClientResolver.class);
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ClientBootstrapResolver.class);
 
     private final BootstrapFactory bootstrapFactory;
     private final ChannelAddressFactory addressFactory;
     private final ChannelPipelineFactory pipelineFactory;
     private final LocationResolver locationResolver;
-    private final Barrier barrier;
-    private final RegionInfo regionInfo;
+    private final Map<String, Object> acceptOptions;
 
-    private ClientBootstrap clientBootstrap;
+    private ServerBootstrap bootstrap;
 
-    public ClientResolver(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory,
-            ChannelPipelineFactory pipelineFactory, LocationResolver locationResolver, Barrier barrier,
-            RegionInfo regionInfo) {
+    public ServerBootstrapResolver(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory,
+            ChannelPipelineFactory pipelineFactory, LocationResolver locationResolver, Map<String, Object> acceptOptions) {
         this.bootstrapFactory = bootstrapFactory;
         this.addressFactory = addressFactory;
         this.pipelineFactory = pipelineFactory;
         this.locationResolver = locationResolver;
-        this.barrier = barrier;
-        this.regionInfo = regionInfo;
+        this.acceptOptions = acceptOptions;
     }
 
-    public ClientBootstrap resolve() throws Exception {
-        if (clientBootstrap == null) {
-            URI connectUri = locationResolver.resolve();
-            ChannelAddress remoteAddress = addressFactory.newChannelAddress(connectUri);
-            LOGGER.debug("Initializing client Bootstrap connecting to remoteAddress " + remoteAddress);
-            ClientBootstrap clientBootstrapCandidate = bootstrapFactory.newClientBootstrap(connectUri.getScheme());
-            clientBootstrapCandidate.setPipelineFactory(pipelineFactory);
-            clientBootstrapCandidate.setOption("remoteAddress", remoteAddress);
-            clientBootstrap = clientBootstrapCandidate;
+    public ServerBootstrap resolve() throws Exception {
+        if (bootstrap == null) {
+            URI acceptURI = locationResolver.resolve();
+            ChannelAddress localAddress = addressFactory.newChannelAddress(acceptURI, acceptOptions);
+            LOGGER.debug("Initializing server Bootstrap binding to address " + localAddress);
+            ServerBootstrap serverBootstrapCandidate = bootstrapFactory.newServerBootstrap(acceptURI.getScheme());
+            acceptOptions.put("localAddress", localAddress);
+            serverBootstrapCandidate.setOptions(acceptOptions);
+            serverBootstrapCandidate.setPipelineFactory(pipelineFactory);
+            bootstrap = serverBootstrapCandidate;
         }
-        return clientBootstrap;
+        return bootstrap;
     }
 
-    public Barrier getBarrier() {
-        return this.barrier;
-    }
-
-    public RegionInfo getRegionInfo() {
-        return this.regionInfo;
-    }
 }

@@ -23,8 +23,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.el.ELContext;
+
 import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
-import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
 public class AstAcceptNode extends AstStreamNode {
 
@@ -33,7 +34,7 @@ public class AstAcceptNode extends AstStreamNode {
     private List<AstAcceptableNode> acceptables;
 
     private AstLocation location;
-    private ExpressionContext environment;
+    private ELContext environment;
 
     public AstLocation getLocation() {
         return location;
@@ -59,11 +60,11 @@ public class AstAcceptNode extends AstStreamNode {
         return options;
     }
 
-    public ExpressionContext getEnvironment() {
+    public ELContext getEnvironment() {
         return environment;
     }
 
-    public void setEnvironment(ExpressionContext expressionContext) {
+    public void setEnvironment(ELContext expressionContext) {
         this.environment = expressionContext;
     }
 

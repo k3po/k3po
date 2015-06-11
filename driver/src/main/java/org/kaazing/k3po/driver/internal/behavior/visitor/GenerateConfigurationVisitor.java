@@ -101,9 +101,9 @@ import org.kaazing.k3po.driver.internal.behavior.handler.event.UnboundHandler;
 import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor.State;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
-import org.kaazing.k3po.driver.internal.resolver.ClientResolver;
+import org.kaazing.k3po.driver.internal.resolver.ClientBootstrapResolver;
 import org.kaazing.k3po.driver.internal.resolver.LocationResolver;
-import org.kaazing.k3po.driver.internal.resolver.ServerResolver;
+import org.kaazing.k3po.driver.internal.resolver.ServerBootstrapResolver;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
@@ -337,10 +337,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         // Now that accept supports expression value, accept uri may not be available at this point.
         // To defer the evaluation of accept uri and initialization of  ServerBootstrap, LocationResolver and
-        // ServerResolver are created with information necessary create ClientBootstrap when the
+        // ServerResolver are created with information necessary to create ClientBootstrap when the
         // accept uri is available.
         LocationResolver locationResolver = new LocationResolver(acceptNode.getLocation(), acceptNode.getEnvironment());
-        ServerResolver serverResolver = new ServerResolver(bootstrapFactory, addressFactory,
+        ServerBootstrapResolver serverResolver = new ServerBootstrapResolver(bootstrapFactory, addressFactory,
                 pipelineFactory, locationResolver, acceptOptions);
 
         state.configuration.getServerResolvers().add(serverResolver);
@@ -399,10 +399,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         // Now that connect supports barrier and expression value, connect uri may not be available at this point.
         // To defer the evaluation of connect uri and initialization of ClientBootstrap, LocationResolver and
-        // ClientResolver are created with information necessary create ClientBootstrap when the connect uri
+        // ClientResolver are created with information necessary to create ClientBootstrap when the connect uri
         // is available.
         LocationResolver locationResolver = new LocationResolver(connectNode.getLocation(), connectNode.getEnvironment());
-        ClientResolver clientResolver = new ClientResolver(bootstrapFactory, addressFactory,
+        ClientBootstrapResolver clientResolver = new ClientBootstrapResolver(bootstrapFactory, addressFactory,
                 pipelineFactory, locationResolver, barrier, connectNode.getRegionInfo());
 
         // retain pipelines for tear down

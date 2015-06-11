@@ -67,8 +67,12 @@ public final class Functions {
     }
 
     @Function
-    public static String uniqueUri(String origin) {
-        return origin + new String(uniqueId());
+    public static String append(String... strings) {
+        StringBuilder result = new StringBuilder();
+        for (String string : strings) {
+            result.append(string);
+        }
+        return result.toString();
     }
 
     public static class Mapper extends FunctionMapperSpi.Reflective {
