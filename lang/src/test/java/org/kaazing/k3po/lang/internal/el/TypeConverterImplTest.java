@@ -20,7 +20,6 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -29,8 +28,6 @@ import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 
-import org.hamcrest.core.IsInstanceOf;
-import org.junit.Assert;
 import org.junit.Test;
 
 import de.odysseus.el.misc.TypeConverter;
@@ -64,7 +61,7 @@ public class TypeConverterImplTest {
 
         Object o = converter.convert(byteArr, byte[].class);
 
-        assertTrue(o instanceof byte[]);
+        assertThat(o, instanceOf(byte[].class));
 
         assertArrayEquals(byteArr, (byte[]) o);
     }
@@ -78,7 +75,7 @@ public class TypeConverterImplTest {
 
         Object o = converter.convert(l, byte[].class);
 
-        assertTrue(o instanceof byte[]);
+        assertThat(o, instanceOf(byte[].class));
 
         assertArrayEquals(expected, (byte[]) o);
 
@@ -99,7 +96,7 @@ public class TypeConverterImplTest {
 
         Object o = converter.convert(l, byte[].class);
 
-        assertTrue(o instanceof byte[]);
+        assertThat(o, instanceOf(byte[].class));
 
         assertArrayEquals(expected, (byte[]) o);
 
@@ -120,7 +117,7 @@ public class TypeConverterImplTest {
 
         Object o = converter.convert(l, byte[].class);
 
-        assertTrue(o instanceof byte[]);
+        assertThat(o, instanceOf(byte[].class));
 
         assertArrayEquals(expected, (byte[]) o);
 
@@ -141,7 +138,7 @@ public class TypeConverterImplTest {
 
         Object o = converter.convert(l, byte[].class);
 
-        assertTrue(o instanceof byte[]);
+        assertThat(o, instanceOf(byte[].class));
 
         assertArrayEquals(expected, (byte[]) o);
 
@@ -158,8 +155,8 @@ public class TypeConverterImplTest {
 
         Object o = converter.convert(converter, TypeConverter.class);
 
-        assertTrue(o instanceof TypeConverter);
-        assertTrue(o instanceof TypeConverterImpl);
+        assertThat(o, instanceOf(TypeConverter.class));
+        assertThat(o, instanceOf(TypeConverterImpl.class));
 
         assertEquals(converter, o);
     }

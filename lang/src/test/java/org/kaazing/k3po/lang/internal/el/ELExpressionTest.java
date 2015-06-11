@@ -17,7 +17,7 @@
 package org.kaazing.k3po.lang.internal.el;
 
 import static java.lang.String.format;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
@@ -44,7 +44,7 @@ public class ELExpressionTest {
         ValueExpression expr = factory.createValueExpression(ctx, script, boolean.class);
         Boolean value = (Boolean) expr.getValue(ctx);
 
-        assertTrue(format("Expected '%s' to be false, got %s", expr.getExpressionString(), value), value.equals(false));
+        assertEquals(format("Expected '%s' to be false, got %s", expr.getExpressionString(), value), false, value);
     }
 
     @Test
@@ -54,7 +54,8 @@ public class ELExpressionTest {
         ValueExpression expr = factory.createValueExpression(ctx, script, int.class);
         Integer value = (Integer) expr.getValue(ctx);
 
-        assertTrue(format("Expected '%s' to result in 14, got %d", expr.getExpressionString(), value), value.equals(14));
+        assertEquals(format("Expected '%s' to result in 14, got %d", expr.getExpressionString(), value),
+                Integer.valueOf(14), value);
     }
 
     @Test
@@ -64,6 +65,7 @@ public class ELExpressionTest {
         ValueExpression expr = factory.createValueExpression(ctx, script, int.class);
         Integer value = (Integer) expr.getValue(ctx);
 
-        assertTrue(format("Expected '%s' to result in 10, got %d", expr.getExpressionString(), value), value.equals(10));
+        assertEquals(format("Expected '%s' to result in 10, got %d", expr.getExpressionString(), value),
+                Integer.valueOf(10), value);
     }
 }
