@@ -16,7 +16,7 @@
 
 package org.kaazing.k3po.lang.internal.parser;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -58,7 +58,7 @@ public class RobotScriptLexerTest {
         lexer = new RobotLexer(ais);
         Token token = lexer.nextToken();
 
-        assertEquals(String.format("Expected EOF token, got %d (%s)", token.getType(), token), RobotLexer.EOF,
+        assertSame(String.format("Expected EOF token, got %d (%s)", token.getType(), token), RobotLexer.EOF,
                 token.getType());
     }
 
@@ -76,8 +76,7 @@ public class RobotScriptLexerTest {
         lexer = new RobotLexer(ais);
         Token token = lexer.nextToken();
 
-        assertEquals(
-                String.format("Expected token type %d, got %d (%s)", Token.EOF, token.getType(), token.getText()),
+        assertSame(String.format("Expected token type %d, got %d (%s)", Token.EOF, token.getType(), token.getText()),
                 Token.EOF, token.getType());
     }
 
@@ -95,7 +94,7 @@ public class RobotScriptLexerTest {
         lexer = new RobotLexer(ais);
         Token token = lexer.nextToken();
 
-        assertEquals(String.format("Expected keyword token, got type %d: %s", token.getType(), token.getText()),
+        assertSame(String.format("Expected keyword token, got type %d: %s", token.getType(), token.getText()),
                 RobotLexer.CloseKeyword, token.getType());
     }
 }

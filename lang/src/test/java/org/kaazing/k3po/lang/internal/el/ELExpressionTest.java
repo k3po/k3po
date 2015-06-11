@@ -18,6 +18,7 @@ package org.kaazing.k3po.lang.internal.el;
 
 import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
@@ -44,7 +45,7 @@ public class ELExpressionTest {
         ValueExpression expr = factory.createValueExpression(ctx, script, boolean.class);
         Boolean value = (Boolean) expr.getValue(ctx);
 
-        assertEquals(format("Expected '%s' to be false, got %s", expr.getExpressionString(), value), false, value);
+        assertFalse(format("Expected '%s' to be false, got %s", expr.getExpressionString(), value), value);
     }
 
     @Test
