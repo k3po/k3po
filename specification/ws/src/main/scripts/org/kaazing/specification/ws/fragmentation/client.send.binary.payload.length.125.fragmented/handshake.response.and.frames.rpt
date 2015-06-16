@@ -1,0 +1,58 @@
+accept http://localhost:8080/echo
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8080"
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
+read header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
+read header "Sec-WebSocket-Version" "13"
+
+write status "101" "Switching Protocols"
+write version "HTTP/1.1"
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
+
+read [0x02 0x99] ([0..4] :readMaskA)
+read option mask ${readMaskA}
+read ([0..25] :server25a)
+read option mask [0x00 0x00 0x00 0x00]
+
+read [0x00 0x99] ([0..4] :readMaskB)
+read option mask ${readMaskB}
+read ([0..25] :server25b)
+read option mask [0x00 0x00 0x00 0x00]
+
+read [0x00 0x99] ([0..4] :readMaskC)
+read option mask ${readMaskC}
+read ([0..25] :server25c)
+read option mask [0x00 0x00 0x00 0x00]
+
+read [0x00 0x99] ([0..4] :readMaskD)
+read option mask ${readMaskD}
+read ([0..25] :server25d)
+read option mask [0x00 0x00 0x00 0x00]
+
+read [0x80 0x99] ([0..4] :readMaskE)
+read option mask ${readMaskE}
+read ([0..25] :server25e)
+read option mask [0x00 0x00 0x00 0x00]
+
+write [0x02 0x19]
+write ${server25a}
+
+write [0x00 0x19]
+write ${server25b}
+
+write [0x00 0x19]
+write ${server25c}
+
+write [0x00 0x19]
+write ${server25d}
+
+write [0x80 0x19]
+write ${server25e}
+
