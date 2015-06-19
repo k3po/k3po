@@ -72,7 +72,7 @@ public abstract class ChannelAddressFactorySpi {
             }
         }
 
-        URI transportURI = (URI) options.get("transport");
+        URI transportURI = (URI) options.remove("transport");
         if (transportURI == null) {
             LocationFactory transportFactory = getTransportFactory();
             if (transportFactory != null) {

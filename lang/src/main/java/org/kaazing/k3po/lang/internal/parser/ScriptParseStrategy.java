@@ -801,7 +801,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             }
             Token transport = ctx.transport;
             if (transport != null) {
-                node.setTransport(transport.getText());
+                node.setTransport(transport.getText().substring(1, transport.getText().length() - 1));
             }
             super.visitAcceptNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
@@ -872,7 +872,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             }
             Token transport = ctx.transport;
             if (transport != null) {
-                node.setTransport(transport.getText());
+                node.setTransport(transport.getText().substring(1, transport.getText().length() - 1));
             }
             return node;
         }
