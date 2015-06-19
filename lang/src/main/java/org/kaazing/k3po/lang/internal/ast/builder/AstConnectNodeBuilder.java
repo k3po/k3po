@@ -36,8 +36,8 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         return this;
     }
 
-    public AstConnectNodeBuilder setAddress(String address) {
-        node.setTransport(address);
+    public AstConnectNodeBuilder setTransport(String transport) {
+        node.setTransport(transport);
         return this;
     }
 
