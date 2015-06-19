@@ -403,6 +403,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // is available.
         LocationResolver locationResolver = new LocationResolver(connectNode.getLocation(), connectNode.getEnvironment());
         Map<String, Object> connectOptions = new HashMap<>();
+        String transport = connectNode.getTransport();
+        if (transport != null) {
+            connectOptions.put("transport", URI.create(transport));
+        }
         ClientBootstrapResolver clientResolver = new ClientBootstrapResolver(bootstrapFactory, addressFactory,
                 pipelineFactory, locationResolver, barrier, connectNode.getRegionInfo(), connectOptions);
 

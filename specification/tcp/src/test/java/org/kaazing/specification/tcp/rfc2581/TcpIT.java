@@ -48,6 +48,7 @@ public class TcpIT {
     }
 
     @Test
+    @org.junit.Ignore
     @Specification({
             "establish.connection.with.accept.option/tcp.client",
             "establish.connection.with.accept.option/tcp.server" })
@@ -56,6 +57,7 @@ public class TcpIT {
     }
 
     @Test
+    @org.junit.Ignore
     @Specification({
             "establish.connection.with.connect.option/tcp.client",
             "establish.connection.with.connect.option/tcp.server" })

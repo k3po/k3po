@@ -1,0 +1,34 @@
+accept http://localhost:8080/index.html
+accepted
+connected
+
+read method "GET"
+read header "Host" "localhost:8080"
+read notify GOT_REQUEST
+read closed
+
+write await GOT_RESPONSE
+write status "200" "OK"
+write version "HTTP/1.1"
+write header content-length
+write header "Content-Type" "text/html"
+write "<html><body>Hello World!</body></html>"
+write close
+
+
+
+
+connect await GOT_REQUEST
+connect option transport "tcp://localhost:8081"
+connect http://localhost:8080/index.html
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write close
+
+read status "200" /.+/
+read version "HTTP/1.1"
+read notify GOT_RESPONSE
+read closed
