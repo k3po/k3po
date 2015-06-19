@@ -402,8 +402,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // ClientResolver are created with information necessary to create ClientBootstrap when the connect uri
         // is available.
         LocationResolver locationResolver = new LocationResolver(connectNode.getLocation(), connectNode.getEnvironment());
+        Map<String, Object> connectOptions = new HashMap<>();
         ClientBootstrapResolver clientResolver = new ClientBootstrapResolver(bootstrapFactory, addressFactory,
-                pipelineFactory, locationResolver, barrier, connectNode.getRegionInfo());
+                pipelineFactory, locationResolver, barrier, connectNode.getRegionInfo(), connectOptions);
 
         // retain pipelines for tear down
         state.configuration.getClientAndServerPipelines().add(pipeline);

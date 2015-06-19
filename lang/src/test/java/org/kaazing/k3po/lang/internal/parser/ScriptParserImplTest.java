@@ -1242,6 +1242,29 @@ public class ScriptParserImplTest {
     }
 
     @Test
+    public void shouldParseConnectScriptWithOptions() throws Exception {
+
+        String script =
+                "connect option transport \"localhost:8888\"\n" +
+                "connect tcp://localhost:7788\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+        /*
+        AstLocation location = new AstLocationLiteral(URI.create("tcp://localhost:7788"));
+
+        AstScriptNode expected =
+                new AstScriptNodeBuilder().addConnectStream().setLocation(location)
+                        .addConnectedEvent().done().addCloseCommand().done().addClosedEvent().done().done().done();
+
+        assertEquals(expected, actual);
+        */
+    }
+
+    @Test
     public void shouldParseAcceptScript() throws Exception {
 
         String script =
@@ -1256,6 +1279,28 @@ public class ScriptParserImplTest {
                 .addConnectedEvent().done().addCloseCommand().done().addClosedEvent().done().done().done();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseAcceptScriptWithOptions() throws Exception {
+
+        String script =
+                "# tcp.client.accept-then-close\n" +
+                "accept option transport \"localhost:8000\"\n" +
+                "accept tcp://localhost:7788\n" +
+                "accepted\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+
+//        AstScriptNode expected = new AstScriptNodeBuilder().addAcceptStream()
+//                .setLocation(new AstLocationLiteral(URI.create("tcp://localhost:7788"))).done().addAcceptedStream()
+//                .addConnectedEvent().done().addCloseCommand().done().addClosedEvent().done().done().done();
+
+//        assertEquals(expected, actual);
     }
 
     @Test

@@ -165,6 +165,7 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
         newConnectNode.setLocation(connectNode.getLocation());
         newConnectNode.setEnvironment(connectNode.getEnvironment());
         newConnectNode.setBarrier(connectNode.getBarrier());
+        newConnectNode.setTransport(connectNode.getTransport());
 
         state.streamables = newConnectNode.getStreamables();
 

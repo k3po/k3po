@@ -31,6 +31,7 @@ public class AstAcceptNode extends AstStreamNode {
 
     private Map<String, Object> options;
     private String acceptName;
+    private String transport;
     private List<AstAcceptableNode> acceptables;
 
     private AstLocation location;
@@ -151,4 +152,11 @@ public class AstAcceptNode extends AstStreamNode {
     }
 
 
+    public String getTransport() {
+        return transport;
+    }
+
+    public void setTransport(String transport) {
+        this.transport = transport;
+    }
 }

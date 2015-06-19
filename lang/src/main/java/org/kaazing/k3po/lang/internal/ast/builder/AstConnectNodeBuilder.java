@@ -36,6 +36,11 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         return this;
     }
 
+    public AstConnectNodeBuilder setAddress(String address) {
+        node.setTransport(address);
+        return this;
+    }
+
     @Override
     public AstOpenedNodeBuilder.StreamNested<AstConnectNodeBuilder> addOpenedEvent() {
         return new AstOpenedNodeBuilder.StreamNested<AstConnectNodeBuilder>(this);

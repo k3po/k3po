@@ -30,9 +30,18 @@ public class AstConnectNode extends AstStreamNode {
 
     private Map<String, Object> options;
     private String barrier;
+    private String transport;
 
     private AstLocation location;
     private ELContext environment;
+
+//    public AstConnectNode(AstConnectNode connectNode) {
+//        this.setRegionInfo(connectNode.getRegionInfo());
+//        this.setLocation(connectNode.getLocation());
+//        this.setEnvironment(connectNode.getEnvironment());
+//        this.setBarrier(connectNode.getBarrier());
+//        this.setTransport(connectNode.getTransport());
+//    }
 
     public Map<String, Object> getOptions() {
         if (options == null) {
@@ -110,5 +119,13 @@ public class AstConnectNode extends AstStreamNode {
 
     public void setEnvironment(ELContext expressionContext) {
         this.environment = expressionContext;
+    }
+
+    public String getTransport() {
+        return transport;
+    }
+
+    public void setTransport(String transport) {
+        this.transport = transport;
     }
 }
