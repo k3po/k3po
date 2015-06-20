@@ -37,6 +37,13 @@ public class AstAcceptNode extends AstStreamNode {
     private AstLocation location;
     private ELContext environment;
 
+//    public AstAcceptNode(AstAcceptNode acceptNode) {
+//        this.setRegionInfo(acceptNode.getRegionInfo());
+//        this.setLocation(acceptNode.getLocation());
+//        this.setEnvironment(acceptNode.getEnvironment());
+//        this.setTransport(acceptNode.getTransport());
+//    }
+
     public AstLocation getLocation() {
         return location;
     }

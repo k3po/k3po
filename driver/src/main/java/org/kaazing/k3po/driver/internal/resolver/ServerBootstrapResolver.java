@@ -55,6 +55,7 @@ public class ServerBootstrapResolver {
         if (bootstrap == null) {
             URI acceptURI = locationResolver.resolve();
             ChannelAddress localAddress = addressFactory.newChannelAddress(acceptURI, acceptOptions);
+            System.out.println("accept options = "+acceptOptions);
             LOGGER.debug("Initializing server Bootstrap binding to address " + localAddress);
             ServerBootstrap serverBootstrapCandidate = bootstrapFactory.newServerBootstrap(acceptURI.getScheme());
             acceptOptions.put("localAddress", localAddress);

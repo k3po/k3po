@@ -1,51 +1,74 @@
-accept http://localhost:8080/index.html
-accepted
-connected
+#accept http://localhost:8080/index.html
+#accepted
+#connected
 
-read method "GET"
-read header "Host" "localhost:8080"
-read notify GOT_REQUEST
-read closed
+#read method "GET"
+#read header "Host" "localhost:8080"
+#read notify GOT_REQUEST
+#read closed
 
-write await GOT_RESPONSE
-write status "200" "OK"
-write version "HTTP/1.1"
-write header content-length
-write header "Content-Type" "text/html"
-write "<html><body>Hello World!</body></html>"
-write close
-
-
+#write await GOT_RESPONSE
+#write status "200" "OK"
+#write version "HTTP/1.1"
+#write header content-length
+#write header "Content-Type" "text/html"
+#write "<html><body>Hello World!</body></html>"
+#write close
 
 
-connect await GOT_REQUEST
-connect option transport "tcp://localhost:8081"
-connect http://localhost:8080/index.html
-connected
 
-write method "GET"
-write version "HTTP/1.1"
-write header host
-write close
 
-read status "200" /.+/
-read version "HTTP/1.1"
-read "<html><body>Hello World!</body></html>"
-read notify GOT_RESPONSE
-read closed
+#connect await GOT_REQUEST
+#connect option transport "tcp://localhost:8081"
+#connect http://localhost:8080/index.html
+#connected
+#
+#write method "GET"
+#write version "HTTP/1.1"
+#write header host
+#write close
+#
+#read status "200" /.+/
+#read version "HTTP/1.1"
+#read "<html><body>Hello World!</body></html>"
+#read notify GOT_RESPONSE
+#read closed
 
 
 #
 # tcp version
 #
 
-#accept tcp://localhost:8080
-#accepted
-#connected
-#
-#read "GET /index.html HTTP/1.1\r\n"
-#read "Host: localhost:8080\r\n"
-#read "\r\n"
-#write "HTTP/1.1 200 OK\r\n"
-#close
-#closed
+accept tcp://localhost:8080
+accepted
+connected
+
+read "GET /index.html HTTP/1.1\r\n"
+read "Host: localhost:8080\r\n"
+read "\r\n"
+read notify GOT_REQUEST
+
+write await GOT_RESPONSE
+write "HTTP/1.1 200 OK\r\n"
+write "Content-Type: text/html\r\n"
+write "Content-Length: 38\r\n"
+write "\r\n"
+write "<html><body>Hello World!</body></html>"
+close
+closed
+
+connect await GOT_REQUEST
+connect tcp://localhost:8081
+connected
+
+write "GET /index.html HTTP/1.1\r\n"
+write "Host: localhost:8080\r\n"
+write "\r\n"
+read "HTTP/1.1 200 OK\r\n"
+read "Content-Type: text/html\r\n"
+read "Content-Length: 38\r\n"
+read "\r\n"
+read "<html><body>Hello World!</body></html>"
+read notify GOT_RESPONSE
+close
+closed

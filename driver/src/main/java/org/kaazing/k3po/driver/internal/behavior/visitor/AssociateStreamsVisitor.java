@@ -102,10 +102,12 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
     @Override
     public AstScriptNode visit(AstAcceptNode acceptNode, State state) throws Exception {
 
+        // TODO use copy constructor
         AstAcceptNode newAcceptNode = new AstAcceptNode();
         newAcceptNode.setRegionInfo(acceptNode.getRegionInfo());
         newAcceptNode.setLocation(acceptNode.getLocation());
         newAcceptNode.setEnvironment(acceptNode.getEnvironment());
+        newAcceptNode.setTransport(acceptNode.getTransport());
 
         String acceptName = acceptNode.getAcceptName();
         String newAcceptName = acceptName != null ? acceptName : String.format("~accept~%d", ++state.implicitAcceptCount);
