@@ -51,7 +51,7 @@ import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerChannel> {
 
     private final ConcurrentNavigableMap<URI, HttpServerChannel> httpBindings;
-    private final ConcurrentMap<URI, HttpTransport> httpTransportsByLocation; // TODO: use address for location stack
+    private final ConcurrentMap<ChannelAddress, HttpTransport> httpTransports;
     private final ChannelPipelineFactory pipelineFactory;
 
     public HttpServerChannelSink() {
@@ -61,7 +61,7 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
     private HttpServerChannelSink(ConcurrentNavigableMap<URI, HttpServerChannel> httpBindings) {
         this.pipelineFactory = new HttpChildChannelPipelineFactory(httpBindings);
         this.httpBindings = httpBindings;
-        this.httpTransportsByLocation = new ConcurrentHashMap<URI, HttpTransport>();
+        this.httpTransports = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -77,8 +77,7 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
         }
 
         ChannelAddress address = httpLocalAddress.getTransport();
-        URI location = address.getLocation();
-        HttpTransport httpTransport = httpTransportsByLocation.get(location);
+        HttpTransport httpTransport = httpTransports.get(address);
         if (httpTransport == null) {
             String schemeName = address.getLocation().getScheme();
             String httpSchemeName = httpLocalAddress.getLocation().getScheme();
@@ -91,7 +90,7 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
             // bind transport
             ChannelFuture bindFuture = bootstrap.bindAsync(address);
             HttpTransport newHttpTransport = new HttpTransport(bindFuture, 1);
-            httpTransport = httpTransportsByLocation.putIfAbsent(location, newHttpTransport);
+            httpTransport = httpTransports.putIfAbsent(address, newHttpTransport);
             if (httpTransport == null) {
                 httpTransport = newHttpTransport;
             }
@@ -126,14 +125,13 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
         }
 
         ChannelAddress address = httpLocalAddress.getTransport();
-        URI location = address.getLocation();
-        HttpTransport httpTransport = httpTransportsByLocation.get(location);
+        HttpTransport httpTransport = httpTransports.get(address);
         assert httpTransport != null;
 
         if (httpTransport.count.decrementAndGet() == 0) {
             // ensure only zero count is removed
             HttpTransport oldHttpTransport = new HttpTransport(httpTransport.future);
-            if (httpTransportsByLocation.remove(location, oldHttpTransport)) {
+            if (httpTransports.remove(address, oldHttpTransport)) {
                 // unbind transport
                 Channel transport = httpUnbindChannel.getTransport();
                 ChannelFuture unbindFuture = transport.unbind();
