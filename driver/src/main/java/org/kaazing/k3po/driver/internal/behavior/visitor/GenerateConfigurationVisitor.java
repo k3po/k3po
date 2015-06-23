@@ -335,7 +335,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         Map<String, Object> acceptOptions = acceptNode.getOptions();
         acceptOptions.put("regionInfo", acceptInfo);
         String transport = acceptNode.getTransport();
-        System.out.println("**** JITU Tranport = " + transport);
 
         if (transport != null) {
             acceptOptions.put("transport", URI.create(transport));

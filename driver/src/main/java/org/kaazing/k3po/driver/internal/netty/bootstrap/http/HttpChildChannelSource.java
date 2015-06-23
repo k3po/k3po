@@ -148,9 +148,6 @@ public class HttpChildChannelSource extends HttpChannelHandler {
             return;
         }
 
-        System.out.println("JITU httpMessageReceived local = " + ctx.getChannel().getLocalAddress() + " remote = " +
-                ctx.getChannel().getRemoteAddress());
-
         ChannelAddress transportCandidate = Channels.localAddress(ctx.getChannel());
         ChannelAddress candidate = new ChannelAddress(httpLocation, transportCandidate);
 

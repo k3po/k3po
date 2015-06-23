@@ -29,7 +29,6 @@ public class ChannelAddress extends SocketAddress {
     public static final Comparator<ChannelAddress> ADDRESS_COMPARATOR = new Comparator<ChannelAddress>() {
         @Override
         public int compare(ChannelAddress o1, ChannelAddress o2) {
-            System.out.println("COmparator o1=" + o1 + " o2 = " + o2);
             return o1.getLocation().compareTo(o2.getLocation());
         }
     };
