@@ -1245,8 +1245,8 @@ public class ScriptParserImplTest {
     public void shouldParseConnectScriptWithOptions() throws Exception {
 
         String script =
-                "connect option transport \"localhost:8888\"\n" +
                 "connect tcp://localhost:7788\n" +
+                "        option transport tcp://localhost:8888\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";
@@ -1286,8 +1286,8 @@ public class ScriptParserImplTest {
 
         String script =
                 "# tcp.client.accept-then-close\n" +
-                "accept option transport \"localhost:8000\"\n" +
                 "accept tcp://localhost:7788\n" +
+                "       option transport tcp://localhost:8000\n" +
                 "accepted\n" +
                 "connected\n" +
                 "close\n" +

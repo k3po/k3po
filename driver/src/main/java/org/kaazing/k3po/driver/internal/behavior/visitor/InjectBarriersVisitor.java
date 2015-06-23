@@ -93,12 +93,7 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
         state.readWriteState = ReadWriteState.NONE;
 
         // TODO use copy constructor
-        AstAcceptNode newAcceptNode = new AstAcceptNode();
-        newAcceptNode.setRegionInfo(acceptNode.getRegionInfo());
-        newAcceptNode.setAcceptName(acceptNode.getAcceptName());
-        newAcceptNode.setLocation(acceptNode.getLocation());
-        newAcceptNode.setEnvironment(acceptNode.getEnvironment());
-        newAcceptNode.setTransport(acceptNode.getTransport());
+        AstAcceptNode newAcceptNode = new AstAcceptNode(acceptNode);
 
         state.streamables = newAcceptNode.getStreamables();
         for (AstStreamableNode streamable : acceptNode.getStreamables()) {
@@ -138,12 +133,7 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
 
         state.readWriteState = ReadWriteState.NONE;
 
-        AstConnectNode newConnectNode = new AstConnectNode();
-        newConnectNode.setRegionInfo(connectNode.getRegionInfo());
-        newConnectNode.setLocation(connectNode.getLocation());
-        newConnectNode.setEnvironment(connectNode.getEnvironment());
-        newConnectNode.setBarrier(connectNode.getBarrier());
-        newConnectNode.setTransport(connectNode.getTransport());
+        AstConnectNode newConnectNode = new AstConnectNode(connectNode);
 
         state.streamables = newConnectNode.getStreamables();
         for (AstStreamableNode streamable : connectNode.getStreamables()) {

@@ -1,3 +1,6 @@
+#
+# client <--> proxy
+#
 accept http://localhost:8080/index.html
 accepted
 connected
@@ -16,11 +19,12 @@ write "<html><body>Hello World!</body></html>"
 write close
 
 
-
-
+#
+# proxy <--> server (listening at localhost:8081)
+#
 connect await GOT_REQUEST
-connect option transport "tcp://localhost:8081"
 connect http://localhost:8080/index.html
+        option transport tcp://localhost:8081
 connected
 
 write method "GET"
@@ -33,42 +37,3 @@ read version "HTTP/1.1"
 read "<html><body>Hello World!</body></html>"
 read notify GOT_RESPONSE
 read closed
-
-
-#
-# tcp version
-#
-
-#accept tcp://localhost:8080
-#accepted
-#connected
-#
-#read "GET /index.html HTTP/1.1\r\n"
-#read "Host: localhost:8080\r\n"
-#read "\r\n"
-#read notify GOT_REQUEST
-#
-#write await GOT_RESPONSE
-#write "HTTP/1.1 200 OK\r\n"
-#write "Content-Type: text/html\r\n"
-#write "Content-Length: 38\r\n"
-#write "\r\n"
-#write "<html><body>Hello World!</body></html>"
-#close
-#closed
-#
-#connect await GOT_REQUEST
-#connect tcp://localhost:8081
-#connected
-#
-#write "GET /index.html HTTP/1.1\r\n"
-#write "Host: localhost:8080\r\n"
-#write "\r\n"
-#read "HTTP/1.1 200 OK\r\n"
-#read "Content-Type: text/html\r\n"
-#read "Content-Length: 38\r\n"
-#read "\r\n"
-#read "<html><body>Hello World!</body></html>"
-#read notify GOT_RESPONSE
-#close
-#closed

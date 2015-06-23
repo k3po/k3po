@@ -332,13 +332,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             }
         };
 
-        Map<String, Object> acceptOptions = acceptNode.getOptions();
+        Map<String, Object> acceptOptions = new HashMap<>();
         acceptOptions.put("regionInfo", acceptInfo);
-        String transport = acceptNode.getTransport();
-
-        if (transport != null) {
-            acceptOptions.put("transport", URI.create(transport));
-        }
+        acceptOptions.putAll(acceptNode.getOptions());
 
         // Now that accept supports expression value, accept uri may not be available at this point.
         // To defer the evaluation of accept uri and initialization of  ServerBootstrap, LocationResolver and
@@ -408,10 +404,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // is available.
         LocationResolver locationResolver = new LocationResolver(connectNode.getLocation(), connectNode.getEnvironment());
         Map<String, Object> connectOptions = new HashMap<>();
-        String transport = connectNode.getTransport();
-        if (transport != null) {
-            connectOptions.put("transport", URI.create(transport));
-        }
+        connectOptions.putAll(connectNode.getOptions());
+
         ClientBootstrapResolver clientResolver = new ClientBootstrapResolver(bootstrapFactory, addressFactory,
                 pipelineFactory, locationResolver, barrier, connectNode.getRegionInfo(), connectOptions);
 

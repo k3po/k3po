@@ -20,6 +20,8 @@ import org.kaazing.k3po.lang.internal.ast.AstConnectNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 
+import java.net.URI;
+
 public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<AstConnectNode> {
 
     public AstConnectNodeBuilder() {
@@ -33,11 +35,6 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
 
     public AstConnectNodeBuilder setBarrier(String barrier) {
         node.setBarrier(barrier);
-        return this;
-    }
-
-    public AstConnectNodeBuilder setTransport(String transport) {
-        node.setTransport(transport);
         return this;
     }
 

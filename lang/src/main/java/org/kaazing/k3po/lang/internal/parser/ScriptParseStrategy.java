@@ -792,16 +792,18 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstAcceptNode visitAcceptNode(AcceptNodeContext ctx) {
             AstLocationVisitor locationVisitor = new AstLocationVisitor(elFactory, elContext);
-            AstLocation location = locationVisitor.visit(ctx.location());
+            AstLocation location = locationVisitor.visit(ctx.acceptURI);
             node = new AstAcceptNode();
             node.setLocation(location);
             node.setEnvironment(elContext);
             if (ctx.text != null) {
                 node.setAcceptName(ctx.text.getText());
             }
-            Token transport = ctx.transport;
+            RobotParser.LocationContext transport = ctx.value;
             if (transport != null) {
-                node.setTransport(transport.getText().substring(1, transport.getText().length() - 1));
+                // TODO handle expressionValue
+                // TODO use vistior to populate transport URI
+                node.getOptions().put("transport", URI.create(transport.uriValue().uri.getText()));
             }
             super.visitAcceptNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
@@ -860,7 +862,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstConnectNode visitConnectNode(ConnectNodeContext ctx) {
             AstLocationVisitor locationVisitor = new AstLocationVisitor(elFactory, elContext);
-            AstLocation location = locationVisitor.visit(ctx.location());
+            AstLocation location = locationVisitor.visit(ctx.connectURI);
             node = new AstConnectNode();
             node.setLocation(location);
             node.setEnvironment(elContext);
@@ -870,9 +872,11 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             if (barrier != null) {
                 node.setBarrier(barrier.getText());
             }
-            Token transport = ctx.transport;
+            RobotParser.LocationContext transport = ctx.value;
             if (transport != null) {
-                node.setTransport(transport.getText().substring(1, transport.getText().length() - 1));
+                // TODO handle expressionValue
+                // TODO use vistior to populate transport URI
+                node.getOptions().put("transport", URI.create(transport.uriValue().uri.getText()));
             }
             return node;
         }

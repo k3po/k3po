@@ -32,7 +32,7 @@ streamNode
     ;
 
 acceptNode
-    : k=AcceptKeyword (OptionKeyword TransportKeyword transport=TextLiteral AcceptKeyword)? acceptURI=location ( AsKeyword text=Name )?
+    : k=AcceptKeyword acceptURI=location ( AsKeyword text=Name )? (OptionKeyword TransportKeyword value=location)?
       serverStreamableNode*
     ;
 
@@ -41,7 +41,7 @@ acceptableNode
     ;
 
 connectNode
-    : k=ConnectKeyword (AwaitKeyword barrier=Name ConnectKeyword)? (OptionKeyword TransportKeyword transport=TextLiteral ConnectKeyword)? connectURI=location  streamableNode+
+    : k=ConnectKeyword (AwaitKeyword barrier=Name ConnectKeyword)? connectURI=location (OptionKeyword TransportKeyword value=location)? streamableNode+
     ;
 
 serverStreamableNode

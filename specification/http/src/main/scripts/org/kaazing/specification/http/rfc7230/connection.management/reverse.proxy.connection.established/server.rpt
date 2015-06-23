@@ -1,5 +1,5 @@
-accept option transport "tcp://localhost:8081"
 accept http://localhost:8080/index.html
+       option transport tcp://localhost:8081
 accepted
 connected
 
@@ -13,22 +13,3 @@ write header content-length
 write header "Content-Type" "text/html"
 write "<html><body>Hello World!</body></html>"
 write close
-
-
-#
-# tcp version
-#
-#accept tcp://localhost:8081
-#accepted
-#connected
-#
-#read "GET /index.html HTTP/1.1\r\n"
-#read "Host: localhost:8080\r\n"
-#read "\r\n"
-#write "HTTP/1.1 200 OK\r\n"
-#write "Content-Type: text/html\r\n"
-#write "Content-Length: 38\r\n"
-#write "\r\n"
-#write "<html><body>Hello World!</body></html>"
-#close
-#closed
