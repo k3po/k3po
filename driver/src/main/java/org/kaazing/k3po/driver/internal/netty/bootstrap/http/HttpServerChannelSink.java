@@ -83,7 +83,7 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
             String httpSchemeName = httpLocalAddress.getLocation().getScheme();
 
             ServerBootstrap bootstrap = bootstrapFactory.newServerBootstrap(schemeName);
-            bootstrap.setParentHandler(createParentHandler(httpBindChannel));
+            bootstrap.setParentHandler(createParentHandler(httpBindChannel, address));
             bootstrap.setPipelineFactory(pipelineFactory);
             bootstrap.setOption(format("%s.nextProtocol", schemeName), httpSchemeName);
 
@@ -181,13 +181,14 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
         }
     }
 
-    private ChannelHandler createParentHandler(HttpServerChannel channel) {
+    private ChannelHandler createParentHandler(HttpServerChannel channel, final ChannelAddress address) {
         return new SimpleChannelHandler() {
 
             private final ChannelGroup childChannels = new DefaultChannelGroup();
 
             @Override
             public void childChannelOpen(ChannelHandlerContext ctx, ChildChannelStateEvent e) throws Exception {
+                e.getChildChannel().setAttachment(address);
                 childChannels.add(e.getChildChannel());
                 super.childChannelOpen(ctx, e);
             }

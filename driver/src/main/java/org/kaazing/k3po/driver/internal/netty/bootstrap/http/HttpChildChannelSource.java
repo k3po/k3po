@@ -148,7 +148,7 @@ public class HttpChildChannelSource extends HttpChannelHandler {
             return;
         }
 
-        ChannelAddress transportCandidate = Channels.localAddress(ctx.getChannel());
+        ChannelAddress transportCandidate = (ChannelAddress) ctx.getChannel().getAttachment();
         ChannelAddress candidate = new ChannelAddress(httpLocation, transportCandidate);
 
         Entry<ChannelAddress, HttpServerChannel> httpBinding = httpBindings.floorEntry(candidate);

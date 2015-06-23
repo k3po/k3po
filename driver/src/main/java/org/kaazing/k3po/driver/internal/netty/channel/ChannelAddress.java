@@ -26,10 +26,22 @@ import org.jboss.netty.channel.ChannelException;
 public class ChannelAddress extends SocketAddress {
 
     private static final long serialVersionUID = 1L;
+
     public static final Comparator<ChannelAddress> ADDRESS_COMPARATOR = new Comparator<ChannelAddress>() {
         @Override
         public int compare(ChannelAddress o1, ChannelAddress o2) {
-            return o1.getLocation().compareTo(o2.getLocation());
+            if (o1 == null && o2 == null) {
+                return 0;
+            } else if (o1 == null) {
+                return -1;
+            } else if (o2 == null) {
+                return 1;
+            }
+            int status = o1.getLocation().compareTo(o2.getLocation());
+            if (status == 0) {
+                status = this.compare(o1.getTransport(), o2.getTransport());
+            }
+            return status;
         }
     };
 
