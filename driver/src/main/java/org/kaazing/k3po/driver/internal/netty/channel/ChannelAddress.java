@@ -18,6 +18,7 @@ package org.kaazing.k3po.driver.internal.netty.channel;
 
 import java.net.SocketAddress;
 import java.net.URI;
+import java.util.Comparator;
 import java.util.Objects;
 
 import org.jboss.netty.channel.ChannelException;
@@ -25,6 +26,14 @@ import org.jboss.netty.channel.ChannelException;
 public class ChannelAddress extends SocketAddress {
 
     private static final long serialVersionUID = 1L;
+    public static final Comparator<ChannelAddress> ADDRESS_COMPARATOR = new Comparator<ChannelAddress>() {
+        @Override
+        public int compare(ChannelAddress o1, ChannelAddress o2) {
+            System.out.println("COmparator o1=" + o1 + " o2 = " + o2);
+            return o1.getLocation().compareTo(o2.getLocation());
+        }
+    };
+
 
     private final URI location;
     private final boolean ephemeral;

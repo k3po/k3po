@@ -50,15 +50,15 @@ import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
 public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerChannel> {
 
-    private final ConcurrentNavigableMap<URI, HttpServerChannel> httpBindings;
+    private final ConcurrentNavigableMap<ChannelAddress, HttpServerChannel> httpBindings;
     private final ConcurrentMap<ChannelAddress, HttpTransport> httpTransports;
     private final ChannelPipelineFactory pipelineFactory;
 
     public HttpServerChannelSink() {
-        this(new ConcurrentSkipListMap<URI, HttpServerChannel>());
+        this(new ConcurrentSkipListMap<ChannelAddress, HttpServerChannel>(ChannelAddress.ADDRESS_COMPARATOR));
     }
 
-    private HttpServerChannelSink(ConcurrentNavigableMap<URI, HttpServerChannel> httpBindings) {
+    private HttpServerChannelSink(ConcurrentNavigableMap<ChannelAddress, HttpServerChannel> httpBindings) {
         this.pipelineFactory = new HttpChildChannelPipelineFactory(httpBindings);
         this.httpBindings = httpBindings;
         this.httpTransports = new ConcurrentHashMap<>();
@@ -71,7 +71,7 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
         final ChannelAddress httpLocalAddress = (ChannelAddress) evt.getValue();
         URI httpLocation = httpLocalAddress.getLocation();
 
-        HttpServerChannel httpBoundChannel = httpBindings.putIfAbsent(httpLocation, httpBindChannel);
+        HttpServerChannel httpBoundChannel = httpBindings.putIfAbsent(httpLocalAddress, httpBindChannel);
         if (httpBoundChannel != null) {
             httpBindFuture.setFailure(new ChannelException(format("Duplicate bind failed: %s", httpLocation)));
         }
@@ -117,9 +117,8 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
         final HttpServerChannel httpUnbindChannel = (HttpServerChannel) evt.getChannel();
         final ChannelFuture httpUnbindFuture = evt.getFuture();
         ChannelAddress httpLocalAddress = httpUnbindChannel.getLocalAddress();
-        URI httpLocation = httpLocalAddress.getLocation();
 
-        if (!httpBindings.remove(httpLocation, httpUnbindChannel)) {
+        if (!httpBindings.remove(httpLocalAddress, httpUnbindChannel)) {
             httpUnbindFuture.setFailure(new ChannelException("Channel not bound").fillInStackTrace());
             return;
         }
