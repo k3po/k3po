@@ -1,0 +1,20 @@
+
+accept http://localhost:8000/auth/
+accepted
+connected
+
+read method "GET"
+read header "Authorization" "Basic dGVzdDp0ZXN0" #test:test 
+
+write status "401" "Unauthorized"
+write header "WWW-Authenticate" "Basic realm=\"Command Center\""
+write close
+
+accepted
+connected
+
+read method "GET"
+read header "Authorization" "Basic YWRtaW46YWRtaW4=" #admin:admin
+
+write status "404" "Not Found"
+write close

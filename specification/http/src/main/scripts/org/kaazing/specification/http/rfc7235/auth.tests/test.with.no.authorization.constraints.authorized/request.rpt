@@ -1,0 +1,10 @@
+
+connect http://localhost:8000/auth/
+connected
+
+write method "GET"
+write header "Authorization" "Basic am9lOndlbGNvbWU=" #joe:welcome
+write close
+
+read status "404" "Not Found"
+

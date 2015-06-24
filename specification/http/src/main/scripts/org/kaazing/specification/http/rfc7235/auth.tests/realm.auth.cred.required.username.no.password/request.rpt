@@ -1,0 +1,9 @@
+
+connect http://localhost:8000/auth/
+connected
+
+write method "GET"
+write header "Authorization" "Basic YWRtaW46dGVzdA==" #admin:test
+write close
+
+read status "401" "Unauthorized"
