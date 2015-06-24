@@ -169,6 +169,11 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
             return this;
         }
 
+        public ScriptNested<R> setTransport(AstLocation transport) {
+            node.getOptions().put("transport", transport);
+            return this;
+        }
+
         public ScriptNested<R> setBarrier(String barrier) {
             node.setBarrier(barrier);
             return this;

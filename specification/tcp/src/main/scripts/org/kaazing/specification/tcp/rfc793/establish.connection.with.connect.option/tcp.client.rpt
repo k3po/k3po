@@ -1,3 +1,0 @@
-connect option transport "tcp://localhost:8081"
-connect tcp://localhost:8080
-connected

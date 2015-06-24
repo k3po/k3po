@@ -801,9 +801,9 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             }
             RobotParser.LocationContext transport = ctx.value;
             if (transport != null) {
-                // TODO handle expressionValue
-                // TODO use vistior to populate transport URI
-                node.getOptions().put("transport", URI.create(transport.uriValue().uri.getText()));
+                AstLocationVisitor transportVisitor = new AstLocationVisitor(elFactory, elContext);
+                AstLocation transportLocation = transportVisitor.visit(ctx.value);
+                node.getOptions().put("transport", transportLocation);
             }
             super.visitAcceptNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
@@ -874,9 +874,9 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             }
             RobotParser.LocationContext transport = ctx.value;
             if (transport != null) {
-                // TODO handle expressionValue
-                // TODO use vistior to populate transport URI
-                node.getOptions().put("transport", URI.create(transport.uriValue().uri.getText()));
+                AstLocationVisitor transportVisitor = new AstLocationVisitor(elFactory, elContext);
+                AstLocation transportLocation = transportVisitor.visit(ctx.value);
+                node.getOptions().put("transport", transportLocation);
             }
             return node;
         }

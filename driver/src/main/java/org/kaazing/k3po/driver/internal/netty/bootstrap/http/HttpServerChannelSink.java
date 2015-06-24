@@ -188,7 +188,7 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
 
             @Override
             public void childChannelOpen(ChannelHandlerContext ctx, ChildChannelStateEvent e) throws Exception {
-                e.getChildChannel().setAttachment(address);
+                e.getChannel().setAttachment(address);
                 childChannels.add(e.getChildChannel());
                 super.childChannelOpen(ctx, e);
             }

@@ -151,6 +151,7 @@ import org.kaazing.k3po.lang.internal.ast.matcher.AstVariableLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
@@ -334,7 +335,12 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         Map<String, Object> acceptOptions = new HashMap<>();
         acceptOptions.put("regionInfo", acceptInfo);
-        acceptOptions.putAll(acceptNode.getOptions());
+        AstLocation transport = (AstLocation) acceptNode.getOptions().get("transport");
+        LocationResolver transportResolver = null;
+        if (transport != null) {
+            transportResolver = new LocationResolver(transport, acceptNode.getEnvironment());
+            acceptOptions.put("transport", transportResolver.resolve());
+        }
 
         // Now that accept supports expression value, accept uri may not be available at this point.
         // To defer the evaluation of accept uri and initialization of  ServerBootstrap, LocationResolver and
@@ -342,7 +348,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // accept uri is available.
         LocationResolver locationResolver = new LocationResolver(acceptNode.getLocation(), acceptNode.getEnvironment());
         ServerBootstrapResolver serverResolver = new ServerBootstrapResolver(bootstrapFactory, addressFactory,
-                pipelineFactory, locationResolver, acceptOptions);
+                pipelineFactory, locationResolver, transportResolver, acceptOptions);
 
         state.configuration.getServerResolvers().add(serverResolver);
 
@@ -404,10 +410,15 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // is available.
         LocationResolver locationResolver = new LocationResolver(connectNode.getLocation(), connectNode.getEnvironment());
         Map<String, Object> connectOptions = new HashMap<>();
-        connectOptions.putAll(connectNode.getOptions());
+        AstLocation transport = (AstLocation) connectNode.getOptions().get("transport");
+        LocationResolver transportResolver = null;
+        if (transport != null) {
+            transportResolver = new LocationResolver(transport, connectNode.getEnvironment());
+            connectOptions.put("transport", transportResolver.resolve());
+        }
 
         ClientBootstrapResolver clientResolver = new ClientBootstrapResolver(bootstrapFactory, addressFactory,
-                pipelineFactory, locationResolver, barrier, connectNode.getRegionInfo(), connectOptions);
+                pipelineFactory, locationResolver, transportResolver, barrier, connectNode.getRegionInfo(), connectOptions);
 
         // retain pipelines for tear down
         state.configuration.getClientAndServerPipelines().add(pipeline);

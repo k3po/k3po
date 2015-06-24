@@ -38,22 +38,30 @@ public class ServerBootstrapResolver {
     private final ChannelAddressFactory addressFactory;
     private final ChannelPipelineFactory pipelineFactory;
     private final LocationResolver locationResolver;
+    private final LocationResolver transportResolver;
+
     private final Map<String, Object> acceptOptions;
 
     private ServerBootstrap bootstrap;
 
     public ServerBootstrapResolver(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory,
-            ChannelPipelineFactory pipelineFactory, LocationResolver locationResolver, Map<String, Object> acceptOptions) {
+            ChannelPipelineFactory pipelineFactory, LocationResolver locationResolver,
+            LocationResolver transportResolver, Map<String, Object> acceptOptions) {
         this.bootstrapFactory = bootstrapFactory;
         this.addressFactory = addressFactory;
         this.pipelineFactory = pipelineFactory;
         this.locationResolver = locationResolver;
+        this.transportResolver = transportResolver;
         this.acceptOptions = acceptOptions;
     }
 
     public ServerBootstrap resolve() throws Exception {
         if (bootstrap == null) {
             URI acceptURI = locationResolver.resolve();
+            if (transportResolver != null) {
+                URI transportURI = transportResolver.resolve();
+                acceptOptions.put("transport", transportURI);
+            }
             ChannelAddress localAddress = addressFactory.newChannelAddress(acceptURI, acceptOptions);
             LOGGER.debug("Initializing server Bootstrap binding to address " + localAddress);
             ServerBootstrap serverBootstrapCandidate = bootstrapFactory.newServerBootstrap(acceptURI.getScheme());
