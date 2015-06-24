@@ -1,9 +1,8 @@
-
 connect http://localhost:8000/auth/
 connected
 
 write method "GET"
-write header "Authorization" "Basic dGVzdDp0ZXN0" #test:test
+write header "Authorization" "Basic dGVzdDp0ZXN0" #login test:test
 write close
 
-read status "404" "Not Found"
+read status "200" "OK"

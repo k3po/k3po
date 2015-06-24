@@ -1,10 +1,8 @@
-
 connect http://localhost:8000/auth/
 connected
 
 write method "GET"
-write header "Authorization" "Basic YWRtaW46YWRtaW4=" #admin:admin
+write header "Authorization" "Basic YWRtaW46YWRtaW4=" #login admin:admin
 write close
 
-read status "404" "Not Found"
-
+read status "200" "OK"

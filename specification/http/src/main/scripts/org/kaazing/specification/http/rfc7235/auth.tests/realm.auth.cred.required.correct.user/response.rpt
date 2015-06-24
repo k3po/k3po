@@ -1,10 +1,9 @@
-
 accept http://localhost:8000/auth/
 accepted
 connected
 
 read method "GET"
-read header "Authorization" "Basic YWRtaW46YWRtaW4=" 
+read header "Authorization" "Basic YWRtaW46YWRtaW4=" #login admin:admin
 
-write status "404" "Not Found"
+write status "200" "OK"
 write close
