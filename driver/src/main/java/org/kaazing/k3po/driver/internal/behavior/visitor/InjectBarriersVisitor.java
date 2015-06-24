@@ -92,7 +92,6 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
 
         state.readWriteState = ReadWriteState.NONE;
 
-        // TODO use copy constructor
         AstAcceptNode newAcceptNode = new AstAcceptNode(acceptNode);
 
         state.streamables = newAcceptNode.getStreamables();

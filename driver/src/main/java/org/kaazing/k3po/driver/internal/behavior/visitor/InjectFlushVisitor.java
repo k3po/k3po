@@ -92,7 +92,6 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
         state.readState = ReadWriteState.NONE;
         state.writeState = ReadWriteState.NONE;
 
-        // TODO use copy constructor
         AstAcceptNode newAcceptNode = new AstAcceptNode(acceptNode);
 
         state.streamables = newAcceptNode.getStreamables();

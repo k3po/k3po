@@ -90,7 +90,6 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
         state.connectivityState = ConnectivityState.NONE;
 
-        // TODO use copy constructor
         AstAcceptNode newAcceptNode = new AstAcceptNode(acceptNode);
 
         state.streamables = newAcceptNode.getStreamables();

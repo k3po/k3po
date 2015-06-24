@@ -339,7 +339,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         LocationResolver transportResolver = null;
         if (transport != null) {
             transportResolver = new LocationResolver(transport, acceptNode.getEnvironment());
-            acceptOptions.put("transport", transportResolver.resolve());
         }
 
         // Now that accept supports expression value, accept uri may not be available at this point.
@@ -414,7 +413,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         LocationResolver transportResolver = null;
         if (transport != null) {
             transportResolver = new LocationResolver(transport, connectNode.getEnvironment());
-            connectOptions.put("transport", transportResolver.resolve());
         }
 
         ClientBootstrapResolver clientResolver = new ClientBootstrapResolver(bootstrapFactory, addressFactory,

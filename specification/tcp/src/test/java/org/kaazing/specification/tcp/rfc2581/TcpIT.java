@@ -48,24 +48,6 @@ public class TcpIT {
     }
 
     @Test
-    @org.junit.Ignore
-    @Specification({
-            "establish.connection.with.accept.option/tcp.client",
-            "establish.connection.with.accept.option/tcp.server" })
-    public void establishConnectionWithAcceptOption() throws Exception {
-        k3po.finish();
-    }
-
-    @Test
-    @org.junit.Ignore
-    @Specification({
-            "establish.connection.with.connect.option/tcp.client",
-            "establish.connection.with.connect.option/tcp.server" })
-    public void establishConnectionWithConnecttOption() throws Exception {
-        k3po.finish();
-    }
-
-    @Test
     @Specification({
         "server.sent.data/tcp.client",
         "server.sent.data/tcp.server" })
