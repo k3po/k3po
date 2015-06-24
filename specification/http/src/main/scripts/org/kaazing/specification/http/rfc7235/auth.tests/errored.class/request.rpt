@@ -1,0 +1,11 @@
+#YWRtaW46YWRtaW4= : admin:admin   dGVzdDp0ZXN0 : test:test   am9lOndlbGNvbWU= : joe:welcome (base64)
+
+connect http://localhost:8000/snmp
+connected
+
+write method "GET"
+write header "Upgrade" "websocket" 
+write header "Authorization" "Basic YWRtaW46YWRtaW4=" # test:test
+write close
+
+#if administrator - no response

@@ -1,0 +1,10 @@
+
+accept http://localhost:8000/snmp
+accepted
+connected
+
+read method "GET"
+read header "Upgrade" "websocket"
+read header "Authorization" "Basic YWRtaW46YWRtaW4="
+
+#no response
