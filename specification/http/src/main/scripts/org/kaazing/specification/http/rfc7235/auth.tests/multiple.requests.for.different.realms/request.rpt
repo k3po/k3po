@@ -1,0 +1,19 @@
+connect http://localhost:8000/resource # connecting to two different connections
+connected
+
+write method "GET"
+write header "Authorization" "Basic am9lOndlbGNvbWU=" #login joe:welcome
+write close
+
+read status "401" "Unauthorized"
+read header "WWW-Authenticate" "Basic realm=" /.*/ #Read any realm value (assumes no constraints)
+
+connect http://localhost:8000/resource2
+connected
+
+write method "GET"
+write header "Authorization" "Basic am9lOndlbGNvbWU=" #login joe:welcome
+write close
+
+read status "401" "Unauthorized"
+read header "WWW-Authenticate" "Basic realm=" /.*/ #Same as above
