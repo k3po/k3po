@@ -80,11 +80,11 @@ public class AuthIT {
         k3po.finish();
     }
 
-    @Test
+    /*@Test
     @Specification({"multiple.requests.for.different.realms/request",
         "multiple.requests.for.different.realms/response" })
     public void multipleRequestsForDifferentRealms() throws Exception {
         k3po.finish();
-    }
+    }*/
 
 }
