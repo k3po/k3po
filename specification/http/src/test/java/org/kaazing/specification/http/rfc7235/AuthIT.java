@@ -38,7 +38,7 @@ import org.kaazing.k3po.junit.rules.K3poRule;
 public class AuthIT {
 
     private final K3poRule k3po = new K3poRule()
-            .setScriptRoot("org/kaazing/specification/http/rfc7235/auth.tests");
+        .setScriptRoot("org/kaazing/specification/http/rfc7235/auth.tests");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -46,59 +46,45 @@ public class AuthIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({
-       "realm.auth.cred.required.correct.user/request",
-       "realm.auth.cred.required.correct.user/response" })
+    @Specification({"realm.auth.cred.required.correct.user/request",
+        "realm.auth.cred.required.correct.user/response" })
     public void realmAuthCredRequiredCorrectUser() throws Exception {
-       k3po.finish();
+        k3po.finish();
     }
 
     @Test
-    @Specification({
-       "realm.auth.cred.required.incorrect.user/request",
-       "realm.auth.cred.required.incorrect.user/response" })
+    @Specification({"realm.auth.cred.required.incorrect.user/request",
+        "realm.auth.cred.required.incorrect.user/response" })
     public void realmAuthCredRequiredIncorrectUser() throws Exception {
-       k3po.finish();
+        k3po.finish();
     }
 
     @Test
-    @Specification({
-       "realm.auth.cred.required.password.no.username/request",
-       "realm.auth.cred.required.password.no.username/response" })
+    @Specification({"realm.auth.cred.required.password.no.username/request",
+        "realm.auth.cred.required.password.no.username/response" })
     public void realmAuthCredRequiredPasswordNoUsername() throws Exception {
-       k3po.finish();
+        k3po.finish();
     }
 
     @Test
-    @Specification({
-       "realm.auth.cred.required.username.no.password/request",
-       "realm.auth.cred.required.username.no.password/response" })
+    @Specification({"realm.auth.cred.required.username.no.password/request",
+        "realm.auth.cred.required.username.no.password/response" })
     public void realmAuthCredRequiredUsernameNoPassword() throws Exception {
-       k3po.finish();
+        k3po.finish();
     }
 
     @Test
-    @Specification({
-       "test.with.no.authorization.constraints.admin/request",
-       "test.with.no.authorization.constraints.admin/response" })
-    public void testWithNoAuthorizationConstraintsAdmin() throws Exception {
-       k3po.finish();
-    }
-
-    @Test
-    @Specification({
-       "test.with.no.authorization.constraints.authorized/request",
-       "test.with.no.authorization.constraints.authorized/response" })
-    public void testWithNoAuthorizationConstraintsAuthorized() throws Exception {
-       k3po.finish();
-    }
-
-    @Test
-    @Specification({
-       "with.www.authenticate.and.different.authorizations/request",
-       "with.www.authenticate.and.different.authorizations/response" })
+    @Specification({"with.www.authenticate.and.different.authorizations/request",
+        "with.www.authenticate.and.different.authorizations/response" })
     public void withWWWAuthenticateAndDifferentAuthorizations() throws Exception {
-       k3po.finish();
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({"multiple.requests/request",
+        "multiple.requests/response" })
+    public void multipleRequests() throws Exception {
+        k3po.finish();
     }
 
 }

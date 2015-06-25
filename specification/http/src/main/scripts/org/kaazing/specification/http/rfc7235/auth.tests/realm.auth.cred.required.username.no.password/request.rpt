@@ -1,8 +1,9 @@
-connect http://localhost:8000/echo/
+connect http://localhost:8000/resource
 connected
 
 write method "GET"
-write header "Authorization" "Basic YWRtaW46dGVzdA==" #login admin:test
+write header "Authorization" "Basic am9lOmJhZHBhc3M=" #login joe:badpass
 write close
 
 read status "401" "Unauthorized"
+

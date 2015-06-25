@@ -1,20 +1,21 @@
-connect http://localhost:8000/echo/
+connect http://localhost:8000/resource
 connected
 
 write method "GET"
-write header "Authorization" "Basic dGVzdDp0ZXN0" #login test:test
+write header "Authorization" "Basic YmFkdXNlcjpiYWRwYXNz" #login baduser:badpass
 write close
 
 read status "401" "Unauthorized"
-read header "WWW-Authenticate" "Basic realm=\"Command Center\""
+read header "WWW-Authenticate" "Basic realm=" /.*/ #Read any value (assumes no constraints)
 read notify FIRST_REQUEST_COMPLETE
 
 connect await FIRST_REQUEST_COMPLETE
-connect http://localhost:8000/echo/
+connect http://localhost:8000/resource
 connected
 
 write method "GET"
-write header "Authorization" "Basic YWRtaW46YWRtaW4=" #login admin:admin
+write header "Authorization" "Basic am9lOndlbGNvbWU=" #login joe:welcome
 write close
 
 read status "200" "OK"
+

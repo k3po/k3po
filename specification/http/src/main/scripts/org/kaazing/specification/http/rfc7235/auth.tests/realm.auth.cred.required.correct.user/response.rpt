@@ -1,9 +1,10 @@
-accept http://localhost:8000/echo/
+accept http://localhost:8000/resource
 accepted
 connected
 
 read method "GET"
-read header "Authorization" "Basic YWRtaW46YWRtaW4=" #login admin:admin
+read header "Authorization" "Basic am9lOndlbGNvbWU=" #login joe:welcome
 
 write status "200" "OK"
 write close
+
