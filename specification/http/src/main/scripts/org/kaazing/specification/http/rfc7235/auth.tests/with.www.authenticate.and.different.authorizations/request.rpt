@@ -1,4 +1,4 @@
-connect http://localhost:8000/auth/
+connect http://localhost:8000/echo/
 connected
 
 write method "GET"
@@ -10,7 +10,7 @@ read header "WWW-Authenticate" "Basic realm=\"Command Center\""
 read notify FIRST_REQUEST_COMPLETE
 
 connect await FIRST_REQUEST_COMPLETE
-connect http://localhost:8000/auth/
+connect http://localhost:8000/echo/
 connected
 
 write method "GET"

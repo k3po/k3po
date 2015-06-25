@@ -45,14 +45,6 @@ public class AuthIT {
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
 
-    /* @Test
-    @Specification({
-       "errored.class/request",
-       "errored.class/response" })
-    public void shouldSucceed() throws Exception {
-       k3po.finish();
-    } */
-
     @Test
     @Specification({
        "realm.auth.cred.required.correct.user/request",
