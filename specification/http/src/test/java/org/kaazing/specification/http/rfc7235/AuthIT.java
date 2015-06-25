@@ -81,9 +81,9 @@ public class AuthIT {
     }
 
     @Test
-    @Specification({"multiple.requests/request",
-        "multiple.requests/response" })
-    public void multipleRequests() throws Exception {
+    @Specification({"multiple.requests.for.different.realms/request",
+        "multiple.requests.for.different.realms/response" })
+    public void multipleRequestsForDifferentRealms() throws Exception {
         k3po.finish();
     }
 
