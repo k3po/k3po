@@ -32,9 +32,11 @@ import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
 /**
- * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7235#section-2.1">RFC 7235 section 2:1</a>, 
- * <a href="https://tools.ietf.org/html/rfc7235#section-2.2">RFC 7235 section 2:2</a>, <a href="https://tools.ietf.org/html/rfc7235#section-3.1">RFC 7235 section 3:1</a>, 
- * <a href="https://tools.ietf.org/html/rfc7235#section-4.1">RFC 7235 section 4:1</a>, and <a href="https://tools.ietf.org/html/rfc7235#section-4.2">RFC 7235 section 4:2</a>.
+ * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7235#section-2.1">RFC 7235 section 2:1</a>,
+ * <a href="https://tools.ietf.org/html/rfc7235#section-2.2">RFC 7235 section 2:2</a>,
+ * <a href="https://tools.ietf.org/html/rfc7235#section-3.1">RFC 7235 section 3:1</a>,
+ * <a href="https://tools.ietf.org/html/rfc7235#section-4.1">RFC 7235 section 4:1</a> and
+ * <a href="https://tools.ietf.org/html/rfc7235#section-4.2">RFC 7235 section 4:2</a>.
  */
 public class BasicAuthIT {
 
@@ -82,9 +84,9 @@ public class BasicAuthIT {
     }
 
     @Test
-    @Specification({"unauthorized/no.credentials/response",
-        "unauthorized/no.credentials/request" })
-    public void unauthorizedNoCredentials() throws Exception {
+    @Specification({"unauthorized/multiple.invalid.requests/response",
+        "unauthorized/multiple.invalid.requests/request" })
+    public void unauthorizedMultipleInvalidRequests() throws Exception {
         k3po.finish();
     }
 
@@ -94,7 +96,7 @@ public class BasicAuthIT {
     public void unauthorizedUnknownUser() throws Exception {
         k3po.finish();
     }
-    
+
     @Test
     @Specification({"unauthorized/valid.username.invalid.password/response",
         "unauthorized/valid.username.invalid.password/request" })
