@@ -7,7 +7,7 @@ read header "Authorization" "Basic YmFkdXNlcjpiYWRwYXNz" #login baduser:badpass
 
 write status "401" "Unauthorized"
 write header "WWW-Authenticate" "Basic realm=\"Example Realm\"" #A sample realm name
-write close
+write flush
 
 accepted
 connected
@@ -16,5 +16,5 @@ read method "GET"
 read header "Authorization" "Basic am9lOndlbGNvbWU=" #login joe:welcome
 
 write status "200" "OK"
-write close
+write flush
 

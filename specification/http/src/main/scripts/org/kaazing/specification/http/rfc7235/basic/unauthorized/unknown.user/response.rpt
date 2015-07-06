@@ -3,8 +3,8 @@ accepted
 connected
 
 read method "GET"
-read header "Authorization" "Basic am9lOmJhZHBhc3M=" #login joe:badpass 
+read header "Authorization" "Basic YmFkdXNlcjpiYWRwYXNz" #login baduser:badpass 
 
 write status "401" "Unauthorized"
-write close
+write flush
 

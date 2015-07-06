@@ -1,0 +1,11 @@
+#403 response to valid user not in required role
+#Using admin:admin for a gateway with constraints of AUTHORIZED so ADMINISTRATOR would not have adequate credentials for access
+connect http://localhost:8000/resource
+connected
+
+write method "GET"
+write header "Authorization" "Basic YWRtaW46YWRtaW4=" #login admin:admin
+write close
+
+read status "403" "Forbidden"
+

@@ -7,7 +7,7 @@ read header "Authorization" "Basic am9lOndlbGNvbWU=" #login joe:welcome
 
 write status "401" "Unauthorized"
 write header "WWW-Authenticate" "Basic realm=\"Example Realm 1\"" #A sample realm name
-write close
+write flush
 
 accept http://localhost:8000/resource2
 accepted
@@ -18,5 +18,5 @@ read header "Authorization" "Basic am9lOndlbGNvbWU=" #login joe:welcome
 
 write status "401" "Unauthorized"
 write header "WWW-Authenticate" "Basic realm=\"Example Realm 2\"" #Another sample realm name
-write close
+write flush
 
