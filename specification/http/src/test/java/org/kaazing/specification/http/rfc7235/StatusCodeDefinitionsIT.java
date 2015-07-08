@@ -39,8 +39,7 @@ import org.kaazing.k3po.junit.rules.K3poRule;
  */
 public class StatusCodeDefinitionsIT {
 
-    private final K3poRule k3po = new K3poRule()
-    .setScriptRoot("org/kaazing/specification/http/rfc7235/status.codes");
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/http/rfc7235/status");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -48,22 +47,24 @@ public class StatusCodeDefinitionsIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({"multiple.invalid.requests/response",
+    @Specification({
+        "multiple.invalid.requests/response",
         "multiple.invalid.requests/request" })
-    public void unauthorizedMultipleInvalidRequests() throws Exception {
+    public void shouldRespondWithMultiple401sWithMultipleInvalidRequests() throws Exception {
         k3po.finish();
     }
 
     @Test
-    @Specification({"valid.credentials/request",
+    @Specification({
+        "valid.credentials/request",
         "valid.credentials/response" })
-    public void validCredentials() throws Exception {
+    public void shouldRespond200WithValidCredentials() throws Exception {
         k3po.finish();
     }
 
     @Ignore("TODO")
     @Test
-    public void proxy() {
+    public void proxyTestsTODO() {
         // Need tests to handle the case that has a Proxy-Authenticate header and/or
         // a proxy authorization header.
     }

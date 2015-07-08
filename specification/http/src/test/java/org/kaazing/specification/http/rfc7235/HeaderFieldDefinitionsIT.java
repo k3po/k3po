@@ -38,8 +38,7 @@ import org.kaazing.k3po.junit.rules.K3poRule;
  */
 public class HeaderFieldDefinitionsIT {
 
-    private final K3poRule k3po = new K3poRule()
-    .setScriptRoot("org/kaazing/specification/http/rfc7235/header.fields");
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/http/rfc7235/headers");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -47,23 +46,26 @@ public class HeaderFieldDefinitionsIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({"invalid.username.valid.password/response",
+    @Specification({
+        "invalid.username.valid.password/response",
         "invalid.username.valid.password/request" })
-    public void unauthorizedInvalidUsernameValidPassword() throws Exception {
+    public void shouldRespond401WithInvalidUsernameValidPassword() throws Exception {
         k3po.finish();
     }
 
     @Test
-    @Specification({"unknown.user/response",
-        "unknown.user/request" })
-    public void unauthorizedUnknownUser() throws Exception {
+    @Specification({
+        "invalid.user/response",
+        "invalid.user/request" })
+    public void shouldRespond401ToInvalidUser() throws Exception {
         k3po.finish();
     }
 
     @Test
-    @Specification({"valid.username.invalid.password/response",
+    @Specification({
+        "valid.username.invalid.password/response",
         "valid.username.invalid.password/request" })
-    public void unauthorizedValidUsernameInvalidPassword() throws Exception {
+    public void shouldRespond401WithValidUsernameInvalidPassword() throws Exception {
         k3po.finish();
     }
 

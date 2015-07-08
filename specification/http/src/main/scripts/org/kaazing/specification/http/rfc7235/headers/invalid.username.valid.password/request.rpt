@@ -6,4 +6,5 @@ write header "Authorization" "Basic YmFkdXNlcjp3ZWxjb21l" #login baduser:welcome
 write close
 
 read status "401" "Unauthorized"
+read header "WWW-Authenticate" "Basic realm=" /.+/ #Any valid realm
 

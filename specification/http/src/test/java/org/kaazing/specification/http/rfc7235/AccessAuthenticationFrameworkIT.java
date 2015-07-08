@@ -39,8 +39,7 @@ import org.kaazing.k3po.junit.rules.K3poRule;
  */
 public class AccessAuthenticationFrameworkIT {
 
-    private final K3poRule k3po = new K3poRule()
-    .setScriptRoot("org/kaazing/specification/http/rfc7235/auth.framework");
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/http/rfc7235/framework");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -48,29 +47,32 @@ public class AccessAuthenticationFrameworkIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({"forbidden/response",
-        "forbidden/request" })
-    public void forbidden() throws Exception {
+    @Specification({
+        "forbidden/request",
+        "forbidden/response" })
+    public void shouldGiveForbiddenResponse() throws Exception {
         k3po.finish();
     }
 
     @Test
-    @Specification({"invalid.then.valid.credentials/request",
+    @Specification({
+        "invalid.then.valid.credentials/request",
         "invalid.then.valid.credentials/response" })
-    public void authorizedInvalidThenValidCredentials() throws Exception {
+    public void shouldPassWithInvalidThenValidCredentials() throws Exception {
         k3po.finish();
     }
 
     @Test
-    @Specification({"missing.then.valid.credentials/request",
+    @Specification({
+        "missing.then.valid.credentials/request",
         "missing.then.valid.credentials/response" })
-    public void authorizedMissingThenValidCredentials() throws Exception {
+    public void shouldPassWithMissingThenValidCredentials() throws Exception {
         k3po.finish();
     }
 
     @Ignore("TODO")
     @Test
-    public void proxy() {
+    public void proxyTestsTODO() {
         // Proxy tests that follow the same pattern as the tests above.
         // ie. a test that deals with 407 responses instead of 401 responses
     }

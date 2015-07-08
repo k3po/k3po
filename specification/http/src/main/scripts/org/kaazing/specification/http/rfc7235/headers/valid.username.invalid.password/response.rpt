@@ -6,5 +6,6 @@ read method "GET"
 read header "Authorization" "Basic am9lOmJhZHBhc3M=" #login joe:badpass 
 
 write status "401" "Unauthorized"
+write header "WWW-Authenticate" "Basic realm=\"Example Realm\"" #A sample realm name
 write flush
 

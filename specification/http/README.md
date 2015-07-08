@@ -44,7 +44,7 @@ The integration tests fall into the following categories:
 
 The integration tests fall into the following categories:
  * Access Authentication Framework
- * Status Code Definitions
  * Header Field Definitions
+ * Status Code Definitions
 
 
