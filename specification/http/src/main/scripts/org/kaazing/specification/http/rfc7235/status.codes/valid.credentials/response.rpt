@@ -7,3 +7,4 @@ read header "Authorization" "Basic am9lOndlbGNvbWU=" #login joe:welcome
 
 write status "200" "OK"
 write flush
+
