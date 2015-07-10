@@ -12,35 +12,18 @@
 
 <span></span>
 
-<span class="c14">[WebSocket Protocol: x-kaazing-handshake](#h.we9xo0tvcx5l)</span>
-
-<span class="c14">[Abstract](#h.u9x9rr3l26nc)</span>
-
-<span class="c14">[Requirements](#h.8a8tb1xahm5w)</span>
-
-<span class="c14">[Introduction](#h.29pvishefr4i)</span>
-
-<span class="c14">[Protocol Handshake Requirements](#h.s1w3o69ee680)</span>
-
-<span class="c14">[Handshake Requirements for the Opening WebSocket Handshake](#h.5biyb39zunn0)</span>
-
-<span class="c14">[Handshake Requirements for the Extended WebSocket Handshake](#h.5biyb39zunn0)</span>
-
-<span class="c14">[Diagrams](#h.5402w5pyjkqp)</span>
-
-<span class="c14">[Kaazing Extended Handshake Response Codes](#h.npngrxv7fc79)</span>
-
-<span class="c14">[1xx Informational](#h.eydn93gag3ju)</span>
-
-<span class="c14">[2xx Success](#h.vn2pcos66bb7)</span>
-
-<span class="c14">[3xx Redirection](#h.kr7xfdvwwh8s)</span>
-
-<span class="c14">[4xx Client Error](#h.6coxonb7itkx)</span>
-
-<span class="c14">[5xx Server Error](#h.3hrxijjawtc9)</span>
-
-<span class="c14">[References](#h.lemg6nsskp1p)</span>
+  * [Introduction](#introduction)
+  * [Protocol Handshake Requirements](#protocol-handshake-requirements)
+    * [Handshake Requirements for the Opening WebSocket Handshake](#handshake-requirements-for-the-opening-websocket-handshake)
+    * [Handshake Requirements for the Extended WebSocket Handshake](#handshake-requirements-for-the-extended-websocket-handshake)
+  * [Diagrams](#diagrams)
+  * [Kaazing Extended Handshake Response Codes](#kaazing-extended-handshake-response-codes)
+    * [1xx Informational](#1xx-informational)
+    * [2xx success](#2xx-success)
+    * [3xx Redirection](#3xx-redirection)
+    * [4xx Client Error](#4xx-client-error)
+    * [5xx Server Error](#5xx-server-error)
+  * [References](#references)
 
 <span class="c3"></span>
 
