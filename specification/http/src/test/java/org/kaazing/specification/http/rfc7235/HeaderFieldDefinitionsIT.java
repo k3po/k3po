@@ -47,25 +47,9 @@ public class HeaderFieldDefinitionsIT {
 
     @Test
     @Specification({
-        "invalid.username.valid.password/response",
-        "invalid.username.valid.password/request" })
-    public void shouldRespond401WithInvalidUsernameValidPassword() throws Exception {
-        k3po.finish();
-    }
-
-    @Test
-    @Specification({
         "invalid.user/response",
         "invalid.user/request" })
     public void shouldRespond401ToInvalidUser() throws Exception {
-        k3po.finish();
-    }
-
-    @Test
-    @Specification({
-        "valid.username.invalid.password/response",
-        "valid.username.invalid.password/request" })
-    public void shouldRespond401WithValidUsernameInvalidPassword() throws Exception {
         k3po.finish();
     }
 

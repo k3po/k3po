@@ -6,7 +6,7 @@ write header "Authorization" "Basic" #Authorization without credentials
 write close
 
 read status "401" "Unauthorized"
-read header "WWW-Authenticate" "Basic realm=" /.*/ #Read any value (assumes no constraints)
+read header "WWW-Authenticate" "Basic realm=" /.*/ #Read any realm value
 read notify FIRST_REQUEST_COMPLETE
 
 connect await FIRST_REQUEST_COMPLETE

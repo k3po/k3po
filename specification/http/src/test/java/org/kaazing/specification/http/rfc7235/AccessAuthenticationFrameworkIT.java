@@ -50,7 +50,7 @@ public class AccessAuthenticationFrameworkIT {
     @Specification({
         "forbidden/request",
         "forbidden/response" })
-    public void shouldGiveForbiddenResponse() throws Exception {
+    public void shouldRespondWithForbiddenStatusCode() throws Exception {
         k3po.finish();
     }
 
@@ -58,7 +58,7 @@ public class AccessAuthenticationFrameworkIT {
     @Specification({
         "invalid.then.valid.credentials/request",
         "invalid.then.valid.credentials/response" })
-    public void shouldPassWithInvalidThenValidCredentials() throws Exception {
+    public void shouldRespondWithUnauthorizedStatusCodeWithInvalidCredentials() throws Exception {
         k3po.finish();
     }
 
@@ -66,7 +66,15 @@ public class AccessAuthenticationFrameworkIT {
     @Specification({
         "missing.then.valid.credentials/request",
         "missing.then.valid.credentials/response" })
-    public void shouldPassWithMissingThenValidCredentials() throws Exception {
+    public void shouldRespondWithUnauthorizedStatusCodeWithMissingCredentials() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "partial.then.valid.credentials/request",
+        "partial.then.valid.credentials/response" })
+    public void shouldRespondWithUnauthorizedStatusCodeWithPartialCredentials() throws Exception {
         k3po.finish();
     }
 
