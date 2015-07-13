@@ -56,7 +56,11 @@ public final class Functions {
     @Function
     public static String getDate() {
         SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-        return format.format(new Date())+" GMT";
+        return format.format(new Date()) + " GMT";
+    }
+
+    private Functions() {
+        // utility
     }
 
 }
