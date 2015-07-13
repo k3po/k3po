@@ -1,5 +1,4 @@
 property writeMask ${httpx:randomBytes(4)}
-
 connect http://localhost:8000/echo
 connected
 
