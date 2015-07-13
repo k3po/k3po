@@ -1,215 +1,158 @@
-﻿WebSocket Protocol: x-kaazing-handshake
-Abstract
-This document specifies the behavior of a WebSocket protocol called the “Kaazing WebSocket Handshake Protocol” (KHP).   It can be used to enable extended WebSocket capabilities for WebSocket clients.  It is intended for use with native WebSocket implementations.
-Requirements
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119 [RFC2119].
+## WebSocket Protocol: x-kaazing-handshake
 
+### Abstract
 
+This document specifies the behavior of a WebSocket protocol called the “Kaazing WebSocket Handshake Protocol” (KHP).  It can be used to enable extended WebSocket capabilities for WebSocket clients. It is intended for use with native WebSocket implementations.
 
+### Requirements
 
-WebSocket Protocol: x-kaazing-handshake
-Abstract
-Requirements
-Introduction
-Protocol Handshake Requirements
-Handshake Requirements for the Opening WebSocket Handshake
-Handshake Requirements for the Extended WebSocket Handshake
-Diagrams
-Kaazing Extended Handshake Response Codes
-1xx Informational
-2xx Success
-3xx Redirection
-4xx Client Error
-5xx Server Error
-References
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://tools.ietf.org/html/rfc2119).
 
+## Table of Contents
 
+  * [Introduction](#introduction)
+  * [Protocol Handshake Requirements](#protocol-handshake-requirements)
+    * [Handshake Requirements for the Opening WebSocket Handshake](#handshake-requirements-for-the-opening-websocket-handshake)
+    * [Handshake Requirements for the Extended WebSocket Handshake](#handshake-requirements-for-the-extended-websocket-handshake)
+  * [Diagrams](#diagrams)
+  * [Kaazing Extended Handshake Response Codes](#kaazing-extended-handshake-response-codes)
+    * [1xx Informational](#1xx-informational)
+    * [2xx success](#2xx-success)
+    * [3xx Redirection](#3xx-redirection)
+    * [4xx Client Error](#4xx-client-error)
+    * [5xx Server Error](#5xx-server-error)
+  * [References](#references)
 
+### Introduction
 
+The WebSocket protocol [[WSP](http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-17)] defines notions of extension and sub-protocols. [Section 1.9](http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-17#section-1.9) of [WSP] specifies that “WebSocket subprotocols” can be negotiated at time of initial handshake. This document describes a new Kaazing-specific sub-protocol whose role is to define an additional handshake, allowing the client to negotiate additional capabilities, loosely called “extensions”, or “application-class extensions” to distinguish these from [WSP] extensions.
 
-
-Introduction
-
-
-The WebSocket protocol [WSP] defines notions of extension and sub-protocols.   Section 1.9  of [WSP] specifies that “WebSocket subprotocols” can be negotiated at time of initial handshake. This document describes a new Kaazing-specific sub-protocol whose role is to define an additional handshake, allowing the client to negotiate additional capabilities, loosely called “extensions”, or “application-class extensions” to distinguish these from [WSP] extensions.
-
-
-The intention of this document is to define a WebSocket sub-protocol, named “x-kaazing-handshake”  that allows for negotiation of available Kaazing-specific capabilities that will work over established native WebSocket connections.
-
+The intention of this document is to define a WebSocket sub-protocol, named “x-kaazing-handshake” that allows for negotiation of available Kaazing-specific capabilities that will work over established native WebSocket connections.
 
 The extended handshake defined in this document provides an opportunity for clients to negotiate application-class extensions after the WebSocket is established but before the application puts the WebSocket to use.
 
+### Protocol Handshake Requirements
 
-
-
-Protocol Handshake Requirements 
 This section describes the handshake requirements necessary for establishing a WebSocket that speaks the KHP subprotocol.
 
+There are two handshake request/response message pairs between a client and a server to establish a KHP WebSocket. The first request/response message pair is called the “Opening” handshake and is a standard WebSocket opening handshake using the HTTP protocol. This is to establish the raw WebSocket and to ensure that the KHP is the chosen protocol. 
 
-There are two handshake request/response message pairs between a client and a server to establish a KHP WebSocket.  The first request/response message pair is called the “Opening” handshake and is a standard WebSocket opening handshake using the HTTP protocol.  This is to establish the raw WebSocket and to ensure that the KHP is the chosen protocol.  
-
-
-The second message pair is called the “Extended” handshake; messages are sent using WebSocket messages over the established raw WebSocket.  The WebSocket is not said to be _open_ until the second message pair has successfully  completed.
-
+The second message pair is called the “Extended” handshake; messages are sent using WebSocket messages over the established raw WebSocket. The WebSocket is not said to be _open_ until the second message pair has successfully completed.
 
 An “extended” handshake MUST be required when KHP is the chosen protocol during the “opening” handshake.
 
-
-Handshake Requirements for the Opening WebSocket Handshake
-
+#### Handshake Requirements for the Opening WebSocket Handshake
 
 To negotiate the use of KHP, the WebSocket client MUST include the following sub-protocol value within the raw WebSocket handshake:
 
-
-        x-kaazing-handshake
-
+	x-kaazing-handshake
 
 For example, the following header would be sufficient:
 
-
-Sec-WebSocket-Protocol: x-kaazing-handshake, amqp, ...
-
+	Sec-WebSocket-Protocol: x-kaazing-handshake, amqp, ...
 
 The rules defined in [WSP] apply to the server receiving such a WebSocket opening handshake.
 
-
-If the server does agree to use the x-kaazing-handshake protocol,[a] the server MUST send back a |Sec-WebSocket-Protocol| header field containing x-kaazing-handshake in its response.
-
-
-Handshake Requirements for the Extended WebSocket Handshake
+If the server does agree to use the x-kaazing-handshake protocol, <sup>[[a]]()</sup>the server MUST send back a |Sec-WebSocket-Protocol| header field containing x-kaazing-handshake in its response.
 
 
-The extended handshake requires a WebSocket message from client to server (“extended handshake request”), followed by a server response to the client (“extended handshake response”).  The extended handshake MUST only commence when the client and server successfully negotiate the “x-kaazing-handshake” protocol in the opening handshake.  
 
 
-No other messages should be sent by client or server until the _extended handshake is completed_[b][c].
+#### Handshake Requirements for the Extended WebSocket Handshake
 
+The extended handshake requires a WebSocket message from client to server (“extended handshake request”), followed by a server response to the client (“extended handshake response”). The extended handshake MUST only commence when the client and server successfully negotiate the “x-kaazing-handshake” protocol in the opening handshake. 
 
-The extended handshake WebSocket payloads take the form of HTTP Requests (for extended handshake requests) and HTTP Responses (for extended handshake responses) following the HTTP 1.1 protocol  [RFC 2616].
+No other messages should be sent by client or server until the _extended handshake is completed_<sup>
 
+The extended handshake WebSocket payloads take the form of HTTP Requests (for extended handshake requests) and HTTP Responses (for extended handshake responses) following the HTTP 1.1 protocol [RFC 2616].
 
+| Title |
 | --------------------- |
 | Web Socket Frame |
 | Http Request/Response |
 
 
+
 If protocol negotiation was specified in the opening handshake, any protocols requested other than “x-kaazing-handshake” MUST be included in the extended handshake request as values in the header:
 
+	Sec-WebSocket-Protocol:
 
-        Sec-WebSocket-Protocol: 
+If any WebSocket extensions were requested but not negotiated successfully in the opening handshake, then the client MUSTinclude any such extensions inside extended handshake request as values in the header:
 
+	Sec-WebSocket-Extensions
 
-If any WebSocket extensions were requested but not negotiated successfully in the opening handshake, then the client MUST include any such extensions inside extended handshake request as values in the header:
-
-
-        Sec-WebSocket-Extensions
-
-
-The “Sec-WebSocket-Extensions” header MUST contain a non-empty list of extension names which the client desires, in an order of client preference, with the same semantics for the header as [WSP]. 
-
+The “Sec-WebSocket-Extensions” header MUST contain a non-empty list of extension names which the client desires, in an order of client preference, with the same semantics for the header as [WSP].
 
 For example, inclusion of the following headers in the HTTP request payload within the first extended handshake request message indicates the client wishes to use a compression extension:
 
+	Sec-WebSocket-Extensions: x-kaazing-compression
 
-Sec-WebSocket-Extensions: x-kaazing-compression
+In the case that they are required, a client MAY include other headers in the first WebSocket message along with those above. This allows extension-specific information to be communicated between client and server without the need for additional handshakes.
 
+A WebSocket server receiving the extended handshake message MUST respond with an extended handshake response message. 
 
-In the case that they are required, a client MAY include other headers in the first WebSocket message along with those above.  This allows extension-specific information to be communicated between client and server without the need for additional handshakes.
+In the case where the extended handshake contains an extension that was already negotiated in the opening handshake, the server MUST detect that condition and respond in error before _Closing the WebSocket Connection_.
 
+The extended handshake response contains a HTTP status code which may or may not be “actionable”, as defined in a separate section below. When the extended handshake response has an HTTP status code that is not actionable, it is said that the _extended handshake failed_.
 
-A WebSocket server receiving the extended handshake message MUST respond with an extended handshake response message.  
-
-
-In the case where the extended handshake contains an extension that was already negotiated in the opening handshake, the server MUST detect that condition and respond in error before _Closing the WebSocket Connection_. 
-
-
-The extended handshake response contains a HTTP status code which may or may not be “actionable”, as defined in a separate section below. When the extended handshake response has an HTTP status code that is not actionable, it is said that the _extended handshake failed_. 
+The actionable HTTP status codes are referenced in a separate section below. For the sake of example, some interesting response codes and their interpretation when seen in an extended handshake response are detailed in the table below.
 
 
-The actionable HTTP status codes are referenced in a separate section below.  For the sake of example, some interesting response codes and their interpretation when seen in an extended handshake response are detailed in the table below.
-
-
-
-
-Extended Handshake Response Code
-	Client Behavior
-	101 Switching Protocols
-	Clients receiving a 101 extended response SHOULD consider the _extended handshake completed_.
-	302 Temporary Redirect
-	Clients receiving a 302 or 307 extended response MUST _Close the WebSocket Connection_ following the definition in [WSP], and proceed with a fresh opening handshake to the URL specified in the Location: header of the extended handshake response.  The client should make no more than a fixed maximum number of reconnect attempts when faced with these redirect codes.  Additionally, client is responsible for detecting redirect loops to matching resources and avoiding reconnection attempts in such scenarios.
-	401 Unauthorized
-	Clients receiving a 401 extended response SHOULD continue the extended handshake, and reply with a replayed extended handshake request containing additional authorization information.  If the client fails to reply in a timely manner, it is the server’s responsibility to _Close the WebSocket Connection_.
-	
-
-
-
-
+| Extended Handshake Response Code | Client Behavior |
+| ---------- | ---------- |
+| 101 Switching Protocols | Clients receiving a 101 extended response SHOULD consider the _extended handshake completed_. |
+| 302 Temporary Redirect | Clients receiving a 302 or 307 extended response MUST _Close the WebSocket Connection_ following the definition in [WSP], and proceed with a fresh opening handshake to the URL specified in the Location: header of the extended handshake response.  The client should make no more than a fixed maximum number of reconnect attempts when faced with these redirect codes.  Additionally, client is responsible for detecting redirect loops to matching resources and avoiding reconnection attempts in such scenarios. | 
+| 401 Unauthorized | Clients receiving a 401 extended response SHOULD continue the extended handshake, and reply with a replayed extended handshake request containing additional authorization information.  If the client fails to reply in a timely manner, it is the server’s responsibility to _Close the WebSocket Connection_. |
 
 The extended handshake response MAY include these headers: 
 
-
         Sec-WebSocket-Extensions
-
 
 The “Sec-WebSocket-Extensions” header if present MUST contain a non-empty list of extensions, chosen from the requested extensions by the client and no others, which are to be used for further client-server communication.   If the “Sec-WebSocket-Extensions” header is not present, no extensions were negotiated and none apply.  Where there are no conflicts, the standard interpretation of this header as defined in [WSP] should also apply.
 
-
 In the case that they are required, the server MAY include other headers in the WebSocket response message along with those above.  This allows information to be communicated from  server to client, in particular any reasons for failure.
-
 
 The client then receives the extended handshake response message.  The client must _Close the WebSocket Connection_ following the definition in [WSP] if any of the following are true:
 * the raw WebSocket opened during the opening handshake is closed
 * the _extended handshake failed_
 * the Sec-WebSocket-Extensions selected by the server are not a subset of  those requested
 
-
 At this point, if the WebSocket is not closed, it is said that the _extended handshake is completed_.
-Diagrams 
 
+### Diagrams 
 
 Green means web socket framing around an HTTP payload content.
 
+![](image00.png)
 
-  
+### Kaazing Extended Handshake Response Codes
+This section captures the expected interpretation of the extended response by the client for each of the following embedded extended HTTP response code.  The definitions for the HTTP response codes were taken from the [List of HTTP Status Codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes) on Wikipedia 10/20/2011.
 
+#### 1xx Informational
 
+Request received, continuing process.[[2]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-RFC_2616-1)
 
-Kaazing Extended Handshake Response Codes
-This section captures the expected interpretation of the extended response by the client for each of the following embedded extended HTTP response code.  The definitions for the HTTP response codes were taken from the List of HTTP Status Codes on Wikipedia 10/20/2011.
-1xx Informational
-
-
-Request received, continuing process.[2]
 This class of status code indicates a provisional response, consisting only of the Status-Line and optional headers, and is terminated by an empty line. Since HTTP/1.0 did not define any 1xx status codes, serversmust not send a 1xx response to an HTTP/1.0 client except under experimental conditions.
-HTTP Response Code
-	100 Continue
-This means that the server has received the request headers, and that the client should proceed to send the request body (in the case of a request for which a body needs to be sent; for example, a POST request). If the request body is large, sending it to a server when a request has already been rejected based upon inappropriate headers is inefficient. To have a server check if the request could be accepted based on the request's headers alone, a client must send Expect: 100-continue as a header in its initial request[2] and check if a 100 Continue status code is received in response before continuing (or receive 417 Expectation Failed and not continue).[2]
-	Extended Handshake Action
-	If the client requests this with an Expect: header, and the WebSocket server supports it, then this is a valid extended handshake response code, actionable on the client which MUST send the request body.
-	
 
-HTTP Response Code
-	101 Switching Protocols
-This means the requester has asked the server to switch protocols and the server is acknowledging that it will do so.[2]
-	Extended Handshake Action
-	Clients receiving a valid WebSocket handshake [WSP] 101 extended response that corresponds to their request MUST consider the _extended handshake completed_.
+| | |
+| ---- | ----|
+| HTTP Response Code | 100 Continue <br> This means that the server has received the request headers, and that the client should proceed to send the request body (in the case of a request for which a body needs to be sent; for example, a [POST](https://bit.ly/1dWx8n5) request. If the request body is large, sending it to a server when a request has already been rejected based upon inappropriate headers is inefficient. To have a server check if the request could be accepted based on the request's headers alone, a client must send Expect: 100-continue as a header in its initial request[[2]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-RFC_2616-1) and check if a 100 Continue status code is received in response before continuing (or receive 417 Expectation Failed and not continue).[[2]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-RFC_2616-1) |
+| Extended Handshake Action | If the client requests this with an Expect: header, and the WebSocket server supports it, then this is a valid extended handshake response code, actionable on the client which MUST send the request body. |
 	
-
-HTTP Response Code
-	102 Processing (WebDAV) (RFC 2518)
-As a WebDAV request may contain many sub-requests involving file operations, it may take a long time to complete the request. This code indicates that the server has received and is processing the request, but no response is available yet.[3] This prevents the client from timing out and assuming the request was lost.
-	Extended Handshake Action
-	A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP].
+| | |
+| ---- | ---- |
+| HTTP Response Code | 101 Switching Protocols <br> This means the requester has asked the server to switch protocols and the server is acknowledging that it will do so.[[2]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-RFC_2616-1) |
+| Extended Handshake Action | Clients receiving a valid WebSocket handshake [WSP] 101 extended response that corresponds to their request MUST consider the _extended handshake completed_. |
 	
+| | |
+| ---- | ---- |
+| HTTP Response Code | 102 Processing [(WebDAV)](https://en.wikipedia.org/wiki/WebDAV) (RFC 2518) <br> As a WebDAV request may contain many sub-requests involving file operations, it may take a long time to complete the request. This code indicates that the server has received and is processing the request, but no response is available yet.[[3]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-RFC_2518-2) This prevents the client from timing out and assuming the request was lost. |
+| Extended Handshake Action | A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP]. |
 
-HTTP Response Code
-	
-
-103 Checkpoint
-   This code is used in the Resumable HTTP Requests Proposal to resume aborted   
-   PUT or POST requests.[4]
-	Extended Handshake Action
-	A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP].
+| | |
+| --- | --- |
+|HTTP Response Code | 103 Checkpoint <br> This code is used in the Resumable HTTP Requests Proposal to resume aborted PUT or POST requests.[[4]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-ResumableHttpRequestsProposal-3) |
+| Extended Handshake Action | A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP]. |
 	
 
 HTTP Response Code
