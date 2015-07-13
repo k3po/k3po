@@ -27,10 +27,10 @@ write "GET /echo HTTP/1.1\r\n"
 write "\r\n"
 write option mask [0x00 0x00 0x00 0x00]
 
-# 101 OK response
+# 302 response
 read [0x82 0x3C]
 read /HTTP\/1.1 302.+\r\n/
-read "Location: http://localhost:8080/echo\r\n"
+read /Location: (?<redirect>.*+)\r\n/
 read "\r\n"
 
 write [0x88 0x02] ${writeMask}
@@ -42,7 +42,7 @@ read [0x88 0x02 0x03 0xf3]
 read notify FIRST_CONNECTION_CLOSED
 
 connect await FIRST_CONNECTION_CLOSED
-connect http://localhost:8001/echo1
+connect ${redirect}
 connected
 
 write method "GET"
@@ -53,4 +53,5 @@ write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
 write header "Sec-WebSocket-Version" "13"
 write header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
+write flush
 

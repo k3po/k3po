@@ -112,7 +112,7 @@ public class ExtendedHandshakeIT {
         k3po.finish();
     }
 
-    @Ignore
+//    @Ignore
     @Test
     @Specification({
         "extended/extended.handshake.response.code.302/request",

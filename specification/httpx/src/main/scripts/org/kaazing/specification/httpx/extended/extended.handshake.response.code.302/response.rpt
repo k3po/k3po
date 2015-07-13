@@ -28,8 +28,8 @@ read "GET /echo HTTP/1.1\r\n"
 read "\r\n"
 read option mask [0x00 0x00 0x00 0x00]
 
-# 101 OK response
-write [0x82 0x3C] # 60 Char
+# 302 response
+write [0x82 0x3C]
 write "HTTP/1.1 302 Found\r\n"
 write "Location: http://localhost:8080/echo\r\n"
 write "\r\n"
@@ -42,18 +42,16 @@ read option mask [0x00 0x00 0x00 0x00]
 
 write [0x88 0x02 0x03 0xf3]
 
-accept http://localhost:8001/echo1
+accept http://localhost:8080/echo
 accepted
 connected
 
 read method "GET"
 read version "HTTP/1.1"
-read header "Host" "localhost:8001"
+read header "Host" "localhost:8080"
 read header "Upgrade" "websocket"
 read header "Connection" "Upgrade"
 read header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
 read header "Sec-WebSocket-Version" "13"
 read header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
-
-
 
