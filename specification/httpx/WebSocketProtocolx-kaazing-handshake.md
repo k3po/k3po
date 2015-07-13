@@ -154,84 +154,65 @@ This class of status code indicates a provisional response, consisting only of t
 |HTTP Response Code | 103 Checkpoint <br> This code is used in the Resumable HTTP Requests Proposal to resume aborted PUT or POST requests.[[4]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-ResumableHttpRequestsProposal-3) |
 | Extended Handshake Action | A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP]. |
 	
+| | |
+| --- | ---|
+| HTTP Response Code | 122 Request-URI too long <br> This is a non-standard IE7-only code which means the URI is longer than a maximum of 2083 characters.[[5]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-4)[[6]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-5) (See code 414.) |
+| Extended Handshake Action | A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP]. |
 
-HTTP Response Code
-	122 Request-URI too long
-This is a non-standard IE7-only code which means the URI is longer than a maximum of 2083 characters.[5][6] (See code 414.)
-	Extended Handshake Action
-	A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP].
-	
-
-2xx Success
-
+#### 2xx Success
 
 This class of status codes indicates the action requested by the client was received, understood, accepted and processed successfully.
-HTTP Response Code
-	200 OK
-Standard response for successful HTTP requests. The actual response will depend on the request method used. In a GET request, the response will contain an entity corresponding to the requested resource. In a POST request the response will contain an entity describing or containing the result of the action.[2]
-	Extended Handshake Action
-	A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP].  The intention of the extended handshake is to receive a 101 upgrade rather than obtain a successful response.
+
+| | |
+| --- | ---|
+| HTTP Response Code | 200 OK <br> Standard response for successful HTTP requests. The actual response will depend on the request method used. In a GET request, the response will contain an entity corresponding to the requested resource. In a POST request the response will contain an entity describing or containing the result of the action.[[2]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-RFC_2616-1) |
+| Extended Handshake Action | A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP].  The intention of the extended handshake is to receive a 101 upgrade rather than obtain a successful response. |
 	
-
-HTTP Response Code
-	201 Created
-The request has been fulfilled and resulted in a new resource being created.[2]
-	Extended Handshake Action
-	A Client receiving 201 extended response that corresponds to their request MUST consider the _extended handshake completed_.  The intention of the server using this response code rather than a 101 response code indicates that perhaps an emulated or alternative WebSocket has been established.  The content of the response and response headers will determine exactly which.
+| | |
+| --- | ---|
+| HTTP Response Code | 201 Created <br> The request has been fulfilled and resulted in a new resource being created.[[2]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-RFC_2616-1) |
+| Extended Handshake Action | A Client receiving 201 extended response that corresponds to their request MUST consider the _extended handshake completed_.  The intention of the server using this response code rather than a 101 response code indicates that perhaps an emulated or alternative WebSocket has been established.  The content of the response and response headers will determine exactly which. |
 	
-
-HTTP Response Code
-	202 Accepted
-The request has been accepted for processing, but the processing has not been completed. The request might or might not eventually be acted upon, as it might be disallowed when processing actually takes place.[2]
-	Extended Handshake Action
-	A client receiving this response can choose to wait for up to a maximum amount of time for another response, before _Closing the WebSocket Connection_.
+| | |
+| --- | ---|
+| HTTP Response Code | 202 Accepted <br> The request has been accepted for processing, but the processing has not been completed. The request might or might not eventually be acted upon, as it might be disallowed when processing actually takes place.[[2]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-RFC_2616-1) |
+| Extended Handshake Action | A client receiving this response can choose to wait for up to a maximum amount of time for another response, before _Closing the WebSocket Connection_. |
 	
-
-HTTP Response Code
-	203 Non-Authoritative Information (since HTTP/1.1)
-The server successfully processed the request, but is returning information that may be from another source.[2]
-	Extended Handshake Action
-	A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP].
+| | |
+| --- | ---|
+| HTTP Response Code | 203 Non-Authoritative Information (since HTTP/1.1) <br> The server successfully processed the request, but is returning information that may be from another source.[[2]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-RFC_2616-1) |
+| Extended Handshake Action | A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP]. |
 	
-
-HTTP Response Code
-	204 No Content
-The server successfully processed the request, but is not returning any content.[2]
-	Extended Handshake Action
-	A Client receiving a 204 extended response that corresponds to their request MUST consider the _extended handshake completed_.
+| | |
+| --- | ---|
+| HTTP Response Code | 204 No Content <br> The server successfully processed the request, but is not returning any content.[[2]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-RFC_2616-1) |
+| Extended Handshake Action | A Client receiving a 204 extended response that corresponds to their request MUST consider the _extended handshake completed_. |
 	
-
-HTTP Response Code
-	205 Reset Content
-The server successfully processed the request, but is not returning any content. Unlike a 204 response, this response requires that the requester reset the document view.[2]
-	Extended Handshake Action
-	A Client receiving 205 extended response that corresponds to their request MUST consider the _extended handshake completed_.
+| | |
+| --- | ---|
+| HTTP Response Code | 205 Reset Content <br> The server successfully processed the request, but is not returning any content. Unlike a 204 response, this response requires that the requester reset the document view.[[2]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-RFC_2616-1) |
+| Extended Handshake Action | A Client receiving 205 extended response that corresponds to their request MUST consider the _extended handshake completed_. |
 	
-
-HTTP Response Code
-	206 Partial Content
-The server is delivering only part of the resource due to a range header sent by the client. The range header is used by tools like wget to enable resuming of interrupted downloads, or split a download into multiple simultaneous streams.[2]
-	Extended Handshake Action
-	A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP].
+| | |
+| --- | ---|
+| HTTP Response Code | 206 Partial Content <br> The server is delivering only part of the resource due to a range header sent by the client. The range header is used by tools like [wget](https://en.wikipedia.org/wiki/Wget) to enable resuming of interrupted downloads, or split a download into multiple simultaneous streams.[[2]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-RFC_2616-1)
+| Extended Handshake Action | A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP]. |
 	
-
-HTTP Response Code
-	207 Multi-Status (WebDAV) (RFC 4918)
-The message body that follows is an XML message and can contain a number of separate response codes, depending on how many sub-requests were made.[7]
-	Extended Handshake Action
-	A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP].
+| | |
+| --- | ---|
+| HTTP Response Code | 207 Multi-Status (WebDAV) (RFC 4918) <br> The message body that follows is an [XML](https://en.wikipedia.org/wiki/XML) message and can contain a number of separate response codes, depending on how many sub-requests were made.[[7]](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-RFC_4918-6) |
+| Extended Handshake Action | A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP]. |
 	
+| | |
+| --- | ---|
+| HTTP Response Code | 226 IM Used (RFC 3229) <br> The server has fulfilled a GET request for the resource, and the response is a representation of the result of one or more instance-manipulations applied to the current instance. [8](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-RFC_3229-7) |
+| Extended Handshake Action | A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP]. |
 
-HTTP Response Code
-	226 IM Used (RFC 3229)
-The server has fulfilled a GET request for the resource, and the response is a representation of the result of one or more instance-manipulations applied to the current instance. [8]
-	Extended Handshake Action
-	A Client receiving this response MUST _Close the WebSocket Connection_ following the definition in [WSP].
-	3xx Redirection
+#### 3xx Redirection
 
+The client must take additional action to complete the request.[2](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#cite_note-RFC_2616-1)
+This class of status code indicates that further action needs to be taken by the user agent in order to fulfil the request. The action required may be carried out by the user agent without interaction with the user if and only if the method used in the second request is GET or HEAD. A user agent should not automatically redirect a request more than five times, since such redirections usually indicate an [infinite loop](https://en.wikipedia.org/wiki/Infinite_loop).
 
-The client must take additional action to complete the request.[2]
-This class of status code indicates that further action needs to be taken by the user agent in order to fulfil the request. The action required may be carried out by the user agent without interaction with the user if and only if the method used in the second request is GET or HEAD. A user agent should not automatically redirect a request more than five times, since such redirections usually indicate an infinite loop.
 HTTP Response Code
 	300 Multiple Choices
 Indicates multiple options for the resource that the client may follow. It, for instance, could be used to present different format options for video, list files with different extensions, or word sense disambiguation.[2]
