@@ -35,7 +35,7 @@
         <module>specification/amqp_1_0.jms</module>
         <module>specification/bbosh</module>
         <module>specification/http</module>
-		<module>specification/httpx</module>
+	<module>specification/httpx</module>
         <module>specification/http2</module>
         <module>specification/httpxe</module>
         <module>specification/k3po.control</module>
