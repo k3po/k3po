@@ -7,6 +7,7 @@ write header host
 write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
+write header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
 write header "Sec-WebSocket-Version" "13"
 
 read status "101" /.+/
@@ -14,7 +15,6 @@ read version "HTTP/1.1"
 read header "Upgrade" "websocket"
 read header "Connection" "Upgrade"
 read header "Sec-WebSocket-Accept" "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
-read header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
 read header "Server" /.+/
 read header "Date" /.+/
 

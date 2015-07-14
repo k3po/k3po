@@ -1,5 +1,5 @@
 property writeMask ${httpx:randomBytes(4)}
-connect http://localhost:8000/echo
+connect http://localhost:8000/echoauth
 connected
 
 write method "GET"
