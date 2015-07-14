@@ -21,17 +21,17 @@ write header "Server" "Kaazing Gateway"
 write header "Date" ${httpx:getDate()}
 write flush
 
-read [0x82 0x96]
+read [0x82 0x9a]
 read [(:maskingKey){4}]
 read option mask ${writeMask}
-read "GET /echo HTTP/1.1\r\n"
+read "GET /echoauth HTTP/1.1\r\n"
 read "\r\n"
 read option mask [0x00 0x00 0x00 0x00]
 
-write [0x82 0x7E 0x00 0xC6 ]
+write [0x82 0x7E 0x00 0xcc ]
 write "HTTP/1.1 401 Unauthorized\r\n"
 write "Content-Type: text/html\r\n"
-write "WWW-Authenticate: Application Basic realm=\"Command Center\"\r\n"
+write "WWW-Authenticate: Application Basic realm=\"Kaazing Gateway Demo\"\r\n"
 write "Content-Length: 64\r\n"
 write "\r\n"
 write "<html><head></head><body><h1>401 Unauthorized</h1></body></html>"

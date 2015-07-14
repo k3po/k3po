@@ -92,7 +92,7 @@ public class ExtendedHandshakeIT {
     @Specification({
         "extended/extension.in.extended.handshake/request",
         "extended/extension.in.extended.handshake/response" })
-    public void shouldPassWhenExtensionIsNegotiatedInExtenedHandshake() throws Exception {
+    public void shouldPassWhenExtensionIsNegotiatedInExtendedHandshake() throws Exception {
         k3po.finish();
     }
 
