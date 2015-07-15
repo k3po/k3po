@@ -6,7 +6,7 @@ write header "Authorization" "Basic" ${http:loginBase64Encoder("baduser:badpass"
 write flush
 
 read status "401" "Unauthorized"
-read header "WWW-Authenticate" "Basic realm=" /.+/
+read header "WWW-Authenticate" "Basic realm=\"Example Realm\""
 
 connect http://localhost:8000/resource
 connected
@@ -16,7 +16,7 @@ write version "HTTP/1.1"
 write flush
 
 read status "407" "Proxy Authentication Required"
-read header "Proxy-Authentication" "Basic realm=" /.+/
+read header "Proxy-Authentication" "Basic realm=\"Example Realm\""
 
 connect http://localhost:8000/resource
 connected
