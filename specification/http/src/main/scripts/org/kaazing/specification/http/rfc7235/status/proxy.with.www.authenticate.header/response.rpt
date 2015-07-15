@@ -13,6 +13,7 @@ accepted
 connected
 
 read method "GET"
+read version "HTTP/1.1"
 
 write status "407" "Proxy Authentication Required"
 write header "Proxy-Authentication" "Basic realm=\"Example Realm\""
