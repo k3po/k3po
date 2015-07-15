@@ -1,11 +1,9 @@
-#403 response to valid user not in required role
-#Using admin:admin for a gateway with constraints of AUTHORIZED so ADMINISTRATOR would not have adequate credentials for access
 accept http://localhost:8000/resource
 accepted
 connected
 
 read method "GET"
-read header "Authorization" "Basic YWRtaW46YWRtaW4=" #login admin:admin
+read header "Authorization" "Basic" ${http:loginBase64Encoder("admin:admin")}
 read closed
 
 write status "403" "Forbidden"

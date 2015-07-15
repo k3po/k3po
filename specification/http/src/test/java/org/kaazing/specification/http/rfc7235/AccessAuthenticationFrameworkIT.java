@@ -78,11 +78,13 @@ public class AccessAuthenticationFrameworkIT {
         k3po.finish();
     }
 
-    @Ignore("TODO")
     @Test
-    public void proxyTestsTODO() {
-        // Proxy tests that follow the same pattern as the tests above.
-        // ie. a test that deals with 407 responses instead of 401 responses
+    @Specification({
+        "proxy.authentication/request",
+        "proxy.authentication/response"
+    })
+    public void shouldPassWithProxyAuthentication() throws Exception {
+        k3po.finish();
     }
 
 }

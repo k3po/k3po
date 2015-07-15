@@ -62,11 +62,22 @@ public class StatusCodeDefinitionsIT {
         k3po.finish();
     }
 
-    @Ignore("TODO")
     @Test
-    public void proxyTestsTODO() {
-        // Need tests to handle the case that has a Proxy-Authenticate header and/or
-        // a proxy authorization header.
+    @Specification({
+        "proxy.with.authorization.header/request",
+        "proxy.with.authorization.header/response"
+    })
+    public void proxyMustNotAlterAuthenticationHeader() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "proxy.with.www.authenticate.header/request",
+        "proxy.with.www.authenticate.header/response"
+    })
+    public void proxyMustNotModifyWWWAuthenticateHeader() throws Exception {
+        k3po.finish();
     }
 
 }

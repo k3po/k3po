@@ -5,15 +5,15 @@ connected
 read method "GET"
 read header "Authorization" "Basic" ${http:loginBase64Encoder("baduser:badpass")}
 
-write status "401" "Unauthorized"
-write header "WWW-Authenticate" "Basic realm=\"Example Realm\""
+write status "407" "Proxy Authentication Required"
+write header "Proxy-Authentication" "Basic realm=\"Example Realm\""
 write flush
 
 accepted
 connected
 
 read method "GET"
-read header "Authorization" "Basic" ${http:loginBase64Encoder("joe:welcome")}
+read header "Proxy-Authorization" "Basic" ${http:loginBase64Encoder("joe:welcome")}
 
 write status "200" "OK"
 write flush

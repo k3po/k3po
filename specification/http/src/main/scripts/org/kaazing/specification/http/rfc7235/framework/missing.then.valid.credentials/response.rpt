@@ -3,18 +3,18 @@ accepted
 connected
 
 read method "GET"
-read header "Authorization" "Basic" #Authorization without credentials
+read header "Authorization" "Basic"
 read closed 
 
 write status "401" "Unauthorized"
-write header "WWW-Authenticate" "Basic realm=\"Example Realm\"" #A sample realm name
+write header "WWW-Authenticate" "Basic realm=\"Example Realm\""
 write flush
 
 accepted
 connected
 
 read method "GET"
-read header "Authorization" "Basic am9lOndlbGNvbWU=" #login joe:welcome
+read header "Authorization" "Basic" ${http:loginBase64Encoder("joe:welcome")}
 
 write status "200" "OK"
 write flush

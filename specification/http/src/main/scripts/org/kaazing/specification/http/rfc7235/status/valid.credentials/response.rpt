@@ -3,7 +3,7 @@ accepted
 connected
 
 read method "GET"
-read header "Authorization" "Basic am9lOndlbGNvbWU=" #login joe:welcome
+read header "Authorization" "Basic" ${http:loginBase64Encoder("joe:welcome")}
 
 write status "200" "OK"
 write flush

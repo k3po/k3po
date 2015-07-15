@@ -53,37 +53,13 @@ public class HeaderFieldDefinitionsIT {
         k3po.finish();
     }
 
-    @Ignore("TODO")
     @Test
-    public void proxyMustNotModifyWWWAuthenticateHeader() {
-
-    }
-
-    @Ignore("TODO")
-    @Test
-    public void proxyMustNotAlterAuthenticationHeader() {
-
-    }
-
-    @Ignore("TODO")
-    @Test
-    public void secureProxyShouldSend407ToAnyUnAuthorizedRequest() {
-        // The "Proxy-Authenticate" header field consists of at least one
-        // challenge that indicates the authentication scheme(s) and parameters
-        // applicable to the proxy for this effective request URI (Section 5.5
-        // of [RFC7230]). A proxy MUST send at least one Proxy-Authenticate
-        // header field in each 407 (Proxy Authentication Required) response
-        // that it generates.
-    }
-
-    @Ignore("TODO")
-    @Test
-    public void clientMaySendProxyAuthorizationHeaderInResponseTo407() {
-        // The "Proxy-Authorization" header field allows the client to identify
-        // itself (or its user) to a proxy that requires authentication. Its
-        // value consists of credentials containing the authentication
-        // information of the client for the proxy and/or realm of the resource
-        // being requested.
+    @Specification({
+        "invalid.proxy.user/request",
+        "invalid.proxy.user/response"
+    })
+    public void secureProxyShouldSend407ToAnyUnAuthorizedRequest() throws Exception {
+        k3po.finish();
     }
 
 }

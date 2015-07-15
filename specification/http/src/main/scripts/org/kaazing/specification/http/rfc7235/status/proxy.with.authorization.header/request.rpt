@@ -1,0 +1,19 @@
+connect http://localhost:8000/resource
+connected
+
+write method "GET"
+write header "Authorization" "Basic" ${http:loginBase64Encoder("baduser:badpass")}
+write flush
+
+read status "407" "Proxy Authentication Required"
+read header "Proxy-Authentication" "Basic realm=" /.+/
+
+connect http://localhost:8000/resource
+connected
+
+write method "GET"
+write header "Proxy-Authorization" "Basic" ${http:loginBase64Encoder("joe:welcome")}
+write flush
+
+read status "200" "OK"
+

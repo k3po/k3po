@@ -33,6 +33,20 @@ public final class Functions {
     private static final Random RANDOM = new Random();
 
     @Function
+    public static String loginBase64Encoder(String login) {
+        byte[] bytes = login.getBytes();
+        return bytesToString(Base64.encode(bytes));
+    }
+
+    private static String bytesToString(byte[] x) {
+        String answer = "";
+        for (int i = 0; i < x.length; i++) {
+            answer += (char) x[i];
+        }
+        return answer;
+    }
+
+    @Function
     public static String randomInvalidVersion() {
         String randomVersion = null;
         Pattern validVersionPattern = Pattern.compile("HTTP/1\\.(\\d)+");

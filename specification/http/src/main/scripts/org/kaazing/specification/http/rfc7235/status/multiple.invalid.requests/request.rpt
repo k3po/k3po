@@ -1,20 +1,20 @@
-connect http://localhost:8000/resource # connecting to two different connections
+connect http://localhost:8000/resource
 connected
 
 write method "GET"
-write header "Authorization" "Basic YmFkdXNlcjpiYWRwYXNz=" #login baduser:badpass
+write header "Authorization" "Basic" ${http:loginBase64Encoder("baduser:badpass")}
 write close
 
 read status "401" "Unauthorized"
-read header "WWW-Authenticate" "Basic realm=" /.*/ #Read any realm value (assumes no constraints)
+read header "WWW-Authenticate" "Basic realm=" /.*/
 
 connect http://localhost:8000/resource
 connected
 
 write method "GET"
-write header "Authorization" "Basic YmFkdXNlcjpiYWRwYXNz" #login baduser:badpass
+write header "Authorization" "Basic" ${http:loginBase64Encoder("baduser:badpass")}
 write close
 
 read status "401" "Unauthorized"
-read header "WWW-Authenticate" "Basic realm=" /.*/ #Same as above
+read header "WWW-Authenticate" "Basic realm=" /.*/
 
