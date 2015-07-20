@@ -43,17 +43,17 @@ public class OpeningHandshakeIT {
 
     @Test
     @Specification({
-        "opening/fails.to.upgrade.without.handshake.protocol/request",
-        "opening/fails.to.upgrade.without.handshake.protocol/response" })
-    public void shouldFailWithoutHandshakeProtocol() throws Exception {
+        "opening/extended.handshake.protocol.not.negotiated/request",
+        "opening/extended.handshake.protocol.not.negotiated/response" })
+    public void shouldFailHandshakeWhenExtendedHandshakeProtocolNotNegotiated() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "opening/upgrades.with.handshake.protocol/request",
-        "opening/upgrades.with.handshake.protocol/response" })
-    public void shouldPassWithHandshakeProtocol() throws Exception {
+        "opening/extended.handshake.protocol.negotiated/request",
+        "opening/extended.handshake.protocol.negotiated/response" })
+    public void shouldEstablishNativeConnectionWhenExtendedHandshakeProtocolNegotiated() throws Exception {
         k3po.finish();
     }
 
