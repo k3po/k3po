@@ -30,8 +30,8 @@ public class OriginSecurityIT {
 
     @Test
     @Specification({
-        "origin.request.header.with.x-origin/request",
-        "origin.request.header.with.x-origin/response"})
+        "request.with.origin.header.and.x.origin.header/request",
+        "request.with.origin.header.and.x.origin.header/response"})
     public void shouldPassWithOriginAndXoriginRequests() throws Exception {
         k3po.finish();
     }
@@ -62,8 +62,8 @@ public class OriginSecurityIT {
 
     @Test
     @Specification({
-        "x-origin.encoded.request.header/request",
-        "x-origin.encoded.request.header/response"})
+        "x.origin.encoded.request.header/request",
+        "x.origin.encoded.request.header/response"})
     public void shouldPassWithEncodedXoriginRequest() throws Exception {
         k3po.finish();
     }
