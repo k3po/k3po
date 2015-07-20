@@ -114,6 +114,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.ExpressionValueContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.FixedLengthBytesMatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralBytesContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralTextContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.LocationContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.MatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.OpenedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.OptionNodeContext;
@@ -799,7 +800,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             if (ctx.text != null) {
                 node.setAcceptName(ctx.text.getText());
             }
-            RobotParser.LocationContext transport = ctx.value;
+            LocationContext transport = ctx.value;
             if (transport != null) {
                 AstLocationVisitor transportVisitor = new AstLocationVisitor(elFactory, elContext);
                 AstLocation transportLocation = transportVisitor.visit(ctx.value);
@@ -872,7 +873,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             if (barrier != null) {
                 node.setBarrier(barrier.getText());
             }
-            RobotParser.LocationContext transport = ctx.value;
+            LocationContext transport = ctx.value;
             if (transport != null) {
                 AstLocationVisitor transportVisitor = new AstLocationVisitor(elFactory, elContext);
                 AstLocation transportLocation = transportVisitor.visit(ctx.value);

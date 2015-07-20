@@ -38,7 +38,7 @@ public class AstConnectNode extends AstStreamNode {
     }
 
     public AstConnectNode(AstConnectNode connectNode) {
-        this.setRegionInfo(connectNode.getRegionInfo());
+        this.regionInfo = connectNode.regionInfo;
         this.location = connectNode.location;
         this.environment = connectNode.environment;
         this.barrier = connectNode.barrier;

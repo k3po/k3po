@@ -40,7 +40,7 @@ public class AstAcceptNode extends AstStreamNode {
     }
 
     public AstAcceptNode(AstAcceptNode acceptNode) {
-        this.setRegionInfo(acceptNode.getRegionInfo());
+        this.regionInfo = acceptNode.regionInfo;
         this.location = acceptNode.location;
         this.environment = acceptNode.environment;
         this.options = acceptNode.options;
