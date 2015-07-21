@@ -153,9 +153,9 @@ public class OpeningIT {
 
     @Test
     @Specification({
-        "request.header.x.websocket.version.not.wseb-1.1/handshake.request",
-        "request.header.x.websocket.version.not.wseb-1.1/handshake.response" })
-    public void shouldFailHandshakeWhenRequestHeaderXWebSocketVersionNotWseb11()
+        "request.header.x.websocket.version.not.wseb-1.0/handshake.request",
+        "request.header.x.websocket.version.not.wseb-1.0/handshake.response" })
+    public void shouldFailHandshakeWhenRequestHeaderXWebSocketVersionNotWseb10()
             throws Exception {
         k3po.finish();
     }
