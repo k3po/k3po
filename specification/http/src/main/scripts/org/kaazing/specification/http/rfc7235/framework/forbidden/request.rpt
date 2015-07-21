@@ -1,8 +1,10 @@
+property badCredentials ${http:loginBase64Encoder("admin:admin")}
+property authHeader ${http:append("Basic", badCredentials)}
 connect http://localhost:8000/resource
 connected
 
 write method "GET"
-write header "Authorization" "Basic" ${http:loginBase64Encoder("admin:admin")}
+write header "Authorization" ${authHeader}
 write close
 
 read status "403" "Forbidden"

@@ -1,9 +1,13 @@
+property invalidCredentials ${http:loginBase64Encoder("baduser:badpass")}
+property invalidAuthHeader ${http:append("Basic", invalidCredentials)}
+property credentials ${http:loginBase64Encoder("joe:welcome")}
+property authHeader ${http:append("Basic", credentials)}
 accept http://localhost:8000/resource
 accepted
 connected
 
 read method "GET"
-read header "Authorization" "Basic" ${http:loginBase64Encoder("baduser:badpass")}
+read header "Authorization" ${invalidAuthHeader}
 
 write status "407" "Proxy Authentication Required"
 write header "Proxy-Authentication" "Basic realm=\"Example Realm\""
@@ -13,7 +17,7 @@ accepted
 connected
 
 read method "GET"
-read header "Proxy-Authorization" "Basic" ${http:loginBase64Encoder("joe:welcome")}
+read header "Proxy-Authorization" ${authHeader}
 
 write status "200" "OK"
 write flush

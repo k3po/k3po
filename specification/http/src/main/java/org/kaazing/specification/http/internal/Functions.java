@@ -38,6 +38,14 @@ public final class Functions {
         return bytesToString(Base64.encode(bytes));
     }
 
+    @Function
+    public static String append(String... strings) {
+        StringBuilder x = new StringBuilder();
+        for(String s:strings)
+            x.append(s);
+        return x.toString();
+    }
+
     private static String bytesToString(byte[] x) {
         String answer = "";
         for (int i = 0; i < x.length; i++) {

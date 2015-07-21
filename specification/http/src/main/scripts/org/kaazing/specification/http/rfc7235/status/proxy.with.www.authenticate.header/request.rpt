@@ -1,8 +1,12 @@
+property invalidCredentials ${http:loginBase64Encoder("baduser:badpass")}
+property invalidAuthHeader ${http:append("Basic", invalidCredentials)}
+property credentials ${http:loginBase64Encoder("joe:welcome")}
+property authHeader ${http:append("Basic", credentials)}
 connect http://localhost:8000/resource
 connected
 
 write method "GET"
-write header "Authorization" "Basic" ${http:loginBase64Encoder("baduser:badpass")}
+write header "Authorization" ${invalidAuthHeader}
 write flush
 
 read status "401" "Unauthorized"
@@ -22,7 +26,7 @@ connect http://localhost:8000/resource
 connected
 
 write method "GET"
-write header "Proxy-Authorization" "Basic" ${http:loginBase64Encoder("joe:welcome")}
+write header "Proxy-Authorization" ${authHeader}
 write flush
 
 read status "200" "OK"
