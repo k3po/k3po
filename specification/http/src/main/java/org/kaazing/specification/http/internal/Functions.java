@@ -41,8 +41,9 @@ public final class Functions {
     @Function
     public static String append(String... strings) {
         StringBuilder x = new StringBuilder();
-        for(String s:strings)
+        for (String s:strings) {
             x.append(s);
+        }
         return x.toString();
     }
 
