@@ -9,3 +9,4 @@ read version "HTTP/1.1"
 read "POST HTTP/1.1\r\n"
 read "Authorization: Basic " ${httpxe:loginBase64Encoder("joe:welcome")} "\r\n"
 read "Content-Type: text/plain\r\n"
+

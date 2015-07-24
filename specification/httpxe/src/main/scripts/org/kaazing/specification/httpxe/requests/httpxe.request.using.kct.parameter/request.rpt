@@ -10,3 +10,4 @@ write "POST HTTP/1.1\r\n"
 write "Authorization: Basic " ${httpxe:loginBase64Encoder("joe:welcome")} "\r\n"
 write "Content-Type: text/plain\r\n"
 write flush
+
