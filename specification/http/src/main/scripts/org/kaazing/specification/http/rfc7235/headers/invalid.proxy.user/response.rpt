@@ -8,6 +8,6 @@ read method "GET"
 read header "Proxy-Authorization" ${authHeader}
 
 write status "407" "Proxy Authentication Required"
-write header "Proxy-Authenticate" "Basic realm=\"Example Realm\""
+write header "Proxy-Authenticate" "Basic realm=\"Kaazing Gateway Demo\""
 write flush
 

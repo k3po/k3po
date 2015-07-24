@@ -10,7 +10,7 @@ read method "GET"
 read header "Authorization" ${partialAuthHeader}
 
 write status "401" "Unauthorized"
-write header "WWW-Authenticate" "Basic realm=\"Example Realm\""
+write header "WWW-Authenticate" "Basic realm=\"Kaazing Gateway Demo\""
 write flush
 
 accepted

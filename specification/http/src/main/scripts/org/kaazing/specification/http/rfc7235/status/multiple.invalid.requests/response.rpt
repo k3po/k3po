@@ -8,7 +8,7 @@ read method "GET"
 read header "Authorization" ${invalidAuthHeader}
 
 write status "401" "Unauthorized"
-write header "WWW-Authenticate" "Basic realm=\"Example Realm 1\""
+write header "WWW-Authenticate" "Basic realm=\"Kaazing Gateway Demo\""
 write flush
 
 accepted
@@ -18,6 +18,6 @@ read method "GET"
 read header "Authorization" ${invalidAuthHeader}
 
 write status "401" "Unauthorized"
-write header "WWW-Authenticate" "Basic realm=\"Example Realm 2\""
+write header "WWW-Authenticate" "Basic realm=\"Kaazing Gateway Demo\""
 write flush
 
