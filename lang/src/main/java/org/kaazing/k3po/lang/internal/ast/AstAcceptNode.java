@@ -36,6 +36,16 @@ public class AstAcceptNode extends AstStreamNode {
     private AstLocation location;
     private ELContext environment;
 
+    public AstAcceptNode() {
+    }
+
+    public AstAcceptNode(AstAcceptNode acceptNode) {
+        this.regionInfo = acceptNode.regionInfo;
+        this.location = acceptNode.location;
+        this.environment = acceptNode.environment;
+        this.options = acceptNode.options;
+    }
+
     public AstLocation getLocation() {
         return location;
     }
@@ -54,7 +64,7 @@ public class AstAcceptNode extends AstStreamNode {
 
     public Map<String, Object> getOptions() {
         if (options == null) {
-            options = new LinkedHashMap<String, Object>();
+            options = new LinkedHashMap<>();
         }
 
         return options;
@@ -149,6 +159,5 @@ public class AstAcceptNode extends AstStreamNode {
 
         sb.append('\n');
     }
-
 
 }

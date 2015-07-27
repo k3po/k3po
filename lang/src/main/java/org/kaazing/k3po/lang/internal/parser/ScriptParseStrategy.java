@@ -114,6 +114,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.ExpressionValueContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.FixedLengthBytesMatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralBytesContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralTextContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.LocationContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.MatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.OpenedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.OptionNodeContext;
@@ -792,12 +793,18 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstAcceptNode visitAcceptNode(AcceptNodeContext ctx) {
             AstLocationVisitor locationVisitor = new AstLocationVisitor(elFactory, elContext);
-            AstLocation location = locationVisitor.visit(ctx.location());
+            AstLocation location = locationVisitor.visit(ctx.acceptURI);
             node = new AstAcceptNode();
             node.setLocation(location);
             node.setEnvironment(elContext);
             if (ctx.text != null) {
                 node.setAcceptName(ctx.text.getText());
+            }
+            LocationContext transport = ctx.value;
+            if (transport != null) {
+                AstLocationVisitor transportVisitor = new AstLocationVisitor(elFactory, elContext);
+                AstLocation transportLocation = transportVisitor.visit(ctx.value);
+                node.getOptions().put("transport", transportLocation);
             }
             super.visitAcceptNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
@@ -856,7 +863,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstConnectNode visitConnectNode(ConnectNodeContext ctx) {
             AstLocationVisitor locationVisitor = new AstLocationVisitor(elFactory, elContext);
-            AstLocation location = locationVisitor.visit(ctx.location());
+            AstLocation location = locationVisitor.visit(ctx.connectURI);
             node = new AstConnectNode();
             node.setLocation(location);
             node.setEnvironment(elContext);
@@ -865,6 +872,12 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             Token barrier = ctx.barrier;
             if (barrier != null) {
                 node.setBarrier(barrier.getText());
+            }
+            LocationContext transport = ctx.value;
+            if (transport != null) {
+                AstLocationVisitor transportVisitor = new AstLocationVisitor(elFactory, elContext);
+                AstLocation transportLocation = transportVisitor.visit(ctx.value);
+                node.getOptions().put("transport", transportLocation);
             }
             return node;
         }

@@ -17,6 +17,7 @@
 package org.kaazing.k3po.driver.internal.resolver;
 
 import java.net.URI;
+import java.util.Map;
 
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.logging.InternalLogger;
@@ -42,24 +43,33 @@ public class ClientBootstrapResolver {
     private final LocationResolver locationResolver;
     private final Barrier barrier;
     private final RegionInfo regionInfo;
+    private final Map<String, Object> connectOptions;
+    private final LocationResolver transportResolver;
 
     private ClientBootstrap bootstrap;
 
     public ClientBootstrapResolver(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory,
-            ChannelPipelineFactory pipelineFactory, LocationResolver locationResolver, Barrier barrier,
-            RegionInfo regionInfo) {
+            ChannelPipelineFactory pipelineFactory, LocationResolver locationResolver,
+            LocationResolver transportResolver, Barrier barrier,
+            RegionInfo regionInfo, Map<String, Object> connectOptions) {
         this.bootstrapFactory = bootstrapFactory;
         this.addressFactory = addressFactory;
         this.pipelineFactory = pipelineFactory;
         this.locationResolver = locationResolver;
+        this.transportResolver = transportResolver;
         this.barrier = barrier;
         this.regionInfo = regionInfo;
+        this.connectOptions = connectOptions;
     }
 
     public ClientBootstrap resolve() throws Exception {
         if (bootstrap == null) {
             URI connectUri = locationResolver.resolve();
-            ChannelAddress remoteAddress = addressFactory.newChannelAddress(connectUri);
+            if (transportResolver != null) {
+                URI transportUri = transportResolver.resolve();
+                connectOptions.put("transport", transportUri);
+            }
+            ChannelAddress remoteAddress = addressFactory.newChannelAddress(connectUri, connectOptions);
             LOGGER.debug("Initializing client Bootstrap connecting to remoteAddress " + remoteAddress);
             ClientBootstrap clientBootstrapCandidate = bootstrapFactory.newClientBootstrap(connectUri.getScheme());
             clientBootstrapCandidate.setPipelineFactory(pipelineFactory);
