@@ -1,0 +1,13 @@
+property invalidCredentials ${http:loginBase64Encoder("baduser:badpass")}
+property authHeader ${http:append("Basic ", invalidCredentials)}
+accept http://localhost:8000/resource
+accepted
+connected
+
+read method "GET"
+read header "Proxy-Authorization" ${authHeader}
+
+write status "407" "Proxy Authentication Required"
+write header "Proxy-Authenticate" "Basic realm=\"Kaazing Gateway Demo\""
+write flush
+
