@@ -48,8 +48,8 @@ public class StatusCodeDefinitionsIT {
 
     @Test
     @Specification({
-        "multiple.invalid.requests/response",
-        "multiple.invalid.requests/request" })
+        "multiple.requests.with.invalid.credentials/response",
+        "multiple.requests.with.invalid.credentials/request" })
     public void shouldRespondWithMultiple401sWithMultipleInvalidRequests() throws Exception {
         k3po.finish();
     }
@@ -64,8 +64,8 @@ public class StatusCodeDefinitionsIT {
 
     @Test
     @Specification({
-        "proxy.with.authorization.header/request",
-        "proxy.with.authorization.header/response"
+        "challenge.with.proxy.authorization.header/request",
+        "challenge.with.proxy.authorization.header/response"
     })
     public void proxyMustNotAlterAuthenticationHeader() throws Exception {
         k3po.finish();
@@ -73,8 +73,8 @@ public class StatusCodeDefinitionsIT {
 
     @Test
     @Specification({
-        "proxy.with.www.authenticate.header/request",
-        "proxy.with.www.authenticate.header/response"
+        "challenge.with.proxy.authenticate.header/request",
+        "challenge.with.proxy.authenticate.header/response"
     })
     public void proxyMustNotModifyWWWAuthenticateHeader() throws Exception {
         k3po.finish();
