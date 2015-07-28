@@ -8,7 +8,7 @@ write header "Authorization" "Basic"
 write close
 
 read status "401" "Unauthorized"
-read header "WWW-Authenticate" "Basic realm=" /.*/
+read header "WWW-Authenticate" /Basic realm=.+/
 read notify FIRST_REQUEST_COMPLETE
 
 connect await FIRST_REQUEST_COMPLETE

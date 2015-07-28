@@ -8,5 +8,5 @@ write header "Proxy-Authorization" ${authHeader}
 write flush
 
 read status "407" "Proxy Authentication Required"
-read header "Proxy-Authenticate" "Basic realm=" /.*/
+read header "Proxy-Authenticate" /Basic realm=.+/
 
