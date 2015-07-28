@@ -1,5 +1,5 @@
-property goodCredentials ${http:loginBase64Encoder("joe:welcome")}
-property proxyAuthHeader ${http:append("Basic ", goodCredentials)}
+property validCredentials ${http:loginBase64Encoder("joe:welcome")}
+property proxyAuthHeader ${http:append("Basic ", validCredentials)}
 connect http://localhost:8000/resource
 connected
 
