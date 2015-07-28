@@ -1,7 +1,7 @@
 property invalidCredentials ${http:loginBase64Encoder("baduser:badpass")}
-property authHeader1 ${http:append("Basic", invalidCredentials)}
+property authHeader1 ${http:append("Basic ", invalidCredentials)}
 property validCredentials ${http:loginBase64Encoder("joe:welcome")}
-property authHeader2 ${http:append("Basic", invalidCredentials)}
+property authHeader2 ${http:append("Basic ", invalidCredentials)}
 accept http://localhost:8000/resource
 accepted
 connected
