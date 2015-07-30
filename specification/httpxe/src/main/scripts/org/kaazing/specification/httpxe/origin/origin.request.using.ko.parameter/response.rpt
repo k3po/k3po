@@ -5,6 +5,6 @@ connected
 read parameter ".ko" "http://source.example.com:80"
 read method "GET"
 read version "HTTP/1.1"
-read header "HOST" "target.example.com:80"
-read header "Referer" "http://target.example.com:80/any/path?query=any"
+read header "HOST" "localhost:8000"
+read header "Referer" "http://localhost:8000/any/path?query=any"
 

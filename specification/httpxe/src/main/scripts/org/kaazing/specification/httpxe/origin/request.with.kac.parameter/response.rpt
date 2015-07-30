@@ -6,7 +6,7 @@ read parameter ".kac" "ex"
 read method "GET"
 read version "HTTP/1.1"
 read header "Referer" "http://source.example.com:80"
-read header "Origin" "http://source.examples.com:80"
+read header "Origin" "http://localhost:8000"
 
 write status "200" "OK"
 write header "Access-Control-Allow-Origin" "*"

@@ -14,5 +14,3 @@ write "101 Switching Protocols HTTP/1.1\r\n"
 write "Content-Type: text/html\r\n"
 write flush
 
-
-

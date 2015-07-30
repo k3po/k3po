@@ -161,16 +161,16 @@ public class RequestsIT {
 
     @Test
     @Specification({
-        "httpxe.request.using.http/request",
-        "httpxe.request.using.http/response" })
+        "client.sends.httpxe.request/request",
+        "client.sends.httpxe.request/response" })
     public void shouldPassWithHttpxeReqestUsingHttpContentType() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "httpxe.request.using.kct.parameter/request",
-        "httpxe.request.using.kct.parameter/response" })
+        "client.sends.httpxe.request.using.kct.parameter/request",
+        "client.sends.httpxe.request.using.kct.parameter/response" })
     public void shouldPassWithHttpxeReqestUsingKctParamter() throws Exception {
         k3po.finish();
     }

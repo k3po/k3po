@@ -4,8 +4,8 @@ connected
 write parameter ".ko" "http%3A//source.example.com%3A80"
 write method "GET"
 write version "HTTP/1.1"
-write header "HOST" "target.example.com:80"
-write header "Referer" "http://target.example.com:80/any/path?query=any"
+write header "HOST" "localhost:8000"
+write header "Referer" "http://localhost:8000/any/path?query=any"
 write header content-length
 write flush
 

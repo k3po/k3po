@@ -22,8 +22,8 @@ public class OriginSecurityIT {
 
     @Test
     @Specification({
-        "origin.request.header/request",
-        "origin.request.header/response"})
+        "request.with.origin.header/request",
+        "request.with.origin.header/response"})
     public void shouldPassWithOriginRequestHeader() throws Exception {
         k3po.finish();
     }
@@ -54,17 +54,9 @@ public class OriginSecurityIT {
 
     @Test
     @Specification({
-        "origin.request.with.differing.headers/request",
-        "origin.request.with.differing.headers/response"})
+        "x.origin.header.not.identical.to.origin.header/request",
+        "x.origin.header.not.identical.to.origin.header/response"})
     public void shouldPassWhenXoriginHeaderDiffersFromOriginHeader() throws Exception {
-        k3po.finish();
-    }
-
-    @Test
-    @Specification({
-        "x.origin.encoded.request.header/request",
-        "x.origin.encoded.request.header/response"})
-    public void shouldPassWithEncodedXoriginRequest() throws Exception {
         k3po.finish();
     }
 
@@ -73,6 +65,14 @@ public class OriginSecurityIT {
         "request.with.kac.parameter/request",
         "request.with.kac.parameter/response"})
     public void shouldPassWithAccessControlWithKacParameter() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "x.origin.encoded.request.header/request",
+        "x.origin.encoded.request.header/response"})
+    public void shouldPassWithEncodedXoriginRequest() throws Exception {
         k3po.finish();
     }
 

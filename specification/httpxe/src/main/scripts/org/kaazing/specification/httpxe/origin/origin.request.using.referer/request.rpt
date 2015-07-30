@@ -3,8 +3,8 @@ connected
 
 write method "POST"
 write version "HTTP/1.1"
-write header "HOST" "target.example.com:80"
-write header "Referer" "http://target.example.com:80/different/path"
+write header "HOST" "localhost:8000"
+write header "Referer" "http://localhost:8000/different/path"
 write header "X-Origin" "http://source.examples.com:80"
 write header content-length
 write flush
