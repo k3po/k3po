@@ -1,0 +1,36 @@
+property writeMask ${httpx:randomBytes(4)}
+connect http://localhost:8000/echoauth
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
+write header "Sec-WebSocket-Version" "13"
+write header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
+
+read status "101" /.+/
+read version "HTTP/1.1"
+read header "Upgrade" "websocket"
+read header "Connection" "Upgrade"
+read header "Sec-WebSocket-Accept" "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
+read header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
+read header "Server" /.+/
+read header "Date" /.+/
+
+write [0x82 0x9a] ${writeMask}
+write option mask ${writeMask}
+write "GET /echoauth HTTP/1.1\r\n"
+write "\r\n"
+write option mask [0x00 0x00 0x00 0x00]
+
+read [0x82 0x7e 0x00 0xcc]
+read "HTTP/1.1 401 Unauthorized\r\n"
+read "Content-Type: text/html\r\n"
+read "WWW-Authenticate: Application Basic realm=\"Kaazing Gateway Demo\"\r\n"
+read "Content-Length: 64\r\n"
+read "\r\n"
+read "<html><head></head><body><h1>401 Unauthorized</h1></body></html>"
+

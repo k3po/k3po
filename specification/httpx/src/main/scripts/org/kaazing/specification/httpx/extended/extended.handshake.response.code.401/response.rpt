@@ -1,0 +1,38 @@
+accept http://localhost:8000/echoauth
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+read header "Upgrade" "websocket"
+read header "Connection" "Upgrade"
+read header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
+read header "Sec-WebSocket-Version" "13"
+read header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
+
+write status "101" "Switching Protocols"
+write version "HTTP/1.1"
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade" 
+write header "Sec-WebSocket-Accept" "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
+write header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
+write header "Server" "Kaazing Gateway"
+write header "Date" ${httpx:getDate()}
+write flush
+
+read [0x82 0x9a]
+read [(:maskingKey){4}]
+read option mask ${writeMask}
+read "GET /echoauth HTTP/1.1\r\n"
+read "\r\n"
+read option mask [0x00 0x00 0x00 0x00]
+
+write [0x82 0x7E 0x00 0xcc ]
+write "HTTP/1.1 401 Unauthorized\r\n"
+write "Content-Type: text/html\r\n"
+write "WWW-Authenticate: Application Basic realm=\"Kaazing Gateway Demo\"\r\n"
+write "Content-Length: 64\r\n"
+write "\r\n"
+write "<html><head></head><body><h1>401 Unauthorized</h1></body></html>"
+

@@ -140,7 +140,7 @@ To establish an emulated WebSocket connection, a client makes an HTTP handshake 
 
 Browser clients MUST send the `Origin` HTTP header with the source origin.
 
-Clients MUST send the `X-WebSocket-Version` HTTP header with the value `wseb-1.1`.
+Clients MUST send the `X-WebSocket-Version` HTTP header with the value `wseb-1.0`.
 
 Clients MUST send the `X-Sequence-No` HTTP header. Please see [Request Sequencing](#request-sequencing) for details.
 
@@ -162,7 +162,7 @@ POST /path/;e/cb?query HTTP/1.1
 Host: host.example.com:8080
 Origin: [source-origin]
 Content-Length: 0
-X-WebSocket-Version: wseb-1.1
+X-WebSocket-Version: wseb-1.0
 X-WebSocket-Protocol: x,y,z
 X-Accept-Commands: ping
 X-Sequence-Number: 5
@@ -224,7 +224,7 @@ emulated WebSocket connection.
 
 ```
 HTTP/1.1 201 Created
-X-WebSocket-Version: wseb-1.1
+X-WebSocket-Version: wseb-1.0
 X-WebSocket-Protocol: x
 Content-Type: text/plain;charset=utf-8
 Content-Length: 105
@@ -244,7 +244,7 @@ If the server determines that any of the following conditions are not met by the
 send an HTTP response with a `4xx` status code, such as `400 Bad Request`.
 
 * the HTTP handshake request method MUST be `POST` 
-* the HTTP handshake request header `X-WebSocket-Version` MUST have the value `wseb-1.1`
+* the HTTP handshake request header `X-WebSocket-Version` MUST have the value `wseb-1.0`
 * the HTTP handshake request header `X-Sequence-No` MUST be a valid sequence number. Please see [Request Sequencing](#request-sequencing) for details.
 * the HTTP handshake request header `X-WebSocket-Protocol` is OPTIONAL, and when present indicates a list of alternative 
   protocols to speak in client preference order
@@ -264,7 +264,7 @@ __Note:__ the server MAY send an HTTP redirect (status code `3xx`) or an HTTP au
 specification.
 
 * the HTTP handshake response status MUST be `201`
-* the HTTP handshake response header `X-WebSocket-Version` MUST have the value `wseb-1.1`
+* the HTTP handshake response header `X-WebSocket-Version` MUST have the value `wseb-1.0`
 * the HTTP handshake response header `Content-Type` MUST have the value `text/plain;charset=utf-8`
 * the HTTP handshake response header `X-WebSocket-Protocol` MUST have one of the values negotiated by the client, if any were
 sent by the client
@@ -666,7 +666,7 @@ Content-Length: 0
 Here, the handshake request location path uses `/;e/cte` instead
 ```
 HTTP/1.1 201 Created
-X-WebSocket-Version: wseb-1.1
+X-WebSocket-Version: wseb-1.0
 Content-Type: text/plain;charset=utf-8
 Content-Length: 105
 
@@ -703,7 +703,7 @@ Content-Length: 0
 Here, the handshake request location path uses `/;e/ctm` instead
 ```
 HTTP/1.1 201 Created
-X-WebSocket-Version: wseb-1.1
+X-WebSocket-Version: wseb-1.0
 Content-Type: text/plain;charset=utf-8
 Content-Length: 105
 

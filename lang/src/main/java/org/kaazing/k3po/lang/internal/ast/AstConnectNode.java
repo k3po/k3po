@@ -34,9 +34,20 @@ public class AstConnectNode extends AstStreamNode {
     private AstLocation location;
     private ELContext environment;
 
+    public AstConnectNode() {
+    }
+
+    public AstConnectNode(AstConnectNode connectNode) {
+        this.regionInfo = connectNode.regionInfo;
+        this.location = connectNode.location;
+        this.environment = connectNode.environment;
+        this.barrier = connectNode.barrier;
+        this.options = connectNode.options;
+    }
+
     public Map<String, Object> getOptions() {
         if (options == null) {
-            options = new LinkedHashMap<String, Object>();
+            options = new LinkedHashMap<>();
         }
 
         return options;
@@ -111,4 +122,5 @@ public class AstConnectNode extends AstStreamNode {
     public void setEnvironment(ELContext expressionContext) {
         this.environment = expressionContext;
     }
+
 }

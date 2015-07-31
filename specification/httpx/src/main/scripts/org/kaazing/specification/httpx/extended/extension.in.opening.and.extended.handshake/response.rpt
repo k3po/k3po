@@ -1,0 +1,60 @@
+accept http://localhost:8000/echoauth
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+read header "Upgrade" "websocket"
+read header "Connection" "Upgrade"
+read header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
+read header "Sec-WebSocket-Version" "13"
+read header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
+read header "Sec-WebSocket-Extensions" "x-kaazing-idle-timeout"
+
+write status "101" "Switching Protocols"
+write version "HTTP/1.1"
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade" 
+write header "Sec-WebSocket-Accept" "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
+write header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
+write header "Sec-WebSocket-Extensions" "x-kaazing-idle-timeout"
+write header "Server" "Kaazing Gateway"
+write header "Date" ${httpx:getDate()}
+write flush
+
+read [0x82 0x96]
+read [(:maskingKey){4}]
+read option mask ${writeMask}
+read "GET /echo HTTP/1.1\r\n"
+read "Sec-WebSocket-Extensions: x-kaazing-idle-timeout\r\n" #Example Extension
+read "\r\n"
+read option mask [0x00 0x00 0x00 0x00]
+
+# 401 Challenge
+write [0x82 0x7E 0x00 0xC6 ]
+write "HTTP/1.1 401 Unauthorized\r\n"
+write "Content-Type: text/html\r\n"
+write "WWW-Authenticate: Application Basic realm=\"Command Center\"\r\n"
+write "Content-Length: 64\r\n"
+write "\r\n"
+write "<html><head></head><body><h1>401 Unauthorized</h1></body></html>"
+
+# 401 Challenge Response
+read [0x82 0xBD]
+read [(:maskingKey){4}]
+read option mask ${writeMask}
+read "GET /echo HTTP/1.1\r\n"
+read "Authorization: Basic am9lOndlbGNvbWU=\r\n"
+read "Sec-WebSocket-Extensions: x-kaazing-idle-timeout\r\n"
+read "\r\n"
+read option mask [0x00 0x00 0x00 0x00]
+
+write [0x88 0x02 0x03 0xf3]
+
+read [0x88 0x02]
+read [(:maskingKey){4}]
+read option mask ${maskingKey}
+read [0x03 0xf3]
+read option mask [0x00 0x00 0x00 0x00]
+

@@ -1242,6 +1242,34 @@ public class ScriptParserImplTest {
     }
 
     @Test
+    public void shouldParseConnectScriptWithOptions() throws Exception {
+
+        String script =
+                "connect http://localhost:7788\n" +
+                "        option transport tcp://localhost:8888\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+        AstLocation location = new AstLocationLiteral(URI.create("http://localhost:7788"));
+        AstLocation transport = new AstLocationLiteral(URI.create("tcp://localhost:8888"));
+
+        AstScriptNode expected = new AstScriptNodeBuilder()
+                .addConnectStream()
+                    .setLocation(location)
+                    .setTransport(transport)
+                    .addConnectedEvent().done()
+                    .addCloseCommand().done()
+                    .addClosedEvent().done()
+                .done()
+        .done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void shouldParseAcceptScript() throws Exception {
 
         String script =
@@ -1254,6 +1282,38 @@ public class ScriptParserImplTest {
         AstScriptNode expected = new AstScriptNodeBuilder().addAcceptStream()
                 .setLocation(new AstLocationLiteral(URI.create("tcp://localhost:7788"))).done().addAcceptedStream()
                 .addConnectedEvent().done().addCloseCommand().done().addClosedEvent().done().done().done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseAcceptScriptWithOptions() throws Exception {
+
+        String script =
+                "# tcp.client.accept-then-close\n" +
+                "accept http://localhost:7788\n" +
+                "       option transport tcp://localhost:8000\n" +
+                "accepted\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+        AstLocation location = new AstLocationLiteral(URI.create("http://localhost:7788"));
+        AstLocation transport = new AstLocationLiteral(URI.create("tcp://localhost:8000"));
+
+        AstScriptNode expected = new AstScriptNodeBuilder()
+                .addAcceptStream()
+                    .setLocation(location)
+                    .setTransport(transport)
+                .done()
+                .addAcceptedStream()
+                    .addConnectedEvent().done()
+                    .addCloseCommand().done()
+                    .addClosedEvent().done()
+                .done()
+        .done();
 
         assertEquals(expected, actual);
     }

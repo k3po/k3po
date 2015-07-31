@@ -7,14 +7,14 @@ write method "POST"
 write version "HTTP/1.1"
 write header host
 write header content-length
-write header "X-WebSocket-Version" "wseb-1.1"
+write header "X-WebSocket-Version" "wseb-1.0"
 write header "X-Sequence-No" ${wse:asString(sequence)}
 write close
 
 read status "201" /.+/
 read version "HTTP/1.1"
-read header "X-WebSocket-Version" "wseb-1.1"
-read header "Content-Type" "text/plain;charset=utf-8"
+read header "X-WebSocket-Version" "wseb-1.0"
+read header "Content-Type" /text\/plain;charset=(?i)utf-8/
 
 read /http:\/\/localhost:8080\/path\/.+?\n/
 read /http:\/\/localhost:(?!8080\/)\d{1,5}\/path\/.+?\n/

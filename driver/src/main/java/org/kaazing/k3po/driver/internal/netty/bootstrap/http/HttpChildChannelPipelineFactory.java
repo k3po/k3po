@@ -25,12 +25,13 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
+import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
 final class HttpChildChannelPipelineFactory implements ChannelPipelineFactory {
 
-    private final NavigableMap<URI, HttpServerChannel> httpBindings;
+    private final NavigableMap<ChannelAddress, HttpServerChannel> httpBindings;
 
-    public HttpChildChannelPipelineFactory(NavigableMap<URI, HttpServerChannel> httpBindings) {
+    public HttpChildChannelPipelineFactory(NavigableMap<ChannelAddress, HttpServerChannel> httpBindings) {
         this.httpBindings = httpBindings;
     }
 
