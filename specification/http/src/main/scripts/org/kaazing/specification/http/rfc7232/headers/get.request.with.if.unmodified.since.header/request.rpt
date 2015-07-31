@@ -8,14 +8,14 @@ write flush
 
 read status "200" "OK"
 read header "ETag" "abc123"
-read header "Last-Modified" /.+/
+read header "Last-Modified" /(?<lastModified>.+)/
 
 connect http://localhost:8000/resource
 connected
 
 write method "GET"
 write version "HTTP/1.1"
-write header "If-Unmodified-Since" "Mon, 1 Jan 2015 01:23:45 GMT"
+write header "If-Unmodified-Since" ${lastModified}
 write header content-length
 write flush
 

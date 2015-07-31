@@ -7,7 +7,7 @@ write header content-length
 write flush
 
 read status "200" "OK"
-read header "ETag" "abc123"
+read header "ETag" /(?<etag>.+)/
 read header "Last-Modified" /.+/
 
 connect http://localhost:8000/resource
@@ -15,7 +15,7 @@ connected
 
 write method "GET"
 write version "HTTP/1.1"
-write header "If-None-Match" "*"
+write header "If-None-Match" ${etag}
 write header content-length
 write flush
 

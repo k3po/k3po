@@ -15,7 +15,7 @@ connected
 
 write method "GET"
 write version "HTTP/1.1"
-write header "If-Match" "invalid/etag"
+write header "If-Match" "invalidetag"
 write header content-length
 write flush
 

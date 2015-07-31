@@ -16,7 +16,7 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
-read header "If-Match" "invalid/etag"
+read header "If-Match" /.+/
 
 write status "412" "Precondition Failed"
 write flush

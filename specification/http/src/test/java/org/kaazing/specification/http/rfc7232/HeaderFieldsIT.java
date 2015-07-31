@@ -36,6 +36,9 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
+/**
+ * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7232">RFC 7232</a>.
+ */
 public class HeaderFieldsIT {
 
     private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/http/rfc7232/headers");

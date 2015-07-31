@@ -16,7 +16,7 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
-read header "If-None-Match" "*"
+read header "If-None-Match" /.+/
 
 write status "304" "Not Modified"
 write header "ETag" "abc123"
