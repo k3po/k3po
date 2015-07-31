@@ -6,7 +6,6 @@ read method "GET"
 read version "HTTP/1.1"
 
 write status "200" "OK"
-write header "ETag" "abc123"
 write header "Last-Modified" "Mon, 1 Jan 2015 01:23:45 GMT"
 write header content-length
 write flush
@@ -19,6 +18,5 @@ read version "HTTP/1.1"
 read header "If-Modified-Since" /.+/
 
 write status "304" "Not Modified"
-write header "ETag" "abc123"
 write flush
 

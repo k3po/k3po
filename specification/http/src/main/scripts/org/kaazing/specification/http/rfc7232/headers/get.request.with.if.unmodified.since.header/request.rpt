@@ -7,7 +7,6 @@ write header content-length
 write flush
 
 read status "200" "OK"
-read header "ETag" "abc123"
 read header "Last-Modified" /(?<lastModified>.+)/
 
 connect http://localhost:8000/resource
@@ -20,5 +19,4 @@ write header content-length
 write flush
 
 read status "304" "Not Modified"
-read header "ETag" "abc123"
 

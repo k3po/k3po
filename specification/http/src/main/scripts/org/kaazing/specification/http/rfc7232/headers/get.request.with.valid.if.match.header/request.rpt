@@ -8,7 +8,6 @@ write flush
 
 read status "200" "OK"
 read header "ETag" /(?<etag>.+)/
-read header "Last-Modified" /.+/
 
 connect http://localhost:8000/resource
 connected
