@@ -81,8 +81,8 @@ public class ResponsesIT {
 
     @Test
     @Specification({
-        "header.in.connection.header.but.not.body/request",
-        "header.in.connection.header.but.not.body/response"})
+        "connection.header.not.enveloped.in.response.body/request",
+        "connection.header.not.enveloped.in.response.body/response"})
     public void shouldPassWhenConnectionHeaderInHeaderNotBody() throws Exception {
         k3po.finish();
     }
