@@ -1,0 +1,12 @@
+accept http://localhost:8000/path
+accepted
+connected
+
+read method "POST"
+read version "HTTP/1.1"
+read header "Content-Type" "application/x-message-http"
+
+read "POST HTTP/1.1\r\n"
+read "Authorization: Basic " ${httpxe:loginBase64Encoder("joe:welcome")} "\r\n"
+read "Content-Type: text/plain"
+

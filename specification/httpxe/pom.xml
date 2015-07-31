@@ -28,10 +28,18 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.kaazing</groupId>
+            <artifactId>k3po.lang</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
         <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
             <resource>
                 <directory>src/main/scripts</directory>
             </resource>
