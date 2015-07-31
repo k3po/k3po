@@ -21,7 +21,7 @@ read option mask ${readMaskA}
 read ([0..25] :server25)
 read option mask [0x00 0x00 0x00 0x00]
 
-read [0x00 0xe4] ([0..4] :readMaskB)
+read [0x80 0xe4] ([0..4] :readMaskB)
 read option mask ${readMaskB}
 read ([0..100] :server100)
 read option mask [0x00 0x00 0x00 0x00]

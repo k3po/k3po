@@ -27,7 +27,7 @@ write option mask ${writeMaskA}
 write ${client25}
 write option mask [0x00 0x00 0x00 0x00]
 
-write [0x00 0xe4] ${writeMaskB}
+write [0x80 0xe4] ${writeMaskB}
 write option mask ${writeMaskB}
 write ${client100}
 write option mask [0x00 0x00 0x00 0x00]
