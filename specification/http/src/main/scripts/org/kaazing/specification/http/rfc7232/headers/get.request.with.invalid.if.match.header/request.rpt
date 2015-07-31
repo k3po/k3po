@@ -7,7 +7,7 @@ write header content-length
 write flush
 
 read status "200" "OK"
-read header "ETag" "abc123"
+read header "ETag" /.+/
 
 connect http://localhost:8000/resource
 connected
