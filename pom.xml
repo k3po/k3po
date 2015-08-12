@@ -46,7 +46,6 @@
         <module>specification/tls</module>
         <module>specification/ws</module>
         <module>specification/wse</module>
-        <module>specification/wsr</module>
     </modules>
 
     <properties>

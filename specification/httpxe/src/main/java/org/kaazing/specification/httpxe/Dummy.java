@@ -1,3 +1,4 @@
+package org.kaazing.specification.httpxe;
 /*
  * Copyright 2014, Kaazing Corporation. All rights reserved.
  *
@@ -14,21 +15,9 @@
  * limitations under the License.
  */
 
-package org.kaazing.specification.wsr;
-
-import org.junit.Test;
-import org.kaazing.k3po.junit.annotation.Specification;
-
 /**
- * 
+ * This project has no public api.  This class is only here to get javadoc to compile, as required for Sonatype.
  */
-public class SampleIT {
+public class Dummy {
 
-    @Test
-    @Specification({
-        "handshake.request",
-        "handshake.response"})
-    public void shouldPass() {
-        
-    }
 }
