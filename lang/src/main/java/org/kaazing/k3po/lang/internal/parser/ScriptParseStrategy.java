@@ -85,6 +85,9 @@ import org.kaazing.k3po.lang.internal.ast.matcher.AstVariableLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
+import org.kaazing.k3po.lang.internal.ast.value.AstLocationExpression;
+import org.kaazing.k3po.lang.internal.ast.value.AstLocationLiteral;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 import org.kaazing.k3po.lang.internal.regex.NamedGroupPattern;
@@ -111,6 +114,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.ExpressionValueContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.FixedLengthBytesMatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralBytesContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralTextContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.LocationContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.MatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.OpenedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.OptionNodeContext;
@@ -132,6 +136,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.StreamNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.StreamableNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.UnbindNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.UnboundNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.UriValueContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.VariableLengthBytesMatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteAwaitNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteCloseNodeContext;
@@ -787,10 +792,19 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
         @Override
         public AstAcceptNode visitAcceptNode(AcceptNodeContext ctx) {
+            AstLocationVisitor locationVisitor = new AstLocationVisitor(elFactory, elContext);
+            AstLocation location = locationVisitor.visit(ctx.acceptURI);
             node = new AstAcceptNode();
-            node.setLocation(URI.create(ctx.acceptURI.getText()));
+            node.setLocation(location);
+            node.setEnvironment(elContext);
             if (ctx.text != null) {
                 node.setAcceptName(ctx.text.getText());
+            }
+            LocationContext transport = ctx.value;
+            if (transport != null) {
+                AstLocationVisitor transportVisitor = new AstLocationVisitor(elFactory, elContext);
+                AstLocation transportLocation = transportVisitor.visit(ctx.value);
+                node.getOptions().put("transport", transportLocation);
             }
             super.visitAcceptNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
@@ -848,13 +862,22 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
         @Override
         public AstConnectNode visitConnectNode(ConnectNodeContext ctx) {
+            AstLocationVisitor locationVisitor = new AstLocationVisitor(elFactory, elContext);
+            AstLocation location = locationVisitor.visit(ctx.connectURI);
             node = new AstConnectNode();
-            node.setLocation(URI.create(ctx.connectURI.getText()));
+            node.setLocation(location);
+            node.setEnvironment(elContext);
             super.visitConnectNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
             Token barrier = ctx.barrier;
             if (barrier != null) {
                 node.setBarrier(barrier.getText());
+            }
+            LocationContext transport = ctx.value;
+            if (transport != null) {
+                AstLocationVisitor transportVisitor = new AstLocationVisitor(elFactory, elContext);
+                AstLocation transportLocation = transportVisitor.visit(ctx.value);
+                node.getOptions().put("transport", transportLocation);
             }
             return node;
         }
@@ -1865,6 +1888,69 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             }
         }
     }
+
+    private static class AstLocationLiteralVisitor extends AstVisitor<AstLocationLiteral> {
+
+        public AstLocationLiteralVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+            super(elFactory, elContext);
+        }
+
+        @Override
+        public AstLocationLiteral visitUriValue(UriValueContext ctx) {
+            String uriText = ctx.uri.getText();
+            URI uri = URI.create(uriText);
+            AstLocationLiteral value = new AstLocationLiteral(uri);
+            value.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return value;
+        }
+
+    }
+
+    private static class AstLocationExpressionVisitor extends AstVisitor<AstLocationExpression> {
+
+        protected AstLocationExpressionVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+            super(elFactory, elContext);
+        }
+
+        @Override
+        public AstLocationExpression visitExpressionValue(ExpressionValueContext ctx) {
+            ValueExpression expression = elFactory.createValueExpression(elContext, ctx.expression.getText(), URI.class);
+            AstLocationExpression value = new AstLocationExpression(expression, elContext);
+            value.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return value;
+        }
+    }
+
+    private static class AstLocationVisitor extends AstVisitor<AstLocation> {
+
+        protected AstLocationVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+            super(elFactory, elContext);
+        }
+
+        @Override
+        public AstLocation visitUriValue(UriValueContext ctx) {
+            AstLocationLiteralVisitor visitor = new AstLocationLiteralVisitor(elFactory, elContext);
+            AstLocationLiteral value = visitor.visit(ctx);
+
+            if (value != null) {
+                childInfos().add(value.getRegionInfo());
+            }
+
+            return value;
+        }
+
+        @Override
+        public AstLocation visitExpressionValue(ExpressionValueContext ctx) {
+            AstLocationExpressionVisitor visitor = new AstLocationExpressionVisitor(elFactory, elContext);
+            AstLocationExpression value = visitor.visit(ctx);
+            if (value != null) {
+                childInfos().add(value.getRegionInfo());
+            }
+
+            return value;
+        }
+    }
+
 
     private static class AstValueVisitor extends AstVisitor<AstValue> {
 

@@ -1,0 +1,22 @@
+accept http://localhost:8000/echo
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+read header "Upgrade" "websocket"
+read header "Connection" "Upgrade"
+read header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
+read header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
+read header "Sec-WebSocket-Version" "13"
+
+write status "101" "Switching Protocols"
+write version "HTTP/1.1"
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade" 
+write header "Sec-WebSocket-Accept" "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
+write header "Server" "Kaazing Gateway"
+write header "Date" ${httpx:getDate()}
+write flush
+

@@ -4,7 +4,7 @@ connected
 
 read method "POST"
 read version "HTTP/1.1"
-read header "X-WebSocket-Version" "wseb-1.1"
+read header "X-WebSocket-Version" "wseb-1.0"
 read closed
 
 write status "400" "Bad Request" 

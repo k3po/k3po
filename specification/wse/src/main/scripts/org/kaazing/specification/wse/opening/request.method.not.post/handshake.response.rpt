@@ -4,8 +4,8 @@ connected
 
 read method /(?!POST)/
 read version "HTTP/1.1"
-read header "X-WebSocket-Version" "wseb-1.1"
-read header "X-Sequence-No" /(?<sequence>\b[0-9]{1,3}\b)/
+read header "X-WebSocket-Version" "wseb-1.0"
+read header "X-Sequence-No" /(?<sequence>[0-9]{1,3})/
 read closed
 
 write status "400" "Bad Request" 

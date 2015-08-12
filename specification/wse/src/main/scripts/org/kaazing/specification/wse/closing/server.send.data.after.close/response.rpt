@@ -1,3 +1,8 @@
+property upstreamId ${wse:uniqueId()}
+property downstreamId ${wse:uniqueId()}
+property upstream ${wse:append("http://localhost:8080/path/", upstreamId)}
+property downstream ${wse:append("http://localhost:8080/path/", downstreamId)}
+
 property data ${wse:randomBytes(127)}
 
 accept http://localhost:8080/path/;e/cb?query
@@ -6,27 +11,25 @@ connected
 
 read method "POST"
 read version "HTTP/1.1"
-read header "X-WebSocket-Version" "wseb-1.1"
-read header "X-Sequence-No" /(?<sequence>\b[0-9]{1,3}\b)/
+read header "X-WebSocket-Version" "wseb-1.0"
+read header "X-Sequence-No" /(?<sequence>[0-9]{1,3})/
 read closed
 
 write status "201" "Created" 
 write version "HTTP/1.1"
-write header "X-WebSocket-Version" "wseb-1.1"
+write header "X-WebSocket-Version" "wseb-1.0"
 write header "Content-Type" "text/plain;charset=utf-8"
 write header content-length
 
-write "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
-write "http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1\n"
-write notify CREATED
+write ${upstream} "\n"
+write ${downstream} "\n"
 write close
 
 # Downstream
-accept http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1
+accept ${downstream}
 accepted
 connected
 
-read await CREATED
 read method "GET"
 read version "HTTP/1.1"
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
@@ -41,16 +44,14 @@ write flush
 write [0x01 0x30 0x32 0xFF]
 write [0x80 0x7F] ${data}
 write [0x01 0x30 0x31 0xFF]
-write notify CLOSE_SENT
 write close
 
 
 # Upstream
-accept http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh
+accept ${upstream}
 accepted
 connected
 
-read await CLOSE_SENT
 read method "POST"
 read version "HTTP/1.1"
 read header "Content-Type" "application/octet-stream"

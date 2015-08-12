@@ -1,0 +1,56 @@
+property writeMask ${httpx:randomBytes(4)}
+connect http://localhost:8000/echo
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
+write header "Sec-WebSocket-Version" "13"
+write header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
+
+read status "101" /.+/
+read version "HTTP/1.1"
+read header "Upgrade" "websocket"
+read header "Connection" "Upgrade"
+read header "Sec-WebSocket-Accept" "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
+read header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
+read header "Server" /.+/
+read header "Date" /.+/
+
+write [0x82 0x96] ${writeMask}
+write option mask ${writeMask}
+write "GET /echo HTTP/1.1\r\n"
+write "\r\n"
+write option mask [0x00 0x00 0x00 0x00]
+
+# 302 response
+read [0x82 0x3C]
+read /HTTP\/1.1 302.+\r\n/
+read /Location: (?<redirect>.*+)\r\n/
+read "\r\n"
+
+write [0x88 0x02] ${writeMask}
+write option mask ${writeMask}
+write [0x03 0xf3]
+write option mask [0x00 0x00 0x00 0x00]
+
+read [0x88 0x02 0x03 0xf3]
+read notify FIRST_CONNECTION_CLOSED
+
+connect await FIRST_CONNECTION_CLOSED
+connect ${redirect}
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
+write header "Sec-WebSocket-Version" "13"
+write header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
+write flush
+

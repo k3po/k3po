@@ -1,0 +1,13 @@
+property invalidCredentials ${http:loginBase64Encoder("admin:admin")}
+property authHeader ${http:append("Basic ", invalidCredentials)}
+accept http://localhost:8000/resource
+accepted
+connected
+
+read method "GET"
+read header "Authorization" ${authHeader}
+read closed
+
+write status "403" "Forbidden"
+write flush
+

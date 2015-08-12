@@ -62,6 +62,16 @@ public class ConnectionManagementIT {
         k3po.finish();
     }
 
+
+    @Test
+    @Specification({
+            "reverse.proxy.connection.established/client",
+            "reverse.proxy.connection.established/proxy",
+            "reverse.proxy.connection.established/server" })
+    public void reverseProxyConnectionEstablished() throws Exception {
+        k3po.finish();
+    }
+
     /**
      * See <a href="https://tools.ietf.org/html/rfc7230#section-6.1">RFC 7230 section 6.1: Connection</a>.
      *

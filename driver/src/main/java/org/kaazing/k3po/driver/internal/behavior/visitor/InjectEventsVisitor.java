@@ -90,10 +90,7 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
         state.connectivityState = ConnectivityState.NONE;
 
-        AstAcceptNode newAcceptNode = new AstAcceptNode();
-        newAcceptNode.setRegionInfo(acceptNode.getRegionInfo());
-        newAcceptNode.setAcceptName(acceptNode.getAcceptName());
-        newAcceptNode.setLocation(acceptNode.getLocation());
+        AstAcceptNode newAcceptNode = new AstAcceptNode(acceptNode);
 
         state.streamables = newAcceptNode.getStreamables();
         for (AstStreamableNode streamable : acceptNode.getStreamables()) {
@@ -133,10 +130,7 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
         state.connectivityState = ConnectivityState.NONE;
 
-        AstConnectNode newConnectNode = new AstConnectNode();
-        newConnectNode.setRegionInfo(connectNode.getRegionInfo());
-        newConnectNode.setLocation(connectNode.getLocation());
-        newConnectNode.setBarrier(connectNode.getBarrier());
+        AstConnectNode newConnectNode = new AstConnectNode(connectNode);
 
         state.streamables = newConnectNode.getStreamables();
         for (AstStreamableNode streamable : connectNode.getStreamables()) {

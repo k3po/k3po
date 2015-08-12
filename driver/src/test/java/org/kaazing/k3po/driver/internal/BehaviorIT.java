@@ -61,4 +61,17 @@ public class BehaviorIT {
         k3po.finish();
     }
 
+    @Test
+    @TestSpecification({
+        "connect.expression" })
+    public void testConnectWithExpression() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "accept.expression" })
+    public void testAcceptWithExpression() throws Exception {
+        k3po.finish();
+    }
 }

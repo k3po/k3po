@@ -7,24 +7,24 @@ write method "POST"
 write version "HTTP/1.1"
 write header host
 write header content-length
-write header "X-WebSocket-Version" "wseb-1.1"
+write header "X-WebSocket-Version" "wseb-1.0"
 write header "X-Sequence-No" ${wse:asString(sequence)}
 write close
 
 read status "201" /.+/
 read version "HTTP/1.1"
-read header "X-WebSocket-Version" "wseb-1.1"
-read header "Content-Type" "text/plain;charset=utf-8"
+read header "X-WebSocket-Version" "wseb-1.0"
+read header "Content-Type" /text\/plain;charset=(?i)utf-8/
 
-read "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
+read /(?<upstream>http:\/\/localhost:8080\/path\/.+)/ "\n"
 read notify CREATED
 read closed
 
-# upstream
-connect http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh
+# Upstream
+connect await CREATED
+connect ${upstream}
 connected
 
-write await CREATED
 write method "POST"
 write version "HTTP/1.1"
 write header host

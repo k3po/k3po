@@ -100,10 +100,10 @@ import org.kaazing.k3po.driver.internal.behavior.handler.event.ReadHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.UnboundHandler;
 import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor.State;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
-import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
+import org.kaazing.k3po.driver.internal.resolver.ClientBootstrapResolver;
+import org.kaazing.k3po.driver.internal.resolver.LocationResolver;
+import org.kaazing.k3po.driver.internal.resolver.ServerBootstrapResolver;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
@@ -151,6 +151,7 @@ import org.kaazing.k3po.lang.internal.ast.matcher.AstVariableLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
@@ -301,8 +302,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         state.readUnmasker = Masker.IDENTITY_MASKER;
         state.writeMasker = Masker.IDENTITY_MASKER;
 
-        URI acceptURI = acceptNode.getLocation();
-
         /* Create a list of pipelines, for each acceptable */
         final List<ChannelPipeline> pipelines = new ArrayList<ChannelPipeline>();
         state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
@@ -334,16 +333,23 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             }
         };
 
-        Map<String, Object> acceptOptions = acceptNode.getOptions();
-        ChannelAddress localAddress = addressFactory.newChannelAddress(acceptURI, acceptOptions);
+        Map<String, Object> acceptOptions = new HashMap<>();
+        acceptOptions.put("regionInfo", acceptInfo);
+        AstLocation transport = (AstLocation) acceptNode.getOptions().get("transport");
+        LocationResolver transportResolver = null;
+        if (transport != null) {
+            transportResolver = new LocationResolver(transport, acceptNode.getEnvironment());
+        }
 
-        ServerBootstrap serverBootstrap = bootstrapFactory.newServerBootstrap(acceptURI.getScheme());
-        serverBootstrap.setOptions(acceptOptions);
-        serverBootstrap.setPipelineFactory(pipelineFactory);
-        serverBootstrap.setOption("localAddress", localAddress);
-        serverBootstrap.setOption("regionInfo", acceptInfo);
+        // Now that accept supports expression value, accept uri may not be available at this point.
+        // To defer the evaluation of accept uri and initialization of  ServerBootstrap, LocationResolver and
+        // ServerResolver are created with information necessary to create ClientBootstrap when the
+        // accept uri is available.
+        LocationResolver locationResolver = new LocationResolver(acceptNode.getLocation(), acceptNode.getEnvironment());
+        ServerBootstrapResolver serverResolver = new ServerBootstrapResolver(bootstrapFactory, addressFactory,
+                pipelineFactory, locationResolver, transportResolver, acceptOptions);
 
-        state.configuration.getServerBootstraps().add(serverBootstrap);
+        state.configuration.getServerResolvers().add(serverResolver);
 
         return state.configuration;
     }
@@ -355,13 +361,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstConnectNode connectNode, State state) throws Exception {
 
-        URI connectURI = connectNode.getLocation();
         // masking is a no-op by default for each stream
         state.readUnmasker = Masker.IDENTITY_MASKER;
         state.writeMasker = Masker.IDENTITY_MASKER;
-
-        Map<String, Object> connectOptions = connectNode.getOptions();
-        String barrierName = connectNode.getBarrier();
 
         state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
 
@@ -375,16 +377,13 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         completionHandler.setRegionInfo(connectNode.getRegionInfo());
         state.pipelineAsMap.put(handlerName, completionHandler);
 
-        ChannelAddress remoteAddress = addressFactory.newChannelAddress(connectURI);
-        connectOptions.put("remoteAddress", remoteAddress);
-        connectOptions.put("regionInfo", connectNode.getRegionInfo());
-
-        ClientBootstrap clientBootstrap = bootstrapFactory.newClientBootstrap(connectURI.getScheme());
+        String barrierName = connectNode.getBarrier();
+        Barrier barrier = null;
+        if (barrierName != null) {
+            barrier = state.lookupBarrier(barrierName);
+        }
 
         final ChannelPipeline pipeline = pipelineFromMap(state.pipelineAsMap);
-
-        // retain pipelines for tear down
-        state.configuration.getClientAndServerPipelines().add(pipeline);
 
         /*
          * TODO. This is weird. I will only have one pipeline per connect. But if I don't set a factory When a connect
@@ -403,17 +402,26 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 return pipeline;
             }
         };
-        clientBootstrap.setPipelineFactory(pipelineFactory);
-        clientBootstrap.setOptions(connectOptions);
-        if (barrierName != null) {
-            Barrier barrier = state.lookupBarrier(barrierName);
-            clientBootstrap.setOption("barrier", barrier);
+
+        // Now that connect supports barrier and expression value, connect uri may not be available at this point.
+        // To defer the evaluation of connect uri and initialization of ClientBootstrap, LocationResolver and
+        // ClientResolver are created with information necessary to create ClientBootstrap when the connect uri
+        // is available.
+        LocationResolver locationResolver = new LocationResolver(connectNode.getLocation(), connectNode.getEnvironment());
+        Map<String, Object> connectOptions = new HashMap<>();
+        AstLocation transport = (AstLocation) connectNode.getOptions().get("transport");
+        LocationResolver transportResolver = null;
+        if (transport != null) {
+            transportResolver = new LocationResolver(transport, connectNode.getEnvironment());
         }
 
-        state.configuration.getClientBootstraps().add(clientBootstrap);
+        ClientBootstrapResolver clientResolver = new ClientBootstrapResolver(bootstrapFactory, addressFactory,
+                pipelineFactory, locationResolver, transportResolver, barrier, connectNode.getRegionInfo(), connectOptions);
 
-        LOGGER.debug("Added client Bootstrap connecting to remoteAddress " + remoteAddress);
+        // retain pipelines for tear down
+        state.configuration.getClientAndServerPipelines().add(pipeline);
 
+        state.configuration.getClientResolvers().add(clientResolver);
         return state.configuration;
     }
 

@@ -102,6 +102,22 @@ public class OpeningHandshakeIT {
 
     @Test
     @Specification({
+        "response.header.sec.websocket.extensions.partial.agreement/handshake.request",
+        "response.header.sec.websocket.extensions.partial.agreement/handshake.response" })
+    public void shouldEstablishConnectionWithSomeExtensionsNegotiated() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "response.header.sec.websocket.extensions.reordered/handshake.request",
+        "response.header.sec.websocket.extensions.reordered/handshake.response" })
+    public void shouldEstablishConnectionWhenOrderOfExtensionsNegotiatedChanged() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "request.method.not.get/handshake.request",
         "request.method.not.get/handshake.response" })
     public void shouldFailHandshakeWhenMethodNotGet() throws Exception {

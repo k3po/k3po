@@ -19,27 +19,35 @@ package org.kaazing.k3po.lang.internal.ast;
 import static java.lang.String.format;
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
-import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.el.ELContext;
+
+import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
+
 public class AstConnectNode extends AstStreamNode {
 
-    private URI location;
     private Map<String, Object> options;
     private String barrier;
 
-    public URI getLocation() {
-        return location;
+    private AstLocation location;
+    private ELContext environment;
+
+    public AstConnectNode() {
     }
 
-    public void setLocation(URI location) {
-        this.location = location;
+    public AstConnectNode(AstConnectNode connectNode) {
+        this.regionInfo = connectNode.regionInfo;
+        this.location = connectNode.location;
+        this.environment = connectNode.environment;
+        this.barrier = connectNode.barrier;
+        this.options = connectNode.options;
     }
 
     public Map<String, Object> getOptions() {
         if (options == null) {
-            options = new LinkedHashMap<String, Object>();
+            options = new LinkedHashMap<>();
         }
 
         return options;
@@ -52,6 +60,11 @@ public class AstConnectNode extends AstStreamNode {
         if (location != null) {
             hashCode <<= 4;
             hashCode ^= location.hashCode();
+        }
+
+        if (environment != null) {
+            hashCode <<= 4;
+            hashCode ^= environment.hashCode();
         }
 
         if (options != null) {
@@ -93,4 +106,21 @@ public class AstConnectNode extends AstStreamNode {
     public void setBarrier(String barrier) {
         this.barrier = barrier;
     }
+
+    public AstLocation getLocation() {
+        return location;
+    }
+
+    public void setLocation(AstLocation location) {
+        this.location = location;
+    }
+
+    public ELContext getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(ELContext expressionContext) {
+        this.environment = expressionContext;
+    }
+
 }

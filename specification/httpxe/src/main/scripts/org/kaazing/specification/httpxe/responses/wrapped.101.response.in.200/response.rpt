@@ -1,0 +1,15 @@
+accept http://localhost:8000/path
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+
+write status "200" "OK"
+write header "Content-Type" "application/x-message-http"
+write header content-length
+
+write "101 Switching Protocols HTTP/1.1\r\n"
+write "Content-Type: text/html\r\n"
+write flush
+

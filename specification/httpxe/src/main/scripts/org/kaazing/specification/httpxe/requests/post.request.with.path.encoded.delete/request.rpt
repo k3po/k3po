@@ -1,0 +1,8 @@
+connect http://localhost:8000/;delete/path
+connected
+
+write method "POST"
+write version "HTTP/1.1"
+write header content-length
+write flush
+

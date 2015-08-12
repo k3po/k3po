@@ -1,0 +1,12 @@
+property invalidCredentials ${http:loginBase64Encoder("baduser:badpass")}
+property authHeader ${http:append("Basic ", invalidCredentials)}
+connect http://localhost:8000/resource
+connected
+
+write method "GET"
+write header "Proxy-Authorization" ${authHeader}
+write flush
+
+read status "407" "Proxy Authentication Required"
+read header "Proxy-Authenticate" /Basic realm=.+/
+

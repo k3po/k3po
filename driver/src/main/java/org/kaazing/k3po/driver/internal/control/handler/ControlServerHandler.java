@@ -202,8 +202,13 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             startFuture.addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(final ChannelFuture f) {
-                    final StartedMessage started = new StartedMessage();
-                    Channels.write(ctx, Channels.future(null), started);
+                    if (f.isSuccess()) {
+                        final StartedMessage started = new StartedMessage();
+                        Channels.write(ctx, Channels.future(null), started);
+                    }
+                    else {
+                        sendErrorMessage(ctx, f.getCause());
+                    }
                 }
             });
         } catch (Exception e) {
@@ -254,20 +259,20 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         channel.write(error);
     }
 
-    private void sendErrorMessage(ChannelHandlerContext ctx, Exception exception) {
+    private void sendErrorMessage(ChannelHandlerContext ctx, Throwable throwable) {
         ErrorMessage error = new ErrorMessage();
-        error.setDescription(exception.getMessage());
+        error.setDescription(throwable.getMessage());
 
-        if (exception instanceof ScriptParseException) {
+        if (throwable instanceof ScriptParseException) {
             if (logger.isDebugEnabled()) {
-                logger.error("Caught exception trying to parse script. Sending error to client", exception);
+                logger.error("Caught exception trying to parse script. Sending error to client", throwable);
             } else {
-                logger.error("Caught exception trying to parse script. Sending error to client. Due to " + exception);
+                logger.error("Caught exception trying to parse script. Sending error to client. Due to " + throwable);
             }
             error.setSummary("Parse Error");
             Channels.write(ctx, Channels.future(null), error);
         } else {
-            logger.error("Internal Error. Sending error to client", exception);
+            logger.error("Internal Error. Sending error to client", throwable);
             error.setSummary("Internal Error");
             Channels.write(ctx, Channels.future(null), error);
         }

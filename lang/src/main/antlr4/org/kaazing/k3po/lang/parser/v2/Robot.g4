@@ -32,7 +32,7 @@ streamNode
     ;
 
 acceptNode
-    : k=AcceptKeyword acceptURI=location ( AsKeyword text=Name )?
+    : k=AcceptKeyword acceptURI=location ( AsKeyword text=Name )? (OptionKeyword TransportKeyword value=location)?
       serverStreamableNode*
     ;
 
@@ -41,7 +41,7 @@ acceptableNode
     ;
 
 connectNode
-    : k=ConnectKeyword (AwaitKeyword barrier=Name ConnectKeyword)? connectURI=location  streamableNode+
+    : k=ConnectKeyword (AwaitKeyword barrier=Name ConnectKeyword)? connectURI=location (OptionKeyword TransportKeyword value=location)? streamableNode+
     ;
 
 serverStreamableNode
@@ -319,9 +319,13 @@ expressionValue
     : expression=ExpressionLiteral
     ;
 
+uriValue
+    : uri=URILiteral
+    ;
+
 location
-    : URILiteral
-    | ExpressionLiteral
+    : uriValue
+    | expressionValue
     ;
 
 SignedDecimalLiteral
@@ -333,6 +337,10 @@ SignedDecimalLiteral
 OptionKeyword: 'option';
 
 MaskKeyword: 'mask';
+
+TransportKeyword
+    : 'transport'
+    ;
 
 ShortKeyword
     : 'short'

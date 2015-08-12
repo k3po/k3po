@@ -1,0 +1,11 @@
+connect http://localhost:8000/;post/path
+connected
+
+write method "POST"
+write version "HTTP/1.1"
+write header "HOST" "localhost:8000"
+write header "X-Origin" "http://source.example.com:80"
+write header "X-Origin-http%3A%2F%2Fsource.example.com%3A80" "http://source.example.com:80"
+write header content-length
+write flush
+

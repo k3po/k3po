@@ -7,23 +7,24 @@ write method "POST"
 write version "HTTP/1.1"
 write header host
 write header content-length
-write header "X-WebSocket-Version" "wseb-1.1"
+write header "X-WebSocket-Version" "wseb-1.0"
 write header "X-Accept-Commands" "ping"
 write header "X-Sequence-No" ${wse:asString(sequence)}
 write close
 
 read status "201" /.+/
 read version "HTTP/1.1"
-read header "X-WebSocket-Version" "wseb-1.1"
-read header "Content-Type" "text/plain;charset=utf-8"
+read header "X-WebSocket-Version" "wseb-1.0"
+read header "Content-Type" /text\/plain;charset=(?i)utf-8/
 
-read "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
-read "http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1\n"
+read /(?<upstream>http:\/\/localhost:8080\/path\/.+)/ "\n"
+read /(?<downstream>http:\/\/localhost:8080\/path\/.+)/ "\n"
 read notify CREATED
 read closed
 
 # Downstream
-connect http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1
+connect await CREATED
+connect ${downstream}
 connected
 
 write await CREATED
@@ -40,16 +41,11 @@ read header "Connection" "close"
 
 read [0x8A 0x00]
 
-read notify FIRST_PONG_RECEIVED
-
-read closed
-
-
 # Upstream
-connect http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh?.krn=1
+connect await CREATED
+connect ${upstream}
 connected
 
-write await CREATED
 write method "POST"
 write version "HTTP/1.1"
 write header host
@@ -64,12 +60,13 @@ write close
 read status "200" /.+/
 read version "HTTP/1.1"
 read closed
+read notify FIRST_UPSTREAM_COMPLETED
 
 # Out of Order Upstream
-connect http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh?.krn=2
+connect await FIRST_UPSTREAM_COMPLETED
+connect ${upstream}
 connected
 
-write await FIRST_PONG_RECEIVED
 write method "POST"
 write version "HTTP/1.1"
 write header host
@@ -82,4 +79,3 @@ write [0x01 0x30 0x31 0xFF]
 write close
 
 read status /4\d\d/ /.+/
-read closed

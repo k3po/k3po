@@ -61,16 +61,17 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.jboss.netty.handler.codec.http.QueryStringEncoder;
+import org.kaazing.k3po.driver.internal.channel.Channels;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChildChannel.HttpReadState;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
 public class HttpChildChannelSource extends HttpChannelHandler {
 
-    private final NavigableMap<URI, HttpServerChannel> httpBindings;
+    private final NavigableMap<ChannelAddress, HttpServerChannel> httpBindings;
 
     private volatile HttpChildChannel httpChildChannel;
 
-    public HttpChildChannelSource(NavigableMap<URI, HttpServerChannel> httpBindings) {
+    public HttpChildChannelSource(NavigableMap<ChannelAddress, HttpServerChannel> httpBindings) {
         this.httpBindings = httpBindings;
     }
 
@@ -147,7 +148,12 @@ public class HttpChildChannelSource extends HttpChannelHandler {
             return;
         }
 
-        Entry<URI, HttpServerChannel> httpBinding = httpBindings.floorEntry(httpLocation);
+        // channel's local address is resolved address so get the bind address from
+        // server channel's attachment
+        ChannelAddress transportCandidate = (ChannelAddress) ctx.getChannel().getParent().getAttachment();
+        ChannelAddress candidate = new ChannelAddress(httpLocation, transportCandidate);
+
+        Entry<ChannelAddress, HttpServerChannel> httpBinding = httpBindings.floorEntry(candidate);
 
         if (httpBinding == null) {
             HttpResponse httpResponse = new DefaultHttpResponse(version, NOT_FOUND);

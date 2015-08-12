@@ -1,0 +1,13 @@
+connect http://localhost:8000/path
+connected
+
+write method "POST"
+write version "HTTP/1.1"
+write header "Content-Type" "application/x-message-http"
+write header content-length
+
+write "POST HTTP/1.1\r\n"
+write "Authorization: Basic " ${httpxe:loginBase64Encoder("joe:welcome")} "\r\n"
+write "Content-Type: text/plain"
+write flush
+

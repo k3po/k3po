@@ -1,0 +1,40 @@
+accept http://localhost:8000/echo
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+read header "Upgrade" "websocket"
+read header "Connection" "Upgrade"
+read header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
+read header "Sec-WebSocket-Version" "13"
+read header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
+
+write status "101" "Switching Protocols"
+write version "HTTP/1.1"
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade" 
+write header "Sec-WebSocket-Accept" "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
+write header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
+write header "Server" "Kaazing Gateway"
+write header "Date" ${httpx:getDate()}
+write flush
+
+read [0x82 0x96]
+read [(:maskingKey){4}]
+read option mask ${writeMask}
+read "GET /echo HTTP/1.1\r\n"
+read "\r\n"
+read option mask [0x00 0x00 0x00 0x00]
+
+# 101 OK response
+write [0x82 0x7E 0x00 0xC9]
+write "HTTP/1.1 101 WebSocket Protocol Handshake\r\n"
+write "Connection: Upgrade\r\n"
+write "Date: " ${httpx:getDate()} "\r\n"
+write "Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n"
+write "Server: Kaazing Gateway\r\n"
+write "Upgrade: websocket\r\n"
+write "\r\n"
+

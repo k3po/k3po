@@ -1,28 +1,33 @@
+property upstreamId ${wse:uniqueId()}
+property downstreamId ${wse:uniqueId()}
+property upstream ${wse:append("http://localhost:8080/path/", upstreamId)}
+property downstream ${wse:append("http://localhost:8080/path/", downstreamId)}
+
 accept http://localhost:8080/path/;e/cb?.ksn=0
 accepted
 connected
 
 read method "POST"
 read version "HTTP/1.1"
-read header "X-WebSocket-Version" "wseb-1.1"
+read header "X-WebSocket-Version" "wseb-1.0"
 read closed
 
 write status "201" "Created" 
 write version "HTTP/1.1"
-write header "X-WebSocket-Version" "wseb-1.1"
+write header "X-WebSocket-Version" "wseb-1.0"
 write header "Content-Type" "text/plain;charset=utf-8"
 write header content-length
 
-write "http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh\n"
-write "http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1\n"
+write ${upstream} "\n"
+write ${downstream} "\n"
 write close
 
 # Downstream
-accept http://localhost:8080/path/T4hpc2vqXueYRyyl3dIQw5K64XLQxuf1?.ksn=1
+accept ${downstream}
 accepted
 connected
 
-read await CREATED
+read parameter ".ksn" "1"
 read method "GET"
 read version "HTTP/1.1"
 read closed
@@ -32,7 +37,6 @@ write version "HTTP/1.1"
 write header "Content-Type" "application/octet-stream"
 write header "Connection" "close"
 write flush
-write notify DOWNSTREAM_OPENED
 
 write await CLOSE_FRAME_RECEIVED
 write [0x01 0x30 0x32 0xFF]
@@ -40,11 +44,11 @@ write [0x01 0x30 0x31 0xFF]
 write close
 
 # Upstream
-accept http://localhost:8080/path/QD12TQhXT6I5KeCrDe6g0IC9qoDkIioh?.ksn=1
+accept ${upstream}
 accepted
 connected
 
-read await DOWNSTREAM_OPENED
+read parameter ".ksn" "1"
 read method "POST"
 read version "HTTP/1.1"
 read header "Content-Type" "application/octet-stream"

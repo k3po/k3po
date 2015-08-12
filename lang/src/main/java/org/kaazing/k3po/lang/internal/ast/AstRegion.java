@@ -20,7 +20,7 @@ import org.kaazing.k3po.lang.internal.RegionInfo;
 
 public abstract class AstRegion {
 
-    private RegionInfo regionInfo;
+    protected RegionInfo regionInfo;
 
     public RegionInfo getRegionInfo() {
         return regionInfo;
