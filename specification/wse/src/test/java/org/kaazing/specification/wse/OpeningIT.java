@@ -198,15 +198,6 @@ public class OpeningIT {
 
     @Test
     @Specification({
-        "response.header.x.websocket.version.not.matching/handshake.request",
-        "response.header.x.websocket.version.not.matching/handshake.response" })
-    public void shouldFailConnectionWhenResponseHeaderXWebSocketVersionNotMatching()
-            throws Exception {
-        k3po.finish();
-    }
-
-    @Test
-    @Specification({
         "response.header.x.websocket.protocol.not.negotiated/handshake.request",
         "response.header.x.websocket.protocol.not.negotiated/handshake.response" })
     public void shouldFailConnectionWhenXWebSocketProtocolNotNegotiated()

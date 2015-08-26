@@ -189,9 +189,6 @@ For any handshake response status code other than `201`, the client MUST fail th
 For any handshake response content type other than `text/plain;charset=utf-8`, the client MUST fail the emulated WebSocket 
 connection.
 
-For any handshake response `X-WebSocket-Version` HTTP header value not matching the value sent in the handshake request, 
-clients MUST fail the emulated WebSocket connection.
-
 For any handshake response `X-WebSocket-Protocol` HTTP header value not matching one of the values sent in the handshake
 request, the client MUST fail the emulated WebSocket connection.
 
@@ -224,7 +221,6 @@ emulated WebSocket connection.
 
 ```
 HTTP/1.1 201 Created
-X-WebSocket-Version: wseb-1.0
 X-WebSocket-Protocol: x
 Content-Type: text/plain;charset=utf-8
 Content-Length: 105
@@ -264,7 +260,6 @@ __Note:__ the server MAY send an HTTP redirect (status code `3xx`) or an HTTP au
 specification.
 
 * the HTTP handshake response status MUST be `201`
-* the HTTP handshake response header `X-WebSocket-Version` MUST have the value `wseb-1.0`
 * the HTTP handshake response header `Content-Type` MUST have the value `text/plain;charset=utf-8`
 * the HTTP handshake response header `X-WebSocket-Protocol` MUST have one of the values negotiated by the client, if any were
 sent by the client
@@ -666,7 +661,6 @@ Content-Length: 0
 Here, the handshake request location path uses `/;e/cte` instead
 ```
 HTTP/1.1 201 Created
-X-WebSocket-Version: wseb-1.0
 Content-Type: text/plain;charset=utf-8
 Content-Length: 105
 
@@ -703,7 +697,6 @@ Content-Length: 0
 Here, the handshake request location path uses `/;e/ctm` instead
 ```
 HTTP/1.1 201 Created
-X-WebSocket-Version: wseb-1.0
 Content-Type: text/plain;charset=utf-8
 Content-Length: 105
 
