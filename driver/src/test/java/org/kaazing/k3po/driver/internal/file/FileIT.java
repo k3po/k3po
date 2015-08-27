@@ -19,10 +19,12 @@ package org.kaazing.k3po.driver.internal.file;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
+import org.jboss.netty.logging.InternalLoggerFactory;
+import org.jboss.netty.util.DebugUtil;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
 import org.kaazing.k3po.driver.internal.test.utils.K3poTestRule;
@@ -37,9 +39,15 @@ public class FileIT {
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
 
+    @BeforeClass
+    public static void initLogger() {
+        System.out.println("********** debugEnabled **** " + DebugUtil.isDebugEnabled());
+        System.out.println("******* factory ***** " + InternalLoggerFactory.getDefaultFactory());
+    }
+
     @Test
     @TestSpecification({
-        "file.accept.read",
+        "file.connect.write",
     })
     public void shouldReadFromExistingFile() throws Exception {
         k3po.finish();
