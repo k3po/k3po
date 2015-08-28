@@ -39,12 +39,6 @@ public class FileIT {
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
 
-    @BeforeClass
-    public static void initLogger() {
-        System.out.println("********** debugEnabled **** " + DebugUtil.isDebugEnabled());
-        System.out.println("******* factory ***** " + InternalLoggerFactory.getDefaultFactory());
-    }
-
     @Test
     @TestSpecification({
         "file.connect.write",

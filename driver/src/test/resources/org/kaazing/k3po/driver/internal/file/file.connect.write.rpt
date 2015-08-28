@@ -8,5 +8,5 @@ connect file:///tmp/junk
 connected
 
 write "Hello World1"
-write option offset 100
+#write option offset 100
 write "Hello World2"

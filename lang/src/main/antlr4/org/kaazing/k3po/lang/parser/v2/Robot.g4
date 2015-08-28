@@ -56,15 +56,27 @@ serverStreamableNode
     ;
     
 optionNode 
-    : readOptionNode
-    | writeOptionNode
+    : readOptionMaskNode
+    | readOptionOffsetNode
+    | writeOptionMaskNode
+    | writeOptionOffsetNode
     ;
 
-writeOptionNode: 
-    k=WriteKeyword OptionKeyword (name=MaskKeyword value=writeValue | name=OffsetKeyword DecimalLiteral);
+readOptionMaskNode
+    : k=ReadKeyword OptionKeyword name=MaskKeyword value=writeValue
+    ;
 
-readOptionNode: 
-    k=ReadKeyword OptionKeyword (name=MaskKeyword value=writeValue | name=OffsetKeyword DecimalLiteral);
+readOptionOffsetNode
+    : k=ReadKeyword OptionKeyword name=OffsetKeyword value=DecimalLiteral
+    ;
+
+writeOptionMaskNode
+    : k=WriteKeyword OptionKeyword name=MaskKeyword value=writeValue
+    ;
+
+writeOptionOffsetNode
+    : k=WriteKeyword OptionKeyword name=OffsetKeyword value=DecimalLiteral
+    ;
 
 serverCommandNode
     : unbindNode
