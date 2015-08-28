@@ -123,7 +123,7 @@ import org.kaazing.k3po.lang.internal.ast.AstReadAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
-import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadOptionMaskNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
@@ -135,7 +135,7 @@ import org.kaazing.k3po.lang.internal.ast.AstWriteCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteNotifyNode;
-import org.kaazing.k3po.lang.internal.ast.AstWriteOptionNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteOptionMaskNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteValueNode;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstByteLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstExactBytesMatcher;
@@ -1071,7 +1071,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     }
 
     @Override
-    public Configuration visit(AstReadOptionNode node, State state) throws Exception {
+    public Configuration visit(AstReadOptionMaskNode node, State state) throws Exception {
 
         String optionName = node.getOptionName();
         AstValue optionValue = node.getOptionValue();
@@ -1083,7 +1083,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     }
 
     @Override
-    public Configuration visit(AstWriteOptionNode node, State state) throws Exception {
+    public Configuration visit(AstWriteOptionMaskNode node, State state) throws Exception {
 
         String optionName = node.getOptionName();
         AstValue optionValue = node.getOptionValue();

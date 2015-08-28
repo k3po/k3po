@@ -18,16 +18,16 @@ package org.kaazing.k3po.lang.internal.ast.builder;
 
 import javax.el.ValueExpression;
 
-import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadOptionMaskNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
 import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
-public class AstReadOptionNodeBuilder extends AbstractAstStreamableNodeBuilder<AstReadOptionNode, AstReadOptionNode> {
+public class AstReadOptionNodeBuilder extends AbstractAstStreamableNodeBuilder<AstReadOptionMaskNode, AstReadOptionMaskNode> {
 
     public AstReadOptionNodeBuilder() {
-        this(new AstReadOptionNode());
+        this(new AstReadOptionMaskNode());
     }
 
     public AstReadOptionNodeBuilder setOptionName(String optionName) {
@@ -46,19 +46,19 @@ public class AstReadOptionNodeBuilder extends AbstractAstStreamableNodeBuilder<A
     }
 
     @Override
-    public AstReadOptionNode done() {
+    public AstReadOptionMaskNode done() {
         return result;
     }
 
-    private AstReadOptionNodeBuilder(AstReadOptionNode node) {
+    private AstReadOptionNodeBuilder(AstReadOptionMaskNode node) {
         super(node, node);
     }
 
     public static class StreamNested<R extends AbstractAstNodeBuilder<? extends AstStreamNode, ?>> extends
-            AbstractAstStreamableNodeBuilder<AstReadOptionNode, R> {
+            AbstractAstStreamableNodeBuilder<AstReadOptionMaskNode, R> {
 
         public StreamNested(R builder) {
-            super(new AstReadOptionNode(), builder);
+            super(new AstReadOptionMaskNode(), builder);
         }
 
         public StreamNested<R> setOptionName(String optionName) {

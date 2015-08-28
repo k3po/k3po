@@ -38,7 +38,7 @@ import org.kaazing.k3po.lang.internal.ast.AstReadAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
-import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadOptionMaskNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
@@ -50,7 +50,7 @@ import org.kaazing.k3po.lang.internal.ast.AstWriteCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteNotifyNode;
-import org.kaazing.k3po.lang.internal.ast.AstWriteOptionNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteOptionMaskNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteValueNode;
 
 public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, State> {
@@ -304,13 +304,13 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
     }
 
     @Override
-    public AstScriptNode visit(AstReadOptionNode node, State state) throws Exception {
+    public AstScriptNode visit(AstReadOptionMaskNode node, State state) throws Exception {
         state.streamables.add(node);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstWriteOptionNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteOptionMaskNode node, State state) throws Exception {
         state.streamables.add(node);
         return null;
     }

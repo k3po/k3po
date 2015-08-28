@@ -18,7 +18,7 @@ package org.kaazing.k3po.lang.internal.ast;
 
 import static java.lang.String.format;
 
-public class AstReadOptionNode extends AstOptionNode {
+public class AstReadOptionMaskNode extends AstOptionNode {
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
@@ -31,7 +31,7 @@ public class AstReadOptionNode extends AstOptionNode {
 
     @Override
     protected boolean equalTo(AstRegion that) {
-        return that instanceof AstReadOptionNode;
+        return that instanceof AstReadOptionMaskNode;
     }
 
     @Override
