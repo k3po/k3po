@@ -38,6 +38,7 @@ import org.kaazing.k3po.lang.internal.ast.AstReadClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadOptionMaskNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadOptionOffsetNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
@@ -50,6 +51,7 @@ import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteOptionMaskNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteOptionOffsetNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteValueNode;
 
 public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State> {
@@ -344,6 +346,18 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
 
     @Override
     public AstScriptNode visit(AstWriteOptionMaskNode node, State state) throws Exception {
+        state.streamables.add(node);
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstReadOptionOffsetNode node, State state) throws Exception {
+        state.streamables.add(node);
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstWriteOptionOffsetNode node, State state) throws Exception {
         state.streamables.add(node);
         return null;
     }

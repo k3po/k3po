@@ -28,13 +28,16 @@ import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannelSink;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
-import uk.co.real_logic.agrona.IoUtil;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.net.URI;
 import java.nio.MappedByteBuffer;
 
-import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
+import static java.nio.channels.FileChannel.MapMode.READ_ONLY;
+import static java.nio.channels.FileChannel.MapMode.READ_WRITE;
 import static org.jboss.netty.channel.Channels.fireChannelBound;
 
 public class FileChannelSink extends AbstractChannelSink {
@@ -49,13 +52,14 @@ public class FileChannelSink extends AbstractChannelSink {
             LOGGER.debug("connectRequested pipeline = " + pipeline + " evt = " + evt);
         }
 
+        ChannelFuture connectFuture = evt.getFuture();
+
         try {
-
-            final ChannelAddress fileAddress = (ChannelAddress) evt.getValue();
-            final FileChannel fileChannel = (FileChannel) evt.getChannel();
-
-            File file = new File(fileAddress.getLocation());
-            MappedByteBuffer buf = IoUtil.mapExistingFile(file, fileAddress.toString());
+            ChannelAddress fileAddress = (ChannelAddress) evt.getValue();
+            FileChannel fileChannel = (FileChannel) evt.getChannel();
+            String mode = "rw";     // TODO get these values from ChannelAddress
+            long size = 0;
+            MappedByteBuffer buf = mapFile(fileAddress.getLocation(), mode, size);
             unsafeBuffer = new UnsafeBuffer(buf);
 
             if (!fileChannel.isBound()) {
@@ -64,8 +68,6 @@ public class FileChannelSink extends AbstractChannelSink {
                 fireChannelBound(fileChannel, fileAddress);
             }
 
-
-            ChannelFuture connectFuture = evt.getFuture();
             connectFuture.setSuccess();
 
             Channels.fireChannelConnected(fileChannel, fileAddress);
@@ -75,6 +77,7 @@ public class FileChannelSink extends AbstractChannelSink {
             MessageEvent msg = new UpstreamMessageEvent(fileChannel, channelBuffer, fileAddress);
             fileChannel.getPipeline().sendUpstream(msg);
         } catch (Throwable t) {
+            connectFuture.setFailure(t);
             t.printStackTrace();
         }
     }
@@ -115,6 +118,48 @@ public class FileChannelSink extends AbstractChannelSink {
 
         ChannelFuture closeFuture = evt.getFuture();
         closeFuture.setSuccess();
+    }
+
+
+    private static MappedByteBuffer mapFile(URI fileAddress, String mode, long size) throws IOException {
+        File location = new File(fileAddress);
+
+        if (!location.exists()) {
+            if (mode != null && mode.equals("r")) {
+                String msg = String.format("File = %s doesn't exist, cannot be opened in read only mode", location);
+                throw new IllegalArgumentException(msg);
+            }
+            if (size == 0) {
+                String msg = String.format("File = %s is newly created, need size to be specified", location);
+                throw new IllegalArgumentException(msg);
+            }
+        }
+
+        java.nio.channels.FileChannel.MapMode mapMode;
+
+        if (mode == null) {
+            mode = "rw";
+        }
+        switch (mode) {
+            case "r":
+                mapMode = READ_ONLY;
+                break;
+            case "rw":
+                mapMode = READ_WRITE;
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("Unknown mode = %s for file = %s", mode, location));
+        }
+
+        try (RandomAccessFile file = new RandomAccessFile(location, mode);
+             java.nio.channels.FileChannel channel = file.getChannel()) {
+
+            if (size == 0) {
+                size = channel.size();
+            }
+
+            return channel.map(mapMode, 0, size);
+        }
     }
 
 }

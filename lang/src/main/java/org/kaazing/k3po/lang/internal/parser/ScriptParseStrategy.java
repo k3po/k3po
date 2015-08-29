@@ -57,6 +57,7 @@ import org.kaazing.k3po.lang.internal.ast.AstReadClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadOptionMaskNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadOptionOffsetNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
 import org.kaazing.k3po.lang.internal.ast.AstRegion;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
@@ -70,6 +71,7 @@ import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteOptionMaskNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteOptionOffsetNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteValueNode;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstByteLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstExactBytesMatcher;
@@ -975,7 +977,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             AstValue value = visitor.visit(ctx);
             childInfos().add(value.getRegionInfo());
 
-            node = new AstReadOptionMaskNode();
+            node = new AstReadOptionOffsetNode();
             node.setOptionName(ctx.name.getText());
             node.setOptionValue(value);
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
@@ -1000,19 +1002,16 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
         @Override
         public AstOptionNode visitWriteOptionOffsetNode(WriteOptionOffsetNodeContext ctx) {
-/*
             AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
             AstValue value = visitor.visit(ctx);
             childInfos().add(value.getRegionInfo());
 
-            node = new AstWriteOptionNode();
+            node = new AstWriteOptionOffsetNode();
             node.setOptionName(ctx.name.getText());
             node.setOptionValue(value);
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
 
             return node;
-            */
-            return new AstWriteOptionMaskNode();
         }
     }
 

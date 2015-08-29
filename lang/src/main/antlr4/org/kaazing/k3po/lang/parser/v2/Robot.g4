@@ -67,7 +67,7 @@ readOptionMaskNode
     ;
 
 readOptionOffsetNode
-    : k=ReadKeyword OptionKeyword name=OffsetKeyword value=DecimalLiteral
+    : k=ReadKeyword OptionKeyword name=OffsetKeyword value=writeValue
     ;
 
 writeOptionMaskNode
@@ -75,7 +75,7 @@ writeOptionMaskNode
     ;
 
 writeOptionOffsetNode
-    : k=WriteKeyword OptionKeyword name=OffsetKeyword value=DecimalLiteral
+    : k=WriteKeyword OptionKeyword name=OffsetKeyword value=writeValue
     ;
 
 serverCommandNode

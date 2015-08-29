@@ -56,5 +56,7 @@ public abstract class AstNode extends AstRegion {
 
         R visit(AstReadOptionMaskNode node, P parameter) throws Exception;
         R visit(AstWriteOptionMaskNode node, P parameter) throws Exception;
+        R visit(AstReadOptionOffsetNode node, P parameter) throws Exception;
+        R visit(AstWriteOptionOffsetNode node, P parameter) throws Exception;
     }
 }
