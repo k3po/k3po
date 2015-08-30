@@ -2,11 +2,22 @@
 # Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
 #
 
+#connect file:///tmp/junk
+#        option size 1000
+#        option mode rw
+#connected
+#
+#write "Hello World1"
+#write option offset "100"
+#write "Hello World2"
+#write notify WRITE_DONE
+#
+#
+#connect await WRITE_DONE
 connect file:///tmp/junk
-        option size 1000
-        option mode rw
+        option mode r
 connected
 
-write "Hello World1"
-write option offset "100"
-write "Hello World2"
+read "Hello World1"
+read option offset "100"
+read "Hello World2"

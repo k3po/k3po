@@ -84,10 +84,12 @@ import org.kaazing.k3po.driver.internal.behavior.handler.command.CloseHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.DisconnectHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.FlushHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.ReadConfigHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.command.ReadOptionOffsetHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.ShutdownOutputHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.UnbindHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteConfigHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteOptionOffsetHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.BoundHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ChildClosedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ChildOpenedHandler;
@@ -1104,6 +1106,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         assert "offset".equals(optionName);
 
+        ReadOptionOffsetHandler handler = new ReadOptionOffsetHandler();
+        handler.setRegionInfo(node.getRegionInfo());
+        String handlerName = String.format("writeOption#%d (offset)", state.pipelineAsMap.size() + 1);
+        state.pipelineAsMap.put(handlerName, handler);
         return state.configuration;
     }
 
@@ -1115,6 +1121,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         assert "offset".equals(optionName);
 
+        WriteOptionOffsetHandler handler = new WriteOptionOffsetHandler();
+        handler.setRegionInfo(node.getRegionInfo());
+        String handlerName = String.format("writeOption#%d (offset)", state.pipelineAsMap.size() + 1);
+        state.pipelineAsMap.put(handlerName, handler);
         return state.configuration;
     }
 

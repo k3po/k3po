@@ -16,6 +16,7 @@
 
 package org.kaazing.k3po.driver.internal.netty.bootstrap.file;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelSink;
@@ -28,6 +29,9 @@ import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import static org.jboss.netty.channel.Channels.fireChannelOpen;
 
 public final class FileChannel extends AbstractChannel<FileChannelConfig> {
+
+    public ChannelBuffer channelBuffer;
+    public int writeOffset;
 
     FileChannel(ChannelFactory factory, ChannelPipeline pipeline, ChannelSink sink) {
         super(null, factory, pipeline, sink, new DefaultFileChannelConfig());
@@ -55,4 +59,8 @@ public final class FileChannel extends AbstractChannel<FileChannelConfig> {
         super.setLocalAddress(localAddress);
     }
 
+    public void readOffset(int offset) {
+        System.out.println("******* JITU FileChannel#readOffset ChannelBuffer = " + channelBuffer);
+        channelBuffer.readerIndex(offset);
+    }
 }

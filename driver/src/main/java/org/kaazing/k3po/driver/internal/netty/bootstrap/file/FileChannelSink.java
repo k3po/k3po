@@ -39,6 +39,7 @@ import java.nio.MappedByteBuffer;
 import static java.nio.channels.FileChannel.MapMode.READ_ONLY;
 import static java.nio.channels.FileChannel.MapMode.READ_WRITE;
 import static org.jboss.netty.channel.Channels.fireChannelBound;
+import static org.jboss.netty.channel.Channels.fireMessageReceived;
 
 public class FileChannelSink extends AbstractChannelSink {
 
@@ -74,8 +75,12 @@ public class FileChannelSink extends AbstractChannelSink {
 
             // Send a read event using memory mapped buffer contents
             ChannelBuffer channelBuffer = ChannelBuffers.wrappedBuffer(buf);
+            fileChannel.channelBuffer = channelBuffer;
             MessageEvent msg = new UpstreamMessageEvent(fileChannel, channelBuffer, fileAddress);
             fileChannel.getPipeline().sendUpstream(msg);
+
+            // fireMessageReceived(ctx, buf, ctx.getChannel().getRemoteAddress());
+
         } catch (Throwable t) {
             connectFuture.setFailure(t);
             t.printStackTrace();
@@ -87,10 +92,13 @@ public class FileChannelSink extends AbstractChannelSink {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("writeRequested pipeline = " + pipeline + " evt = " + evt);
         }
+        writeOffset = ((FileChannel) evt.getChannel()).writeOffset;
         ChannelBuffer channelBuffer = (ChannelBuffer) evt.getMessage();
         while (channelBuffer.readable()) {
             unsafeBuffer.putByte(writeOffset++, channelBuffer.readByte());
         }
+        ((FileChannel) evt.getChannel()).writeOffset = writeOffset;
+
 
         ChannelFuture writeFuture = evt.getFuture();
         writeFuture.setSuccess();
