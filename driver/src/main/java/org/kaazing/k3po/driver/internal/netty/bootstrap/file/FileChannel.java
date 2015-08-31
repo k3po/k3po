@@ -20,17 +20,14 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelSink;
-import org.jboss.netty.channel.ServerChannel;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannel;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractServerChannel;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.http.DefaultHttpChannelConfig;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
 import static org.jboss.netty.channel.Channels.fireChannelOpen;
 
 public final class FileChannel extends AbstractChannel<FileChannelConfig> {
 
-    public ChannelBuffer channelBuffer;
+    public ChannelBuffer readBuffer;
     public int writeOffset;
 
     FileChannel(ChannelFactory factory, ChannelPipeline pipeline, ChannelSink sink) {
@@ -59,8 +56,9 @@ public final class FileChannel extends AbstractChannel<FileChannelConfig> {
         super.setLocalAddress(localAddress);
     }
 
-    public void readOffset(int offset) {
-        System.out.println("******* JITU FileChannel#readOffset ChannelBuffer = " + channelBuffer);
-        channelBuffer.readerIndex(offset);
+    public String toString() {
+        ChannelAddress localAddress = this.getLocalAddress();
+        return localAddress != null ? localAddress.toString() : super.toString();
     }
+
 }

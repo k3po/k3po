@@ -16,27 +16,31 @@
 
 package org.kaazing.k3po.driver.internal.behavior.handler.command;
 
-import static java.lang.String.format;
-import static java.util.Collections.singletonList;
-import static java.util.Objects.requireNonNull;
-
-import java.util.List;
-
-import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigEncoder;
+import org.jboss.netty.logging.InternalLogger;
+import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.file.FileChannel;
 
 public class WriteOptionOffsetHandler extends AbstractCommandHandler {
+
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(WriteOptionOffsetHandler.class);
+    private final int offset;
+
+    public WriteOptionOffsetHandler(int offset) {
+        this.offset = offset;
+    }
 
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
         try {
             FileChannel channel = (FileChannel) ctx.getChannel();
-            channel.writeOffset = 35;       // TODO
+            channel.writeOffset = offset;
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(String.format("Setting write option offset %d for channel %s", offset, channel));
+            }
             getHandlerFuture().setSuccess();
-        } catch (Exception e) {
-            getHandlerFuture().setFailure(e);
+        } catch (Throwable t) {
+            getHandlerFuture().setFailure(t);
         }
     }
 

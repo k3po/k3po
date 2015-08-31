@@ -75,7 +75,7 @@ public class FileChannelSink extends AbstractChannelSink {
 
             // Send a read event using memory mapped buffer contents
             ChannelBuffer channelBuffer = ChannelBuffers.wrappedBuffer(buf);
-            fileChannel.channelBuffer = channelBuffer;
+            fileChannel.readBuffer = channelBuffer;
             MessageEvent msg = new UpstreamMessageEvent(fileChannel, channelBuffer, fileAddress);
             fileChannel.getPipeline().sendUpstream(msg);
 

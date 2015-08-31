@@ -16,36 +16,55 @@
 
 package org.kaazing.k3po.driver.internal.behavior.handler.command;
 
-import static java.lang.String.format;
-import static java.util.Collections.singletonList;
-import static java.util.Objects.requireNonNull;
-import static org.jboss.netty.channel.Channels.fireMessageReceived;
-
-import java.util.List;
-
-import org.jboss.netty.channel.Channel;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigEncoder;
+import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.logging.InternalLogger;
+import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.file.FileChannel;
+
+import static org.jboss.netty.channel.Channels.fireMessageReceived;
 
 public class ReadOptionOffsetHandler extends AbstractCommandHandler {
 
-    @Override
-    protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
-        try {
-            FileChannel channel = (FileChannel) ctx.getChannel();
-            channel.readOffset(35);      // TODO
-            getHandlerFuture().setSuccess();
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ReadOptionOffsetHandler.class);
+    private final int offset;
 
-            fireMessageReceived(ctx, channel.channelBuffer, ctx.getChannel().getRemoteAddress());
-        } catch (Exception e) {
-            getHandlerFuture().setFailure(e);
+    public ReadOptionOffsetHandler(int offset) {
+        this.offset = offset;
+    }
+
+    @Override
+    protected void handleUpstream1(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
+        // Do not propagate remaining data to next handler(s) as the offset change make them invalid
+        // This handler would fire message received event below to the next handlers
+        if (!(e instanceof MessageEvent)) {
+            super.handleUpstream1(ctx, e);
         }
     }
 
     @Override
+    protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
+        FileChannel channel = (FileChannel) ctx.getChannel();
+        ChannelBuffer buffer = channel.readBuffer;
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("Adjusting the file %s channel for read option offset %d", channel, offset));
+        }
+        try {
+            buffer.readerIndex(offset);
+            getHandlerFuture().setSuccess();
+        } catch (Throwable t) {
+            getHandlerFuture().setFailure(t);
+        }
+
+        fireMessageReceived(ctx, buffer, ctx.getChannel().getRemoteAddress());
+    }
+
+    @Override
     public String toString() {
-        return "read option offset";
+        return "read option offset " + offset;
     }
 
 }

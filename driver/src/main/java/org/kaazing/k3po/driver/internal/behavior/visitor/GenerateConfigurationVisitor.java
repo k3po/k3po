@@ -1102,13 +1102,14 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstReadOptionOffsetNode node, State state) throws Exception {
 
         String optionName = node.getOptionName();
-        AstValue optionValue = node.getOptionValue();
+        AstLiteralTextValue optionValue = (AstLiteralTextValue) node.getOptionValue();
 
         assert "offset".equals(optionName);
 
-        ReadOptionOffsetHandler handler = new ReadOptionOffsetHandler();
+        int offset = Integer.parseInt(optionValue.getValue());
+        ReadOptionOffsetHandler handler = new ReadOptionOffsetHandler(offset);
         handler.setRegionInfo(node.getRegionInfo());
-        String handlerName = String.format("writeOption#%d (offset)", state.pipelineAsMap.size() + 1);
+        String handlerName = String.format("readOption#%d (offset=%d)", state.pipelineAsMap.size() + 1, offset);
         state.pipelineAsMap.put(handlerName, handler);
         return state.configuration;
     }
@@ -1117,13 +1118,14 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstWriteOptionOffsetNode node, State state) throws Exception {
 
         String optionName = node.getOptionName();
-        AstValue optionValue = node.getOptionValue();
+        AstLiteralTextValue optionValue = (AstLiteralTextValue) node.getOptionValue();
 
         assert "offset".equals(optionName);
 
-        WriteOptionOffsetHandler handler = new WriteOptionOffsetHandler();
+        int offset = Integer.parseInt(optionValue.getValue());
+        WriteOptionOffsetHandler handler = new WriteOptionOffsetHandler(offset);
         handler.setRegionInfo(node.getRegionInfo());
-        String handlerName = String.format("writeOption#%d (offset)", state.pipelineAsMap.size() + 1);
+        String handlerName = String.format("writeOption#%d (offset=%d)", state.pipelineAsMap.size() + 1, offset);
         state.pipelineAsMap.put(handlerName, handler);
         return state.configuration;
     }

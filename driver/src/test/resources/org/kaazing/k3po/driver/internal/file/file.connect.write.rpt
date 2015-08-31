@@ -2,22 +2,43 @@
 # Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
 #
 
-#connect file:///tmp/junk
-#        option size 1000
-#        option mode rw
-#connected
+# TODO file location
+
 #
-#write "Hello World1"
-#write option offset "100"
-#write "Hello World2"
-#write notify WRITE_DONE
+# Write the file contents
 #
+connect file:///tmp/junk
+        option size 1000
+        option mode rw
+connected
+
+write "Hello World"
+write option offset "100"
+write "Hello World1"
+write option offset "200"
+write "Hello World2"
+write option offset "300"
+write "Hello World3"
+write option offset "400"
+write "Hello World4"
+
+write notify WRITE_DONE
+
+
+#
+# Read the file contents
 #
 #connect await WRITE_DONE
 connect file:///tmp/junk
         option mode r
 connected
 
-read "Hello World1"
+read "Hello World"
 read option offset "100"
+read "Hello World1"
+read option offset "200"
 read "Hello World2"
+read option offset "300"
+read "Hello World3"
+read option offset "400"
+read "Hello World4"

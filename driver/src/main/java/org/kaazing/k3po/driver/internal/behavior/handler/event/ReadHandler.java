@@ -84,7 +84,6 @@ public class ReadHandler extends AbstractEventHandler {
     private void messageReceived(ChannelHandlerContext ctx, MessageEvent e, boolean isLast) throws Exception {
 
         ChannelBuffer buf = (ChannelBuffer) e.getMessage();
-        System.out.println("******** JITU ReadHandler ChannelBuffer = " + buf);
         // first unmask the bytes (if mask read option is specified)
         buf = unmasker.applyMask(buf);
 
