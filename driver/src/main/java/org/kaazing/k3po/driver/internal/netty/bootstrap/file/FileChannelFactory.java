@@ -18,29 +18,12 @@ package org.kaazing.k3po.driver.internal.netty.bootstrap.file;
 
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ServerChannelFactory;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
-import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
 
 public class FileChannelFactory implements ChannelFactory {
 
-    private final FileChannelSink channelSink;
-
-    public FileChannelFactory(FileChannelSink channelSink) {
-        this.channelSink = channelSink;
-    }
-
-    public void setAddressFactory(ChannelAddressFactory addressFactory) {
-        //channelSink.setAddressFactory(addressFactory);
-    }
-
-    public void setBootstrapFactory(BootstrapFactory bootstrapFactory) {
-        //channelSink.setBootstrapFactory(bootstrapFactory);
-    }
-
     @Override
     public FileChannel newChannel(ChannelPipeline pipeline) {
-        return new FileChannel(this, pipeline, channelSink);
+        return new FileChannel(this, pipeline, new FileChannelSink());
     }
 
     @Override

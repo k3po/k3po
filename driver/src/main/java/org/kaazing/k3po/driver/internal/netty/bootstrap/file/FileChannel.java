@@ -27,8 +27,7 @@ import static org.jboss.netty.channel.Channels.fireChannelOpen;
 
 public final class FileChannel extends AbstractChannel<FileChannelConfig> {
 
-    public ChannelBuffer readBuffer;
-    public int writeOffset;
+
 
     FileChannel(ChannelFactory factory, ChannelPipeline pipeline, ChannelSink sink) {
         super(null, factory, pipeline, sink, new DefaultFileChannelConfig());

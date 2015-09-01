@@ -19,6 +19,7 @@ package org.kaazing.k3po.driver.internal.netty.bootstrap.file;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
@@ -35,17 +36,19 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URI;
 import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel.MapMode;
+import java.util.Map;
 
 import static java.nio.channels.FileChannel.MapMode.READ_ONLY;
 import static java.nio.channels.FileChannel.MapMode.READ_WRITE;
 import static org.jboss.netty.channel.Channels.fireChannelBound;
-import static org.jboss.netty.channel.Channels.fireMessageReceived;
 
 public class FileChannelSink extends AbstractChannelSink {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(FileChannelSink.class);
     private UnsafeBuffer unsafeBuffer;
     private int writeOffset;
+    private ChannelBuffer readBuffer;
 
     @Override
     protected void connectRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
@@ -54,13 +57,21 @@ public class FileChannelSink extends AbstractChannelSink {
         }
 
         ChannelFuture connectFuture = evt.getFuture();
+        ChannelAddress fileAddress = (ChannelAddress) evt.getValue();
+        Map<String, Object> options = fileAddress.getOptions();
+        String mode = (String) options.get("mode");
+        if (mode == null) {
+            mode = "rw";
+        }
+        Long size = (Long) options.get("size");
+        if (size == null) {
+            size = (long) 0;
+        }
+        FileChannel fileChannel = (FileChannel) evt.getChannel();
 
         try {
-            ChannelAddress fileAddress = (ChannelAddress) evt.getValue();
-            FileChannel fileChannel = (FileChannel) evt.getChannel();
-            String mode = "rw";     // TODO get these values from ChannelAddress
-            long size = 0;
             MappedByteBuffer buf = mapFile(fileAddress.getLocation(), mode, size);
+            readBuffer = ChannelBuffers.wrappedBuffer(buf);
             unsafeBuffer = new UnsafeBuffer(buf);
 
             if (!fileChannel.isBound()) {
@@ -70,21 +81,14 @@ public class FileChannelSink extends AbstractChannelSink {
             }
 
             connectFuture.setSuccess();
-
-            Channels.fireChannelConnected(fileChannel, fileAddress);
-
-            // Send a read event using memory mapped buffer contents
-            ChannelBuffer channelBuffer = ChannelBuffers.wrappedBuffer(buf);
-            fileChannel.readBuffer = channelBuffer;
-            MessageEvent msg = new UpstreamMessageEvent(fileChannel, channelBuffer, fileAddress);
-            fileChannel.getPipeline().sendUpstream(msg);
-
-            // fireMessageReceived(ctx, buf, ctx.getChannel().getRemoteAddress());
-
         } catch (Throwable t) {
             connectFuture.setFailure(t);
-            t.printStackTrace();
         }
+
+        Channels.fireChannelConnected(fileChannel, fileAddress);
+
+        // Send a read event using memory mapped buffer contents
+        fireMessageReceived(fileChannel, fileAddress);
     }
 
     @Override
@@ -92,30 +96,14 @@ public class FileChannelSink extends AbstractChannelSink {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("writeRequested pipeline = " + pipeline + " evt = " + evt);
         }
-        writeOffset = ((FileChannel) evt.getChannel()).writeOffset;
         ChannelBuffer channelBuffer = (ChannelBuffer) evt.getMessage();
         while (channelBuffer.readable()) {
             unsafeBuffer.putByte(writeOffset++, channelBuffer.readByte());
         }
-        ((FileChannel) evt.getChannel()).writeOffset = writeOffset;
-
 
         ChannelFuture writeFuture = evt.getFuture();
         writeFuture.setSuccess();
     }
-
-//    @Override
-//    protected void bindRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
-//        System.out.println("bindRequested pipeline = " + pipeline + " evt = " + evt);
-//        ChannelFuture bindFuture = evt.getFuture();
-//        bindFuture.setSuccess();
-//        Channels.fireChannelBound(evt.getChannel(), null);
-//    }
-//
-//    @Override
-//    protected void unbindRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
-//        System.out.println("unbindRequested pipeline = " + pipeline + " evt = " + evt);
-//    }
 
     @Override
     protected void closeRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
@@ -133,7 +121,7 @@ public class FileChannelSink extends AbstractChannelSink {
         File location = new File(fileAddress);
 
         if (!location.exists()) {
-            if (mode != null && mode.equals("r")) {
+            if (mode.equals("r")) {
                 String msg = String.format("File = %s doesn't exist, cannot be opened in read only mode", location);
                 throw new IllegalArgumentException(msg);
             }
@@ -143,11 +131,7 @@ public class FileChannelSink extends AbstractChannelSink {
             }
         }
 
-        java.nio.channels.FileChannel.MapMode mapMode;
-
-        if (mode == null) {
-            mode = "rw";
-        }
+        MapMode mapMode;
         switch (mode) {
             case "r":
                 mapMode = READ_ONLY;
@@ -168,6 +152,23 @@ public class FileChannelSink extends AbstractChannelSink {
 
             return channel.map(mapMode, 0, size);
         }
+    }
+
+    public void setWriteOffset(int offset) {
+        writeOffset = offset;
+    }
+
+    public void setReadOffset(int offset) {
+        readBuffer.readerIndex(offset);
+    }
+
+    public void fireMessageReceived(ChannelHandlerContext ctx) {
+        Channels.fireMessageReceived(ctx, readBuffer, ctx.getChannel().getRemoteAddress());
+    }
+
+    private void fireMessageReceived(FileChannel fileChannel, ChannelAddress fileAddress) {
+        MessageEvent msg = new UpstreamMessageEvent(fileChannel, readBuffer, fileAddress);
+        fileChannel.getPipeline().sendUpstream(msg);
     }
 
 }
