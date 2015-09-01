@@ -93,7 +93,7 @@ public abstract class ChannelAddressFactorySpi {
     }
 
     protected ChannelAddress newChannelAddress0(URI location, ChannelAddress transport, Map<String, Object> options) {
-        return new ChannelAddress(location, transport);
+        return new ChannelAddress(location, transport, options);
     }
 
     /**

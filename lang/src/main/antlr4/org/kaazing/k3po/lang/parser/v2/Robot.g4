@@ -43,8 +43,8 @@ acceptableNode
 connectNode
     : k=ConnectKeyword (AwaitKeyword barrier=Name ConnectKeyword)? connectURI=location
                        (OptionKeyword TransportKeyword value=location)?
-                       (OptionKeyword SizeKeyword DecimalLiteral)?
-                       (OptionKeyword ModeKeyword ModeValue)?
+                       (OptionKeyword SizeKeyword size=DecimalLiteral)?
+                       (OptionKeyword ModeKeyword fmode=ModeValue)?
         streamableNode+
     ;
 

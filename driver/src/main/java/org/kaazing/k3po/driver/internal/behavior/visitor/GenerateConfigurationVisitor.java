@@ -418,6 +418,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         if (transport != null) {
             transportResolver = new LocationResolver(transport, connectNode.getEnvironment());
         }
+        connectOptions.putAll(connectNode.getOptions());
 
         ClientBootstrapResolver clientResolver = new ClientBootstrapResolver(bootstrapFactory, addressFactory,
                 pipelineFactory, locationResolver, transportResolver, barrier, connectNode.getRegionInfo(), connectOptions);

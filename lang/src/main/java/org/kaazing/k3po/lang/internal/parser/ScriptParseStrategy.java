@@ -885,6 +885,14 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
                 AstLocation transportLocation = transportVisitor.visit(ctx.value);
                 node.getOptions().put("transport", transportLocation);
             }
+            Token mode = ctx.fmode;
+            if (mode != null) {
+                node.getOptions().put("mode", mode.getText());
+            }
+            Token size = ctx.size;
+            if (size != null) {
+                node.getOptions().put("size", Long.parseLong(size.getText()));
+            }
             return node;
         }
 

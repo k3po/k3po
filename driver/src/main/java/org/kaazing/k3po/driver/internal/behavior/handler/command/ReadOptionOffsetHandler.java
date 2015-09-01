@@ -38,7 +38,7 @@ public class ReadOptionOffsetHandler extends AbstractCommandHandler {
     @Override
     protected void handleUpstream1(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
         // Do not propagate remaining data to next handler(s) as the offset change make them invalid
-        // This handler would fire message received event below to the next handlers
+        // This handler would fire message received event below when offset is changed
         if (!(e instanceof MessageEvent)) {
             super.handleUpstream1(ctx, e);
         }
