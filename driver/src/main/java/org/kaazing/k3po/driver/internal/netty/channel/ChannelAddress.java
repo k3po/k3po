@@ -62,12 +62,12 @@ public class ChannelAddress extends SocketAddress {
         this(location, transport, false);
     }
 
-    public ChannelAddress(URI location, ChannelAddress transport, Map<String, Object> options) {
-        this(location, transport, false, options);
-    }
-
     public ChannelAddress(URI location, ChannelAddress transport, boolean ephemeral) {
         this(location, transport, ephemeral, Collections.<String, Object>emptyMap());
+    }
+
+    public ChannelAddress(URI location, ChannelAddress transport, Map<String, Object> options) {
+        this(location, transport, false, options);
     }
 
     public ChannelAddress(URI location, ChannelAddress transport, boolean ephemeral, Map<String, Object> options) {
@@ -97,7 +97,8 @@ public class ChannelAddress extends SocketAddress {
         if (ephemeral) {
             throw new ChannelException("Channel address is already ephemeral");
         }
-        return new ChannelAddress(location, transport, true, Collections.<String, Object>emptyMap());
+
+        return new ChannelAddress(location, transport, true);
     }
 
     @Override

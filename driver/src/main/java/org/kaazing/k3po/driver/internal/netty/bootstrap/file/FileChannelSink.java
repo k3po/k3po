@@ -91,7 +91,8 @@ public class FileChannelSink extends AbstractChannelSink {
 
         Channels.fireChannelConnected(fileChannel, fileAddress);
 
-        // Send a read event using memory mapped buffer contents
+        // Send a read event using memory mapped buffer contents so that reads in the
+        // scripts can be matched
         fireMessageReceived(fileChannel, fileAddress);
     }
 

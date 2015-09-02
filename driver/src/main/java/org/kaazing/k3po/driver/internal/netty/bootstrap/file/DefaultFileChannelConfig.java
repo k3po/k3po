@@ -16,7 +16,6 @@
 
 package org.kaazing.k3po.driver.internal.netty.bootstrap.file;
 
-import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.DefaultChannelConfig;
 
 public class DefaultFileChannelConfig extends DefaultChannelConfig implements FileChannelConfig {
