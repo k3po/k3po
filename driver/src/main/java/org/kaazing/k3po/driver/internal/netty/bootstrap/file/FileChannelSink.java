@@ -45,8 +45,12 @@ import static org.jboss.netty.channel.Channels.fireChannelBound;
 public class FileChannelSink extends AbstractChannelSink {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(FileChannelSink.class);
-    private ChannelBuffer fileBuffer;
-    private MappedByteBuffer mappedBuffer;
+
+    // Note that read position and write position are independent in the script. We are keeping
+    // two buffers(view on the same MappedByteBuffer) to achieve this and also don't have to
+    // manage positions explicitly
+    private ChannelBuffer readBuffer;
+    private ChannelBuffer writeBuffer;
 
     @Override
     protected void connectRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
@@ -68,13 +72,12 @@ public class FileChannelSink extends AbstractChannelSink {
         FileChannel fileChannel = (FileChannel) evt.getChannel();
 
         try {
-            mappedBuffer = mapFile(fileAddress.getLocation(), mode, size);
-            fileBuffer = ChannelBuffers.wrappedBuffer(mappedBuffer);
-            if (mode.equals("r")) {
-                setReadOffset(0);
-            } else {
-                setWriteOffset(0);
-            }
+            MappedByteBuffer mappedBuffer = mapFile(fileAddress.getLocation(), mode, size);
+            readBuffer = ChannelBuffers.wrappedBuffer(mappedBuffer);
+            setReadOffset(0);
+            writeBuffer = ChannelBuffers.wrappedBuffer(mappedBuffer);
+            setWriteOffset(0);
+
             if (!fileChannel.isBound()) {
                 fileChannel.setLocalAddress(fileAddress);
                 fileChannel.setBound();
@@ -98,8 +101,7 @@ public class FileChannelSink extends AbstractChannelSink {
             LOGGER.debug("writeRequested pipeline = " + pipeline + " evt = " + evt);
         }
         ChannelBuffer channelBuffer = (ChannelBuffer) evt.getMessage();
-        fileBuffer.writeBytes(channelBuffer);
-        mappedBuffer.force();
+        writeBuffer.writeBytes(channelBuffer);
         ChannelFuture writeFuture = evt.getFuture();
         writeFuture.setSuccess();
     }
@@ -154,19 +156,19 @@ public class FileChannelSink extends AbstractChannelSink {
     }
 
     public void setWriteOffset(int offset) {
-        fileBuffer.writerIndex(offset);
+        writeBuffer.writerIndex(offset);
     }
 
     public void setReadOffset(int offset) {
-        fileBuffer.readerIndex(offset);
+        readBuffer.readerIndex(offset);
     }
 
     public void fireMessageReceived(ChannelHandlerContext ctx) {
-        Channels.fireMessageReceived(ctx, fileBuffer, ctx.getChannel().getRemoteAddress());
+        Channels.fireMessageReceived(ctx, readBuffer, ctx.getChannel().getRemoteAddress());
     }
 
     private void fireMessageReceived(FileChannel fileChannel, ChannelAddress fileAddress) {
-        MessageEvent msg = new UpstreamMessageEvent(fileChannel, fileBuffer, fileAddress);
+        MessageEvent msg = new UpstreamMessageEvent(fileChannel, readBuffer, fileAddress);
         fileChannel.getPipeline().sendUpstream(msg);
     }
 
