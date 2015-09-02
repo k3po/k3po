@@ -16,20 +16,16 @@
 
 package org.kaazing.k3po.driver.internal.file;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.rules.RuleChain.outerRule;
-
-import org.jboss.netty.logging.InternalLoggerFactory;
-import org.jboss.netty.util.DebugUtil;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
-import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
 import org.kaazing.k3po.driver.internal.test.utils.K3poTestRule;
 import org.kaazing.k3po.driver.internal.test.utils.TestSpecification;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.rules.RuleChain.outerRule;
 
 public class FileIT {
 
@@ -42,7 +38,15 @@ public class FileIT {
 
     @Test
     @TestSpecification({
-        "create.and.write.to.file"
+        "read.from.existing.file"
+    })
+    public void shouldReadFromExistingFile() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+            "create.and.write.to.file"
     })
     public void shouldCreateAndWriteToFile() throws Exception {
         k3po.finish();
@@ -50,9 +54,9 @@ public class FileIT {
 
     @Test
     @TestSpecification({
-        "read.from.existing.file"
+            "read.and.write.simultaneously.in.file"
     })
-    public void shouldReadFromExistingFile() throws Exception {
+    public void shouldReadAndWriteSimultaneouslyInFile() throws Exception {
         k3po.finish();
     }
 
