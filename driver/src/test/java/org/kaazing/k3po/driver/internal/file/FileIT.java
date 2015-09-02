@@ -25,6 +25,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
+import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
 import org.kaazing.k3po.driver.internal.test.utils.K3poTestRule;
@@ -41,7 +42,15 @@ public class FileIT {
 
     @Test
     @TestSpecification({
-        "file.connect.write",
+        "create.and.write.to.file",
+    })
+    public void shouldCreateAndWriteToFile() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+            "read.from.existing.file",
     })
     public void shouldReadFromExistingFile() throws Exception {
         k3po.finish();

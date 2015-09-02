@@ -2,12 +2,10 @@
 # Copyright (c) 2007-2013, Kaazing Corporation. All rights reserved.
 #
 
-# TODO file location
-
 #
 # Write the file contents
 #
-connect file:///tmp/junk
+connect file:target/non.existing.file.dat
         option size 1000
         option mode rw
 connected
@@ -28,8 +26,8 @@ write notify WRITE_DONE
 #
 # Read the file contents
 #
-#connect await WRITE_DONE
-connect file:///tmp/junk
+connect await WRITE_DONE
+connect file:target/non.existing.file.dat
         option mode r
 connected
 

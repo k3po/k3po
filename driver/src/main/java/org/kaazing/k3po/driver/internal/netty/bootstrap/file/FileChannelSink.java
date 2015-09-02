@@ -119,6 +119,11 @@ public class FileChannelSink extends AbstractChannelSink {
 
 
     private static MappedByteBuffer mapFile(URI fileAddress, String mode, long size) throws IOException {
+        if (fileAddress.isOpaque()) {
+            // robot scripts specify relative file uri as opaque !
+            URI currentDir = new File(".").toURI();
+            fileAddress = currentDir.resolve(fileAddress.getSchemeSpecificPart());
+        }
         File location = new File(fileAddress);
 
         if (!location.exists()) {
