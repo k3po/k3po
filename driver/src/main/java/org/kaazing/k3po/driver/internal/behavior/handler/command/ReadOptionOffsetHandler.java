@@ -16,7 +16,6 @@
 
 package org.kaazing.k3po.driver.internal.behavior.handler.command;
 
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
@@ -24,8 +23,6 @@ import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.file.FileChannel;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.file.FileChannelSink;
-
-import static org.jboss.netty.channel.Channels.fireMessageReceived;
 
 public class ReadOptionOffsetHandler extends AbstractCommandHandler {
 
@@ -65,7 +62,7 @@ public class ReadOptionOffsetHandler extends AbstractCommandHandler {
 
     @Override
     public String toString() {
-        return "read option offset " + offset;
+        return "read option offset = " + offset;
     }
 
 }
