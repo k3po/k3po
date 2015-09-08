@@ -19,12 +19,12 @@ read [0x05]
 # selected method: no authentication required
 read [0x00]
 
-## Write CONNECT request
+## Write BIND request
 # version: SOCKS v5
 write [0x05]
 
-# CONNECT command
-write [0x01]
+# BIND command
+write [0x02]
 
 # RSV field
 write [0x00]
@@ -39,15 +39,15 @@ write [0x00 0x00 0x00 0x0A]
 # URI
 write "pipe://foo" [0x00]
 
-# DST.PORT
-write [0x00 0x00]
+# DST.PORT - invalid port
+write [0x00 0x01]
 
-## Read CONNECT response
+## Read BIND response
 # version: SOCKS v5
 read [0x05]
 
-# Succeeded response
-read [0x00]
+# Connection refused response
+read [0x05]
 
 # RSV field
 read [0x00]
@@ -63,10 +63,7 @@ read [0x00 0x00 0x00 0x0A]
 read "pipe://foo" [0x00]
 
 # BND.PORT
-read [0x00 0x00]
-
-# write data through the SOCKS proxy
-write []
+read [0x00 0x01]
 
 close
 closed

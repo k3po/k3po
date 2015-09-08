@@ -40,15 +40,15 @@ read [0x00 0x00 0x00 0x0A]
 # URI
 read "pipe://foo" [0x00]
 
-# DST.PORT
-read [0x00 0x00]
+# DST.PORT - invalid port
+read [0x00 0x01]
 
-## Write CONNECT response
+## Write CONNECT response - connection refused
 # version: SOCKS v5
 write [0x05]
 
-# Succeeded response
-write [0x00]
+# Connection refused response
+write [0x05]
 
 # RSV field
 write [0x00]
@@ -64,6 +64,6 @@ write [0x00 0x00 0x00 0x0A]
 write "pipe://foo" [0x00]
 
 # BND.PORT
-write [0x00 0x00]
+write [0x00 0x01]
 
 closed

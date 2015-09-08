@@ -1,0 +1,69 @@
+accept tcp://localhost:1080
+accepted
+connected
+
+## Read the request bytes for connecting with no-authentication
+# version: SOCKS v5
+read [0x05]
+
+# number of method: 1
+read [0x01]
+
+# method: no authentication required
+read [0x00]
+
+
+## Write a success response
+# version: SOCKS v5
+write [0x05]
+
+# selected method: no authentication required
+write [0x00]
+
+## Read BIND request
+# version: SOCKS v5
+read [0x05]
+
+# BIND command
+read [0x02]
+
+# RSV field
+read [0x00]
+
+# ATYP with URI
+read [0xFE]
+
+# DST.ADDR with URI
+# URI length
+read [0x00 0x00 0x00 0x0A]
+
+# URI
+read "pipe://foo" [0x00]
+
+# DST.PORT
+read [0x00 0x00]
+
+## Write BIND response
+# version: SOCKS v5
+write [0x05]
+
+# Succeeded response
+write [0x00]
+
+# RSV field
+write [0x00]
+
+# ATYP with URI
+write [0xFE]
+
+# BND.ADDR with URI
+# URI length
+write [0x00 0x00 0x00 0x0A]
+
+# URI
+write "pipe://foo" [0x00]
+
+# BND.PORT
+write [0x00 0x00]
+
+closed
