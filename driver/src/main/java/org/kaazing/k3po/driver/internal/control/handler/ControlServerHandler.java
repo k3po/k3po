@@ -29,6 +29,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -114,14 +115,16 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 ClassLoader contextClassLoader = currentThread.getContextClassLoader();
                 try {
                     currentThread.setContextClassLoader(scriptLoader);
-                    prepareFuture = robot.prepare(aggregatedScript.toString());
+                    prepareFuture =
+                            robot.prepare(aggregatedScript.toString(), prepare.getAwaitBarriers(), prepare.getNotifyBarriers());
                 }
                 finally {
                     currentThread.setContextClassLoader(contextClassLoader);
                 }
             }
             else {
-                prepareFuture = robot.prepare(aggregatedScript.toString());
+                prepareFuture =
+                        robot.prepare(aggregatedScript.toString(), prepare.getAwaitBarriers(), prepare.getNotifyBarriers());
             }
 
             prepareFuture.addListener(new ChannelFutureListener() {
@@ -143,13 +146,10 @@ public class ControlServerHandler extends ControlUpstreamHandler {
      */
     public static String aggregateScript(List<String> scriptNames, ClassLoader scriptLoader) throws URISyntaxException,
             IOException {
-        List<String> scriptNamesWithExtension = new LinkedList<>();
         final StringBuilder aggregatedScript = new StringBuilder();
+        final List<String> barriers = new ArrayList<>();
         for (String scriptName : scriptNames) {
             String scriptNameWithExtension = format("%s.rpt", scriptName);
-            scriptNamesWithExtension.add(scriptNameWithExtension);
-        }
-        for (String scriptNameWithExtension : scriptNamesWithExtension) {
             Path scriptPath = Paths.get(scriptNameWithExtension);
             String script = null;
 
@@ -175,7 +175,8 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             }
 
             if (script == null) {
-                throw new RuntimeException("Script not found: " + scriptPath);
+                //                throw new RuntimeException("Script not found: " + scriptPath);
+                barriers.add(scriptName);
             }
 
             aggregatedScript.append(script);

@@ -18,10 +18,12 @@ package org.kaazing.k3po.driver.internal.behavior.visitor;
 
 import static java.lang.String.format;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
@@ -65,6 +67,16 @@ public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBa
         Collection<String> notifierNames = new HashSet<String>();
     }
 
+    // DPW-Sept7 todo validate testFramework awaits have corresponding notify
+    private final Set<String> testFrameworkAwaitBarriers;
+    private final Set<String> testFrameworkNotifyBarriers;
+
+    public ValidateBarriersVisitor(String[] awaitBarriers, String[] notifyBarriers) {
+        this.testFrameworkAwaitBarriers = new HashSet<String>(Arrays.asList(awaitBarriers));
+        this.testFrameworkNotifyBarriers = new HashSet<String>(Arrays.asList(notifyBarriers));
+
+    }
+
     @Override
     public Void visit(AstScriptNode scriptNode, State state) throws Exception {
 
@@ -80,7 +92,10 @@ public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBa
         awaiterNames.removeAll(state.notifierNames);
         if (!awaiterNames.isEmpty()) {
             String awaiterName = awaiterNames.iterator().next();
-            throw new ScriptParseException(format("barrier name '%s' not triggered by any 'notify' directives", awaiterName));
+            if (!testFrameworkNotifyBarriers.contains(awaiterName)) {
+                throw new ScriptParseException(format("barrier name '%s' not triggered by any 'notify' directives",
+                        awaiterName));
+            }
         }
 
         return null;

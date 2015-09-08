@@ -47,7 +47,7 @@ public class ValidateBarriersVisitorTest {
                 .done()
             .done();
 
-        ValidateBarriersVisitor validateBarriers = new ValidateBarriersVisitor();
+        ValidateBarriersVisitor validateBarriers = new ValidateBarriersVisitor(new String[]{}, new String[]{});
         inputScriptNode.accept(validateBarriers, new ValidateBarriersVisitor.State());
     }
 
@@ -75,7 +75,7 @@ public class ValidateBarriersVisitorTest {
                 .done()
             .done();
 
-        ValidateBarriersVisitor validateBarriers = new ValidateBarriersVisitor();
+        ValidateBarriersVisitor validateBarriers = new ValidateBarriersVisitor(new String[]{}, new String[]{});
         inputScriptNode.accept(validateBarriers, new ValidateBarriersVisitor.State());
     }
 }

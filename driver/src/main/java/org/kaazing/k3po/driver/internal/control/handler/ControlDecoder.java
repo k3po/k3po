@@ -217,6 +217,8 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
             case "name":
                 prepareMessage.getNames().add(headerValue);
                 break;
+            case "await":
+                prepareMessage.getAwaitBarriers().add(headerValue);
             }
             break;
         case PREPARED:

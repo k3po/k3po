@@ -36,6 +36,7 @@ import java.util.concurrent.ConcurrentMap;
 import javax.el.ELResolver;
 import javax.el.ValueExpression;
 
+import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -205,6 +206,11 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 return pipeline;
             }
         }
+
+        public Map<String, Barrier> getBarriersByName() {
+            return barriersByName;
+        }
+
     }
 
     public GenerateConfigurationVisitor(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory) {

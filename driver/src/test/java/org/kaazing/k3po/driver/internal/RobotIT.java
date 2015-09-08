@@ -33,6 +33,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -87,7 +88,7 @@ public class RobotIT {
         String script = "foobar";
 
         thrown.expect(ScriptParseException.class);
-        robot.prepare(script);
+        robot.prepare(script, new ArrayList<String>(), new ArrayList<String>());
     }
 
     @Test
@@ -288,7 +289,7 @@ public class RobotIT {
                 "\n";
         // @formatter:on
 
-        robot.prepare(script).await();
+        robot.prepare(script, new ArrayList<String>(), new ArrayList<String>()).await();
 
         robot.abort().await();
 

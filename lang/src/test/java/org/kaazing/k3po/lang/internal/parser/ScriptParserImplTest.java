@@ -1444,7 +1444,7 @@ public class ScriptParserImplTest {
     }
 
     @Ignore("Not implemented and perhaps not designed correctly.  "
-            + "Need to access the use and proper syntax for child channels - DPW")
+            + "Need to access the use and proper syntax for child channels")
     @Test
     public void shouldParseScript() throws Exception {
 

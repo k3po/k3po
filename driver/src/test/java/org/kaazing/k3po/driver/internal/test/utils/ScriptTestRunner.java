@@ -30,8 +30,11 @@ public class ScriptTestRunner implements Callable<ScriptPair> {
     private final List<String> scriptNames;
     private final Latch latch;
     private volatile Boolean aborted = false;
+    private List<String> awaitBarriers;
+    private List<String> notifyBarriers;
 
-    public ScriptTestRunner(List<String> scriptNames, Latch latch, Robot robot) {
+    public ScriptTestRunner(List<String> scriptNames, Latch latch, Robot robot, List<String> awaitBarriers,
+            List<String> notifyBarriers) {
         if (scriptNames == null) {
             throw new NullPointerException("names");
         }
@@ -43,6 +46,8 @@ public class ScriptTestRunner implements Callable<ScriptPair> {
         this.robot = robot;
         this.scriptNames = scriptNames;
         this.latch = latch;
+        this.awaitBarriers = awaitBarriers;
+        this.notifyBarriers = notifyBarriers;
     }
 
     @Override
@@ -56,7 +61,8 @@ public class ScriptTestRunner implements Callable<ScriptPair> {
             String expectedScript = null;
             expectedScript = ControlServerHandler.aggregateScript(scriptNames, Thread.currentThread().getContextClassLoader());
 
-            ChannelFuture prepareFuture = robot.prepare(expectedScript);
+            // DPW-Sept7 TODO
+            ChannelFuture prepareFuture = robot.prepare(expectedScript, awaitBarriers, notifyBarriers);
 
             prepareFuture.addListener(new ChannelFutureListener() {
 

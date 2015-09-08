@@ -19,6 +19,7 @@ package org.kaazing.k3po.driver.internal.test.utils;
 import static java.lang.String.format;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,6 +31,9 @@ public class K3poTestRule extends Verifier {
 
     private String scriptRoot;
     private final Latch latch;
+    private List<String> awaitBarriers;
+    private List<String> notifyBarriers;
+    private K3poTestStatement k3poTestStatement;
 
     public K3poTestRule() {
         latch = new Latch();
@@ -64,7 +68,13 @@ public class K3poTestRule extends Verifier {
                 String scriptName = format("%s/%s", packagePath, scripts[i]);
                 scriptNames.add(scriptName);
             }
-            statement = new K3poTestStatement(statement, latch, scriptNames);
+
+            TestAwaitBarrier testAwaitBarriers = description.getAnnotation(TestAwaitBarrier.class);
+            awaitBarriers = Arrays.asList((testAwaitBarriers != null) ? testAwaitBarriers.value() : new String[]{});
+            TestNotifyBarrier testNotifyBarriers = description.getAnnotation(TestNotifyBarrier.class);
+            notifyBarriers = Arrays.asList((testNotifyBarriers != null) ? testNotifyBarriers.value() : new String[]{});
+            this.k3poTestStatement = new K3poTestStatement(statement, latch, scriptNames, awaitBarriers, notifyBarriers);
+            statement = this.k3poTestStatement;
         }
 
         return super.apply(statement, description);
@@ -79,6 +89,26 @@ public class K3poTestRule extends Verifier {
 
         // wait for script to finish
         latch.awaitFinished();
+    }
+
+    /**
+     * Wait for barrier to fire
+     * @param string
+     * @throws InterruptedException
+     */
+    public void awaitBarrier(String barrierName) throws InterruptedException {
+        if (Arrays.asList(notifyBarriers).contains(barrierName)) {
+            k3poTestStatement.awaitBarrier(barrierName);
+        }
+
+    }
+
+    /**
+     * Notify barrier to fire
+     * @param string
+     */
+    public void notifyBarrier(String barrierName) {
+        k3poTestStatement.notifyBarrier(barrierName);
     }
 
 }
