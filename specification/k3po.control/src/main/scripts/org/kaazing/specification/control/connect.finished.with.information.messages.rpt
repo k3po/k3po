@@ -1,0 +1,30 @@
+connect tcp://localhost:12345
+connected
+
+write "PREPARE\n"
+write "version:2.0\n"
+write "\n"
+
+read "PREPARED\n"
+read "content-length:0\n"
+read "\n"
+
+write "START\n"
+write "\n"
+
+write "INFORMATION\n"
+write "notify: NOTIFY_BARRIER\n"
+write "\n"
+
+read "INFORMATION\n"
+read "await: AWAIT_BARRIER\n"
+read "\n"
+
+read "STARTED\n"
+read "\n"
+
+read "FINISHED\n"
+read "content-length:0\n"
+read "\n"
+
+closed
