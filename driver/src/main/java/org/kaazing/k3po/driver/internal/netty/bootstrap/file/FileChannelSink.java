@@ -89,6 +89,7 @@ public class FileChannelSink extends AbstractChannelSink {
             connectFuture.setFailure(t);
         }
 
+        fileChannel.setConnected();
         Channels.fireChannelConnected(fileChannel, fileAddress);
 
         // Send a read event using memory mapped buffer contents so that reads in the
