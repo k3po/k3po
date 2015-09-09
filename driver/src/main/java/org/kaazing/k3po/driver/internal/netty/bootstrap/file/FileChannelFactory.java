@@ -20,10 +20,11 @@ import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipeline;
 
 public class FileChannelFactory implements ChannelFactory {
+    private final FileChannelSink fileChannelSink = new FileChannelSink();
 
     @Override
     public FileChannel newChannel(ChannelPipeline pipeline) {
-        return new FileChannel(this, pipeline, new FileChannelSink());
+        return new FileChannel(this, pipeline, fileChannelSink);
     }
 
     @Override

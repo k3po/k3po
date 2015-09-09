@@ -20,7 +20,6 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.file.FileChannel;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.file.FileChannelSink;
 
 public class WriteOptionOffsetHandler extends AbstractCommandHandler {
 
@@ -33,13 +32,13 @@ public class WriteOptionOffsetHandler extends AbstractCommandHandler {
 
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
+        FileChannel channel = (FileChannel) ctx.getChannel();
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("Setting write option offset %d for channel %s", offset, channel));
+        }
         try {
-            FileChannel channel = (FileChannel) ctx.getChannel();
-            FileChannelSink sink = (FileChannelSink) channel.getPipeline().getSink();
-            sink.setWriteOffset(offset);
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(String.format("Setting write option offset %d for channel %s", offset, channel));
-            }
+            channel.setWriteOffset(offset);
             getHandlerFuture().setSuccess();
         } catch (Throwable t) {
             getHandlerFuture().setFailure(t);

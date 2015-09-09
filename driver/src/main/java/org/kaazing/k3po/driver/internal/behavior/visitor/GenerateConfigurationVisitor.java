@@ -1093,7 +1093,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 break;
 
             default:
-                throw new IllegalArgumentException("Unrecognized read option type: " + optionName);
+                throw new IllegalArgumentException("Unrecognized read option : " + optionName);
         }
 
         return state.configuration;
@@ -1119,7 +1119,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 break;
 
             default:
-                throw new IllegalArgumentException("Unrecognized write option type: " + optionName);
+                throw new IllegalArgumentException("Unrecognized write option : " + optionName);
         }
 
         return state.configuration;

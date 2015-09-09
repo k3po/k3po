@@ -22,7 +22,6 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.file.FileChannel;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.file.FileChannelSink;
 
 public class ReadOptionOffsetHandler extends AbstractCommandHandler {
 
@@ -45,19 +44,18 @@ public class ReadOptionOffsetHandler extends AbstractCommandHandler {
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
         FileChannel channel = (FileChannel) ctx.getChannel();
-        FileChannelSink sink = (FileChannelSink) channel.getPipeline().getSink();
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(String.format("Adjusting the file %s channel for read option offset %d", channel, offset));
         }
         try {
-            sink.setReadOffset(offset);
+            channel.setReadOffset(offset);
             getHandlerFuture().setSuccess();
         } catch (Throwable t) {
             getHandlerFuture().setFailure(t);
         }
 
-        sink.fireMessageReceived(ctx);
+        channel.fireMessageReceived(ctx);
     }
 
     @Override
