@@ -21,16 +21,12 @@
 
 package org.kaazing.k3po.driver.internal.behavior.parser;
 
-import org.kaazing.k3po.driver.internal.behavior.visitor.ValidateBarriersVisitor;
 import org.kaazing.k3po.driver.internal.behavior.visitor.ValidateStreamsVisitor;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 
 public class ScriptValidator {
 
-    public void validate(AstScriptNode scriptAST, String[] awaitBarriers, String[] notifyBarriers) throws Exception {
-
-        ValidateBarriersVisitor validateBarriers = new ValidateBarriersVisitor(awaitBarriers, notifyBarriers);
-        scriptAST.accept(validateBarriers, new ValidateBarriersVisitor.State());
+    public void validate(AstScriptNode scriptAST) throws Exception {
 
         ValidateStreamsVisitor validateStreams = new ValidateStreamsVisitor();
         scriptAST.accept(validateStreams, new ValidateStreamsVisitor.State());

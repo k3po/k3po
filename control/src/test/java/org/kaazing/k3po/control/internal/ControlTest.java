@@ -201,6 +201,7 @@ public class ControlTest {
                 oneOf(input).read(with(any(byte[].class)), with(equal(0)), with(any(int.class)));
                 will(readInitialBytes(0, ("PREPARED\n" +
                                           "content-length:9\n" +
+                                          "future-header:future-value\n" + // test forward compatibility
                                           "\n" +
                                           "# comment").getBytes(UTF_8)));
                 allowing(input).available();
@@ -221,8 +222,8 @@ public class ControlTest {
         mockery.checking(new Expectations() {
             {
                 oneOf(input).read(with(any(byte[].class)), with(equal(0)), with(any(int.class)));
-                will(readInitialBytes(0, ("STARTED\n" +
-                                          "\n").getBytes(UTF_8)));
+                will(readInitialBytes(0, ("STARTED\n" + "future-header:future-value\n" + // test forward compatibility
+                        "\n").getBytes(UTF_8)));
                 allowing(input).available();
                 will(returnValue(0));
             }
@@ -244,6 +245,7 @@ public class ControlTest {
                 oneOf(input).read(with(any(byte[].class)), with(equal(0)), with(any(int.class)));
                 will(readInitialBytes(0, ("FINISHED\n" +
                                           "content-length:9\n" +
+                                          "future-header:future-value\n" + // test forward compatibility
                                           "\n" +
                                           "# comment").getBytes(UTF_8)));
                 allowing(input).available();
@@ -269,6 +271,7 @@ public class ControlTest {
                 will(readInitialBytes(0, ("ERROR\n" +
                                           "summary:summary text\n" +
                                           "content-length:16\n" +
+                                          "future-header:future-value\n" + // test forward compatibility
                                           "\n" +
                                           "description text").getBytes(UTF_8)));
                 allowing(input).available();

@@ -59,4 +59,10 @@ public class ControlIT {
     public void shouldPrepareStartThenFinishedWithDiff() throws Exception {
         robot.finish();
     }
+
+    @Test
+    @Specification({"accept.finished.with.barriers", "connect.finished.with.barriers"})
+    public void shouldPrepareStartThenFinishedWithBarriers() throws Exception {
+        robot.finish();
+    }
 }

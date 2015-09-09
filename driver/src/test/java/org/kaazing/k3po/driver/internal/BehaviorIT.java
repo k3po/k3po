@@ -74,4 +74,12 @@ public class BehaviorIT {
     public void testAcceptWithExpression() throws Exception {
         k3po.finish();
     }
+
+    @TestSpecification("test.barrier.passing.from.test.framework")
+    @Test
+    public void testPassingBarriers() throws Exception {
+        k3po.notifyBarrier("AWAITING_BARRIER");
+        k3po.awaitBarrier("NOTIFYING_BARRIER");
+        k3po.finish();
+    }
 }

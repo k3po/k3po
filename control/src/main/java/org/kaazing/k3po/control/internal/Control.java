@@ -248,7 +248,7 @@ public final class Control {
                     // compatibility
                     break;
                 default:
-                    throw new IllegalStateException("Unrecognized event header: " + headerName);
+                    // NOP allow unrecognized headers for future compatibility
                 }
             }
         } while (!line.isEmpty());
@@ -275,7 +275,7 @@ public final class Control {
                     // compatibility
                     break;
                 default:
-                    throw new IllegalStateException("Unrecognized event header: " + headerName);
+                    // NOP allow unrecognized headers for future compatibility
                 }
             }
         } while (!line.isEmpty());
@@ -301,7 +301,7 @@ public final class Control {
                     // compatibility
                     break;
                 default:
-                    throw new IllegalStateException("Unrecognized event header: " + headerName);
+                    // NOP allow unrecognized headers for future compatibility
                 }
             }
         } while (!line.isEmpty());
@@ -336,7 +336,7 @@ public final class Control {
                     // compatibility
                     break;
                 default:
-                    throw new IllegalStateException("Unrecognized event header: " + headerName);
+                    // NOP allow unrecognized headers for future compatibility
                 }
             }
         } while (!line.isEmpty());

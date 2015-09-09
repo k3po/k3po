@@ -36,24 +36,19 @@ public class K3poTestStatement extends Statement {
     private final Latch latch;
 
     private final List<String> scriptNames;
-    private List<String> awaitBarriers;
-    private List<String> notifyBarriers;
     private Robot robot;
 
-    public K3poTestStatement(Statement statement, Latch latch, List<String> scriptNames, List<String> awaitBarriers,
-            List<String> notifyBarriers) {
+    public K3poTestStatement(Statement statement, Latch latch, List<String> scriptNames) {
         this.latch = latch;
         this.statement = statement;
         this.scriptNames = scriptNames;
-        this.awaitBarriers = awaitBarriers;
-        this.notifyBarriers = notifyBarriers;
     }
 
     @Override
     public void evaluate() throws Throwable {
 
         robot = new Robot();
-        ScriptTestRunner scriptRunner = new ScriptTestRunner(scriptNames, latch, robot, awaitBarriers, notifyBarriers);
+        ScriptTestRunner scriptRunner = new ScriptTestRunner(scriptNames, latch, robot);
         FutureTask<ScriptPair> scriptFuture = new FutureTask<ScriptPair>(scriptRunner);
 
         try {
@@ -133,11 +128,12 @@ public class K3poTestStatement extends Statement {
         }
     }
 
-    public void awaitBarrier(String barrierName) throws InterruptedException {
+    public void awaitBarrier(String barrierName) throws Exception {
         robot.awaitBarrier(barrierName);
     }
 
-    public void notifyBarrier(String barrierName) {
+    public void notifyBarrier(String barrierName) throws Exception {
         robot.notifyBarrier(barrierName);
     }
+
 }

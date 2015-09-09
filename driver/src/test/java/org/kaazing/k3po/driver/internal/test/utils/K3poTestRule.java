@@ -31,8 +31,6 @@ public class K3poTestRule extends Verifier {
 
     private String scriptRoot;
     private final Latch latch;
-    private List<String> awaitBarriers;
-    private List<String> notifyBarriers;
     private K3poTestStatement k3poTestStatement;
 
     public K3poTestRule() {
@@ -69,11 +67,7 @@ public class K3poTestRule extends Verifier {
                 scriptNames.add(scriptName);
             }
 
-            TestAwaitBarrier testAwaitBarriers = description.getAnnotation(TestAwaitBarrier.class);
-            awaitBarriers = Arrays.asList((testAwaitBarriers != null) ? testAwaitBarriers.value() : new String[]{});
-            TestNotifyBarrier testNotifyBarriers = description.getAnnotation(TestNotifyBarrier.class);
-            notifyBarriers = Arrays.asList((testNotifyBarriers != null) ? testNotifyBarriers.value() : new String[]{});
-            this.k3poTestStatement = new K3poTestStatement(statement, latch, scriptNames, awaitBarriers, notifyBarriers);
+            this.k3poTestStatement = new K3poTestStatement(statement, latch, scriptNames);
             statement = this.k3poTestStatement;
         }
 
@@ -94,20 +88,18 @@ public class K3poTestRule extends Verifier {
     /**
      * Wait for barrier to fire
      * @param string
-     * @throws InterruptedException
+     * @throws Exception
      */
-    public void awaitBarrier(String barrierName) throws InterruptedException {
-        if (Arrays.asList(notifyBarriers).contains(barrierName)) {
-            k3poTestStatement.awaitBarrier(barrierName);
-        }
-
+    public void awaitBarrier(String barrierName) throws Exception {
+        k3poTestStatement.awaitBarrier(barrierName);
     }
 
     /**
      * Notify barrier to fire
      * @param string
+     * @throws Exception
      */
-    public void notifyBarrier(String barrierName) {
+    public void notifyBarrier(String barrierName) throws Exception {
         k3poTestStatement.notifyBarrier(barrierName);
     }
 

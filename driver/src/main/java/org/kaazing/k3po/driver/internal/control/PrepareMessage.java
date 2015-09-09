@@ -24,13 +24,9 @@ public class PrepareMessage extends ControlMessage {
 
     private List<String> names;
     private String version;
-    private List<String> awaitBarriers;
-    private List<String> notifyBarriers;
 
     public PrepareMessage() {
         this.names = new ArrayList<String>(5);
-        awaitBarriers = new ArrayList<String>();
-        notifyBarriers = new ArrayList<String>();
     }
 
     public void setVersion(String version) {
@@ -67,14 +63,6 @@ public class PrepareMessage extends ControlMessage {
 
     protected final boolean equals(PrepareMessage that) {
         return super.equalTo(that) && Objects.equals(this.names, that.names);
-    }
-
-    public List<String> getNotifyBarriers() {
-        return notifyBarriers;
-    }
-
-    public List<String> getAwaitBarriers() {
-        return awaitBarriers;
     }
 
 }

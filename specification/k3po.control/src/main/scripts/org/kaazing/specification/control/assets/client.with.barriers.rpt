@@ -1,0 +1,8 @@
+# client
+connect tcp://localhost:8000
+connected
+read notify NOTIFYING_BARRIER
+write await AWAITING_BARRIER
+write "echo"
+read "echo"
+closed

@@ -16,11 +16,18 @@
 
 package org.kaazing.k3po.driver.internal.control;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class PreparedMessage extends ControlMessage {
 
     private String script = "";
+    private List<String> barriers;
+
+    public PreparedMessage() {
+        barriers = new ArrayList<>();
+    }
 
     public String getScript() {
         return script;
@@ -47,6 +54,10 @@ public class PreparedMessage extends ControlMessage {
 
     protected final boolean equals(PreparedMessage that) {
         return super.equalTo(that) && Objects.equals(this.script, that.script);
+    }
+
+    public List<String> getBarriers() {
+        return barriers;
     }
 
 }

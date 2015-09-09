@@ -27,6 +27,7 @@ import static org.kaazing.k3po.lang.internal.RegionInfo.newSequential;
 
 import java.io.ByteArrayInputStream;
 import java.net.SocketAddress;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -130,7 +131,7 @@ public class Robot {
         return startedFuture;
     }
 
-    public ChannelFuture prepare(String expectedScript, List<String> list, List<String> list2) throws Exception {
+    public ChannelFuture prepare(String expectedScript) throws Exception {
 
         if (preparedFuture != null) {
             throw new IllegalStateException("Script already prepared");
@@ -143,6 +144,9 @@ public class Robot {
         final ScriptParser parser = new Parser();
         AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(expectedScript.getBytes(UTF_8)));
 
+        final ScriptValidator validator = new ScriptValidator();
+        validator.validate(scriptAST);
+
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Parsed script:\n" + scriptAST);
         }
@@ -153,7 +157,7 @@ public class Robot {
         final GenerateConfigurationVisitor visitor = new GenerateConfigurationVisitor(bootstrapFactory, addressFactory);
         State gcvState = new GenerateConfigurationVisitor.State();
         configuration = scriptAST.accept(visitor, gcvState);
-        barriersByName = gcvState.getBarriersByName();
+        this.barriersByName = gcvState.getBarriersByName();
 
         preparedFuture = prepareConfiguration();
 
@@ -162,7 +166,7 @@ public class Robot {
 
     // ONLY used for testing, TODO, remove and use TestSpecification instead
     ChannelFuture prepareAndStart(String script) throws Exception {
-        ChannelFuture preparedFuture = prepare(script, new ArrayList<String>(), new ArrayList<String>());
+        ChannelFuture preparedFuture = prepare(script);
         preparedFuture.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
@@ -535,12 +539,24 @@ public class Robot {
         }
     }
 
-    public void awaitBarrier(String barrierName) throws InterruptedException {
-        barriersByName.get(barrierName).getFuture().await();
+    public Map<String, Barrier> getBarriersByName() {
+        return barriersByName;
     }
 
-    public void notifyBarrier(String barrierName) {
-        barriersByName.get(barrierName).getFuture().setSuccess();
+    public void notifyBarrier(String barrierName) throws Exception {
+        final Barrier barrier = barriersByName.get(barrierName);
+        if (barrier == null) {
+            throw new Exception("Can not notify nonexistant barrier: " + barrierName);
+        }
+        barrier.getFuture().setSuccess();
+    }
+
+    public ChannelFuture awaitBarrier(String barrierName) throws Exception {
+        final Barrier barrier = barriersByName.get(barrierName);
+        if (barrier == null) {
+            throw new Exception("Can not await nonexistant barrier: " + barrierName);
+        }
+        return barrier.getFuture();
     }
 
 }

@@ -2,8 +2,8 @@ accept tcp://localhost:7000
 accepted
 connected
 
-read notify NOTIFYING_BARRIER
 read "HELLO"
+read notify NOTIFYING_BARRIER
 
 close
 closed
