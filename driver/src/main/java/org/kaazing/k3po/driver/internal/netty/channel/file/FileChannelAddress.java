@@ -21,6 +21,7 @@ import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.Objects;
 
 public class FileChannelAddress extends ChannelAddress {
     private final String mode;
@@ -43,4 +44,23 @@ public class FileChannelAddress extends ChannelAddress {
     public long size() {
         return size;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o instanceof FileChannelAddress) {
+            FileChannelAddress that = (FileChannelAddress) o;
+            return Objects.equals(mode, that.mode) && this.size == that.size && super.equals(o);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (super.hashCode() + mode.hashCode() + size);
+    }
+
 }

@@ -16,6 +16,8 @@
 
 package org.kaazing.k3po.driver.internal.netty.channel;
 
+import static java.lang.String.format;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;

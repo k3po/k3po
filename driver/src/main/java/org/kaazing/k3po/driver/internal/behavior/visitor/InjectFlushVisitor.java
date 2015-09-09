@@ -347,5 +347,4 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
         state.streamables.add(node);
         return null;
     }
-
 }
