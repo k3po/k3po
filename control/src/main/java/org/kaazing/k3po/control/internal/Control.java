@@ -45,12 +45,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.kaazing.k3po.control.internal.command.AbortCommand;
+import org.kaazing.k3po.control.internal.command.AwaitCommand;
 import org.kaazing.k3po.control.internal.command.Command;
+import org.kaazing.k3po.control.internal.command.NotifyCommand;
 import org.kaazing.k3po.control.internal.command.PrepareCommand;
 import org.kaazing.k3po.control.internal.command.StartCommand;
 import org.kaazing.k3po.control.internal.event.CommandEvent;
 import org.kaazing.k3po.control.internal.event.ErrorEvent;
 import org.kaazing.k3po.control.internal.event.FinishedEvent;
+import org.kaazing.k3po.control.internal.event.NotifiedEvent;
+import org.kaazing.k3po.control.internal.event.NotifyEvent;
 import org.kaazing.k3po.control.internal.event.PreparedEvent;
 import org.kaazing.k3po.control.internal.event.StartedEvent;
 
@@ -64,6 +68,8 @@ public final class Control {
     private static final String ERROR_EVENT = "ERROR";
     private static final String STARTED_EVENT = "STARTED";
     private static final String PREPARED_EVENT = "PREPARED";
+    private static final String NOTIFY_EVENT = "NOTIFY";
+    private static final String NOTIFIED_EVENT = "NOTIFIED";
 
     private static final Pattern HEADER_PATTERN = Pattern.compile("([a-z\\-]+):([^\n]+)");
     private static final Charset UTF_8 = Charset.forName("UTF-8");
@@ -142,6 +148,12 @@ public final class Control {
         case ABORT:
             writeCommand((AbortCommand) command);
             break;
+        case AWAIT:
+            writeCommand((AwaitCommand) command);
+            break;
+        case NOTIFY:
+            writeCommand((NotifyCommand) command);
+            break;
         default:
             throw new IllegalArgumentException("Urecognized command kind: " + command.getKind());
         }
@@ -181,6 +193,10 @@ public final class Control {
                 return readErrorEvent();
             case FINISHED_EVENT:
                 return readFinishedEvent();
+            case NOTIFIED_EVENT:
+                return readNotifiedEvent();
+            case NOTIFY_EVENT:
+                return readNotifyEvent();
             }
         }
 
@@ -230,6 +246,28 @@ public final class Control {
         textOut.flush();
     }
 
+    private void writeCommand(NotifyCommand notify) throws IOException, CharacterCodingException {
+        OutputStream bytesOut = connection.getOutputStream();
+        CharsetEncoder encoder = UTF_8.newEncoder();
+        Writer textOut = new OutputStreamWriter(bytesOut, encoder);
+
+        textOut.append("NOTIFY\n");
+        textOut.append(String.format("barrier:%s\n", notify.getBarrier()));
+        textOut.append("\n");
+        textOut.flush();
+    }
+
+    private void writeCommand(AwaitCommand await) throws IOException, CharacterCodingException {
+        OutputStream bytesOut = connection.getOutputStream();
+        CharsetEncoder encoder = UTF_8.newEncoder();
+        Writer textOut = new OutputStreamWriter(bytesOut, encoder);
+
+        textOut.append("AWAIT\n");
+        textOut.append(String.format("barrier:%s\n", await.getBarrier()));
+        textOut.append("\n");
+        textOut.flush();
+    }
+
     private PreparedEvent readPreparedEvent() throws IOException {
         PreparedEvent prepared = new PreparedEvent();
         String line;
@@ -246,6 +284,9 @@ public final class Control {
                     break;
                 case "name":
                     // compatibility
+                    break;
+                case "barrier":
+                    prepared.getBarriers().add(headerValue);
                     break;
                 default:
                     // NOP allow unrecognized headers for future compatibility
@@ -315,6 +356,48 @@ public final class Control {
         return finished;
     }
 
+    private NotifiedEvent readNotifiedEvent() throws IOException {
+        NotifiedEvent notified = new NotifiedEvent();
+        String line;
+        do {
+            line = textIn.readLine();
+            Matcher matcher = HEADER_PATTERN.matcher(line);
+            if (matcher.matches()) {
+                String headerName = matcher.group(1);
+                String headerValue = matcher.group(2);
+                switch (headerName) {
+                case "barrier":
+                    notified.setBarrier(headerValue);
+                    break;
+                default:
+                    // NOP allow unrecognized headers for future compatibility
+                }
+            }
+        } while (!line.isEmpty());
+        return notified;
+    }
+
+    private NotifyEvent readNotifyEvent() throws IOException {
+        NotifyEvent notifiy = new NotifyEvent();
+        String line;
+        do {
+            line = textIn.readLine();
+            Matcher matcher = HEADER_PATTERN.matcher(line);
+            if (matcher.matches()) {
+                String headerName = matcher.group(1);
+                String headerValue = matcher.group(2);
+                switch (headerName) {
+                case "barrier":
+                    notifiy.setBarrier(headerValue);
+                    break;
+                default:
+                    // NOP allow unrecognized headers for future compatibility
+                }
+            }
+        } while (!line.isEmpty());
+        return notifiy;
+    }
+
     private ErrorEvent readErrorEvent() throws IOException {
         ErrorEvent error = new ErrorEvent();
         String line;
@@ -360,5 +443,17 @@ public final class Control {
             bytesRead += result;
         } while (bytesRead != length);
         return new String(content);
+    }
+
+    public void notifyBarrier(String barrierName) throws Exception {
+        final NotifyCommand notifyCommand = new NotifyCommand();
+        notifyCommand.setBarrier(barrierName);
+        this.writeCommand(notifyCommand);
+    }
+
+    public void await(String barrierName) throws Exception {
+        final AwaitCommand awaitCommand = new AwaitCommand();
+        awaitCommand.setBarrier(barrierName);
+        this.writeCommand(awaitCommand);
     }
 }

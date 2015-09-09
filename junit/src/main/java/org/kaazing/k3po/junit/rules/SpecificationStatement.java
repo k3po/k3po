@@ -39,15 +39,13 @@ import org.kaazing.k3po.junit.rules.internal.ScriptPair;
 final class SpecificationStatement extends Statement {
 
     private final Statement statement;
-    private final URL controlURL;
-    private final List<String> scriptNames;
     private final Latch latch;
+    private final ScriptRunner scriptRunner;
 
     SpecificationStatement(Statement statement, URL controlURL, List<String> scriptNames, Latch latch) {
         this.statement = statement;
-        this.controlURL = controlURL;
-        this.scriptNames = scriptNames;
         this.latch = latch;
+        this.scriptRunner = new ScriptRunner(controlURL, scriptNames, latch);
     }
 
     @Override
@@ -55,7 +53,6 @@ final class SpecificationStatement extends Statement {
 
         latch.setInterruptOnException(Thread.currentThread());
 
-        ScriptRunner scriptRunner = new ScriptRunner(controlURL, scriptNames, latch);
         FutureTask<ScriptPair> scriptFuture = new FutureTask<ScriptPair>(scriptRunner);
 
         try {
@@ -68,16 +65,14 @@ final class SpecificationStatement extends Statement {
             try {
                 // note: JUnit timeout will trigger an exception
                 statement.evaluate();
-            }
-            catch (AssumptionViolatedException e) {
+            } catch (AssumptionViolatedException e) {
 
                 if (!latch.isFinished()) {
                     scriptRunner.abort();
                 }
 
                 throw e;
-            }
-            catch (Throwable cause) {
+            } catch (Throwable cause) {
                 // any exception aborts the script (including timeout)
                 if (latch.hasException()) {
                     // propagate exception if the latch has an exception
@@ -130,10 +125,18 @@ final class SpecificationStatement extends Statement {
             ScriptPair scripts = scriptFuture.get();
 
             assertEquals("Specified behavior did not match", scripts.getExpectedScript(), scripts.getObservedScript());
-        }
-        finally {
+        } finally {
             // clean up the task if it is still running
             scriptFuture.cancel(true);
         }
+    }
+
+    public void awaitBarrier(String barrierName) throws InterruptedException {
+        scriptRunner.awaitBarrier(barrierName);
+
+    }
+
+    public void notifyBarrier(String barrierName) throws InterruptedException {
+        scriptRunner.notifyBarrier(barrierName);
     }
 }

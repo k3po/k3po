@@ -19,7 +19,6 @@ package org.kaazing.k3po.driver.internal.test.utils;
 import static java.lang.String.format;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
