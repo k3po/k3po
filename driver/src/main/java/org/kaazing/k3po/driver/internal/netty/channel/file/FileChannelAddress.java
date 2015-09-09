@@ -16,25 +16,31 @@
 
 package org.kaazing.k3po.driver.internal.netty.channel.file;
 
-import static org.kaazing.k3po.driver.internal.netty.channel.LocationFactories.keepAuthorityOnly;
+
+import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
 import java.net.URI;
 import java.util.Map;
 
-import org.jboss.netty.channel.ChannelException;
-import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
-import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactorySpi;
-import org.kaazing.k3po.driver.internal.netty.channel.LocationFactory;
+public class FileChannelAddress extends ChannelAddress {
+    private final String mode;
+    private final long size;
 
-public class FileChannelAddressFactorySpi extends ChannelAddressFactorySpi {
+    public FileChannelAddress(URI location, Map<String, Object> options) {
+        super(location);
 
-    @Override
-    public String getSchemeName() {
-        return "file";
+        String mode = (String) options.get("mode");
+        this.mode = mode == null ? "rw" : mode;
+
+        Long size = (Long) options.get("size");
+        this.size = size == null ? 0 : size;
     }
 
-    @Override
-    protected ChannelAddress newChannelAddress0(URI location, ChannelAddress transport, Map<String, Object> options) {
-        return new FileChannelAddress(location, options);
+    public String mode() {
+        return mode;
+    }
+
+    public long size() {
+        return size;
     }
 }

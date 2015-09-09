@@ -27,6 +27,7 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.UpstreamMessageEvent;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannel;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
+import org.kaazing.k3po.driver.internal.netty.channel.file.FileChannelAddress;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +35,6 @@ import java.io.RandomAccessFile;
 import java.net.URI;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel.MapMode;
-import java.util.Map;
 
 import static java.nio.channels.FileChannel.MapMode.READ_ONLY;
 import static java.nio.channels.FileChannel.MapMode.READ_WRITE;
@@ -67,6 +67,7 @@ public final class FileChannel extends AbstractChannel<FileChannelConfig> {
     @Override
     protected boolean setClosed() {
         // Do we need to call MappedByteBuffer#force() ?
+        // Also unmap the memory mapper buffer without waiting for GC ??
         return super.setClosed();
     }
 
@@ -103,16 +104,8 @@ public final class FileChannel extends AbstractChannel<FileChannelConfig> {
     }
 
     void mapFile() throws IOException {
-        Map<String, Object> options = getLocalAddress().getOptions();
-        String mode = (String) options.get("mode");
-        if (mode == null) {
-            mode = "rw";
-        }
-        Long size = (Long) options.get("size");
-        if (size == null) {
-            size = (long) 0;
-        }
-        MappedByteBuffer mappedBuffer = mapFile(getLocalAddress().getLocation(), mode, size);
+        FileChannelAddress address = (FileChannelAddress) getLocalAddress();
+        MappedByteBuffer mappedBuffer = mapFile(address.getLocation(), address.mode(), address.size());
         readBuffer = ChannelBuffers.wrappedBuffer(mappedBuffer);
         setReadOffset(0);
         writeBuffer = ChannelBuffers.wrappedBuffer(mappedBuffer);

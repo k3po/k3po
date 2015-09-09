@@ -18,9 +18,7 @@ package org.kaazing.k3po.driver.internal.netty.channel;
 
 import java.net.SocketAddress;
 import java.net.URI;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Map;
 import java.util.Objects;
 
 import org.jboss.netty.channel.ChannelException;
@@ -52,7 +50,6 @@ public class ChannelAddress extends SocketAddress {
     private final boolean ephemeral;
 
     private final ChannelAddress transport;
-    private final Map<String, Object> options;
 
     public ChannelAddress(URI location) {
         this(location, null);
@@ -63,14 +60,6 @@ public class ChannelAddress extends SocketAddress {
     }
 
     public ChannelAddress(URI location, ChannelAddress transport, boolean ephemeral) {
-        this(location, transport, ephemeral, Collections.<String, Object>emptyMap());
-    }
-
-    public ChannelAddress(URI location, ChannelAddress transport, Map<String, Object> options) {
-        this(location, transport, false, options);
-    }
-
-    public ChannelAddress(URI location, ChannelAddress transport, boolean ephemeral, Map<String, Object> options) {
         if (location == null) {
             throw new NullPointerException("location");
         }
@@ -78,7 +67,6 @@ public class ChannelAddress extends SocketAddress {
         this.location = location;
         this.transport = transport;
         this.ephemeral = ephemeral;
-        this.options = options;
     }
 
     public URI getLocation() {
@@ -87,10 +75,6 @@ public class ChannelAddress extends SocketAddress {
 
     public ChannelAddress getTransport() {
         return transport;
-    }
-
-    public Map<String, Object> getOptions() {
-        return options;
     }
 
     public ChannelAddress newEphemeralAddress() {
