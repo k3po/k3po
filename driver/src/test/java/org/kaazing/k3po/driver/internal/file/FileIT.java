@@ -46,7 +46,7 @@ public class FileIT {
 
     @Test
     @TestSpecification({
-            "create.and.write.to.file"
+        "create.and.write.to.file"
     })
     public void shouldCreateAndWriteToFile() throws Exception {
         k3po.finish();
@@ -54,7 +54,7 @@ public class FileIT {
 
     @Test
     @TestSpecification({
-            "read.and.write.simultaneously.in.file"
+        "read.and.write.simultaneously.in.file"
     })
     public void shouldReadAndWriteSimultaneouslyInFile() throws Exception {
         k3po.finish();
