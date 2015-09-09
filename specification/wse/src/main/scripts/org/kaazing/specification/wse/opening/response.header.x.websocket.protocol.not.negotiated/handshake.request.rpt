@@ -14,7 +14,6 @@ write close
 
 read status "201" /.+/
 read version "HTTP/1.1"
-read header "X-WebSocket-Version" "wseb-1.0"
 read header "X-WebSocket-Protocol" /(?!primary|secondary)/
 read header "Content-Type" /text\/plain;charset=(?i)utf-8/
 
