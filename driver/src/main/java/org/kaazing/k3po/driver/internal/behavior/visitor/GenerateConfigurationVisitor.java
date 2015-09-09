@@ -125,8 +125,7 @@ import org.kaazing.k3po.lang.internal.ast.AstReadAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
-import org.kaazing.k3po.lang.internal.ast.AstReadOptionMaskNode;
-import org.kaazing.k3po.lang.internal.ast.AstReadOptionOffsetNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
@@ -138,8 +137,7 @@ import org.kaazing.k3po.lang.internal.ast.AstWriteCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteNotifyNode;
-import org.kaazing.k3po.lang.internal.ast.AstWriteOptionMaskNode;
-import org.kaazing.k3po.lang.internal.ast.AstWriteOptionOffsetNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteValueNode;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstByteLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstExactBytesMatcher;
@@ -1076,58 +1074,54 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     }
 
     @Override
-    public Configuration visit(AstReadOptionMaskNode node, State state) throws Exception {
+    public Configuration visit(AstReadOptionNode node, State state) throws Exception {
 
         String optionName = node.getOptionName();
-        AstValue optionValue = node.getOptionValue();
+        switch (optionName) {
+            case "mask" :
+                AstValue maskValue = node.getOptionValue();
+                state.readUnmasker = maskValue.accept(new GenerateMaskOptionValueVisitor(), state);
+                break;
 
-        assert "mask".equals(optionName);
-        state.readUnmasker = optionValue.accept(new GenerateMaskOptionValueVisitor(), state);
+            case "offset" :
+                AstLiteralTextValue offsetValue = (AstLiteralTextValue) node.getOptionValue();
+                int offset = Integer.parseInt(offsetValue.getValue());
+                ReadOptionOffsetHandler handler = new ReadOptionOffsetHandler(offset);
+                handler.setRegionInfo(node.getRegionInfo());
+                String handlerName = String.format("readOption#%d (offset=%d)", state.pipelineAsMap.size() + 1, offset);
+                state.pipelineAsMap.put(handlerName, handler);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unrecognized read option type: " + optionName);
+        }
 
         return state.configuration;
     }
 
     @Override
-    public Configuration visit(AstWriteOptionMaskNode node, State state) throws Exception {
+    public Configuration visit(AstWriteOptionNode node, State state) throws Exception {
 
         String optionName = node.getOptionName();
-        AstValue optionValue = node.getOptionValue();
+        switch (optionName) {
+            case "mask" :
+                AstValue maskValue = node.getOptionValue();
+                state.writeMasker = maskValue.accept(new GenerateMaskOptionValueVisitor(), state);
+                break;
 
-        assert "mask".equals(optionName);
-        state.writeMasker = optionValue.accept(new GenerateMaskOptionValueVisitor(), state);
+            case "offset" :
+                AstLiteralTextValue offsetValue = (AstLiteralTextValue) node.getOptionValue();
+                int offset = Integer.parseInt(offsetValue.getValue());
+                WriteOptionOffsetHandler handler = new WriteOptionOffsetHandler(offset);
+                handler.setRegionInfo(node.getRegionInfo());
+                String handlerName = String.format("writeOption#%d (offset=%d)", state.pipelineAsMap.size() + 1, offset);
+                state.pipelineAsMap.put(handlerName, handler);
+                break;
 
-        return state.configuration;
-    }
+            default:
+                throw new IllegalArgumentException("Unrecognized write option type: " + optionName);
+        }
 
-    @Override
-    public Configuration visit(AstReadOptionOffsetNode node, State state) throws Exception {
-
-        String optionName = node.getOptionName();
-        AstLiteralTextValue optionValue = (AstLiteralTextValue) node.getOptionValue();
-
-        assert "offset".equals(optionName);
-
-        int offset = Integer.parseInt(optionValue.getValue());
-        ReadOptionOffsetHandler handler = new ReadOptionOffsetHandler(offset);
-        handler.setRegionInfo(node.getRegionInfo());
-        String handlerName = String.format("readOption#%d (offset=%d)", state.pipelineAsMap.size() + 1, offset);
-        state.pipelineAsMap.put(handlerName, handler);
-        return state.configuration;
-    }
-
-    @Override
-    public Configuration visit(AstWriteOptionOffsetNode node, State state) throws Exception {
-
-        String optionName = node.getOptionName();
-        AstLiteralTextValue optionValue = (AstLiteralTextValue) node.getOptionValue();
-
-        assert "offset".equals(optionName);
-
-        int offset = Integer.parseInt(optionValue.getValue());
-        WriteOptionOffsetHandler handler = new WriteOptionOffsetHandler(offset);
-        handler.setRegionInfo(node.getRegionInfo());
-        String handlerName = String.format("writeOption#%d (offset=%d)", state.pipelineAsMap.size() + 1, offset);
-        state.pipelineAsMap.put(handlerName, handler);
         return state.configuration;
     }
 

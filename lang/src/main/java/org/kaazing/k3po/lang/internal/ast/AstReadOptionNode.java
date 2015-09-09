@@ -18,7 +18,7 @@ package org.kaazing.k3po.lang.internal.ast;
 
 import static java.lang.String.format;
 
-public class AstWriteOptionOffsetNode extends AstOptionNode {
+public class AstReadOptionNode extends AstOptionNode {
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
@@ -31,12 +31,12 @@ public class AstWriteOptionOffsetNode extends AstOptionNode {
 
     @Override
     protected boolean equalTo(AstRegion that) {
-        return that instanceof AstWriteOptionOffsetNode;
+        return that instanceof AstReadOptionNode;
     }
 
     @Override
     protected void describe(StringBuilder buf) {
         super.describe(buf);
-        buf.append(format("write option %s %s\n", getOptionName(), getOptionValue()));
+        buf.append(format("read option %s %s\n", getOptionName(), getOptionValue()));
     }
 }

@@ -42,8 +42,7 @@ import org.kaazing.k3po.lang.internal.ast.AstReadAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
-import org.kaazing.k3po.lang.internal.ast.AstReadOptionMaskNode;
-import org.kaazing.k3po.lang.internal.ast.AstReadOptionOffsetNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
@@ -55,8 +54,7 @@ import org.kaazing.k3po.lang.internal.ast.AstWriteCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteFlushNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteNotifyNode;
-import org.kaazing.k3po.lang.internal.ast.AstWriteOptionMaskNode;
-import org.kaazing.k3po.lang.internal.ast.AstWriteOptionOffsetNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteValueNode;
 import org.kaazing.k3po.lang.internal.parser.ScriptParseException;
 
@@ -290,25 +288,13 @@ public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBa
     }
 
     @Override
-    public Void visit(AstReadOptionMaskNode node, State state) throws Exception {
+    public Void visit(AstReadOptionNode node, State state) throws Exception {
         // NOOP
         return null;
     }
 
     @Override
-    public Void visit(AstWriteOptionMaskNode node, State state) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstReadOptionOffsetNode node, State state) throws Exception {
-        // NOOP
-        return null;
-    }
-
-    @Override
-    public Void visit(AstWriteOptionOffsetNode node, State state) throws Exception {
+    public Void visit(AstWriteOptionNode node, State state) throws Exception {
         // NOOP
         return null;
     }
