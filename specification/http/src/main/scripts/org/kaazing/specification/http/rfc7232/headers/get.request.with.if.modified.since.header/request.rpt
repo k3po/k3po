@@ -8,10 +8,12 @@ write flush
 
 read status "200" "OK"
 read header "Last-Modified" /(?<lastModified>.+)/
+read notify LAST_MODIFIED
 
 connect http://localhost:8000/resource
 connected
 
+write await LAST_MODIFIED
 write method "GET"
 write version "HTTP/1.1"
 write header "If-Modified-Since" ${lastModified}
