@@ -41,6 +41,7 @@
         <module>specification/k3po.control</module>
         <module>specification/mqtt_3_1_1</module>
         <module>specification/socks5</module>
+        <module>specification/socks5plus</module>
         <module>specification/sse</module>
         <module>specification/tcp</module>
         <module>specification/tls</module>
