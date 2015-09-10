@@ -266,8 +266,19 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
     private class BarrierStateMachine implements BarrierStateListener {
 
-        private BarrierState state;
+        private BarrierState state = INITIAL;
         private List<BarrierStateListener> stateListeners = new ArrayList<>();
+
+        @Override
+        public void initial() {
+            System.out.println("Hello");
+            synchronized (this) {
+                this.state = NOTIFYING;
+                for (BarrierStateListener listener : stateListeners) {
+                    listener.initial();
+                }
+            }
+        }
 
         @Override
         public void notifying() {
@@ -292,7 +303,10 @@ final class ScriptRunner implements Callable<ScriptPair> {
         public void addListener(BarrierStateListener stateListener) {
             synchronized (this) {
                 switch (this.state) {
-                // notify write away if waiting on state
+                // notify right away if waiting on state
+                case INITIAL:
+                    stateListener.initial();
+                    break;
                 case NOTIFYING:
                     stateListener.notify();
                     break;
@@ -302,16 +316,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
                 default:
                     break;
                 }
-            }
-        }
-
-        @Override
-        public void initial() {
-            synchronized (this) {
-                this.state = INITIAL;
-                for (BarrierStateListener listener : stateListeners) {
-                    listener.initial();
-                }
+                stateListeners.add(stateListener);
             }
         }
     }
