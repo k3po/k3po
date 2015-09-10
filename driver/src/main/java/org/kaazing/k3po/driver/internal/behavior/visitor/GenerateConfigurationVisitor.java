@@ -36,7 +36,6 @@ import java.util.concurrent.ConcurrentMap;
 import javax.el.ELResolver;
 import javax.el.ValueExpression;
 
-import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;

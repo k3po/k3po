@@ -29,9 +29,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -243,6 +241,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         robot.notifyBarrier(barrier);
         final NotifiedMessage notifiedMessaged = new NotifiedMessage();
         notifiedMessaged.setBarrier(barrier);
+        logger.debug("sending NOTIFIED: " + barrier);
         ChannelFuture pendingNotify = ctx.getChannel().write(notifiedMessaged);
         pendingWrites.add(pendingNotify);
     }
@@ -260,9 +259,10 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
                 if (future.isSuccess()) {
-                    final NotifyMessage notify = new NotifyMessage();
-                    notify.setBarrier(barrier);
-                    Channels.write(ctx, Channels.future(null), notify);
+                    logger.debug("sending NOTIFIED: " + barrier);
+                    final NotifiedMessage notified = new NotifiedMessage();
+                    notified.setBarrier(barrier);
+                    Channels.write(ctx, Channels.future(null), notified);
                 }
             }
         });

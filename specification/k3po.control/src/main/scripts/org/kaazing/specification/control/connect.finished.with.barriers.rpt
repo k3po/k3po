@@ -39,7 +39,7 @@ write "AWAIT\n"
 write "barrier:NOTIFYING_BARRIER\n"
 write "\n"
 
-read "NOTIFY\n"
+read "NOTIFIED\n"
 read "barrier:NOTIFYING_BARRIER\n"
 read "\n"
 

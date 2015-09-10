@@ -45,7 +45,6 @@ import org.kaazing.k3po.control.internal.event.CommandEvent;
 import org.kaazing.k3po.control.internal.event.ErrorEvent;
 import org.kaazing.k3po.control.internal.event.FinishedEvent;
 import org.kaazing.k3po.control.internal.event.NotifiedEvent;
-import org.kaazing.k3po.control.internal.event.NotifyEvent;
 import org.kaazing.k3po.control.internal.event.PreparedEvent;
 import org.kaazing.k3po.junit.rules.internal.ScriptPair;
 
@@ -137,12 +136,6 @@ final class ScriptRunner implements Callable<ScriptPair> {
                         stateMachine.notified();
                         break;
                         // DPW TODO combine this into one command
-                    case NOTIFY:
-                        NotifyEvent notifyEvent = (NotifyEvent) event;
-                        barrier = notifyEvent.getBarrier();
-                        stateMachine = barriers.get(barrier);
-                        stateMachine.notified();
-                        break;
                     case ERROR:
                         ErrorEvent error = (ErrorEvent) event;
                         throw new SpecificationException(format("%s:%s", error.getSummary(), error.getDescription()));

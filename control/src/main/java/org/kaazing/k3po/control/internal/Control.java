@@ -54,7 +54,6 @@ import org.kaazing.k3po.control.internal.event.CommandEvent;
 import org.kaazing.k3po.control.internal.event.ErrorEvent;
 import org.kaazing.k3po.control.internal.event.FinishedEvent;
 import org.kaazing.k3po.control.internal.event.NotifiedEvent;
-import org.kaazing.k3po.control.internal.event.NotifyEvent;
 import org.kaazing.k3po.control.internal.event.PreparedEvent;
 import org.kaazing.k3po.control.internal.event.StartedEvent;
 
@@ -68,7 +67,6 @@ public final class Control {
     private static final String ERROR_EVENT = "ERROR";
     private static final String STARTED_EVENT = "STARTED";
     private static final String PREPARED_EVENT = "PREPARED";
-    private static final String NOTIFY_EVENT = "NOTIFY";
     private static final String NOTIFIED_EVENT = "NOTIFIED";
 
     private static final Pattern HEADER_PATTERN = Pattern.compile("([a-z\\-]+):([^\n]+)");
@@ -195,8 +193,6 @@ public final class Control {
                 return readFinishedEvent();
             case NOTIFIED_EVENT:
                 return readNotifiedEvent();
-            case NOTIFY_EVENT:
-                return readNotifyEvent();
             }
         }
 
@@ -375,27 +371,6 @@ public final class Control {
             }
         } while (!line.isEmpty());
         return notified;
-    }
-
-    private NotifyEvent readNotifyEvent() throws IOException {
-        NotifyEvent notifiy = new NotifyEvent();
-        String line;
-        do {
-            line = textIn.readLine();
-            Matcher matcher = HEADER_PATTERN.matcher(line);
-            if (matcher.matches()) {
-                String headerName = matcher.group(1);
-                String headerValue = matcher.group(2);
-                switch (headerName) {
-                case "barrier":
-                    notifiy.setBarrier(headerValue);
-                    break;
-                default:
-                    // NOP allow unrecognized headers for future compatibility
-                }
-            }
-        } while (!line.isEmpty());
-        return notifiy;
     }
 
     private ErrorEvent readErrorEvent() throws IOException {

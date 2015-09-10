@@ -40,7 +40,7 @@ read "AWAIT\n"
 read "barrier:NOTIFYING_BARRIER\n"
 read "\n"
 
-write "NOTIFY\n"
+write "NOTIFIED\n"
 write "barrier:NOTIFYING_BARRIER\n"
 write "\n"
 

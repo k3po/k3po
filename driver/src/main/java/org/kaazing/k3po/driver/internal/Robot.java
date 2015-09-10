@@ -27,7 +27,6 @@ import static org.kaazing.k3po.lang.internal.RegionInfo.newSequential;
 
 import java.io.ByteArrayInputStream;
 import java.net.SocketAddress;
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
