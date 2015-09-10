@@ -75,7 +75,7 @@ public class ControlEncoder extends OneToOneEncoder {
         ChannelBuffer buf = dynamicBuffer(channel.getConfig().getBufferFactory());
         encodeInitial(kind, buf);
         for (String barrier : preparedMessage.getBarriers()) {
-            // ~ denote injected barriers
+            // ~ denote injected barriers, which need not be shared with test framework
             if (!barrier.startsWith("~")) {
                 encodeHeader("barrier", barrier, buf);
             }

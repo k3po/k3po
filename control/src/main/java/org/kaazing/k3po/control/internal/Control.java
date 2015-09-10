@@ -248,7 +248,7 @@ public final class Control {
         Writer textOut = new OutputStreamWriter(bytesOut, encoder);
 
         textOut.append("NOTIFY\n");
-        textOut.append(String.format("barrier:%s\n", notify.getBarrier()));
+        textOut.append(format("barrier:%s\n", notify.getBarrier()));
         textOut.append("\n");
         textOut.flush();
     }
@@ -259,7 +259,7 @@ public final class Control {
         Writer textOut = new OutputStreamWriter(bytesOut, encoder);
 
         textOut.append("AWAIT\n");
-        textOut.append(String.format("barrier:%s\n", await.getBarrier()));
+        textOut.append(format("barrier:%s\n", await.getBarrier()));
         textOut.append("\n");
         textOut.flush();
     }

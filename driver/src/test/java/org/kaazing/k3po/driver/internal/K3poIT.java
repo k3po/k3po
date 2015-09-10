@@ -56,7 +56,6 @@ public class K3poIT {
     @After
     public void shutdownRobot() throws Exception {
         robot.stop();
-
     }
 
     @Rule
