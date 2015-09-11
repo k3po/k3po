@@ -84,10 +84,12 @@ import org.kaazing.k3po.driver.internal.behavior.handler.command.CloseHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.DisconnectHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.FlushHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.ReadConfigHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.command.ReadOptionOffsetHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.ShutdownOutputHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.UnbindHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteConfigHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteOptionOffsetHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.BoundHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ChildClosedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ChildOpenedHandler;
@@ -414,6 +416,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         if (transport != null) {
             transportResolver = new LocationResolver(transport, connectNode.getEnvironment());
         }
+        connectOptions.putAll(connectNode.getOptions());
 
         ClientBootstrapResolver clientResolver = new ClientBootstrapResolver(bootstrapFactory, addressFactory,
                 pipelineFactory, locationResolver, transportResolver, barrier, connectNode.getRegionInfo(), connectOptions);
@@ -1074,10 +1077,24 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstReadOptionNode node, State state) throws Exception {
 
         String optionName = node.getOptionName();
-        AstValue optionValue = node.getOptionValue();
+        switch (optionName) {
+            case "mask" :
+                AstValue maskValue = node.getOptionValue();
+                state.readUnmasker = maskValue.accept(new GenerateMaskOptionValueVisitor(), state);
+                break;
 
-        assert "mask".equals(optionName);
-        state.readUnmasker = optionValue.accept(new GenerateMaskOptionValueVisitor(), state);
+            case "offset" :
+                AstLiteralTextValue offsetValue = (AstLiteralTextValue) node.getOptionValue();
+                int offset = Integer.parseInt(offsetValue.getValue());
+                ReadOptionOffsetHandler handler = new ReadOptionOffsetHandler(offset);
+                handler.setRegionInfo(node.getRegionInfo());
+                String handlerName = String.format("readOption#%d (offset=%d)", state.pipelineAsMap.size() + 1, offset);
+                state.pipelineAsMap.put(handlerName, handler);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unrecognized read option : " + optionName);
+        }
 
         return state.configuration;
     }
@@ -1086,10 +1103,24 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstWriteOptionNode node, State state) throws Exception {
 
         String optionName = node.getOptionName();
-        AstValue optionValue = node.getOptionValue();
+        switch (optionName) {
+            case "mask" :
+                AstValue maskValue = node.getOptionValue();
+                state.writeMasker = maskValue.accept(new GenerateMaskOptionValueVisitor(), state);
+                break;
 
-        assert "mask".equals(optionName);
-        state.writeMasker = optionValue.accept(new GenerateMaskOptionValueVisitor(), state);
+            case "offset" :
+                AstLiteralTextValue offsetValue = (AstLiteralTextValue) node.getOptionValue();
+                int offset = Integer.parseInt(offsetValue.getValue());
+                WriteOptionOffsetHandler handler = new WriteOptionOffsetHandler(offset);
+                handler.setRegionInfo(node.getRegionInfo());
+                String handlerName = String.format("writeOption#%d (offset=%d)", state.pipelineAsMap.size() + 1, offset);
+                state.pipelineAsMap.put(handlerName, handler);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unrecognized write option : " + optionName);
+        }
 
         return state.configuration;
     }
