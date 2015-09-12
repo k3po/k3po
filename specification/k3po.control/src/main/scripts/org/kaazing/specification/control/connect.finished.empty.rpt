@@ -19,5 +19,11 @@ read "FINISHED\n"
 read "content-length:0\n"
 read "\n"
 
+write "DISPOSE\n"
+write "\n"
+
+read "DISPOSE\n"
+read "\n"
+
 close
 closed
