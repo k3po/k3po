@@ -62,7 +62,7 @@ public class ReadVariableLengthBytesDecoderTest {
         ValueExpression expression = expressionFactory.createValueExpression(environment, "${var}", Integer.class);
         MessageDecoder decoder = new ReadVariableLengthBytesDecoder(expression, environment);
 
-        environment.getELResolver().setValue(environment, null, "var", new Integer(3));
+        environment.getELResolver().setValue(environment, null, "var", 3);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[]{0x01, 0x02, 0x03}));
         assertNotNull(remainingBuffer);
@@ -74,7 +74,7 @@ public class ReadVariableLengthBytesDecoderTest {
         ValueExpression expression = expressionFactory.createValueExpression(environment, "${var}", Integer.class);
         MessageDecoder decoder = new ReadVariableLengthBytesDecoder(expression, environment, "var2");
 
-        environment.getELResolver().setValue(environment, null, "var", new Integer(3));
+        environment.getELResolver().setValue(environment, null, "var", 3);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[]{0x01, 0x02, 0x03}));
         assertNotNull(remainingBuffer);
@@ -88,7 +88,7 @@ public class ReadVariableLengthBytesDecoderTest {
         ValueExpression expression = expressionFactory.createValueExpression(environment, "${var}", Integer.class);
         MessageDecoder decoder = new ReadVariableLengthBytesDecoder(expression, environment);
 
-        environment.getELResolver().setValue(environment, null, "var", new Integer(3));
+        environment.getELResolver().setValue(environment, null, "var", 3);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[]{0x01, 0x02}));
         assertNull(remainingBuffer);
@@ -99,7 +99,7 @@ public class ReadVariableLengthBytesDecoderTest {
         ValueExpression expression = expressionFactory.createValueExpression(environment, "${var}", Integer.class);
         MessageDecoder decoder = new ReadVariableLengthBytesDecoder(expression, environment, "var2");
 
-        environment.getELResolver().setValue(environment, null, "var", new Integer(3));
+        environment.getELResolver().setValue(environment, null, "var", 3);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[]{0x01, 0x02}));
         assertNull(remainingBuffer);
@@ -114,7 +114,7 @@ public class ReadVariableLengthBytesDecoderTest {
         ValueExpression expression = expressionFactory.createValueExpression(environment, "${var}", Integer.class);
         MessageDecoder decoder = new ReadVariableLengthBytesDecoder(expression, environment);
 
-        environment.getELResolver().setValue(environment, null, "var", new Integer(3));
+        environment.getELResolver().setValue(environment, null, "var", 3);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[]{0x01, 0x02}));
         assertNull(remainingBuffer);
@@ -130,7 +130,7 @@ public class ReadVariableLengthBytesDecoderTest {
         ValueExpression expression = expressionFactory.createValueExpression(environment, "${var}", Integer.class);
         MessageDecoder decoder = new ReadVariableLengthBytesDecoder(expression, environment, "var2");
 
-        environment.getELResolver().setValue(environment, null, "var", new Integer(3));
+        environment.getELResolver().setValue(environment, null, "var", 3);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[]{0x01, 0x02}));
         assertNull(remainingBuffer);
@@ -153,7 +153,7 @@ public class ReadVariableLengthBytesDecoderTest {
         ValueExpression expression = expressionFactory.createValueExpression(environment, "${var}", Integer.class);
         MessageDecoder decoder = new ReadVariableLengthBytesDecoder(expression, environment);
 
-        environment.getELResolver().setValue(environment, null, "var", new Integer(3));
+        environment.getELResolver().setValue(environment, null, "var", 3);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[]{0x01, 0x02, 0x03, 0x04, 0x05}));
         assertNotNull(remainingBuffer);
@@ -165,7 +165,7 @@ public class ReadVariableLengthBytesDecoderTest {
         ValueExpression expression = expressionFactory.createValueExpression(environment, "${var}", Integer.class);
         MessageDecoder decoder = new ReadVariableLengthBytesDecoder(expression, environment, "var2");
 
-        environment.getELResolver().setValue(environment, null, "var", new Integer(3));
+        environment.getELResolver().setValue(environment, null, "var", 3);
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer(new byte[]{0x01, 0x02, 0x03, 0x04, 0x05}));
         assertNotNull(remainingBuffer);

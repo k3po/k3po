@@ -227,14 +227,14 @@ public abstract class TcpScript extends AbstractScript{
     	if(!closedRead){
     		closingScript = true;
     	}
-        closingWriteAck = new Long(closingAck + 1L);
+        closingWriteAck = closingAck + 1L;
     }
     
     public final void setClosingReadAck(long closingAck) {
         if(closingReadAck != null){
             return;
         }
-        closingReadAck = new Long(closingAck + 1L);
+        closingReadAck = closingAck + 1L;
     }
     
     @Override
