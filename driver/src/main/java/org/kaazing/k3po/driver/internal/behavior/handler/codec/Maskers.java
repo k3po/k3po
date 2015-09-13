@@ -26,8 +26,8 @@ import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 public final class Maskers {
 
     public static Masker newMasker(byte[] maskingKey) {
-        for (int i = 0; i < maskingKey.length; i++) {
-            if (maskingKey[i] != 0x00) {
+        for (byte aMaskingKey : maskingKey) {
+            if (aMaskingKey != 0x00) {
                 return new ExactBytesMasker(maskingKey);
             }
         }

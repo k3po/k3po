@@ -1142,8 +1142,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             String literalText = value.getValue();
             byte[] literalTextAsBytes = literalText.getBytes(UTF_8);
 
-            for (int i = 0; i < literalTextAsBytes.length; i++) {
-                if (literalTextAsBytes[i] != 0x00) {
+            for (byte literalTextAsByte : literalTextAsBytes) {
+                if (literalTextAsByte != 0x00) {
                     return Maskers.newMasker(literalTextAsBytes);
                 }
             }
@@ -1157,8 +1157,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
             byte[] literalBytes = value.getValue();
 
-            for (int i = 0; i < literalBytes.length; i++) {
-                if (literalBytes[i] != 0x00) {
+            for (byte literalByte : literalBytes) {
+                if (literalByte != 0x00) {
                     return Maskers.newMasker(literalBytes);
                 }
             }

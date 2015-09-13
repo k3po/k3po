@@ -114,13 +114,13 @@ public class K3poRule extends Verifier {
             }
 
             List<String> scriptNames = new LinkedList<>();
-            for (int i = 0; i < scripts.length; i++) {
+            for (String script : scripts) {
                 // strict compatibility (relax to support fully qualified paths later)
-                if (scripts[i].startsWith("/")) {
+                if (script.startsWith("/")) {
                     throw new IllegalArgumentException("Script path must be relative");
                 }
 
-                String scriptName = format("%s/%s", packagePath, scripts[i]);
+                String scriptName = format("%s/%s", packagePath, script);
                 scriptNames.add(scriptName);
             }
 

@@ -55,8 +55,8 @@ public final class Utils {
         else {
             StringBuilder sb = new StringBuilder();
             sb.append("[");
-            for (int index = 0; index < observed.length; index++) {
-                sb.append(String.format("0x%02x ", observed[index]));
+            for (byte anObserved : observed) {
+                sb.append(String.format("0x%02x ", anObserved));
             }
             sb.setCharAt(sb.length() - 1, ']');
             return sb.toString();
