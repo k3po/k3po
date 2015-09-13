@@ -163,11 +163,11 @@ public class TcpClientComposer extends AbstractComposer {
         }
     }
 
-    protected static final String formatFragmentName(String ipAddr, Integer clientPort) {
+    protected static String formatFragmentName(String ipAddr, Integer clientPort) {
         return formatFragmentName(ipAddr, clientPort.toString());
     }
 
-    protected static final String formatFragmentName(String ipAddr, String clientPort) {
+    protected static String formatFragmentName(String ipAddr, String clientPort) {
         return ipAddr + SEP + clientPort;
     }
 }

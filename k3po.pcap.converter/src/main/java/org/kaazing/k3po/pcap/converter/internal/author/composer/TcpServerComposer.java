@@ -148,7 +148,7 @@ public class TcpServerComposer extends AbstractComposer {
         }
     }
 
-    private static final String makeClientId(String clientIp, int port) {
+    private static String makeClientId(String clientIp, int port) {
         return clientIp + ":" + port;
     }
 
@@ -167,11 +167,11 @@ public class TcpServerComposer extends AbstractComposer {
         }
     }
 
-    protected static final String formatFragmentName(String ipAddr, Integer serverPort) {
+    protected static String formatFragmentName(String ipAddr, Integer serverPort) {
         return formatFragmentName(ipAddr, serverPort.toString());
     }
 
-    protected static final String formatFragmentName(String ipAddr, String serverPort) {
+    protected static String formatFragmentName(String ipAddr, String serverPort) {
         return ipAddr + SEP + serverPort;
     }
 
