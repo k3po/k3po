@@ -48,7 +48,7 @@ public class K3poTestStatement extends Statement {
 
         Robot robot = new Robot();
         ScriptTestRunner scriptRunner = new ScriptTestRunner(scriptNames, latch, robot);
-        FutureTask<ScriptPair> scriptFuture = new FutureTask<ScriptPair>(scriptRunner);
+        FutureTask<ScriptPair> scriptFuture = new FutureTask<>(scriptRunner);
 
         try {
             // start the script execution

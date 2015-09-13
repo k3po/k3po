@@ -45,7 +45,7 @@ public final class ExecutorServiceFactory {
     private static ExecutorServiceFactory newInstance(
             ServiceLoader<ExecutorServiceFactorySpi> loader) {
         SortedMap<String, ExecutorServiceFactorySpi> executorServiceFactories =
-                new TreeMap<String, ExecutorServiceFactorySpi>();
+                new TreeMap<>();
 
         for (ExecutorServiceFactorySpi spi : loader) {
             String executorName = spi.getName();

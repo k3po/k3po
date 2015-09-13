@@ -113,7 +113,7 @@ public class HttpClientBootstrapTest {
         ChannelAddressFactory channelAddressFactory = newChannelAddressFactory();
         ChannelAddress channelAddress = channelAddressFactory.newChannelAddress(URI.create("http://localhost:8000/path"));
 
-        final AtomicReference<String> messageRef = new AtomicReference<String>();
+        final AtomicReference<String> messageRef = new AtomicReference<>();
         HttpContext httpContext = httpServer.createContext("/path");
         httpContext.setHandler(new HttpHandler() {
 

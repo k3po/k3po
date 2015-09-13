@@ -67,7 +67,7 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
     public static final class State {
         private List<AstStreamNode> streams;
         private List<AstStreamableNode> streamables;
-        private Map<String, AstAcceptNode> accepts = new HashMap<String, AstAcceptNode>();
+        private Map<String, AstAcceptNode> accepts = new HashMap<>();
         private String implicitAcceptName;
         private int implicitAcceptCount;
     }

@@ -26,7 +26,7 @@ import org.kaazing.k3po.driver.internal.RobotServer;
  */
 public abstract class AbstractMojo extends org.apache.maven.plugin.AbstractMojo {
 
-    private static final ThreadLocal<RobotServer> ROBOT_SERVER = new ThreadLocal<RobotServer>();
+    private static final ThreadLocal<RobotServer> ROBOT_SERVER = new ThreadLocal<>();
 
     /**
      * @parameter expression="${project}"

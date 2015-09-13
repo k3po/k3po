@@ -42,8 +42,8 @@ public class Parser {
     private final static Logger LOG = Logger.getLogger(Parser.class.getName());
     private final XmlPullParser parser;
     private final TcpdumpReader tcpdumpReader;
-    private final Stack<String> protoStack = new Stack<String>();
-    private final Stack<String> fieldStack = new Stack<String>();
+    private final Stack<String> protoStack = new Stack<>();
+    private final Stack<String> fieldStack = new Stack<>();
 
     private static XmlPullParserFactory xppFactory;
 
@@ -188,7 +188,7 @@ public class Parser {
 
     private Packet setProtoProperties(XmlStartTag st, Packet currentPacket) throws XmlPullParserException {
         parser.readStartTag(st);
-        XmlAttributesHashMap<String, String> attributes = new XmlAttributesHashMap<String, String>();
+        XmlAttributesHashMap<String, String> attributes = new XmlAttributesHashMap<>();
         for (int i = 0; i < st.getAttributeCount(); i++) {
             attributes.put(st.getAttributeLocalName(i).trim(), st.getAttributeValue(i).trim().toString());
         }
@@ -220,7 +220,7 @@ public class Parser {
 
     private Packet setFieldProperties(XmlStartTag st, Packet currentPacket) throws XmlPullParserException {
         parser.readStartTag(st);
-        XmlAttributesHashMap<String, String> attributes = new XmlAttributesHashMap<String, String>();
+        XmlAttributesHashMap<String, String> attributes = new XmlAttributesHashMap<>();
         for (int i = 0; i < st.getAttributeCount(); i++) {
             attributes.put(st.getAttributeLocalName(i).trim(), st.getAttributeValue(i).trim().toString());
         }
@@ -320,7 +320,7 @@ public class Parser {
 
         parser.readStartTag(st);
 
-        XmlAttributesHashMap<String, String> attributes = new XmlAttributesHashMap<String, String>();
+        XmlAttributesHashMap<String, String> attributes = new XmlAttributesHashMap<>();
 
         for (int i = 0; i < st.getAttributeCount(); i++) {
             attributes.put(st.getAttributeLocalName(i).trim(), st.getAttributeValue(i).trim().toString());

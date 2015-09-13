@@ -40,52 +40,52 @@ public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<Ast
 
     @Override
     public AstOpenedNodeBuilder.StreamNested<AstAcceptNodeBuilder> addOpenedEvent() {
-        return new AstOpenedNodeBuilder.StreamNested<AstAcceptNodeBuilder>(this);
+        return new AstOpenedNodeBuilder.StreamNested<>(this);
     }
 
     @Override
     public AstBoundNodeBuilder.StreamNested<AstAcceptNodeBuilder> addBoundEvent() {
-        return new AstBoundNodeBuilder.StreamNested<AstAcceptNodeBuilder>(this);
+        return new AstBoundNodeBuilder.StreamNested<>(this);
     }
 
     @Override
     public AstChildOpenedNodeBuilder.StreamNested<AstAcceptNodeBuilder> addChildOpenedEvent() {
-        return new AstChildOpenedNodeBuilder.StreamNested<AstAcceptNodeBuilder>(this);
+        return new AstChildOpenedNodeBuilder.StreamNested<>(this);
     }
 
     @Override
     public AstChildClosedNodeBuilder.StreamNested<AstAcceptNodeBuilder> addChildClosedEvent() {
-        return new AstChildClosedNodeBuilder.StreamNested<AstAcceptNodeBuilder>(this);
+        return new AstChildClosedNodeBuilder.StreamNested<>(this);
     }
 
     @Override
     public AstUnboundNodeBuilder.StreamNested<AstAcceptNodeBuilder> addUnboundEvent() {
-        return new AstUnboundNodeBuilder.StreamNested<AstAcceptNodeBuilder>(this);
+        return new AstUnboundNodeBuilder.StreamNested<>(this);
     }
 
     @Override
     public AstClosedNodeBuilder.StreamNested<AstAcceptNodeBuilder> addClosedEvent() {
-        return new AstClosedNodeBuilder.StreamNested<AstAcceptNodeBuilder>(this);
+        return new AstClosedNodeBuilder.StreamNested<>(this);
     }
 
     @Override
     public AstReadAwaitNodeBuilder.StreamNested<AstAcceptNodeBuilder> addReadAwaitBarrier() {
-        return new AstReadAwaitNodeBuilder.StreamNested<AstAcceptNodeBuilder>(this);
+        return new AstReadAwaitNodeBuilder.StreamNested<>(this);
     }
 
     @Override
     public AstReadNotifyNodeBuilder.StreamNested<AstAcceptNodeBuilder> addReadNotifyBarrier() {
-        return new AstReadNotifyNodeBuilder.StreamNested<AstAcceptNodeBuilder>(this);
+        return new AstReadNotifyNodeBuilder.StreamNested<>(this);
     }
 
     @Override
     public AstWriteAwaitNodeBuilder.StreamNested<AstAcceptNodeBuilder> addWriteAwaitBarrier() {
-        return new AstWriteAwaitNodeBuilder.StreamNested<AstAcceptNodeBuilder>(this);
+        return new AstWriteAwaitNodeBuilder.StreamNested<>(this);
     }
 
     @Override
     public AstWriteNotifyNodeBuilder.StreamNested<AstAcceptNodeBuilder> addWriteNotifyBarrier() {
-        return new AstWriteNotifyNodeBuilder.StreamNested<AstAcceptNodeBuilder>(this);
+        return new AstWriteNotifyNodeBuilder.StreamNested<>(this);
     }
 
     @Override
@@ -120,57 +120,57 @@ public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<Ast
         }
 
         public AstAcceptableNodeBuilder.AcceptNested<ScriptNested<R>> addAcceptedStream() {
-            return new AstAcceptableNodeBuilder.AcceptNested<ScriptNested<R>>(this);
+            return new AstAcceptableNodeBuilder.AcceptNested<>(this);
         }
 
         @Override
         public AstOpenedNodeBuilder.StreamNested<ScriptNested<R>> addOpenedEvent() {
-            return new AstOpenedNodeBuilder.StreamNested<ScriptNested<R>>(this);
+            return new AstOpenedNodeBuilder.StreamNested<>(this);
         }
 
         @Override
         public AstBoundNodeBuilder.StreamNested<ScriptNested<R>> addBoundEvent() {
-            return new AstBoundNodeBuilder.StreamNested<ScriptNested<R>>(this);
+            return new AstBoundNodeBuilder.StreamNested<>(this);
         }
 
         @Override
         public AstChildOpenedNodeBuilder.StreamNested<ScriptNested<R>> addChildOpenedEvent() {
-            return new AstChildOpenedNodeBuilder.StreamNested<ScriptNested<R>>(this);
+            return new AstChildOpenedNodeBuilder.StreamNested<>(this);
         }
 
         @Override
         public AstChildClosedNodeBuilder.StreamNested<ScriptNested<R>> addChildClosedEvent() {
-            return new AstChildClosedNodeBuilder.StreamNested<ScriptNested<R>>(this);
+            return new AstChildClosedNodeBuilder.StreamNested<>(this);
         }
 
         @Override
         public AstUnboundNodeBuilder.StreamNested<ScriptNested<R>> addUnboundEvent() {
-            return new AstUnboundNodeBuilder.StreamNested<ScriptNested<R>>(this);
+            return new AstUnboundNodeBuilder.StreamNested<>(this);
         }
 
         @Override
         public AstClosedNodeBuilder.StreamNested<ScriptNested<R>> addClosedEvent() {
-            return new AstClosedNodeBuilder.StreamNested<ScriptNested<R>>(this);
+            return new AstClosedNodeBuilder.StreamNested<>(this);
         }
 
         @Override
         public AstReadAwaitNodeBuilder.StreamNested<ScriptNested<R>> addReadAwaitBarrier() {
-            return new AstReadAwaitNodeBuilder.StreamNested<ScriptNested<R>>(this);
+            return new AstReadAwaitNodeBuilder.StreamNested<>(this);
         }
 
         @Override
         public AstReadNotifyNodeBuilder.StreamNested<ScriptNested<R>> addReadNotifyBarrier() {
-            return new AstReadNotifyNodeBuilder.StreamNested<ScriptNested<R>>(this);
+            return new AstReadNotifyNodeBuilder.StreamNested<>(this);
         }
 
         @Override
         public AstWriteAwaitNodeBuilder.StreamNested<ScriptNested<R>> addWriteAwaitBarrier() {
-            return new AstWriteAwaitNodeBuilder.StreamNested<ScriptNested<R>>(this);
+            return new AstWriteAwaitNodeBuilder.StreamNested<>(this);
         }
 
         @Override
         public AstWriteNotifyNodeBuilder.StreamNested<ScriptNested<R>> addWriteNotifyBarrier() {
-            return new AstWriteNotifyNodeBuilder.StreamNested<ScriptNested<R>>(this);
+            return new AstWriteNotifyNodeBuilder.StreamNested<>(this);
         }
 
         @Override

@@ -135,7 +135,7 @@ public class ReadHandlerTest {
         ExpressionFactory expressionFactory = ExpressionFactoryUtils.newExpressionFactory();
         environment = new ExpressionContext();
 
-        List<MessageDecoder> decoders = new ArrayList<MessageDecoder>();
+        List<MessageDecoder> decoders = new ArrayList<>();
         RegionInfo regionInfo = newSequential(0, 0);
         decoders.add(new ReadExactTextDecoder(regionInfo, "Hello", UTF_8));
         decoders.add(new ReadExactBytesDecoder(regionInfo, new byte[] { 0x01, 0x02, 0x03 }));

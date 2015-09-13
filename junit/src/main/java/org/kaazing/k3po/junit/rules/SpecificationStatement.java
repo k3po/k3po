@@ -56,7 +56,7 @@ final class SpecificationStatement extends Statement {
         latch.setInterruptOnException(Thread.currentThread());
 
         ScriptRunner scriptRunner = new ScriptRunner(controlURL, scriptNames, latch);
-        FutureTask<ScriptPair> scriptFuture = new FutureTask<ScriptPair>(scriptRunner);
+        FutureTask<ScriptPair> scriptFuture = new FutureTask<>(scriptRunner);
 
         try {
             // start the script execution

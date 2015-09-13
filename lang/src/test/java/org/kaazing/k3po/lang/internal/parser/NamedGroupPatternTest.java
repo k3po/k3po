@@ -143,7 +143,7 @@ public class NamedGroupPatternTest {
 
     @Test
     public void shouldParseRegex4() throws Exception {
-        ArrayList<String> groupNames = new ArrayList<String>(1);
+        ArrayList<String> groupNames = new ArrayList<>(1);
         groupNames.add("hello");
         groupNames.add("reason");
         String scriptText = format("(?<hello>HTTP\\/1.1\\s401\\s(?<reason>.*)\\r\\n\\r\\n)");

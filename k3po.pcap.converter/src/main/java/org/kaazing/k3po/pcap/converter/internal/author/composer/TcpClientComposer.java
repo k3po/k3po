@@ -34,7 +34,7 @@ import org.kaazing.k3po.pcap.converter.internal.packet.Packet;
  */
 public class TcpClientComposer extends AbstractComposer {
 
-    private final Map<Integer, TcpClientScript> scripts = new HashMap<Integer, TcpClientScript>();
+    private final Map<Integer, TcpClientScript> scripts = new HashMap<>();
     private final static Logger LOG = Logger.getLogger(TcpClientComposer.class.getName());
     protected final static OutputType OUTPUT_TYPE = OutputType.TCP_CLIENT_SCRIPT;
 

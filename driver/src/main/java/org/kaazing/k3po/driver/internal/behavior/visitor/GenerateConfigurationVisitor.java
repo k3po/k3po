@@ -179,7 +179,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         private Map<String, ChannelHandler> pipelineAsMap;
 
         public State() {
-            barriersByName = new ConcurrentHashMap<String, Barrier>();
+            barriersByName = new ConcurrentHashMap<>();
         }
 
         private Barrier lookupBarrier(String barrierName) {
@@ -196,12 +196,12 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         }
 
         public class PipelineFactory {
-            private Map<URI, List<ChannelPipeline>> pipelines = new HashMap<URI, List<ChannelPipeline>>();
+            private Map<URI, List<ChannelPipeline>> pipelines = new HashMap<>();
 
             public List<ChannelPipeline> getPipeline(URI acceptURI) {
                 List<ChannelPipeline> pipeline = pipelines.get(acceptURI);
                 if (pipeline == null) {
-                    pipeline = new ArrayList<ChannelPipeline>();
+                    pipeline = new ArrayList<>();
                     pipelines.put(acceptURI, pipeline);
                 }
                 return pipeline;
@@ -280,7 +280,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // masking is a no-op by default for each stream
         state.readUnmasker = Masker.IDENTITY_MASKER;
         state.writeMasker = Masker.IDENTITY_MASKER;
-        state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
+        state.pipelineAsMap = new LinkedHashMap<>();
 
         for (AstStreamableNode streamable : acceptedNode.getStreamables()) {
             streamable.accept(this, state);
@@ -305,8 +305,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         state.writeMasker = Masker.IDENTITY_MASKER;
 
         /* Create a list of pipelines, for each acceptable */
-        final List<ChannelPipeline> pipelines = new ArrayList<ChannelPipeline>();
-        state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
+        final List<ChannelPipeline> pipelines = new ArrayList<>();
+        state.pipelineAsMap = new LinkedHashMap<>();
 
         for (AstAcceptableNode acceptableNode : acceptNode.getAcceptables()) {
 
@@ -367,7 +367,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         state.readUnmasker = Masker.IDENTITY_MASKER;
         state.writeMasker = Masker.IDENTITY_MASKER;
 
-        state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
+        state.pipelineAsMap = new LinkedHashMap<>();
 
         for (AstStreamableNode streamable : connectNode.getStreamables()) {
             streamable.accept(this, state);
@@ -506,7 +506,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
     @Override
     public Configuration visit(AstWriteValueNode node, State state) throws Exception {
-        List<MessageEncoder> messageEncoders = new ArrayList<MessageEncoder>();
+        List<MessageEncoder> messageEncoders = new ArrayList<>();
 
         for (AstValue val : node.getValues()) {
             messageEncoders.add(val.accept(new GenerateWriteEncoderVisitor(), state.configuration));
@@ -660,7 +660,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstReadValueNode node, State state) throws Exception {
 
-        List<MessageDecoder> messageDecoders = new ArrayList<MessageDecoder>();
+        List<MessageDecoder> messageDecoders = new ArrayList<>();
 
         for (AstValueMatcher matcher : node.getMatchers()) {
             messageDecoders.add(matcher.accept(new GenerateReadDecoderVisitor(), state.configuration));
@@ -859,7 +859,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             AstLiteralTextValue name = (AstLiteralTextValue) node.getValue("name");
             requireNonNull(name);
 
-            List<MessageDecoder> valueDecoders = new ArrayList<MessageDecoder>();
+            List<MessageDecoder> valueDecoders = new ArrayList<>();
             for (AstValueMatcher matcher : node.getMatchers()) {
                 valueDecoders.add(matcher.accept(new GenerateReadDecoderVisitor(), state.configuration));
             }
@@ -892,7 +892,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             AstLiteralTextValue name = (AstLiteralTextValue) node.getValue("name");
             requireNonNull(name);
 
-            List<MessageDecoder> valueDecoders = new ArrayList<MessageDecoder>();
+            List<MessageDecoder> valueDecoders = new ArrayList<>();
             for (AstValueMatcher matcher : node.getMatchers()) {
                 valueDecoders.add(matcher.accept(new GenerateReadDecoderVisitor(), state.configuration));
             }
@@ -958,7 +958,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             AstValue name = node.getName("name");
             MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
 
-            List<MessageEncoder> valueEncoders = new ArrayList<MessageEncoder>();
+            List<MessageEncoder> valueEncoders = new ArrayList<>();
             for (AstValue value : node.getValues()) {
                 valueEncoders.add(value.accept(new GenerateWriteEncoderVisitor(), state.configuration));
             }
@@ -1000,7 +1000,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             AstValue name = node.getName("name");
             MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
 
-            List<MessageEncoder> valueEncoders = new ArrayList<MessageEncoder>();
+            List<MessageEncoder> valueEncoders = new ArrayList<>();
             for (AstValue value : node.getValues()) {
                 valueEncoders.add(value.accept(new GenerateWriteEncoderVisitor(), state.configuration));
             }
