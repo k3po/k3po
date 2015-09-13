@@ -16,15 +16,11 @@
 
 package org.kaazing.k3po.driver.internal.netty.channel.file;
 
-import static org.kaazing.k3po.driver.internal.netty.channel.LocationFactories.keepAuthorityOnly;
-
 import java.net.URI;
 import java.util.Map;
 
-import org.jboss.netty.channel.ChannelException;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactorySpi;
-import org.kaazing.k3po.driver.internal.netty.channel.LocationFactory;
 
 public class FileChannelAddressFactorySpi extends ChannelAddressFactorySpi {
 
