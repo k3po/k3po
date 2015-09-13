@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 public abstract class BBoshStrategy {
 
-    public static enum Kind {
+    public enum Kind {
         POLLING, LONG_POLLING, STREAMING
     }
 

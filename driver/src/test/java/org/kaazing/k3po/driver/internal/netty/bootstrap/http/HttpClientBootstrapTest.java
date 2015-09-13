@@ -75,7 +75,7 @@ import com.sun.net.httpserver.HttpServer;
 @SuppressWarnings("restriction")
 public class HttpClientBootstrapTest {
 
-    private static enum ContentStrategy {
+    private enum ContentStrategy {
         CHUNKED, BUFFERED, EXPLICIT
     }
 
