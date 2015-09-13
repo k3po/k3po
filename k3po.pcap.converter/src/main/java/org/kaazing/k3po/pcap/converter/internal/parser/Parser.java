@@ -190,7 +190,7 @@ public class Parser {
         parser.readStartTag(st);
         XmlAttributesHashMap<String, String> attributes = new XmlAttributesHashMap<>();
         for (int i = 0; i < st.getAttributeCount(); i++) {
-            attributes.put(st.getAttributeLocalName(i).trim(), st.getAttributeValue(i).trim().toString());
+            attributes.put(st.getAttributeLocalName(i).trim(), st.getAttributeValue(i).trim());
         }
 
         protoStack.push(attributes.get("name"));
@@ -222,7 +222,7 @@ public class Parser {
         parser.readStartTag(st);
         XmlAttributesHashMap<String, String> attributes = new XmlAttributesHashMap<>();
         for (int i = 0; i < st.getAttributeCount(); i++) {
-            attributes.put(st.getAttributeLocalName(i).trim(), st.getAttributeValue(i).trim().toString());
+            attributes.put(st.getAttributeLocalName(i).trim(), st.getAttributeValue(i).trim());
         }
         //tcp
         if ( attributes.checkIfEqual("name", "tcp.srcport") ) {
@@ -323,7 +323,7 @@ public class Parser {
         XmlAttributesHashMap<String, String> attributes = new XmlAttributesHashMap<>();
 
         for (int i = 0; i < st.getAttributeCount(); i++) {
-            attributes.put(st.getAttributeLocalName(i).trim(), st.getAttributeValue(i).trim().toString());
+            attributes.put(st.getAttributeLocalName(i).trim(), st.getAttributeValue(i).trim());
         }
 
         // used for id
