@@ -42,7 +42,7 @@ final class Utils {
 
     private static void inject0(Object target, Class<?> injectableType, Object injectableInstance) {
 
-        Class<? extends Object> targetClass = target.getClass();
+        Class<?> targetClass = target.getClass();
         Method[] methods = targetClass.getMethods();
         for (Method method : methods) {
             String methodName = method.getName();
