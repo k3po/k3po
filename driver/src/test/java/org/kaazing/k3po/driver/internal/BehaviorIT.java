@@ -65,14 +65,11 @@ public class BehaviorIT {
     @Test
     @TestSpecification({
         "duplicate.notifies.on.barriers" })
-    public void testDuplicateNotifiesFromTestFramework() throws Exception {
+    public void testDuplicateAwaitsNotifiedFromTestFramework() throws Exception {
         /*
          * No special logic for this (like we don't throw a error or warning). All that would happen is the client would
          * be notified multiple times. I don't think its necessarily beneficial to throw a error or anything,
          */
-        k3po.notifyBarrier("NOTIFY_FROM_FRAMEWORK");
-        k3po.notifyBarrier("NOTIFY_FROM_FRAMEWORK");
-        k3po.notifyBarrier("NOTIFY_FROM_FRAMEWORK");
         k3po.notifyBarrier("NOTIFY_FROM_FRAMEWORK");
         k3po.finish();
     }
