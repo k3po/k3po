@@ -53,7 +53,7 @@ public abstract class FunctionMapperSpi {
         private final Map<String, Method> functions;
 
         protected Reflective(Class<?> functions) {
-            Map<String, Method> functionsAsMap = new HashMap<String, Method>();
+            Map<String, Method> functionsAsMap = new HashMap<>();
             for (Method method : functions.getMethods()) {
                 if (isStatic(method.getModifiers())) {
                     Function annotation = method.getAnnotation(Function.class);

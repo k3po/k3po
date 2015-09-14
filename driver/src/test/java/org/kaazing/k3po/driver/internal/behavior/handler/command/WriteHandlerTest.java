@@ -116,7 +116,7 @@ public class WriteHandlerTest {
 
         execution = new ExecutionHandler();
 
-        List<MessageEncoder> encoders = new ArrayList<MessageEncoder>();
+        List<MessageEncoder> encoders = new ArrayList<>();
         encoders.add(new WriteBytesEncoder(new byte[] { 0x01, 0x02, 0x03 }));
         encoders.add(new WriteTextEncoder("Hello, world", UTF_8));
 

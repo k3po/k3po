@@ -49,7 +49,7 @@ public final class TcpBootstrapFactorySpi extends BootstrapFactorySpi implements
     private NioServerSocketChannelFactory serverChannelFactory;
 
     public TcpBootstrapFactorySpi() {
-        channelFactories = new ConcurrentLinkedDeque<ChannelFactory>();
+        channelFactories = new ConcurrentLinkedDeque<>();
     }
 
     @Resource

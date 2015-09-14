@@ -60,7 +60,7 @@ public class RptScriptCreator {
         ComposerFactory composerFactory = new GenericComposerFactory(emitterFactory);
         coordinatorFactory = new CoordinatorFactoryImpl(composerFactory, emitterFactory);
         creatorNote = emitterFactory.getNoteEmitter(OutputType.CREATOR, CREATOR_NOTE_HEADER);
-        coordinators = new HashMap<ConversationId, Stack<Coordinator>>();
+        coordinators = new HashMap<>();
 
     }
     
@@ -68,7 +68,7 @@ public class RptScriptCreator {
         this.emitterFactory = emitterFactory;
         this.coordinatorFactory = coordinatorFactory;
         creatorNote = emitterFactory.getNoteEmitter(OutputType.CREATOR, CREATOR_NOTE_HEADER);
-        coordinators = new HashMap<ConversationId, Stack<Coordinator>>();
+        coordinators = new HashMap<>();
     }
 
     public void addPacketToScripts(Packet packet) {

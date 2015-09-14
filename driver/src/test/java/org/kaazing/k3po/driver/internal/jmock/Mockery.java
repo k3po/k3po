@@ -42,19 +42,7 @@ public class Mockery extends org.jmock.Mockery {
                 }
 
             }
-            catch (SecurityException e) {
-                throw new RuntimeException(e);
-
-            }
-            catch (NoSuchFieldException e) {
-                throw new RuntimeException(e);
-
-            }
-            catch (IllegalArgumentException e) {
-                throw new RuntimeException(e);
-
-            }
-            catch (IllegalAccessException e) {
+            catch (SecurityException | IllegalAccessException | IllegalArgumentException | NoSuchFieldException e) {
                 throw new RuntimeException(e);
             }
         }

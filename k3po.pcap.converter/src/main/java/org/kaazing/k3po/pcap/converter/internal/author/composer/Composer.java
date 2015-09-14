@@ -24,28 +24,28 @@ public interface Composer {
      * Returns this nodes IP
      * @return
      */
-    public String getIp();
+    String getIp();
     
     /**
      * Emits the conversation of a script
      * @param packet
      */
-    public void emitConversation(Packet packet);
+    void emitConversation(Packet packet);
     
     /**
      * Tells whether all script segments are in a finished state (i.e. at a rupert Closed)
      * @return
      */
-    public boolean isFinished();
+    boolean isFinished();
     
     /**
      * Will write all script fragments it has to file
      */
-    public void writeToFile();
+    void writeToFile();
     
     /**
      * Will return a copy of the script which will be the sum total of the fragments
      */
-    public String getScript();
+    String getScript();
     
 }
