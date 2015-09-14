@@ -555,7 +555,7 @@ public class Robot {
     public ChannelFuture awaitBarrier(String barrierName) throws Exception {
         final Barrier barrier = barriersByName.get(barrierName);
         if (barrier == null) {
-            throw new Exception("Can not await nonexistant barrier: " + barrierName);
+            throw new Exception("Can not notify a barrier that does not exist in the script: " + barrierName);
         }
         return barrier.getFuture();
     }
