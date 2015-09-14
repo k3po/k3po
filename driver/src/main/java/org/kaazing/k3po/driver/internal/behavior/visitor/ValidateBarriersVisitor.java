@@ -61,8 +61,8 @@ import org.kaazing.k3po.lang.internal.parser.ScriptParseException;
 public class ValidateBarriersVisitor implements AstNode.Visitor<Void, ValidateBarriersVisitor.State> {
 
     public static class State {
-        Map<String, AstBarrierNode> awaitersByName = new HashMap<String, AstBarrierNode>();
-        Collection<String> notifierNames = new HashSet<String>();
+        Map<String, AstBarrierNode> awaitersByName = new HashMap<>();
+        Collection<String> notifierNames = new HashSet<>();
     }
 
     @Override

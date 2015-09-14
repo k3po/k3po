@@ -79,7 +79,7 @@ public class TypeConverterImplTest {
 
         assertArrayEquals(expected, (byte[]) o);
 
-        Long lg = new Long(l);
+        Long lg = l;
 
         o = converter.convert(lg, byte[].class);
 
@@ -100,7 +100,7 @@ public class TypeConverterImplTest {
 
         assertArrayEquals(expected, (byte[]) o);
 
-        Integer lg = new Integer(l);
+        Integer lg = l;
 
         o = converter.convert(lg, byte[].class);
 
@@ -121,7 +121,7 @@ public class TypeConverterImplTest {
 
         assertArrayEquals(expected, (byte[]) o);
 
-        Short lg = new Short(l);
+        Short lg = l;
 
         o = converter.convert(lg, byte[].class);
 
@@ -142,7 +142,7 @@ public class TypeConverterImplTest {
 
         assertArrayEquals(expected, (byte[]) o);
 
-        Byte lg = new Byte(l);
+        Byte lg = l;
 
         o = converter.convert(lg, byte[].class);
 

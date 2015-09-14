@@ -34,8 +34,8 @@ public final class Functions {
 
     private static String bytesToString(byte[] x) {
         String answer = "";
-        for (int i = 0; i < x.length; i++) {
-            answer += (char) x[i];
+        for (byte aX : x) {
+            answer += (char) aX;
         }
         return answer;
     }

@@ -27,7 +27,7 @@ public final class RegionInfo {
 
     private static final List<RegionInfo> EMPTY_CHILDREN = emptyList();
 
-    public static enum Kind { PARALLEL, SEQUENTIAL };
+    public enum Kind { PARALLEL, SEQUENTIAL };
 
     public final List<RegionInfo> children;
     public final int start;

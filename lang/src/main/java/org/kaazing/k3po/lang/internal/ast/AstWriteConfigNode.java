@@ -32,8 +32,8 @@ public class AstWriteConfigNode extends AstCommandNode {
     private Map<String, AstValue> valuesByName;
 
     public AstWriteConfigNode() {
-        this.namesByName = new LinkedHashMap<String, AstValue>();
-        this.valuesByName = new LinkedHashMap<String, AstValue>();
+        this.namesByName = new LinkedHashMap<>();
+        this.valuesByName = new LinkedHashMap<>();
     }
 
     public void setType(String type) {

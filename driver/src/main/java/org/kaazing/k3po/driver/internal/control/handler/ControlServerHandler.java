@@ -114,14 +114,14 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 ClassLoader contextClassLoader = currentThread.getContextClassLoader();
                 try {
                     currentThread.setContextClassLoader(scriptLoader);
-                    prepareFuture = robot.prepare(aggregatedScript.toString());
+                    prepareFuture = robot.prepare(aggregatedScript);
                 }
                 finally {
                     currentThread.setContextClassLoader(contextClassLoader);
                 }
             }
             else {
-                prepareFuture = robot.prepare(aggregatedScript.toString());
+                prepareFuture = robot.prepare(aggregatedScript);
             }
 
             prepareFuture.addListener(new ChannelFutureListener() {

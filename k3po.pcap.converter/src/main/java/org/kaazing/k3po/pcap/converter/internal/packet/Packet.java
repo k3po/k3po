@@ -293,7 +293,7 @@ public class Packet {
     //HTTP
     
     private RequestType requestType;
-    private LinkedList<HttpField> listOfHttpFields = new LinkedList<HttpField>();
+    private LinkedList<HttpField> listOfHttpFields = new LinkedList<>();
     private String requestURI;
     
     public RequestType getHttpRequestType() {
@@ -387,7 +387,7 @@ public class Packet {
     }
     
     public Map<Integer, Integer> getHttpFieldPositionsAndSize(){
-        Map<Integer, Integer> posAndSize = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> posAndSize = new HashMap<>();
         for(HttpField iter: listOfHttpFields){
             if(!posAndSize.containsKey(iter.getPos())){
                 posAndSize.put(iter.getPos(), iter.getSize());

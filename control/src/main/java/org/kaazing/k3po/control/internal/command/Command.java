@@ -33,7 +33,7 @@ public abstract class Command {
      * Kind of Command.
      *
      */
-    public static enum Kind {
+    public enum Kind {
         /**
          * Prepare command.
          */

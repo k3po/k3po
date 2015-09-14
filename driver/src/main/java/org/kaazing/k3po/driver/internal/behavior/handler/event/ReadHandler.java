@@ -55,7 +55,7 @@ public class ReadHandler extends AbstractEventHandler {
         }
         this.decoders = decoders;
         this.unmasker = unmasker;
-        this.consumedDecoders = new ArrayList<MessageDecoder>(decoders);
+        this.consumedDecoders = new ArrayList<>(decoders);
     }
 
     @Override

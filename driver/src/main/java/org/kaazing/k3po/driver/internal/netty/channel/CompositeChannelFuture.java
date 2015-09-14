@@ -61,7 +61,7 @@ public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChan
         super(channel, false);
 
         this.failFast = failFast;
-        this.kids = new ArrayList<E>(kids);
+        this.kids = new ArrayList<>(kids);
 
         for (E k : kids) {
             k.addListener(listener);

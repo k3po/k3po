@@ -16,7 +16,6 @@
 
 package org.kaazing.k3po.lang.internal.parser;
 
-import static org.junit.Assert.assertEquals;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_CLOSED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_HTTP_HEADER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_HTTP_METHOD;

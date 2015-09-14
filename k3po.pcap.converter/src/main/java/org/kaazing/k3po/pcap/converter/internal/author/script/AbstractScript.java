@@ -127,7 +127,7 @@ public abstract class AbstractScript {
         writeClose();
     }
     
-    private final void writeClose(){
+    private void writeClose(){
         writeln("close"); 
     }
     

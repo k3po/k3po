@@ -32,7 +32,7 @@ public abstract class AbstractPreparationEvent implements PreparationEvent {
     public AbstractPreparationEvent(Channel channel, ChannelFuture future) {
         this.channel = channel;
         this.future = future;
-        this.pipelineFutures = new LinkedHashSet<ChannelFuture>();
+        this.pipelineFutures = new LinkedHashSet<>();
     }
 
     @Override
@@ -55,7 +55,7 @@ public abstract class AbstractPreparationEvent implements PreparationEvent {
 
         // We set the composite to failFast. This is so that as soon as one handler future fails ... any pipelinefutures
         // that contain it will also fail. This is needed so that the listener in the CompletionHandler will fire
-        ChannelFuture pipelineFuture = new CompositeChannelFuture<ChannelFuture>(channel, pipelineFutures, true);
+        ChannelFuture pipelineFuture = new CompositeChannelFuture<>(channel, pipelineFutures, true);
 
         // Note: add handler future to pipeline futures afterwards
         // so pipelineFuture represents all members of

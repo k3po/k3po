@@ -135,7 +135,7 @@ public class ReadHandlerTest {
         ExpressionFactory expressionFactory = ExpressionFactoryUtils.newExpressionFactory();
         environment = new ExpressionContext();
 
-        List<MessageDecoder> decoders = new ArrayList<MessageDecoder>();
+        List<MessageDecoder> decoders = new ArrayList<>();
         RegionInfo regionInfo = newSequential(0, 0);
         decoders.add(new ReadExactTextDecoder(regionInfo, "Hello", UTF_8));
         decoders.add(new ReadExactBytesDecoder(regionInfo, new byte[] { 0x01, 0x02, 0x03 }));
@@ -380,7 +380,7 @@ public class ReadHandlerTest {
             }
         });
         environment.getELResolver().setValue(environment, null, "variable", new byte[] { 0x01, 0x02, 0x03 });
-        environment.getELResolver().setValue(environment, null, "variable2", new Integer(3));
+        environment.getELResolver().setValue(environment, null, "variable2", 3);
 
         // expression.setValue(environment, new byte[] { 0x01, 0x02, 0x03 });
         // expression.setValue(environment, 3);
@@ -423,7 +423,7 @@ public class ReadHandlerTest {
             }
         });
         environment.getELResolver().setValue(environment, null, "variable", new byte[] { 0x01, 0x02, 0x03 });
-        environment.getELResolver().setValue(environment, null, "variable2", new Integer(3));
+        environment.getELResolver().setValue(environment, null, "variable2", 3);
 
         // expression.setValue(environment, new byte[] { 0x01, 0x02, 0x03 });
         // expression.setValue(environment, 3);
@@ -474,7 +474,7 @@ public class ReadHandlerTest {
         });
 
         environment.getELResolver().setValue(environment, null, "variable", new byte[] { 0x01, 0x02, 0x03 });
-        environment.getELResolver().setValue(environment, null, "variable2", new Integer(3));
+        environment.getELResolver().setValue(environment, null, "variable2", 3);
 
         // expression.setValue(environment, new byte[] { 0x01, 0x02, 0x03 });
         // expression.setValue(environment, 3);
@@ -505,7 +505,7 @@ public class ReadHandlerTest {
         });
 
         environment.getELResolver().setValue(environment, null, "variable", new byte[] { 0x01, 0x02, 0x03 });
-        environment.getELResolver().setValue(environment, null, "variable2", new Integer(3));
+        environment.getELResolver().setValue(environment, null, "variable2", 3);
 
         // expression.setValue(environment, new byte[] { 0x01, 0x02, 0x03 });
         // expression.setValue(environment, 3);
@@ -562,7 +562,7 @@ public class ReadHandlerTest {
             }
         });
         environment.getELResolver().setValue(environment, null, "variable", new byte[] { 0x01, 0x02, 0x03 });
-        environment.getELResolver().setValue(environment, null, "variable2", new Integer(3));
+        environment.getELResolver().setValue(environment, null, "variable2", 3);
 
         // expression.setValue(environment, new byte[] { 0x01, 0x02, 0x03 });
         // expression.setValue(environment, 3);
