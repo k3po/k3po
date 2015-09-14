@@ -36,7 +36,7 @@ public class AwaitMessage extends ControlMessage {
 
     @Override
     public boolean equals(Object obj) {
-        return (this == obj) || (obj instanceof ErrorMessage) && equalTo((ErrorMessage) obj);
+        return (this == obj) || (obj instanceof AwaitMessage) && equalTo((AwaitMessage) obj);
     }
 
     protected boolean equals(AwaitMessage that) {

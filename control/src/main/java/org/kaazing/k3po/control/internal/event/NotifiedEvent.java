@@ -41,7 +41,7 @@ public class NotifiedEvent extends CommandEvent {
 
     @Override
     public boolean equals(Object o) {
-        return o == this || o instanceof PreparedEvent && equalTo((NotifiedEvent) o);
+        return o == this || o instanceof NotifiedEvent && equalTo((NotifiedEvent) o);
     }
 
     protected boolean equalTo(NotifiedEvent that) {

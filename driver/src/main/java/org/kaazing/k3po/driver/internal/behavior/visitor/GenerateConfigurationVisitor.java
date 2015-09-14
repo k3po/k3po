@@ -176,8 +176,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         /* The pipelineAsMap is built by each node that is visited. */
         private Map<String, ChannelHandler> pipelineAsMap;
 
-        public State() {
-            barriersByName = new ConcurrentHashMap<String, Barrier>();
+        public State(ConcurrentMap<String, Barrier> barriersByName) {
+            this.barriersByName = barriersByName;
         }
 
         private Barrier lookupBarrier(String barrierName) {

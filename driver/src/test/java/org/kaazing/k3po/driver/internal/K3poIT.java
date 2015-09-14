@@ -42,9 +42,6 @@ public class K3poIT {
 
     private RobotServer robot;
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     @Before
     public void setupRobot() throws Exception {
         robot =
@@ -57,9 +54,6 @@ public class K3poIT {
     public void shutdownRobot() throws Exception {
         robot.stop();
     }
-
-    @Rule
-    public final ExpectedException expectedExceptions = ExpectedException.none();
 
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);

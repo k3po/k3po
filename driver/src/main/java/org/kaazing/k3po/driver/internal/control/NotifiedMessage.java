@@ -36,7 +36,7 @@ public class NotifiedMessage extends ControlMessage {
 
     @Override
     public boolean equals(Object obj) {
-        return (this == obj) || (obj instanceof ErrorMessage) && equalTo((ErrorMessage) obj);
+        return (this == obj) || (obj instanceof NotifiedMessage) && equalTo((NotifiedMessage) obj);
     }
 
     protected boolean equals(NotifiedMessage that) {

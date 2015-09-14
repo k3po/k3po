@@ -23,7 +23,7 @@ import java.util.Objects;
 public class PreparedMessage extends ControlMessage {
 
     private String script = "";
-    private List<String> barriers;
+    private final List<String> barriers;
 
     public PreparedMessage() {
         barriers = new ArrayList<>();
