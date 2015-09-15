@@ -64,7 +64,7 @@ public class BehaviorIT {
 
     @Test
     @TestSpecification({
-        "duplicate.notifies.on.barriers" })
+        "duplicate.awaits.notified.from.test.framework" })
     public void testDuplicateAwaitsNotifiedFromTestFramework() throws Exception {
         /*
          * No special logic for this (like we don't throw a error or warning). All that would happen is the client would
