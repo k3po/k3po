@@ -19,58 +19,41 @@
  * under the License.
  */
 
-package org.kaazing.k3po.control.internal.command;
+package org.kaazing.k3po.control.internal.event;
+
+import static org.kaazing.k3po.control.internal.event.CommandEvent.Kind.NOTIFIED;
 
 import java.util.Objects;
 
-/**
- * Abstract class for a Command to the robot.
- *
- */
-public abstract class Command {
+public class NotifiedEvent extends CommandEvent {
 
-    /**
-     * Kind of Command.
-     *
-     */
-    public enum Kind {
-        /**
-         * Prepare command.
-         */
-        PREPARE,
-        /**
-         * Start command.
-         */
-        START,
-        /**
-         * Abort command.
-         */
-        ABORT,
-        /**
-         * Await command.
-         */
-        AWAIT,
-        /**
-         * Notify command.
-         */
-        NOTIFY
-    }
-
-    /**
-     * @return Kind
-     */
-    public abstract Kind getKind();
+    private String barrier;
 
     @Override
-    public abstract int hashCode();
+    public Kind getKind() {
+        return NOTIFIED;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getKind(), getBarrier());
+    }
 
     @Override
     public boolean equals(Object o) {
-        return o == this || o instanceof Command && equalTo((Command) o);
+        return o == this || o instanceof NotifiedEvent && equalTo((NotifiedEvent) o);
     }
 
-    protected final boolean equalTo(Command that) {
-        return Objects.equals(this.getKind(), that.getKind());
+    protected boolean equalTo(NotifiedEvent that) {
+        return super.equalTo(that) && Objects.equals(this.getBarrier(), that.getBarrier());
+    }
+
+    public String getBarrier() {
+        return barrier;
+    }
+
+    public void setBarrier(String barrier) {
+        this.barrier = barrier;
     }
 
 }

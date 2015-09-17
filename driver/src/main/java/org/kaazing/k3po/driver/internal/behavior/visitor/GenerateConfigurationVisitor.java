@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.el.ELResolver;
@@ -178,8 +177,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         /* The pipelineAsMap is built by each node that is visited. */
         private Map<String, ChannelHandler> pipelineAsMap;
 
-        public State() {
-            barriersByName = new ConcurrentHashMap<>();
+        public State(ConcurrentMap<String, Barrier> barriersByName) {
+            this.barriersByName = barriersByName;
         }
 
         private Barrier lookupBarrier(String barrierName) {
@@ -207,6 +206,11 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 return pipeline;
             }
         }
+
+        public Map<String, Barrier> getBarriersByName() {
+            return barriersByName;
+        }
+
     }
 
     public GenerateConfigurationVisitor(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory) {

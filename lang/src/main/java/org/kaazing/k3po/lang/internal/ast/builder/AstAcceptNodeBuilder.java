@@ -20,8 +20,6 @@ import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 
-import java.net.URI;
-
 public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<AstAcceptNode> {
 
     public AstAcceptNodeBuilder() {

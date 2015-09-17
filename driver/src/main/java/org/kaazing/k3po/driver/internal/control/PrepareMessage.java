@@ -64,4 +64,5 @@ public class PrepareMessage extends ControlMessage {
     protected final boolean equals(PrepareMessage that) {
         return super.equalTo(that) && Objects.equals(this.names, that.names);
     }
+
 }

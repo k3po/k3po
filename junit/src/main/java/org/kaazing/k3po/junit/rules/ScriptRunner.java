@@ -23,12 +23,19 @@ package org.kaazing.k3po.junit.rules;
 
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.kaazing.k3po.junit.rules.ScriptRunner.BarrierState.INITIAL;
+import static org.kaazing.k3po.junit.rules.ScriptRunner.BarrierState.NOTIFIED;
+import static org.kaazing.k3po.junit.rules.ScriptRunner.BarrierState.NOTIFYING;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 
 import org.kaazing.k3po.control.internal.Control;
 import org.kaazing.k3po.control.internal.command.AbortCommand;
@@ -37,6 +44,7 @@ import org.kaazing.k3po.control.internal.command.StartCommand;
 import org.kaazing.k3po.control.internal.event.CommandEvent;
 import org.kaazing.k3po.control.internal.event.ErrorEvent;
 import org.kaazing.k3po.control.internal.event.FinishedEvent;
+import org.kaazing.k3po.control.internal.event.NotifiedEvent;
 import org.kaazing.k3po.control.internal.event.PreparedEvent;
 import org.kaazing.k3po.junit.rules.internal.ScriptPair;
 
@@ -47,8 +55,9 @@ final class ScriptRunner implements Callable<ScriptPair> {
     private final Latch latch;
 
     private volatile boolean abortScheduled;
+    private volatile Map<String, BarrierStateMachine> barriers;
 
-    ScriptRunner(URL controlURL, List<String> names, Latch latch) throws Exception {
+    ScriptRunner(URL controlURL, List<String> names, Latch latch) {
 
         if (names == null) {
             throw new NullPointerException("names");
@@ -61,6 +70,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
         this.controller = new Control(controlURL);
         this.names = names;
         this.latch = latch;
+        this.barriers = new HashMap<String, ScriptRunner.BarrierStateMachine>();
     }
 
     public void abort() {
@@ -97,6 +107,9 @@ final class ScriptRunner implements Callable<ScriptPair> {
                     case PREPARED:
                         PreparedEvent prepared = (PreparedEvent) event;
                         expectedScript = prepared.getScript();
+                        for (String barrier : prepared.getBarriers()) {
+                            barriers.put(barrier, new BarrierStateMachine());
+                        }
 
                         // notify script is prepared
                         latch.notifyPrepared();
@@ -115,6 +128,14 @@ final class ScriptRunner implements Callable<ScriptPair> {
                         break;
                     case STARTED:
                         break;
+                        // DPW TODO combine this into one command
+                    case NOTIFIED:
+                        NotifiedEvent notifiedEvent = (NotifiedEvent) event;
+                        String barrier = notifiedEvent.getBarrier();
+                        BarrierStateMachine stateMachine = barriers.get(barrier);
+                        stateMachine.notified();
+                        break;
+                        // DPW TODO combine this into one command
                     case ERROR:
                         ErrorEvent error = (ErrorEvent) event;
                         throw new SpecificationException(format("%s:%s", error.getSummary(), error.getDescription()));
@@ -156,5 +177,140 @@ final class ScriptRunner implements Callable<ScriptPair> {
     private void sendAbortCommand() throws Exception {
         AbortCommand abort = new AbortCommand();
         controller.writeCommand(abort);
+    }
+
+    public void awaitBarrier(String barrierName) throws InterruptedException {
+        if (!barriers.keySet().contains(barrierName)) {
+            throw new IllegalArgumentException(String.format(
+                    "Barrier with %s is not present in the script and thus can't be waited upon", barrierName));
+        }
+        final CountDownLatch notifiedLatch = new CountDownLatch(1);
+        final BarrierStateMachine barrierStateMachine = barriers.get(barrierName);
+        barrierStateMachine.addListener(new BarrierStateListener() {
+
+            @Override
+            public void initial() {
+                // NOOP
+            }
+
+            @Override
+            public void notifying() {
+                // NOOP
+            }
+
+            @Override
+            public void notified() {
+                notifiedLatch.countDown();
+            }
+
+        });
+        try {
+            controller.await(barrierName);
+        } catch (Exception e) {
+            latch.notifyException(e);
+        }
+        notifiedLatch.await();
+    }
+
+    public void notifyBarrier(final String barrierName) throws InterruptedException {
+        if (!barriers.keySet().contains(barrierName)) {
+            throw new IllegalArgumentException(String.format(
+                    "Barrier with %s is not present in the script and thus can't be notified", barrierName));
+        }
+        final CountDownLatch notifiedLatch = new CountDownLatch(1);
+        final BarrierStateMachine barrierStateMachine = barriers.get(barrierName);
+        barrierStateMachine.addListener(new BarrierStateListener() {
+
+            @Override
+            public void initial() {
+                barrierStateMachine.notifying();
+                // Only write to wire once
+                try {
+                    controller.notifyBarrier(barrierName);
+                } catch (Exception e) {
+                    latch.notifyException(e);
+                }
+            }
+
+            @Override
+            public void notifying() {
+                // NOOP
+            }
+
+            @Override
+            public void notified() {
+                notifiedLatch.countDown();
+            }
+        });
+        notifiedLatch.await();
+    }
+
+    private interface BarrierStateListener {
+        void initial();
+
+        void notified();
+
+        void notifying();
+    }
+
+    enum BarrierState {
+        INITIAL, NOTIFYING, NOTIFIED;
+    }
+
+    private class BarrierStateMachine implements BarrierStateListener {
+
+        private BarrierState state = INITIAL;
+        private List<BarrierStateListener> stateListeners = new ArrayList<>();
+
+        @Override
+        public void initial() {
+            System.out.println("Hello");
+            synchronized (this) {
+                this.state = NOTIFYING;
+                for (BarrierStateListener listener : stateListeners) {
+                    listener.initial();
+                }
+            }
+        }
+
+        @Override
+        public void notifying() {
+            synchronized (this) {
+                this.state = NOTIFYING;
+                for (BarrierStateListener listener : stateListeners) {
+                    listener.notifying();
+                }
+            }
+        }
+
+        @Override
+        public void notified() {
+            synchronized (this) {
+                this.state = NOTIFIED;
+                for (BarrierStateListener listener : stateListeners) {
+                    listener.notified();
+                }
+            }
+        }
+
+        public void addListener(BarrierStateListener stateListener) {
+            synchronized (this) {
+                switch (this.state) {
+                // notify right away if waiting on state
+                case INITIAL:
+                    stateListener.initial();
+                    break;
+                case NOTIFYING:
+                    stateListener.notify();
+                    break;
+                case NOTIFIED:
+                    stateListener.notified();
+                    break;
+                default:
+                    break;
+                }
+                stateListeners.add(stateListener);
+            }
+        }
     }
 }
