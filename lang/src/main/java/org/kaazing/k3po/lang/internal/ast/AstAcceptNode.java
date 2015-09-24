@@ -80,7 +80,7 @@ public class AstAcceptNode extends AstStreamNode {
 
     public List<AstAcceptableNode> getAcceptables() {
         if (acceptables == null) {
-            acceptables = new LinkedList<AstAcceptableNode>();
+            acceptables = new LinkedList<>();
         }
 
         return acceptables;

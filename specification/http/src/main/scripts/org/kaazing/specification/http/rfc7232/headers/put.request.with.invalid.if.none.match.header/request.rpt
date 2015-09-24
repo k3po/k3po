@@ -1,0 +1,24 @@
+connect http://localhost:8000/resource
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header content-length
+write flush
+
+read status "200" "OK"
+read header "ETag" /.+/
+read notify READ_ETAG
+
+connect http://localhost:8000/resource
+connected
+
+write await READ_ETAG
+write method "PUT"
+write version "HTTP/1.1"
+write header "If-None-Match" "invalid/etag"
+write header content-length
+write flush
+
+read status "412" "Precondition Failed"
+

@@ -1,0 +1,22 @@
+connect http://localhost:8000/resource
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header content-length
+write flush
+
+read status "200" "OK"
+read header "ETag" /.+/
+
+connect http://localhost:8000/resource
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header "If-Match" "invalidetag"
+write header content-length
+write flush
+
+read status "412" "Precondition Failed"
+

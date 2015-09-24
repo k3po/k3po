@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2007-2014 Kaazing Corporation. All rights reserved.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,10 +19,17 @@
  * under the License.
  */
 
-/**
- *  Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7232">RFC 7232:
- *   Hypertext Transfer Protocol (HTTP/1.1): Conditional Requests</a>.
- */
-package org.kaazing.specification.http.rfc7232;
+package org.kaazing.k3po.driver.internal.behavior.parser;
 
-// TODO
+import org.kaazing.k3po.driver.internal.behavior.visitor.ValidateStreamsVisitor;
+import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
+
+public class ScriptValidator {
+
+    public void validate(AstScriptNode scriptAST) throws Exception {
+
+        ValidateStreamsVisitor validateStreams = new ValidateStreamsVisitor();
+        scriptAST.accept(validateStreams, new ValidateStreamsVisitor.State());
+    }
+
+}

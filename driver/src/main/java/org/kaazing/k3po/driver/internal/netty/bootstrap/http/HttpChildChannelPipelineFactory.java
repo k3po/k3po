@@ -18,7 +18,6 @@ package org.kaazing.k3po.driver.internal.netty.bootstrap.http;
 
 import static org.jboss.netty.channel.Channels.pipeline;
 
-import java.net.URI;
 import java.util.NavigableMap;
 
 import org.jboss.netty.channel.ChannelPipeline;

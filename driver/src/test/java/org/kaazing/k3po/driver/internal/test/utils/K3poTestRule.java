@@ -30,6 +30,7 @@ public class K3poTestRule extends Verifier {
 
     private String scriptRoot;
     private final Latch latch;
+    private K3poTestStatement k3poTestStatement;
 
     public K3poTestRule() {
         latch = new Latch();
@@ -55,16 +56,18 @@ public class K3poTestRule extends Verifier {
             }
 
             List<String> scriptNames = new LinkedList<>();
-            for (int i = 0; i < scripts.length; i++) {
+            for (String script : scripts) {
                 // strict compatibility (relax to support fully qualified paths later)
-                if (scripts[i].startsWith("/")) {
+                if (script.startsWith("/")) {
                     throw new IllegalArgumentException("Script path must be relative");
                 }
 
-                String scriptName = format("%s/%s", packagePath, scripts[i]);
+                String scriptName = format("%s/%s", packagePath, script);
                 scriptNames.add(scriptName);
             }
-            statement = new K3poTestStatement(statement, latch, scriptNames);
+
+            this.k3poTestStatement = new K3poTestStatement(statement, latch, scriptNames);
+            statement = this.k3poTestStatement;
         }
 
         return super.apply(statement, description);
@@ -79,6 +82,24 @@ public class K3poTestRule extends Verifier {
 
         // wait for script to finish
         latch.awaitFinished();
+    }
+
+    /**
+     * Wait for barrier to fire
+     * @param string
+     * @throws Exception
+     */
+    public void awaitBarrier(String barrierName) throws Exception {
+        k3poTestStatement.awaitBarrier(barrierName);
+    }
+
+    /**
+     * Notify barrier to fire
+     * @param string
+     * @throws Exception
+     */
+    public void notifyBarrier(String barrierName) throws Exception {
+        k3poTestStatement.notifyBarrier(barrierName);
     }
 
 }

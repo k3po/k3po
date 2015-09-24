@@ -1,0 +1,20 @@
+connect tcp://localhost:8080
+connected
+
+write "hello world"
+read "hello client"
+
+close
+closed
+
+
+accept tcp://localhost:8080
+accepted
+connected
+
+read "hello world"
+read notify HELLO_WORLD
+write await SEND_RESPONSE
+write "hello client"
+
+closed

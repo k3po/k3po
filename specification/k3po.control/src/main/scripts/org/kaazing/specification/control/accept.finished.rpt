@@ -4,12 +4,12 @@ connected
 
 read "PREPARE\n"
 read "version:2.0\n"
-read "name:path/to/script/server\n"
-read "name:path/to/script/client\n"
+read "name:org/kaazing/specification/control/assets/server\n"
+read "name:org/kaazing/specification/control/assets/client\n"
 read "\n"
 
 write "PREPARED\n"
-write "content-length:176\n"
+write "content-length:174\n"
 write "\n"
 write "# server\n"
 write "accept tcp://localhost:8000\n"
@@ -33,7 +33,7 @@ write "STARTED\n"
 write "\n"
 
 write "FINISHED\n"
-write "content-length:176\n"
+write "content-length:174\n"
 write "\n"
 write "# server\n"
 write "accept tcp://localhost:8000\n"
@@ -50,5 +50,4 @@ write "write \"echo\"\n"
 write "read \"echo\"\n"
 write "closed\n"
 
-close
 closed

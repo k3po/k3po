@@ -26,7 +26,7 @@ public class PrepareMessage extends ControlMessage {
     private String version;
 
     public PrepareMessage() {
-        this.names = new ArrayList<String>(5);
+        this.names = new ArrayList<>(5);
     }
 
     public void setVersion(String version) {
@@ -64,4 +64,5 @@ public class PrepareMessage extends ControlMessage {
     protected final boolean equals(PrepareMessage that) {
         return super.equalTo(that) && Objects.equals(this.names, that.names);
     }
+
 }

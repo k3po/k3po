@@ -37,7 +37,7 @@ public class AstReadValueNode extends AstEventNode {
 
     public void addMatcher(AstValueMatcher matcher) {
         if (matchers == null) {
-            matchers = new ArrayList<AstValueMatcher>();
+            matchers = new ArrayList<>();
         }
         matchers.add(matcher);
     }

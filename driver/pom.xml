@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.kaazing</groupId>
         <artifactId>k3po.parent</artifactId>
-        <version>2.0.2</version>
+        <version>2.1.0</version>
     </parent>
 
     <artifactId>k3po.driver</artifactId>
@@ -86,6 +86,11 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kaazing</groupId>
+            <artifactId>specification.k3po.control</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

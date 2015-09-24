@@ -15,7 +15,6 @@ read closed
 
 write status "301" "Created" 
 write version "HTTP/1.1"
-write header "X-WebSocket-Version" "wseb-1.0"
 write header "Content-Type" "text/plain;charset=utf-8"
 write header content-length
 
