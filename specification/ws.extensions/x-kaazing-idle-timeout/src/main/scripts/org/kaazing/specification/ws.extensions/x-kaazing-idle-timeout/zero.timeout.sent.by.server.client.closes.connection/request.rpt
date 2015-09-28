@@ -39,7 +39,7 @@ read "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
 read "Connection: Upgrade\r\n"
 read "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n"
 read "Sec-WebSocket-Accept" "TXCKJSpylVJ7v9ZGLGbt58vypzE="
-read "Sec-WebSocket-Extensions: x-kaazing-idle-timeout; timeout=123000\r\n"
+read "Sec-WebSocket-Extensions: x-kaazing-idle-timeout; timeout=0\r\n"
 read "Server: Kaazing Gateway\r\n"
 read "Upgrade: websocket\r\n"
 read "\r\n"
@@ -47,8 +47,9 @@ read "\r\n"
 # binary-encoded balancer directive - NO balance needed      
 read [0x82 0x04 0xEF 0x83 0xBF 0x4E]
 
-# Read random data
-read [0x11 0x11]
+# Response to native PING should be native PONG
+read [0x89 0x00]
+write [0x8a 0x00]
 
 # Do clean close
 write [0x88 0x00]

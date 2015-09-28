@@ -54,18 +54,26 @@ public class IdleTimeoutExtensionIT {
     }
 
     @Specification({
-        "extension.control.frames.sent.by.server.no.client.timeout/request",
-        "extension.control.frames.sent.by.server.no.client.timeout/response" })
+        "extension.ping.pong.enabled.should.not.be.native.client.closes.connection/request",
+        "extension.ping.pong.enabled.should.not.be.native.client.closes.connection/response" })
     @Test
-    public void extensionControlFramesSentByServerNoClientTimeout() throws Exception {
+    public void extensionPingPongEnabledShouldNotBeNativeClientClosesConnection() throws Exception {
         k3po.finish();
     }
 
     @Specification({
-        "standard.control.frames.sent.by.server.no.client.timeout/request",
-        "standard.control.frames.sent.by.server.no.client.timeout/response" })
+        "extension.ping.pong.frames.sent.by.server.no.client.timeout/request",
+        "extension.ping.pong.frames.sent.by.server.no.client.timeout/response" })
     @Test
-    public void standardControlFramesSentByServerNoClientTimeout() throws Exception {
+    public void extensionPingPongFramesSentByServerNoClientTimeout() throws Exception {
+        k3po.finish();
+    }
+
+    @Specification({
+        "negative.timeout.sent.by.server.client.closes.connection/request",
+        "negative.timeout.sent.by.server.client.closes.connection/response" })
+    @Test
+    public void negativeTimeoutSentByServerClientClosesConnection() throws Exception {
         k3po.finish();
     }
 
@@ -74,6 +82,22 @@ public class IdleTimeoutExtensionIT {
         "no.data.sent.by.server.client.timeout/response" })
     @Test
     public void noDataSentByServerClientTimeout() throws Exception {
+        k3po.finish();
+    }
+
+    @Specification({
+        "standard.ping.pong.frames.sent.by.server.no.client.timeout/request",
+        "standard.ping.pong.frames.sent.by.server.no.client.timeout/response" })
+    @Test
+    public void standardPingPongFramesSentByServerNoClientTimeout() throws Exception {
+        k3po.finish();
+    }
+
+    @Specification({
+        "zero.timeout.sent.by.server.client.closes.connection/request",
+        "zero.timeout.sent.by.server.client.closes.connection/response" })
+    @Test
+    public void zeroTimeoutSentByServerClientClosesConnection() throws Exception {
         k3po.finish();
     }
 }

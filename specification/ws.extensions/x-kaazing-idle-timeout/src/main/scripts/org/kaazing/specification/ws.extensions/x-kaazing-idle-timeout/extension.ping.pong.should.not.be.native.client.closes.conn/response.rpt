@@ -31,16 +31,18 @@ read "Host: localhost:8001\r\n"
 read "Origin: http://localhost:8001\r\n"
 read "Sec-WebSocket-Key: nDaimG37f4nUqogPypithw==\r\n"
 read "Sec-WebSocket-Version: 13\r\n"
-read "Sec-WebSocket-Extensions: x-kaazing-idle-timeout\r\n"
+read "Sec-WebSocket-Extensions: x-kaazing-ping-pong\r\n"
 read "\r\n"
 
-# 101 Response 
+# 101 Response
 
 write "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
 write "Connection: Upgrade\r\n"
 write "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n"
 write "Sec-WebSocket-Accept" "TXCKJSpylVJ7v9ZGLGbt58vypzE="
-write "Sec-WebSocket-Extensions: x-kaazing-idle-timeout; timeout=123000\r\n"
+# The 4 control bytes for ping-pong extension are 0x01010102:
+write "Sec-WebSocket-Extensions: x-kaazing-ping-pong; 01010102"
+write "\r\n"
 write "Server: Kaazing Gateway\r\n"
 write "Upgrade: websocket\r\n"
 write "\r\n"
@@ -48,8 +50,25 @@ write "\r\n"
 # binary-encoded balancer directive - NO balance needed      
 write [0x82 0x04 0xEF 0x83 0xBF 0x4E]
 
-# Write random data
-write [0x11 0x11]
+# Response to native PING should be native PONG
+read [0x89 0x00]
+#write [0x8a 0x00]
+
+# Send masked extended PING (unmasked form is read [0x81 0x06 0x01 0x01 0x01 0x02 0x09 0x00])
+#read [0x81 0x86 0x01 0x01 0x01 0x01 0x00 0x00 0x00 0x03 0x08 0x01]
+
+# Expect extended PONG response
+#write [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00]
+
+# Send masked extended PONG, expect no response (unmasked form is [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00])
+#read [0x81 0x86 0x01 0x01 0x01 0x01 0x00 0x00 0x00 0x03 0x0b 0x01]
+
+# Send native PONG (masked), expect no answer
+#read [0x8a 0x00]
+
+# Send text data "AB" to be echoed (to make sure connection is still operating properly)
+#read [0x81 0x82 0x01 0x01 0x01 0x01 0x40 0x43]
+#write [0x81 0x02 0x41 0x42]
 
 # Do clean close
 read [0x88 0x00]
