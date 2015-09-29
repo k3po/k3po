@@ -23,7 +23,7 @@ connect tcp://127.0.0.1:8001
 connected
 
 # Connection request
-write "GET /echo?.kl=Y HTTP/1.1\r\n"
+write "GET /echoZeroTimeout?.kl=Y HTTP/1.1\r\n"
 write "Upgrade: websocket\r\n"
 write "Connection: Upgrade\r\n"
 write "Host: localhost:8001\r\n"
@@ -37,8 +37,8 @@ write "\r\n"
 
 read "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
 read "Connection: Upgrade\r\n"
-read "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n"
-read "Sec-WebSocket-Accept" "TXCKJSpylVJ7v9ZGLGbt58vypzE="
+read "Date:" /.*/ "\r\n"
+read "Sec-WebSocket-Accept" /.*/ "\r\n"
 read "Sec-WebSocket-Extensions: x-kaazing-idle-timeout; timeout=0\r\n"
 read "Server: Kaazing Gateway\r\n"
 read "Upgrade: websocket\r\n"

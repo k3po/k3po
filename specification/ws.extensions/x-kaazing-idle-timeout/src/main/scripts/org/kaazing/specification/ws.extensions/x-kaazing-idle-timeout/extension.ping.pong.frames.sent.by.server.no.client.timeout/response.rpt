@@ -29,59 +29,30 @@ read "Upgrade: websocket\r\n"
 read "Connection: Upgrade\r\n"
 read "Host: localhost:8001\r\n"
 read "Origin: http://localhost:8001\r\n"
-read "Sec-WebSocket-Protocol: x-kaazing-handshake\r\n"
-read "Pragma: no-cache\r\n"
-read "Cache-Control: no-cache\r\n"
 read "Sec-WebSocket-Key: ePYyZxvR5fDLh/oEugMjbA==\r\n"
 read "Sec-WebSocket-Version: 13\r\n"
-read "Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits, x-webkit-deflate-frame\r\n"
-read "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\r\n"
-read "\r\n"
-
-# 101 Response
-
-write "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
-write "Connection: Upgrade\r\n"
-write "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n"
-write "Sec-WebSocket-Accept" "TXCKJSpylVJ7v9ZGLGbt58vypzE="
-write "Sec-WebSocket-Protocol: x-kaazing-handshake\r\n"
-write "Server: Kaazing Gateway\r\n"
-write "Upgrade: websocket\r\n"
-write "\r\n"
-
-# binary-encoded balancer directive - NO balance needed      
-write [0x82 0x04 0xEF 0x83 0xBF 0x4E]
-
-# Masked enveloped HTTP request
-read [0x82 0xfe 0x00 0x8c 0x00 0x00 0x00 0x00]
-read "GET /echo HTTP/1.1\r\n"
-read "WebSocket-Protocol: \r\n"
-read "Sec-WebSocket-Protocol: \r\n"
 read "Sec-WebSocket-Extensions: x-kaazing-idle-timeout,x-kaazing-ping-pong\r\n"
 read "\r\n"
 
-# Enveloped response: 4th byte was 0x7f in Chao's wireshark, why?
-write [0x82 0x7e 0x01 0x42]
+# 101 Response 
+
 write "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
 write "Connection: Upgrade\r\n"
 write "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n"
-write "Sec-WebSocket-Accept" "TXCKJSpylVJ7v9ZGLGbt58vypzE="
+write "Sec-WebSocket-Accept" "TXCKJSpylVJ7v9ZGLGbt58vypzE=\r\n"
 write "Sec-WebSocket-Extensions: x-kaazing-idle-timeout; timeout=2000\r\n"
 write "Sec-WebSocket-Extensions: x-kaazing-ping-pong; 01010102\r\n"
 write "Server: Kaazing Gateway\r\n"
 write "Upgrade: websocket\r\n"
 write "\r\n"
 
-# No sure what this is
-write [0x82 0x00]
-
 # binary-encoded balancer directive - NO balance needed      
 write [0x82 0x04 0xEF 0x83 0xBF 0x4E]
 
-# Expect extended PING
+# Send extended PING
 write [0x81 0x06 0x01 0x01 0x01 0x02 0x09 0x00]
 
-# Send (masked) extended PONG response (unmasked form is [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00])
+# Expect (masked) extended PONG response (unmasked form is [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00])
 read [0x81 0x86 0x01 0x01 0x01 0x01 0x00 0x00 0x00 0x03 0x0b 0x01]
 
 close

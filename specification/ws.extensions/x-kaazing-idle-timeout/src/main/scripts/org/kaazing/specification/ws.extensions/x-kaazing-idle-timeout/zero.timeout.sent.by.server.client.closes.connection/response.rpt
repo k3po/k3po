@@ -24,7 +24,7 @@ accepted
 connected
 
 # Connection request
-read "GET /echo?.kl=Y HTTP/1.1\r\n"
+read "GET /echoZeroTimeout?.kl=Y HTTP/1.1\r\n"
 read "Upgrade: websocket\r\n"
 read "Connection: Upgrade\r\n"
 read "Host: localhost:8001\r\n"
@@ -39,7 +39,7 @@ read "\r\n"
 write "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
 write "Connection: Upgrade\r\n"
 write "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n"
-write "Sec-WebSocket-Accept" "TXCKJSpylVJ7v9ZGLGbt58vypzE="
+write "Sec-WebSocket-Accept" "TXCKJSpylVJ7v9ZGLGbt58vypzE=\r\n"
 write "Sec-WebSocket-Extensions: x-kaazing-idle-timeout; timeout=0\r\n"
 write "Server: Kaazing Gateway\r\n"
 write "Upgrade: websocket\r\n"

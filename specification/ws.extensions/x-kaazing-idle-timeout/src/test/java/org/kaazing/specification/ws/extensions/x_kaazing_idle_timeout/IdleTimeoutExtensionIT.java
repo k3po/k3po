@@ -54,8 +54,8 @@ public class IdleTimeoutExtensionIT {
     }
 
     @Specification({
-        "extension.ping.pong.enabled.should.not.be.native.client.closes.connection/request",
-        "extension.ping.pong.enabled.should.not.be.native.client.closes.connection/response" })
+        "extension.ping.pong.should.not.be.native.client.closes.conn/request",
+        "extension.ping.pong.should.not.be.native.client.closes.conn/response" })
     @Test
     public void extensionPingPongEnabledShouldNotBeNativeClientClosesConnection() throws Exception {
         k3po.finish();
