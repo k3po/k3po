@@ -50,6 +50,13 @@ public class IdleTimeoutExtensionIT {
         "downstream.data.sent.by.server.no.client.timeout/response" })
     @Test
     public void downstreamDataSentByServerNoClientTimeout() throws Exception {
+        k3po.awaitBarrier("READY");
+        Thread.sleep(1000);
+        k3po.notifyBarrier("TICK_ONE");
+        Thread.sleep(1000);
+        k3po.notifyBarrier("TICK_TWO");
+        Thread.sleep(1000);
+        k3po.notifyBarrier("TICK_THREE");
         k3po.finish();
     }
 
