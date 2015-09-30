@@ -19,23 +19,12 @@ write "Connection: Upgrade\r\n"
 write "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n"
 write "Sec-WebSocket-Accept: TXCKJSpylVJ7v9ZGLGbt58vypzE=\r\n"
 # The 4 control bytes for ping-pong extension are 0x01010102:
-write "Sec-WebSocket-Extensions: x-kaazing-ping-pong; 01010102"
+write "Sec-WebSocket-Extensions: x-kaazing-ping-pong"
 write "\r\n"
 write "Server: Kaazing Gateway\r\n"
 write "Upgrade: websocket\r\n"
 write "\r\n"
 
-# binary-encoded balancer directive - NO balance needed
-write [0x82 0x04 0xEF 0x83 0xBF 0x4E]
+# Expect the client to fail the connection
 
-# Send standard PING
-write [0x09 0x00]
-
-# Expect standard PONG (masked)
-read [0x8a 0x00]
-
-# Do clean close
-read [0x88 0x00]
-write [0x88 0x00]
-
-close
+closed

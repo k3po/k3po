@@ -80,4 +80,28 @@ public class PingPongExtensionsIT {
     public void clientShouldReplyToStandardPingWithStandardPong() throws Exception {
         k3po.finish();
     }
+
+    @Test
+    @Specification({
+        "client.should.disconnect.if.wrong.control.bytes.length/request",
+        "client.should.disconnect.if.wrong.control.bytes.length/response" })
+    public void clientShouldDisconnectIfWrongControlBytesLength() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "client.should.disconnect.if.wrong.control.bytes.value/request",
+        "client.should.disconnect.if.wrong.control.bytes.value/response" })
+    public void clientShouldDisconnectIfWrongControlBytesValue() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "client.should.disconnect.if.no.control.bytes.sent/request",
+        "client.should.disconnect.if.no.control.bytes.sent/response" })
+    public void clientShouldDisconnectIfNoControlBytesSent() throws Exception {
+        k3po.finish();
+    }
 }
