@@ -44,16 +44,6 @@ read "Server: Kaazing Gateway\r\n"
 read "Upgrade: websocket\r\n"
 read "\r\n"
 
-# binary-encoded balancer directive - NO balance needed      
-read [0x82 0x04 0xEF 0x83 0xBF 0x4E]
-
-# Response to native PING should be native PONG
-read [0x89 0x00]
-write [0x8a 0x00]
-
-# Do clean close
-write [0x88 0x00]
-read [0x88 0x00]
-
+# Client fails the WebSocket connection since the timeout value is invalid
 close
 closed

@@ -50,5 +50,5 @@ write "\r\n"
 write [0x82 0x04 0xEF 0x83 0xBF 0x4E]
 
 # Client should timeout and close the connection
-read await ONE_SECOND
+read await TICK_ONE
 closed

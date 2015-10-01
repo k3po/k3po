@@ -89,6 +89,9 @@ public class IdleTimeoutExtensionIT {
         "no.data.sent.by.server.client.timeout/response" })
     @Test
     public void noDataSentByServerClientTimeout() throws Exception {
+        k3po.awaitBarrier("HANDSHAKE_COMPLETE");
+        Thread.sleep(1000);
+        k3po.notifyBarrier("TICK_ONE");
         k3po.finish();
     }
 
