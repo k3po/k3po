@@ -67,6 +67,14 @@ public class PingPongExtensionsIT {
 
     @Test
     @Specification({
+        "server.may.send.extended.pong.control.frames/request",
+        "server.may.send.extended.pong.control.frames/response" })
+    public void serverMaySendExtendedPongControlFrames() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "client.should.reply.to.extended.ping.with.extended.pong/request",
         "client.should.reply.to.extended.ping.with.extended.pong/response" })
     public void clientShouldReplyToExtendedPingWithExtendedPong() throws Exception {
