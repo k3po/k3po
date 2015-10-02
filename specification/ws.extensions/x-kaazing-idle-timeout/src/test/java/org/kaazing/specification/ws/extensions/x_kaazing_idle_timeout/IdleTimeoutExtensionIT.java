@@ -50,6 +50,13 @@ public class IdleTimeoutExtensionIT {
         "downstream.data.sent.by.server.no.client.timeout/response" })
     @Test
     public void downstreamDataSentByServerNoClientTimeout() throws Exception {
+        k3po.awaitBarrier("READY");
+        Thread.sleep(1000);
+        k3po.notifyBarrier("TICK_ONE");
+        Thread.sleep(1000);
+        k3po.notifyBarrier("TICK_TWO");
+        Thread.sleep(1000);
+        k3po.notifyBarrier("TICK_THREE");
         k3po.finish();
     }
 
@@ -82,6 +89,9 @@ public class IdleTimeoutExtensionIT {
         "no.data.sent.by.server.client.timeout/response" })
     @Test
     public void noDataSentByServerClientTimeout() throws Exception {
+        k3po.awaitBarrier("HANDSHAKE_COMPLETE");
+        Thread.sleep(1000);
+        k3po.notifyBarrier("TICK_ONE");
         k3po.finish();
     }
 

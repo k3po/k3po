@@ -48,12 +48,18 @@ write "\r\n"
 # binary-encoded balancer directive - NO balance needed      
 write [0x82 0x04 0xEF 0x83 0xBF 0x4E]
 
-# Write random data
-write [0x11 0x11]
+write notify READY
+
+# Write random data (but a valid ws frame) within the timeout frequency
+write await TICK_ONE
+write [0x82 0x02 0x11 0x11]
+write await TICK_TWO
+write [0x82 0x02 0x11 0x11]
+write await TICK_THREE
+write [0x82 0x02 0x11 0x11]
 
 # Do clean close
 read [0x88 0x00]
 write [0x88 0x00]
 
-close
 closed
