@@ -21,6 +21,8 @@
 
 package org.kaazing.k3po.control.internal.event;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -30,6 +32,11 @@ import java.util.Objects;
 public final class PreparedEvent extends CommandEvent {
 
     private String script;
+    private final List<String> barriers;
+
+    public PreparedEvent() {
+        barriers = new ArrayList<String>();
+    }
 
     @Override
     public Kind getKind() {
@@ -64,5 +71,13 @@ public final class PreparedEvent extends CommandEvent {
 
     protected boolean equalTo(PreparedEvent that) {
         return super.equalTo(that) && Objects.equals(this.script, that.script);
+    }
+
+    /**
+     * The list of barriers in the script
+     * @return
+     */
+    public List<String> getBarriers() {
+        return barriers;
     }
 }

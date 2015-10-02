@@ -17,8 +17,8 @@
 package org.kaazing.k3po.pcap.converter.internal.author.emitter;
 
 public interface EmitterFactory {
-    public Emitter getRptScriptEmitter(OutputType ot, String name);
-    public Emitter getNoteEmitter(OutputType ot, String noteHeader);
-	public void setMemSaver(boolean b);
+    Emitter getRptScriptEmitter(OutputType ot, String name);
+    Emitter getNoteEmitter(OutputType ot, String noteHeader);
+	void setMemSaver(boolean b);
 }
     

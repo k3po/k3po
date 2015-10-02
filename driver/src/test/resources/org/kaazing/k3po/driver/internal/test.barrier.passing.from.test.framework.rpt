@@ -1,0 +1,18 @@
+accept tcp://localhost:7000
+accepted
+connected
+
+read "HELLO"
+read notify NOTIFYING_BARRIER
+
+close
+closed
+
+
+connect tcp://localhost:7000
+connected
+
+write await AWAITING_BARRIER
+write "HELLO"
+
+closed

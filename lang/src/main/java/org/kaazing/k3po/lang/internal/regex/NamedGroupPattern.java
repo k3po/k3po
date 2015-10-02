@@ -51,7 +51,7 @@ public class NamedGroupPattern {
             TokenStream tokens = new CommonTokenStream(lexer);
             RegexParser parser = new RegexParser(tokens);
             parser.setErrorHandler(new BailErrorStrategy());
-            final List<String> groupNames = new ArrayList<String>();
+            final List<String> groupNames = new ArrayList<>();
             parser.addParseListener(new RegexBaseListener() {
                 @Override
                 public void exitGroupN(GroupNContext ctx) {

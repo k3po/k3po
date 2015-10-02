@@ -21,7 +21,7 @@ import java.util.concurrent.CountDownLatch;
 
 class Latch {
 
-    static enum State {
+    enum State {
         INIT, PREPARED, STARTABLE, FINISHED
     }
 

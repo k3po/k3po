@@ -33,7 +33,7 @@ final class Utils {
 
     public static void inject0(Object target, Class<?> injectableType, Object injectableInstance) {
 
-        Class<? extends Object> targetClass = target.getClass();
+        Class<?> targetClass = target.getClass();
         Method[] methods = targetClass.getMethods();
         for (Method method : methods) {
             String methodName = method.getName();
@@ -51,17 +51,10 @@ final class Utils {
                         try {
                             method.invoke(target, injectableInstance);
 
-                        } catch (IllegalArgumentException e) {
+                        } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
 
-                        } catch (IllegalAccessException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-
-                        } catch (InvocationTargetException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
                         }
                     }
                 }

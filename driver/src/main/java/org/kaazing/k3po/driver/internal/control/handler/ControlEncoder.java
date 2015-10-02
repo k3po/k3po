@@ -30,6 +30,8 @@ import org.kaazing.k3po.driver.internal.control.ControlMessage;
 import org.kaazing.k3po.driver.internal.control.ControlMessage.Kind;
 import org.kaazing.k3po.driver.internal.control.ErrorMessage;
 import org.kaazing.k3po.driver.internal.control.FinishedMessage;
+import org.kaazing.k3po.driver.internal.control.NotifiedMessage;
+import org.kaazing.k3po.driver.internal.control.NotifyMessage;
 import org.kaazing.k3po.driver.internal.control.PreparedMessage;
 import org.kaazing.k3po.driver.internal.control.StartedMessage;
 
@@ -52,6 +54,10 @@ public class ControlEncoder extends OneToOneEncoder {
                 return encodeErrorMessage(ctx, channel, (ErrorMessage) controlMessage);
             case FINISHED:
                 return encodeFinishedMessage(ctx, channel, (FinishedMessage) controlMessage);
+            case NOTIFY:
+                return encodeNotifyMessage(ctx, channel, (NotifyMessage) controlMessage);
+            case NOTIFIED:
+                return encodedNotifiedMessage(ctx, channel, (NotifiedMessage) controlMessage);
             default:
                 break;
             }
@@ -68,6 +74,12 @@ public class ControlEncoder extends OneToOneEncoder {
 
         ChannelBuffer buf = dynamicBuffer(channel.getConfig().getBufferFactory());
         encodeInitial(kind, buf);
+        for (String barrier : preparedMessage.getBarriers()) {
+            // ~ denote injected barriers, which need not be shared with test framework
+            if (!barrier.startsWith("~")) {
+                encodeHeader("barrier", barrier, buf);
+            }
+        }
         return encodeContent(script, buf);
     }
 
@@ -98,6 +110,26 @@ public class ControlEncoder extends OneToOneEncoder {
         ChannelBuffer buf = dynamicBuffer(channel.getConfig().getBufferFactory());
         encodeInitial(kind, buf);
         return encodeContent(script, buf);
+    }
+
+    private Object encodeNotifyMessage(ChannelHandlerContext ctx, Channel channel, NotifyMessage notifyMessage) {
+        Kind kind = notifyMessage.getKind();
+        String barrier = notifyMessage.getBarrier();
+
+        ChannelBuffer buf = dynamicBuffer(channel.getConfig().getBufferFactory());
+        encodeInitial(kind, buf);
+        encodeHeader("barrier", barrier, buf);
+        return encodeNoContent(buf);
+    }
+
+    private Object encodedNotifiedMessage(ChannelHandlerContext ctx, Channel channel, NotifiedMessage notifiedMessage) {
+        Kind kind = notifiedMessage.getKind();
+        String barrier = notifiedMessage.getBarrier();
+
+        ChannelBuffer buf = dynamicBuffer(channel.getConfig().getBufferFactory());
+        encodeInitial(kind, buf);
+        encodeHeader("barrier", barrier, buf);
+        return encodeNoContent(buf);
     }
 
     private static void encodeInitial(Kind kind, ChannelBuffer buf) {

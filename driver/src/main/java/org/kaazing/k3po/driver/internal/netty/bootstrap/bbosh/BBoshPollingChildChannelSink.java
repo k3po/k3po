@@ -66,8 +66,8 @@ public class BBoshPollingChildChannelSink extends AbstractChannelSink {
 
     public BBoshPollingChildChannelSink(int nextSequenceNo) {
         this.nextSequenceNo = new AtomicInteger(nextSequenceNo);
-        this.httpChannelRef = new AtomicReference<HttpChildChannel>();
-        this.messages = new ConcurrentLinkedDeque<MessageEvent>();
+        this.httpChannelRef = new AtomicReference<>();
+        this.messages = new ConcurrentLinkedDeque<>();
     }
 
     @Override

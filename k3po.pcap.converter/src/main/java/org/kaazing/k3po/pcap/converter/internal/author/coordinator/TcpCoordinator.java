@@ -41,8 +41,8 @@ public class TcpCoordinator extends AbstractCoordinator implements Coordinator {
         super(emitterFactory, emitterFactory.getRptScriptEmitter(OutputType.TCP_COORDINATOR,
                 conversationId.getIpAddr1()), emitterFactory.getRptScriptEmitter(OutputType.TCP_COORDINATOR,
                 conversationId.getIpAddr2()), conversationId, composerFactory);
-        clients = new HashMap<String, Composer>(2);
-        servers = new HashMap<String, Composer>(2);
+        clients = new HashMap<>(2);
+        servers = new HashMap<>(2);
 
     }
 

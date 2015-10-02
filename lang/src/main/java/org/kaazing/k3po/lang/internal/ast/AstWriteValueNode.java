@@ -37,7 +37,7 @@ public class AstWriteValueNode extends AstCommandNode {
 
     public void addValue(AstValue value) {
         if (values == null) {
-            values = new ArrayList<AstValue>();
+            values = new ArrayList<>();
         }
         values.add(value);
     }

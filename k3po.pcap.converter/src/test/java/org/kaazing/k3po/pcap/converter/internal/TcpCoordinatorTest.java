@@ -37,11 +37,11 @@ public class TcpCoordinatorTest extends AbstractTcpTest {
             super(emitterFactory, conversationId, composerFactory);
         }
 
-        public static final String clientNameStub(Packet p) {
+        public static String clientNameStub(Packet p) {
             return clientName(p);
         }
 
-        public static final String serverNameStub(Packet p) {
+        public static String serverNameStub(Packet p) {
             return serverName(p);
         }
     }

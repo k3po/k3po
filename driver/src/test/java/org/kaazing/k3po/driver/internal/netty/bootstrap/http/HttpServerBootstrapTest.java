@@ -74,7 +74,7 @@ import org.mockito.InOrder;
 @RunWith(Theories.class)
 public class HttpServerBootstrapTest {
 
-    private static enum ContentStrategy {
+    private enum ContentStrategy {
         CLOSE, CHUNKED, BUFFERED, EXPLICIT
     }
 
