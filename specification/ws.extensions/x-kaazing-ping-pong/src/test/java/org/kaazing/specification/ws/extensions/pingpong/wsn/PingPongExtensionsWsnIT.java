@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kaazing.specification.ws.extensions.pingpong;
+package org.kaazing.specification.ws.extensions.pingpong.wsn;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
@@ -31,7 +31,7 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
-public class PingPongExtensionsIT {
+public class PingPongExtensionsWsnIT {
 
     private final K3poRule k3po = new K3poRule()
             .setScriptRoot("org/kaazing/specification/ws.extensions/x-kaazing-ping-pong/wsn");
