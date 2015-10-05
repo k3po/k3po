@@ -52,23 +52,23 @@ write [0x82 0x04 0xEF 0x83 0xBF 0x4E]
 write notify HANDSHAKE_COMPLETE
 
 ################################################################
+# Expect random data flowing from client 
+read [0x82 0x02 0x11 0x11]
+
 # Write first PONG frame @ TICK_ONE within the timeout frequency
 write await TICK_ONE
 
 # Send extended PONG
 write [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00]
-
+################################################################
 # Expect random data flowing from client 
 read [0x82 0x02 0x11 0x11]
-################################################################
+
 # Write second PONG frame @ TICK_TWO within the timeout frequency
 write await TICK_TWO
 
 # Send extended PING
 write [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00]
-
-# Expect random data flowing from client 
-read [0x82 0x02 0x11 0x11]
 ################################################################
 
 closed
