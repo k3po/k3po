@@ -67,7 +67,7 @@ read [0x82 0x02 0x11 0x11]
 # Write second PONG frame @ TICK_TWO within the timeout frequency
 write await TICK_TWO
 
-# Send extended PING
+# Send extended PONG
 write [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00]
 ################################################################
 
