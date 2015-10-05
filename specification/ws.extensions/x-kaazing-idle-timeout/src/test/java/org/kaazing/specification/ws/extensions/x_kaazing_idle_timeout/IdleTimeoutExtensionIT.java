@@ -40,7 +40,7 @@ public class IdleTimeoutExtensionIT {
 
     private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/ws.extensions/x-kaazing-idle-timeout");
 
-    private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
+    private final TestRule timeout = new DisableOnDebug(new Timeout(7, SECONDS));
 
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
@@ -50,7 +50,8 @@ public class IdleTimeoutExtensionIT {
         "downstream.data.sent.by.server.no.client.timeout/response" })
     @Test
     public void downstreamDataSentByServerNoClientTimeout() throws Exception {
-        k3po.awaitBarrier("READY");
+        k3po.start();
+        k3po.awaitBarrier("HANDSHAKE_COMPLETE");
         Thread.sleep(1000);
         k3po.notifyBarrier("TICK_ONE");
         Thread.sleep(1000);
@@ -73,6 +74,26 @@ public class IdleTimeoutExtensionIT {
         "extension.ping.pong.frames.sent.by.server.no.client.timeout/response" })
     @Test
     public void extensionPingPongFramesSentByServerNoClientTimeout() throws Exception {
+        k3po.start();
+        k3po.awaitBarrier("HANDSHAKE_COMPLETE");
+        Thread.sleep(1000);
+        k3po.notifyBarrier("TICK_ONE");
+        Thread.sleep(1000);
+        k3po.notifyBarrier("TICK_TWO");
+        k3po.finish();
+    }
+
+    @Specification({
+        "pong.frames.sent.by.server.no.client.timeout/request",
+        "pong.frames.sent.by.server.no.client.timeout/response" })
+    @Test
+    public void pongFramesSentByServerNoClientTimeout() throws Exception {
+        k3po.start();
+        k3po.awaitBarrier("HANDSHAKE_COMPLETE");
+        Thread.sleep(1000);
+        k3po.notifyBarrier("TICK_ONE");
+        Thread.sleep(1000);
+        k3po.notifyBarrier("TICK_TWO");
         k3po.finish();
     }
 
@@ -89,8 +110,9 @@ public class IdleTimeoutExtensionIT {
         "no.data.sent.by.server.client.timeout/response" })
     @Test
     public void noDataSentByServerClientTimeout() throws Exception {
+        k3po.start();
         k3po.awaitBarrier("HANDSHAKE_COMPLETE");
-        Thread.sleep(1000);
+        Thread.sleep(5000);
         k3po.notifyBarrier("TICK_ONE");
         k3po.finish();
     }
@@ -100,6 +122,12 @@ public class IdleTimeoutExtensionIT {
         "standard.ping.pong.frames.sent.by.server.no.client.timeout/response" })
     @Test
     public void standardPingPongFramesSentByServerNoClientTimeout() throws Exception {
+        k3po.start();
+        k3po.awaitBarrier("HANDSHAKE_COMPLETE");
+        Thread.sleep(1000);
+        k3po.notifyBarrier("TICK_ONE");
+        Thread.sleep(1000);
+        k3po.notifyBarrier("TICK_TWO");
         k3po.finish();
     }
 

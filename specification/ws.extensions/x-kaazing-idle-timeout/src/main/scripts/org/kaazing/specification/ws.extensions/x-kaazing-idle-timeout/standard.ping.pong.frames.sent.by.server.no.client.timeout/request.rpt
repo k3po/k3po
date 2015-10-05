@@ -47,11 +47,21 @@ read "\r\n"
 # binary-encoded balancer directive - NO balance needed      
 read [0x82 0x04 0xEF 0x83 0xBF 0x4E]
 
+################################################################
+# Expect PING @ TICK_ONE
 # Read PING
 read [0x89 0x00]
 
 # Send PONG response
 write [0x8a 0x00]
+################################################################
+# Expect PING @ TICK_TWO
+# Read PING
+read [0x89 0x00]
+
+# Send PONG response
+write [0x8a 0x00]
+################################################################
 
 # Do clean close
 write [0x88 0x00]

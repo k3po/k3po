@@ -29,9 +29,9 @@ read "Upgrade: websocket\r\n"
 read "Connection: Upgrade\r\n"
 read "Host: localhost:8001\r\n"
 read "Origin: http://localhost:8001\r\n"
-read "Sec-WebSocket-Key: nDaimG37f4nUqogPypithw==\r\n"
+read "Sec-WebSocket-Key: ePYyZxvR5fDLh/oEugMjbA==\r\n"
 read "Sec-WebSocket-Version: 13\r\n"
-read "Sec-WebSocket-Extensions: x-kaazing-idle-timeout\r\n"
+read "Sec-WebSocket-Extensions: x-kaazing-idle-timeout,x-kaazing-ping-pong\r\n"
 read "\r\n"
 
 # 101 Response 
@@ -41,6 +41,7 @@ write "Connection: Upgrade\r\n"
 write "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n"
 write "Sec-WebSocket-Accept" "TXCKJSpylVJ7v9ZGLGbt58vypzE=\r\n"
 write "Sec-WebSocket-Extensions: x-kaazing-idle-timeout; timeout=2000\r\n"
+write "Sec-WebSocket-Extensions: x-kaazing-ping-pong; 01010102\r\n"
 write "Server: Kaazing Gateway\r\n"
 write "Upgrade: websocket\r\n"
 write "\r\n"
@@ -50,23 +51,24 @@ write [0x82 0x04 0xEF 0x83 0xBF 0x4E]
 
 write notify HANDSHAKE_COMPLETE
 
-# Write random data (but a valid ws frame) within the timeout frequency
 ################################################################
-# Write second PING frame @ TICK_ONE within the timeout frequency
+# Write first PONG frame @ TICK_ONE within the timeout frequency
 write await TICK_ONE
-write [0x82 0x02 0x11 0x11]
-################################################################
-# Write second PING frame @ TICK_TWO within the timeout frequency
-write await TICK_TWO
-write [0x82 0x02 0x11 0x11]
-################################################################
-# Write second PING frame @ TICK_THREE within the timeout frequency
-write await TICK_THREE
-write [0x82 0x02 0x11 0x11]
-################################################################
 
-# Do clean close
-read [0x88 0x00]
-write [0x88 0x00]
+# Send extended PONG
+write [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00]
+
+# Expect random data flowing from client 
+read [0x82 0x02 0x11 0x11]
+################################################################
+# Write second PONG frame @ TICK_TWO within the timeout frequency
+write await TICK_TWO
+
+# Send extended PING
+write [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00]
+
+# Expect random data flowing from client 
+read [0x82 0x02 0x11 0x11]
+################################################################
 
 closed

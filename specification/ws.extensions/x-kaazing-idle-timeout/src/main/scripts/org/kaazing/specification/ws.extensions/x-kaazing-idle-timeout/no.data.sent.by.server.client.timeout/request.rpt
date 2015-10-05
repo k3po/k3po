@@ -30,7 +30,7 @@ write "Host: localhost:8001\r\n"
 write "Origin: http://localhost:8001\r\n"
 write "Sec-WebSocket-Key: ePYyZxvR5fDLh/oEugMjbA==\r\n"
 write "Sec-WebSocket-Version: 13\r\n"
-write "Sec-WebSocket-Extensions: x-kaazing-idle-timeout,x-kaazing-ping-pong\r\n"
+write "Sec-WebSocket-Extensions: x-kaazing-idle-timeout\r\n"
 write "\r\n"
 
 # 101 Response
@@ -40,7 +40,6 @@ read "Connection: Upgrade\r\n"
 read "Date:" /.*/ "\r\n"
 read "Sec-WebSocket-Accept" /.*/ "\r\n"
 read "Sec-WebSocket-Extensions: x-kaazing-idle-timeout; timeout=2000\r\n"
-read "Sec-WebSocket-Extensions: x-kaazing-ping-pong; 01010102\r\n"
 read "Server: Kaazing Gateway\r\n"
 read "Upgrade: websocket\r\n"
 read "\r\n"
@@ -48,15 +47,5 @@ read "\r\n"
 # binary-encoded balancer directive - NO balance needed      
 read [0x82 0x04 0xEF 0x83 0xBF 0x4E]
 
-# Expect extended PING
-read [0x81 0x06 0x01 0x01 0x01 0x02 0x09 0x00]
-
-# Send (masked) extended PONG response (unmasked form is [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00])
-write [0x81 0x86 0x01 0x01 0x01 0x01 0x00 0x00 0x00 0x03 0x0b 0x01]
-
-# Expect another extended PING
-read [0x81 0x06 0x01 0x01 0x01 0x02 0x09 0x00]
-
-# Don't respond. Server should close connection (inactivity timeout expired)
-
+close
 closed
