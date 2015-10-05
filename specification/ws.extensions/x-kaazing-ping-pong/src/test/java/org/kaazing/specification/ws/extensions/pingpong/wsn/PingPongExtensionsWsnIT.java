@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kaazing.specification.ws.extensions.pingpong;
+package org.kaazing.specification.ws.extensions.pingpong.wsn;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
@@ -31,7 +31,7 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
-public class PingPongExtensionsIT {
+public class PingPongExtensionsWsnIT {
 
     private final K3poRule k3po = new K3poRule()
             .setScriptRoot("org/kaazing/specification/ws.extensions/x-kaazing-ping-pong/wsn");
@@ -67,6 +67,14 @@ public class PingPongExtensionsIT {
 
     @Test
     @Specification({
+        "server.may.send.extended.pong.control.frames/request",
+        "server.may.send.extended.pong.control.frames/response" })
+    public void serverMaySendExtendedPongControlFrames() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "client.should.reply.to.extended.ping.with.extended.pong/request",
         "client.should.reply.to.extended.ping.with.extended.pong/response" })
     public void clientShouldReplyToExtendedPingWithExtendedPong() throws Exception {
@@ -78,6 +86,30 @@ public class PingPongExtensionsIT {
         "client.should.reply.to.standard.ping.with.standard.pong/request",
         "client.should.reply.to.standard.ping.with.standard.pong/response" })
     public void clientShouldReplyToStandardPingWithStandardPong() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "client.should.disconnect.if.wrong.control.bytes.length/request",
+        "client.should.disconnect.if.wrong.control.bytes.length/response" })
+    public void clientShouldDisconnectIfWrongControlBytesLength() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "client.should.disconnect.if.wrong.control.bytes.value/request",
+        "client.should.disconnect.if.wrong.control.bytes.value/response" })
+    public void clientShouldDisconnectIfWrongControlBytesValue() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "client.should.disconnect.if.no.control.bytes.sent/request",
+        "client.should.disconnect.if.no.control.bytes.sent/response" })
+    public void clientShouldDisconnectIfNoControlBytesSent() throws Exception {
         k3po.finish();
     }
 }
