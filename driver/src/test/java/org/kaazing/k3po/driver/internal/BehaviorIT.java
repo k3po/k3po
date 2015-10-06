@@ -102,4 +102,14 @@ public class BehaviorIT {
         k3po.awaitBarrier("NOTIFYING_BARRIER");
         k3po.finish();
     }
+
+    @TestSpecification("closed.vs.disconnected.issue")
+    @Test
+    public void closeVsDisconnectedIssue() throws Exception {
+        //k3po.start();
+        k3po.awaitBarrier("HANDSHAKE_COMPLETE");
+        Thread.sleep(3000);
+        k3po.notifyBarrier("TICK_ONE");
+        k3po.finish();
+    }
 }
