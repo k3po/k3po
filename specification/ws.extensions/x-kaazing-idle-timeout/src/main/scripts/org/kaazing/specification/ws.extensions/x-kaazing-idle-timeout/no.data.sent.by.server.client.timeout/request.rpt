@@ -47,5 +47,7 @@ read "\r\n"
 # binary-encoded balancer directive - NO balance needed      
 read [0x82 0x04 0xEF 0x83 0xBF 0x4E]
 
+write await TICK_ONE
+
 close
 closed
