@@ -24,7 +24,7 @@ accepted
 connected
 
 # Connection request
-read "GET /echo?.kl=Y HTTP/1.1\r\n"
+read "GET /echo HTTP/1.1\r\n"
 read "Upgrade: websocket\r\n"
 read "Connection: Upgrade\r\n"
 read "Host: localhost:8001\r\n"
@@ -45,9 +45,6 @@ write "Sec-WebSocket-Extensions: x-kaazing-ping-pong; 01010102\r\n"
 write "Server: Kaazing Gateway\r\n"
 write "Upgrade: websocket\r\n"
 write "\r\n"
-
-# binary-encoded balancer directive - NO balance needed      
-write [0x82 0x04 0xEF 0x83 0xBF 0x4E]
 
 write notify HANDSHAKE_COMPLETE
 

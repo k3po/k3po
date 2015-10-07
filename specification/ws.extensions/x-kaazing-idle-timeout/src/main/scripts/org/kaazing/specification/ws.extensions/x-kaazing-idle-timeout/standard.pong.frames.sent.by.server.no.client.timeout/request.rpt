@@ -12,7 +12,7 @@ write "Sec-WebSocket-Version: 13\r\n"
 write "Sec-WebSocket-Extensions: x-kaazing-idle-timeout\r\n"
 write "\r\n"
 
-# 101 Response
+# 101 Response 
 
 read "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
 read "Connection: Upgrade\r\n"
@@ -23,10 +23,19 @@ read "Server: Kaazing Gateway\r\n"
 read "Upgrade: websocket\r\n"
 read "\r\n"
 
-write await TICK_ONE
+################################################################
+# Send random data from client
+write [0x82 0x02 0x11 0x11]
+
+# Expect PONG @ TICK_ONE
+read [0x8a 0x00]
+################################################################
+# Send random data from client
+write [0x82 0x02 0x11 0x11]
+
+# Expect PONG @ TICK_TWO
+read [0x8a 0x00]
+################################################################
 
 close
-
-write notify TICK_TWO
-
 closed
