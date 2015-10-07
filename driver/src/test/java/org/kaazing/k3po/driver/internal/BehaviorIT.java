@@ -56,6 +56,26 @@ public class BehaviorIT {
 
     @Test
     @TestSpecification({
+        "delayed.connect.via.testframework" })
+    public void testDelayedClientConnectViaTestFramework() throws Exception {
+        k3po.notifyBarrier("NOTIFY_FROM_FRAMEWORK");
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "duplicate.awaits.notified.from.test.framework" })
+    public void testDuplicateAwaitsNotifiedFromTestFramework() throws Exception {
+        /*
+         * No special logic for this (like we don't throw a error or warning). All that would happen is the client would
+         * be notified multiple times. I don't think its necessarily beneficial to throw a error or anything,
+         */
+        k3po.notifyBarrier("NOTIFY_FROM_FRAMEWORK");
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
         "delayed.http.connect" })
     public void testDelayedHttpClientConnect() throws Exception {
         k3po.finish();
@@ -72,6 +92,14 @@ public class BehaviorIT {
     @TestSpecification({
         "accept.expression" })
     public void testAcceptWithExpression() throws Exception {
+        k3po.finish();
+    }
+
+    @TestSpecification("test.barrier.passing.from.test.framework")
+    @Test
+    public void testPassingBarriers() throws Exception {
+        k3po.notifyBarrier("AWAITING_BARRIER");
+        k3po.awaitBarrier("NOTIFYING_BARRIER");
         k3po.finish();
     }
 }

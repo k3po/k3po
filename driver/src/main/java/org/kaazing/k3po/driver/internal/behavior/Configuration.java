@@ -41,19 +41,19 @@ public class Configuration {
 
     public List<ChannelPipeline> getClientAndServerPipelines() {
         if (pipelines == null) {
-            pipelines = new ArrayList<ChannelPipeline>();
+            pipelines = new ArrayList<>();
         }
         return pipelines;
     }
 
     public List<ChannelPipeline> getServerPipelines(RegionInfo regionInfo) {
         if (serverPipelinesByRegion == null) {
-            serverPipelinesByRegion = new HashMap<RegionInfo, List<ChannelPipeline>>();
+            serverPipelinesByRegion = new HashMap<>();
         }
 
         List<ChannelPipeline> serverPipelines = serverPipelinesByRegion.get(regionInfo);
         if (serverPipelines == null) {
-            serverPipelines = new ArrayList<ChannelPipeline>();
+            serverPipelines = new ArrayList<>();
             serverPipelinesByRegion.put(regionInfo, serverPipelines);
         }
         return serverPipelines;
@@ -69,7 +69,7 @@ public class Configuration {
 
     public List<ServerBootstrapResolver> getServerResolvers() {
         if (serverResolvers == null) {
-            serverResolvers = new ArrayList<ServerBootstrapResolver>();
+            serverResolvers = new ArrayList<>();
         }
 
         return serverResolvers;
@@ -77,7 +77,7 @@ public class Configuration {
 
     public List<ClientBootstrapResolver> getClientResolvers() {
         if (clientResolvers == null) {
-            clientResolvers = new ArrayList<ClientBootstrapResolver>();
+            clientResolvers = new ArrayList<>();
         }
 
         return clientResolvers;
@@ -85,7 +85,7 @@ public class Configuration {
 
     public Set<Barrier> getBarriers() {
         if (barriers == null) {
-            barriers = new HashSet<Barrier>();
+            barriers = new HashSet<>();
         }
         return barriers;
     }

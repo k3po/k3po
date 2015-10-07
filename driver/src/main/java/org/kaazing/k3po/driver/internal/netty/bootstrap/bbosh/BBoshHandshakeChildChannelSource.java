@@ -197,7 +197,7 @@ public class BBoshHandshakeChildChannelSource extends SimpleChannelHandler {
             public void operationComplete(ChannelFuture httpBindFuture) throws Exception {
                 if (httpBindFuture.isSuccess()) {
                     final URI connectionLocalURI = handshakeLocalURI.resolve(connectionPath);
-                    Map<String, Object> options = new HashMap<String, Object>();
+                    Map<String, Object> options = new HashMap<>();
                     options.put("bbosh.transport", httpConnectionLocalURI);
                     ChannelAddress connectionLocalAddress = addressFactory.newChannelAddress(connectionLocalURI, options);
                     channel.setLocalAddress(connectionLocalAddress);
@@ -243,7 +243,7 @@ public class BBoshHandshakeChildChannelSource extends SimpleChannelHandler {
 
     private static List<BBoshStrategy> readAcceptStrategies(HttpHeaders httpHeaders) {
         List<String> strategyValues = httpHeaders.getAll(Names.X_ACCEPT_STRATEGY);
-        List<BBoshStrategy> strategies = new ArrayList<BBoshStrategy>(3);
+        List<BBoshStrategy> strategies = new ArrayList<>(3);
         for (String strategyValue : strategyValues) {
             String[] strategyValueParts = strategyValue.split(",\\s+");
             for (String strategyValuePart : strategyValueParts) {

@@ -60,7 +60,7 @@ public final class Launcher {
 
             String scriptPathEntries = cmd.getOptionValue("scriptpath", "src/test/scripts");
             String[] scriptPathEntryArray = scriptPathEntries.split(";");
-            List<URL> scriptUrls = new ArrayList<URL>();
+            List<URL> scriptUrls = new ArrayList<>();
 
             for (String scriptPathEntry : scriptPathEntryArray) {
                 File scriptEntryFilePath = new File(scriptPathEntry);

@@ -36,7 +36,7 @@ public class ScriptProgress {
     public ScriptProgress(RegionInfo scriptInfo, String expectedScript) {
         this.expectedScript = expectedScript;
         this.scriptInfo = requireNonNull(scriptInfo);
-        this.failureInfos = new ConcurrentHashMap<RegionInfo, String>();
+        this.failureInfos = new ConcurrentHashMap<>();
     }
 
     public void addScriptFailure(RegionInfo regionInfo) {
