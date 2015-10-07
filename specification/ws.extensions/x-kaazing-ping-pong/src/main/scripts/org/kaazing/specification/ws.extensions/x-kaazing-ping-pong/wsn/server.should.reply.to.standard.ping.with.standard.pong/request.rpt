@@ -1,39 +1,35 @@
-connect tcp://127.0.0.1:8001
+property key ${ws:handshakeKey()}
+property writeMask ${ws:randomBytes(4)}
+
+connect http://localhost:8001/echo
 connected
 
-# Connection request
-write "GET /echo?.kl=Y HTTP/1.1\r\n"
-write "Upgrade: websocket\r\n"
-write "Connection: Upgrade\r\n"
-write "Host: localhost:8001\r\n"
-write "Origin: http://localhost:8001\r\n"
-write "Sec-WebSocket-Key: nDaimG37f4nUqogPypithw==\r\n"
-write "Sec-WebSocket-Version: 13\r\n"
-write "Sec-WebSocket-Extensions: x-kaazing-ping-pong\r\n"
-write "\r\n"
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Key" ${key}
+write header "Sec-WebSocket-Version" "13"
+write header "Sec-WebSocket-Extensions" "x-kaazing-ping-pong"
 
-# 101 Response
-read "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
-read "Connection: Upgrade\r\n"
-read "Date:" /.*/ "\r\n"
-read "Sec-WebSocket-Accept:" /.*/ "\r\n"
+read status "101" /.+/
+read version "HTTP/1.1"
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
+read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
 # The 4 control bytes for ping-pong extension are 0x01010102:
-read "Sec-WebSocket-Extensions: x-kaazing-ping-pong; 01010102"
-read "\r\n"
-read "Server: Kaazing Gateway\r\n"
-read "Upgrade: websocket\r\n"
-read "\r\n"
-
-# binary-encoded balancer directive - NO balance needed
- read [0x82 0x04 0xEF 0x83 0xBF 0x4E]
+read header "Sec-WebSocket-Extensions" "x-kaazing-ping-pong; 01010102"
 
 # Response to standard PING should be standard PONG
-write [0x89 0x00]
+# Note: client must always use a mask when writing to server (see RFC 6455)
+write [0x89 0x80] ${writeMask}
 read [0x8a 0x00]
 
 # Do clean close
-write [0x88 0x00]
+write [0x88 0x80] ${writeMask}
+
 read [0x88 0x00]
 
-close
+# Server is responsible for closing the TCP connection
 closed

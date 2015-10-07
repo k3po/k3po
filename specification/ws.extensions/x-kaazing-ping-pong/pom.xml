@@ -6,7 +6,7 @@
         <groupId>org.kaazing</groupId>
         <artifactId>k3po.parent</artifactId>
         <version>develop-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../../../pom.xml</relativePath>
     </parent>
 
     <artifactId>specification.x-kaazing-ping-pong</artifactId>
@@ -30,6 +30,12 @@
         <dependency>
             <groupId>org.kaazing</groupId>
             <artifactId>k3po.junit</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.kaazing</groupId>
+            <artifactId>specification.ws</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
