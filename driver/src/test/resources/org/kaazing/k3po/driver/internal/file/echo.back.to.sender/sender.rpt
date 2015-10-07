@@ -1,0 +1,18 @@
+#
+# Copyright (c) 2007-2015, Kaazing Corporation. All rights reserved.
+#
+
+connect file:target/k3po/echo.back.to.sender.dat
+        option size 256
+        option mode rw
+connected
+
+write notify FILE_EXISTS
+
+write option offset "0"
+write "Hello, world"
+write notify ECHO_REQUESTED
+
+read await ECHOED
+read option offset "128"
+read "Hello, world"
