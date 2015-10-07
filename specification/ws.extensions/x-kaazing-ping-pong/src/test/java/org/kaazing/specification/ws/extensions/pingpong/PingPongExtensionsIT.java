@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kaazing.specification.ws.extensions.pingpong.wsn;
+package org.kaazing.specification.ws.extensions.pingpong;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
@@ -31,10 +31,10 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
-public class PingPongExtensionsWsnIT {
+public class PingPongExtensionsIT {
 
     private final K3poRule k3po = new K3poRule()
-            .setScriptRoot("org/kaazing/specification/ws.extensions/x-kaazing-ping-pong/wsn");
+            .setScriptRoot("org/kaazing/specification/ws.extensions/x-kaazing-ping-pong");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -59,17 +59,17 @@ public class PingPongExtensionsWsnIT {
 
     @Test
     @Specification({
-        "server.may.send.extended.ping.control.frames/request",
-        "server.may.send.extended.ping.control.frames/response" })
-    public void serverMaySendExtendedPingControlFrames() throws Exception {
+        "server.should.timeout.if.client.does.not.respond.to.extended.ping/request",
+        "server.should.timeout.if.client.does.not.respond.to.extended.ping/response" })
+    public void serverShouldTimeoutIfClientDoesNotRespondToExtendedPing() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "server.may.send.extended.pong.control.frames/request",
-        "server.may.send.extended.pong.control.frames/response" })
-    public void serverMaySendExtendedPongControlFrames() throws Exception {
+        "client.should.receive.extended.pong.frame/request",
+        "client.should.receive.extended.pong.frame/response" })
+    public void clientShouldReceiveExtendedPongFrame() throws Exception {
         k3po.finish();
     }
 
@@ -94,14 +94,6 @@ public class PingPongExtensionsWsnIT {
         "client.should.disconnect.if.wrong.control.bytes.length/request",
         "client.should.disconnect.if.wrong.control.bytes.length/response" })
     public void clientShouldDisconnectIfWrongControlBytesLength() throws Exception {
-        k3po.finish();
-    }
-
-    @Test
-    @Specification({
-        "client.should.disconnect.if.wrong.control.bytes.value/request",
-        "client.should.disconnect.if.wrong.control.bytes.value/response" })
-    public void clientShouldDisconnectIfWrongControlBytesValue() throws Exception {
         k3po.finish();
     }
 
