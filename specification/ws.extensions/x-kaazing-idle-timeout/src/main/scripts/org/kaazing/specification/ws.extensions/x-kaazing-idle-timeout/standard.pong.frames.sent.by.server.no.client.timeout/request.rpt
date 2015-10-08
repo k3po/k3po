@@ -1,27 +1,24 @@
-connect tcp://127.0.0.1:8001
+property key ${ws:handshakeKey()}
+property writeMask ${ws:randomBytes(4)}
+
+connect http://localhost:8001/echo
 connected
 
-# Connection request
-write "GET /echo HTTP/1.1\r\n"
-write "Upgrade: websocket\r\n"
-write "Connection: Upgrade\r\n"
-write "Host: localhost:8001\r\n"
-write "Origin: http://localhost:8001\r\n"
-write "Sec-WebSocket-Key: ePYyZxvR5fDLh/oEugMjbA==\r\n"
-write "Sec-WebSocket-Version: 13\r\n"
-write "Sec-WebSocket-Extensions: x-kaazing-idle-timeout\r\n"
-write "\r\n"
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Key" ${key}
+write header "Sec-WebSocket-Version" "13"
+write header "Sec-WebSocket-Extensions" "x-kaazing-idle-timeout"
 
-# 101 Response 
-
-read "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
-read "Connection: Upgrade\r\n"
-read "Date:" /.*/ "\r\n"
-read "Sec-WebSocket-Accept" /.*/ "\r\n"
-read "Sec-WebSocket-Extensions: x-kaazing-idle-timeout; timeout=2000\r\n"
-read "Server: Kaazing Gateway\r\n"
-read "Upgrade: websocket\r\n"
-read "\r\n"
+read status "101" /.+/
+read version "HTTP/1.1"
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
+read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
+read header "Sec-WebSocket-Extensions" "x-kaazing-idle-timeout; timeout=2000"
 
 ################################################################
 # Send random data from client
@@ -37,5 +34,8 @@ write [0x82 0x02 0x11 0x11]
 read [0x8a 0x00]
 ################################################################
 
-close
+# Close the ws connection cleanly
+write [0x88 0x80] ${writeMask}
+read [0x88 0x00]
+
 closed

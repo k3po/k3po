@@ -1,50 +1,24 @@
-#
-# Copyright (c) 2007-2014 Kaazing Corporation. All rights reserved.
-# 
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-# 
-#   http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
-#
-
-accept tcp://127.0.0.1:8001
+accept http://localhost:8001/echo
 accepted
 connected
 
-# Connection request
-read "GET /echo HTTP/1.1\r\n"
-read "Upgrade: websocket\r\n"
-read "Connection: Upgrade\r\n"
-read "Host: localhost:8001\r\n"
-read "Origin: http://localhost:8001\r\n"
-read "Sec-WebSocket-Key: ePYyZxvR5fDLh/oEugMjbA==\r\n"
-read "Sec-WebSocket-Version: 13\r\n"
-read "Sec-WebSocket-Extensions: x-kaazing-idle-timeout,x-kaazing-ping-pong\r\n"
-read "\r\n"
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8001"
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
+read header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
+read header "Sec-WebSocket-Version" "13"
+read header "Sec-WebSocket-Extensions" "x-kaazing-idle-timeout,x-kaazing-ping-pong"
 
-# 101 Response 
 
-write "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
-write "Connection: Upgrade\r\n"
-write "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n"
-write "Sec-WebSocket-Accept" "TXCKJSpylVJ7v9ZGLGbt58vypzE=\r\n"
-write "Sec-WebSocket-Extensions: x-kaazing-idle-timeout; timeout=2000\r\n"
-write "Sec-WebSocket-Extensions: x-kaazing-ping-pong; 01010102\r\n"
-write "Server: Kaazing Gateway\r\n"
-write "Upgrade: websocket\r\n"
-write "\r\n"
+write status "101" "Switching Protocols"
+write version "HTTP/1.1"
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
+write header "Sec-WebSocket-Extensions" "x-kaazing-idle-timeout; timeout=2000"
+write header "Sec-WebSocket-Extensions" "x-kaazing-ping-pong; 01010102"
 
 write notify HANDSHAKE_COMPLETE
 
@@ -68,4 +42,9 @@ write await TICK_TWO
 write [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00]
 ################################################################
 
+# Clean close
+read [0x88 0x80] [0..4]
+write [0x88 0x00]
+
+close
 closed
