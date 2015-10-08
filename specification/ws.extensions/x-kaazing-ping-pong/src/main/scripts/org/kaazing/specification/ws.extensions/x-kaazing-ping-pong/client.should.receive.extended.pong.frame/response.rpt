@@ -1,34 +1,29 @@
-accept tcp://127.0.0.1:8001
+accept http://localhost:8001/echo
 accepted
 connected
 
-# Connection request
-read "GET /echo?.kl=Y HTTP/1.1\r\n"
-read "Upgrade: websocket\r\n"
-read "Connection: Upgrade\r\n"
-read "Host: localhost:8001\r\n"
-read "Origin: http://localhost:8001\r\n"
-read "Sec-WebSocket-Key: nDaimG37f4nUqogPypithw==\r\n"
-read "Sec-WebSocket-Version: 13\r\n"
-read "Sec-WebSocket-Extensions: x-kaazing-ping-pong\r\n"
-read "\r\n"
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8001"
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
+read header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
+read header "Sec-WebSocket-Version" "13"
+read header "Sec-WebSocket-Extensions" "x-kaazing-ping-pong"
 
-# 101 Response
-write "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
-write "Connection: Upgrade\r\n"
-write "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n"
-write "Sec-WebSocket-Accept: TXCKJSpylVJ7v9ZGLGbt58vypzE=\r\n"
-# The 4 control bytes for ping-pong extension are 0x01010102:
-write "Sec-WebSocket-Extensions: x-kaazing-ping-pong; 01010102"
-write "\r\n"
-write "Server: Kaazing Gateway\r\n"
-write "Upgrade: websocket\r\n"
-write "\r\n"
-
-# binary-encoded balancer directive - NO balance needed
-write [0x82 0x04 0xEF 0x83 0xBF 0x4E]
+write status "101" "Switching Protocols"
+write version "HTTP/1.1"
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
+write header "Sec-WebSocket-Extensions" "x-kaazing-ping-pong; 01010102"
 
 # Send extended PONG
 write [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00]
 
+# Clean close from client (masked)
+read [0x88 0x80] [0..4]
+write [0x88 0x00]
+
 close
+closed

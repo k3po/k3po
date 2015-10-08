@@ -28,7 +28,6 @@ read [0x8a 0x00]
 
 # Do clean close
 write [0x88 0x80] ${writeMask}
-
 read [0x88 0x00]
 
 # Server is responsible for closing the TCP connection
