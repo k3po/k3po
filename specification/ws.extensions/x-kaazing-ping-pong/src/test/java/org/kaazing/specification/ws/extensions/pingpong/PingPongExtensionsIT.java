@@ -67,6 +67,14 @@ public class PingPongExtensionsIT {
 
     @Test
     @Specification({
+        "should.escape.data.frame.starting.with.control.bytes/request",
+        "should.escape.data.frame.starting.with.control.bytes/response" })
+    public void shouldEscapeDataFrameStartingWithControlBytes() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "client.should.receive.extended.pong.frame/request",
         "client.should.receive.extended.pong.frame/response" })
     public void clientShouldReceiveExtendedPongFrame() throws Exception {
