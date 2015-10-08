@@ -45,14 +45,14 @@ The extension name is specified on the initial connection handshake.
 	Sec-WebSocket-Extension:x-kaazing-ping-pong;<control_bytes>
 	…
 ```
-<`control_bytes`> designates four bytes represented in hexadecimal notation, as described in the WebSocket Extension Control Frame Injection specification.
+<`control_bytes`> designates four bytes represented in hexadecimal notation, as described in the [WebSocket Extension Control Frame Injection](../control-frame-injection/SPEC.md) specification.
 
 Once the extension is negotiated successfully, the server MAY send extended PING and PONG control frames (as defined below) rather than the standard PING and PONG frames defined by the WebSocket Protocol [WSP], in order to make them visible to the Kaazing WebSocket client library. The server MUST respond to an extended PING frame with an extended PONG frame. But it MUST still respond to standard WebSocket PING frame with a standard PONG. The client MUST respond to an extended PING control frame with an extended PONG frame. The server may also assume that the client will respond to a standard WebSocket PING frame with a standard PONG (since the Browser native WebSocket implementation will take care of this).
 
 
 ### Protocol Definitions: extended PING and PONG
 
-Once the extension is negotiated, all WebSocket frames are delivered unmodified, but WebSocket frames may include extended PING and PONG frames. These are websocket text frames distinguished by a server-negotiated control frame control byte sequence at the start of the payload, as defined by the WebSocket Extension Control Frame Injection specification. The format of the payload of these frames is the control bytes followed by a standard RFC 6455 PING or PONG frame with the fin bit unset (so it's a valid UTF) and no application data (zero data length):
+Once the extension is negotiated, all WebSocket frames are delivered unmodified, but WebSocket frames may include extended PING and PONG frames. These are websocket text frames distinguished by a server-negotiated control frame control byte sequence at the start of the payload, as defined by the [WebSocket Extension Control Frame Injection](../control-frame-injection/SPEC.md) specification. The format of the payload of these frames is the control bytes followed by a standard RFC 6455 PING or PONG frame with the fin bit unset (so it's a valid UTF) and no application data (zero data length):
 
 ping:
 	 
