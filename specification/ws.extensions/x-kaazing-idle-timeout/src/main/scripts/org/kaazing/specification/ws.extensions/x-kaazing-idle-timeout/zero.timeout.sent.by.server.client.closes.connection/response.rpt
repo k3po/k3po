@@ -3,7 +3,7 @@ accepted
 connected
 
 # Connection request
-read "GET /echoZeroTimeout HTTP/1.1\r\n"
+read "GET /echo HTTP/1.1\r\n"
 read "Upgrade: websocket\r\n"
 read "Connection: Upgrade\r\n"
 read "Host: localhost:8001\r\n"
