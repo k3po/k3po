@@ -11,7 +11,6 @@ read header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
 read header "Sec-WebSocket-Version" "13"
 read header "Sec-WebSocket-Extensions" "x-kaazing-idle-timeout"
 
-
 write status "101" "Switching Protocols"
 write version "HTTP/1.1"
 write header "Upgrade" "websocket"
