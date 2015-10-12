@@ -22,16 +22,40 @@ read header "Sec-WebSocket-Extensions" "x-kaazing-idle-timeout; timeout=2000"
 read header "Sec-WebSocket-Extensions" "x-kaazing-ping-pong; 01010102"
 
 ################################################################
-# Send random data from client
-write [0x82 0x02 0x11 0x11]
+# Send random data from client at regular intervals so server does not ping
 
-# Expect extended PONG @ TICK_ONE
+write await SEND_ONE
+# Send random data from client
+write [0x82 0x82] ${writeMask}
+write option mask ${writeMask}
+write [0x11 0x11]
+write option mask [0x00 0x00 0x00 0x00]
+################################################################
+write await SEND_TWO
+# Send random data from client
+write [0x82 0x82] ${writeMask}
+write option mask ${writeMask}
+write [0x11 0x11]
+write option mask [0x00 0x00 0x00 0x00]
+
+# Expect extended PONG @ SEND_TWO
 read [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00]
 ################################################################
+write await SEND_THREE
 # Send random data from client
-write [0x82 0x02 0x11 0x11]
+write [0x82 0x82] ${writeMask}
+write option mask ${writeMask}
+write [0x11 0x11]
+write option mask [0x00 0x00 0x00 0x00]
+################################################################
+write await SEND_FOUR
+# Send random data from client
+write [0x82 0x82] ${writeMask}
+write option mask ${writeMask}
+write [0x11 0x11]
+write option mask [0x00 0x00 0x00 0x00]
 
-# Expect extended PONG @ TICK_TWO
+# Expect extended PONG @ SEND_FOUR
 read [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00]
 ################################################################
 

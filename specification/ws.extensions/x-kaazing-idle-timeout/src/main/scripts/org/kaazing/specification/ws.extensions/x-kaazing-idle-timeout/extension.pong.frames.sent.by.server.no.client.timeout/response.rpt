@@ -22,22 +22,34 @@ write header "Sec-WebSocket-Extensions" "x-kaazing-ping-pong; 01010102"
 write notify HANDSHAKE_COMPLETE
 
 ################################################################
-# Expect random data flowing from client 
-read [0x82 0x02 0x11 0x11]
+# Expect random data flowing from client
 
-# Write first PONG frame @ TICK_ONE within the timeout frequency
-write await TICK_ONE
+read [0x82 0x82] ([0..4] :readMask)
+read option mask ${readMask}
+read [0x11 0x11]
+read option mask [0x00 0x00 0x00 0x00]
+################################################################
+read [0x82 0x82] ([0..4] :readMask)
+read option mask ${writeMask}
+read [0x11 0x11]
+read option mask [0x00 0x00 0x00 0x00]
 
 # Send extended PONG
+write await SEND_TWO
 write [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00]
 ################################################################
-# Expect random data flowing from client 
-read [0x82 0x02 0x11 0x11]
-
-# Write second PONG frame @ TICK_TWO within the timeout frequency
-write await TICK_TWO
+read [0x82 0x82] ([0..4] :readMask)
+read option mask ${readMask}
+read [0x11 0x11]
+read option mask [0x00 0x00 0x00 0x00]
+################################################################
+read [0x82 0x82] ([0..4] :readMask)
+read option mask ${writeMask}
+read [0x11 0x11]
+read option mask [0x00 0x00 0x00 0x00]
 
 # Send extended PONG
+write await SEND_FOUR
 write [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00]
 ################################################################
 
