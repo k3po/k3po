@@ -24,7 +24,6 @@ read "Upgrade: websocket\r\n"
 read "\r\n"
 
 write await TICK_ONE
-write notify TICK_TWO
 
 close
 closed

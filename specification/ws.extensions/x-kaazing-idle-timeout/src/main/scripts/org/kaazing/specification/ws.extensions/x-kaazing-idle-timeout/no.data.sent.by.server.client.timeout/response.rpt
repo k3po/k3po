@@ -26,8 +26,6 @@ write "\r\n"
 
 read notify HANDSHAKE_COMPLETE
 
-# Client should timeout and close the connection - this doesn't happen
-
-read await TICK_TWO
+# Client should timeout and close the connection
 
 closed
