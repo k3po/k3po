@@ -2,7 +2,24 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/2.0.3...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/2.1.0...HEAD)
+
+**Implemented enhancements:**
+
+- specification: physical binds and connects [\#197](https://github.com/k3po/k3po/issues/197)
+
+**Closed issues:**
+
+- file transport fails to create file when parent directory does not exist [\#224](https://github.com/k3po/k3po/issues/224)
+
+**Merged pull requests:**
+
+- Normalize the path before passing to class loader to load resource [\#228](https://github.com/k3po/k3po/pull/228) ([jitsni](https://github.com/jitsni))
+- Fix \#224 by ensuring that parent directory exists… [\#225](https://github.com/k3po/k3po/pull/225) ([jfallows](https://github.com/jfallows))
+- Added x-kaazing-ping-pong WSN spec tests [\#221](https://github.com/k3po/k3po/pull/221) ([mgherghe](https://github.com/mgherghe))
+
+## [2.1.0](https://github.com/k3po/k3po/tree/2.1.0) (2015-09-24)
+[Full Changelog](https://github.com/k3po/k3po/compare/2.0.3...2.1.0)
 
 **Closed issues:**
 

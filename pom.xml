@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>k3po.parent</artifactId>
-    <version>2.1.0</version>
+    <version>2.1.1</version>
 
     <name>k3po/parent</name>
     <url>https://github.com/kaazing/k3po</url>
@@ -35,7 +35,7 @@
         <module>specification/amqp_1_0.jms</module>
         <module>specification/bbosh</module>
         <module>specification/http</module>
-	<module>specification/httpx</module>
+        <module>specification/httpx</module>
         <module>specification/http2</module>
         <module>specification/httpxe</module>
         <module>specification/k3po.control</module>
@@ -46,6 +46,7 @@
         <module>specification/tls</module>
         <module>specification/ws</module>
         <module>specification/wse</module>
+        <module>specification/ws.extensions/x-kaazing-ping-pong</module>
     </modules>
 
     <properties>
