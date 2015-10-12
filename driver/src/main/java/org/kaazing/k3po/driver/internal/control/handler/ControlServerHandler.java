@@ -149,7 +149,8 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         final StringBuilder aggregatedScript = new StringBuilder();
         for (String scriptName : scriptNames) {
             String scriptNameWithExtension = format("%s.rpt", scriptName);
-            Path scriptPath = Paths.get(scriptNameWithExtension);
+            Path scriptPath = Paths.get(scriptNameWithExtension).normalize();
+            scriptNameWithExtension = scriptPath.toString();
             String script = null;
 
             assert !scriptPath.isAbsolute();
