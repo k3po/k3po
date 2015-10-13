@@ -35,7 +35,7 @@
         <module>specification/amqp_1_0.jms</module>
         <module>specification/bbosh</module>
         <module>specification/http</module>
-	<module>specification/httpx</module>
+        <module>specification/httpx</module>
         <module>specification/http2</module>
         <module>specification/httpxe</module>
         <module>specification/k3po.control</module>
@@ -46,6 +46,7 @@
         <module>specification/tls</module>
         <module>specification/ws</module>
         <module>specification/wse</module>
+        <module>specification/ws.extensions/x-kaazing-ping-pong</module>
     </modules>
 
     <properties>

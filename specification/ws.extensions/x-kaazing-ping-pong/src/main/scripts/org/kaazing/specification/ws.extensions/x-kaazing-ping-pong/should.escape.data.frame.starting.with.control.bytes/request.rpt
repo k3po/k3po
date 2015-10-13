@@ -1,0 +1,45 @@
+property key ${ws:handshakeKey()}
+property writeMask ${ws:randomBytes(4)}
+
+connect http://localhost:8001/echo
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Key" ${key}
+write header "Sec-WebSocket-Version" "13"
+write header "Sec-WebSocket-Extensions" "x-kaazing-ping-pong"
+
+read status "101" /.+/
+read version "HTTP/1.1"
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
+read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
+# The 4 control bytes for ping-pong extension are 0x01010102:
+read header "Sec-WebSocket-Extensions" "x-kaazing-ping-pong; 01010102"
+
+# Send a text message starting with the control bytes and followed by "ABC" 
+write [0x81 0x84] ${writeMask}
+write option mask ${writeMask}
+write [0x01 0x01 0x01 0x02]
+write option mask [0x00 0x00 0x00 0x00]
+
+write [0x81 0x87] ${writeMask}
+write option mask ${writeMask}
+write [0x01 0x01 0x01 0x02]
+write [0x41 0x42 0x43]
+write option mask [0x00 0x00 0x00 0x00]
+
+# Expect echoed response, starting with the escape frame
+read [0x81 0x04 0x01 0x01 0x01 0x02]
+read [0x81 0x07 0x01 0x01 0x01 0x02]
+read "ABC"
+
+# Do clean close
+write [0x88 0x80] ${writeMask}
+read [0x88 0x00]
+
+closed
