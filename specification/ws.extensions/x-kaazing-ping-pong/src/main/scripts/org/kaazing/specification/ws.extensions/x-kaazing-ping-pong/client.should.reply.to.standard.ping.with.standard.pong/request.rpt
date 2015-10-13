@@ -1,0 +1,34 @@
+property key ${ws:handshakeKey()}
+property writeMask ${ws:randomBytes(4)}
+
+connect http://localhost:8001/echo
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Key" ${key}
+write header "Sec-WebSocket-Version" "13"
+write header "Sec-WebSocket-Extensions" "x-kaazing-ping-pong"
+
+read status "101" /.+/
+read version "HTTP/1.1"
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
+read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
+# The 4 control bytes for ping-pong extension are 0x01010102:
+read header "Sec-WebSocket-Extensions" "x-kaazing-ping-pong; 01010102"
+
+# Read standard PING
+read [0x09 0x00]
+
+# Respond with standard PONG (masked)
+write [0x8a 0x00] ${writeMask}
+
+# Do clean close
+write [0x88 0x80] ${writeMask}
+read [0x88 0x00]
+
+closed
