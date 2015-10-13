@@ -132,7 +132,7 @@ public class IdleTimeoutExtensionIT {
         "standard.pong.frames.sent.by.server.no.client.timeout/response" })
     @Test
     public void standardPongFramesSentByServerNoClientTimeout() throws Exception {
-    	k3po.start();
+        k3po.start();
         k3po.awaitBarrier("HANDSHAKE_COMPLETE");
         Thread.sleep(1000);
         k3po.notifyBarrier("SEND_ONE");
