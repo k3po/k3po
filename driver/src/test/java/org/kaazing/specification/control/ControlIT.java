@@ -55,7 +55,7 @@ public class ControlIT {
     }
 
     @Test
-    @TestSpecification({ "foo/../accept.finished.with.diff", "connect.finished.with.diff" })
+    @TestSpecification({ "accept.finished.with.diff", "connect.finished.with.diff" })
     public void shouldPrepareStartThenFinishedWithDiff() throws Exception {
         robot.finish();
     }
