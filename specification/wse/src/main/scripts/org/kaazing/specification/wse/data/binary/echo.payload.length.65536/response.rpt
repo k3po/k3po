@@ -57,11 +57,5 @@ read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
 read [0x80 0x84 0x80 0x00]
 read ([0..65536] :server65536)
-read [0x01 0x30 0x31 0xFF]
 read notify DATA_RECEIVED
-read closed
 
-write status "200" "OK"
-write version "HTTP/1.1"
-write header content-length
-write close
