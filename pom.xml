@@ -46,6 +46,7 @@
         <module>specification/tls</module>
         <module>specification/ws</module>
         <module>specification/wse</module>
+        <module>specification/ws.extensions/x-kaazing-idle-timeout</module>
         <module>specification/ws.extensions/x-kaazing-ping-pong</module>
     </modules>
 
