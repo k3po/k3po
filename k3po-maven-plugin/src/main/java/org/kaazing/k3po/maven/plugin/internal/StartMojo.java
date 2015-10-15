@@ -19,6 +19,8 @@ package org.kaazing.k3po.maven.plugin.internal;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.System.identityHashCode;
+import static org.apache.maven.plugins.annotations.LifecyclePhase.PRE_INTEGRATION_TEST;
+import static org.apache.maven.plugins.annotations.ResolutionScope.TEST;
 import static org.jboss.netty.logging.InternalLoggerFactory.setDefaultFactory;
 
 import java.io.File;
@@ -31,37 +33,27 @@ import java.util.List;
 
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.kaazing.k3po.driver.internal.RobotServer;
 import org.kaazing.k3po.maven.plugin.internal.logging.MavenLoggerFactory;
 
 /**
  * Start K3PO
- *
- * @goal start
- * @phase pre-integration-test
- *
- * @requiresDependencyResolution test
  */
+@Mojo(name = "start", defaultPhase = PRE_INTEGRATION_TEST, requiresDependencyResolution = TEST)
 public class StartMojo extends AbstractMojo {
 
-    /**
-     * @parameter default-value="true" expression="${maven.k3po.daemon}"
-     */
+    @Parameter(defaultValue = "true", property = "maven.k3po.daemon")
     private boolean daemon;
 
-    /**
-     * @parameter name="control" default-value="tcp://localhost:11642"
-     */
+    @Parameter(alias = "control", defaultValue = "tcp://localhost:11642")
     private URI controlURI;
 
-    /**
-     * @parameter default-value="src/test/scripts"
-     */
+    @Parameter(defaultValue = "src/test/scripts")
     private File scriptDir;
 
-    /**
-     * @parameter default-value="false" expression="${maven.k3po.verbose}"
-     */
+    @Parameter(defaultValue = "false", property = "maven.k3po.verbose")
     private boolean verbose;
 
     @Override

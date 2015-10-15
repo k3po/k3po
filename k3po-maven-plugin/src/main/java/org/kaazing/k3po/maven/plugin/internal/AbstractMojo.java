@@ -18,6 +18,7 @@ package org.kaazing.k3po.maven.plugin.internal;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.kaazing.k3po.driver.internal.RobotServer;
 
@@ -28,23 +29,19 @@ public abstract class AbstractMojo extends org.apache.maven.plugin.AbstractMojo 
 
     private static final ThreadLocal<RobotServer> ROBOT_SERVER = new ThreadLocal<>();
 
-    /**
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     * @since 1.0
-     */
+    @Parameter(property = "project", required = true, readonly = true)
     protected MavenProject project;
 
-    /**
-     * @parameter default-value="false" expression="${skipTests || skipITs}"
-     */
+    @Parameter(defaultValue = "false", property = "skipTests")
     private boolean skipTests;
+
+    @Parameter(defaultValue = "false", property = "skipITs")
+    private boolean skipITs;
 
     @Override
     public final void execute() throws MojoExecutionException, MojoFailureException {
 
-        if (skipTests) {
+        if (skipTests || skipITs) {
             getLog().info("Tests are skipped");
             return;
         }
