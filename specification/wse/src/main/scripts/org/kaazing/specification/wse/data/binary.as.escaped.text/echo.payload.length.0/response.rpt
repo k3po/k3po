@@ -56,11 +56,4 @@ read header "Content-Type" /text\/plain;charset=(?i)utf-8/
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
 read [0xC2 0x80 0x7F 0x3F]
-read [0x01 0x30 0x31 0xC3 0xBF]
 read notify DATA_RECEIVED
-read closed
-
-write status "200" "OK"
-write version "HTTP/1.1"
-write header content-length
-write close
