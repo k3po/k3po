@@ -29,7 +29,7 @@ public abstract class AbstractMojo extends org.apache.maven.plugin.AbstractMojo 
 
     private static final ThreadLocal<RobotServer> ROBOT_SERVER = new ThreadLocal<>();
 
-    @Parameter(property = "project", required = true, readonly = true)
+    @Parameter(defaultValue = "${project}", readonly = true)
     protected MavenProject project;
 
     @Parameter(defaultValue = "false", property = "skipTests")

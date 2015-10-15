@@ -47,7 +47,7 @@ public class StartMojo extends AbstractMojo {
     @Parameter(defaultValue = "true", property = "maven.k3po.daemon")
     private boolean daemon;
 
-    @Parameter(alias = "control", defaultValue = "tcp://localhost:11642")
+    @Parameter(name = "control", defaultValue = "tcp://localhost:11642")
     private URI controlURI;
 
     @Parameter(defaultValue = "src/test/scripts")
@@ -56,13 +56,21 @@ public class StartMojo extends AbstractMojo {
     @Parameter(defaultValue = "false", property = "maven.k3po.verbose")
     private boolean verbose;
 
+    public URI getControl() {
+        return controlURI;
+    }
+
+    public void setControl(URI controlURI) {
+        this.controlURI = controlURI;
+    }
+
     @Override
     protected void executeImpl() throws MojoExecutionException {
 
         try {
             ClassLoader scriptLoader = createScriptLoader();
 
-            RobotServer server = new RobotServer(controlURI, verbose, scriptLoader);
+            RobotServer server = new RobotServer(getControl(), verbose, scriptLoader);
 
             // TODO: detect Maven version to determine logger factory
             //         3.0 -> MavenLoggerFactory
