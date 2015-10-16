@@ -64,7 +64,8 @@ public class AgronaChannelAddressFactorySpi extends ChannelAddressFactorySpi {
             throw new ChannelException(String.format("%s reader option missing", getSchemeName()));
         }
 
-        if (!(options.get(OPTION_READER) instanceof ChannelReader)) {
+        Object reader = options.get(OPTION_READER);
+        if (!(reader instanceof ChannelReader)) {
             throw new ChannelException(String.format("%s reader option incorrect type", getSchemeName()));
         }
 
@@ -72,11 +73,12 @@ public class AgronaChannelAddressFactorySpi extends ChannelAddressFactorySpi {
             throw new ChannelException(String.format("%s writer option missing", getSchemeName()));
         }
 
-        if (!(options.get(OPTION_WRITER) instanceof ChannelWriter)) {
+        Object writer = options.get(OPTION_WRITER);
+        if (!(writer instanceof ChannelWriter)) {
             throw new ChannelException(String.format("%s reader option incorrect type", getSchemeName()));
         }
 
-        return super.newChannelAddress0(location, transport, options);
+        return new AgronaChannelAddress(location, (ChannelReader) reader, (ChannelWriter) writer) ;
     }
 
 }

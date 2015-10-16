@@ -16,19 +16,20 @@
 
 package org.kaazing.k3po.driver.internal.netty.channel.agrona;
 
-import uk.co.real_logic.agrona.concurrent.MessageHandler;
+import uk.co.real_logic.agrona.DirectBuffer;
+import uk.co.real_logic.agrona.concurrent.broadcast.BroadcastTransmitter;
 
-public interface ChannelReader {
+public final class BroadcastTransmitterChannelWriter implements ChannelWriter {
 
-    ChannelReader NO_OP = new ChannelReader() {
+    private final BroadcastTransmitter transmitter;
 
-        @Override
-        public int read(MessageHandler handler) {
-            return 0;
-        }
+    public BroadcastTransmitterChannelWriter(BroadcastTransmitter transmitter) {
+        this.transmitter = transmitter;
+    }
 
-    };
-
-    int read(MessageHandler handler);
+    public boolean write(int msgTypeId, DirectBuffer srcBuffer, int srcIndex, int length) {
+        transmitter.transmit(msgTypeId, srcBuffer, srcIndex, length);
+        return true;
+    }
 
 }

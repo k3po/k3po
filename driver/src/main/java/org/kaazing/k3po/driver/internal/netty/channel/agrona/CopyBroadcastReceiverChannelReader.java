@@ -17,18 +17,18 @@
 package org.kaazing.k3po.driver.internal.netty.channel.agrona;
 
 import uk.co.real_logic.agrona.concurrent.MessageHandler;
+import uk.co.real_logic.agrona.concurrent.broadcast.CopyBroadcastReceiver;
 
-public interface ChannelReader {
+public final class CopyBroadcastReceiverChannelReader implements ChannelReader {
 
-    ChannelReader NO_OP = new ChannelReader() {
+    private final CopyBroadcastReceiver copyReceiver;
 
-        @Override
-        public int read(MessageHandler handler) {
-            return 0;
-        }
+    public CopyBroadcastReceiverChannelReader(CopyBroadcastReceiver copyReceiver) {
+        this.copyReceiver = copyReceiver;
+    }
 
-    };
-
-    int read(MessageHandler handler);
+    public int read(MessageHandler handler) {
+        return copyReceiver.receive(handler);
+    }
 
 }

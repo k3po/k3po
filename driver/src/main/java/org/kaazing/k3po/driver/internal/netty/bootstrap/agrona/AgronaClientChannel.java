@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-package org.kaazing.k3po.driver.internal.netty.channel.agrona;
+package org.kaazing.k3po.driver.internal.netty.bootstrap.agrona;
 
-import uk.co.real_logic.agrona.concurrent.MessageHandler;
+import static org.jboss.netty.channel.Channels.fireChannelOpen;
 
-public interface ChannelReader {
+import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelSink;
 
-    ChannelReader NO_OP = new ChannelReader() {
+public final class AgronaClientChannel extends AgronaChannel {
 
-        @Override
-        public int read(MessageHandler handler) {
-            return 0;
-        }
+    final AgronaClientBoss boss;
 
-    };
+    AgronaClientChannel(ChannelFactory factory, ChannelPipeline pipeline, ChannelSink sink,
+            AgronaClientBoss boss, AgronaWorker worker) {
+        super(null, factory, pipeline, sink, worker);
 
-    int read(MessageHandler handler);
+        this.boss = boss;
+
+        fireChannelOpen(this);
+    }
 
 }
