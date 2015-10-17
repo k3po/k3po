@@ -25,6 +25,8 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannelSink;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
+import org.kaazing.k3po.driver.internal.netty.channel.FlushEvent;
+import org.kaazing.k3po.driver.internal.netty.channel.ShutdownOutputEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.AgronaChannelAddress;
 
 public class AgronaClientChannelSink extends AbstractChannelSink {
@@ -48,14 +50,28 @@ public class AgronaClientChannelSink extends AbstractChannelSink {
     @Override
     protected void writeRequested(ChannelPipeline pipeline, MessageEvent evt) throws Exception {
         ChannelBuffer channelBuffer = (ChannelBuffer) evt.getMessage();
-        AgronaClientChannel channel = (AgronaClientChannel) evt.getChannel();
+        AgronaChannel channel = (AgronaChannel) evt.getChannel();
         ChannelFuture writeFuture = evt.getFuture();
         channel.worker.write(channel, channelBuffer, writeFuture);
     }
 
     @Override
+    protected void flushRequested(ChannelPipeline pipeline, FlushEvent evt) throws Exception {
+        AgronaChannel channel = (AgronaChannel) evt.getChannel();
+        ChannelFuture flushFuture = evt.getFuture();
+        channel.worker.flush(channel, flushFuture);
+    }
+
+    @Override
+    protected void shutdownOutputRequested(ChannelPipeline pipeline, ShutdownOutputEvent evt) throws Exception {
+        AgronaChannel channel = (AgronaChannel) evt.getChannel();
+        ChannelFuture shutdownOutputFuture = evt.getFuture();
+        channel.worker.shutdownOutput(channel, shutdownOutputFuture);
+    }
+
+    @Override
     protected void closeRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
-        AgronaClientChannel channel = (AgronaClientChannel) evt.getChannel();
+        AgronaChannel channel = (AgronaChannel) evt.getChannel();
         channel.worker.close(channel);
     }
 

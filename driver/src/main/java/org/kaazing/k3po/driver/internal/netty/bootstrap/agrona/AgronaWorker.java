@@ -16,11 +16,15 @@
 
 package org.kaazing.k3po.driver.internal.netty.bootstrap.agrona;
 
+import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
 import static org.jboss.netty.channel.Channels.fireChannelClosed;
 import static org.jboss.netty.channel.Channels.fireChannelDisconnected;
 import static org.jboss.netty.channel.Channels.fireChannelUnbound;
 import static org.jboss.netty.channel.Channels.fireWriteComplete;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireFlushed;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireOutputShutdown;
+import static uk.co.real_logic.agrona.BitUtil.SIZE_OF_INT;
 
 import java.util.Deque;
 import java.util.Set;
@@ -29,6 +33,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CountDownLatch;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.ChannelException;
 import org.jboss.netty.channel.ChannelFuture;
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.AgronaChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.ChannelReader;
@@ -65,6 +70,14 @@ public final class AgronaWorker implements Runnable {
 
     public void write(AgronaChannel channel, ChannelBuffer channelBuffer, ChannelFuture writeFuture) {
         registerTask(new WriteTask(channel, channelBuffer, writeFuture));
+    }
+
+    public void flush(AgronaChannel channel, ChannelFuture flushFuture) {
+        registerTask(new FlushTask(channel, flushFuture));
+    }
+
+    public void shutdownOutput(AgronaChannel channel, ChannelFuture shutdownOutputFuture) {
+        registerTask(new ShutdownOutputTask(channel, shutdownOutputFuture));
     }
 
     public void close(AgronaChannel channel) {
@@ -127,6 +140,30 @@ public final class AgronaWorker implements Runnable {
         taskQueue.offer(task);
     }
 
+    private static boolean flushWriteBufferIfNecessary(AgronaChannel channel) {
+        ChannelBuffer writeBuffer = channel.writeBuffer;
+        int readableBytes = writeBuffer.readableBytes();
+        if (readableBytes == 0) {
+            return false;
+        }
+        else if (readableBytes < SIZE_OF_INT) {
+            String message = format("Minimum %d bytes needed for message type id", SIZE_OF_INT);
+            throw new ChannelException(message);
+        }
+        else {
+            UnsafeBuffer srcBuffer = new UnsafeBuffer(new byte[readableBytes - SIZE_OF_INT]);
+            int msgTypeId = writeBuffer.getInt(0);
+            writeBuffer.getBytes(SIZE_OF_INT, srcBuffer.byteArray());
+            writeBuffer.resetWriterIndex();
+
+            AgronaChannelAddress remoteAddress = channel.getRemoteAddress();
+            ChannelWriter writer = remoteAddress.getWriter();
+            writer.write(msgTypeId, srcBuffer, 0, srcBuffer.capacity());
+
+            return true;
+        }
+    }
+
     private static final class WriteTask implements Runnable {
 
         private final AgronaChannel channel;
@@ -144,20 +181,62 @@ public final class AgronaWorker implements Runnable {
 
         @Override
         public void run() {
+            ChannelBuffer writeBuffer = channel.writeBuffer;
             int readableBytes = buffer.readableBytes();
-            byte[] array = buffer.array();
-            int arrayOffset = buffer.arrayOffset();
-            int readerIndex = buffer.readerIndex();
-
-            UnsafeBuffer srcBuffer = new UnsafeBuffer(array, arrayOffset + readerIndex, readableBytes);
-
-            ChannelWriter writer = channel.getRemoteAddress().getWriter();
-            // TODO: msgTypeId is fixed (!)
-            writer.write(0x01, srcBuffer, 0, srcBuffer.capacity());
+            writeBuffer.writeBytes(buffer);
             future.setSuccess();
             fireWriteComplete(channel, readableBytes);
         }
 
+    }
+
+    private static final class FlushTask implements Runnable {
+
+        private final AgronaChannel channel;
+        private final ChannelFuture future;
+
+        public FlushTask(
+                AgronaChannel channel,
+                ChannelFuture future) {
+            this.channel = channel;
+            this.future = future;
+        }
+
+        @Override
+        public void run() {
+            try {
+                flushWriteBufferIfNecessary(channel);
+                future.setSuccess();
+                fireFlushed(channel);
+            }
+            catch (ChannelException ex) {
+                future.setFailure(ex);
+            }
+        }
+
+    }
+
+    private static final class ShutdownOutputTask implements Runnable {
+
+        private final AgronaChannel channel;
+        private final ChannelFuture future;
+
+        public ShutdownOutputTask(AgronaChannel channel, ChannelFuture future) {
+            this.channel = channel;
+            this.future = future;
+        }
+
+        @Override
+        public void run() {
+            try {
+                flushWriteBufferIfNecessary(channel);
+                future.setSuccess();
+                fireOutputShutdown(channel);
+            }
+            catch (ChannelException ex) {
+                future.setFailure(ex);
+            }
+        }
     }
 
     private static final class CloseTask implements Runnable {
@@ -170,6 +249,7 @@ public final class AgronaWorker implements Runnable {
 
         @Override
         public void run() {
+            flushWriteBufferIfNecessary(channel);
             if (channel.setClosed()) {
                 fireChannelDisconnected(channel);
                 fireChannelUnbound(channel);
@@ -178,4 +258,5 @@ public final class AgronaWorker implements Runnable {
         }
 
     }
+
 }

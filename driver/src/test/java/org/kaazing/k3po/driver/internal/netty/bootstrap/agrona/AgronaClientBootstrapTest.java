@@ -20,10 +20,12 @@ import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
+import static org.jboss.netty.buffer.ChannelBuffers.buffer;
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory.newChannelAddressFactory;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.flush;
 import static org.kaazing.k3po.driver.internal.netty.channel.agrona.AgronaChannelAddress.OPTION_READER;
 import static org.kaazing.k3po.driver.internal.netty.channel.agrona.AgronaChannelAddress.OPTION_WRITER;
 import static org.mockito.Matchers.any;
@@ -38,8 +40,10 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -57,6 +61,7 @@ import org.junit.runner.RunWith;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrapRule;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
+import org.kaazing.k3po.driver.internal.netty.channel.FlushEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.SimpleChannelHandler;
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.BroadcastTransmitterChannelWriter;
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.ChannelReader;
@@ -108,7 +113,14 @@ public class AgronaClientBootstrapTest {
     @Theory
     public void shouldConnectEchoThenClose(WriterStrategy pingStrategy, ReaderStrategy pongStrategy) throws Exception {
 
-        SimpleChannelHandler client = new SimpleChannelHandler();
+        final AtomicInteger pongsReceived = new AtomicInteger();
+        SimpleChannelHandler client = new SimpleChannelHandler() {
+            @Override
+            public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+                pongsReceived.incrementAndGet();
+                super.messageReceived(ctx, e);
+            }
+        };
         SimpleChannelHandler clientSpy = spy(client);
 
         bootstrap.setPipeline(pipeline(clientSpy));
@@ -157,43 +169,48 @@ public class AgronaClientBootstrapTest {
         options.put(OPTION_WRITER, pingWriter);
         ChannelAddress channelAddress = channelAddressFactory.newChannelAddress(location, options);
 
-        Channel channel = bootstrap.connect(channelAddress).syncUninterruptibly().getChannel();
-        channel.write(copiedBuffer("Hello, world", UTF_8)).syncUninterruptibly();
+        ChannelBuffer ping = buffer(256);
+        ping.writeInt(0x01);
+        ping.writeBytes("Hello, world".getBytes(UTF_8));
 
-        final AtomicReference<Message> messageRef = new AtomicReference<>();
+        Channel channel = bootstrap.connect(channelAddress).syncUninterruptibly().getChannel();
+        channel.write(ping).syncUninterruptibly();
+        flush(channel);
+
+        final AtomicReference<Message> pongRef = new AtomicReference<>();
 
         final MessageHandler messageHandler = new MessageHandler() {
             @Override
             public void onMessage(int msgTypeId, MutableDirectBuffer buffer, int index, int length) {
-                Message message = new Message();
-                message.typeId = msgTypeId;
-                message.payload = buffer.getStringWithoutLengthUtf8(index, length);
-                messageRef.set(message);
+                Message pong = new Message();
+                pong.typeId = msgTypeId;
+                pong.payload = buffer.getStringWithoutLengthUtf8(index, length);
+                pongRef.set(pong);
             }
         };
 
         while (pingReader.read(messageHandler) == 0) {
-            sleep(200);
+            sleep(1);
         }
 
-        UnsafeBuffer srcBuffer = new UnsafeBuffer("Hello, world".getBytes(UTF_8));
-        pongWriter.write(0x01, srcBuffer, 0, srcBuffer.capacity());
+        Message pong = pongRef.get();
+        assertNotNull(pong);
 
-        // no INPUT_SHUTDOWN signal, so coordinate on echoed message instead
-        Message message;
-        do {
-            Thread.sleep(1L);
-        } while ((message = messageRef.get()) == null);
+        UnsafeBuffer srcBuffer = new UnsafeBuffer(pong.payload.getBytes(UTF_8));
+        pongWriter.write(pong.typeId, srcBuffer, 0, srcBuffer.capacity());
 
+        while (pongsReceived.get() == 0) {
+            sleep(1);
+        }
         channel.close().syncUninterruptibly();
 
         bootstrap.shutdown();
 
-        assertEquals(0x01, message.typeId);
-        assertEquals("Hello, world", message.payload);
+        assertEquals(0x01, pong.typeId);
+        assertEquals("Hello, world", pong.payload);
 
-        verify(clientSpy, times(8)).handleUpstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
-        verify(clientSpy, times(3)).handleDownstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
+        verify(clientSpy, times(9)).handleUpstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
+        verify(clientSpy, times(4)).handleDownstream(any(ChannelHandlerContext.class), any(ChannelEvent.class));
 
         InOrder childConnect = inOrder(clientSpy);
         childConnect.verify(clientSpy).channelOpen(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
@@ -203,9 +220,11 @@ public class AgronaClientBootstrapTest {
 
         InOrder childWrite = inOrder(clientSpy);
         childWrite.verify(clientSpy).writeRequested(any(ChannelHandlerContext.class), any(MessageEvent.class));
+        childWrite.verify(clientSpy).flushRequested(any(ChannelHandlerContext.class), any(FlushEvent.class));
         childWrite.verify(clientSpy).closeRequested(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
         // asynchronous
         verify(clientSpy).writeComplete(any(ChannelHandlerContext.class), any(WriteCompletionEvent.class));
+        verify(clientSpy).flushed(any(ChannelHandlerContext.class), any(FlushEvent.class));
 
         InOrder childRead = inOrder(clientSpy);
         childRead.verify(clientSpy).messageReceived(any(ChannelHandlerContext.class), any(MessageEvent.class));

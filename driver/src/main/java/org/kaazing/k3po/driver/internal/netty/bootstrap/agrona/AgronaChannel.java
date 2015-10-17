@@ -16,7 +16,9 @@
 
 package org.kaazing.k3po.driver.internal.netty.bootstrap.agrona;
 
+import static org.jboss.netty.buffer.ChannelBuffers.dynamicBuffer;
 import static org.jboss.netty.channel.Channels.fireMessageReceived;
+import static uk.co.real_logic.agrona.BitUtil.SIZE_OF_INT;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -38,14 +40,16 @@ public abstract class AgronaChannel extends AbstractChannel<AgronaChannelConfig>
 
         @Override
         public void onMessage(int msgTypeId, MutableDirectBuffer buffer, int index, int length) {
-            // TODO: msgTypeId ignored (!)
-            ChannelBuffer message = ChannelBuffers.buffer(length);
-            buffer.getBytes(index, message.array(), message.arrayOffset(), length);
-            message.writerIndex(length);
+            ChannelBuffer message = ChannelBuffers.buffer(SIZE_OF_INT + length);
+            message.setInt(0, msgTypeId);
+            buffer.getBytes(index, message.array(), message.arrayOffset() + SIZE_OF_INT, length);
+            message.writerIndex(SIZE_OF_INT + length);
             fireMessageReceived(AgronaChannel.this, message);
         }
 
     };
+
+    final ChannelBuffer writeBuffer = dynamicBuffer(8192);
 
     AgronaChannel(AgronaServerChannel parent, ChannelFactory factory,
             ChannelPipeline pipeline, ChannelSink sink, AgronaWorker worker) {

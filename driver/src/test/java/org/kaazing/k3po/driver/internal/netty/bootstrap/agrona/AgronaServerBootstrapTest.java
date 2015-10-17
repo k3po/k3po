@@ -205,7 +205,7 @@ public class AgronaServerBootstrapTest {
         pingWriter.write(0x01, srcBuffer, 0, srcBuffer.capacity());
 
         while (pongReader.read(messageHandler) == 0) {
-            sleep(200);
+            sleep(1);
         }
 
         // wait for child channels to close

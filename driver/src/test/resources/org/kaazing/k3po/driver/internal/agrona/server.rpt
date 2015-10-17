@@ -1,0 +1,15 @@
+property newLayout ${agronaIT:layoutInit("target/agrona-itest", 1024, 1024)}
+
+accept agrona://stream/bidirectional
+       option reader ${agrona:manyToOneReader(newLayout.ring)}
+       option writer ${agrona:broadcastTransmitter(newLayout.broadcast)}
+
+accepted
+connected
+
+read [0x00 0x00 0x00 0x01]
+read ([0..32] :server32)
+
+write [0x00 0x00 0x00 0x02]
+write ${server32}
+write close
