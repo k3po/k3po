@@ -43,36 +43,37 @@ public class AgronaClientChannelSink extends AbstractChannelSink {
             fireChannelBound(channel, localAddress);
         }
 
-        ChannelFuture connectFuture = evt.getFuture();
-        channel.boss.connect(channel, remoteAddress, connectFuture);
+        ChannelFuture future = evt.getFuture();
+        channel.boss.connect(channel, remoteAddress, future);
     }
 
     @Override
     protected void writeRequested(ChannelPipeline pipeline, MessageEvent evt) throws Exception {
         ChannelBuffer channelBuffer = (ChannelBuffer) evt.getMessage();
         AgronaChannel channel = (AgronaChannel) evt.getChannel();
-        ChannelFuture writeFuture = evt.getFuture();
-        channel.worker.write(channel, channelBuffer, writeFuture);
+        ChannelFuture future = evt.getFuture();
+        channel.worker.write(channel, channelBuffer, future);
     }
 
     @Override
     protected void flushRequested(ChannelPipeline pipeline, FlushEvent evt) throws Exception {
         AgronaChannel channel = (AgronaChannel) evt.getChannel();
-        ChannelFuture flushFuture = evt.getFuture();
-        channel.worker.flush(channel, flushFuture);
+        ChannelFuture future = evt.getFuture();
+        channel.worker.flush(channel, future);
     }
 
     @Override
     protected void shutdownOutputRequested(ChannelPipeline pipeline, ShutdownOutputEvent evt) throws Exception {
         AgronaChannel channel = (AgronaChannel) evt.getChannel();
-        ChannelFuture shutdownOutputFuture = evt.getFuture();
-        channel.worker.shutdownOutput(channel, shutdownOutputFuture);
+        ChannelFuture future = evt.getFuture();
+        channel.worker.shutdownOutput(channel, future);
     }
 
     @Override
     protected void closeRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
         AgronaChannel channel = (AgronaChannel) evt.getChannel();
-        channel.worker.close(channel);
+        ChannelFuture future = evt.getFuture();
+        channel.worker.close(channel, future);
     }
 
 }

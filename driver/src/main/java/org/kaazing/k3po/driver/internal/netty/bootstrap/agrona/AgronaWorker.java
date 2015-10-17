@@ -68,21 +68,21 @@ public final class AgronaWorker implements Runnable {
         readableChannels.add(channel);
     }
 
-    public void write(AgronaChannel channel, ChannelBuffer channelBuffer, ChannelFuture writeFuture) {
-        registerTask(new WriteTask(channel, channelBuffer, writeFuture));
+    public void write(AgronaChannel channel, ChannelBuffer channelBuffer, ChannelFuture future) {
+        registerTask(new WriteTask(channel, channelBuffer, future));
     }
 
-    public void flush(AgronaChannel channel, ChannelFuture flushFuture) {
-        registerTask(new FlushTask(channel, flushFuture));
+    public void flush(AgronaChannel channel, ChannelFuture future) {
+        registerTask(new FlushTask(channel, future));
     }
 
-    public void shutdownOutput(AgronaChannel channel, ChannelFuture shutdownOutputFuture) {
-        registerTask(new ShutdownOutputTask(channel, shutdownOutputFuture));
+    public void shutdownOutput(AgronaChannel channel, ChannelFuture future) {
+        registerTask(new ShutdownOutputTask(channel, future));
     }
 
-    public void close(AgronaChannel channel) {
+    public void close(AgronaChannel channel, ChannelFuture future) {
         readableChannels.remove(channel);
-        registerTask(new CloseTask(channel));
+        registerTask(new CloseTask(channel, future));
     }
 
     @Override
@@ -242,14 +242,19 @@ public final class AgronaWorker implements Runnable {
     private static final class CloseTask implements Runnable {
 
         private final AgronaChannel channel;
+        private final ChannelFuture future;
 
-        public CloseTask(AgronaChannel channel) {
+        public CloseTask(
+                AgronaChannel channel,
+                ChannelFuture future) {
             this.channel = channel;
+            this.future = future;
         }
 
         @Override
         public void run() {
             flushWriteBufferIfNecessary(channel);
+            future.setSuccess();
             if (channel.setClosed()) {
                 fireChannelDisconnected(channel);
                 fireChannelUnbound(channel);

@@ -13,3 +13,6 @@ write flush
 
 read [0x00 0x00 0x00 0x02]
 read ${client32}
+
+close
+closed
