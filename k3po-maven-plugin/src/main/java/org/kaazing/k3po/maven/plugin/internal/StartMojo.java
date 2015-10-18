@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.kaazing.k3po.driver.internal.RobotServer;
@@ -81,23 +82,32 @@ public class StartMojo extends AbstractMojo {
             // setDefaultFactory(new Slf4JLoggerFactory());
 
             // use Maven3 logger for Robot when started via plugin
-            setDefaultFactory(new MavenLoggerFactory(getLog()));
+            Log log = getLog();
+            setDefaultFactory(new MavenLoggerFactory(log));
 
             long checkpoint = currentTimeMillis();
             server.start();
             float duration = (currentTimeMillis() - checkpoint) / 1000.0f;
-            if (getLog().isDebugEnabled()) {
-                getLog().debug(format("K3PO [%08x] started in %.3fsec", identityHashCode(server), duration));
+            if (log.isDebugEnabled()) {
+                if (!daemon) {
+                    log.debug(format("K3PO [%08x] started in %.3fsec (CTRL+C to stop)", identityHashCode(server), duration));
+                }
+                else {
+                    log.debug(format("K3PO [%08x] started in %.3fsec", identityHashCode(server), duration));
+                }
             } else {
-                getLog().info("K3PO started");
+                if (!daemon) {
+                    log.info("K3PO started (CTRL+C to stop)");
+                }
+                else {
+                    log.info("K3PO started");
+                }
             }
 
             setServer(server);
 
             if (!daemon) {
                 server.join();
-            } else {
-                getLog().info(format("K3PO will terminate when Maven process terminates"));
             }
         }
         catch (Exception e) {
