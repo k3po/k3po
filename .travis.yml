@@ -1,6 +1,6 @@
 language: Java
 jdk:
   - oraclejdk8
-install: mvn -X -DskipTests -DskipITs verify
+install: mvn -e -DskipTests -DskipITs verify
 script: mvn verify
 sudo: false
