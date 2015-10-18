@@ -4,3 +4,6 @@ connected
 read method "GET"
 read header "some" "header"
 read closed
+
+write header content-length
+write close
