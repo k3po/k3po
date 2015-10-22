@@ -29,3 +29,6 @@ out
 build-local.properties
 .checkstyle
 .metadata
+
+# java.util.logging.file override
+logging.properties

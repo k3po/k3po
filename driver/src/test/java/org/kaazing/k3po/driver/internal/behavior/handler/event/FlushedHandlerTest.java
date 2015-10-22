@@ -322,11 +322,12 @@ public class FlushedHandlerTest {
     }
 
     @Test
-    public void shouldConsumeUpstreamFlushedEvent() throws Exception {
+    public void shouldPropagateUpstreamFlushedEvent() throws Exception {
 
         context.checking(new Expectations() {
             {
                 oneOf(upstream).handleUpstream(with(any(ChannelHandlerContext.class)), with(any(PreparationEvent.class)));
+                oneOf(upstream).handleUpstream(with(any(ChannelHandlerContext.class)), with(any(FlushEvent.class)));
             }
         });
 
@@ -334,8 +335,7 @@ public class FlushedHandlerTest {
         ChannelFuture handlerFuture = handler.getHandlerFuture();
         fireFlushed(channel);
 
-        assertTrue(handlerFuture.isDone());
-        assertTrue(handlerFuture.isSuccess());
+        assertFalse(handlerFuture.isDone());
 
         context.assertIsSatisfied();
     }
@@ -397,20 +397,4 @@ public class FlushedHandlerTest {
         context.assertIsSatisfied();
     }
 
-    @Test
-    public void shouldPropagateUpstreamFlushedEventAfterFutureDone() throws Exception {
-
-        context.checking(new Expectations() {
-            {
-                oneOf(upstream).handleUpstream(with(any(ChannelHandlerContext.class)), with(any(PreparationEvent.class)));
-                oneOf(upstream).handleUpstream(with(any(ChannelHandlerContext.class)), with(any(FlushEvent.class)));
-            }
-        });
-
-        Channel channel = channelFactory.newChannel(pipeline);
-        fireFlushed(channel);
-        fireFlushed(channel);
-
-        context.assertIsSatisfied();
-    }
 }
