@@ -52,7 +52,7 @@ import org.kaazing.k3po.lang.internal.ast.AstWriteValueNode;
 // Note: this is no longer injecting, just validating, as injection is now generalized
 public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, ValidateStreamsVisitor.State> {
 
-    public static enum StreamState {
+    public enum StreamState {
         // @formatter:off
         OPEN,
         CLOSED,

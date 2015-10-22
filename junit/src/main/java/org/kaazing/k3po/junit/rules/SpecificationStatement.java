@@ -53,7 +53,7 @@ final class SpecificationStatement extends Statement {
 
         latch.setInterruptOnException(Thread.currentThread());
 
-        FutureTask<ScriptPair> scriptFuture = new FutureTask<ScriptPair>(scriptRunner);
+        FutureTask<ScriptPair> scriptFuture = new FutureTask<>(scriptRunner);
 
         try {
             // start the script execution

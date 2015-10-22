@@ -23,27 +23,27 @@ import org.jboss.netty.channel.MessageEvent;
 
 public class Expectations extends org.jmock.Expectations {
 
-    public static final Matcher<MessageEvent> response(Object expected) {
+    public static Matcher<MessageEvent> response(Object expected) {
         return new HttpResponseMatcher(expected);
     }
 
-    public static final Matcher<MessageEvent> message(Object expected) {
+    public static Matcher<MessageEvent> message(Object expected) {
         return message(equal(expected));
     }
 
-    public static final Matcher<MessageEvent> message(Matcher<Object> expected) {
+    public static Matcher<MessageEvent> message(Matcher<Object> expected) {
         return new MessageEventMessageMatcher(expected);
     }
 
-    public static final Matcher<ChannelStateEvent> channelState(ChannelState expectedState, Object expectedValue) {
+    public static Matcher<ChannelStateEvent> channelState(ChannelState expectedState, Object expectedValue) {
         return channelState(same(expectedState), equal(expectedValue));
     }
 
-    public static final Matcher<ChannelStateEvent> channelState(ChannelState expected) {
+    public static Matcher<ChannelStateEvent> channelState(ChannelState expected) {
         return channelState(same(expected), any(Object.class));
     }
 
-    public static final Matcher<ChannelStateEvent> channelState(Matcher<ChannelState> expectedState,
+    public static Matcher<ChannelStateEvent> channelState(Matcher<ChannelState> expectedState,
             Matcher<Object> expectedValue) {
         return new ChannelStateEventChannelStateMatcher(expectedState, expectedValue);
     }

@@ -55,7 +55,7 @@ import org.kaazing.k3po.lang.internal.ast.AstWriteValueNode;
 
 public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, State> {
 
-    public static enum ReadWriteState {
+    public enum ReadWriteState {
         NONE, READ, WRITE
     }
 

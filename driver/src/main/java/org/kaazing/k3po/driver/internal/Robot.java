@@ -29,8 +29,12 @@ import java.io.ByteArrayInputStream;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -96,7 +100,7 @@ public class Robot {
 
     private final ChannelHandler closeOnExceptionHandler = new CloseOnExceptionHandler();
 
-    private Map<String, Barrier> barriersByName;
+    private final ConcurrentMap<String, Barrier> barriersByName = new ConcurrentHashMap<String, Barrier>();
 
     // tests
     public Robot() {
@@ -154,9 +158,7 @@ public class Robot {
         progress = new ScriptProgress(scriptInfo, expectedScript);
 
         final GenerateConfigurationVisitor visitor = new GenerateConfigurationVisitor(bootstrapFactory, addressFactory);
-        State gcvState = new GenerateConfigurationVisitor.State();
-        configuration = scriptAST.accept(visitor, gcvState);
-        this.barriersByName = gcvState.getBarriersByName();
+        configuration = scriptAST.accept(visitor, new GenerateConfigurationVisitor.State(barriersByName));
 
         preparedFuture = prepareConfiguration();
 
@@ -545,7 +547,7 @@ public class Robot {
     public void notifyBarrier(String barrierName) throws Exception {
         final Barrier barrier = barriersByName.get(barrierName);
         if (barrier == null) {
-            throw new Exception("Can not notify nonexistant barrier: " + barrierName);
+            throw new Exception("Can not notify a barrier that does not exist in the script: " + barrierName);
         }
         barrier.getFuture().setSuccess();
     }
@@ -553,7 +555,7 @@ public class Robot {
     public ChannelFuture awaitBarrier(String barrierName) throws Exception {
         final Barrier barrier = barriersByName.get(barrierName);
         if (barrier == null) {
-            throw new Exception("Can not await nonexistant barrier: " + barrierName);
+            throw new Exception("Can not notify a barrier that does not exist in the script: " + barrierName);
         }
         return barrier.getFuture();
     }

@@ -40,7 +40,7 @@ public class NotifyCommand extends Command {
 
     @Override
     public boolean equals(Object o) {
-        return o == this || o instanceof AwaitCommand && equalTo((AwaitCommand) o);
+        return o == this || o instanceof NotifyCommand && equalTo((NotifyCommand) o);
     }
 
     protected boolean equalTo(NotifyCommand that) {

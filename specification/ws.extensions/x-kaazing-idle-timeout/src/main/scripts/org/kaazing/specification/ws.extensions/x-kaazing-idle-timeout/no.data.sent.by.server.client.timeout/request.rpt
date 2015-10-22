@@ -1,0 +1,29 @@
+connect tcp://127.0.0.1:8001
+connected
+
+# Connection request
+write "GET /echo HTTP/1.1\r\n"
+write "Upgrade: websocket\r\n"
+write "Connection: Upgrade\r\n"
+write "Host: localhost:8001\r\n"
+write "Origin: http://localhost:8001\r\n"
+write "Sec-WebSocket-Key: ePYyZxvR5fDLh/oEugMjbA==\r\n"
+write "Sec-WebSocket-Version: 13\r\n"
+write "Sec-WebSocket-Extensions: x-kaazing-idle-timeout\r\n"
+write "\r\n"
+
+# 101 Response
+
+read "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
+read "Connection: Upgrade\r\n"
+read "Date:" /.*/ "\r\n"
+read "Sec-WebSocket-Accept" /.*/ "\r\n"
+read "Sec-WebSocket-Extensions: x-kaazing-idle-timeout; timeout=2000\r\n"
+read "Server: Kaazing Gateway\r\n"
+read "Upgrade: websocket\r\n"
+read "\r\n"
+
+write await TICK_ONE
+
+close
+closed

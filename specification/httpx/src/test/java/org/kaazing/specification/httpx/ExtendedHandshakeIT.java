@@ -23,7 +23,6 @@ package org.kaazing.specification.httpx;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -54,6 +53,14 @@ public class ExtendedHandshakeIT {
         "extended/connection.established/request",
         "extended/connection.established/response" })
     public void shouldEstablishConnection() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "extended/connection.established.data.exchanged.close/request",
+        "extended/connection.established.data.exchanged.close/response" })
+    public void shouldEstablishConnectionAndExchangeDataAndClose() throws Exception {
         k3po.finish();
     }
 

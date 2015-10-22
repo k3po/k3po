@@ -49,7 +49,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
         final TcpServerComposer composer = new TcpServerComposer(emitterFactory, emitter, SERVER_IP);
         final Packet synAck = PacketUtil.getTcpSynAckPacket(CLIENT_IP, SERVER_IP, CLIENT_PORT, SERVER_PORT);
         composer.emitConversation(synAck);
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         expectedScript.add("accept tcp://" + SERVER_IP + ":" + SERVER_PORT);
         expectedScript.add("accepted");
 
@@ -61,7 +61,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
     @Test
     public void testFirstPacketAndConnect() {
         final TcpServerComposer composer = getComposerWithOpenConnection();
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         expectedScript.add("accept tcp://" + SERVER_IP + ":" + SERVER_PORT);
         expectedScript.add("accepted");
         expectedScript.add("connected");
@@ -72,7 +72,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
     public void testServerReadData(){
         TcpServerComposer composer = getComposerWithOpenConnection();
         final String preTestScript = composer.getScript();
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         composer.emitConversation(toServerPayloadPacket);
         expectedScript.add(payloadScriptRead);
         final String testScript = composer.getScript().substring(preTestScript.length());
@@ -83,7 +83,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
     public void testServerAvoidDuplicateReadData(){
         TcpServerComposer composer = getComposerWithOpenConnection();
         final String preTestScript = composer.getScript();
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         composer.emitConversation(toServerPayloadPacket);
         composer.emitConversation(toServerPayloadPacket);
         expectedScript.add(payloadScriptRead);
@@ -95,7 +95,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
     public void testServerWriteData(){
         TcpServerComposer composer = getComposerWithOpenConnection();
         final String preTestScript = composer.getScript();
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         composer.emitConversation(toClientPayloadPacket);
         expectedScript.add(payloadScriptWrite);
         final String testScript = composer.getScript().substring(preTestScript.length());
@@ -106,7 +106,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
     public void testServerAvoidDuplicateWriteData(){
         TcpServerComposer composer = getComposerWithOpenConnection();
         final String preTestScript = composer.getScript();
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         composer.emitConversation(toClientPayloadPacket);
         composer.emitConversation(toClientPayloadPacket);
         expectedScript.add(payloadScriptWrite);
@@ -129,7 +129,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
         composer.emitConversation(finPacket);
         composer.emitConversation(ackPacket);
         final String testScript = composer.getScript().substring(preTestScript.length());
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         expectedScript.add(Util.CLOSE_WRITE);
         assertTrue(ScriptTestUtil.scriptIsInstanceOfScript(testScript, expectedScript));
     }
@@ -149,7 +149,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
         composer.emitConversation(finPacket);
         composer.emitConversation(ackPacket);
         final String testScript = composer.getScript().substring(preTestScript.length());
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         expectedScript.add(Util.CLOSE_READ);
         assertTrue(ScriptTestUtil.scriptIsInstanceOfScript(testScript, expectedScript));
     }
@@ -174,7 +174,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
         composer.emitConversation(finAckPacket);
         composer.emitConversation(ackPacket);
         final String testScript = composer.getScript().substring(preTestScript.length());
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         expectedScript.add(Util.CLOSE_READ);
         expectedScript.add(Util.CLOSE_WRITE);
         expectedScript.add("close");
@@ -202,7 +202,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
         composer.emitConversation(finAckPacket);
         composer.emitConversation(ackPacket);
         final String testScript = composer.getScript().substring(preTestScript.length());
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         expectedScript.add(Util.CLOSE_WRITE);
         expectedScript.add(Util.CLOSE_READ);
         expectedScript.add("close");
@@ -219,7 +219,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
         composer.emitConversation(SERVER_ACK_PACKET);
         composer.emitConversation(CLIENT_ACK_PACKET);
         final String testScript = composer.getScript().substring(preTestScript.length());
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         expectedScript.add(Util.CLOSE_READ);
         expectedScript.add(Util.CLOSE_WRITE);
         expectedScript.add("close");
@@ -236,7 +236,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
         composer.emitConversation(CLIENT_ACK_PACKET);
         composer.emitConversation(SERVER_ACK_PACKET);
         final String testScript = composer.getScript().substring(preTestScript.length());
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         expectedScript.add(Util.CLOSE_WRITE);
         expectedScript.add(Util.CLOSE_READ);
         expectedScript.add("close");
@@ -253,7 +253,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
         composer.emitConversation(CLIENT_ACK_PACKET);
         composer.emitConversation(SERVER_ACK_PACKET);
         final String testScript = composer.getScript().substring(preTestScript.length());
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         expectedScript.add(Util.CLOSE_WRITE);
         expectedScript.add(Util.CLOSE_READ);
         expectedScript.add("close");
@@ -270,7 +270,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
         composer.emitConversation(SERVER_ACK_PACKET);
         composer.emitConversation(CLIENT_ACK_PACKET);
         final String testScript = composer.getScript().substring(preTestScript.length());
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         expectedScript.add(Util.CLOSE_READ);
         expectedScript.add(Util.CLOSE_WRITE);
         expectedScript.add("close");
@@ -287,7 +287,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
         composer.emitConversation(CLIENT_FIN_PACKET);
         composer.emitConversation(SERVER_ACK_PACKET);
         final String testScript = composer.getScript().substring(preTestScript.length());
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         expectedScript.add(Util.CLOSE_WRITE);
         expectedScript.add(Util.CLOSE_READ);
         expectedScript.add("close");
@@ -304,7 +304,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
         composer.emitConversation(SERVER_FIN_PACKET);
         composer.emitConversation(CLIENT_ACK_PACKET);
         final String testScript = composer.getScript().substring(preTestScript.length());
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         expectedScript.add(Util.CLOSE_READ);
         expectedScript.add(Util.CLOSE_WRITE);
         expectedScript.add("closed");
@@ -315,7 +315,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
     public void testWriteWhileReadClosed(){
         TcpServerComposer composer = getComposerWithOpenConnection();
         final String preTestScript = composer.getScript();
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         composer.emitConversation(SERVER_FIN_PACKET);
         composer.emitConversation(CLIENT_ACK_PACKET);
         composer.emitConversation(toServerPayloadPacket);
@@ -329,7 +329,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
     public void testWriteWhileReadClosedAndThenClose(){
         TcpServerComposer composer = getComposerWithOpenConnection();
         final String preTestScript = composer.getScript();
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         composer.emitConversation(SERVER_FIN_PACKET);
         composer.emitConversation(CLIENT_ACK_PACKET);
         composer.emitConversation(toServerPayloadPacket);
@@ -348,7 +348,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
     public void testReadWhileWriteClosed(){
         TcpServerComposer composer = getComposerWithOpenConnection();
         final String preTestScript = composer.getScript();
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         composer.emitConversation(CLIENT_FIN_PACKET);
         composer.emitConversation(SERVER_ACK_PACKET);
         composer.emitConversation(toClientPayloadPacket);
@@ -362,7 +362,7 @@ public class TcpServerComposerSingleScriptTest extends AbstractTcpTest {
     public void testReadWhileWriteClosedAndThenClose(){
         TcpServerComposer composer = getComposerWithOpenConnection();
         final String preTestScript = composer.getScript();
-        final List<String> expectedScript = new LinkedList<String>();
+        final List<String> expectedScript = new LinkedList<>();
         composer.emitConversation(CLIENT_FIN_PACKET);
         composer.emitConversation(SERVER_ACK_PACKET);
         composer.emitConversation(toClientPayloadPacket);

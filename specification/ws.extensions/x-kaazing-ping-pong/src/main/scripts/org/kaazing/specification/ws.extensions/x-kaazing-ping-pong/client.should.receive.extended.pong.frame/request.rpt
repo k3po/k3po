@@ -1,0 +1,33 @@
+property key ${ws:handshakeKey()}
+property writeMask ${ws:randomBytes(4)}
+
+connect http://localhost:8001/echo
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Key" ${key}
+write header "Sec-WebSocket-Version" "13"
+write header "Sec-WebSocket-Extensions" "x-kaazing-ping-pong"
+
+read status "101" /.+/
+read version "HTTP/1.1"
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
+read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
+# The 4 control bytes for ping-pong extension are 0x01010102:
+read header "Sec-WebSocket-Extensions" "x-kaazing-ping-pong; 01010102"
+
+# Expect extended PONG
+read [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00]
+
+# Don't respond. Server should close connection (inactivity timeout expired)
+
+# Do clean close
+write [0x88 0x80] ${writeMask}
+read [0x88 0x00]
+
+closed

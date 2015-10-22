@@ -57,7 +57,7 @@ public class ControlEncoder extends OneToOneEncoder {
             case NOTIFY:
                 return encodeNotifyMessage(ctx, channel, (NotifyMessage) controlMessage);
             case NOTIFIED:
-                return encodiedNotifiedMessage(ctx, channel, (NotifiedMessage) controlMessage);
+                return encodedNotifiedMessage(ctx, channel, (NotifiedMessage) controlMessage);
             default:
                 break;
             }
@@ -122,7 +122,7 @@ public class ControlEncoder extends OneToOneEncoder {
         return encodeNoContent(buf);
     }
 
-    private Object encodiedNotifiedMessage(ChannelHandlerContext ctx, Channel channel, NotifiedMessage notifiedMessage) {
+    private Object encodedNotifiedMessage(ChannelHandlerContext ctx, Channel channel, NotifiedMessage notifiedMessage) {
         Kind kind = notifiedMessage.getKind();
         String barrier = notifiedMessage.getBarrier();
 

@@ -27,7 +27,7 @@ public abstract class AstStreamNode extends AstNode {
 
     public List<AstStreamableNode> getStreamables() {
         if (streamables == null) {
-            streamables = new LinkedList<AstStreamableNode>();
+            streamables = new LinkedList<>();
         }
         return streamables;
     }

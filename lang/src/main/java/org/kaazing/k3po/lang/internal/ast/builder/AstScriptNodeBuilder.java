@@ -29,19 +29,19 @@ public class AstScriptNodeBuilder extends AbstractAstNodeBuilder<AstScriptNode, 
     }
 
     public AstPropertyNodeBuilder.ScriptNested<AstScriptNodeBuilder> addProperty() {
-        return new AstPropertyNodeBuilder.ScriptNested<AstScriptNodeBuilder>(this);
+        return new AstPropertyNodeBuilder.ScriptNested<>(this);
     }
 
     public AstAcceptNodeBuilder.ScriptNested<AstScriptNodeBuilder> addAcceptStream() {
-        return new AstAcceptNodeBuilder.ScriptNested<AstScriptNodeBuilder>(this);
+        return new AstAcceptNodeBuilder.ScriptNested<>(this);
     }
 
     public AstAcceptableNodeBuilder.ScriptNested<AstScriptNodeBuilder> addAcceptedStream() {
-        return new AstAcceptableNodeBuilder.ScriptNested<AstScriptNodeBuilder>(this);
+        return new AstAcceptableNodeBuilder.ScriptNested<>(this);
     }
 
     public AstConnectNodeBuilder.ScriptNested<AstScriptNodeBuilder> addConnectStream() {
-        return new AstConnectNodeBuilder.ScriptNested<AstScriptNodeBuilder>(this);
+        return new AstConnectNodeBuilder.ScriptNested<>(this);
     }
 
     @Override

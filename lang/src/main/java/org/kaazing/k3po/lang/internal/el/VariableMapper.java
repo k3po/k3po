@@ -26,7 +26,7 @@ public class VariableMapper extends javax.el.VariableMapper {
     protected final ConcurrentMap<String, ValueExpression> variables;
 
     public VariableMapper() {
-        variables = new ConcurrentHashMap<String, ValueExpression>();
+        variables = new ConcurrentHashMap<>();
     }
 
     @Override

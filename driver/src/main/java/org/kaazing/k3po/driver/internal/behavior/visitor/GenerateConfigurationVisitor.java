@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.el.ELResolver;
@@ -84,10 +83,12 @@ import org.kaazing.k3po.driver.internal.behavior.handler.command.CloseHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.DisconnectHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.FlushHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.ReadConfigHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.command.ReadOptionOffsetHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.ShutdownOutputHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.UnbindHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteConfigHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteOptionOffsetHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.BoundHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ChildClosedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ChildOpenedHandler;
@@ -176,8 +177,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         /* The pipelineAsMap is built by each node that is visited. */
         private Map<String, ChannelHandler> pipelineAsMap;
 
-        public State() {
-            barriersByName = new ConcurrentHashMap<String, Barrier>();
+        public State(ConcurrentMap<String, Barrier> barriersByName) {
+            this.barriersByName = barriersByName;
         }
 
         private Barrier lookupBarrier(String barrierName) {
@@ -194,12 +195,12 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         }
 
         public class PipelineFactory {
-            private Map<URI, List<ChannelPipeline>> pipelines = new HashMap<URI, List<ChannelPipeline>>();
+            private Map<URI, List<ChannelPipeline>> pipelines = new HashMap<>();
 
             public List<ChannelPipeline> getPipeline(URI acceptURI) {
                 List<ChannelPipeline> pipeline = pipelines.get(acceptURI);
                 if (pipeline == null) {
-                    pipeline = new ArrayList<ChannelPipeline>();
+                    pipeline = new ArrayList<>();
                     pipelines.put(acceptURI, pipeline);
                 }
                 return pipeline;
@@ -283,7 +284,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // masking is a no-op by default for each stream
         state.readUnmasker = Masker.IDENTITY_MASKER;
         state.writeMasker = Masker.IDENTITY_MASKER;
-        state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
+        state.pipelineAsMap = new LinkedHashMap<>();
 
         for (AstStreamableNode streamable : acceptedNode.getStreamables()) {
             streamable.accept(this, state);
@@ -308,8 +309,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         state.writeMasker = Masker.IDENTITY_MASKER;
 
         /* Create a list of pipelines, for each acceptable */
-        final List<ChannelPipeline> pipelines = new ArrayList<ChannelPipeline>();
-        state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
+        final List<ChannelPipeline> pipelines = new ArrayList<>();
+        state.pipelineAsMap = new LinkedHashMap<>();
 
         for (AstAcceptableNode acceptableNode : acceptNode.getAcceptables()) {
 
@@ -340,10 +341,24 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         Map<String, Object> acceptOptions = new HashMap<>();
         acceptOptions.put("regionInfo", acceptInfo);
-        AstLocation transport = (AstLocation) acceptNode.getOptions().get("transport");
+        Map<String, Object> acceptNodeOptions = acceptNode.getOptions();
+        AstLocation transport = (AstLocation) acceptNodeOptions.get("transport");
         LocationResolver transportResolver = null;
         if (transport != null) {
             transportResolver = new LocationResolver(transport, acceptNode.getEnvironment());
+        }
+        acceptOptions.putAll(acceptNodeOptions);
+
+        // TODO: defer "reader", expression evaluation
+        AstExpressionValue readerOption = (AstExpressionValue) acceptNodeOptions.get("reader");
+        if (readerOption != null) {
+            acceptOptions.put("reader", readerOption.getValue().getValue(readerOption.getEnvironment()));
+        }
+
+        // TODO: defer "writer", expression evaluation
+        AstExpressionValue writerOption = (AstExpressionValue) acceptNodeOptions.get("writer");
+        if (writerOption != null) {
+            acceptOptions.put("writer", writerOption.getValue().getValue(writerOption.getEnvironment()));
         }
 
         // Now that accept supports expression value, accept uri may not be available at this point.
@@ -370,7 +385,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         state.readUnmasker = Masker.IDENTITY_MASKER;
         state.writeMasker = Masker.IDENTITY_MASKER;
 
-        state.pipelineAsMap = new LinkedHashMap<String, ChannelHandler>();
+        state.pipelineAsMap = new LinkedHashMap<>();
 
         for (AstStreamableNode streamable : connectNode.getStreamables()) {
             streamable.accept(this, state);
@@ -414,10 +429,24 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // is available.
         LocationResolver locationResolver = new LocationResolver(connectNode.getLocation(), connectNode.getEnvironment());
         Map<String, Object> connectOptions = new HashMap<>();
-        AstLocation transport = (AstLocation) connectNode.getOptions().get("transport");
+        Map<String, Object> connectNodeOptions = connectNode.getOptions();
+        AstLocation transport = (AstLocation) connectNodeOptions.get("transport");
         LocationResolver transportResolver = null;
         if (transport != null) {
             transportResolver = new LocationResolver(transport, connectNode.getEnvironment());
+        }
+        connectOptions.putAll(connectNodeOptions);
+
+        // TODO: defer "reader", expression evaluation
+        AstExpressionValue readerOption = (AstExpressionValue) connectNodeOptions.get("reader");
+        if (readerOption != null) {
+            connectOptions.put("reader", readerOption.getValue().getValue(readerOption.getEnvironment()));
+        }
+
+        // TODO: defer "writer", expression evaluation
+        AstExpressionValue writerOption = (AstExpressionValue) connectNodeOptions.get("writer");
+        if (writerOption != null) {
+            connectOptions.put("writer", writerOption.getValue().getValue(writerOption.getEnvironment()));
         }
 
         ClientBootstrapResolver clientResolver = new ClientBootstrapResolver(bootstrapFactory, addressFactory,
@@ -508,7 +537,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
     @Override
     public Configuration visit(AstWriteValueNode node, State state) throws Exception {
-        List<MessageEncoder> messageEncoders = new ArrayList<MessageEncoder>();
+        List<MessageEncoder> messageEncoders = new ArrayList<>();
 
         for (AstValue val : node.getValues()) {
             messageEncoders.add(val.accept(new GenerateWriteEncoderVisitor(), state.configuration));
@@ -662,7 +691,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstReadValueNode node, State state) throws Exception {
 
-        List<MessageDecoder> messageDecoders = new ArrayList<MessageDecoder>();
+        List<MessageDecoder> messageDecoders = new ArrayList<>();
 
         for (AstValueMatcher matcher : node.getMatchers()) {
             messageDecoders.add(matcher.accept(new GenerateReadDecoderVisitor(), state.configuration));
@@ -861,7 +890,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             AstLiteralTextValue name = (AstLiteralTextValue) node.getValue("name");
             requireNonNull(name);
 
-            List<MessageDecoder> valueDecoders = new ArrayList<MessageDecoder>();
+            List<MessageDecoder> valueDecoders = new ArrayList<>();
             for (AstValueMatcher matcher : node.getMatchers()) {
                 valueDecoders.add(matcher.accept(new GenerateReadDecoderVisitor(), state.configuration));
             }
@@ -894,7 +923,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             AstLiteralTextValue name = (AstLiteralTextValue) node.getValue("name");
             requireNonNull(name);
 
-            List<MessageDecoder> valueDecoders = new ArrayList<MessageDecoder>();
+            List<MessageDecoder> valueDecoders = new ArrayList<>();
             for (AstValueMatcher matcher : node.getMatchers()) {
                 valueDecoders.add(matcher.accept(new GenerateReadDecoderVisitor(), state.configuration));
             }
@@ -960,7 +989,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             AstValue name = node.getName("name");
             MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
 
-            List<MessageEncoder> valueEncoders = new ArrayList<MessageEncoder>();
+            List<MessageEncoder> valueEncoders = new ArrayList<>();
             for (AstValue value : node.getValues()) {
                 valueEncoders.add(value.accept(new GenerateWriteEncoderVisitor(), state.configuration));
             }
@@ -1002,7 +1031,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             AstValue name = node.getName("name");
             MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
 
-            List<MessageEncoder> valueEncoders = new ArrayList<MessageEncoder>();
+            List<MessageEncoder> valueEncoders = new ArrayList<>();
             for (AstValue value : node.getValues()) {
                 valueEncoders.add(value.accept(new GenerateWriteEncoderVisitor(), state.configuration));
             }
@@ -1079,10 +1108,24 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstReadOptionNode node, State state) throws Exception {
 
         String optionName = node.getOptionName();
-        AstValue optionValue = node.getOptionValue();
+        switch (optionName) {
+            case "mask" :
+                AstValue maskValue = node.getOptionValue();
+                state.readUnmasker = maskValue.accept(new GenerateMaskOptionValueVisitor(), state);
+                break;
 
-        assert "mask".equals(optionName);
-        state.readUnmasker = optionValue.accept(new GenerateMaskOptionValueVisitor(), state);
+            case "offset" :
+                AstLiteralTextValue offsetValue = (AstLiteralTextValue) node.getOptionValue();
+                int offset = Integer.parseInt(offsetValue.getValue());
+                ReadOptionOffsetHandler handler = new ReadOptionOffsetHandler(offset);
+                handler.setRegionInfo(node.getRegionInfo());
+                String handlerName = String.format("readOption#%d (offset=%d)", state.pipelineAsMap.size() + 1, offset);
+                state.pipelineAsMap.put(handlerName, handler);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unrecognized read option : " + optionName);
+        }
 
         return state.configuration;
     }
@@ -1091,10 +1134,24 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstWriteOptionNode node, State state) throws Exception {
 
         String optionName = node.getOptionName();
-        AstValue optionValue = node.getOptionValue();
+        switch (optionName) {
+            case "mask" :
+                AstValue maskValue = node.getOptionValue();
+                state.writeMasker = maskValue.accept(new GenerateMaskOptionValueVisitor(), state);
+                break;
 
-        assert "mask".equals(optionName);
-        state.writeMasker = optionValue.accept(new GenerateMaskOptionValueVisitor(), state);
+            case "offset" :
+                AstLiteralTextValue offsetValue = (AstLiteralTextValue) node.getOptionValue();
+                int offset = Integer.parseInt(offsetValue.getValue());
+                WriteOptionOffsetHandler handler = new WriteOptionOffsetHandler(offset);
+                handler.setRegionInfo(node.getRegionInfo());
+                String handlerName = String.format("writeOption#%d (offset=%d)", state.pipelineAsMap.size() + 1, offset);
+                state.pipelineAsMap.put(handlerName, handler);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unrecognized write option : " + optionName);
+        }
 
         return state.configuration;
     }
@@ -1116,8 +1173,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             String literalText = value.getValue();
             byte[] literalTextAsBytes = literalText.getBytes(UTF_8);
 
-            for (int i = 0; i < literalTextAsBytes.length; i++) {
-                if (literalTextAsBytes[i] != 0x00) {
+            for (byte literalTextAsByte : literalTextAsBytes) {
+                if (literalTextAsByte != 0x00) {
                     return Maskers.newMasker(literalTextAsBytes);
                 }
             }
@@ -1131,8 +1188,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
             byte[] literalBytes = value.getValue();
 
-            for (int i = 0; i < literalBytes.length; i++) {
-                if (literalBytes[i] != 0x00) {
+            for (byte literalByte : literalBytes) {
+                if (literalByte != 0x00) {
                     return Maskers.newMasker(literalBytes);
                 }
             }

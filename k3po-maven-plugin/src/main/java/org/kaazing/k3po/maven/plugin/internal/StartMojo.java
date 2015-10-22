@@ -19,6 +19,8 @@ package org.kaazing.k3po.maven.plugin.internal;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.System.identityHashCode;
+import static org.apache.maven.plugins.annotations.LifecyclePhase.PRE_INTEGRATION_TEST;
+import static org.apache.maven.plugins.annotations.ResolutionScope.TEST;
 import static org.jboss.netty.logging.InternalLoggerFactory.setDefaultFactory;
 
 import java.io.File;
@@ -31,38 +33,37 @@ import java.util.List;
 
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.kaazing.k3po.driver.internal.RobotServer;
 import org.kaazing.k3po.maven.plugin.internal.logging.MavenLoggerFactory;
 
 /**
  * Start K3PO
- *
- * @goal start
- * @phase pre-integration-test
- *
- * @requiresDependencyResolution test
  */
+@Mojo(name = "start", defaultPhase = PRE_INTEGRATION_TEST, requiresDependencyResolution = TEST)
 public class StartMojo extends AbstractMojo {
 
-    /**
-     * @parameter default-value="true" expression="${maven.k3po.daemon}"
-     */
+    @Parameter(defaultValue = "true", property = "maven.k3po.daemon")
     private boolean daemon;
 
-    /**
-     * @parameter name="control" default-value="tcp://localhost:11642"
-     */
+    @Parameter(name = "control", defaultValue = "tcp://localhost:11642")
     private URI controlURI;
 
-    /**
-     * @parameter default-value="src/test/scripts"
-     */
+    @Parameter(defaultValue = "src/test/scripts")
     private File scriptDir;
 
-    /**
-     * @parameter default-value="false" expression="${maven.k3po.verbose}"
-     */
+    @Parameter(defaultValue = "false", property = "maven.k3po.verbose")
     private boolean verbose;
+
+    public URI getControl() {
+        return controlURI;
+    }
+
+    public void setControl(URI controlURI) {
+        this.controlURI = controlURI;
+    }
 
     @Override
     protected void executeImpl() throws MojoExecutionException {
@@ -70,7 +71,7 @@ public class StartMojo extends AbstractMojo {
         try {
             ClassLoader scriptLoader = createScriptLoader();
 
-            RobotServer server = new RobotServer(controlURI, verbose, scriptLoader);
+            RobotServer server = new RobotServer(getControl(), verbose, scriptLoader);
 
             // TODO: detect Maven version to determine logger factory
             //         3.0 -> MavenLoggerFactory
@@ -81,23 +82,32 @@ public class StartMojo extends AbstractMojo {
             // setDefaultFactory(new Slf4JLoggerFactory());
 
             // use Maven3 logger for Robot when started via plugin
-            setDefaultFactory(new MavenLoggerFactory(getLog()));
+            Log log = getLog();
+            setDefaultFactory(new MavenLoggerFactory(log));
 
             long checkpoint = currentTimeMillis();
             server.start();
             float duration = (currentTimeMillis() - checkpoint) / 1000.0f;
-            if (getLog().isDebugEnabled()) {
-                getLog().debug(format("K3PO [%08x] started in %.3fsec", identityHashCode(server), duration));
+            if (log.isDebugEnabled()) {
+                if (!daemon) {
+                    log.debug(format("K3PO [%08x] started in %.3fsec (CTRL+C to stop)", identityHashCode(server), duration));
+                }
+                else {
+                    log.debug(format("K3PO [%08x] started in %.3fsec", identityHashCode(server), duration));
+                }
             } else {
-                getLog().info("K3PO started");
+                if (!daemon) {
+                    log.info("K3PO started (CTRL+C to stop)");
+                }
+                else {
+                    log.info("K3PO started");
+                }
             }
 
             setServer(server);
 
             if (!daemon) {
                 server.join();
-            } else {
-                getLog().info(format("K3PO will terminate when Maven process terminates"));
             }
         }
         catch (Exception e) {
@@ -107,7 +117,7 @@ public class StartMojo extends AbstractMojo {
 
     private ClassLoader createScriptLoader()
             throws DependencyResolutionRequiredException, MalformedURLException {
-        List<URL> scriptPath = new LinkedList<URL>();
+        List<URL> scriptPath = new LinkedList<>();
         if (scriptDir != null) {
             scriptPath.add(scriptDir.getAbsoluteFile().toURI().toURL());
         }

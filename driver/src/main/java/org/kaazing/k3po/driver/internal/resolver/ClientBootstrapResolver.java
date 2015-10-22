@@ -64,14 +64,14 @@ public class ClientBootstrapResolver {
 
     public ClientBootstrap resolve() throws Exception {
         if (bootstrap == null) {
-            URI connectUri = locationResolver.resolve();
+            URI connectURI = locationResolver.resolve();
             if (transportResolver != null) {
-                URI transportUri = transportResolver.resolve();
-                connectOptions.put("transport", transportUri);
+                URI transportURI = transportResolver.resolve();
+                connectOptions.put("transport", transportURI);
             }
-            ChannelAddress remoteAddress = addressFactory.newChannelAddress(connectUri, connectOptions);
+            ChannelAddress remoteAddress = addressFactory.newChannelAddress(connectURI, connectOptions);
             LOGGER.debug("Initializing client Bootstrap connecting to remoteAddress " + remoteAddress);
-            ClientBootstrap clientBootstrapCandidate = bootstrapFactory.newClientBootstrap(connectUri.getScheme());
+            ClientBootstrap clientBootstrapCandidate = bootstrapFactory.newClientBootstrap(connectURI.getScheme());
             clientBootstrapCandidate.setPipelineFactory(pipelineFactory);
             clientBootstrapCandidate.setOption("remoteAddress", remoteAddress);
             bootstrap = clientBootstrapCandidate;

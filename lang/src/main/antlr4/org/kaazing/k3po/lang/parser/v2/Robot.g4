@@ -32,7 +32,10 @@ streamNode
     ;
 
 acceptNode
-    : k=AcceptKeyword acceptURI=location ( AsKeyword text=Name )? (OptionKeyword TransportKeyword value=location)?
+    : k=AcceptKeyword acceptURI=location ( AsKeyword text=Name )?
+      (OptionKeyword TransportKeyword value=location)?
+      (OptionKeyword ReaderKeyword reader=expressionValue)?
+      (OptionKeyword WriterKeyword writer=expressionValue)?
       serverStreamableNode*
     ;
 
@@ -41,7 +44,13 @@ acceptableNode
     ;
 
 connectNode
-    : k=ConnectKeyword (AwaitKeyword barrier=Name ConnectKeyword)? connectURI=location (OptionKeyword TransportKeyword value=location)? streamableNode+
+    : k=ConnectKeyword (AwaitKeyword barrier=Name ConnectKeyword)? connectURI=location
+                       (OptionKeyword TransportKeyword value=location)?
+                       (OptionKeyword SizeKeyword size=DecimalLiteral)?
+                       (OptionKeyword ModeKeyword fmode=ModeValue)?
+                       (OptionKeyword ReaderKeyword reader=expressionValue)?
+                       (OptionKeyword WriterKeyword writer=expressionValue)?
+        streamableNode+
     ;
 
 serverStreamableNode
@@ -52,15 +61,27 @@ serverStreamableNode
     ;
     
 optionNode 
-    : readOptionNode
-    | writeOptionNode
+    : readOptionMaskNode
+    | readOptionOffsetNode
+    | writeOptionMaskNode
+    | writeOptionOffsetNode
     ;
 
-writeOptionNode: 
-    k=WriteKeyword OptionKeyword name=MaskKeyword value=writeValue;
+readOptionMaskNode
+    : k=ReadKeyword OptionKeyword name=MaskKeyword value=writeValue
+    ;
 
-readOptionNode: 
-    k=ReadKeyword OptionKeyword name=MaskKeyword value=writeValue;
+readOptionOffsetNode
+    : k=ReadKeyword OptionKeyword name=OffsetKeyword value=writeValue
+    ;
+
+writeOptionMaskNode
+    : k=WriteKeyword OptionKeyword name=MaskKeyword value=writeValue
+    ;
+
+writeOptionOffsetNode
+    : k=WriteKeyword OptionKeyword name=OffsetKeyword value=writeValue
+    ;
 
 serverCommandNode
     : unbindNode
@@ -334,17 +355,27 @@ SignedDecimalLiteral
 //    |  DecimalLiteral
     ;
 
+MaskKeyword: 'mask';
+
+ModeKeyword: 'mode';
+
+OffsetKeyword : 'offset';
+
 OptionKeyword: 'option';
 
-MaskKeyword: 'mask';
+ReaderKeyword: 'reader';
+
+SizeKeyword: 'size';
+
+ShortKeyword
+    : 'short'
+    ;
 
 TransportKeyword
     : 'transport'
     ;
 
-ShortKeyword
-    : 'short'
-    ;
+WriterKeyword: 'writer';
 
 IntKeyword
     : 'int'
@@ -480,6 +511,11 @@ HttpStatusKeyword
 
 HttpVersionKeyword
     : 'version'
+    ;
+
+ModeValue
+    : 'r'
+    | 'rw'
     ;
 
 // URI cannot begin with any of our data type delimiters, and MUST contain a colon.

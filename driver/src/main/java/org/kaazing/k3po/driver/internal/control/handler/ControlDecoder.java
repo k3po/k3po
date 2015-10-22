@@ -36,7 +36,7 @@ import org.kaazing.k3po.driver.internal.control.StartMessage;
 
 public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
 
-    static enum State {
+    enum State {
         READ_INITIAL, READ_HEADER, READ_CONTENT
     }
 
