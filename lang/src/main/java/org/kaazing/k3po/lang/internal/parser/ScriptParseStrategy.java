@@ -810,6 +810,18 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
                 AstLocation transportLocation = transportVisitor.visit(ctx.value);
                 node.getOptions().put("transport", transportLocation);
             }
+            ExpressionValueContext reader = ctx.reader;
+            if (reader != null) {
+                AstExpressionValueVisitor readerVisitor = new AstExpressionValueVisitor(elFactory, elContext, Object.class);
+                AstExpressionValue readerValue = readerVisitor.visit(ctx.reader);
+                node.getOptions().put("reader", readerValue);
+            }
+            ExpressionValueContext writer = ctx.writer;
+            if (writer != null) {
+                AstExpressionValueVisitor writerVisitor = new AstExpressionValueVisitor(elFactory, elContext, Object.class);
+                AstExpressionValue writerValue = writerVisitor.visit(ctx.writer);
+                node.getOptions().put("writer", writerValue);
+            }
             super.visitAcceptNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
             return node;
@@ -890,6 +902,18 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             Token size = ctx.size;
             if (size != null) {
                 node.getOptions().put("size", Long.parseLong(size.getText()));
+            }
+            ExpressionValueContext reader = ctx.reader;
+            if (reader != null) {
+                AstExpressionValueVisitor readerVisitor = new AstExpressionValueVisitor(elFactory, elContext, Object.class);
+                AstExpressionValue readerValue = readerVisitor.visit(ctx.reader);
+                node.getOptions().put("reader", readerValue);
+            }
+            ExpressionValueContext writer = ctx.writer;
+            if (writer != null) {
+                AstExpressionValueVisitor writerVisitor = new AstExpressionValueVisitor(elFactory, elContext, Object.class);
+                AstExpressionValue writerValue = writerVisitor.visit(ctx.writer);
+                node.getOptions().put("writer", writerValue);
             }
             return node;
         }

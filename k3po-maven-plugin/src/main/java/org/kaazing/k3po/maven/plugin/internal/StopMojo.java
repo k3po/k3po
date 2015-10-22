@@ -39,17 +39,18 @@ public class StopMojo extends AbstractMojo {
         if (server == null) {
             getLog().error(format("K3PO not running"));
         }
+        else {
+            try {
+                long checkpoint = currentTimeMillis();
+                server.stop();
+                float duration = (currentTimeMillis() - checkpoint) / 1000.0f;
+                getLog().debug(format("K3PO [%08x] stopped in %.3fsec", identityHashCode(server), duration));
 
-        try {
-            long checkpoint = currentTimeMillis();
-            server.stop();
-            float duration = (currentTimeMillis() - checkpoint) / 1000.0f;
-            getLog().debug(format("K3PO [%08x] stopped in %.3fsec", identityHashCode(server), duration));
-
-            setServer(null);
-        }
-        catch (Exception e) {
-            throw new MojoExecutionException(format("K3PO [%08x] failed to stop", identityHashCode(server)), e);
+                setServer(null);
+            }
+            catch (Exception e) {
+                throw new MojoExecutionException(format("K3PO [%08x] failed to stop", identityHashCode(server)), e);
+            }
         }
     }
 }

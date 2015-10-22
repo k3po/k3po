@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.kaazing</groupId>
         <artifactId>k3po.parent</artifactId>
-        <version>2.2.1</version>
+        <version>3.0.0-alpha-1</version>
     </parent>
 
     <artifactId>k3po-maven-plugin</artifactId>
@@ -27,17 +27,17 @@
             <artifactId>k3po.driver</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-project</artifactId>
-            <version>2.0.2</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-            <version>2.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-annotations</artifactId>
         </dependency>
     </dependencies>
 
