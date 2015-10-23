@@ -104,6 +104,7 @@ import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
 import org.kaazing.k3po.driver.internal.resolver.ClientBootstrapResolver;
 import org.kaazing.k3po.driver.internal.resolver.LocationResolver;
+import org.kaazing.k3po.driver.internal.resolver.OptionsResolver;
 import org.kaazing.k3po.driver.internal.resolver.ServerBootstrapResolver;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
@@ -152,7 +153,6 @@ import org.kaazing.k3po.lang.internal.ast.matcher.AstVariableLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
-import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
@@ -341,25 +341,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         Map<String, Object> acceptOptions = new HashMap<>();
         acceptOptions.put("regionInfo", acceptInfo);
-        Map<String, Object> acceptNodeOptions = acceptNode.getOptions();
-        AstLocation transport = (AstLocation) acceptNodeOptions.get("transport");
-        LocationResolver transportResolver = null;
-        if (transport != null) {
-            transportResolver = new LocationResolver(transport, acceptNode.getEnvironment());
-        }
-        acceptOptions.putAll(acceptNodeOptions);
-
-        // TODO: defer "reader", expression evaluation
-        AstExpressionValue readerOption = (AstExpressionValue) acceptNodeOptions.get("reader");
-        if (readerOption != null) {
-            acceptOptions.put("reader", readerOption.getValue().getValue(readerOption.getEnvironment()));
-        }
-
-        // TODO: defer "writer", expression evaluation
-        AstExpressionValue writerOption = (AstExpressionValue) acceptNodeOptions.get("writer");
-        if (writerOption != null) {
-            acceptOptions.put("writer", writerOption.getValue().getValue(writerOption.getEnvironment()));
-        }
+        acceptOptions.putAll(acceptNode.getOptions());
+        OptionsResolver optionsResolver = new OptionsResolver(acceptOptions, acceptNode.getEnvironment());
 
         // Now that accept supports expression value, accept uri may not be available at this point.
         // To defer the evaluation of accept uri and initialization of  ServerBootstrap, LocationResolver and
@@ -367,7 +350,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // accept uri is available.
         LocationResolver locationResolver = new LocationResolver(acceptNode.getLocation(), acceptNode.getEnvironment());
         ServerBootstrapResolver serverResolver = new ServerBootstrapResolver(bootstrapFactory, addressFactory,
-                pipelineFactory, locationResolver, transportResolver, acceptOptions);
+                pipelineFactory, locationResolver, optionsResolver);
 
         state.configuration.getServerResolvers().add(serverResolver);
 
@@ -428,29 +411,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // ClientResolver are created with information necessary to create ClientBootstrap when the connect uri
         // is available.
         LocationResolver locationResolver = new LocationResolver(connectNode.getLocation(), connectNode.getEnvironment());
-        Map<String, Object> connectOptions = new HashMap<>();
-        Map<String, Object> connectNodeOptions = connectNode.getOptions();
-        AstLocation transport = (AstLocation) connectNodeOptions.get("transport");
-        LocationResolver transportResolver = null;
-        if (transport != null) {
-            transportResolver = new LocationResolver(transport, connectNode.getEnvironment());
-        }
-        connectOptions.putAll(connectNodeOptions);
-
-        // TODO: defer "reader", expression evaluation
-        AstExpressionValue readerOption = (AstExpressionValue) connectNodeOptions.get("reader");
-        if (readerOption != null) {
-            connectOptions.put("reader", readerOption.getValue().getValue(readerOption.getEnvironment()));
-        }
-
-        // TODO: defer "writer", expression evaluation
-        AstExpressionValue writerOption = (AstExpressionValue) connectNodeOptions.get("writer");
-        if (writerOption != null) {
-            connectOptions.put("writer", writerOption.getValue().getValue(writerOption.getEnvironment()));
-        }
+        OptionsResolver optionsResolver = new OptionsResolver(connectNode.getOptions(), connectNode.getEnvironment());
 
         ClientBootstrapResolver clientResolver = new ClientBootstrapResolver(bootstrapFactory, addressFactory,
-                pipelineFactory, locationResolver, transportResolver, barrier, connectNode.getRegionInfo(), connectOptions);
+                pipelineFactory, locationResolver, optionsResolver, barrier, connectNode.getRegionInfo());
 
         // retain pipelines for tear down
         state.configuration.getClientAndServerPipelines().add(pipeline);
