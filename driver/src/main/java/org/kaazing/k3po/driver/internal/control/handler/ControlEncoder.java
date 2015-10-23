@@ -28,6 +28,7 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 import org.kaazing.k3po.driver.internal.control.ControlMessage;
 import org.kaazing.k3po.driver.internal.control.ControlMessage.Kind;
+import org.kaazing.k3po.driver.internal.control.DisposedMessage;
 import org.kaazing.k3po.driver.internal.control.ErrorMessage;
 import org.kaazing.k3po.driver.internal.control.FinishedMessage;
 import org.kaazing.k3po.driver.internal.control.NotifiedMessage;
@@ -58,6 +59,8 @@ public class ControlEncoder extends OneToOneEncoder {
                 return encodeNotifyMessage(ctx, channel, (NotifyMessage) controlMessage);
             case NOTIFIED:
                 return encodedNotifiedMessage(ctx, channel, (NotifiedMessage) controlMessage);
+            case DISPOSED:
+                return encodedDisposedMessage(ctx, channel, (DisposedMessage) controlMessage);
             default:
                 break;
             }
@@ -129,6 +132,14 @@ public class ControlEncoder extends OneToOneEncoder {
         ChannelBuffer buf = dynamicBuffer(channel.getConfig().getBufferFactory());
         encodeInitial(kind, buf);
         encodeHeader("barrier", barrier, buf);
+        return encodeNoContent(buf);
+    }
+
+    private Object encodedDisposedMessage(ChannelHandlerContext ctx, Channel channel, DisposedMessage disposedMessage) {
+        Kind kind = disposedMessage.getKind();
+
+        ChannelBuffer buf = dynamicBuffer(channel.getConfig().getBufferFactory());
+        encodeInitial(kind, buf);
         return encodeNoContent(buf);
     }
 

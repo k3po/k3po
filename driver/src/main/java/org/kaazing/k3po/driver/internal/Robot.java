@@ -29,10 +29,8 @@ import java.io.ByteArrayInputStream;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -61,7 +59,6 @@ import org.kaazing.k3po.driver.internal.behavior.handler.CompletionHandler;
 import org.kaazing.k3po.driver.internal.behavior.parser.Parser;
 import org.kaazing.k3po.driver.internal.behavior.parser.ScriptValidator;
 import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor;
-import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor.State;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
@@ -94,7 +91,6 @@ public class Robot {
 
     private final ChannelAddressFactory addressFactory;
     private final BootstrapFactory bootstrapFactory;
-    private final boolean createdBootstrapFactory;
 
     private ScriptProgress progress;
 
@@ -102,24 +98,10 @@ public class Robot {
 
     private final ConcurrentMap<String, Barrier> barriersByName = new ConcurrentHashMap<String, Barrier>();
 
-    // tests
     public Robot() {
-        this(newChannelAddressFactory());
-    }
-
-    private Robot(ChannelAddressFactory addressFactory) {
-        this(addressFactory,
-             newBootstrapFactory(Collections.<Class<?>, Object>singletonMap(ChannelAddressFactory.class, addressFactory)), true);
-    }
-
-    private Robot(
-            ChannelAddressFactory addressFactory,
-            BootstrapFactory bootstrapFactory,
-            boolean createdBootstrapFactory) {
-
-        this.addressFactory = addressFactory;
-        this.bootstrapFactory = bootstrapFactory;
-        this.createdBootstrapFactory = createdBootstrapFactory;
+        this.addressFactory = newChannelAddressFactory();
+        this.bootstrapFactory =
+                newBootstrapFactory(Collections.<Class<?>, Object>singletonMap(ChannelAddressFactory.class, addressFactory));
 
         ChannelFutureListener stopConfigurationListener = createStopConfigurationListener();
         this.abortedFuture.addListener(stopConfigurationListener);
@@ -218,32 +200,19 @@ public class Robot {
         return (progress != null) ? progress.getObservedScript() : null;
     }
 
-    public boolean isDestroyed() {
-        return destroyed;
-    }
-
-    public boolean destroy() {
-
-        if (destroyed) {
-            return true;
-        }
+    public void dispose() {
 
         abort();
 
-        if (createdBootstrapFactory) {
-            try {
-                bootstrapFactory.shutdown();
-                bootstrapFactory.releaseExternalResources();
-            }
-            catch (Exception e) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Caught exception releasing resources", e);
-                }
-                return false;
+        try {
+            bootstrapFactory.shutdown();
+            bootstrapFactory.releaseExternalResources();
+        }
+        catch (Exception e) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Caught exception releasing resources", e);
             }
         }
-
-        return destroyed = true;
     }
 
     private ChannelFuture prepareConfiguration() throws Exception {

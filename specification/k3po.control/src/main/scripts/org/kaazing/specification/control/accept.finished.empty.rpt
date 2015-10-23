@@ -23,5 +23,6 @@ write "\n"
 read "DISPOSE\n"
 read "\n"
 
-write "DISPOSE\n"
+write "DISPOSED\n"
 write "\n"
+

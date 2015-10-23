@@ -18,7 +18,7 @@ package org.kaazing.k3po.driver.internal.control;
 
 public abstract class ControlMessage {
 
-    public static enum Kind {
+    public enum Kind {
         PREPARE, PREPARED, START, STARTED, ERROR, ABORT, FINISHED, AWAIT, NOTIFY, NOTIFIED, DISPOSE, DISPOSED
     }
 

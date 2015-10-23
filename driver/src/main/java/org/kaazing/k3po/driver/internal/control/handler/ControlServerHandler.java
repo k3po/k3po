@@ -45,6 +45,8 @@ import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.Robot;
 import org.kaazing.k3po.driver.internal.control.AwaitMessage;
+import org.kaazing.k3po.driver.internal.control.DisposeMessage;
+import org.kaazing.k3po.driver.internal.control.DisposedMessage;
 import org.kaazing.k3po.driver.internal.control.ErrorMessage;
 import org.kaazing.k3po.driver.internal.control.FinishedMessage;
 import org.kaazing.k3po.driver.internal.control.NotifiedMessage;
@@ -80,7 +82,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         if (robot != null) {
-            robot.destroy();
+            robot.dispose();
         }
         channelClosedFuture.setSuccess();
         ctx.sendUpstream(e);
@@ -263,6 +265,18 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 }
             }
         });
+    }
+
+    @Override
+    public void disposeReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
+        robot.dispose();
+        writeDisposed(ctx);
+    }
+
+    private void writeDisposed(ChannelHandlerContext ctx) {
+        Channel channel = ctx.getChannel();
+        DisposedMessage disposedMessage = new DisposedMessage();
+        channel.write(disposedMessage);
     }
 
     private ChannelFutureListener whenAbortedOrFinished(final ChannelHandlerContext ctx) {

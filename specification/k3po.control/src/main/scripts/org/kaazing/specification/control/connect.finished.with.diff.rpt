@@ -52,7 +52,7 @@ read "closed\n"
 write "DISPOSE\n"
 write "\n"
 
-read "DISPOSE\n"
+read "DISPOSED\n"
 read "\n"
 
 closed

@@ -116,12 +116,14 @@ final class SpecificationStatement extends Statement {
                 }
             }
 
+            scriptRunner.dispose();
             // note: statement MUST call join() to ensure wrapped Rule(s) do not complete early
             // and to allow Specification script(s) to make progress
             String k3poSimpleName = K3poRule.class.getSimpleName();
             assertTrue(format("Did you instantiate %s with a @Rule and call %s.join()?", k3poSimpleName, k3poSimpleName),
                     latch.isStartable());
 
+            // DPW - TODO-ABC
             ScriptPair scripts = scriptFuture.get();
 
             assertEquals("Specified behavior did not match", scripts.getExpectedScript(), scripts.getObservedScript());
