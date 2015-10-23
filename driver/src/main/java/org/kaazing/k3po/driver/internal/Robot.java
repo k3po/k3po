@@ -45,8 +45,6 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ChildChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.channel.group.ChannelGroupFuture;
-import org.jboss.netty.channel.group.ChannelGroupFutureListener;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.jboss.netty.logging.InternalLogger;
@@ -81,13 +79,13 @@ public class Robot {
     private final ChannelFuture startedFuture = Channels.future(channel);
     private final ChannelFuture abortedFuture = Channels.future(channel);
     private final ChannelFuture finishedFuture = Channels.future(channel);
+    private final ChannelFuture disposedFuture = Channels.future(channel);
 
     private final DefaultChannelGroup serverChannels = new DefaultChannelGroup();
     private final DefaultChannelGroup clientChannels = new DefaultChannelGroup();
 
     private Configuration configuration;
     private ChannelFuture preparedFuture;
-    private volatile boolean destroyed;
 
     private final ChannelAddressFactory addressFactory;
     private final BootstrapFactory bootstrapFactory;
@@ -200,19 +198,35 @@ public class Robot {
         return (progress != null) ? progress.getObservedScript() : null;
     }
 
-    public void dispose() {
+    public ChannelFuture dispose() {
+        if (preparedFuture == null) {
+            // no need to clean up if never started
+            disposedFuture.setSuccess();
+        } else if (!disposedFuture.isDone()) {
+            ChannelFuture future = abort();
+            future.addListener(new ChannelFutureListener() {
 
-        abort();
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    // close server and client channels
+                    // final ChannelGroupFuture closeFuture =
+                    serverChannels.close();
+                    clientChannels.close();
 
-        try {
-            bootstrapFactory.shutdown();
-            bootstrapFactory.releaseExternalResources();
+                    try {
+                        bootstrapFactory.shutdown();
+                        bootstrapFactory.releaseExternalResources();
+                    } catch (Exception e) {
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("Caught exception releasing resources", e);
+                        }
+                    } finally {
+                        disposedFuture.setSuccess();
+                    }
+                }
+            });
         }
-        catch (Exception e) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Caught exception releasing resources", e);
-            }
-        }
+        return disposedFuture;
     }
 
     private ChannelFuture prepareConfiguration() throws Exception {
@@ -346,15 +360,6 @@ public class Robot {
             for (ChannelFuture connectFuture : connectFutures) {
                 connectFuture.cancel();
             }
-
-            // close server and client channels
-            final ChannelGroupFuture closeFuture = serverChannels.close();
-            closeFuture.addListener(new ChannelGroupFutureListener() {
-                @Override
-                public void operationComplete(final ChannelGroupFuture future) {
-                    clientChannels.close();
-                }
-            });
         }
     }
 

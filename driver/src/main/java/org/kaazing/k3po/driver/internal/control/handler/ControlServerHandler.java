@@ -80,12 +80,17 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     }
 
     @Override
-    public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+    public void channelClosed(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
         if (robot != null) {
-            robot.dispose();
+            robot.dispose().addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    channelClosedFuture.setSuccess();
+                    ctx.sendUpstream(e);
+                }
+            });
         }
-        channelClosedFuture.setSuccess();
-        ctx.sendUpstream(e);
+
     }
 
     @Override
@@ -269,8 +274,12 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     @Override
     public void disposeReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
-        robot.dispose();
-        writeDisposed(ctx);
+        robot.dispose().addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                writeDisposed(ctx);
+            }
+        });
     }
 
     private void writeDisposed(ChannelHandlerContext ctx) {
