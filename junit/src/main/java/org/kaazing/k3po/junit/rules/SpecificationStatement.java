@@ -116,7 +116,6 @@ final class SpecificationStatement extends Statement {
                 }
             }
 
-            scriptRunner.dispose();
             // note: statement MUST call join() to ensure wrapped Rule(s) do not complete early
             // and to allow Specification script(s) to make progress
             String k3poSimpleName = K3poRule.class.getSimpleName();
@@ -127,8 +126,13 @@ final class SpecificationStatement extends Statement {
 
             assertEquals("Specified behavior did not match", scripts.getExpectedScript(), scripts.getObservedScript());
         } finally {
-            // clean up the task if it is still running
-            scriptFuture.cancel(true);
+            try {
+                scriptRunner.dispose();
+            } finally {
+
+                // clean up the task if it is still running
+                scriptFuture.cancel(true);
+            }
         }
     }
 

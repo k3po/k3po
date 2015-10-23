@@ -33,7 +33,7 @@ import org.kaazing.k3po.junit.rules.K3poRule;
 
 public class ExtendedHandshakeIT {
 
-    private final K3poRule k3po = new K3poRule();
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/httpx/extended");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -42,95 +42,95 @@ public class ExtendedHandshakeIT {
 
     @Test
     @Specification({
-        "extended/connection.established.with.authorization/request",
-        "extended/connection.established.with.authorization/response" })
+        "connection.established.with.authorization/request",
+        "connection.established.with.authorization/response" })
     public void shouldEstablishConnectionWithAuthorization() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "extended/connection.established/request",
-        "extended/connection.established/response" })
+        "connection.established/request",
+        "connection.established/response" })
     public void shouldEstablishConnection() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "extended/connection.established.data.exchanged.close/request",
-        "extended/connection.established.data.exchanged.close/response" })
+        "connection.established.data.exchanged.close/request",
+        "connection.established.data.exchanged.close/response" })
     public void shouldEstablishConnectionAndExchangeDataAndClose() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "extended/client.sends.message.between.opening.and.extended.handshake/request",
-        "extended/client.sends.message.between.opening.and.extended.handshake/response" })
+        "client.sends.message.between.opening.and.extended.handshake/request",
+        "client.sends.message.between.opening.and.extended.handshake/response" })
     public void shouldFailWhenClientSendsMessageBetweenOpeningAndExtendedHandshake() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "extended/server.sends.message.between.opening.and.extended.handshake/request",
-        "extended/server.sends.message.between.opening.and.extended.handshake/response" })
+        "server.sends.message.between.opening.and.extended.handshake/request",
+        "server.sends.message.between.opening.and.extended.handshake/response" })
     public void shouldFailWhenServerSendsMessageBetweenOpeningAndExtendedHandshake() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "extended/extension.in.opening.and.extended.handshake/request",
-        "extended/extension.in.opening.and.extended.handshake/response" })
+        "extension.in.opening.and.extended.handshake/request",
+        "extension.in.opening.and.extended.handshake/response" })
     public void shouldFailWhenExtendedHandShakeHasExtensionFromOpeningHandshake() throws Exception {
         k3po.finish();
     }
 
     @Test
-    @Specification({"extended/extension.in.opening.handshake/request",
-        "extended/extension.in.opening.handshake/response" })
+    @Specification({"extension.in.opening.handshake/request",
+        "extension.in.opening.handshake/response" })
     public void shouldPassWhenExtensionIsNegotiatedInOpeningHandshake() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "extended/extension.in.extended.handshake/request",
-        "extended/extension.in.extended.handshake/response" })
+        "extension.in.extended.handshake/request",
+        "extension.in.extended.handshake/response" })
     public void shouldPassWhenExtensionIsNegotiatedInExtendedHandshake() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "extended/extended.handshake.response.code.200/request",
-        "extended/extended.handshake.response.code.200/response" })
+        "extended.handshake.response.code.200/request",
+        "extended.handshake.response.code.200/response" })
     public void shouldFailWhenWebSocketProtocolGets200StatusCode() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "extended/extended.handshake.response.code.101/request",
-        "extended/extended.handshake.response.code.101/response" })
+        "extended.handshake.response.code.101/request",
+        "extended.handshake.response.code.101/response" })
     public void shouldPassWhenWebSocketProtocolGets101StatusCode() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "extended/extended.handshake.response.code.302/request",
-        "extended/extended.handshake.response.code.302/response" })
+        "extended.handshake.response.code.302/request",
+        "extended.handshake.response.code.302/response" })
     public void shouldPassWhenWebSocketProtocolGets302StatusCode() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "extended/extended.handshake.response.code.401/request",
-        "extended/extended.handshake.response.code.401/response" })
+        "extended.handshake.response.code.401/request",
+        "extended.handshake.response.code.401/response" })
     public void shouldPassWhenWebSocketProtocolGets401StatusCode() throws Exception {
         k3po.finish();
     }
