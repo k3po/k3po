@@ -70,11 +70,11 @@ public class HttpBootstrapFactorySpi extends BootstrapFactorySpi {
 
     @Override
     public void shutdown() {
-        serverChannelFactory.shutdown();
+        // ignore, no external resources to shutdown as it always runs on top of another transport (tcp)
     }
 
     @Override
     public void releaseExternalResources() {
-        serverChannelFactory.releaseExternalResources();
+        // ignore, no external resources to shutdown as it always runs on top of another transport (tcp)
     }
 }
