@@ -70,11 +70,11 @@ public class HttpBootstrapFactorySpi extends BootstrapFactorySpi {
 
     @Override
     public void shutdown() {
-        // ignore
+        serverChannelFactory.shutdown();
     }
 
     @Override
     public void releaseExternalResources() {
-        // ignore
+        serverChannelFactory.releaseExternalResources();
     }
 }
