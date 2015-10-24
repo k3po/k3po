@@ -457,7 +457,7 @@ public class Robot {
                 if (!completionFuture.isSuccess()) {
                     Throwable cause = completionFuture.getCause();
                     if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("Unexpected exception: " + cause);
+                        LOGGER.debug("Unexpected exception: " + cause + " " + exception.getMessage());
                     }
                     if (cause instanceof ScriptProgressException) {
                         ScriptProgressException exception = (ScriptProgressException) cause;
