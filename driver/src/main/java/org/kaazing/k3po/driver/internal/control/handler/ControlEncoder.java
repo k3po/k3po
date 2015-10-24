@@ -26,6 +26,8 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+import org.jboss.netty.logging.InternalLogger;
+import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.control.ControlMessage;
 import org.kaazing.k3po.driver.internal.control.ControlMessage.Kind;
 import org.kaazing.k3po.driver.internal.control.DisposedMessage;
@@ -39,6 +41,7 @@ import org.kaazing.k3po.driver.internal.control.StartedMessage;
 public class ControlEncoder extends OneToOneEncoder {
 
     private static final byte LF = (byte) 0x0a;
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ControlEncoder.class);
 
     @Override
     protected Object encode(ChannelHandlerContext ctx, Channel channel, Object message) throws Exception {
@@ -48,18 +51,25 @@ public class ControlEncoder extends OneToOneEncoder {
 
             switch (controlMessage.getKind()) {
             case PREPARED:
+                LOGGER.info("Encoding PREPARED");
                 return encodePreparedMessage(ctx, channel, (PreparedMessage) controlMessage);
             case STARTED:
+                LOGGER.info("Encoding STARTED");
                 return encodeStartedMessage(ctx, channel, (StartedMessage) controlMessage);
             case ERROR:
+                LOGGER.info("Encoding ERROR");
                 return encodeErrorMessage(ctx, channel, (ErrorMessage) controlMessage);
             case FINISHED:
+                LOGGER.info("Encoding FINISHED");
                 return encodeFinishedMessage(ctx, channel, (FinishedMessage) controlMessage);
             case NOTIFY:
+                LOGGER.info("Encoding NOTIFY");
                 return encodeNotifyMessage(ctx, channel, (NotifyMessage) controlMessage);
             case NOTIFIED:
+                LOGGER.info("Encoding NOTIFIED");
                 return encodedNotifiedMessage(ctx, channel, (NotifiedMessage) controlMessage);
             case DISPOSED:
+                LOGGER.info("Encoding DISPOSED");
                 return encodedDisposedMessage(ctx, channel, (DisposedMessage) controlMessage);
             default:
                 break;
