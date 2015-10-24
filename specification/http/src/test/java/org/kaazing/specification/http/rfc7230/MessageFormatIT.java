@@ -460,13 +460,4 @@ public class MessageFormatIT {
         k3po.finish();
     }
 
-    @Test
-    @Specification({
-            "reverse.proxy.head.response.has.content.length/client",
-            "reverse.proxy.head.response.has.content.length/proxy",
-            "reverse.proxy.head.response.has.content.length/server" })
-    public void proxyShouldEstablishConnectionWhenHeadResponseHasContent() throws Exception {
-        k3po.finish();
-    }
-
 }
