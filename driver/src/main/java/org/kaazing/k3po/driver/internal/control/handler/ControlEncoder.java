@@ -49,27 +49,24 @@ public class ControlEncoder extends OneToOneEncoder {
         if (message instanceof ControlMessage) {
             ControlMessage controlMessage = (ControlMessage) message;
 
-            switch (controlMessage.getKind()) {
+            Kind kind = controlMessage.getKind();
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Encoding " + kind);
+            }
+            switch (kind) {
             case PREPARED:
-                LOGGER.info("Encoding PREPARED");
                 return encodePreparedMessage(ctx, channel, (PreparedMessage) controlMessage);
             case STARTED:
-                LOGGER.info("Encoding STARTED");
                 return encodeStartedMessage(ctx, channel, (StartedMessage) controlMessage);
             case ERROR:
-                LOGGER.info("Encoding ERROR");
                 return encodeErrorMessage(ctx, channel, (ErrorMessage) controlMessage);
             case FINISHED:
-                LOGGER.info("Encoding FINISHED");
                 return encodeFinishedMessage(ctx, channel, (FinishedMessage) controlMessage);
             case NOTIFY:
-                LOGGER.info("Encoding NOTIFY");
                 return encodeNotifyMessage(ctx, channel, (NotifyMessage) controlMessage);
             case NOTIFIED:
-                LOGGER.info("Encoding NOTIFIED");
                 return encodedNotifiedMessage(ctx, channel, (NotifiedMessage) controlMessage);
             case DISPOSED:
-                LOGGER.info("Encoding DISPOSED");
                 return encodedDisposedMessage(ctx, channel, (DisposedMessage) controlMessage);
             default:
                 break;

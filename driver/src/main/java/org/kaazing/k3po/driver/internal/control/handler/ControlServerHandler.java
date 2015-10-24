@@ -45,7 +45,6 @@ import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.Robot;
 import org.kaazing.k3po.driver.internal.control.AwaitMessage;
-import org.kaazing.k3po.driver.internal.control.DisposeMessage;
 import org.kaazing.k3po.driver.internal.control.DisposedMessage;
 import org.kaazing.k3po.driver.internal.control.ErrorMessage;
 import org.kaazing.k3po.driver.internal.control.FinishedMessage;

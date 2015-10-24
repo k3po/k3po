@@ -411,10 +411,9 @@ public class Robot {
                 Channel boundChannel = bindFuture.getChannel();
                 SocketAddress localAddress = boundChannel.getLocalAddress();
                 if (bindFuture.isSuccess()) {
-                    LOGGER.info("Successfully bound to " + localAddress);
-//                    if (LOGGER.isDebugEnabled()) {
-//                        LOGGER.debug("Successfully bound to " + localAddress);
-//                    }
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Successfully bound to " + localAddress);
+                    }
                 } else {
                     LOGGER.error("Failed to bind to " + localAddress);
                     Throwable cause = bindFuture.getCause();
@@ -455,8 +454,10 @@ public class Robot {
         return new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture completionFuture) throws Exception {
+                Throwable cause = completionFuture.getCause();
+                LOGGER.info("Unexpected exception" + cause);
                 if (!completionFuture.isSuccess()) {
-                    Throwable cause = completionFuture.getCause();
+//                    Throwable cause = completionFuture.getCause();
                     if (cause instanceof ScriptProgressException) {
                         ScriptProgressException exception = (ScriptProgressException) cause;
                         progress.addScriptFailure(exception.getRegionInfo(), exception.getMessage());
