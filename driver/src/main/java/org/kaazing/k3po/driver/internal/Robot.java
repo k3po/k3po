@@ -408,13 +408,15 @@ public class Robot {
             @Override
             public void operationComplete(final ChannelFuture bindFuture) throws Exception {
 
+                Channel boundChannel = bindFuture.getChannel();
+                SocketAddress localAddress = boundChannel.getLocalAddress();
                 if (bindFuture.isSuccess()) {
-                    if (LOGGER.isDebugEnabled()) {
-                        Channel boundChannel = bindFuture.getChannel();
-                        SocketAddress localAddress = boundChannel.getLocalAddress();
-                        LOGGER.debug("Successfully bound to " + localAddress);
-                    }
+                    LOGGER.info("Successfully bound to " + localAddress);
+//                    if (LOGGER.isDebugEnabled()) {
+//                        LOGGER.debug("Successfully bound to " + localAddress);
+//                    }
                 } else {
+                    LOGGER.error("Failed to bind to " + localAddress);
                     Throwable cause = bindFuture.getCause();
                     String message = format("accept failed: %s", cause.getMessage());
                     progress.addScriptFailure(regionInfo, message);
