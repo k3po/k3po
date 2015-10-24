@@ -129,7 +129,6 @@ final class SpecificationStatement extends Statement {
             try {
                 scriptRunner.dispose();
             } finally {
-
                 // clean up the task if it is still running
                 scriptFuture.cancel(true);
             }

@@ -45,6 +45,8 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ChildChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
+import org.jboss.netty.channel.group.ChannelGroupFuture;
+import org.jboss.netty.channel.group.ChannelGroupFutureListener;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.jboss.netty.logging.InternalLogger;
@@ -210,19 +212,25 @@ public class Robot {
                 public void operationComplete(ChannelFuture future) throws Exception {
                     // close server and client channels
                     // final ChannelGroupFuture closeFuture =
-                    serverChannels.close();
-                    clientChannels.close();
+                    serverChannels.close().addListener(new ChannelGroupFutureListener() {
 
-                    try {
-                        bootstrapFactory.shutdown();
-                        bootstrapFactory.releaseExternalResources();
-                    } catch (Exception e) {
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("Caught exception releasing resources", e);
+                        @Override
+                        public void operationComplete(ChannelGroupFuture future) throws Exception {
+                            clientChannels.close();
+                            try {
+                                bootstrapFactory.shutdown();
+                                bootstrapFactory.releaseExternalResources();
+                            } catch (Exception e) {
+                                if (LOGGER.isDebugEnabled()) {
+                                    LOGGER.error("Caught exception releasing resources", e);
+                                }
+                            } finally {
+                                disposedFuture.setSuccess();
+                            }
+
                         }
-                    } finally {
-                        disposedFuture.setSuccess();
-                    }
+                    });
+
                 }
             });
         }
