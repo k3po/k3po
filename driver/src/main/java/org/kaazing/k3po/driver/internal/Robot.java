@@ -454,10 +454,11 @@ public class Robot {
         return new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture completionFuture) throws Exception {
-                Throwable cause = completionFuture.getCause();
-                LOGGER.info("Unexpected exception" + cause);
                 if (!completionFuture.isSuccess()) {
-//                    Throwable cause = completionFuture.getCause();
+                    Throwable cause = completionFuture.getCause();
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Unexpected exception" + cause);
+                    }
                     if (cause instanceof ScriptProgressException) {
                         ScriptProgressException exception = (ScriptProgressException) cause;
                         progress.addScriptFailure(exception.getRegionInfo(), exception.getMessage());
