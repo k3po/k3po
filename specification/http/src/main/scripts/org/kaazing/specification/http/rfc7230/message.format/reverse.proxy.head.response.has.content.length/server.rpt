@@ -1,0 +1,13 @@
+accept http://localhost:8080/index.html
+       option transport tcp://localhost:8081
+accepted
+connected
+
+read method "HEAD"
+read header "Host" "localhost:8080"
+read closed
+
+write status "200" "OK"
+write version "HTTP/1.1"
+write header "Content-Length" "100"
+write close
