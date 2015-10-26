@@ -67,6 +67,14 @@ public class HttpIT {
 
         k3po.finish();
     }
+    
+    @Test
+    @TestSpecification({
+        "http.accept.websocket.handshake.then.client.hard.close",
+        "http.connect.websocket.handshake.then.client.hard.close" })
+    public void shouldAcceptWebsocketHandshakeThenClientHardClose() throws Exception {
+        k3po.finish();
+    }
 
     @Test
     @TestSpecification({
