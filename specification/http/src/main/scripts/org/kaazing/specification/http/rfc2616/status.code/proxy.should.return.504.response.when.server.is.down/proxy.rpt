@@ -1,0 +1,18 @@
+accept http://localhost:8080/proxy
+accepted
+connected
+read notify CLIENT_REQUEST_READ
+read closed
+write await SERVER_DOWN
+write status "504" "Gateway Timeout"
+write header content-length
+write close
+
+connect http://localhost:8081/server
+connected
+write await CLIENT_REQUEST_READ
+write method "GET"
+write header host
+write close
+
+read notify SERVER_DOWN

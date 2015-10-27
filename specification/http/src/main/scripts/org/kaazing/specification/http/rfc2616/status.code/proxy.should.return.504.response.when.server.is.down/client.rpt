@@ -1,0 +1,6 @@
+connect http://localhost:8080/proxy
+connected
+write method "GET"
+write header host
+write close
+read status "504" "Gateway Timeout"
