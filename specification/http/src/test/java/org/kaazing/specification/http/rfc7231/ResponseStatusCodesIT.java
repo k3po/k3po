@@ -36,20 +36,18 @@ import org.kaazing.k3po.junit.rules.K3poRule;
  * Response Status Codes</a>.
  */
 public class ResponseStatusCodesIT {
-    // TODO
-	private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/http/rfc7231/server.error");
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/http/rfc7231/server.error");
 
-	private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
+    private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
-	@Rule
-	public final TestRule chain = outerRule(k3po).around(timeout);
+    @Rule
+    public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({ 
+    @Specification({
         "proxy.should.return.504.response.when.server.is.down/client",
-        "proxy.should.return.504.response.when.server.is.down/proxy",
-        "proxy.should.return.504.response.when.server.is.down/server" })
-	public void proxyShouldReturn504ResponseWhenServerIsDown() throws Exception {
-		k3po.finish();
-	}
+        "proxy.should.return.504.response.when.server.is.down/proxy" })
+    public void proxyShouldReturn504ResponseWhenServerIsDown() throws Exception {
+        k3po.finish();
+    }
 }

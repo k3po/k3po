@@ -5,19 +5,8 @@ connected
 read method "GET"
 read version "HTTP/1.1"
 read header "Host" "localhost:8080"
-read notify CLIENT_REQUEST_READ
 read closed
 
-write await SERVER_DOWN
 write status "504" "Gateway Timeout"
 write header content-length
 write close
-
-connect http://localhost:8080/server
-        option transport tcp://localhost:8081
-connected
-write await CLIENT_REQUEST_READ
-write method "GET"
-write header host
-
-read notify SERVER_DOWN
