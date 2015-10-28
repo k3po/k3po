@@ -58,6 +58,14 @@ public class ExtendedHandshakeIT {
 
     @Test
     @Specification({
+        "extended/connection.established.data.exchanged.close/request",
+        "extended/connection.established.data.exchanged.close/response" })
+    public void shouldEstablishConnectionAndExchangeDataAndClose() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "extended/client.sends.message.between.opening.and.extended.handshake/request",
         "extended/client.sends.message.between.opening.and.extended.handshake/response" })
     public void shouldFailWhenClientSendsMessageBetweenOpeningAndExtendedHandshake() throws Exception {

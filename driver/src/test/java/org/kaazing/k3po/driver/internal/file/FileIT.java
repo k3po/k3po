@@ -60,4 +60,13 @@ public class FileIT {
         k3po.finish();
     }
 
+    @Test
+    @TestSpecification({
+        "echo.back.to.sender/sender",
+        "echo.back.to.sender/receiver"
+    })
+    public void shouldEchoBackToSender() throws Exception {
+        k3po.finish();
+    }
+
 }

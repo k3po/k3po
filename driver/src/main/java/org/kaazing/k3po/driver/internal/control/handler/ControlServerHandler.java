@@ -150,6 +150,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         for (String scriptName : scriptNames) {
             String scriptNameWithExtension = format("%s.rpt", scriptName);
             Path scriptPath = Paths.get(scriptNameWithExtension);
+            scriptNameWithExtension = URI.create(scriptNameWithExtension).normalize().getPath();
             String script = null;
 
             assert !scriptPath.isAbsolute();

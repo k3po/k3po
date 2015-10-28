@@ -32,7 +32,10 @@ streamNode
     ;
 
 acceptNode
-    : k=AcceptKeyword acceptURI=location ( AsKeyword text=Name )? (OptionKeyword TransportKeyword value=location)?
+    : k=AcceptKeyword acceptURI=location ( AsKeyword text=Name )?
+      (OptionKeyword TransportKeyword value=location)?
+      (OptionKeyword ReaderKeyword reader=expressionValue)?
+      (OptionKeyword WriterKeyword writer=expressionValue)?
       serverStreamableNode*
     ;
 
@@ -45,6 +48,8 @@ connectNode
                        (OptionKeyword TransportKeyword value=location)?
                        (OptionKeyword SizeKeyword size=DecimalLiteral)?
                        (OptionKeyword ModeKeyword fmode=ModeValue)?
+                       (OptionKeyword ReaderKeyword reader=expressionValue)?
+                       (OptionKeyword WriterKeyword writer=expressionValue)?
         streamableNode+
     ;
 
@@ -350,23 +355,27 @@ SignedDecimalLiteral
 //    |  DecimalLiteral
     ;
 
-OptionKeyword: 'option';
-
-SizeKeyword: 'size';
+MaskKeyword: 'mask';
 
 ModeKeyword: 'mode';
 
 OffsetKeyword : 'offset';
 
-MaskKeyword: 'mask';
+OptionKeyword: 'option';
+
+ReaderKeyword: 'reader';
+
+SizeKeyword: 'size';
+
+ShortKeyword
+    : 'short'
+    ;
 
 TransportKeyword
     : 'transport'
     ;
 
-ShortKeyword
-    : 'short'
-    ;
+WriterKeyword: 'writer';
 
 IntKeyword
     : 'int'

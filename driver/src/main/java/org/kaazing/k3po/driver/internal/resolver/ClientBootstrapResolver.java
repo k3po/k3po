@@ -43,35 +43,30 @@ public class ClientBootstrapResolver {
     private final LocationResolver locationResolver;
     private final Barrier barrier;
     private final RegionInfo regionInfo;
-    private final Map<String, Object> connectOptions;
-    private final LocationResolver transportResolver;
+    private final OptionsResolver optionsResolver;
 
     private ClientBootstrap bootstrap;
 
     public ClientBootstrapResolver(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory,
             ChannelPipelineFactory pipelineFactory, LocationResolver locationResolver,
-            LocationResolver transportResolver, Barrier barrier,
-            RegionInfo regionInfo, Map<String, Object> connectOptions) {
+            OptionsResolver optionsResolver, Barrier barrier,
+            RegionInfo regionInfo) {
         this.bootstrapFactory = bootstrapFactory;
         this.addressFactory = addressFactory;
         this.pipelineFactory = pipelineFactory;
         this.locationResolver = locationResolver;
-        this.transportResolver = transportResolver;
+        this.optionsResolver = optionsResolver;
         this.barrier = barrier;
         this.regionInfo = regionInfo;
-        this.connectOptions = connectOptions;
     }
 
     public ClientBootstrap resolve() throws Exception {
         if (bootstrap == null) {
-            URI connectUri = locationResolver.resolve();
-            if (transportResolver != null) {
-                URI transportUri = transportResolver.resolve();
-                connectOptions.put("transport", transportUri);
-            }
-            ChannelAddress remoteAddress = addressFactory.newChannelAddress(connectUri, connectOptions);
+            URI connectURI = locationResolver.resolve();
+            Map<String, Object> connectOptions = optionsResolver.resolve();
+            ChannelAddress remoteAddress = addressFactory.newChannelAddress(connectURI, connectOptions);
             LOGGER.debug("Initializing client Bootstrap connecting to remoteAddress " + remoteAddress);
-            ClientBootstrap clientBootstrapCandidate = bootstrapFactory.newClientBootstrap(connectUri.getScheme());
+            ClientBootstrap clientBootstrapCandidate = bootstrapFactory.newClientBootstrap(connectURI.getScheme());
             clientBootstrapCandidate.setPipelineFactory(pipelineFactory);
             clientBootstrapCandidate.setOption("remoteAddress", remoteAddress);
             bootstrap = clientBootstrapCandidate;

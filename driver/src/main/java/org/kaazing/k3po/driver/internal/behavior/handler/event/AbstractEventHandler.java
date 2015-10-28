@@ -62,7 +62,7 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
 
     protected static final EnumSet<ChannelEventKind> DEFAULT_INTERESTED_EVENTS =
             complementOf(of(CHILD_OPEN, CHILD_CLOSED, WRITE_COMPLETED, INTEREST_OPS, EXCEPTION, IDLE_STATE,
-                            OUTPUT_SHUTDOWN, UNKNOWN));
+                            OUTPUT_SHUTDOWN, FLUSHED, UNKNOWN));
 
     public enum ChannelEventKind {
         CHILD_OPEN, CHILD_CLOSED, OPEN, BOUND, CONNECTED, MESSAGE, WRITE_COMPLETED, DISCONNECTED, UNBOUND, CLOSED, EXCEPTION,

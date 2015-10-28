@@ -138,6 +138,9 @@ public final class FileChannel extends AbstractChannel<FileChannelConfig> {
                 break;
             case "rw":
                 mapMode = READ_WRITE;
+                // parent directory must exist to create file
+                File parentDir = location.getParentFile();
+                parentDir.mkdirs();
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Unknown mode = %s for file = %s", mode, location));
