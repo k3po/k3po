@@ -24,14 +24,13 @@ read "Server: Kaazing Gateway\r\n"
 read "Upgrade: websocket\r\n"
 read "\r\n"
 
-# binary-encoded balancer directive - NO balance needed      
-read [0x82 0x04 0xEF 0x83 0xBF 0x4E]
+read notify HANDSHAKE_COMPLETE
 
-write await TICK_ONE
+write await HANDSHAKE_COMPLETE
 
 close
 
-write notify TICK_TWO
+write notify CLOSED
  
 closed
 
@@ -62,12 +61,7 @@ write "Server: Kaazing Gateway\r\n"
 write "Upgrade: websocket\r\n"
 write "\r\n"
 
-# binary-encoded balancer directive - NO balance needed      
-write [0x82 0x04 0xEF 0x83 0xBF 0x4E]
-
-read notify HANDSHAKE_COMPLETE
-
-read await TICK_TWO
+read await CLOSED
 
 # Client should timeout and close the connection - this doesn't happen
 
