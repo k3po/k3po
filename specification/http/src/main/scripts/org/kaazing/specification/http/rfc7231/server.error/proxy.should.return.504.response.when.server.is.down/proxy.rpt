@@ -1,4 +1,4 @@
-accept http://localhost:8080/proxy
+accept http://localhost:8080/index.html
 accepted
 connected
 

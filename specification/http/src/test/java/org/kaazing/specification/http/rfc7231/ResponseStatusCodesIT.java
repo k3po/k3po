@@ -50,4 +50,15 @@ public class ResponseStatusCodesIT {
     public void proxyShouldReturn504ResponseWhenServerIsDown() throws Exception {
         k3po.finish();
     }
+
+    @Test
+    @Specification({
+            "proxy.should.return.504.response.when.server.disconnects/client",
+            "proxy.should.return.504.response.when.server.disconnects/proxy",
+            "proxy.should.return.504.response.when.server.disconnects/server"
+    })
+    public void proxyShouldReturn504ResponseWhenServerDisconnects() throws Exception {
+        k3po.finish();
+    }
+
 }
