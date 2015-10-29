@@ -30,7 +30,10 @@ write await HANDSHAKE_COMPLETE
 
 close
 
-write notify CLOSED
+write notify CLIENT_CLOSE_ISSUED
+
+# If the following line is uncommented the test passes
+# read await CLIENT_CLOSE_ISSUED
  
 closed
 
@@ -61,8 +64,6 @@ write "Server: Kaazing Gateway\r\n"
 write "Upgrade: websocket\r\n"
 write "\r\n"
 
-read await CLOSED
-
-# Client should timeout and close the connection - this doesn't happen
+read await CLIENT_CLOSE_ISSUED
 
 closed
