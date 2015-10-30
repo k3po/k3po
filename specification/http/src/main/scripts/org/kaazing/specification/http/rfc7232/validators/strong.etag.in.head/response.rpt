@@ -6,11 +6,9 @@ connected
 
 read method "HEAD"
 read version "HTTP/1.1"
-read closed
 
 write status "200" "OK"
 write header "Date" ${created}
 write header "ETag" ${entityTag}
 write header content-length
 write flush
-write close

@@ -5,13 +5,11 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
-read closed
 
 write status "200" "OK"
 write header "Last-Modified" ${lastModified}
 write header content-length
 write flush
-write close
 
 accepted
 connected
@@ -19,12 +17,6 @@ connected
 read method "DELETE"
 read version "HTTP/1.1"
 read header "If-Unmodified-Since" ${lastModified}
-read closed
 
-# The resource was NOT modified since the date specified as part of
-# If-Unmodified-Since header. This means that the condition is true. So,
-# continue to perform the requested method and the response will include
-# 204(No Content) success status code.
 write status "204" "No Content"
 write flush
-write close

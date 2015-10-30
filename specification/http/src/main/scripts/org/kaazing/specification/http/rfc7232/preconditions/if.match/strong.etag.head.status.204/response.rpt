@@ -5,13 +5,11 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
-read closed
 
 write status "200" "OK"
 write header "ETag" ${entityTag}
 write header content-length
 write flush
-write close
 
 accepted
 connected
@@ -19,11 +17,6 @@ connected
 read method "HEAD"
 read version "HTTP/1.1"
 read header "If-Match" ${entityTag}
-read closed
 
-# The etag specified using If-Match header matches the entity-tag of the selected
-# resource. This means that the condition passed and the requested method should
-# be performed. And, the response will include 204(No Content) success status code.
 write status "204" "No Content"
 write flush
-write close

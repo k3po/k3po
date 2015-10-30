@@ -1,27 +1,11 @@
 connect http://localhost:8000/resource
 connected
 
-write method "GET"
-write version "HTTP/1.1"
-write header content-length
-write flush
-write close
-
-read status "200" "OK"
-read header "ETag" /(?<etag>.+)/
-read notify READ_ETAG
-read closed
-
-connect http://localhost:8000/resource
-connected
-
-write await READ_ETAG
 write method "HEAD"
 write version "HTTP/1.1"
-write header "If-None-Match" "\"different-tag\""
+write header "If-None-Match" "\"unmatched-tag\""
 write header content-length
 write flush
-write close
 
 read status "200" "OK"
-read header "ETag" ${etag}
+read header "ETag" /.+/

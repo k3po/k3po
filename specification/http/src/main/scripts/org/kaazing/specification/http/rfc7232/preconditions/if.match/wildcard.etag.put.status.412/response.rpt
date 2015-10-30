@@ -5,10 +5,6 @@ connected
 read method "PUT"
 read version "HTTP/1.1"
 read header "If-Match" "\"*\""
-read closed
 
-# When If-Match vaue is *, the condition evaluates to false. And, the requested method
-# is not performed. The response includes 412(Precondition failed) status code.
 write status "412" "Precondition Failed"
 write flush
-write close

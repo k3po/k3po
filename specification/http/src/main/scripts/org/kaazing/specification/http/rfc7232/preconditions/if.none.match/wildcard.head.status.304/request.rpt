@@ -6,7 +6,7 @@ write version "HTTP/1.1"
 write header "If-None-Match" "\"*\""
 write header content-length
 write flush
-write close
 
 read status "304" "Not Modified"
 read header "ETag" /.+/
+read closed

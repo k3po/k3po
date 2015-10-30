@@ -5,13 +5,11 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
-read closed
 
 write status "200" "OK"
 write header "ETag" ${entityTag}
 write header content-length
 write flush
-write close
 
 accepted
 connected
@@ -19,11 +17,6 @@ connected
 read method "POST"
 read version "HTTP/1.1"
 read header "If-None-Match" ${entityTag}
-read closed
 
-# RFC 7232 does not talk about this rather weird scenario which basically says update a resource that
-# the client knows has changed. The client should have used If-Match header instead. Currently, we are
-# taking a strict view of this and sending a response with 400(Bad Request).
 write status "400" "Bad Request"
 write flush
-write close

@@ -5,12 +5,6 @@ connected
 read method "GET"
 read version "HTTP/1.1"
 read header "If-Match" "\"*\""
-read closed
 
-# When If-Match value is *, the condition evaluates to false. And, the requested method
-# is not performed. However, if the change requested by the method to the resource
-# has already happened(via some other user agent or this user agent has missed the
-# prior response), then the response includes 200(OK) success status code.
 write status "200" "OK"
 write flush
-write close

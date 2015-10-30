@@ -18,12 +18,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-/**
- *  Test to validate behavior of <b>if-match</b> header as specified in
- *  <a href="https://tools.ietf.org/html/rfc7232">RFC 7232:
- *   Hypertext Transfer Protocol (HTTP/1.1): Conditional Requests</a>.
- */
 package org.kaazing.specification.http.rfc7232;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -37,6 +31,9 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
+/**
+ * RFC-7232, section 3.1 "If-Match"
+ */
 public class IfMatchIT {
     private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/http/rfc7232/preconditions/if.match");
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
@@ -48,7 +45,7 @@ public class IfMatchIT {
     @Specification({
         "multiple.etags.delete.status.204/request",
         "multiple.etags.delete.status.204/response" })
-    public void shouldSucceedWithDeleteAndValidETagInTheList() throws Exception {
+    public void shouldSucceedWithDeleteAndMatchingETagInTheList() throws Exception {
         k3po.finish();
     }
 
@@ -56,7 +53,7 @@ public class IfMatchIT {
     @Specification({
         "multiple.etags.get.status.200/request",
         "multiple.etags.get.status.200/response" })
-    public void shouldSucceedWithGetAndValidETagInTheList() throws Exception {
+    public void shouldSucceedWithGetAndMatchingETagInTheList() throws Exception {
         k3po.finish();
     }
 
@@ -64,7 +61,7 @@ public class IfMatchIT {
     @Specification({
         "multiple.etags.head.status.204/request",
         "multiple.etags.head.status.204/response" })
-    public void shouldSucceedWithHeadAndValidETagInTheList() throws Exception {
+    public void shouldSucceedWithHeadAndMatchingETagInTheList() throws Exception {
         k3po.finish();
     }
 
@@ -72,7 +69,7 @@ public class IfMatchIT {
     @Specification({
         "multiple.etags.post.status.204/request",
         "multiple.etags.post.status.204/response" })
-    public void shouldSucceedWithPostAndValidETagInTheList() throws Exception {
+    public void shouldSucceedWithPostAndMatchingETagInTheList() throws Exception {
         k3po.finish();
     }
 
@@ -80,7 +77,7 @@ public class IfMatchIT {
     @Specification({
         "multiple.etags.put.status.204/request",
         "multiple.etags.put.status.204/response" })
-    public void shouldSucceedWithPutAndValidETagInTheList() throws Exception {
+    public void shouldSucceedWithPutAndMatchingETagInTheList() throws Exception {
         k3po.finish();
     }
 
@@ -88,7 +85,7 @@ public class IfMatchIT {
     @Specification({
         "multiple.etags.delete.status.412/request",
         "multiple.etags.delete.status.412/response" })
-    public void shouldCausePreconditionFailedWithDeleteAndNoValidETagsInTheList() throws Exception {
+    public void shouldCausePreconditionFailedWithDeleteAndNoMatchingETagsInTheList() throws Exception {
         k3po.finish();
     }
 
@@ -96,7 +93,7 @@ public class IfMatchIT {
     @Specification({
         "multiple.etags.get.status.412/request",
         "multiple.etags.get.status.412/response" })
-    public void shouldCausePreconditionFailedWithGetAndNoValidETagsInTheList() throws Exception {
+    public void shouldCausePreconditionFailedWithGetAndNoMatchingETagsInTheList() throws Exception {
         k3po.finish();
     }
 
@@ -104,7 +101,7 @@ public class IfMatchIT {
     @Specification({
         "multiple.etags.head.status.412/request",
         "multiple.etags.head.status.412/response" })
-    public void shouldCausePreconditionFailedWithHeadAndNoValidETagsInTheList() throws Exception {
+    public void shouldCausePreconditionFailedWithHeadAndNoMatchingETagsInTheList() throws Exception {
         k3po.finish();
     }
 
@@ -112,7 +109,7 @@ public class IfMatchIT {
     @Specification({
         "multiple.etags.post.status.412/request",
         "multiple.etags.post.status.412/response" })
-    public void shouldCausePreconditionFailedWithPostAndNoValidETagsInTheList() throws Exception {
+    public void shouldCausePreconditionFailedWithPostAndNoMatchingETagsInTheList() throws Exception {
         k3po.finish();
     }
 
@@ -120,7 +117,7 @@ public class IfMatchIT {
     @Specification({
         "multiple.etags.put.status.412/request",
         "multiple.etags.put.status.412/response" })
-    public void shouldCausePreconditionFailedWithPutAndNoValidETagsInTheList() throws Exception {
+    public void shouldCausePreconditionFailedWithPutAndNoMatchingETagsInTheList() throws Exception {
         k3po.finish();
     }
 
@@ -128,7 +125,7 @@ public class IfMatchIT {
     @Specification({
         "strong.etag.delete.status.204/request",
         "strong.etag.delete.status.204/response" })
-    public void shouldSucceedWithDeleteAndValidStrongETag() throws Exception {
+    public void shouldSucceedWithDeleteAndMatchingStrongETag() throws Exception {
         k3po.finish();
     }
 
@@ -136,7 +133,7 @@ public class IfMatchIT {
     @Specification({
         "strong.etag.get.status.200/request",
         "strong.etag.get.status.200/response" })
-    public void shouldSucceedWithGetAndValidStrongETag() throws Exception {
+    public void shouldSucceedWithGetAndMatchingStrongETag() throws Exception {
         k3po.finish();
     }
 
@@ -144,7 +141,7 @@ public class IfMatchIT {
     @Specification({
         "strong.etag.head.status.204/request",
         "strong.etag.head.status.204/response" })
-    public void shouldSucceedWithHeadAndValidStrongETag() throws Exception {
+    public void shouldSucceedWithHeadAndMatchingStrongETag() throws Exception {
         k3po.finish();
     }
 
@@ -152,7 +149,7 @@ public class IfMatchIT {
     @Specification({
         "strong.etag.post.status.204/request",
         "strong.etag.post.status.204/response" })
-    public void shouldSucceedWithPostAndValidStrongETag() throws Exception {
+    public void shouldSucceedWithPostAndMatchingStrongETag() throws Exception {
         k3po.finish();
     }
 
@@ -160,7 +157,7 @@ public class IfMatchIT {
     @Specification({
         "strong.etag.put.status.204/request",
         "strong.etag.put.status.204/response" })
-    public void shouldSucceedWithPutAndValidStrongETag() throws Exception {
+    public void shouldSucceedWithPutAndMatchingStrongETag() throws Exception {
         k3po.finish();
     }
 
@@ -168,7 +165,7 @@ public class IfMatchIT {
     @Specification({
         "strong.etag.delete.status.412/request",
         "strong.etag.delete.status.412/response" })
-    public void shouldCausePreconditionFailedWithDeleteAndInvalidStrongETag() throws Exception {
+    public void shouldCausePreconditionFailedWithDeleteAndUnmatchedStrongETag() throws Exception {
         k3po.finish();
     }
 
@@ -176,7 +173,7 @@ public class IfMatchIT {
     @Specification({
         "strong.etag.get.status.412/request",
         "strong.etag.get.status.412/response" })
-    public void shouldCausePreconditionFailedWithGetAndInvalidStrongETag() throws Exception {
+    public void shouldCausePreconditionFailedWithGetAndUnmatchedStrongETag() throws Exception {
         k3po.finish();
     }
 
@@ -184,7 +181,7 @@ public class IfMatchIT {
     @Specification({
         "strong.etag.head.status.412/request",
         "strong.etag.head.status.412/response" })
-    public void shouldCausePreconditionFailedWithHeadAndInvalidStrongETag() throws Exception {
+    public void shouldCausePreconditionFailedWithHeadAndUnmatchedStrongETag() throws Exception {
         k3po.finish();
     }
 
@@ -192,7 +189,7 @@ public class IfMatchIT {
     @Specification({
         "strong.etag.post.status.412/request",
         "strong.etag.post.status.412/response" })
-    public void shouldCausePreconditionFailedWithPostAndInvalidStrongETag() throws Exception {
+    public void shouldCausePreconditionFailedWithPostAndUnmatchedStrongETag() throws Exception {
         k3po.finish();
     }
 
@@ -200,7 +197,7 @@ public class IfMatchIT {
     @Specification({
         "strong.etag.put.status.412/request",
         "strong.etag.put.status.412/response" })
-    public void shouldCausePreconditionFailedWithPutAndInvalidStrongETag() throws Exception {
+    public void shouldCausePreconditionFailedWithPutAndUnmatchedStrongETag() throws Exception {
         k3po.finish();
     }
 

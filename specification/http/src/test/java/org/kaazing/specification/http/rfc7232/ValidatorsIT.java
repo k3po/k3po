@@ -18,11 +18,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-/**
- *  Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7232">RFC 7232:
- *   Hypertext Transfer Protocol (HTTP/1.1): Conditional Requests</a>.
- */
 package org.kaazing.specification.http.rfc7232;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -37,9 +32,7 @@ import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
 /**
- * Test to validate behavior of <b>Etag</b> and <b>Last-Modified</b> headers as specified in
- *  <a href="https://tools.ietf.org/html/rfc7232">RFC 7232:
- *   Hypertext Transfer Protocol (HTTP/1.1): Conditional Requests</a>.
+ * RFC-7232, section 2.2 "Last-Modified" and section 2.3 "Etag"
  */
 public class ValidatorsIT {
 

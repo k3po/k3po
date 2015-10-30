@@ -5,13 +5,11 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
-read closed
 
 write status "200" "OK"
 write header "Last-Modified" ${lastModified}
 write header content-length
 write flush
-write close
 
 accepted
 connected
@@ -19,12 +17,6 @@ connected
 read method "HEAD"
 read version "HTTP/1.1"
 read header "If-Modified-Since" /.+/
-read closed
 
-# The modification date of the requested resource is later than the date specified
-# in If-Modified-Since header. This means that the condition has passed and the
-# requested GET method should be performed and it will result in a response with
-# 200(OK) status code.
 write status "200" "OK"
 write flush
-write close

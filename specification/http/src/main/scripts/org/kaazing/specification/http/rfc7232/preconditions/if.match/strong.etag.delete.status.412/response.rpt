@@ -1,29 +1,10 @@
-property entityTag "\"r2d2xxxx\""
 accept http://localhost:8000/resource
-accepted
-connected
-
-read method "GET"
-read version "HTTP/1.1"
-read closed
-
-write status "200" "OK"
-write header "ETag" ${entityTag}
-write header content-length
-write flush
-write close
-
 accepted
 connected
 
 read method "DELETE"
 read version "HTTP/1.1"
-read header "If-Match" "invalidEtag"
-read closed
+read header "If-Match" "unexpectedEtag"
 
-# The etag specified using If-Match header does not match the entity-tag of the selected
-# resource. This means that the condition failed and the requested method should not
-# be performed. Instead, the response must include 412(Precondition failed) status code.
 write status "412" "Precondition Failed"
 write flush
-write close

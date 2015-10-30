@@ -6,13 +6,11 @@ write method "GET"
 write version "HTTP/1.1"
 write header content-length
 write flush
-write close
 
 read status "200" "OK"
 read header "Last-Modified" /(?<lastModified>.+)/
 read header "ETag" /(?<etag>.+)/
 read notify LAST_MODIFIED
-read closed
 
 connect http://localhost:8000/resource
 connected
@@ -25,6 +23,5 @@ write header "If-Unmodified-Since" ${lastModifiedClientDate}
 write header "If-Match" ${etag}
 write header content-length
 write flush
-write close
 
 read status "204" "No Content"

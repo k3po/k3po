@@ -1,17 +1,15 @@
-property entityTag "r2d2xxxx"
+property entityTag "\"r2d2xxxx\""
 accept http://localhost:8000/resource
 accepted
 connected
 
 read method "GET"
 read version "HTTP/1.1"
-read closed
 
 write status "200" "OK"
 write header "ETag" ${entityTag}
 write header content-length
 write flush
-write close
 
 accepted
 connected
@@ -19,11 +17,6 @@ connected
 read method "GET"
 read version "HTTP/1.1"
 read header "If-Match" ${entityTag}, "\"tag1\"", "\"tag2\""
-read closed
 
-# One of the etags specified using If-Match header matches the entity-tag of the
-# selected resource. Since the condition evaluates to true, continue to perform
-# the requested method. The response will include 200(OK) status code.
 write status "200" "OK"
 write flush
-write close

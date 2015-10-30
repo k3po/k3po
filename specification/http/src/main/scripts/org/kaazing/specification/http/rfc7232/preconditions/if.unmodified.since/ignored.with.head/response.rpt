@@ -5,13 +5,11 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
-read closed
 
 write status "200" "OK"
 write header "Last-Modified" ${lastModified}
 write header content-length
 write flush
-write close
 
 accepted
 connected
@@ -19,11 +17,6 @@ connected
 read method "HEAD"
 read version "HTTP/1.1"
 read header "If-Unmodified-Since" ${lastModified}
-read closed
 
-# RFC does not explicitly define behavior when If-Unmodified-Since is used with
-# GET/HEAD methods. We are going to ignore If-Unmodified-Since in this situation
-# and perform the requested method and send response with 200(OK) status code.
 write status "200" "OK"
 write flush
-write close

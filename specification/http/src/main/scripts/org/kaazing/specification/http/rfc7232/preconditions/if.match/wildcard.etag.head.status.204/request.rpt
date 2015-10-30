@@ -7,6 +7,5 @@ write header host
 write header "If-Match" "\"*\""
 write header content-length
 write flush
-write close
 
 read status "204" "No Content"

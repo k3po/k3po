@@ -5,13 +5,11 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
-read closed
 
 write status "200" "OK"
 write header "Last-Modified" ${lastModified}
 write header content-length
 write flush
-write close
 
 accepted
 connected
@@ -19,12 +17,6 @@ connected
 read method "PUT"
 read version "HTTP/1.1"
 read header "If-Unmodified-Since" ${lastModified}
-read closed
 
-# The resource was modified since the date specified as part of
-# If-Unmodified-Since header. This means that the condition is false so
-# do not perform the requested method. Instead, the response will include
-# 412(Precondition failed) status code.
 write status "412" "Precondition failed"
 write flush
-write close

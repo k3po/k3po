@@ -6,31 +6,20 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
-read closed
 
 write status "200" "OK"
 write header "Last-Modified" ${lastModified}
 write header "ETag" ${entityTag}
 write header content-length
 write flush
-write close
 
 accepted
 connected
-
-# Ignore If-Unmodified-Since as If-Match header is present.
 
 read method "POST"
 read version "HTTP/1.1"
 read header "If-Unmodified-Since" /.+/
 read header "If-Match" ${entityTag}
-read closed
 
-# Since If-Match header is specified, If-Unmodified-Since header must be ignored according
-# to RFC 7232. Also, the entity-tag of the selected resource representation matches the etag
-# that is specified using If-Match. This means that the condition is true/satisfied. So, the
-# requested method should be performed. And the response should include 204(No Content)
-# success status code.
 write status "204" "No Content"
 write flush
-write close

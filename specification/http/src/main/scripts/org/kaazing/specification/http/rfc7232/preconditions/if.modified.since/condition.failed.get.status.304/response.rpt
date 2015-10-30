@@ -6,13 +6,11 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
-read closed
 
 write status "200" "OK"
 write header "Last-Modified" ${lastModified}
 write header content-length
 write flush
-write close
 
 accepted
 connected
@@ -20,13 +18,7 @@ connected
 read method "GET"
 read version "HTTP/1.1"
 read header "If-Modified-Since" ${lastModified}
-read closed
 
-# The modification date of the requested resource is earlier than or equal to the
-# date provided with If-Modified-Since header. This means that the condition has
-# failed and the requested method must not be performed. Instead, the response 
-# should include 304(Not Modified) status.
 write status "304" "Not Modified"
 write header "ETag" ${entityTag}
-write flush
 write close

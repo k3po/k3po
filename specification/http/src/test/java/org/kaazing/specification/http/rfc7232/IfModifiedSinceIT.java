@@ -18,12 +18,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-/**
- *  Test to validate behavior of <b>if-modified-since</b> header as specified in
- *  <a href="https://tools.ietf.org/html/rfc7232">RFC 7232:
- *   Hypertext Transfer Protocol (HTTP/1.1): Conditional Requests</a>.
- */
 package org.kaazing.specification.http.rfc7232;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -37,6 +31,9 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
+/**
+ * RFC-7232, section 3.3 "If-Modified-Since"
+ */
 public class IfModifiedSinceIT {
     private final K3poRule k3po =
             new K3poRule().setScriptRoot("org/kaazing/specification/http/rfc7232/preconditions/if.modified.since");

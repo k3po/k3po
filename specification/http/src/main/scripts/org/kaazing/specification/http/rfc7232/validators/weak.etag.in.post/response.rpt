@@ -12,5 +12,4 @@ write status "200" "OK"
 write header "Date" ${created}
 write header "ETag" ${entityTag}
 write header content-length
-write flush
 write close

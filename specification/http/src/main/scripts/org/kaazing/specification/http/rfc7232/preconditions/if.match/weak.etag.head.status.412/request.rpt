@@ -8,6 +8,5 @@ write header host
 write header "If-Match" ${weakEntityTag}
 write header content-length
 write flush
-write close
 
 read status "412" "Precondition Failed"
