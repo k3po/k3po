@@ -3,13 +3,9 @@ connect tcp://127.0.0.1:8001
 connected
 
 # Connection request
-write "Request\r\n"
-write "\r\n"
+write "Request"
 
-# 101 Response
-
-read "Response\r\n"
-read "\r\n"
+read "Response"
 
 read notify HANDSHAKE_COMPLETE
 
@@ -19,9 +15,6 @@ close
 
 write notify CLIENT_CLOSE_ISSUED
 
-# If the following line is uncommented the test passes
-# read await CLIENT_CLOSE_ISSUED
- 
 closed
 
 # ============= response ==================
@@ -29,14 +22,9 @@ accept tcp://127.0.0.1:8001
 accepted
 connected
 
-# Connection request
-read "Request\r\n"
-read "\r\n"
+read "Request"
 
-# 101 Response
-
-write "Response\r\n"
-write "\r\n"
+write "Response"
 
 read await CLIENT_CLOSE_ISSUED
 
