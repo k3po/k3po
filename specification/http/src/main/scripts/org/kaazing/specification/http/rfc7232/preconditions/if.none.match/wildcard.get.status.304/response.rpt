@@ -1,0 +1,17 @@
+property entityTag "\"r2d2xxxx\""
+accept http://localhost:8000/resource
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "If-None-Match" "\"*\""
+read closed
+
+# The value of If-None-Match is "*", so the condition evaluates to false. This
+# means do not perform the requested method(GET) instead send a response with
+# 304(Not Modified) status code.
+write status "304" "Not Modified"
+write header "ETag" ${entityTag}
+write flush
+write close

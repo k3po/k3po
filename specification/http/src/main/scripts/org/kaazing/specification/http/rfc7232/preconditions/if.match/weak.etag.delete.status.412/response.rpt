@@ -1,0 +1,15 @@
+property weakEntityTag "W/\"weak-etag\""
+property entityTag "\"r2d2xxxx\""
+accept http://localhost:8000/resource
+accepted
+connected
+
+read method "DELETE"
+read version "HTTP/1.1"
+read header "If-Match" ${weakEntityTag}
+read closed
+
+# Only strong etags must be specified using If-Match header.
+write status "412" "Precondition Failed"
+write flush
+write close

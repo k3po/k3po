@@ -1,0 +1,28 @@
+property lastModified "Thu, 1 Jan 2015 01:23:45 GMT"
+accept http://localhost:8000/resource
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read closed
+
+write status "200" "OK"
+write header "Last-Modified" ${lastModified}
+write header content-length
+write flush
+write close
+
+accepted
+connected
+
+read method "DELETE"
+read version "HTTP/1.1"
+read header "If-Unmodified-Since" /.+/
+read closed
+
+# Ignore If-Unmodified-Since header as it has invalid HTTP date. Continue to perform
+# the requested method and send an appropriate response.
+write status "204" "No Content"
+write flush
+write close

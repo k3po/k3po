@@ -1,0 +1,15 @@
+accept http://localhost:8000/resource
+accepted
+connected
+
+read method "DELETE"
+read version "HTTP/1.1"
+read header "If-None-Match" "\"*\""
+read closed
+
+# The value of If-None-Match is "*", so the condition evaluates to false. Also,
+# the requested method is a neither GET nor HEAD. This implies that the response
+# must include 412(Precondition Failed) status code.
+write status "412" "Precondition Failed"
+write flush
+write close

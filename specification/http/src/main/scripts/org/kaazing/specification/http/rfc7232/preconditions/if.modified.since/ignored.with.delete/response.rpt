@@ -1,0 +1,28 @@
+property lastModified "Thu, 1 Jan 2015 01:23:45 GMT"
+accept http://localhost:8000/resource
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read closed
+
+write status "200" "OK"
+write header "Last-Modified" ${lastModified}
+write header content-length
+write flush
+write close
+
+accepted
+connected
+
+read method "DELETE"
+read version "HTTP/1.1"
+read header "If-Modified-Since" /.+/
+read closed
+
+# If-Modified-Since header must be ignored if the method is neither GET or
+# HEAD according to RFC 7232. Continue to perform the requested method.
+write status "204" "No Content"
+write flush
+write close

@@ -1,0 +1,31 @@
+property entityTag "\"r2d2xxxx\""
+accept http://localhost:8000/resource
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read closed
+
+write status "200" "OK"
+write header "ETag" ${entityTag}
+write header content-length
+write flush
+write close
+
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "If-None-Match" ${entityTag}
+read closed
+
+# The etag specified with If-None-Match header matches the entity-tag of the selected
+# resource. Since the condition evaluates to false and the requested method is a GET,
+# the requested method should not be performed. Instead, send a response with 200(OK)
+# status code.
+write status "304" "Not Modified"
+write header "ETag" ${entityTag}
+write flush
+write close

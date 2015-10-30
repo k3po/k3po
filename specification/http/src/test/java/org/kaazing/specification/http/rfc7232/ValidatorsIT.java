@@ -37,7 +37,9 @@ import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
 /**
- * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7232">RFC 7232</a>.
+ * Test to validate behavior of <b>Etag</b> and <b>Last-Modified</b> headers as specified in
+ *  <a href="https://tools.ietf.org/html/rfc7232">RFC 7232:
+ *   Hypertext Transfer Protocol (HTTP/1.1): Conditional Requests</a>.
  */
 public class ValidatorsIT {
 
@@ -50,35 +52,98 @@ public class ValidatorsIT {
 
     @Test
     @Specification({
-        "response.with.strong.etag.validator/request",
-        "response.with.strong.etag.validator/response" })
-    public void shouldPassWithStrongETag() throws Exception {
+        "last.modified.in.get/request",
+        "last.modified.in.get/response" })
+    public void shouldReceiveLastModifiedInGetResponse() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "response.with.weak.etag.validator/request",
-        "response.with.weak.etag.validator/response" })
-    public void shouldPassWithWeakETag() throws Exception {
+        "last.modified.in.head/request",
+        "last.modified.in.head/response" })
+    public void shouldReceiveLastModifiedInHeadResponse() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "response.with.weak.timestamp.validator/request",
-        "response.with.weak.timestamp.validator/response" })
-    public void shouldPassWithWeakTimestamp() throws Exception {
+        "last.modified.in.post/request",
+        "last.modified.in.post/response" })
+    public void shouldReceiveLastModifiedInPostResponse() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "response.with.timestamp.and.strong.etag/request",
-        "response.with.timestamp.and.strong.etag/response" })
-    public void shouldPassWithTimestampAndStrongEtag() throws Exception {
+        "last.modified.in.put/request",
+        "last.modified.in.put/response" })
+    public void shouldReceiveLastModifiedInPutResponse() throws Exception {
         k3po.finish();
     }
 
+    @Test
+    @Specification({
+        "last.modified.with.strong.etag.in.get/request",
+        "last.modified.with.strong.etag.in.get/response" })
+    public void shouldReceiveLastModifiedAndStrongETagInGetResponse() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "last.modified.with.strong.etag.in.head/request",
+        "last.modified.with.strong.etag.in.head/response" })
+    public void shouldReceiveLastModifiedAndStrongETagInHeadResponse() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "last.modified.with.strong.etag.in.post/request",
+        "last.modified.with.strong.etag.in.post/response" })
+    public void shouldReceiveLastModifiedAndStrongETagInPostResponse() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "last.modified.with.strong.etag.in.put/request",
+        "last.modified.with.strong.etag.in.put/response" })
+    public void shouldReceiveLastModifiedAndStrongETagInPutResponse() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "last.modified.with.weak.etag.in.get/request",
+        "last.modified.with.weak.etag.in.get/response" })
+    public void shouldReceiveLastModifiedAndWeakETagInGetResponse() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "last.modified.with.weak.etag.in.head/request",
+        "last.modified.with.weak.etag.in.head/response" })
+    public void shouldReceiveLastModifiedAndWeakETagInHeadResponse() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "last.modified.with.weak.etag.in.post/request",
+        "last.modified.with.weak.etag.in.post/response" })
+    public void shouldReceiveLastModifiedAndWeakETagInPostResponse() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "last.modified.with.weak.etag.in.put/request",
+        "last.modified.with.weak.etag.in.put/response" })
+    public void shouldReceiveLastModifiedAndWeakETagInPutResponse() throws Exception {
+        k3po.finish();
+    }
 }
 
