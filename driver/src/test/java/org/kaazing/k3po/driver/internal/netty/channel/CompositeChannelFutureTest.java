@@ -120,10 +120,11 @@ public class CompositeChannelFutureTest {
     }
 
     @Test
-    public void shouldBeSucceddedOnlyOnceAllKidsHaveSucceeded() throws Exception {
+    public void shouldSucceedOnlyWhenAllKidsHaveSucceeded() throws Exception {
         final ChannelFuture future1 = context.mock(ChannelFuture.class, "future1");
         final ChannelFuture future2 = context.mock(ChannelFuture.class, "future2");
         Collection<ChannelFuture> futures = Arrays.asList(future1, future2);
+        final ChannelFutureListener testListener = context.mock(ChannelFutureListener.class, "testListener");
         final List<ChannelFutureListener> listeners = new ArrayList<ChannelFutureListener>();
 
         context.checking(new Expectations() {
@@ -137,6 +138,7 @@ public class CompositeChannelFutureTest {
             }
         });
         CompositeChannelFuture<ChannelFuture> composite = new CompositeChannelFuture<ChannelFuture>(channel, futures);
+        composite.addListener(testListener);
         assertFalse(composite.isDone());
 
         context.checking(new Expectations() {
@@ -157,10 +159,98 @@ public class CompositeChannelFutureTest {
                 exactly(2).of(future2).isDone(); will(returnValue(true));
                 oneOf(future2).getCause();
                 oneOf(future2).isSuccess(); will(returnValue(true));
+                oneOf(testListener).operationComplete(with(composite));
             }
         });
         listeners.get(1).operationComplete(future2);
         assertTrue(composite.isSuccess());
+    }
+
+    @Test
+    public void shouldFailOnlyWhenAllKidsHaveCompleted() throws Exception {
+        final ChannelFuture future1 = context.mock(ChannelFuture.class, "future1");
+        final ChannelFuture future2 = context.mock(ChannelFuture.class, "future2");
+        Collection<ChannelFuture> futures = Arrays.asList(future1, future2);
+        final ChannelFutureListener testListener = context.mock(ChannelFutureListener.class, "testListener");
+        final List<ChannelFutureListener> listeners = new ArrayList<ChannelFutureListener>();
+        final Exception testException = new Exception("test exception");
+
+        context.checking(new Expectations() {
+            {
+                oneOf(future1).addListener(with(any(ChannelFutureListener.class)));
+                will(saveParameter(0, listeners));
+                oneOf(future2).addListener(with(any(ChannelFutureListener.class)));
+                will(saveParameter(0, listeners));
+                oneOf(future1).isDone(); will(returnValue(false));
+                oneOf(future2).isDone(); will(returnValue(false));
+            }
+        });
+        CompositeChannelFuture<ChannelFuture> composite = new CompositeChannelFuture<ChannelFuture>(channel, futures);
+        composite.addListener(testListener);
+        assertFalse(composite.isDone());
+
+        context.checking(new Expectations() {
+            {
+                exactly(2).of(future1).isDone(); will(returnValue(true));
+                oneOf(future1).isSuccess(); will(returnValue(false));
+                oneOf(future1).isCancelled(); will(returnValue(false));
+                oneOf(future1).getCause(); will(returnValue(testException));
+                oneOf(future2).isDone(); will(returnValue(false));
+            }
+        });
+        listeners.get(0).operationComplete(future1);
+        assertFalse(composite.isDone());
+
+        context.checking(new Expectations() {
+            {
+                oneOf(future1).isDone(); will(returnValue(true));
+                oneOf(future1).isSuccess(); will(returnValue(false));
+                oneOf(future1).isCancelled(); will(returnValue(false));
+                oneOf(future1).getCause(); will(returnValue(testException));
+                exactly(2).of(future2).isDone(); will(returnValue(true));
+                oneOf(future2).getCause();
+                oneOf(future2).isSuccess(); will(returnValue(true));
+                oneOf(testListener).operationComplete(with(composite));
+            }
+        });
+        listeners.get(1).operationComplete(future2);
+        assertTrue(composite.isDone());
+        assertSame(testException, composite.getCause());
+    }
+
+    @Test
+    public void shouldFailFast() throws Exception {
+        final ChannelFuture future1 = context.mock(ChannelFuture.class, "future1");
+        final ChannelFuture future2 = context.mock(ChannelFuture.class, "future2");
+        Collection<ChannelFuture> futures = Arrays.asList(future1, future2);
+        final ChannelFutureListener testListener = context.mock(ChannelFutureListener.class, "testListener");
+        final List<ChannelFutureListener> listeners = new ArrayList<ChannelFutureListener>();
+        final Exception testException = new Exception("test exception");
+
+        context.checking(new Expectations() {
+            {
+                oneOf(future1).addListener(with(any(ChannelFutureListener.class)));
+                will(saveParameter(0, listeners));
+                oneOf(future2).addListener(with(any(ChannelFutureListener.class)));
+                will(saveParameter(0, listeners));
+                oneOf(future1).isDone(); will(returnValue(false));
+                oneOf(future2).isDone(); will(returnValue(false));
+            }
+        });
+        CompositeChannelFuture<ChannelFuture> composite = new CompositeChannelFuture<ChannelFuture>(channel, futures, true);
+        composite.addListener(testListener);
+        assertFalse(composite.isDone());
+
+        context.checking(new Expectations() {
+            {
+                oneOf(future1).isDone(); will(returnValue(true));
+                exactly(2).of(future1).getCause(); will(returnValue(testException));
+                oneOf(testListener).operationComplete(with(composite));
+            }
+        });
+        listeners.get(0).operationComplete(future1);
+        assertTrue(composite.isDone());
+        assertSame(testException, composite.getCause());
     }
 
 
