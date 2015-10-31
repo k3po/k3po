@@ -18,6 +18,7 @@ package org.kaazing.k3po.driver.internal.netty.channel;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -66,6 +67,91 @@ public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChan
          */
         constructionFinished = true;
         scanFutures();
+    }
+
+    @Override
+    public Throwable getCause() {
+        Throwable t = super.getCause();
+        if (t != null) {
+            return t;
+        }
+
+        Iterator<E> i = kids.iterator();
+        while (i.hasNext()) {
+            E future = i.next();
+            t = future.getCause();
+            if (t != null) {
+                /*
+                 * If we found one then the listener hasn't been notified yet
+                 */
+                if (failFast) {
+                    setFailure(t);
+                }
+                return t;
+            }
+        }
+        return null;
+    }
+
+    private interface CompositeTrue {
+        boolean isTrue(ChannelFuture f);
+    }
+
+    @Override
+    public boolean isSuccess() {
+
+        if (super.isSuccess()) {
+            return true;
+        }
+
+        boolean result = this.allTrue(new CompositeTrue() {
+            @Override
+            public boolean isTrue(ChannelFuture f) {
+                return f.isSuccess();
+            }
+        });
+
+        /*
+         * If true we know we are done and the listener just hasn't been
+         * notified yet to set this.setSuccess(). So we do this now. But it may
+         * have since been marked success sine we last check so make sure we
+         * still return true.
+         */
+        // return result ? (super.setSuccess() || true) : false;
+        return result;
+
+    }
+
+    @Override
+    public boolean isDone() {
+
+        if (super.isDone()) {
+            return true;
+        }
+
+        return this.allTrue(new CompositeTrue() {
+            @Override
+            public boolean isTrue(ChannelFuture f) {
+                return f.isDone();
+            }
+        });
+
+    }
+
+    private boolean allTrue(CompositeTrue predicate) {
+        /* An empty list should evaluate to false. Always. */
+        if (kids.isEmpty()) {
+            return false;
+        }
+
+        Iterator<E> i = kids.iterator();
+        while (i.hasNext()) {
+            E future = i.next();
+            if (!predicate.isTrue(future)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
