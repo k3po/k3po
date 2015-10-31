@@ -18,7 +18,6 @@ package org.kaazing.k3po.driver.internal.netty.channel;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -70,27 +69,26 @@ public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChan
     }
 
     @Override
-    public Throwable getCause() {
-        Throwable t = super.getCause();
-        if (t != null) {
-            return t;
+    public String toString() {
+        StringBuffer s = new StringBuffer(super.toString());
+        s.append(" (");
+        s.append(futureStatus(this));
+        s.append(", " + kids.size() + " kids)");
+        for (E kid : kids) {
+            s.append("\n  ");
+            s.append(kid.toString());
+            s.append(" (");
+            s.append(futureStatus(kid));
+            s.append(")");
         }
+        return s.toString();
+    }
 
-        Iterator<E> i = kids.iterator();
-        while (i.hasNext()) {
-            E future = i.next();
-            t = future.getCause();
-            if (t != null) {
-                /*
-                 * If we found one then the listener hasn't been notified yet
-                 */
-                if (failFast) {
-                    setFailure(t);
-                }
-                return t;
-            }
-        }
-        return null;
+    private static String futureStatus(ChannelFuture future) {
+        return future.isSuccess() ? "success"
+                                   : future.isCancelled() ? "cancelled"
+                                   : future.getCause() == null ? "incomplete"
+                                   : "failed - " + future.getCause();
     }
 
     private void scanFutures() {

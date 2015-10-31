@@ -253,5 +253,43 @@ public class CompositeChannelFutureTest {
         assertSame(testException, composite.getCause());
     }
 
+    @Test
+    public void toStringShouldBeHelpful() throws Exception {
+        final ChannelFuture success = context.mock(ChannelFuture.class, "success");
+        final ChannelFuture cancelled = context.mock(ChannelFuture.class, "cancelled");
+        final ChannelFuture incomplete = context.mock(ChannelFuture.class, "incomplete");
+        final ChannelFuture failed = context.mock(ChannelFuture.class, "failed");
+        Collection<ChannelFuture> futures = Arrays.asList(success, cancelled, incomplete, failed);
+        final Exception testException = new Exception("test exception");
+
+        context.checking(new Expectations() {
+            {
+                oneOf(success).addListener(with(any(ChannelFutureListener.class)));
+                oneOf(cancelled).addListener(with(any(ChannelFutureListener.class)));
+                oneOf(incomplete).addListener(with(any(ChannelFutureListener.class)));
+                oneOf(failed).addListener(with(any(ChannelFutureListener.class)));
+                allowing(success).isDone(); will(returnValue(true));
+                allowing(success).isSuccess(); will(returnValue(true));
+                allowing(success).getCause();
+                allowing(cancelled).isDone(); will(returnValue(true));
+                allowing(cancelled).isSuccess(); will(returnValue(false));
+                allowing(cancelled).isCancelled(); will(returnValue(true));
+                allowing(incomplete).isDone(); will(returnValue(false));
+                allowing(incomplete).isSuccess(); will(returnValue(false));
+                allowing(incomplete).isCancelled(); will(returnValue(false));
+                allowing(incomplete).getCause();
+                allowing(failed).isDone(); will(returnValue(true));
+                allowing(failed).isSuccess(); will(returnValue(false));
+                allowing(failed).isCancelled(); will(returnValue(false));
+                allowing(failed).getCause(); will(returnValue(testException));
+            }
+        });
+        CompositeChannelFuture<ChannelFuture> composite = new CompositeChannelFuture<ChannelFuture>(channel, futures, true);
+        assertFalse(composite.isDone());
+        //System.out.println(composite.toString());
+        assertTrue(composite.toString().matches(
+                "(?s).*success.*success.*cancelled.*cancelled.*incomplete.*incomplete.*failed.*failed.*test exception.*"));
+    }
+
 
 }
