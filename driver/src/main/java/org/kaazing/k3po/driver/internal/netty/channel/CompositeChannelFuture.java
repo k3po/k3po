@@ -146,6 +146,29 @@ public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChan
 
     }
 
+    @Override
+    public String toString() {
+        StringBuffer s = new StringBuffer(super.toString());
+        s.append(" (");
+        s.append(futureStatus(this));
+        s.append(", " + kids.size() + " kids)");
+        for (E kid : kids) {
+            s.append("\n  ");
+            s.append(kid.toString());
+            s.append(" (");
+            s.append(futureStatus(kid));
+            s.append(")");
+        }
+        return s.toString();
+    }
+
+    private static String futureStatus(ChannelFuture future) {
+        return future.isSuccess() ? "success"
+                                   : future.isCancelled() ? "cancelled"
+                                   : future.getCause() == null ? "incomplete"
+                                   : "failed - " + future.getCause();
+    }
+
     private boolean allTrue(CompositeTrue predicate) {
         /* An empty list should evaluate to false. Always. */
         if (kids.isEmpty()) {
