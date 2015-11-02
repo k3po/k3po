@@ -102,7 +102,8 @@ public class ExecutionHandler extends SimplePrepareUpstreamHandler implements Li
                     LOGGER.debug(format("[id: 0x%08x] %s", id, ExecutionHandler.this));
                 }
                 else {
-                    LOGGER.debug(format("[id: 0x%08x] %s [FAILED]", id, ExecutionHandler.this));
+                    LOGGER.debug(format("[id: 0x%08x] %s [FAILED], pipelineFuture:\n%s",
+                            id, ExecutionHandler.this, pipelineFuture));
                 }
             }
         });
