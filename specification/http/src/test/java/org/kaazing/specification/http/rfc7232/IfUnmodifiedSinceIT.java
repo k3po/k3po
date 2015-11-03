@@ -68,24 +68,24 @@ public class IfUnmodifiedSinceIT {
 
     @Test
     @Specification({
-        "condition.passed.delete.status.204/request",
-        "condition.passed.delete.status.204/response" })
+        "condition.passed.delete.status.200/request",
+        "condition.passed.delete.status.200/response" })
     public void shouldResultInSuccessfulResponseWithDeleteAndConditionPassed() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "condition.passed.post.status.204/request",
-        "condition.passed.post.status.204/response" })
+        "condition.passed.post.status.200/request",
+        "condition.passed.post.status.200/response" })
     public void shouldResultInSuccessfulResponseWithPostAndConditionPassed() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "condition.passed.put.status.204/request",
-        "condition.passed.put.status.204/response" })
+        "condition.passed.put.status.200/request",
+        "condition.passed.put.status.200/response" })
     public void shouldResultInSuccessfulResponseWithPutAndConditionPassed() throws Exception {
         k3po.finish();
     }

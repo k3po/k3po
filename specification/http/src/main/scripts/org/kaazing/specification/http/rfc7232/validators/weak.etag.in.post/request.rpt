@@ -1,4 +1,4 @@
-connect http://localhost:8000/resource
+connect http://localhost:8000/index.html
 connected
 
 write method "POST"
@@ -8,4 +8,4 @@ write flush
 
 read status "200" "OK"
 read header "Date" /.*/
-read header "ETag" /(?<etag>.+)/
+read header "ETag" /W.+/

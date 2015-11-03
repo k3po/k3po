@@ -138,5 +138,69 @@ public class ValidatorsIT {
     public void shouldReceiveLastModifiedAndWeakETagInPutResponse() throws Exception {
         k3po.finish();
     }
+
+    @Test
+    @Specification({
+        "strong.etag.in.get/request",
+        "strong.etag.in.get/response" })
+    public void shouldReceiveStrongETagInGetResponse() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "strong.etag.in.head/request",
+        "strong.etag.in.head/response" })
+    public void shouldReceiveStrongETagInHeadResponse() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "strong.etag.in.post/request",
+        "strong.etag.in.post/response" })
+    public void shouldReceiveStrongETagInPostResponse() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "strong.etag.in.put/request",
+        "strong.etag.in.put/response" })
+    public void shouldReceiveStrongETagInPutResponse() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "weak.etag.in.get/request",
+        "weak.etag.in.get/response" })
+    public void shouldReceiveWeakETagInGetResponse() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "weak.etag.in.head/request",
+        "weak.etag.in.head/response" })
+    public void shouldReceiveWeakETagInHeadResponse() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "weak.etag.in.post/request",
+        "weak.etag.in.post/response" })
+    public void shouldReceiveWeakETagInPostResponse() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "weak.etag.in.put/request",
+        "weak.etag.in.put/response" })
+    public void shouldReceiveWeakETagInPutResponse() throws Exception {
+        k3po.finish();
+    }
 }
 

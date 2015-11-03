@@ -1,5 +1,5 @@
 property lastModified "Thu, 1 Jan 2015 01:23:45 GMT"
-connect http://localhost:8000/resource
+connect http://localhost:8000/index.html
 connected
 
 write method "PUT"
@@ -9,4 +9,4 @@ write header "If-Modified-Since" ${lastModified}
 write header content-length
 write flush
 
-read status "204" "No Content"
+read status "200" "OK"

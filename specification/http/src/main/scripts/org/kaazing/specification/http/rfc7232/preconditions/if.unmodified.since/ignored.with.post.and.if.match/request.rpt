@@ -1,5 +1,5 @@
 property lastModifiedClientDate "Sat, 1 Jan 2000 01:23:45 GMT"
-connect http://localhost:8000/resource
+connect http://localhost:8000/index.html
 connected
 
 write method "GET"
@@ -12,7 +12,7 @@ read header "Last-Modified" /(?<lastModified>.+)/
 read header "ETag" /(?<etag>.+)/
 read notify LAST_MODIFIED
 
-connect http://localhost:8000/resource
+connect http://localhost:8000/index.html
 connected
 
 write await LAST_MODIFIED
@@ -24,4 +24,4 @@ write header "If-Match" ${etag}
 write header content-length
 write flush
 
-read status "204" "No Content"
+read status "200" "OK"

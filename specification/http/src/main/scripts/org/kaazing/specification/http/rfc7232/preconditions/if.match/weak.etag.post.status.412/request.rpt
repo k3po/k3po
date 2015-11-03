@@ -1,5 +1,5 @@
 property weakEntityTag "W/\"weak-etag\""
-connect http://localhost:8000/resource
+connect http://localhost:8000/index.html
 connected
 
 write method "POST"

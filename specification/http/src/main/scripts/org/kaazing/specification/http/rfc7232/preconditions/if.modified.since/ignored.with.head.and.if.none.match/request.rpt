@@ -1,4 +1,4 @@
-connect http://localhost:8000/resource
+connect http://localhost:8000/index.html
 connected
 
 write method "GET"
@@ -11,7 +11,7 @@ read header "ETag" /(?<etag>.+)/
 read header "Last-Modified" /(?<lastModified>.+)/
 read notify LAST_MODIFIED
 
-connect http://localhost:8000/resource
+connect http://localhost:8000/index.html
 connected
 
 write await LAST_MODIFIED

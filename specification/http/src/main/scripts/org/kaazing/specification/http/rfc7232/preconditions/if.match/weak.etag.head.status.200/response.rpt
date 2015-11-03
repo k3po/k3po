@@ -1,0 +1,12 @@
+property weakEntityTag "W/\"weak-etag\""
+
+accept http://localhost:8000/index.html
+accepted
+connected
+
+read method "HEAD"
+read version "HTTP/1.1"
+read header "If-Match" ${weakEntityTag}
+
+write status "200" "OK"
+write flush

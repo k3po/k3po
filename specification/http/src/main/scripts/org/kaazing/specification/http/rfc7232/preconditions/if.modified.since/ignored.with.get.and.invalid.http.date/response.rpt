@@ -1,4 +1,4 @@
-accept http://localhost:8000/resource
+accept http://localhost:8000/index.html
 accepted
 connected
 

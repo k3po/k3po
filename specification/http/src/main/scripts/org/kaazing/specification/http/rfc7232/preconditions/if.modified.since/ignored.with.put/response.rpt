@@ -1,4 +1,4 @@
-accept http://localhost:8000/resource
+accept http://localhost:8000/index.html
 accepted
 connected
 
@@ -6,5 +6,5 @@ read method "PUT"
 read version "HTTP/1.1"
 read header "If-Modified-Since" /.+/
 
-write status "204" "No Content"
+write status "200" "OK"
 write flush
