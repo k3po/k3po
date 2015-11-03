@@ -4,6 +4,7 @@ connected
 write method "HEAD"
 write close
 
-read status "100" "OK"
+read status "200" "OK"
+read header "Content-Length" "100"
 read closed
 
