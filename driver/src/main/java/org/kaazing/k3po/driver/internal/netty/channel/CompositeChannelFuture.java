@@ -19,7 +19,6 @@ package org.kaazing.k3po.driver.internal.netty.channel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -44,12 +43,8 @@ import org.jboss.netty.channel.DefaultChannelFuture;
 public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChannelFuture {
 
     private final NotifyingListener listener = new NotifyingListener();
-    private final AtomicInteger unnotified = new AtomicInteger();
     private volatile boolean constructionFinished;
     private final Collection<E> kids;
-    private int successCount;
-    private int failedCount;
-    private int cancelledCount;
     private final boolean failFast;
 
     public CompositeChannelFuture(Channel channel, Collection<E> kids) {
@@ -65,16 +60,13 @@ public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChan
 
         for (E k : kids) {
             k.addListener(listener);
-            unnotified.incrementAndGet();
         }
         /*
          * Note that a composite with no children will be automatically set to
          * success
          */
         constructionFinished = true;
-        if (unnotified.get() == 0) {
-            setSuccess();
-        }
+        scanFutures();
     }
 
     @Override
@@ -162,6 +154,69 @@ public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChan
         return true;
     }
 
+    @Override
+    public String toString() {
+        StringBuffer s = new StringBuffer(super.toString());
+        s.append(" (");
+        s.append(futureStatus(this));
+        s.append(", " + kids.size() + " kids)");
+        for (E kid : kids) {
+            s.append("\n  ");
+            s.append(kid.toString());
+            s.append(" (");
+            s.append(futureStatus(kid));
+            s.append(")");
+        }
+        return s.toString();
+    }
+
+    private static String futureStatus(ChannelFuture future) {
+        return future.isSuccess() ? "success"
+                                   : future.isCancelled() ? "cancelled"
+                                   : future.getCause() == null ? "incomplete"
+                                   : "failed - " + future.getCause();
+    }
+
+    private void scanFutures() {
+        int done = 0;
+        int successCount = 0;
+        int cancelledCount = 0;
+        for (E future : kids) {
+            if (future.isDone()) {
+                done++;
+                if (future.isSuccess()) {
+                    successCount++;
+                }
+                else if (future.isCancelled()) {
+                    cancelledCount++;
+                }
+            }
+        }
+        final int totalKids = kids.size();
+        if (done == totalKids) {
+            if (totalKids == successCount) {
+                setSuccess();
+            } else if (totalKids == cancelledCount) {
+                if (!cancel()) {
+                    if (!isCancelled()) {
+                        // Then the composite was non-cancellable. Set to success
+                        setSuccess();
+                    }
+                }
+            } else if (totalKids == (successCount + cancelledCount)) {
+                setSuccess();
+            } else {
+                for (E f : kids) {
+                    Throwable t = f.getCause();
+                    if (t != null) {
+                        setFailure(t);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
     private class NotifyingListener implements ChannelFutureListener, ChannelFutureProgressListener {
 
         @Override
@@ -174,55 +229,21 @@ public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChan
 
         @Override
         public void operationComplete(final ChannelFuture future) {
-
-            boolean isSuccess = future.isSuccess();
-            boolean isCancelled = future.isCancelled();
-            boolean failed = false;
-
-            /* We need to synchronize here due to the addChildren method */
-            synchronized (CompositeChannelFuture.this) {
-
-                if (CompositeChannelFuture.super.isDone()) {
-                    // Then we must have failed fast.
+            if (!constructionFinished) {
+                return;
+            }
+            if (CompositeChannelFuture.super.isDone()) {
+                // Then we must have failed fast or already succeeded.
+                return;
+            }
+            if (future.isDone()) {
+                if (future.getCause() != null && failFast) {
+                    setFailure(future.getCause());
                     return;
                 }
-                int currentUnnotified = unnotified.decrementAndGet();
-
-                if (isSuccess) {
-                    successCount++;
-                } else if (isCancelled) {
-                    cancelledCount++;
-                } else {
-                    failed = true;
-                    failedCount++;
-                }
-
-                // callSetDone = successCount + failureCount == futures.size();
-                if (currentUnnotified == 0 && constructionFinished) {
-                    final int totalKids = kids.size();
-                    if (totalKids == successCount) {
-                        setSuccess();
-                    } else if (totalKids == cancelledCount) {
-                        if (!cancel()) {
-                            if (!isCancelled()) {
-                                // Then the composite was non-cancellable. Set to success
-                                setSuccess();
-                            }
-                        }
-                    } else {
-                        for (E f : kids) {
-                            Throwable t = f.getCause();
-                            if (t != null) {
-                                setFailure(t);
-                                return;
-                            }
-                        }
-                    }
-                } else if (failed && failFast && constructionFinished) {
-                    setFailure(future.getCause());
-                }
-
+                scanFutures();
             }
         }
+
     }
 }

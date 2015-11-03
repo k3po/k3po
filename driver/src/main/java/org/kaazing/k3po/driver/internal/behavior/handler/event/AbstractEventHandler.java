@@ -52,6 +52,8 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.WriteCompletionEvent;
 import org.jboss.netty.handler.timeout.IdleStateEvent;
+import org.jboss.netty.logging.InternalLogger;
+import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.behavior.ScriptProgressException;
 import org.kaazing.k3po.driver.internal.behavior.handler.ExecutionHandler;
 import org.kaazing.k3po.driver.internal.netty.channel.FlushEvent;
@@ -59,6 +61,7 @@ import org.kaazing.k3po.driver.internal.netty.channel.ShutdownInputEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownOutputEvent;
 
 public abstract class AbstractEventHandler extends ExecutionHandler {
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(AbstractEventHandler.class);
 
     protected static final EnumSet<ChannelEventKind> DEFAULT_INTERESTED_EVENTS =
             complementOf(of(CHILD_OPEN, CHILD_CLOSED, WRITE_COMPLETED, INTEREST_OPS, EXCEPTION, IDLE_STATE,
@@ -101,6 +104,7 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
             ChannelFuture pipelineFuture = getPipelineFuture();
             if (!pipelineFuture.isSuccess()) {
                 // expected event arrived too early
+                LOGGER.debug(format("%s pipelineFuture not success: %s", this, pipelineFuture));
                 Exception exception = new ScriptProgressException(getRegionInfo(), format("%s", this));
                 handlerFuture.setFailure(exception.fillInStackTrace());
             } else {
