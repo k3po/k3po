@@ -22,6 +22,7 @@ import java.util.Map;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
+import org.kaazing.k3po.driver.internal.behavior.Barrier;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
@@ -39,19 +40,26 @@ public class ServerBootstrapResolver {
     private final ChannelPipelineFactory pipelineFactory;
     private final LocationResolver locationResolver;
     private final OptionsResolver optionsResolver;
+    private final Barrier notifyBarrier;
 
     private ServerBootstrap bootstrap;
 
     public ServerBootstrapResolver(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory,
             ChannelPipelineFactory pipelineFactory, LocationResolver locationResolver,
-            OptionsResolver optionsResolver) {
+            OptionsResolver optionsResolver, Barrier notifyBarrier) {
         this.bootstrapFactory = bootstrapFactory;
         this.addressFactory = addressFactory;
         this.pipelineFactory = pipelineFactory;
         this.locationResolver = locationResolver;
         this.optionsResolver = optionsResolver;
+        this.notifyBarrier = notifyBarrier;
     }
 
+    public Barrier getNotifyBarrier() {
+        return notifyBarrier;
+    }
+
+    // TODO: asynchronous, triggered by awaitBarrier
     public ServerBootstrap resolve() throws Exception {
         if (bootstrap == null) {
             URI acceptURI = locationResolver.resolve();
