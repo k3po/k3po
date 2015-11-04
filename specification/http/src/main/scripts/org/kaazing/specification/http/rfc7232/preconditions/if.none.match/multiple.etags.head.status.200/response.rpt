@@ -5,6 +5,7 @@ connected
 
 read method "HEAD"
 read version "HTTP/1.1"
+read header "Host" "localhost:8000"
 read header "If-None-Match" "\"tag1\"", "\"tag2\"", "\"tag3\""
 
 write status "200" "OK"

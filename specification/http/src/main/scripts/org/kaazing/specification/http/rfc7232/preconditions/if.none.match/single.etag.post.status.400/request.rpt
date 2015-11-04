@@ -3,6 +3,7 @@ connected
 
 write method "GET"
 write version "HTTP/1.1"
+write header host
 write header content-length
 write flush
 
@@ -16,6 +17,7 @@ connected
 write await READ_ETAG
 write method "POST"
 write version "HTTP/1.1"
+write header host
 write header "If-None-Match" ${etag}
 write header content-length
 write flush

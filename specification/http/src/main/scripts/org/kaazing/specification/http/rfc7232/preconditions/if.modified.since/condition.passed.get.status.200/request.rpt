@@ -3,6 +3,7 @@ connected
 
 write method "GET"
 write version "HTTP/1.1"
+write header host
 write header content-length
 write flush
 
@@ -16,6 +17,7 @@ connected
 write await LAST_MODIFIED
 write method "GET"
 write version "HTTP/1.1"
+write header host
 write header "If-Modified-Since" ${lastModified}
 write header content-length
 write flush

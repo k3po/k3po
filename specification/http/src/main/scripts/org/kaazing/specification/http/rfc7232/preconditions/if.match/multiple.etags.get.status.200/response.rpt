@@ -5,6 +5,7 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
+read header "Host" "localhost:8000"
 
 write status "200" "OK"
 write header "ETag" ${entityTag}
@@ -16,6 +17,7 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
+read header "Host" "localhost:8000"
 read header "If-Match" ${entityTag}, "\"tag1\"", "\"tag2\""
 
 write status "200" "OK"

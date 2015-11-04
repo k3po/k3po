@@ -5,6 +5,7 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
+read header "Host" "localhost:8000"
 
 write status "200" "OK"
 write header "Last-Modified" ${lastModified}
@@ -16,6 +17,7 @@ connected
 
 read method "HEAD"
 read version "HTTP/1.1"
+read header "Host" "localhost:8000"
 read header "If-Unmodified-Since" ${lastModified}
 
 write status "200" "OK"

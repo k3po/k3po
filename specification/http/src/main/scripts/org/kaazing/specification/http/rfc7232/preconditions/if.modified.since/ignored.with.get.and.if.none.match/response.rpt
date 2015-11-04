@@ -6,6 +6,7 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
+read header "Host" "localhost:8000"
 
 write status "200" "OK"
 write header "ETag" ${entityTag}
@@ -18,6 +19,7 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
+read header "Host" "localhost:8000"
 read header "If-None-Match" ${entityTag}
 read header "If-Modified-Since" /.+/
 

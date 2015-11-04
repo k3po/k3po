@@ -6,7 +6,7 @@ connected
 
 read method "POST"
 read version "HTTP/1.1"
-read closed
+read header "Host" "localhost:8000"
 
 write status "200" "OK"
 write header "Date" ${created}
