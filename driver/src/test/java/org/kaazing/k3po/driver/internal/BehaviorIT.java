@@ -56,6 +56,13 @@ public class BehaviorIT {
 
     @Test
     @TestSpecification({
+        "notifying.accept" })
+    public void testNotifyingAccept() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
         "delayed.connect.via.testframework" })
     public void testDelayedClientConnectViaTestFramework() throws Exception {
         k3po.notifyBarrier("NOTIFY_FROM_FRAMEWORK");
