@@ -57,6 +57,9 @@ public class StartMojo extends AbstractMojo {
     @Parameter(defaultValue = "false", property = "maven.k3po.verbose")
     private boolean verbose;
 
+    @Parameter(property = "basedir")
+    private File workingDirectory;
+
     public URI getControl() {
         return controlURI;
     }
@@ -69,6 +72,12 @@ public class StartMojo extends AbstractMojo {
     protected void executeImpl() throws MojoExecutionException {
 
         try {
+            Log log = getLog();
+            if (log.isDebugEnabled()) {
+                log.debug(format("Setting System property \"user.dir\" to [%s]", workingDirectory.getAbsolutePath()));
+            }
+            System.setProperty("user.dir", workingDirectory.getAbsolutePath());
+
             ClassLoader scriptLoader = createScriptLoader();
 
             RobotServer server = new RobotServer(getControl(), verbose, scriptLoader);
@@ -82,7 +91,6 @@ public class StartMojo extends AbstractMojo {
             // setDefaultFactory(new Slf4JLoggerFactory());
 
             // use Maven3 logger for Robot when started via plugin
-            Log log = getLog();
             setDefaultFactory(new MavenLoggerFactory(log));
 
             long checkpoint = currentTimeMillis();
