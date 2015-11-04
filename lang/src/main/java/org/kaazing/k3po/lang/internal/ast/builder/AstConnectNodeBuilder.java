@@ -32,7 +32,7 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
     }
 
     public AstConnectNodeBuilder setBarrier(String barrier) {
-        node.setBarrier(barrier);
+        node.setAwaitName(barrier);
         return this;
     }
 
@@ -173,7 +173,7 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         }
 
         public ScriptNested<R> setBarrier(String barrier) {
-            node.setBarrier(barrier);
+            node.setAwaitName(barrier);
             return this;
         }
 

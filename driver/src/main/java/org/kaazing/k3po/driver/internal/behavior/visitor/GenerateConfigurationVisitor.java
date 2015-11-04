@@ -248,6 +248,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             resolver.setValue(environment, null, propertyName, value);
         }
 
+        if (value instanceof AutoCloseable) {
+            state.configuration.getResources().add((AutoCloseable) value);
+        }
+
         if (LOGGER.isDebugEnabled()) {
             Object formatValue = (value instanceof byte[]) ? AstLiteralBytesValue.toString((byte[]) value) : value;
             LOGGER.debug(format("Setting value for ${%s} to %s", propertyName, formatValue));
@@ -344,13 +348,19 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         acceptOptions.putAll(acceptNode.getOptions());
         OptionsResolver optionsResolver = new OptionsResolver(acceptOptions, acceptNode.getEnvironment());
 
+        String notifyName = acceptNode.getNotifyName();
+        Barrier notifyBarrier = null;
+        if (notifyName != null) {
+            notifyBarrier = state.lookupBarrier(notifyName);
+        }
+
         // Now that accept supports expression value, accept uri may not be available at this point.
         // To defer the evaluation of accept uri and initialization of  ServerBootstrap, LocationResolver and
         // ServerResolver are created with information necessary to create ClientBootstrap when the
         // accept uri is available.
         LocationResolver locationResolver = new LocationResolver(acceptNode.getLocation(), acceptNode.getEnvironment());
         ServerBootstrapResolver serverResolver = new ServerBootstrapResolver(bootstrapFactory, addressFactory,
-                pipelineFactory, locationResolver, optionsResolver);
+                pipelineFactory, locationResolver, optionsResolver, notifyBarrier);
 
         state.configuration.getServerResolvers().add(serverResolver);
 
@@ -380,10 +390,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         completionHandler.setRegionInfo(connectNode.getRegionInfo());
         state.pipelineAsMap.put(handlerName, completionHandler);
 
-        String barrierName = connectNode.getBarrier();
-        Barrier barrier = null;
-        if (barrierName != null) {
-            barrier = state.lookupBarrier(barrierName);
+        String awaitName = connectNode.getAwaitName();
+        Barrier awaitBarrier = null;
+        if (awaitName != null) {
+            awaitBarrier = state.lookupBarrier(awaitName);
         }
 
         final ChannelPipeline pipeline = pipelineFromMap(state.pipelineAsMap);
@@ -414,7 +424,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         OptionsResolver optionsResolver = new OptionsResolver(connectNode.getOptions(), connectNode.getEnvironment());
 
         ClientBootstrapResolver clientResolver = new ClientBootstrapResolver(bootstrapFactory, addressFactory,
-                pipelineFactory, locationResolver, optionsResolver, barrier, connectNode.getRegionInfo());
+                pipelineFactory, locationResolver, optionsResolver, awaitBarrier, connectNode.getRegionInfo());
 
         // retain pipelines for tear down
         state.configuration.getClientAndServerPipelines().add(pipeline);

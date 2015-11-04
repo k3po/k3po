@@ -41,7 +41,7 @@ public class ClientBootstrapResolver {
     private final ChannelAddressFactory addressFactory;
     private final ChannelPipelineFactory pipelineFactory;
     private final LocationResolver locationResolver;
-    private final Barrier barrier;
+    private final Barrier awaitBarrier;
     private final RegionInfo regionInfo;
     private final OptionsResolver optionsResolver;
 
@@ -49,14 +49,14 @@ public class ClientBootstrapResolver {
 
     public ClientBootstrapResolver(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory,
             ChannelPipelineFactory pipelineFactory, LocationResolver locationResolver,
-            OptionsResolver optionsResolver, Barrier barrier,
+            OptionsResolver optionsResolver, Barrier awaitBarrier,
             RegionInfo regionInfo) {
         this.bootstrapFactory = bootstrapFactory;
         this.addressFactory = addressFactory;
         this.pipelineFactory = pipelineFactory;
         this.locationResolver = locationResolver;
         this.optionsResolver = optionsResolver;
-        this.barrier = barrier;
+        this.awaitBarrier = awaitBarrier;
         this.regionInfo = regionInfo;
     }
 
@@ -74,8 +74,8 @@ public class ClientBootstrapResolver {
         return bootstrap;
     }
 
-    public Barrier getBarrier() {
-        return this.barrier;
+    public Barrier getAwaitBarrier() {
+        return this.awaitBarrier;
     }
 
     public RegionInfo getRegionInfo() {

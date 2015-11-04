@@ -38,6 +38,7 @@ public class Configuration {
     private Set<Barrier> barriers;
     private ExpressionFactory factory;
     private Map<RegionInfo, List<ChannelPipeline>> serverPipelinesByRegion;
+    private List<AutoCloseable> resources;
 
     public List<ChannelPipeline> getClientAndServerPipelines() {
         if (pipelines == null) {
@@ -88,6 +89,13 @@ public class Configuration {
             barriers = new HashSet<>();
         }
         return barriers;
+    }
+
+    public List<AutoCloseable> getResources() {
+        if (resources == null) {
+            resources = new ArrayList<>();
+        }
+        return resources;
     }
 
 }

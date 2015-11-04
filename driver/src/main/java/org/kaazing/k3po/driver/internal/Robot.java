@@ -29,10 +29,8 @@ import java.io.ByteArrayInputStream;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -61,7 +59,6 @@ import org.kaazing.k3po.driver.internal.behavior.handler.CompletionHandler;
 import org.kaazing.k3po.driver.internal.behavior.parser.Parser;
 import org.kaazing.k3po.driver.internal.behavior.parser.ScriptValidator;
 import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor;
-import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor.State;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
@@ -299,7 +296,7 @@ public class Robot {
 
             // Listen for the bindFuture.
             RegionInfo regionInfo = (RegionInfo) server.getOption("regionInfo");
-            bindFuture.addListener(createBindCompleteListener(regionInfo));
+            bindFuture.addListener(createBindCompleteListener(regionInfo, serverResolver.getNotifyBarrier()));
         }
 
         return new CompositeChannelFuture<>(channel, bindFutures);
@@ -308,9 +305,9 @@ public class Robot {
     private void startConfiguration() throws Exception {
         /* Connect to any clients */
         for (final ClientBootstrapResolver clientResolver : configuration.getClientResolvers()) {
-            Barrier barrier = clientResolver.getBarrier();
-            if (barrier != null) {
-                barrier.getFuture().addListener(new ChannelFutureListener() {
+            Barrier awaitBarrier = clientResolver.getAwaitBarrier();
+            if (awaitBarrier != null) {
+                awaitBarrier.getFuture().addListener(new ChannelFutureListener() {
 
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {
@@ -386,6 +383,15 @@ public class Robot {
                     clientChannels.close();
                 }
             });
+
+            for (AutoCloseable resource : configuration.getResources()) {
+                try {
+                    resource.close();
+                }
+                catch (Exception e) {
+                    // ignore
+                }
+            }
         }
     }
 
@@ -421,7 +427,7 @@ public class Robot {
         }
     }
 
-    private ChannelFutureListener createBindCompleteListener(final RegionInfo regionInfo) {
+    private ChannelFutureListener createBindCompleteListener(final RegionInfo regionInfo, final Barrier notifyBarrier) {
         return new ChannelFutureListener() {
             @Override
             public void operationComplete(final ChannelFuture bindFuture) throws Exception {
@@ -432,7 +438,13 @@ public class Robot {
                         SocketAddress localAddress = boundChannel.getLocalAddress();
                         LOGGER.debug("Successfully bound to " + localAddress);
                     }
-                } else {
+
+                    if (notifyBarrier != null) {
+                        ChannelFuture barrierFuture = notifyBarrier.getFuture();
+                        barrierFuture.setSuccess();
+                    }
+                }
+                else {
                     Throwable cause = bindFuture.getCause();
                     String message = format("accept failed: %s", cause.getMessage());
                     progress.addScriptFailure(regionInfo, message);
