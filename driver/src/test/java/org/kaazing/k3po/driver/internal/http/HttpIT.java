@@ -70,6 +70,14 @@ public class HttpIT {
 
     @Test
     @TestSpecification({
+        "http.accept.websocket.handshake.then.client.hard.close",
+        "http.connect.websocket.handshake.then.client.hard.close" })
+    public void shouldAcceptWebsocketHandshakeThenClientHardClose() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
         "http.accept.read.parameter.with.multiple.tokens",
         "tcp.connect.write.parameter.with.multiple.tokens" })
     public void shouldAcceptReadParameterWithMultipleTokens() throws Exception {
