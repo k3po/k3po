@@ -8,5 +8,5 @@ write header "If-None-Match" "\"unmatched-tag\""
 write header content-length
 write flush
 
-read status "200" "OK"
+read status "200" /.*/
 read header "ETag" /.+/

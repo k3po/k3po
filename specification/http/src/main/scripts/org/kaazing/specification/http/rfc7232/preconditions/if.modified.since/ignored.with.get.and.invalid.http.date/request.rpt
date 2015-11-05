@@ -1,4 +1,5 @@
 property invalidDate "Wed, 30 Feb 2000 01:23:45 GMT"
+
 connect http://localhost:8000/index.html
 connected
 
@@ -9,4 +10,4 @@ write header "If-Modified-Since" ${invalidDate}
 write header content-length
 write close
 
-read status "200" "OK"
+read status "200" /.*/

@@ -1,5 +1,6 @@
 property weakEntityTag "W/\"weak-etag\""
 
+
 accept http://localhost:8000/index.html
 accepted
 connected

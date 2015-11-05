@@ -7,7 +7,7 @@ write header host
 write header content-length
 write flush
 
-read status "200" "OK"
+read status "200" /.*/
 read header "Last-Modified" /(?<lastModified>.+)/
 read notify LAST_MODIFIED
 
@@ -22,6 +22,6 @@ write header "If-Modified-Since" ${lastModified}
 write header content-length
 write flush
 
-read status "304" "Not Modified"
+read status "304" /.*/
 read header "ETag" /.+/
 read closed

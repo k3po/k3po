@@ -8,4 +8,4 @@ write header "If-Match" "\"unexpectedETag1\"", "\"unexpectedETag2\"", "\"unexpec
 write header content-length
 write flush
 
-read status "412" "Precondition Failed"
+read status "412" /.*/
