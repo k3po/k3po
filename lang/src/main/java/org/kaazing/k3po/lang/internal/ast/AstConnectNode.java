@@ -29,7 +29,7 @@ import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 public class AstConnectNode extends AstStreamNode {
 
     private Map<String, Object> options;
-    private String barrier;
+    private String awaitName;
 
     private AstLocation location;
     private ELContext environment;
@@ -41,8 +41,32 @@ public class AstConnectNode extends AstStreamNode {
         this.regionInfo = connectNode.regionInfo;
         this.location = connectNode.location;
         this.environment = connectNode.environment;
-        this.barrier = connectNode.barrier;
+        this.awaitName = connectNode.awaitName;
         this.options = connectNode.options;
+    }
+
+    public String getAwaitName() {
+        return awaitName;
+    }
+
+    public void setAwaitName(String awaitName) {
+        this.awaitName = awaitName;
+    }
+
+    public AstLocation getLocation() {
+        return location;
+    }
+
+    public void setLocation(AstLocation location) {
+        this.location = location;
+    }
+
+    public ELContext getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(ELContext expressionContext) {
+        this.environment = expressionContext;
     }
 
     public Map<String, Object> getOptions() {
@@ -72,6 +96,11 @@ public class AstConnectNode extends AstStreamNode {
             hashCode ^= options.hashCode();
         }
 
+        if (awaitName != null) {
+            hashCode <<= 4;
+            hashCode ^= awaitName.hashCode();
+        }
+
         return hashCode;
     }
 
@@ -92,35 +121,11 @@ public class AstConnectNode extends AstStreamNode {
     @Override
     protected void describeLine(StringBuilder sb) {
         super.describeLine(sb);
-        if (barrier == null) {
+        if (awaitName == null) {
             sb.append(format("connect %s\n", location));
         } else {
-            sb.append(format("connect await %s\nconnect %s\n", barrier, location));
+            sb.append(format("connect awaitName %s\nconnect %s\n", awaitName, location));
         }
-    }
-
-    public String getBarrier() {
-        return barrier;
-    }
-
-    public void setBarrier(String barrier) {
-        this.barrier = barrier;
-    }
-
-    public AstLocation getLocation() {
-        return location;
-    }
-
-    public void setLocation(AstLocation location) {
-        this.location = location;
-    }
-
-    public ELContext getEnvironment() {
-        return environment;
-    }
-
-    public void setEnvironment(ELContext expressionContext) {
-        this.environment = expressionContext;
     }
 
 }
