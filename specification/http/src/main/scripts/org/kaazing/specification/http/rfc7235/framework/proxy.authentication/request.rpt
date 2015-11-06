@@ -8,7 +8,9 @@ write close
 
 read status "407" "Proxy Authentication Required"
 read header "Proxy-Authenticate" /Basic realm=.+/
+read notify FIRST_DONE
 
+connect await FIRST_DONE
 connect http://localhost:8000/resource
 connected
 
