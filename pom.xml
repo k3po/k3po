@@ -30,9 +30,11 @@
         <module>control</module>
         <module>launcher</module>
         <module>junit</module>
+ <!--
         <module>examples</module>
         <module>k3po.pcap.converter</module>
         <module>specification/amqp_1_0.jms</module>
+ -->
         <module>specification/bbosh</module>
         <module>specification/http</module>
         <module>specification/httpx</module>
@@ -40,7 +42,7 @@
         <module>specification/httpxe</module>
 
         <module>specification/k3po.control</module>
-
+ <!--
         <module>specification/mqtt_3_1_1</module>
         <module>specification/socks5</module>
         <module>specification/sse</module>
@@ -50,6 +52,7 @@
         <module>specification/wse</module>
         <module>specification/ws.extensions/x-kaazing-idle-timeout</module>
         <module>specification/ws.extensions/x-kaazing-ping-pong</module>
+ -->
     </modules>
 
     <properties>
