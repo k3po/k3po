@@ -18,6 +18,7 @@ accepted
 connected
 read "GET http://localhost:8080/ HTTP/1.1" "\r\n"
 read "first: channel" "\r\n"
+read "\r\n"
 read notify FIRST_CHANNEL_CONNECTED
 write "200 OK HTTP/1.1" "\r\n"
 write "Content-Length: 0" "\r\n"
@@ -29,6 +30,7 @@ accepted
 connected
 read "GET http://localhost:8080/ HTTP/1.1" "\r\n"
 read "delayed: channel" "\r\n"
+read "\r\n"
 write "200 OK HTTP/1.1" "\r\n"
 write "Content-Length: 0" "\r\n"
 write "\r\n"

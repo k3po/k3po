@@ -19,7 +19,6 @@ package org.kaazing.k3po.driver.internal;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -101,13 +100,6 @@ public class BehaviorIT {
     public void testPassingBarriers() throws Exception {
         k3po.notifyBarrier("AWAITING_BARRIER");
         k3po.awaitBarrier("NOTIFYING_BARRIER");
-        k3po.finish();
-    }
-
-    @TestSpecification("closed.vs.disconnected.issue")
-    @Test
-    @Ignore("k3po issue #222")
-    public void closeVsDisconnectedIssue() throws Exception {
         k3po.finish();
     }
 }
