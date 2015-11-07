@@ -14,10 +14,10 @@ read header "Last-Modified" /(?<lastModified>.+)/
 read header "ETag" /(?<entityTag>.+)/
 read notify LAST_MODIFIED
 
+connect await LAST_MODIFIED
 connect http://localhost:8000/index.html
 connected
 
-write await LAST_MODIFIED
 write method "POST"
 write version "HTTP/1.1"
 write header host

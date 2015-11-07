@@ -11,10 +11,10 @@ read status "200" /.*/
 read header "ETag" /(?<entityTag>.+)/
 read notify READ_ETAG
 
+connect await READ_ETAG
 connect http://localhost:8000/index.html
 connected
 
-write await READ_ETAG
 write method "HEAD"
 write version "HTTP/1.1"
 write header host
