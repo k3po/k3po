@@ -1,0 +1,12 @@
+connect http://localhost:8000/index.html
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "If-None-Match" "\"unmatched-tag\""
+write header content-length
+write flush
+
+read status "200" /.*/
+read header "ETag" /.+/

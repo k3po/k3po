@@ -1,0 +1,27 @@
+connect http://localhost:8000/index.html
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header content-length
+write flush
+
+read status "200" /.*/
+read header "ETag" /(?<entityTag>.+)/
+read notify READ_ETAG
+
+connect await READ_ETAG
+connect http://localhost:8000/index.html
+connected
+
+write method "HEAD"
+write version "HTTP/1.1"
+write header host
+write header "If-None-Match" ${entityTag}
+write header content-length
+write flush
+
+read status "304" /.*/
+read header "ETag" ${entityTag}
+read closed
