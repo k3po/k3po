@@ -124,6 +124,9 @@ public class ExecutionHandler extends SimplePrepareUpstreamHandler implements Li
 
         assert handlerFuture != null;
         if (!handlerFuture.isDone()) {
+            int id = (channel != null) ? channel.getId() : 0;
+            LOGGER.info(format("[id: 0x%08x] %s [FAILED during remove], pipelineFuture:\n%s",
+                    id, ExecutionHandler.this, pipelineFuture));
             ScriptProgressException exception = new ScriptProgressException(getRegionInfo(), "");
             exception.fillInStackTrace();
             handlerFuture.setFailure(exception);
