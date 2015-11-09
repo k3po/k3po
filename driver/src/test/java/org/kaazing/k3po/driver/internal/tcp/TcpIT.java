@@ -25,7 +25,9 @@ import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
 import org.junit.rules.Timeout;
+import org.junit.runner.Description;
 import org.kaazing.k3po.driver.internal.test.utils.K3poTestRule;
 import org.kaazing.k3po.driver.internal.test.utils.TestSpecification;
 
@@ -35,11 +37,15 @@ public class TcpIT {
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
-    @Rule
-    public final ExpectedException expectedExceptions = ExpectedException.none();
+    private final TestWatcher failureTrace = new TestWatcher() {
+        @Override
+        protected void failed(Throwable e, Description description) {
+            System.out.println(description + " failed - " + e);
+        };
+    };
 
     @Rule
-    public final TestRule chain = outerRule(k3po).around(timeout);
+    public final TestRule chain = outerRule(failureTrace).around(k3po).around(timeout);
 
     @TestSpecification("client.close.notify.closed")
     @Test // Test case for k2po#222
