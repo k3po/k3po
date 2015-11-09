@@ -222,8 +222,8 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     @Override
     public void abortReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
-        if (logger.isDebugEnabled()) {
-            logger.debug("ABORT");
+        if (logger.isInfoEnabled()) {
+            logger.info("ABORT");
         }
         assert whenAbortedOrFinished != null;
         robot.abort().addListener(whenAbortedOrFinished);
