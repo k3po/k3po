@@ -18,6 +18,7 @@ package org.kaazing.k3po.driver.internal.agrona;
 
 import static uk.co.real_logic.agrona.IoUtil.mapExistingFile;
 import static uk.co.real_logic.agrona.IoUtil.mapNewFile;
+import static uk.co.real_logic.agrona.IoUtil.unmap;
 
 import java.io.File;
 import java.nio.MappedByteBuffer;
@@ -62,15 +63,17 @@ public final class Functions {
                                          : mapExistingFile(location, filename);
         AtomicBuffer ring = new UnsafeBuffer(buffer, 0, totalRingLength);
         AtomicBuffer broadcast = new UnsafeBuffer(buffer, totalRingLength, totalBroadcastLength);
-        return new Layout(ring, broadcast);
+        return new Layout(buffer, ring, broadcast);
     }
 
-    public static final class Layout {
+    public static final class Layout implements AutoCloseable {
 
         private final AtomicBuffer ring;
         private final AtomicBuffer broadcast;
+        private final MappedByteBuffer buffer;
 
-        public Layout(AtomicBuffer ring, AtomicBuffer broadcast) {
+        public Layout(MappedByteBuffer buffer, AtomicBuffer ring, AtomicBuffer broadcast) {
+            this.buffer = buffer;
             this.ring = ring;
             this.broadcast = broadcast;
         }
@@ -81,6 +84,11 @@ public final class Functions {
 
         public AtomicBuffer getBroadcast() {
             return broadcast;
+        }
+
+        @Override
+        public void close() {
+            unmap(buffer);
         }
 
     }

@@ -1,0 +1,27 @@
+connect http://localhost:8000/index.html
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header content-length
+write flush
+
+read status "200" /.*/
+read header "Last-Modified" /(?<lastModified>.+)/
+read notify LAST_MODIFIED
+
+connect await LAST_MODIFIED
+connect http://localhost:8000/index.html
+connected
+
+write method "HEAD"
+write header host
+write version "HTTP/1.1"
+write header "If-Modified-Since" ${lastModified}
+write header content-length
+write flush
+
+read status "304" /.*/
+read header "ETag" /.+/
+read closed

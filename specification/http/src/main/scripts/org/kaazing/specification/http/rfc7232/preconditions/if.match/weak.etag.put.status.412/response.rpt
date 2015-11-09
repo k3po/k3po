@@ -1,0 +1,13 @@
+property weakEntityTag "W/\"weak-etag\""
+
+accept http://localhost:8000/index.html
+accepted
+connected
+
+read method "PUT"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+read header "If-Match" ${weakEntityTag}
+
+write status "412" "Precondition Failed"
+write flush
