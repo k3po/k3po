@@ -1,0 +1,11 @@
+connect http://localhost:8000/index.html
+connected
+
+write method "HEAD"
+write version "HTTP/1.1"
+write header host
+write header "If-Match" "unexpectedEtag"
+write header content-length
+write flush
+
+read status "200" /.*/

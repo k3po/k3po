@@ -1,0 +1,11 @@
+accept http://localhost:8000/index.html
+accepted
+connected
+
+read method "HEAD"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+read header "If-Match" "\"unexpectedETag1\"", "\"unexpectedETag2\"", "\"unexpectedETag3\""
+
+write status "200" "OK"
+write flush
