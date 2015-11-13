@@ -15,10 +15,10 @@ read header "X-Strategy" "streaming;request=chunked"
 read closed
 read notify CONNECT_ONE
 
+connect await CONNECT_ONE
 connect http://localhost:8000/connections/ac32fb3844fe11e4a183164230d1df67
 connected
 
-write await CONNECT_ONE
 write method "PUT"
 write header "Accept" "application/octet-stream"
 write header "Content-Type" "application/octet-stream"
