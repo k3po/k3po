@@ -233,7 +233,7 @@ public class HttpIT {
     }
 
     @Test
-    @Ignore("kepo#256")
+    @Ignore("k3po#256")
     @TestSpecification({
         "server.closes.abruptly.client.closed" })
     public void closedShouldWorkOrBeRejected() throws Exception {
