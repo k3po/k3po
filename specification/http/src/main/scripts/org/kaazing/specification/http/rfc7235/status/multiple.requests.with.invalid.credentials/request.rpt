@@ -9,7 +9,9 @@ write close
 
 read status "401" "Unauthorized"
 read header "WWW-Authenticate" /Basic realm=.+/
+read notify FIRST_DONE
 
+connect await FIRST_DONE
 connect http://localhost:8000/resource
 connected
 

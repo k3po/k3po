@@ -1,3 +1,14 @@
+connect http://localhost:8080/index.html
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write close
+
+read status "504" /.+/
+read version "HTTP/1.1"
+
 #
 # client <--> proxy
 #
@@ -31,3 +42,13 @@ write header host
 write close
 
 write notify GOT_RESPONSE
+closed
+
+# server
+
+accept tcp://localhost:8081
+accepted
+connected
+
+close
+closed
