@@ -81,17 +81,16 @@ public class Robot {
     private final ChannelFuture startedFuture = Channels.future(channel);
     private final ChannelFuture abortedFuture = Channels.future(channel);
     private final ChannelFuture finishedFuture = Channels.future(channel);
+    private final ChannelFuture disposedFuture = Channels.future(channel);
 
     private final DefaultChannelGroup serverChannels = new DefaultChannelGroup();
     private final DefaultChannelGroup clientChannels = new DefaultChannelGroup();
 
     private Configuration configuration;
     private ChannelFuture preparedFuture;
-    private volatile boolean destroyed;
 
     private final ChannelAddressFactory addressFactory;
     private final BootstrapFactory bootstrapFactory;
-    private final boolean createdBootstrapFactory;
 
     private ScriptProgress progress;
 
@@ -99,24 +98,10 @@ public class Robot {
 
     private final ConcurrentMap<String, Barrier> barriersByName = new ConcurrentHashMap<String, Barrier>();
 
-    // tests
     public Robot() {
-        this(newChannelAddressFactory());
-    }
-
-    private Robot(ChannelAddressFactory addressFactory) {
-        this(addressFactory,
-             newBootstrapFactory(Collections.<Class<?>, Object>singletonMap(ChannelAddressFactory.class, addressFactory)), true);
-    }
-
-    private Robot(
-            ChannelAddressFactory addressFactory,
-            BootstrapFactory bootstrapFactory,
-            boolean createdBootstrapFactory) {
-
-        this.addressFactory = addressFactory;
-        this.bootstrapFactory = bootstrapFactory;
-        this.createdBootstrapFactory = createdBootstrapFactory;
+        this.addressFactory = newChannelAddressFactory();
+        this.bootstrapFactory =
+                newBootstrapFactory(Collections.<Class<?>, Object>singletonMap(ChannelAddressFactory.class, addressFactory));
 
         ChannelFutureListener stopConfigurationListener = createStopConfigurationListener();
         this.abortedFuture.addListener(stopConfigurationListener);
@@ -189,8 +174,7 @@ public class Robot {
                 try {
                     startConfiguration();
                     startedFuture.setSuccess();
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     startedFuture.setFailure(ex);
                 }
             }
@@ -215,32 +199,50 @@ public class Robot {
         return (progress != null) ? progress.getObservedScript() : null;
     }
 
-    public boolean isDestroyed() {
-        return destroyed;
-    }
+    public ChannelFuture dispose() {
+        if (preparedFuture == null) {
+            // no need to clean up if never started
+            disposedFuture.setSuccess();
+        } else if (!disposedFuture.isDone()) {
+            ChannelFuture future = abort();
+            future.addListener(new ChannelFutureListener() {
 
-    public boolean destroy() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
 
-        if (destroyed) {
-            return true;
-        }
+                    for (AutoCloseable resource : configuration.getResources()) {
+                        try {
+                            resource.close();
+                        } catch (Exception e) {
+                            // ignore
+                        }
+                    }
+                    // close server and client channels
+                    // final ChannelGroupFuture closeFuture =
+                    serverChannels.close().addListener(new ChannelGroupFutureListener() {
 
-        abort();
+                        @Override
+                        public void operationComplete(ChannelGroupFuture future) throws Exception {
+                            clientChannels.close();
+                            try {
+                                bootstrapFactory.shutdown();
+                                bootstrapFactory.releaseExternalResources();
+                            } catch (Exception e) {
+                                if (LOGGER.isDebugEnabled()) {
+                                    LOGGER.error("Caught exception releasing resources", e);
+                                }
+                            } finally {
+                                disposedFuture
+                                        .setFailure(new Throwable("Disposed due to shutdown of channel, not due to command"));
+                            }
 
-        if (createdBootstrapFactory) {
-            try {
-                bootstrapFactory.shutdown();
-                bootstrapFactory.releaseExternalResources();
-            }
-            catch (Exception e) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Caught exception releasing resources", e);
+                        }
+                    });
+
                 }
-                return false;
-            }
+            });
         }
-
-        return destroyed = true;
+        return disposedFuture;
     }
 
     private ChannelFuture prepareConfiguration() throws Exception {
@@ -284,7 +286,6 @@ public class Robot {
                 }
             });
 
-
             // Bind Asynchronously
             ChannelFuture bindFuture = server.bindAsync();
 
@@ -314,8 +315,7 @@ public class Robot {
                         connectClient(clientResolver);
                     }
                 });
-            }
-            else {
+            } else {
                 connectClient(clientResolver);
             }
         }
@@ -344,8 +344,7 @@ public class Robot {
             }
             RegionInfo scriptInfo = progress.getScriptInfo();
             progress.addScriptFailure(scriptInfo);
-        }
-        else {
+        } else {
             // stopping the configuration will implicitly trigger the script complete listener
             // to handle incomplete script that is being aborted by canceling the finish future
 
@@ -374,24 +373,6 @@ public class Robot {
             for (ChannelFuture connectFuture : connectFutures) {
                 connectFuture.cancel();
             }
-
-            // close server and client channels
-            final ChannelGroupFuture closeFuture = serverChannels.close();
-            closeFuture.addListener(new ChannelGroupFutureListener() {
-                @Override
-                public void operationComplete(final ChannelGroupFuture future) {
-                    clientChannels.close();
-                }
-            });
-
-            for (AutoCloseable resource : configuration.getResources()) {
-                try {
-                    resource.close();
-                }
-                catch (Exception e) {
-                    // ignore
-                }
-            }
         }
     }
 
@@ -407,8 +388,7 @@ public class Robot {
                 }
 
             });
-        }
-        else {
+        } else {
             // no race if not attached
             stopStreamAligned(pipeline);
         }
@@ -417,7 +397,7 @@ public class Robot {
     private void stopStreamAligned(final ChannelPipeline pipeline) {
         for (ChannelHandler handler : pipeline.toMap().values()) {
             // note: removing this handler can trigger script completion
-            //       which in turn can re-attempt to stop this pipeline
+            // which in turn can re-attempt to stop this pipeline
             pipeline.remove(handler);
         }
 
@@ -432,10 +412,10 @@ public class Robot {
             @Override
             public void operationComplete(final ChannelFuture bindFuture) throws Exception {
 
+                Channel boundChannel = bindFuture.getChannel();
+                SocketAddress localAddress = boundChannel.getLocalAddress();
                 if (bindFuture.isSuccess()) {
                     if (LOGGER.isDebugEnabled()) {
-                        Channel boundChannel = bindFuture.getChannel();
-                        SocketAddress localAddress = boundChannel.getLocalAddress();
                         LOGGER.debug("Successfully bound to " + localAddress);
                     }
 
@@ -443,8 +423,7 @@ public class Robot {
                         ChannelFuture barrierFuture = notifyBarrier.getFuture();
                         barrierFuture.setSuccess();
                     }
-                }
-                else {
+                } else {
                     Throwable cause = bindFuture.getCause();
                     String message = format("accept failed: %s", cause.getMessage());
                     progress.addScriptFailure(regionInfo, message);
@@ -466,11 +445,11 @@ public class Robot {
             public void operationComplete(ChannelFuture connectFuture) throws Exception {
                 if (connectFuture.isCancelled()) {
                     // This is more that the connect never really fired, as in the case of a barrier, or the the connect
-                    // is still in process here, so an empty line annotates that it did not do a connect, an actual connect
+                    // is still in process here, so an empty line annotates that it did not do a connect, an actual
+                    // connect
                     // failure should fail the future
                     progress.addScriptFailure(regionInfo, "");
-                }
-                else if (!connectFuture.isSuccess()) {
+                } else if (!connectFuture.isSuccess()) {
                     Throwable cause = connectFuture.getCause();
                     String message = format("connect failed: %s", cause.getMessage());
                     progress.addScriptFailure(regionInfo, message);
@@ -485,11 +464,13 @@ public class Robot {
             public void operationComplete(ChannelFuture completionFuture) throws Exception {
                 if (!completionFuture.isSuccess()) {
                     Throwable cause = completionFuture.getCause();
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Unexpected exception: " + cause + " " + cause.getMessage());
+                    }
                     if (cause instanceof ScriptProgressException) {
                         ScriptProgressException exception = (ScriptProgressException) cause;
                         progress.addScriptFailure(exception.getRegionInfo(), exception.getMessage());
-                    }
-                    else {
+                    } else {
                         LOGGER.warn("Unexpected exception", cause);
                     }
                 }
@@ -512,8 +493,7 @@ public class Robot {
                 if (abortedFuture.isDone()) {
                     // abort complete, trigger finished future
                     finishedFuture.setSuccess();
-                }
-                else {
+                } else {
                     // execution complete, trigger finished future
                     finishedFuture.setSuccess();
                 }
@@ -544,8 +524,7 @@ public class Robot {
                 // close channel and avoid warning logged by default exceptionCaught implementation
                 Channel channel = ctx.getChannel();
                 channel.close();
-            }
-            else {
+            } else {
                 // log exception during close
                 super.exceptionCaught(ctx, e);
             }
