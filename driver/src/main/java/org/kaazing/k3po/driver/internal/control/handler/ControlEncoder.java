@@ -49,11 +49,7 @@ public class ControlEncoder extends OneToOneEncoder {
         if (message instanceof ControlMessage) {
             ControlMessage controlMessage = (ControlMessage) message;
 
-            Kind kind = controlMessage.getKind();
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Encoding " + kind);
-            }
-            switch (kind) {
+            switch (controlMessage.getKind()) {
             case PREPARED:
                 return encodePreparedMessage(ctx, channel, (PreparedMessage) controlMessage);
             case STARTED:
