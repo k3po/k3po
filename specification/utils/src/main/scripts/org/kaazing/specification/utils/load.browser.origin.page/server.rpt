@@ -1,0 +1,16 @@
+# This script is used for loading a browser origin page so other K3poScripts can be ran from within it
+
+# TODO, parameritize origin 
+accept http://localhost:8000/originPage
+accepted
+connected
+
+read method "GET"
+read closed
+write version "HTTP/1.1"
+write status "200" "OK"
+write header content-length
+write "<!DOCTYPE html>"
+write "<link rel=\"icon\" href=\"data:;base64,=\">"
+write close
+
