@@ -265,7 +265,7 @@ public class HttpClientChannelSink extends AbstractChannelSink {
     protected void closeRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
         HttpClientChannel httpClientChannel = (HttpClientChannel) pipeline.getChannel();
         ChannelFuture httpFuture = evt.getFuture();
-        assert httpFuture == httpClientChannel.getCloseFuture();
+        httpFuture.setSuccess();
 
         switch (httpClientChannel.state()) {
         case UPGRADEABLE:

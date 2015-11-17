@@ -2,6 +2,10 @@ property invalidCredentials ${http:loginBase64Encoder("baduser:badpass")}
 property invalidAuthHeader ${http:append("Basic ", invalidCredentials)}
 property credentials ${http:loginBase64Encoder("joe:welcome")}
 property authHeader ${http:append("Basic ", credentials)}
+
+# Note: we have to use barriers to guarantee the ordering
+# of the HTTP request/response pairs
+
 connect http://localhost:8000/resource
 connected
 
@@ -12,6 +16,9 @@ write flush
 read status "401" "Unauthorized"
 read header "WWW-Authenticate" /Basic realm=.+/
 
+read notify FIRST_DONE
+
+connect await FIRST_DONE
 connect http://localhost:8000/resource
 connected
 
@@ -21,7 +28,9 @@ write flush
 
 read status "407" "Proxy Authentication Required"
 read header "Proxy-Authentication" /Basic realm=.+/
+read notify SECOND_DONE
 
+connect await SECOND_DONE
 connect http://localhost:8000/resource
 connected
 

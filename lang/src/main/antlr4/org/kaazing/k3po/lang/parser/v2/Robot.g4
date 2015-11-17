@@ -32,8 +32,9 @@ streamNode
     ;
 
 acceptNode
-    : k=AcceptKeyword acceptURI=location ( AsKeyword text=Name )?
-      (OptionKeyword TransportKeyword value=location)?
+    : k=AcceptKeyword (AwaitKeyword await=Name)? acceptURI=location (AsKeyword as=Name)?
+      (NotifyKeyword notify=Name)? 
+      (OptionKeyword TransportKeyword transport=location)?
       (OptionKeyword ReaderKeyword reader=expressionValue)?
       (OptionKeyword WriterKeyword writer=expressionValue)?
       serverStreamableNode*
@@ -44,8 +45,8 @@ acceptableNode
     ;
 
 connectNode
-    : k=ConnectKeyword (AwaitKeyword barrier=Name ConnectKeyword)? connectURI=location
-                       (OptionKeyword TransportKeyword value=location)?
+    : k=ConnectKeyword (AwaitKeyword await=Name ConnectKeyword?)? connectURI=location
+                       (OptionKeyword TransportKeyword transport=location)?
                        (OptionKeyword SizeKeyword size=DecimalLiteral)?
                        (OptionKeyword ModeKeyword fmode=ModeValue)?
                        (OptionKeyword ReaderKeyword reader=expressionValue)?

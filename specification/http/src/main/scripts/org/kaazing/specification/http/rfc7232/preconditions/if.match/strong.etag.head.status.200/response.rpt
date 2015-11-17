@@ -1,0 +1,25 @@
+property entityTag "\"r2d2xxxx\""
+
+accept http://localhost:8000/index.html
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+
+write status "200" "OK"
+write header "ETag" ${entityTag}
+write header content-length
+write flush
+
+accepted
+connected
+
+read method "HEAD"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+read header "If-Match" ${entityTag}
+
+write status "200" "OK"
+write flush

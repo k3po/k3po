@@ -1,0 +1,27 @@
+property entityTag "\"r2d2xxxx\""
+property lastModified "Mon, 1 Jan 2015 01:23:45 GMT"
+
+accept http://localhost:8000/index.html
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+
+write status "200" "OK"
+write header "Last-Modified" ${lastModified}
+write header content-length
+write flush
+
+accepted
+connected
+
+read method "HEAD"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+read header "If-Modified-Since" ${lastModified}
+
+write status "304" "Not Modified"
+write header "ETag" ${entityTag}
+write close

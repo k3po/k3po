@@ -1,0 +1,14 @@
+accept tcp://localhost:8080
+       notify BOUND
+
+accepted
+connected
+read "notified"
+closed
+
+connect await BOUND
+        tcp://localhost:8080
+connected
+write "notified"
+close
+closed

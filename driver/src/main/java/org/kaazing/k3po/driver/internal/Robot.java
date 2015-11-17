@@ -210,6 +210,15 @@ public class Robot {
 
                 @Override
                 public void operationComplete(ChannelFuture future) throws Exception {
+
+                    for (AutoCloseable resource : configuration.getResources()) {
+                        try {
+                            resource.close();
+                        }
+                        catch (Exception e) {
+                            // ignore
+                        }
+                    }
                     // close server and client channels
                     // final ChannelGroupFuture closeFuture =
                     serverChannels.close().addListener(new ChannelGroupFutureListener() {
@@ -290,7 +299,7 @@ public class Robot {
 
             // Listen for the bindFuture.
             RegionInfo regionInfo = (RegionInfo) server.getOption("regionInfo");
-            bindFuture.addListener(createBindCompleteListener(regionInfo));
+            bindFuture.addListener(createBindCompleteListener(regionInfo, serverResolver.getNotifyBarrier()));
         }
 
         return new CompositeChannelFuture<>(channel, bindFutures);
@@ -299,9 +308,9 @@ public class Robot {
     private void startConfiguration() throws Exception {
         /* Connect to any clients */
         for (final ClientBootstrapResolver clientResolver : configuration.getClientResolvers()) {
-            Barrier barrier = clientResolver.getBarrier();
-            if (barrier != null) {
-                barrier.getFuture().addListener(new ChannelFutureListener() {
+            Barrier awaitBarrier = clientResolver.getAwaitBarrier();
+            if (awaitBarrier != null) {
+                awaitBarrier.getFuture().addListener(new ChannelFutureListener() {
 
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {
@@ -403,7 +412,7 @@ public class Robot {
         }
     }
 
-    private ChannelFutureListener createBindCompleteListener(final RegionInfo regionInfo) {
+    private ChannelFutureListener createBindCompleteListener(final RegionInfo regionInfo, final Barrier notifyBarrier) {
         return new ChannelFutureListener() {
             @Override
             public void operationComplete(final ChannelFuture bindFuture) throws Exception {
@@ -414,8 +423,12 @@ public class Robot {
                     if (LOGGER.isDebugEnabled()) {
                         LOGGER.debug("Successfully bound to " + localAddress);
                     }
+
+                    if (notifyBarrier != null) {
+                        ChannelFuture barrierFuture = notifyBarrier.getFuture();
+                        barrierFuture.setSuccess();
+                    }
                 } else {
-                    LOGGER.error("Failed to bind to " + localAddress);
                     Throwable cause = bindFuture.getCause();
                     String message = format("accept failed: %s", cause.getMessage());
                     progress.addScriptFailure(regionInfo, message);

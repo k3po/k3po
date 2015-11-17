@@ -24,6 +24,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class FileChannelAddress extends ChannelAddress {
+
+    private static final long serialVersionUID = 1L;
+
     private final String mode;
     private final long size;
 

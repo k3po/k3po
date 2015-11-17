@@ -20,14 +20,46 @@ import static org.jboss.netty.channel.Channels.pipeline;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.handler.codec.http.HttpClientCodec;
 import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
 import org.jboss.netty.handler.codec.http.HttpResponseDecoder;
 
+import java.lang.reflect.Field;
+
 final class HttpClientChannelPipelineFactory implements ChannelPipelineFactory {
+    private static final Field encoderField;
+    static {
+        Field tmpField;
+        try {
+            tmpField = HttpClientCodec.class.getDeclaredField("encoder");
+            tmpField.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            tmpField = null;
+        }
+        encoderField = tmpField;
+    }
+
+    private static final Field decoderField;
+    static {
+        Field tmpField;
+        try {
+            tmpField = HttpClientCodec.class.getDeclaredField("decoder");
+            tmpField.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            tmpField = null;
+        }
+        decoderField = tmpField;
+    }
+
 
     @Override
     public ChannelPipeline getPipeline() throws Exception {
-        return pipeline(new HttpResponseDecoder(), new HttpRequestEncoder(), new HttpClientChannelSource());
+        // HttpClientCodec's HttpResponseDecoder, HttpRequestEncoder fields are private in netty 3.9.x
+        // (there are accessor methods in 4.x)
+        HttpClientCodec codec = new HttpClientCodec();
+        HttpResponseDecoder decoder = (HttpResponseDecoder) decoderField.get(codec);
+        HttpRequestEncoder encoder = (HttpRequestEncoder) encoderField.get(codec);
+        return pipeline(decoder, encoder, new HttpClientChannelSource());
     }
 
 }

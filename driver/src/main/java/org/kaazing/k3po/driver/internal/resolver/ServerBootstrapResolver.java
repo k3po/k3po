@@ -22,6 +22,7 @@ import java.util.Map;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
+import org.kaazing.k3po.driver.internal.behavior.Barrier;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
@@ -38,30 +39,31 @@ public class ServerBootstrapResolver {
     private final ChannelAddressFactory addressFactory;
     private final ChannelPipelineFactory pipelineFactory;
     private final LocationResolver locationResolver;
-    private final LocationResolver transportResolver;
-
-    private final Map<String, Object> acceptOptions;
+    private final OptionsResolver optionsResolver;
+    private final Barrier notifyBarrier;
 
     private ServerBootstrap bootstrap;
 
     public ServerBootstrapResolver(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory,
             ChannelPipelineFactory pipelineFactory, LocationResolver locationResolver,
-            LocationResolver transportResolver, Map<String, Object> acceptOptions) {
+            OptionsResolver optionsResolver, Barrier notifyBarrier) {
         this.bootstrapFactory = bootstrapFactory;
         this.addressFactory = addressFactory;
         this.pipelineFactory = pipelineFactory;
         this.locationResolver = locationResolver;
-        this.transportResolver = transportResolver;
-        this.acceptOptions = acceptOptions;
+        this.optionsResolver = optionsResolver;
+        this.notifyBarrier = notifyBarrier;
     }
 
+    public Barrier getNotifyBarrier() {
+        return notifyBarrier;
+    }
+
+    // TODO: asynchronous, triggered by awaitBarrier
     public ServerBootstrap resolve() throws Exception {
         if (bootstrap == null) {
             URI acceptURI = locationResolver.resolve();
-            if (transportResolver != null) {
-                URI transportURI = transportResolver.resolve();
-                acceptOptions.put("transport", transportURI);
-            }
+            Map<String, Object> acceptOptions = optionsResolver.resolve();
             ChannelAddress localAddress = addressFactory.newChannelAddress(acceptURI, acceptOptions);
             LOGGER.debug("Initializing server Bootstrap binding to address " + localAddress);
             ServerBootstrap serverBootstrapCandidate = bootstrapFactory.newServerBootstrap(acceptURI.getScheme());
