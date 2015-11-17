@@ -26,8 +26,6 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.control.ControlMessage;
 import org.kaazing.k3po.driver.internal.control.ControlMessage.Kind;
 import org.kaazing.k3po.driver.internal.control.DisposedMessage;
@@ -41,7 +39,6 @@ import org.kaazing.k3po.driver.internal.control.StartedMessage;
 public class ControlEncoder extends OneToOneEncoder {
 
     private static final byte LF = (byte) 0x0a;
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ControlEncoder.class);
 
     @Override
     protected Object encode(ChannelHandlerContext ctx, Channel channel, Object message) throws Exception {

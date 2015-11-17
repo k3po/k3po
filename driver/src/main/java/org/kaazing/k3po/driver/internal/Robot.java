@@ -174,8 +174,7 @@ public class Robot {
                 try {
                     startConfiguration();
                     startedFuture.setSuccess();
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     startedFuture.setFailure(ex);
                 }
             }
@@ -214,8 +213,7 @@ public class Robot {
                     for (AutoCloseable resource : configuration.getResources()) {
                         try {
                             resource.close();
-                        }
-                        catch (Exception e) {
+                        } catch (Exception e) {
                             // ignore
                         }
                     }
@@ -234,7 +232,8 @@ public class Robot {
                                     LOGGER.error("Caught exception releasing resources", e);
                                 }
                             } finally {
-                                disposedFuture.setSuccess();
+                                disposedFuture
+                                        .setFailure(new Throwable("Disposed due to shutdown of channel, not due to command"));
                             }
 
                         }
@@ -287,7 +286,6 @@ public class Robot {
                 }
             });
 
-
             // Bind Asynchronously
             ChannelFuture bindFuture = server.bindAsync();
 
@@ -317,8 +315,7 @@ public class Robot {
                         connectClient(clientResolver);
                     }
                 });
-            }
-            else {
+            } else {
                 connectClient(clientResolver);
             }
         }
@@ -347,8 +344,7 @@ public class Robot {
             }
             RegionInfo scriptInfo = progress.getScriptInfo();
             progress.addScriptFailure(scriptInfo);
-        }
-        else {
+        } else {
             // stopping the configuration will implicitly trigger the script complete listener
             // to handle incomplete script that is being aborted by canceling the finish future
 
@@ -392,8 +388,7 @@ public class Robot {
                 }
 
             });
-        }
-        else {
+        } else {
             // no race if not attached
             stopStreamAligned(pipeline);
         }
@@ -402,7 +397,7 @@ public class Robot {
     private void stopStreamAligned(final ChannelPipeline pipeline) {
         for (ChannelHandler handler : pipeline.toMap().values()) {
             // note: removing this handler can trigger script completion
-            //       which in turn can re-attempt to stop this pipeline
+            // which in turn can re-attempt to stop this pipeline
             pipeline.remove(handler);
         }
 
@@ -450,11 +445,11 @@ public class Robot {
             public void operationComplete(ChannelFuture connectFuture) throws Exception {
                 if (connectFuture.isCancelled()) {
                     // This is more that the connect never really fired, as in the case of a barrier, or the the connect
-                    // is still in process here, so an empty line annotates that it did not do a connect, an actual connect
+                    // is still in process here, so an empty line annotates that it did not do a connect, an actual
+                    // connect
                     // failure should fail the future
                     progress.addScriptFailure(regionInfo, "");
-                }
-                else if (!connectFuture.isSuccess()) {
+                } else if (!connectFuture.isSuccess()) {
                     Throwable cause = connectFuture.getCause();
                     String message = format("connect failed: %s", cause.getMessage());
                     progress.addScriptFailure(regionInfo, message);
@@ -475,8 +470,7 @@ public class Robot {
                     if (cause instanceof ScriptProgressException) {
                         ScriptProgressException exception = (ScriptProgressException) cause;
                         progress.addScriptFailure(exception.getRegionInfo(), exception.getMessage());
-                    }
-                    else {
+                    } else {
                         LOGGER.warn("Unexpected exception", cause);
                     }
                 }
@@ -499,8 +493,7 @@ public class Robot {
                 if (abortedFuture.isDone()) {
                     // abort complete, trigger finished future
                     finishedFuture.setSuccess();
-                }
-                else {
+                } else {
                     // execution complete, trigger finished future
                     finishedFuture.setSuccess();
                 }
@@ -531,8 +524,7 @@ public class Robot {
                 // close channel and avoid warning logged by default exceptionCaught implementation
                 Channel channel = ctx.getChannel();
                 channel.close();
-            }
-            else {
+            } else {
                 // log exception during close
                 super.exceptionCaught(ctx, e);
             }
