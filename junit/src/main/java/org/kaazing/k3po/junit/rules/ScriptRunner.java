@@ -128,14 +128,12 @@ final class ScriptRunner implements Callable<ScriptPair> {
                         break;
                     case STARTED:
                         break;
-                        // DPW TODO combine this into one command
                     case NOTIFIED:
                         NotifiedEvent notifiedEvent = (NotifiedEvent) event;
                         String barrier = notifiedEvent.getBarrier();
                         BarrierStateMachine stateMachine = barriers.get(barrier);
                         stateMachine.notified();
                         break;
-                        // DPW TODO combine this into one command
                     case ERROR:
                         ErrorEvent error = (ErrorEvent) event;
                         throw new SpecificationException(format("%s:%s", error.getSummary(), error.getDescription()));
@@ -170,7 +168,6 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
         } finally {
             latch.notifyFinished();
-            controller.disconnect();
         }
     }
 
@@ -311,6 +308,25 @@ final class ScriptRunner implements Callable<ScriptPair> {
                 }
                 stateListeners.add(stateListener);
             }
+        }
+    }
+
+    public void dispose() throws Exception {
+        controller.dispose();
+        try {
+            // Give 5 seconds for cleanup to occur
+            CommandEvent event = controller.readEvent(5000, MILLISECONDS);
+
+            // ensure it is the correct event
+            switch (event.getKind()) {
+            case DISPOSED:
+                latch.notifyDisposed();
+                break;
+            default:
+                throw new IllegalArgumentException("Unrecognized event kind: " + event.getKind());
+            }
+        } finally {
+            controller.disconnect();
         }
     }
 }

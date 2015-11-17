@@ -16,24 +16,24 @@
 
 package org.kaazing.k3po.driver.internal.control;
 
-public abstract class ControlMessage {
+import static org.kaazing.k3po.driver.internal.control.ControlMessage.Kind.DISPOSE;
 
-    public enum Kind {
-        PREPARE, PREPARED, START, STARTED, ERROR, ABORT, FINISHED, AWAIT, NOTIFY, NOTIFIED, DISPOSE, DISPOSED
-    }
+import java.util.Objects;
 
-    public abstract Kind getKind();
+public class DisposeMessage extends ControlMessage {
 
-    public abstract int hashCode();
-
-    public abstract boolean equals(Object obj);
-
-    protected final boolean equalTo(ControlMessage that) {
-        return this.getKind() == that.getKind();
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getKind());
     }
 
     @Override
-    public String toString() {
-        return String.format("%s", getKind());
+    public boolean equals(Object obj) {
+        return (this == obj) || (obj instanceof DisposeMessage) && equalTo((DisposeMessage) obj);
+    }
+
+    @Override
+    public Kind getKind() {
+        return DISPOSE;
     }
 }

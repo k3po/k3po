@@ -48,6 +48,9 @@ public class ControlUpstreamHandler extends SimpleChannelUpstreamHandler {
         case AWAIT:
             awaitReceived(ctx, e);
             break;
+        case DISPOSE:
+            disposeReceived(ctx, e);
+            break;
         default:
             throw new IllegalArgumentException(String.format("Unexpected control message: %s", message.getKind()));
         }
@@ -71,6 +74,10 @@ public class ControlUpstreamHandler extends SimpleChannelUpstreamHandler {
     }
 
     public void awaitReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+        super.messageReceived(ctx, e);
+    }
+
+    public void disposeReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         super.messageReceived(ctx, e);
     }
 

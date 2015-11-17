@@ -19,62 +19,31 @@
  * under the License.
  */
 
-package org.kaazing.k3po.control.internal.command;
+package org.kaazing.k3po.control.internal.event;
+
+import static org.kaazing.k3po.control.internal.event.CommandEvent.Kind.DISPOSED;
 
 import java.util.Objects;
 
 /**
- * Abstract class for a Command to the robot.
+ * StartedEvent.
  *
  */
-public abstract class Command {
-
-    /**
-     * Kind of Command.
-     *
-     */
-    public enum Kind {
-        /**
-         * Prepare command.
-         */
-        PREPARE,
-        /**
-         * Start command.
-         */
-        START,
-        /**
-         * Abort command.
-         */
-        ABORT,
-        /**
-         * Await command.
-         */
-        AWAIT,
-        /**
-         * Notify command.
-         */
-        NOTIFY,
-        /**
-         * Dispose command
-         */
-        DISPOSE
-    }
-
-    /**
-     * @return Kind
-     */
-    public abstract Kind getKind();
+public final class DisposedEvent extends CommandEvent {
 
     @Override
-    public abstract int hashCode();
+    public Kind getKind() {
+        return DISPOSED;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getKind());
+    }
 
     @Override
     public boolean equals(Object o) {
-        return o == this || o instanceof Command && equalTo((Command) o);
-    }
-
-    protected final boolean equalTo(Command that) {
-        return Objects.equals(this.getKind(), that.getKind());
+        return o == this || o instanceof DisposedEvent && equalTo((DisposedEvent) o);
     }
 
 }

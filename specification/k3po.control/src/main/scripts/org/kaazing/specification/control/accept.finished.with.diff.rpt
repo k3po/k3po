@@ -50,5 +50,11 @@ write "write \"echo\"\n"
 write "read \"huh?\"\n"
 write "closed\n"
 
+read "DISPOSE\n"
+read "\n"
+
+write "DISPOSED\n"
+write "\n"
+
 close
 closed
