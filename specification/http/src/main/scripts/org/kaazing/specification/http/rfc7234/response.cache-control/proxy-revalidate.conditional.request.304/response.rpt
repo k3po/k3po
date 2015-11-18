@@ -1,5 +1,4 @@
-property lastModified1 "Mon, 1 Jan 2015 01:23:45 GMT"
-property lastModified2 "Mon, 1 Jan 2015 01:23:55 GMT"
+property entityTag "\"r2d2xxxx\""
 
 accept http://localhost:8000/index.html
 accepted
@@ -10,7 +9,8 @@ read version "HTTP/1.1"
 read header "Host" "localhost:8000"
 
 write status "200" "OK"
-write header "Last-Modified" ${lastModified1}
+write header "ETag" ${entityTag}
+write header "Cache-Control" "s-maxage=0, proxy-revalidate"
 write header content-length
 write flush
 
@@ -20,8 +20,9 @@ connected
 read method "GET"
 read version "HTTP/1.1"
 read header "Host" "localhost:8000"
-read header "If-Modified-Since" ${lastModified1}
+read header "If-None-Match" ${entityTag}
 
 write status "304" "Not Modified"
-write header "Last-Modified" ${lastModified2}
+write header "ETag" ${entityTag}
+write header "Cache-Control" "s-maxage=10, proxy-revalidate"
 write close

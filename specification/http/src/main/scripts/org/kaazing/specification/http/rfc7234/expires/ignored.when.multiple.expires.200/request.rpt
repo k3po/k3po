@@ -8,20 +8,18 @@ write header content-length
 write flush
 
 read status "200" /.*/
-read header "Last-Modified" /(?<lastModified>.+)/
-read notify LAST_MODIFIED
+read header "Expires" /.+/
+read header "Expires" /.+/
+read notify EXPIRES
 
-connect await LAST_MODIFIED
+connect await EXPIRES
 connect http://localhost:8000/index.html
 connected
 
-write method "HEAD"
+write method "GET"
 write version "HTTP/1.1"
 write header host
-write header "If-Modified-Since" ${lastModified}
 write header content-length
 write flush
 
-read status "304" /.*/
-read header "Last-Modified" /.+/
-read closed
+read status "200" /.*/

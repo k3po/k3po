@@ -1,0 +1,30 @@
+property timeAtWritingFirstResponse "Wed, 18 Nov 2015 01:10:45 GMT"
+property expires1 "Wed, 18 Nov 2015 01:10:55 GMT"
+property timeAtWritingSecondResponse "Wed, 18 Nov 2015 01:11:00 GMT"
+property expires2 "Wed, 18 Nov 2015 01:11:05 GMT"
+
+accept http://localhost:8000/index.html
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+
+write status "200" "OK"
+write header "Date" ${timeAtWritingFirstResponse}
+write header "Expires" ${expires1}
+write header content-length
+write flush
+
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+
+write status "200" "OK"
+write header "Date" ${timeAtWritingSecondResponse}
+write header "Expires" ${expires2}
+write flush

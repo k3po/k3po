@@ -45,59 +45,67 @@ public class CacheControlInResponseIT {
     @Specification({
         "max-age.fresh.response.from.cache/request",
         "max-age.fresh.response.from.cache/response" })
-    public void shouldReceiveStoredResponseFromCacheWhenResponseIsFresh() throws Exception {
+    public void shouldReceiveCachedResponseWithMaxAgeWhenCachedResponseIsFresh() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "max-age.stale.response.resource.modified.200/request",
-        "max-age.stale.response.resource.modified.200/response" })
-    public void shouldReceiveOKForStaleResponseWhenResourceModified() throws Exception {
+        "max-age.stale.response.conditional.request.304/request",
+        "max-age.stale.response.conditional.request.304/response" })
+    public void shouldReceiveNotModifiedWhenCachedResponseIsStaleForConditionalRequestWithMaxAge() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "max-age.stale.response.resource.unmodified.304/request",
-        "max-age.stale.response.resource.unmodified.304/response" })
-    public void shouldReceiveNotModifiedForStaleResponseWhenResourceUnmodified() throws Exception {
+        "max-age.stale.response.unconditional.request.200/request",
+        "max-age.stale.response.unconditional.request.200/response" })
+    public void shouldReceiveOKWhenCachedResponseIsStaleForUnconditionalRequestWithMaxAge() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "must-revalidate.resource.modified.200/request",
-        "must-revalidate.resource.modified.200/response" })
-    public void shouldReceiveOKForStaleResponseWithMustRevalidateWhenResourceModified()
-    		throws Exception {
+        "must-revalidate.conditional.request.304/request",
+        "must-revalidate.conditional.request.304/response" })
+    public void shouldReceiveNotModifiedWhenCachedResponseIsStaleForConditionalRequestWithMustRevalidate()
+            throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "must-revalidate.resource.unmodified.304/request",
-        "must-revalidate.resource.unmodified.304/response" })
-    public void shouldReceiveNotModifiedForStaleResponseWithMustRevalidateWhenResourceUnmodified()
-    		throws Exception {
+        "must-revalidate.unconditional.request.200/request",
+        "must-revalidate.unconditional.request.200/response" })
+    public void shouldReceiveOKWhenCachedResponseIsStaleForUnconditionalRequestWithMustRevalidate()
+            throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "no-cache.resource.modified.200/request",
-        "no-cache.resource.modified.200/response" })
-    public void shouldReceiveOKWithNoCacheWhenResourceModified()
-    		throws Exception {
+        "no-cache.conditional.request.304/request",
+        "no-cache.conditional.request.304/response" })
+    public void shouldReceiveNotModifiedWithNoCacheForConditionalRequest()
+            throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "no-cache.resource.unmodified.304/request",
-        "no-cache.resource.unmodified.304/response" })
-    public void shouldReceiveNotModifiedWithNoCacheWhenResourceModified()
-    		throws Exception {
+        "no-cache.unconditional.request.200/request",
+        "no-cache.unconditional.request.200/response" })
+    public void shouldReceiveOKWithNoCacheForUnconditionalRequest()
+            throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "no-transform/request",
+        "no-transform/response" })
+    public void shouldReceiveUntransformedCachedResponse() throws Exception {
         k3po.finish();
     }
 
@@ -105,41 +113,41 @@ public class CacheControlInResponseIT {
     @Specification({
         "private.fresh.response.from.cache/request",
         "private.fresh.response.from.cache/response" })
-    public void shouldReceiveStoredResponseFromCacheWithPrivateWhenResponseIsFresh() throws Exception {
+    public void shouldReceiveCachedResponseWithPrivateWhenCachedResponseIsFresh() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "private.stale.response.resource.modified.200/request",
-        "private.stale.response.resource.modified.200/response" })
-    public void shouldReceiveOKForStaleResponseWithPrivateWhenResourceModified() throws Exception {
+        "private.stale.response.conditional.request.304/request",
+        "private.stale.response.conditional.request.304/response" })
+    public void shouldReceiveNotModifiedWhenCachedResponseIsStaleForConditionalRequestWithPrivate() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "private.stale.response.resource.unmodified.304/request",
-        "private.stale.response.resource.unmodified.304/response" })
-    public void shouldReceiveNotModifiedForStaleResponseWithPrivateWhenResourceUnmodified() throws Exception {
+        "private.stale.response.unconditional.request.200/request",
+        "private.stale.response.unconditional.request.200/response" })
+    public void shouldReceiveOKWhenCachedResponseIsStaleForUnconditionalRequestWithPrivate() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "proxy-revalidate.resource.modified.200/request",
-        "proxy-revalidate.resource.modified.200/response" })
-    public void shouldReceiveOKForStaleResponseWithProxyRevalidateWhenResourceModified()
-    		throws Exception {
+        "proxy-revalidate.conditional.request.304/request",
+        "proxy-revalidate.conditional.request.304/response" })
+    public void shouldReceiveNotModifiedWhenCachedResponseIsStaleForConditionalRequestWithProxyRevalidate()
+            throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "proxy-revalidate.resource.unmodified.304/request",
-        "proxy-revalidate.resource.unmodified.304/response" })
-    public void shouldReceiveNotModifiedForStaleResponseWithProxyRevalidateWhenResourceUnmodified()
-    		throws Exception {
+        "proxy-revalidate.unconditional.request.200/request",
+        "proxy-revalidate.unconditional.request.200/response" })
+    public void shouldReceiveOKWhenCachedResponseIsStaleForUnconditionalRequestWithProxyRevalidate()
+            throws Exception {
         k3po.finish();
     }
 
@@ -147,23 +155,23 @@ public class CacheControlInResponseIT {
     @Specification({
         "public.fresh.response.from.cache/request",
         "public.fresh.response.from.cache/response" })
-    public void shouldReceiveStoredResponseFromCacheWithPublicWhenResponseIsFresh() throws Exception {
+    public void shouldReceiveCachedResponseWithPublicWhenCachedResponseIsFresh() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "public.stale.response.resource.modified.200/request",
-        "public.stale.response.resource.modified.200/response" })
-    public void shouldReceiveOKForStaleResponseWithPublicWhenResourceModified() throws Exception {
+        "public.stale.response.conditional.request.304/request",
+        "public.stale.response.conditional.request.304/response" })
+    public void shouldReceiveNotModifiedWhenCachedResponseIsStaleForConditionalRequestWithPublic() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "public.stale.response.resource.unmodified.304/request",
-        "public.stale.response.resource.unmodified.304/response" })
-    public void shouldReceiveNotModifiedForStaleResponseWithPublicWhenResourceUnmodified() throws Exception {
+        "public.stale.response.unconditional.request.200/request",
+        "public.stale.response.unconditional.request.200/response" })
+    public void shouldReceiveOKWhenCachedResponseIsStaleForUnconditionalRequestWithPublic() throws Exception {
         k3po.finish();
     }
 
@@ -171,24 +179,23 @@ public class CacheControlInResponseIT {
     @Specification({
         "s-maxage.fresh.response.from.cache/request",
         "s-maxage.fresh.response.from.cache/response" })
-    public void shouldReceiveStoredResponseFromCacheWithSharedMaxageWhenResponseIsFresh() throws Exception {
+    public void shouldReceiveCachedResponseWithSharedMaxAgeWhenCachedResponseIsFresh() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "s-maxage.stale.response.resource.modified.200/request",
-        "s-maxage.stale.response.resource.modified.200/response" })
-    public void shouldReceiveOKForStaleResponseWithSharedMaxageWhenResourceModified() throws Exception {
+        "s-maxage.stale.response.conditional.request.304/request",
+        "s-maxage.stale.response.conditional.request.304/response" })
+    public void shouldReceiveNotModifiedWhenCachedResponseIsStaleForConditionalRequestWithSharedMaxAge() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "s-maxage.stale.response.resource.unmodified.304/request",
-        "s-maxage.stale.response.resource.unmodified.304/response" })
-    public void shouldReceiveNotModifiedForStaleResponseWithSharedMaxageWhenResourceUnmodified() throws Exception {
+        "s-maxage.stale.response.unconditional.request.200/request",
+        "s-maxage.stale.response.unconditional.request.200/response" })
+    public void shouldReceiveOKWhenCachedResponseIsStaleForUnconditionalRequestWithSharedMaxAge() throws Exception {
         k3po.finish();
     }
-
 }

@@ -1,6 +1,3 @@
-property lastModified1 "Mon, 1 Jan 2015 01:23:45 GMT"
-property lastModified2 "Mon, 1 Jan 2015 01:23:55 GMT"
-
 accept http://localhost:8000/index.html
 accepted
 connected
@@ -10,7 +7,7 @@ read version "HTTP/1.1"
 read header "Host" "localhost:8000"
 
 write status "200" "OK"
-write header "Last-Modified" ${lastModified1}
+write header "Cache-Control" "max-age=0, private"
 write header content-length
 write flush
 
@@ -20,8 +17,7 @@ connected
 read method "GET"
 read version "HTTP/1.1"
 read header "Host" "localhost:8000"
-read header "If-Modified-Since" ${lastModified1}
 
-write status "304" "Not Modified"
-write header "Last-Modified" ${lastModified2}
-write close
+write status "200" "OK"
+write header "Cache-Control" "max-age=10, private"
+write flush
