@@ -54,4 +54,9 @@ public class AstLocationLiteral extends AstLocation {
     protected boolean equalTo(AstLocationLiteral that) {
         return AstUtil.equivalent(this.value, that.value);
     }
+
+    @Override
+    protected void describe(StringBuilder buf) {
+        buf.append(value);
+    }
 }

@@ -30,8 +30,8 @@ public class UnbindHandler extends AbstractCommandHandler {
     }
 
     @Override
-    public String toString() {
-        return "unbind";
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("unbind");
     }
 
 }

@@ -400,7 +400,17 @@ public class Robot {
     }
 
     private void stopStreamAligned(final ChannelPipeline pipeline) {
+
+        LOGGER.debug("Stopping pipeline");
+
         for (ChannelHandler handler : pipeline.toMap().values()) {
+
+            if (LOGGER.isDebugEnabled()) {
+                Channel channel = pipeline.getChannel();
+                int id = (channel != null) ? channel.getId() : 0;
+                LOGGER.debug(format("[id: 0x%08x] %s", id, handler));
+            }
+
             // note: removing this handler can trigger script completion
             // which in turn can re-attempt to stop this pipeline
             pipeline.remove(handler);
@@ -469,9 +479,6 @@ public class Robot {
             public void operationComplete(ChannelFuture completionFuture) throws Exception {
                 if (!completionFuture.isSuccess()) {
                     Throwable cause = completionFuture.getCause();
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("Unexpected exception: " + cause + " " + cause.getMessage());
-                    }
                     if (cause instanceof ScriptProgressException) {
                         ScriptProgressException exception = (ScriptProgressException) cause;
                         progress.addScriptFailure(exception.getRegionInfo(), exception.getMessage());
@@ -533,6 +540,11 @@ public class Robot {
                 // log exception during close
                 super.exceptionCaught(ctx, e);
             }
+        }
+
+        @Override
+        public String toString() {
+            return "close-on-exception";
         }
     }
 

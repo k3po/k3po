@@ -34,8 +34,8 @@ public class OutputShutdownHandler extends AbstractEventHandler {
     }
 
     @Override
-    public String toString() {
-        return "output shutdown";
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("output shutdown");
     }
 
 }

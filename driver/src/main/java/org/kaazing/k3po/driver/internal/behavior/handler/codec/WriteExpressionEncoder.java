@@ -41,10 +41,6 @@ public class WriteExpressionEncoder implements MessageEncoder {
     @Override
     public ChannelBuffer encode() {
 
-        final boolean isDebugEnabled = LOGGER.isDebugEnabled();
-        if (isDebugEnabled) {
-            LOGGER.debug("Getting expression value to write from " + context);
-        }
         final byte[] value;
         // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
         synchronized (context) {
@@ -55,7 +51,7 @@ public class WriteExpressionEncoder implements MessageEncoder {
         if (value != null) {
             result = wrappedBuffer(value);
         } else {
-            if (isDebugEnabled) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Value of expression is null. Encoding as a 0 length buffer");
             }
             result = buffer(0);
@@ -65,7 +61,7 @@ public class WriteExpressionEncoder implements MessageEncoder {
 
     @Override
     public String toString() {
-        return expression.toString();
+        return expression.getExpressionString();
     }
 
 }

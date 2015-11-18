@@ -154,7 +154,7 @@ public final class AgronaWorker implements Runnable {
             UnsafeBuffer srcBuffer = new UnsafeBuffer(new byte[readableBytes - SIZE_OF_INT]);
             int msgTypeId = writeBuffer.getInt(0);
             writeBuffer.getBytes(SIZE_OF_INT, srcBuffer.byteArray());
-            writeBuffer.resetWriterIndex();
+            writeBuffer.writerIndex(0);
 
             AgronaChannelAddress remoteAddress = channel.getRemoteAddress();
             ChannelWriter writer = remoteAddress.getWriter();
@@ -181,11 +181,16 @@ public final class AgronaWorker implements Runnable {
 
         @Override
         public void run() {
-            ChannelBuffer writeBuffer = channel.writeBuffer;
-            int readableBytes = buffer.readableBytes();
-            writeBuffer.writeBytes(buffer);
-            future.setSuccess();
-            fireWriteComplete(channel, readableBytes);
+            try {
+                ChannelBuffer writeBuffer = channel.writeBuffer;
+                int readableBytes = buffer.readableBytes();
+                writeBuffer.writeBytes(buffer);
+                future.setSuccess();
+                fireWriteComplete(channel, readableBytes);
+            }
+            catch (ChannelException ex) {
+                future.setFailure(ex);
+            }
         }
 
     }
@@ -253,12 +258,17 @@ public final class AgronaWorker implements Runnable {
 
         @Override
         public void run() {
-            flushWriteBufferIfNecessary(channel);
-            future.setSuccess();
-            if (channel.setClosed()) {
-                fireChannelDisconnected(channel);
-                fireChannelUnbound(channel);
-                fireChannelClosed(channel);
+            try {
+                flushWriteBufferIfNecessary(channel);
+                future.setSuccess();
+                if (channel.setClosed()) {
+                    fireChannelDisconnected(channel);
+                    fireChannelUnbound(channel);
+                    fireChannelClosed(channel);
+                }
+            }
+            catch (ChannelException ex) {
+                future.setFailure(ex);
             }
         }
 

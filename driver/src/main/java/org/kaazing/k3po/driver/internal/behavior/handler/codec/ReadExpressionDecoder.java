@@ -23,8 +23,6 @@ import java.util.Arrays;
 import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.behavior.ScriptProgressException;
 import org.kaazing.k3po.driver.internal.util.Utils;
 import org.kaazing.k3po.lang.internal.RegionInfo;
@@ -34,7 +32,6 @@ public class ReadExpressionDecoder extends MessageDecoder {
 
     private final ValueExpression expression;
     private final ExpressionContext environment;
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ReadExpressionDecoder.class);
 
     public ReadExpressionDecoder(RegionInfo regionInfo, ValueExpression expression, ExpressionContext environment) {
         super(regionInfo);
@@ -44,16 +41,12 @@ public class ReadExpressionDecoder extends MessageDecoder {
 
     @Override
     public String toString() {
-        return expression.toString();
+        return expression.getExpressionString();
     }
 
     @Override
     protected Object decodeBuffer(ChannelBuffer buffer) throws Exception {
 
-        final boolean isDebugEnabled = LOGGER.isDebugEnabled();
-        if (isDebugEnabled) {
-            LOGGER.debug("Getting value to read from " + environment);
-        }
         final byte[] expected;
         // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
         synchronized (environment) {

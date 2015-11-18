@@ -31,7 +31,7 @@ public class FlushHandler extends AbstractCommandHandler {
     }
 
     @Override
-    public String toString() {
-        return "write flush";
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("write flush");
     }
 }
