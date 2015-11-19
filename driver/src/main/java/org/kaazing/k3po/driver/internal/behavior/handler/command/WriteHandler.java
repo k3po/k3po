@@ -16,7 +16,6 @@
 
 package org.kaazing.k3po.driver.internal.behavior.handler.command;
 
-import static java.lang.String.format;
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
 import static org.jboss.netty.channel.Channels.write;
@@ -66,8 +65,13 @@ public class WriteHandler extends AbstractCommandHandler {
     }
 
     @Override
-    public String toString() {
-        return format("write %s", encoders);
+    protected StringBuilder describe(StringBuilder sb) {
+        sb.append("write ");
+        for (MessageEncoder encoder : encoders) {
+            sb.append(encoder).append(' ');
+        }
+        sb.setLength(sb.length() - 1);
+        return sb;
     }
 
 }

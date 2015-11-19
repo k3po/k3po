@@ -37,7 +37,7 @@ public class ConnectedHandler extends AbstractEventHandler {
     }
 
     @Override
-    public String toString() {
-        return "connected";
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("connected");
     }
 }

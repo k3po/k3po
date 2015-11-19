@@ -37,7 +37,7 @@ public class UnboundHandler extends AbstractEventHandler {
     }
 
     @Override
-    public String toString() {
-        return "unbound";
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("unbound");
     }
 }

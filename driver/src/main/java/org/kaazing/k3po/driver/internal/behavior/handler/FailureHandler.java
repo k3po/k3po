@@ -33,4 +33,8 @@ public class FailureHandler extends ExecutionHandler {
         super.handleUpstream1(ctx, e);
     }
 
+    @Override
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("failure");
+    }
 }

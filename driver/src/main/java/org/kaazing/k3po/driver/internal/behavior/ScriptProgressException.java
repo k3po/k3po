@@ -18,21 +18,15 @@ package org.kaazing.k3po.driver.internal.behavior;
 
 import static java.util.Objects.requireNonNull;
 
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 
 @SuppressWarnings("serial")
 public class ScriptProgressException extends Exception {
 
     private final RegionInfo regionInfo;
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ScriptProgressException.class);
 
     public ScriptProgressException(RegionInfo regionInfo, String message) {
         super(message);
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("ScriptProgressException with " + message);
-        }
         this.regionInfo = requireNonNull(regionInfo);
     }
 

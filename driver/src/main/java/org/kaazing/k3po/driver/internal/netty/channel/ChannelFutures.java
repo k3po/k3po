@@ -14,24 +14,31 @@
  * limitations under the License.
  */
 
-package org.kaazing.k3po.driver.internal.behavior.handler.command;
+package org.kaazing.k3po.driver.internal.netty.channel;
 
 import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.Channels;
 
-public class CloseHandler extends AbstractCommandHandler {
+public final class ChannelFutures {
 
-    @Override
-    protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
-
-        ChannelFuture handlerFuture = getHandlerFuture();
-        Channels.close(ctx, handlerFuture);
+    private ChannelFutures() {
+        // no instances
     }
 
-    @Override
-    protected StringBuilder describe(StringBuilder sb) {
-        return sb.append("close");
+    public static String describeFuture(ChannelFuture future) {
+        if (future == null) {
+            return "null";
+        }
+        else if (future.isSuccess()) {
+            return "success";
+        }
+        else if (future.isCancelled()) {
+            return "cancelled";
+        }
+        else if (future.getCause() != null) {
+            return "failed";
+        }
+        else {
+            return "incomplete";
+        }
     }
-
 }

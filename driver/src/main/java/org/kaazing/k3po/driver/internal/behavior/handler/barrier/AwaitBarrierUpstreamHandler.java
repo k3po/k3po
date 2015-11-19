@@ -88,8 +88,8 @@ public class AwaitBarrierUpstreamHandler extends AbstractBarrierHandler implemen
     }
 
     @Override
-    public String toString() {
-        return format("read await %s", getBarrier());
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append(format("read await %s", getBarrier()));
     }
 
     @Override

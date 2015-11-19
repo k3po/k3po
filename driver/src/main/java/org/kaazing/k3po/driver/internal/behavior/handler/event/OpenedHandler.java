@@ -37,7 +37,7 @@ public class OpenedHandler extends AbstractEventHandler {
     }
 
     @Override
-    public String toString() {
-        return "opened";
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("opened");
     }
 }
