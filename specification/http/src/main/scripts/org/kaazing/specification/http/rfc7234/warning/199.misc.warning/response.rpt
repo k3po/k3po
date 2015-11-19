@@ -1,0 +1,14 @@
+property warning "\"Missing mandatory HTTP/1.1 header 'Host'\" "
+property date "\"Mon, 1 Jan 2015 01:23:45 GMT\""
+
+accept http://localhost:8000/index.html
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+
+write status "400" "Bad Request"
+write header "Warning" "199 - " ${warning} ${date}
+write header content-length
+write flush
