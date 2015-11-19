@@ -27,6 +27,7 @@ import static org.kaazing.k3po.junit.rules.ScriptRunner.BarrierState.INITIAL;
 import static org.kaazing.k3po.junit.rules.ScriptRunner.BarrierState.NOTIFIED;
 import static org.kaazing.k3po.junit.rules.ScriptRunner.BarrierState.NOTIFYING;
 
+import java.lang.management.ManagementFactory;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -56,6 +57,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
     private volatile boolean abortScheduled;
     private volatile Map<String, BarrierStateMachine> barriers;
+    private static final int DISPOSE_TIMEOUT = isDebugging() ? 0: 5000;
 
     ScriptRunner(URL controlURL, List<String> names, Latch latch) {
 
@@ -315,7 +317,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
         controller.dispose();
         try {
             // Give 5 seconds for cleanup to occur
-            CommandEvent event = controller.readEvent(5000, MILLISECONDS);
+            CommandEvent event = controller.readEvent(DISPOSE_TIMEOUT, MILLISECONDS);
 
             // ensure it is the correct event
             switch (event.getKind()) {
@@ -328,5 +330,17 @@ final class ScriptRunner implements Callable<ScriptPair> {
         } finally {
             controller.disconnect();
         }
+    }
+
+    private static boolean isDebugging() {
+        List<String> arguments = ManagementFactory.getRuntimeMXBean().getInputArguments();
+        for (final String argument : arguments) {
+            if ("-Xdebug".equals(argument)) {
+                return true;
+            } else if (argument.startsWith("-agentlib:jdwp")) {
+                return true;
+            }
+        }
+        return false;
     }
 }
