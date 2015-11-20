@@ -18,7 +18,6 @@ write "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
 write "Connection: Upgrade\r\n"
 write "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n"
 write "Sec-WebSocket-Accept: TXCKJSpylVJ7v9ZGLGbt58vypzE=\r\n"
-# The 4 control bytes for ping-pong extension are 0x01010102:
 write "Sec-WebSocket-Extensions: x-kaazing-ping-pong; 00"
 write "\r\n"
 write "Server: Kaazing Gateway\r\n"
