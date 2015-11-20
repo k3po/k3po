@@ -37,7 +37,7 @@ public class BoundHandler extends AbstractEventHandler {
     }
 
     @Override
-    public String toString() {
-        return "bound";
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("bound");
     }
 }

@@ -57,8 +57,8 @@ public class WriteConfigHandler extends AbstractCommandHandler {
     }
 
     @Override
-    public String toString() {
-        return format("write config %s", encoders);
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append(format("write config %s", encoders));
     }
 
 }

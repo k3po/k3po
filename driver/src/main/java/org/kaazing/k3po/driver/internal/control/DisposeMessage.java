@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-package org.kaazing.k3po.driver.internal.behavior.handler.command;
+package org.kaazing.k3po.driver.internal.control;
 
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.Channels;
+import static org.kaazing.k3po.driver.internal.control.ControlMessage.Kind.DISPOSE;
 
-public class CloseHandler extends AbstractCommandHandler {
+import java.util.Objects;
+
+public class DisposeMessage extends ControlMessage {
 
     @Override
-    protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
-
-        ChannelFuture handlerFuture = getHandlerFuture();
-        Channels.close(ctx, handlerFuture);
+    public int hashCode() {
+        return Objects.hashCode(getKind());
     }
 
     @Override
-    protected StringBuilder describe(StringBuilder sb) {
-        return sb.append("close");
+    public boolean equals(Object obj) {
+        return (this == obj) || (obj instanceof DisposeMessage) && equalTo((DisposeMessage) obj);
     }
 
+    @Override
+    public Kind getKind() {
+        return DISPOSE;
+    }
 }

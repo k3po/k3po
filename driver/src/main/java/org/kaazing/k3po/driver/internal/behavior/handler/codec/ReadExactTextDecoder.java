@@ -72,7 +72,7 @@ public class ReadExactTextDecoder extends MessageDecoder {
     @Override
     public String toString() {
         // note: assumes charset UTF-8
-        return expected.toString(UTF_8);
+        return String.format("\"%s\"", expected.toString(UTF_8));
     }
 
     // unit tests

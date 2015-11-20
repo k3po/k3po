@@ -57,8 +57,8 @@ public class NotifyBarrierHandler extends AbstractBarrierHandler {
     }
 
     @Override
-    public String toString() {
-        return format("read|write notify %s", getBarrier());
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append(format("read|write notify %s", getBarrier()));
     }
 
 }

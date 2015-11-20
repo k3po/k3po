@@ -16,6 +16,8 @@
 
 package org.kaazing.k3po.driver.internal.behavior.handler.command;
 
+import static java.lang.String.format;
+
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
@@ -59,8 +61,8 @@ public class ReadOptionOffsetHandler extends AbstractCommandHandler {
     }
 
     @Override
-    public String toString() {
-        return "read option offset = " + offset;
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append(format("read option offset %d", offset));
     }
 
 }

@@ -124,7 +124,7 @@ public class K3poTestStatement extends Statement {
         } finally {
             // clean up the task if it is still running
             scriptFuture.cancel(true);
-            robot.destroy();
+            robot.dispose().await();
         }
     }
 

@@ -38,8 +38,8 @@ public class BindHandler extends AbstractCommandHandler {
     }
 
     @Override
-    public String toString() {
-        return "bind";
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("bind");
     }
 
 }
