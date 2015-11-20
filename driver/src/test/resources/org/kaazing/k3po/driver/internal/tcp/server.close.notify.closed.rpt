@@ -1,0 +1,31 @@
+# ============= request ==================
+connect tcp://127.0.0.1:8001
+connected
+
+read "Request"
+
+write "Response"
+
+read await SERVER_CLOSE_ISSUED
+
+closed
+
+# ============= response ==================
+accept tcp://127.0.0.1:8001
+accepted
+connected
+
+# Connection request
+write "Request"
+
+read "Response"
+
+read notify HANDSHAKE_COMPLETE
+
+write await HANDSHAKE_COMPLETE
+
+close
+
+write notify SERVER_CLOSE_ISSUED
+
+closed

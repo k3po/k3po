@@ -19,12 +19,15 @@ package org.kaazing.k3po.driver.internal.http;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
 import org.junit.rules.Timeout;
+import org.junit.runner.Description;
 import org.kaazing.k3po.driver.internal.test.utils.K3poTestRule;
 import org.kaazing.k3po.driver.internal.test.utils.TestSpecification;
 
@@ -34,11 +37,22 @@ public class HttpIT {
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
-    @Rule
-    public final ExpectedException expectedExceptions = ExpectedException.none();
+    private final TestWatcher executionLog = new TestWatcher() {
+        @Override
+        protected void starting(Description description) {
+            System.out.println(description + " starting");
+        }
+
+        @Override
+        protected void failed(Throwable e, Description description) {
+            System.out.println(description + " failed - " + e);
+        };
+    };
+
+    private final ExpectedException expectedExceptions = ExpectedException.none();
 
     @Rule
-    public final TestRule chain = outerRule(k3po).around(timeout);
+    public final TestRule chain = outerRule(executionLog).around(expectedExceptions).around(k3po).around(timeout);
 
     @Test
     @TestSpecification({
@@ -215,6 +229,14 @@ public class HttpIT {
         "http.accept.two.http.200",
         "tcp.connect.two.http.200.on.same.streams" })
     public void shouldAcceptMultipleHttpOnSameTcp() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Ignore("k3po#256")
+    @TestSpecification({
+        "server.closes.abruptly.client.closed" })
+    public void closedShouldWorkOrBeRejected() throws Exception {
         k3po.finish();
     }
 

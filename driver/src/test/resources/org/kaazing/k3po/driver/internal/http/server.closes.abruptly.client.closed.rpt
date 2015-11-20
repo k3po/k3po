@@ -1,0 +1,54 @@
+connect http://localhost:8080/index.html
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write close
+
+read status "504" /.+/
+read version "HTTP/1.1"
+
+#
+# client <--> proxy
+#
+accept http://localhost:8080/index.html
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8080"
+read notify GOT_REQUEST
+read closed
+
+write await GOT_RESPONSE
+write status "504" "Gateway Timeout"
+write version "HTTP/1.1"
+write close
+
+
+#
+# proxy <--> server (listening at localhost:8081)
+#
+connect await GOT_REQUEST
+connect http://localhost:8080/index.html
+        option transport tcp://localhost:8081
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write close
+
+write notify GOT_RESPONSE
+closed
+
+# server
+
+accept tcp://localhost:8081
+accepted
+connected
+
+close
+closed

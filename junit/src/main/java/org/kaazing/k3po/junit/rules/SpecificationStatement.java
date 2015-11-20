@@ -126,8 +126,12 @@ final class SpecificationStatement extends Statement {
 
             assertEquals("Specified behavior did not match", scripts.getExpectedScript(), scripts.getObservedScript());
         } finally {
-            // clean up the task if it is still running
-            scriptFuture.cancel(true);
+            try {
+                scriptRunner.dispose();
+            } finally {
+                // clean up the task if it is still running
+                scriptFuture.cancel(true);
+            }
         }
     }
 

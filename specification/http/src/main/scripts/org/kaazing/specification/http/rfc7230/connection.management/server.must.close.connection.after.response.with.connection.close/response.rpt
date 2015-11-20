@@ -3,6 +3,8 @@ accepted
 connected
 
 read "GET / HTTP/1.1\r\n"
+read /Host:.*\r\n/
+read "\r\n"
 
 write "HTTP/1.1 200 OK\r\n"
 write "Content-Type: text/plain\r\n"

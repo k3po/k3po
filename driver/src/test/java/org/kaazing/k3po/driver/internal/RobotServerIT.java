@@ -550,7 +550,6 @@ public class RobotServerIT {
         assertEquals(expectedFinished, finished);
         assertFalse(in.ready());
 
-        assertEquals(-1, accepted.getInputStream().read());
     }
 
     @Test
