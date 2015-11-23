@@ -17,7 +17,9 @@
 package org.kaazing.k3po.pcap.converter.internal.author;
 
 public class RptScriptsCreatorFailureException extends RuntimeException {
-   
+
+    private static final long serialVersionUID = 1L;
+
     public RptScriptsCreatorFailureException(String message) {
         super(message);
     }

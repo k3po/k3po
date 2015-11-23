@@ -17,6 +17,9 @@
 package org.kaazing.k3po.pcap.converter.internal.author.composer;
 
 public class ComposerTypeException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
     public ComposerTypeException(String message) {
         super(message);
     }
