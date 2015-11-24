@@ -16,7 +16,6 @@
 
 package org.kaazing.k3po.driver.internal.behavior.handler.event;
 
-import static java.lang.String.format;
 import static java.util.EnumSet.of;
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 import static org.jboss.netty.channel.Channels.fireMessageReceived;
@@ -64,8 +63,13 @@ public class ReadHandler extends AbstractEventHandler {
     }
 
     @Override
-    public String toString() {
-        return format("read %s", decoders);
+    protected StringBuilder describe(StringBuilder sb) {
+        sb.append("read ");
+        for (MessageDecoder decoder : decoders) {
+            sb.append(decoder).append(' ');
+        }
+        sb.setLength(sb.length() - 1);
+        return sb;
     }
 
     @Override

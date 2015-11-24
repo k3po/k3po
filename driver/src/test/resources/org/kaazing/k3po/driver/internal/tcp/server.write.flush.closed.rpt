@@ -1,0 +1,23 @@
+# ============= request ==================
+connect tcp://127.0.0.1:8001
+connected
+
+# Connection request
+write "Request"
+
+read "Response"
+
+close
+closed
+
+# ============= response ==================
+accept tcp://127.0.0.1:8001
+accepted
+connected
+
+read "Request"
+
+write "Response"
+write flush
+
+closed

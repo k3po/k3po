@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kaazing.specification.tcp.rfc2581;
+package org.kaazing.specification.tcp.rfc793;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
@@ -32,7 +32,7 @@ import org.kaazing.k3po.junit.rules.K3poRule;
  */
 public class TcpIT {
 
-    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/tcp/rfc793");
+    private final K3poRule k3po = new K3poRule();
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -41,57 +41,57 @@ public class TcpIT {
 
     @Test
     @Specification({
-        "establish.connection/tcp.client",
-        "establish.connection/tcp.server" })
-    public void establishConnection() throws Exception {
+        "establish.connection/client",
+        "establish.connection/server" })
+    public void shouldEstablishConnection() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "server.sent.data/tcp.client",
-        "server.sent.data/tcp.server" })
-    public void serverSentData() throws Exception {
+        "server.sent.data/client",
+        "server.sent.data/server" })
+    public void shouldReceiveServerSentData() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "client.sent.data/tcp.client",
-        "client.sent.data/tcp.server" })
-    public void clientSentData() throws Exception {
+        "client.sent.data/client",
+        "client.sent.data/server" })
+    public void shouldReceiveClientSentData() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "bidirectional.data/tcp.client",
-        "bidirectional.data/tcp.server" })
-    public void bidirectionalData() throws Exception {
+        "echo.data/client",
+        "echo.data/server" })
+    public void shouldEchoData() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "server.close/tcp.client",
-        "server.close/tcp.server" })
-    public void serverClose() throws Exception {
+        "server.close/client",
+        "server.close/server" })
+    public void shouldInitiateServerClose() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "client.close/tcp.client",
-        "client.close/tcp.server" })
-    public void clientClose() throws Exception {
+        "client.close/client",
+        "client.close/server" })
+    public void shouldInitiateClientClose() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "concurrent.connections/tcp.client",
-        "concurrent.connections/tcp.server" })
-    public void concurrentConnections() throws Exception {
+        "concurrent.connections/client",
+        "concurrent.connections/server" })
+    public void shouldEstablishConcurrentConnections() throws Exception {
         k3po.finish();
     }
 

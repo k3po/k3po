@@ -109,4 +109,11 @@ public class BehaviorIT {
         k3po.awaitBarrier("NOTIFYING_BARRIER");
         k3po.finish();
     }
+
+    @TestSpecification("delayed.client.close")
+    @Test
+    public void delayedClientClose() throws Exception {
+        k3po.notifyBarrier("CLOSE_REQUESTED");
+        k3po.finish();
+    }
 }

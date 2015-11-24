@@ -16,6 +16,8 @@
 
 package org.kaazing.k3po.driver.internal.netty.channel;
 
+import static java.util.Collections.unmodifiableCollection;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -47,9 +49,9 @@ public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChan
     private final AtomicInteger unnotified = new AtomicInteger();
     private volatile boolean constructionFinished;
     private final Collection<E> kids;
-    private int successCount;
-    private int failedCount;
-    private int cancelledCount;
+    private volatile int successCount;
+    private volatile int failedCount;
+    private volatile int cancelledCount;
     private final boolean failFast;
 
     public CompositeChannelFuture(Channel channel, Collection<E> kids) {
@@ -61,11 +63,11 @@ public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChan
         super(channel, false);
 
         this.failFast = failFast;
-        this.kids = new ArrayList<>(kids);
+        this.kids = unmodifiableCollection(new ArrayList<>(kids));
 
         for (E k : kids) {
-            k.addListener(listener);
             unnotified.incrementAndGet();
+            k.addListener(listener);
         }
         /*
          * Note that a composite with no children will be automatically set to
@@ -144,6 +146,29 @@ public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChan
             }
         });
 
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer s = new StringBuffer(super.toString());
+        s.append(" (");
+        s.append(futureStatus(this));
+        s.append(", " + kids.size() + " kids)");
+        for (E kid : kids) {
+            s.append("\n  ");
+            s.append(kid.toString());
+            s.append(" (");
+            s.append(futureStatus(kid));
+            s.append(")");
+        }
+        return s.toString();
+    }
+
+    private static String futureStatus(ChannelFuture future) {
+        return future.isSuccess() ? "success"
+                                   : future.isCancelled() ? "cancelled"
+                                   : future.getCause() == null ? "incomplete"
+                                   : "failed - " + future.getCause();
     }
 
     private boolean allTrue(CompositeTrue predicate) {

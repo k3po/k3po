@@ -165,15 +165,23 @@ public class AstAcceptNode extends AstStreamNode {
     @Override
     protected void describeLine(StringBuilder sb) {
         super.describeLine(sb);
-        sb.append("accept ");
-        sb.append(location);
+        sb.append("accept ").append(location);
 
         if (acceptName != null) {
-            sb.append(" as ");
-            sb.append(acceptName);
+            sb.append(" as ").append(acceptName);
         }
 
         sb.append('\n');
+
+        if (options != null) {
+            for (Map.Entry<String, Object> entry : options.entrySet()) {
+                sb.append("        option ")
+                  .append(entry.getKey())
+                  .append(" ")
+                  .append(entry.getValue())
+                  .append('\n');
+            }
+        }
     }
 
 }

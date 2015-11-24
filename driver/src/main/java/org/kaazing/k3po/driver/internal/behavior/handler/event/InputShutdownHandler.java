@@ -34,8 +34,8 @@ public class InputShutdownHandler extends AbstractEventHandler {
     }
 
     @Override
-    public String toString() {
-        return "input shutdown";
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("input shutdown");
     }
 
 }

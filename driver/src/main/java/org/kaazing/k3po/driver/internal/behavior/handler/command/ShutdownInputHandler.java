@@ -29,8 +29,8 @@ public class ShutdownInputHandler extends AbstractCommandHandler {
     }
 
     @Override
-    public String toString() {
-        return "read close";
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("read close");
     }
 
 }

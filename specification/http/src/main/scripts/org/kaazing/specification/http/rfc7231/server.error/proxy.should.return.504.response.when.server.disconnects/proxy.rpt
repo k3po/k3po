@@ -31,4 +31,3 @@ write header host
 write close
 
 write notify GOT_RESPONSE
-closed

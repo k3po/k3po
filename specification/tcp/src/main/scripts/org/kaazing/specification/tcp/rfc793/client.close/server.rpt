@@ -1,0 +1,9 @@
+accept tcp://localhost:8080
+       notify BOUND
+
+accepted
+connected
+
+read notify CLOSEABLE
+
+closed

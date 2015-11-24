@@ -1,4 +1,5 @@
 accept tcp://localhost:8080
+       notify BOUND
 
 # Stream 1
 accepted
