@@ -6,7 +6,8 @@ read method "GET"
 read version "HTTP/1.1"
 read header "Host" "localhost:8080"
 read header "Upgrade" /(?i:websocket)/
-read header "Connection" /(?i:Upgrade)/
+# commented out as of now because bug: https://github.com/k3po/k3po/issues/53
+# read header "Connection" /(?i:Upgrade)/
 read header "Sec-WebSocket-Key" /(?<readKey>[a-zA-Z0-9+\/=]{24})/
 read header "Sec-WebSocket-Version" "13"
 
@@ -15,10 +16,12 @@ write version "HTTP/1.1"
 write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Accept" ${ws:handshakeHash(readKey)}
+write notify SERVER_READY_TO_READ
 
 read [0x81 0xfd] ([0..4] :readMask)
 read option mask ${readMask}
 read ([0..125] :server125)
 read option mask [0x00 0x00 0x00 0x00]
+read await CLIENT_READY_TO_READ
 
 write [0x81 0x7d] ${server125}

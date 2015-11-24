@@ -47,4 +47,17 @@ public class UtilsIT {
         k3po.finish();
     }
 
+    /**
+     * Tests all generic features of k3po, barriers, etc
+     * @throws Exception
+     */
+    @Test
+    @Specification({
+        "full.feature.test/client",
+        "full.feature.test/server" })
+    public void fullFeatureTest() throws Exception {
+        k3po.finish();
+    }
+
+
 }
