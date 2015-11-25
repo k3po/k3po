@@ -111,7 +111,6 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         if (origin != null) {
             try {
                 originScript = OriginScript.get(origin);
-                System.out.println(originScript);
             } catch (URISyntaxException e) {
                 throw new Exception("Could not find origin: ", e);
             }
