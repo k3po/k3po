@@ -34,8 +34,8 @@ public class FlushedHandler extends AbstractEventHandler {
     }
 
     @Override
-    public String toString() {
-        return "flushed";
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("flushed");
     }
 
 }

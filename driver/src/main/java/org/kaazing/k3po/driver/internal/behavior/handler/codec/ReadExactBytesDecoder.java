@@ -51,7 +51,7 @@ public class ReadExactBytesDecoder extends MessageDecoder {
 
     @Override
     public String toString() {
-        return byteArrayToString(expected.array());
+        return Utils.format(expected.array());
     }
 
     // unit tests

@@ -30,8 +30,8 @@ public class DisconnectHandler extends AbstractCommandHandler {
     }
 
     @Override
-    public String toString() {
-        return "disconnect";
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("disconnect");
     }
 
 }

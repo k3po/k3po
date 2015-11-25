@@ -22,12 +22,11 @@ public final class Utils {
 
     public static String byteArrayToString(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
-        // int count = 0;
-        for (byte b : bytes) {
-            // if( count % 2 == 0 ) {
-            // sb.append( " 0x");
-            // }
-            sb.append(String.format("0x%02x ", b & 0xff));
+        for (int i = 0; i < bytes.length; i++) {
+            if (i > 0) {
+                sb.append(' ');
+            }
+            sb.append(String.format("0x%02x ", bytes[i] & 0xff));
         }
 
         return sb.toString();

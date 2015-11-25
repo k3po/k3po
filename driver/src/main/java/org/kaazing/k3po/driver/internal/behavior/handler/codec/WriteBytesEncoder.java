@@ -17,9 +17,9 @@
 package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 
 import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
-import static org.kaazing.k3po.driver.internal.util.Utils.byteArrayToString;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.kaazing.k3po.driver.internal.util.Utils;
 
 public class WriteBytesEncoder implements MessageEncoder {
 
@@ -36,7 +36,7 @@ public class WriteBytesEncoder implements MessageEncoder {
 
     @Override
     public String toString() {
-        return byteArrayToString(bytes);
+        return Utils.format(bytes);
     }
 
 }

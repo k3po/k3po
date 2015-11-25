@@ -39,6 +39,6 @@ public class WriteTextEncoder implements MessageEncoder {
 
     @Override
     public String toString() {
-        return text;
+        return String.format("\"%s\"", text);
     }
 }

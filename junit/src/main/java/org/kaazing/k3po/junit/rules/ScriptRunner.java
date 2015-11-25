@@ -316,8 +316,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
     public void dispose() throws Exception {
         controller.dispose();
         try {
-            // Give 5 seconds for cleanup to occur
-            CommandEvent event = controller.readEvent(DISPOSE_TIMEOUT, MILLISECONDS);
+            CommandEvent event = controller.readEvent();
 
             // ensure it is the correct event
             switch (event.getKind()) {

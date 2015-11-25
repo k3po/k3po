@@ -38,7 +38,7 @@ public class ChildClosedHandler extends AbstractServerEventHandler {
     }
 
     @Override
-    public String toString() {
-        return "child closed";
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("child closed");
     }
 }

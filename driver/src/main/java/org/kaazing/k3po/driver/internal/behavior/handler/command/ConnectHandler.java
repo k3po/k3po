@@ -38,8 +38,8 @@ public class ConnectHandler extends AbstractCommandHandler {
     }
 
     @Override
-    public String toString() {
-        return "connect";
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("connect");
     }
 
 }

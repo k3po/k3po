@@ -105,8 +105,8 @@ public class AwaitBarrierDownstreamHandler extends AbstractBarrierHandler implem
     }
 
     @Override
-    public String toString() {
-        return format("write await %s", getBarrier());
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append(format("write await %s", getBarrier()));
     }
 
     boolean hasQueuedChannelEvents() {

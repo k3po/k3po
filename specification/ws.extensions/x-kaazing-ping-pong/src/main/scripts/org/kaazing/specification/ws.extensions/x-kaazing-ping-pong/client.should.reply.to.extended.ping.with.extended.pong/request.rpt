@@ -18,16 +18,18 @@ read version "HTTP/1.1"
 read header "Upgrade" /(?i:websocket)/
 read header "Connection" /(?i:Upgrade)/
 read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
-# The 4 control bytes for ping-pong extension are 0x01010102:
-read header "Sec-WebSocket-Extensions" "x-kaazing-ping-pong; 01010102"
+read header "Sec-WebSocket-Extensions" /x-kaazing-ping-pong; *(?<controlBytes>[a-fA-F0-9]{8})/
 
 # Read extended PING
-read [0x81 0x06 0x01 0x01 0x01 0x02 0x09 0x00]
+read [0x81 0x06]
+read ${pp:parseHexString(controlBytes)}
+read [0x09 0x00]
 
 # Send (masked) extended PONG response (unmasked form is [0x81 0x06 0x01 0x01 0x01 0x02 0x0a 0x00])
 write [0x81 0x86] ${writeMask}
 write option mask ${writeMask}
-write [0x01 0x01 0x01 0x02 0x0a 0x00]
+write ${pp:parseHexString(controlBytes)}
+write [0x0a 0x00]
 write option mask [0x00 0x00 0x00 0x00]
 
 # Do clean close
