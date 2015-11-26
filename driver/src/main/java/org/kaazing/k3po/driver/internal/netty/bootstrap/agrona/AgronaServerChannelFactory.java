@@ -23,6 +23,7 @@ import java.util.concurrent.Executors;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ServerChannelFactory;
+import org.jboss.netty.util.ThreadRenamingRunnable;
 
 public class AgronaServerChannelFactory implements ServerChannelFactory {
 
@@ -38,12 +39,12 @@ public class AgronaServerChannelFactory implements ServerChannelFactory {
         // TODO: boss pool
         this.boss = new AgronaServerBoss();
         this.bossExecutor = Executors.newFixedThreadPool(1);
-        this.bossExecutor.execute(boss);
+        this.bossExecutor.execute(new ThreadRenamingRunnable(boss, "Agrona server boss"));
 
         // TODO: worker pool
         this.worker = new AgronaWorker();
         this.workerExecutor = Executors.newFixedThreadPool(1);
-        this.workerExecutor.execute(worker);
+        this.workerExecutor.execute(new ThreadRenamingRunnable(worker, "Agrona worker"));
     }
 
     @Override
