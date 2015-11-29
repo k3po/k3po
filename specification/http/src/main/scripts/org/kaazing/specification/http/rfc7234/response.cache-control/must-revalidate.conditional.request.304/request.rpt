@@ -9,9 +9,10 @@ write flush
 
 read status "200" /.*/
 read header "ETag" /(?<entityTag>.+)/
-read notify CACHE_CONTROL
+read header "Cache-Control" /must-revalidate.*/
+read notify ENTITY_TAG
 
-connect await CACHE_CONTROL
+connect await ENTITY_TAG
 connect http://localhost:8000/index.html
 connected
 

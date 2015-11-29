@@ -21,7 +21,7 @@ read method "GET"
 read version "HTTP/1.1"
 read header "Host" "localhost:8000"
 read header "If-None-Match" ${entityTag}
-read header "Cache-Control" /.+/
+read header "Cache-Control" /max-age=.+/
 
 write status "304" "Not Modified"
 write header "ETag" ${entityTag}

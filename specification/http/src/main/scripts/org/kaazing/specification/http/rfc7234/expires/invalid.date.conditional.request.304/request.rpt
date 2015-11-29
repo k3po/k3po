@@ -10,9 +10,9 @@ write flush
 read status "200" /.*/
 read header "Last-Modified" /(?<lastModified>.+)/
 read header "Expires" /.+/
-read notify EXPIRES
+read notify LAST_MODIFIED
 
-connect await EXPIRES
+connect await LAST_MODIFIED
 connect http://localhost:8000/index.html
 connected
 

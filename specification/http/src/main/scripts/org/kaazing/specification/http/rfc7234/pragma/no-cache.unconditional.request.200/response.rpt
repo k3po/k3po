@@ -1,8 +1,8 @@
 property lastModified "Mon, 1 Jan 2015 01:23:45 GMT"
-property timeAtWritingFirstResponse "Wed, 18 Nov 2015 01:10:45 GMT"
-property timeAtWritingSecondResponse "Wed, 18 Nov 2015 01:10:50 GMT"
-property expires1 "Wed, 18 Nov 2015 01:10:55 GMT"
-property expires2 "Wed, 18 Nov 2015 01:11:10 GMT"
+property dateForFirstResponse "Wed, 18 Nov 2015 01:10:45 GMT"
+property expiresFirstResponse "Wed, 18 Nov 2015 01:10:55 GMT"
+property dateForSecondResponse "Wed, 18 Nov 2015 01:10:50 GMT"
+property expiresSecondResponse "Wed, 18 Nov 2015 01:11:10 GMT"
 
 accept http://localhost:8000/index.html
 accepted
@@ -13,8 +13,8 @@ read version "HTTP/1.1"
 read header "Host" "localhost:8000"
 
 write status "200" "OK"
-write header "Date" ${timeAtWritingFirstResponse}
-write header "Expires" ${expires1}
+write header "Date" ${dateForFirstResponse}
+write header "Expires" ${expiresFirstResponse}
 write header "Last-Modified" ${lastModified}
 write header content-length
 write flush
@@ -28,9 +28,9 @@ read header "Host" "localhost:8000"
 read header "Pragma" /.*/
 
 write status "200" "OK"
-write header "Date" ${timeAtWritingSecondResponse}
+write header "Date" ${dateForSecondResponse}
 write header "Last-Modified" ${lastModified}
-write header "Expires" ${expires2}
+write header "Expires" ${expiresSecondResponse}
 write header content-length
 write flush
 

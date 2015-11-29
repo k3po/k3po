@@ -7,7 +7,7 @@ read version "HTTP/1.1"
 read header "Host" "localhost:8000"
 
 write status "200" "OK"
-write header "Cache-Control" "max-age=10, must-revalidate"
+write header "Cache-Control" "must-revalidate, max-age=10"
 write header content-length
 write flush
 
@@ -19,5 +19,5 @@ read version "HTTP/1.1"
 read header "Host" "localhost:8000"
 
 write status "200" "OK"
-write header "Cache-Control" "max-age=10, must-revalidate"
+write header "Cache-Control" "must-revalidate, max-age=10"
 write flush

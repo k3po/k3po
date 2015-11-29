@@ -8,3 +8,4 @@ write header content-length
 write flush
 
 read status "200" /.*/
+read header "Cache-Control" /s-maxage=.+/

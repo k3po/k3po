@@ -1,5 +1,5 @@
 property lastModified "Mon, 1 Jan 2015 01:23:45 GMT"
-property timeAtWritingFirstResponse "Wed, 18 Nov 2015 01:10:45 GMT"
+property date "Wed, 18 Nov 2015 01:10:45 GMT"
 property expires "Wed, 18 Nov 2015 01:10:55 GMT"
 
 accept http://localhost:8000/index.html
@@ -11,7 +11,7 @@ read version "HTTP/1.1"
 read header "Host" "localhost:8000"
 
 write status "200" "OK"
-write header "Date" ${timeAtWritingFirstResponse}
+write header "Date" ${date}
 write header "Expires" "0"
 write header "Last-Modified" ${lastModified}
 write header content-length

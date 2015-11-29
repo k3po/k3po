@@ -8,11 +8,11 @@ write header content-length
 write flush
 
 read status "200" /.*/
-read header "Cache-Control" /.+/
+read header "Cache-Control" "max-age=10"
 read header "Expires" /.+/
-read notify EXPIRES
+read notify CACHE_CONTROL
 
-connect await EXPIRES
+connect await CACHE_CONTROL
 connect http://localhost:8000/index.html
 connected
 

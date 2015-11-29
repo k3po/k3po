@@ -1,5 +1,5 @@
-property timeAtWritingFirstResponse "Wed, 18 Nov 2015 01:10:45 GMT"
-property timeAtWritingSecondResponse "Wed, 18 Nov 2015 01:10:46 GMT"
+property date "Wed, 18 Nov 2015 01:10:45 GMT"
+property datePlusOneSecond "Wed, 18 Nov 2015 01:10:46 GMT"
 property expires "Wed, 18 Nov 2015 01:10.56 GMT"
 
 accept http://localhost:8000/index.html
@@ -11,7 +11,7 @@ read version "HTTP/1.1"
 read header "Host" "localhost:8000"
 
 write status "200" "OK"
-write header "Date" ${timeAtWritingFirstResponse}
+write header "Date" ${date}
 write header "Expires" "0"
 write header content-length
 write flush
@@ -24,6 +24,6 @@ read version "HTTP/1.1"
 read header "Host" "localhost:8000"
 
 write status "200" "OK"
-write header "Date" ${timeAtWritingSecondResponse}
+write header "Date" ${datePlusOneSecond}
 write header "Expires" ${expires}
 write flush
