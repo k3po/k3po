@@ -17,7 +17,9 @@
 package org.kaazing.k3po.pcap.converter.internal.filter;
 
 public class FilterFailureException extends RuntimeException {
-   
+
+    private static final long serialVersionUID = 1L;
+
     public FilterFailureException(String message) {
         super(message);
     }

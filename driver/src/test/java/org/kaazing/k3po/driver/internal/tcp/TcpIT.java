@@ -23,7 +23,6 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TestRule;
 import org.junit.rules.TestWatcher;
 import org.junit.rules.Timeout;

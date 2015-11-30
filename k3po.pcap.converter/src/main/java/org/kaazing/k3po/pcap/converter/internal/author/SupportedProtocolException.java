@@ -17,6 +17,9 @@
 package org.kaazing.k3po.pcap.converter.internal.author;
 
 public class SupportedProtocolException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
     public SupportedProtocolException(String message) {
         super(message);
     }
