@@ -24,6 +24,7 @@ public class PrepareMessage extends ControlMessage {
 
     private List<String> names;
     private String version;
+    private String origin;
 
     public PrepareMessage() {
         this.names = new ArrayList<>(5);
@@ -63,6 +64,14 @@ public class PrepareMessage extends ControlMessage {
 
     protected final boolean equals(PrepareMessage that) {
         return super.equalTo(that) && Objects.equals(this.names, that.names);
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 
 }
