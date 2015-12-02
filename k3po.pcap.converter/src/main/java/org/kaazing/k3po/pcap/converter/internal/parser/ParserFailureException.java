@@ -17,7 +17,9 @@
 package org.kaazing.k3po.pcap.converter.internal.parser;
 
 public class ParserFailureException extends RuntimeException {
-   
+
+    private static final long serialVersionUID = 1L;
+
     public ParserFailureException(String message) {
         super(message);
     }

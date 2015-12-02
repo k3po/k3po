@@ -355,6 +355,9 @@ public class Parser {
      * @param <V> This was designed/tested for strings only
      */
     private class XmlAttributesHashMap<K, V> extends HashMap<K, V> {
+
+        private static final long serialVersionUID = 1L;
+
         public XmlAttributesHashMap() {
             super();
         }

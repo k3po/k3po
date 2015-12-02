@@ -112,10 +112,20 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         robot = new Robot();
         whenAbortedOrFinished = whenAbortedOrFinished(ctx);
 
+        String originScript = "";
+        String origin = prepare.getOrigin();
+        if (origin != null) {
+            try {
+                originScript = OriginScript.get(origin);
+            } catch (URISyntaxException e) {
+                throw new Exception("Could not find origin: ", e);
+            }
+        }
+
         ChannelFuture prepareFuture;
         try {
 
-            final String aggregatedScript = aggregateScript(scriptNames, scriptLoader);
+            final String aggregatedScript = originScript + aggregateScript(scriptNames, scriptLoader);
 
             if (scriptLoader != null) {
                 Thread currentThread = currentThread();
@@ -123,12 +133,10 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 try {
                     currentThread.setContextClassLoader(scriptLoader);
                     prepareFuture = robot.prepare(aggregatedScript);
-                }
-                finally {
+                } finally {
                     currentThread.setContextClassLoader(contextClassLoader);
                 }
-            }
-            else {
+            } else {
                 prepareFuture = robot.prepare(aggregatedScript);
             }
 
@@ -150,8 +158,8 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     /*
      * Public static because it is used in test utils
      */
-    public static String aggregateScript(List<String> scriptNames, ClassLoader scriptLoader) throws URISyntaxException,
-            IOException {
+    public static String aggregateScript(List<String> scriptNames, ClassLoader scriptLoader)
+            throws URISyntaxException, IOException {
         final StringBuilder aggregatedScript = new StringBuilder();
         for (String scriptName : scriptNames) {
             String scriptNameWithExtension = format("%s.rpt", scriptName);
@@ -192,7 +200,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     private static String readScript(Path scriptPath) throws IOException {
         List<String> lines = Files.readAllLines(scriptPath, UTF_8);
         StringBuilder sb = new StringBuilder();
-        for (String line: lines) {
+        for (String line : lines) {
             sb.append(line);
             sb.append("\n");
         }
@@ -211,8 +219,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                     if (f.isSuccess()) {
                         final StartedMessage started = new StartedMessage();
                         Channels.write(ctx, Channels.future(null), started);
-                    }
-                    else {
+                    } else {
                         sendErrorMessage(ctx, f.getCause());
                     }
                 }

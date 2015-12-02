@@ -149,6 +149,8 @@ public class RptScriptCreator {
      */
     private class KeyToEmitterHashMap extends HashMap<String, Emitter> {
 
+        private static final long serialVersionUID = 1L;
+
         @Override
         public Emitter put(String key, Emitter value) {
             throw new RptScriptsCreatorFailureException(

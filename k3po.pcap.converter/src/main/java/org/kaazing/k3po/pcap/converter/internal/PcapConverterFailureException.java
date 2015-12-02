@@ -17,7 +17,9 @@
 package org.kaazing.k3po.pcap.converter.internal;
 
 public class PcapConverterFailureException extends RuntimeException {
-   
+
+    private static final long serialVersionUID = 1L;
+
     public PcapConverterFailureException(String message) {
         super(message);
     }
