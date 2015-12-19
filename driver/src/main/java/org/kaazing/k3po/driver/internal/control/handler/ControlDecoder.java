@@ -62,8 +62,7 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
     }
 
     @Override
-    protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, State state)
-            throws Exception {
+    protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, State state) throws Exception {
 
         switch (state) {
         case READ_INITIAL: {
@@ -226,6 +225,9 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
                 break;
             case "name":
                 prepareMessage.getNames().add(headerValue);
+                break;
+            case "origin":
+                prepareMessage.setOrigin(headerValue);
                 break;
             }
             break;
