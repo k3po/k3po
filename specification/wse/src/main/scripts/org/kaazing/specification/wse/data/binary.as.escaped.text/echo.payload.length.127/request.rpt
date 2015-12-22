@@ -54,5 +54,5 @@ write header "Content-Type" "text/plain;charset=utf-8"
 write header "X-Sequence-No" ${wse:asString(sequence + 1)}
 write header content-length
 
-write [0x80 0x7B] ${client127}
+write [0xC2 0x80 0x7B] ${client127}
 write flush

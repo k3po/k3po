@@ -57,6 +57,6 @@ read version "HTTP/1.1"
 read header "Content-Type" /text\/plain;charset=(?i)utf-8/
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
-read [0x80 0x7B]
+read [0xC2 0x80 0x7B]
 read ([0..123] :server127)
 read notify DATA_RECEIVED

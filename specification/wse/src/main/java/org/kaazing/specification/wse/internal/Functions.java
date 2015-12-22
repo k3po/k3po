@@ -67,7 +67,6 @@ public final class Functions {
 
     @Function
     public static byte[] escapeBytes(byte[] bytes) {
-        System.out.println("++++++++++1" + bytes.length);
         List<Byte> listOfEscapedBytes = new ArrayList<Byte>();
         byte[] escapedBytes = {0b00000000, 0b00001101, 0b00001010, 0b01111111};
         for (int i = 0; i < bytes.length; i++) {
@@ -81,6 +80,15 @@ public final class Functions {
             bytes[i] = listOfEscapedBytes.get(i);
         }
         return bytes;
+    }
+    
+    @Function
+    public static byte[] randomEscapedBytes(int size){
+        byte[] escapedBytes = {0b00000000, 0b00001101, 0b00001010, 0b01111111};
+        byte[] bytes = new bytes[size];
+        for(int i = 0; i < size; i++){
+            
+        }
     }
 
     @Function
