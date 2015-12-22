@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.el.ELContext;
 
 import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLocationExpression;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocationLiteral;
 
 /**
@@ -48,6 +49,10 @@ public final class OptionsResolver {
                 if (value instanceof AstExpressionValue) {
                     AstExpressionValue expressionValue = (AstExpressionValue) value;
                     value = expressionValue.getValue().getValue(environment);
+                }
+                else if (value instanceof AstLocationExpression) {
+                    AstLocationExpression location = (AstLocationExpression) value;
+                    value = location.getValue().getValue(environment);
                 }
                 else if (value instanceof AstLocationLiteral) {
                     AstLocationLiteral location = (AstLocationLiteral) value;
