@@ -39,7 +39,6 @@ read header "Content-Type" "text/plain;charset=windows-1252"
 read header "Connection" "close"
 
 read [0x80 0x7B]
-#read ${escapedClient127}
 read [0..127]
 
 # Upstream

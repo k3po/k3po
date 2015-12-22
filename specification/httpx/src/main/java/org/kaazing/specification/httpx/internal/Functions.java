@@ -19,7 +19,7 @@
  * under the License.
  */
 
-package org.kaazing.specification.http.internal;
+package org.kaazing.specification.httpx.internal;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
