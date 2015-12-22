@@ -41,10 +41,9 @@ write header "Connection" "close"
 write flush
 
 write await DATA_RECEIVED
-write [0x80 0x7F 0x7F] 
+write [0x80 0x7B]
 write ${wse:escapeBytes(server127)}
 write flush
-
 
 # Upstream
 accept ${upstream}
@@ -60,3 +59,4 @@ read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 read [0xC2 0x80 0x7B]
 read ([0..123] :server127)
 read notify DATA_RECEIVED
+

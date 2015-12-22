@@ -38,9 +38,9 @@ read status "200" /.+/
 read header "Content-Type" "text/plain;charset=windows-1252"
 read header "Connection" "close"
 
-read [0x80 0x7F 0x7F]
-read ${escapedClient127}
-
+read [0x80 0x7B]
+#read ${escapedClient127}
+read [0..127]
 
 # Upstream
 connect await CREATED
@@ -56,3 +56,4 @@ write header content-length
 
 write [0xC2 0x80 0x7B] ${client127}
 write flush
+
