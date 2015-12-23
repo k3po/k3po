@@ -43,4 +43,12 @@ public class BinaryAsEscapedTextIT {
         k3po.finish();
     }
 
+    @Test
+    @Specification({
+        "echo.payload.length.127/request",
+    "echo.payload.length.127/response" })
+    public void shouldEchoFrameWithPayloadLength127() throws Exception {
+        k3po.finish();
+    }
+
 }
