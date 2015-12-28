@@ -48,7 +48,13 @@ public final class Functions {
     @Function
     public static byte[] randomBytesIncludingNumberOfEscapedBytes(int length, int numberOfEscapedBytesToInclude) {
         byte[] bytes = new byte[length];
-        byte[] escapedBytes = {0b00000000, 0b00001101, 0b00001010, 0b01111111};
+        byte[] escapedBytes = {0b00000000, 0b00001101, 0b00001010};
+        // escluding 0b01111111
+        // 0x7f needs to be escaped in utf-8 making length not defined,
+        // so we won't include it as an escaped byte even though it is
+        // as the length of the websocket frame then becomes non deterministic.
+        // spec tests will test escaped bytes explicitly to cover use of 0x7f
+        // (this is the same reason RANDOM.nextInt( ) has a range of 100
 
         for (int i = 0; i < length; i++) {
             if ((length - i) / 2 < numberOfEscapedBytesToInclude) {
@@ -60,7 +66,8 @@ public final class Functions {
                 case 0b00000000:
                 case 0b00001101:
                 case 0b00001010:
-                case 0b01111111:
+                    // case 0b01111111:
+                    // see above
                     if (numberOfEscapedBytesToInclude > 0) {
                         bytes[i] = randomByte;
                         numberOfEscapedBytesToInclude--;
