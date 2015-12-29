@@ -41,8 +41,7 @@ write header "Connection" "close"
 write flush
 
 write await DATA_RECEIVED
-write [0x80 0x7F]
-write ${wse:unescapeBytesAndConvertToEscapedWindows1252(server127)}
+write [0x80 0x04 0x7f 0x30 0x7f 0x72 0x7f 0x6e 0x7f 0x7f]
 write flush
 
 # Upstream
@@ -56,7 +55,6 @@ read version "HTTP/1.1"
 read header "Content-Type" /text\/plain;charset=(?i)utf-8/
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
-read [0xC2 0x80 0x7F]
-read ([0..131] :server127)
+read [0xC2 0x80 0x04 0x7f 0x00 0x7f 0x72 0x7f 0x6e 0x7f 0x7f]
 read notify DATA_RECEIVED
 

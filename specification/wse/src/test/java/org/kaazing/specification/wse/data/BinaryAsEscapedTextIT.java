@@ -19,6 +19,7 @@ package org.kaazing.specification.wse.data;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -36,6 +37,13 @@ public class BinaryAsEscapedTextIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
+    @Specification({"echo.escaped.characters/request",
+        "echo.escaped.characters/response" })
+    public void shouldEchoEscapedCharacters() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
     @Specification({
         "echo.payload.length.0/request",
         "echo.payload.length.0/response" })
@@ -44,6 +52,7 @@ public class BinaryAsEscapedTextIT {
     }
 
     @Test
+    @Ignore("To be completed when wse spec is complete")
     @Specification({
         "echo.payload.length.127/request",
     "echo.payload.length.127/response" })
