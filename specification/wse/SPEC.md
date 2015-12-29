@@ -687,7 +687,7 @@ Connection: close
 [emulated websocket frames]
 ```
 
-However, the client MUST also unescape the `DEL 0`, `DEL r`, `DEL n` and `DEL DEL` escaped character sequences to
+However, the client and server MUST also unescape the `DEL 0`, `DEL r`, `DEL n` and `DEL DEL` escaped character sequences to
 get the logical bytes transfered.
 
 ### Binary as Mixed Text
