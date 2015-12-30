@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-6...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-7...HEAD)
+
+**Merged pull requests:**
+
+- Added wse escaped text test to echo non escaped bytes [\#281](https://github.com/k3po/k3po/pull/281) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-7](https://github.com/k3po/k3po/tree/3.0.0-alpha-7) (2015-12-23)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-6...3.0.0-alpha-7)
 
 **Merged pull requests:**
 
