@@ -68,9 +68,9 @@ public class IfModifiedSinceIT {
 
     @Test
     @Specification({
-        "condition.failed.head.status.200/request",
-        "condition.failed.head.status.200/response" })
-    public void shouldResultInNotModifiedResponseWithHeadAndConditionPassed() throws Exception {
+        "condition.passed.head.status.200/request",
+        "condition.passed.head.status.200/response" })
+    public void shouldResultInOKResponseWithHeadAndConditionPassed() throws Exception {
         k3po.finish();
     }
 

@@ -1,0 +1,31 @@
+property earlier "Wed, 18 Nov 2015 01:10:45 GMT"
+property expires "Thu, 19 Nov 2015 01:10:45 GMT"
+property now "Wed, 18 Nov 2015 01:10:57 GMT"
+
+accept http://localhost:8000/index.html
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+
+write status "200" "OK"
+write header "Date" ${earlier}
+write header "Expires" ${expires}
+write header "Cache-Control" "max-age=10"
+write header content-length
+write flush
+
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+
+write status "200" "OK"
+write header "Date" ${now}
+write header "Expires" ${expires}
+write header "Cache-Control" "max-age=10"
+write flush
