@@ -23,5 +23,5 @@ write header content-length
 write flush
 
 read status "304" /.*/
-read header "ETag" /.+/
+read header "Last-Modified" /.+/
 read closed

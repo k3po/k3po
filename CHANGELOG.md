@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-7...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-8...HEAD)
+
+**Merged pull requests:**
+
+- Make sure BBOSH FINISH is sent only after sending all NOTIFIED messages  [\#284](https://github.com/k3po/k3po/pull/284) ([cmebarrow](https://github.com/cmebarrow))
+- RFC 7234 spec tests [\#270](https://github.com/k3po/k3po/pull/270) ([sanjay-saxena](https://github.com/sanjay-saxena))
+
+## [3.0.0-alpha-8](https://github.com/k3po/k3po/tree/3.0.0-alpha-8) (2015-12-30)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-7...3.0.0-alpha-8)
 
 **Merged pull requests:**
 
