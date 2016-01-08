@@ -100,8 +100,8 @@ public class ReadConfigHandler extends AbstractCommandHandler {
     }
 
     @Override
-    public String toString() {
-        return format("read config %s", decoders);
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append(format("read config %s", decoders));
     }
 
 }

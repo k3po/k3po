@@ -801,13 +801,16 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             node = new AstAcceptNode();
             node.setLocation(location);
             node.setEnvironment(elContext);
-            if (ctx.text != null) {
-                node.setAcceptName(ctx.text.getText());
+            if (ctx.as != null) {
+                node.setAcceptName(ctx.as.getText());
             }
-            LocationContext transport = ctx.value;
+            if (ctx.notify != null) {
+                node.setNotifyName(ctx.notify.getText());
+            }
+            LocationContext transport = ctx.transport;
             if (transport != null) {
                 AstLocationVisitor transportVisitor = new AstLocationVisitor(elFactory, elContext);
-                AstLocation transportLocation = transportVisitor.visit(ctx.value);
+                AstLocation transportLocation = transportVisitor.visit(ctx.transport);
                 node.getOptions().put("transport", transportLocation);
             }
             ExpressionValueContext reader = ctx.reader;
@@ -885,14 +888,13 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             node.setEnvironment(elContext);
             super.visitConnectNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
-            Token barrier = ctx.barrier;
-            if (barrier != null) {
-                node.setBarrier(barrier.getText());
+            if (ctx.await != null) {
+                node.setAwaitName(ctx.await.getText());
             }
-            LocationContext transport = ctx.value;
+            LocationContext transport = ctx.transport;
             if (transport != null) {
                 AstLocationVisitor transportVisitor = new AstLocationVisitor(elFactory, elContext);
-                AstLocation transportLocation = transportVisitor.visit(ctx.value);
+                AstLocation transportLocation = transportVisitor.visit(ctx.transport);
                 node.getOptions().put("transport", transportLocation);
             }
             Token mode = ctx.fmode;

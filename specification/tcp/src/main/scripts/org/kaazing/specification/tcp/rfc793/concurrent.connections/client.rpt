@@ -1,0 +1,32 @@
+# Stream 1
+connect await BOUND
+        tcp://localhost:8080
+connected
+write "Hello"
+read "Hello"
+write "Goodbye"
+read "Goodbye"
+close
+closed
+
+# Stream 2
+connect await BOUND
+        tcp://localhost:8080
+connected
+write "Hello"
+read "Hello"
+write "Goodbye"
+read "Goodbye"
+close
+closed
+
+# Stream 3
+connect await BOUND
+        tcp://localhost:8080
+connected
+write "Hello"
+read "Hello"
+write "Goodbye"
+read "Goodbye"
+close
+closed

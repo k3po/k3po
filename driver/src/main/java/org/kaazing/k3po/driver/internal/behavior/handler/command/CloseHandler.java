@@ -30,8 +30,8 @@ public class CloseHandler extends AbstractCommandHandler {
     }
 
     @Override
-    public String toString() {
-        return "close";
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("close");
     }
 
 }

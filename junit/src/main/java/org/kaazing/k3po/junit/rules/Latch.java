@@ -33,6 +33,7 @@ class Latch {
     private final CountDownLatch prepared;
     private final CountDownLatch startable;
     private final CountDownLatch finished;
+    private final CountDownLatch disposed;
     private volatile Thread testThread;
 
     Latch() {
@@ -41,6 +42,7 @@ class Latch {
         prepared = new CountDownLatch(1);
         startable = new CountDownLatch(1);
         finished = new CountDownLatch(1);
+        disposed = new CountDownLatch(1);
     }
 
     void notifyPrepared() {
@@ -124,6 +126,10 @@ class Latch {
 
     void awaitFinished() throws Exception {
         finished.await();
+    }
+
+    void awaitDisposed() throws Exception {
+        disposed.await();
         if (exception != null) {
             throw exception;
         }
@@ -152,6 +158,10 @@ class Latch {
         if (this.exception != null) {
             testThread.interrupt();
         }
+    }
+
+    public void notifyDisposed() {
+        disposed.countDown();
     }
 
 }

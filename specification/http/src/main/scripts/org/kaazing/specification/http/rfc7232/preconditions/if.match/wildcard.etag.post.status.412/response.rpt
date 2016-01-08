@@ -1,0 +1,12 @@
+accept tcp://localhost:8000
+accepted
+connected
+
+read "POST /doesNotExist.html HTTP/1.1\r\n"
+read "Host: localhost\r\n"
+read "If-Match: \"*\"\r\n"
+read "Content-Length: 0\r\n"
+read "\r\n"
+
+write "HTTP/1.1 412 Precondition Failed\r\n"
+write "\r\n"

@@ -1,0 +1,30 @@
+accept tcp://localhost:8080
+       notify BOUND
+
+# Stream 1
+accepted
+connected
+read "Hello"
+write "Hello"
+read "Goodbye"
+write "Goodbye"
+closed
+
+# Stream 2
+accepted
+connected
+read "Hello"
+write "Hello"
+read "Goodbye"
+write "Goodbye"
+closed
+
+# Stream 3
+accepted
+connected
+read "Hello"
+write "Hello"
+read "Goodbye"
+write "Goodbye"
+closed
+

@@ -17,7 +17,6 @@
 package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
-import static org.kaazing.k3po.driver.internal.util.Utils.byteArrayToString;
 import static org.kaazing.k3po.lang.internal.RegionInfo.newSequential;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -51,7 +50,7 @@ public class ReadExactBytesDecoder extends MessageDecoder {
 
     @Override
     public String toString() {
-        return byteArrayToString(expected.array());
+        return Utils.format(expected.array());
     }
 
     // unit tests

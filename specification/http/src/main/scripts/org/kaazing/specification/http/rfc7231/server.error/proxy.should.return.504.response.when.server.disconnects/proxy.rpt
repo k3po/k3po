@@ -6,12 +6,13 @@ accepted
 connected
 
 read method "GET"
+read version "HTTP/1.1"
 read header "Host" "localhost:8080"
 read notify GOT_REQUEST
 read closed
 
 write await GOT_RESPONSE
-write status "504" "OK"
+write status "504" "Gateway Timeout"
 write version "HTTP/1.1"
 write close
 
@@ -30,4 +31,3 @@ write header host
 write close
 
 write notify GOT_RESPONSE
-closed

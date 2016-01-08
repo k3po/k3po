@@ -17,7 +17,9 @@
 package org.kaazing.k3po.pcap.converter.internal.packet;
 
 public class PacketFailureException extends RuntimeException {
-   
+
+    private static final long serialVersionUID = 1L;
+
     public PacketFailureException(String message) {
         super(message);
     }

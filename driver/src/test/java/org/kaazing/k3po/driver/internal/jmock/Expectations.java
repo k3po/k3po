@@ -16,10 +16,17 @@
 
 package org.kaazing.k3po.driver.internal.jmock;
 
+import java.util.List;
+
 import org.hamcrest.Matcher;
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelState;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
+import org.jmock.api.Action;
+import org.jmock.api.Invocation;
+import org.jmock.lib.action.CustomAction;
 
 public class Expectations extends org.jmock.Expectations {
 
@@ -46,5 +53,30 @@ public class Expectations extends org.jmock.Expectations {
     public static Matcher<ChannelStateEvent> channelState(Matcher<ChannelState> expectedState,
             Matcher<Object> expectedValue) {
         return new ChannelStateEventChannelStateMatcher(expectedState, expectedValue);
+    }
+
+    public static Action callChannelFutureListener(final ChannelFuture future) {
+        return new CustomAction("callChannelFutureListener") {
+
+            @Override
+            public Object invoke(Invocation invocation) throws Throwable {
+                ((ChannelFutureListener) invocation.getParameter(0)).operationComplete(future);
+                return null;
+            }
+
+        };
+    }
+
+    public static <T> Action saveParameter(final int parameter, final List<T> list) {
+        return new CustomAction("save") {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object invoke(Invocation invocation) throws Throwable {
+                list.add((T) invocation.getParameter(parameter));
+                return null;
+            }
+
+        };
     }
 }

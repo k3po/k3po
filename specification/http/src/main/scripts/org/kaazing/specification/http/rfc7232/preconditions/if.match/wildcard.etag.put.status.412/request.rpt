@@ -1,0 +1,13 @@
+property wildcardETag "\"*\""
+
+connect tcp://localhost:8000
+connected
+
+write "PUT /doesNotExist.html HTTP/1.1\r\n"
+write "Host: localhost\r\n"
+write "If-Match: " ${wildcardETag} "\r\n"
+write "Content-Length: 0\r\n"
+write "\r\n"
+write close
+
+read "HTTP/1.1 412 Precondition Failed"

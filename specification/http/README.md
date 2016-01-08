@@ -28,7 +28,8 @@ The integration tests fall into the following categories:
 # RFC-7232
 
 The integration tests fall into the following categories:
- * Conditional Requests
+ * Precondition Header Fields
+ * Validator Header Fields
 
 # RFC-7233
 
@@ -38,7 +39,12 @@ The integration tests fall into the following categories:
 # RFC-7234
 
 The integration tests fall into the following categories:
- * Caching
+* Header Field Definitions
+ * Age
+ * Cache-Control
+ * Expires
+ * Pragma
+ * Warning
 
 # RFC-7235
 

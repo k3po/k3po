@@ -16,6 +16,7 @@
 
 package org.kaazing.k3po.driver.internal.control.handler;
 
+import static java.lang.String.format;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -25,6 +26,7 @@ import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.kaazing.k3po.driver.internal.control.AbortMessage;
 import org.kaazing.k3po.driver.internal.control.AwaitMessage;
 import org.kaazing.k3po.driver.internal.control.ControlMessage;
+import org.kaazing.k3po.driver.internal.control.DisposeMessage;
 import org.kaazing.k3po.driver.internal.control.ErrorMessage;
 import org.kaazing.k3po.driver.internal.control.FinishedMessage;
 import org.kaazing.k3po.driver.internal.control.NotifyMessage;
@@ -60,8 +62,7 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
     }
 
     @Override
-    protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, State state)
-            throws Exception {
+    protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, State state) throws Exception {
 
         switch (state) {
         case READ_INITIAL: {
@@ -139,8 +140,10 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
             return new NotifyMessage();
         case AWAIT:
             return new AwaitMessage();
-        default:
-            throw new IllegalArgumentException(String.format("Unrecognized message kind: %s", messageKind));
+        case DISPOSE:
+            return new DisposeMessage();
+         default:
+            throw new IllegalArgumentException(format("Unrecognized message kind: %s", messageKind));
         }
     }
 
@@ -222,6 +225,9 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
                 break;
             case "name":
                 prepareMessage.getNames().add(headerValue);
+                break;
+            case "origin":
+                prepareMessage.setOrigin(headerValue);
                 break;
             }
             break;

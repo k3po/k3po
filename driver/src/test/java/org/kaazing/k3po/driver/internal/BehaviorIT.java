@@ -56,6 +56,13 @@ public class BehaviorIT {
 
     @Test
     @TestSpecification({
+        "notifying.accept" })
+    public void testNotifyingAccept() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
         "delayed.connect.via.testframework" })
     public void testDelayedClientConnectViaTestFramework() throws Exception {
         k3po.notifyBarrier("NOTIFY_FROM_FRAMEWORK");
@@ -100,6 +107,13 @@ public class BehaviorIT {
     public void testPassingBarriers() throws Exception {
         k3po.notifyBarrier("AWAITING_BARRIER");
         k3po.awaitBarrier("NOTIFYING_BARRIER");
+        k3po.finish();
+    }
+
+    @TestSpecification("delayed.client.close")
+    @Test
+    public void delayedClientClose() throws Exception {
+        k3po.notifyBarrier("CLOSE_REQUESTED");
         k3po.finish();
     }
 }

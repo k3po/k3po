@@ -17,6 +17,7 @@
 package org.kaazing.k3po.driver.internal.netty.bootstrap.agrona;
 
 import static java.lang.Thread.currentThread;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.jboss.netty.channel.Channels.fireChannelBound;
 import static org.jboss.netty.channel.Channels.fireChannelClosed;
 import static org.jboss.netty.channel.Channels.fireChannelUnbound;
@@ -37,9 +38,9 @@ import uk.co.real_logic.agrona.concurrent.IdleStrategy;
 
 public final class AgronaServerBoss implements Runnable {
 
-    private static final int MAX_PARK_NS = 100;
+    private static final long MAX_PARK_NS = MILLISECONDS.toNanos(100L);
 
-    private static final int MIN_PARK_NS = 1;
+    private static final long MIN_PARK_NS = MILLISECONDS.toNanos(1L);
 
     private static final int MAX_YIELDS = 30;
 

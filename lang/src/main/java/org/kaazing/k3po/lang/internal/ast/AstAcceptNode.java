@@ -29,8 +29,9 @@ import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 
 public class AstAcceptNode extends AstStreamNode {
 
-    private Map<String, Object> options;
     private String acceptName;
+    private String notifyName;
+    private Map<String, Object> options;
     private List<AstAcceptableNode> acceptables;
 
     private AstLocation location;
@@ -43,6 +44,8 @@ public class AstAcceptNode extends AstStreamNode {
         this.regionInfo = acceptNode.regionInfo;
         this.location = acceptNode.location;
         this.environment = acceptNode.environment;
+        this.acceptName = acceptNode.acceptName;
+        this.notifyName = acceptNode.notifyName;
         this.options = acceptNode.options;
     }
 
@@ -60,6 +63,14 @@ public class AstAcceptNode extends AstStreamNode {
 
     public void setAcceptName(String acceptName) {
         this.acceptName = acceptName;
+    }
+
+    public String getNotifyName() {
+        return notifyName;
+    }
+
+    public void setNotifyName(String notifyName) {
+        this.notifyName = notifyName;
     }
 
     public Map<String, Object> getOptions() {
@@ -110,6 +121,11 @@ public class AstAcceptNode extends AstStreamNode {
             hashCode ^= acceptName.hashCode();
         }
 
+        if (notifyName != null) {
+            hashCode <<= 4;
+            hashCode ^= notifyName.hashCode();
+        }
+
         if (acceptables != null) {
             hashCode <<= 4;
             hashCode ^= acceptables.hashCode();
@@ -149,15 +165,23 @@ public class AstAcceptNode extends AstStreamNode {
     @Override
     protected void describeLine(StringBuilder sb) {
         super.describeLine(sb);
-        sb.append("accept ");
-        sb.append(location);
+        sb.append("accept ").append(location);
 
         if (acceptName != null) {
-            sb.append(" as ");
-            sb.append(acceptName);
+            sb.append(" as ").append(acceptName);
         }
 
         sb.append('\n');
+
+        if (options != null) {
+            for (Map.Entry<String, Object> entry : options.entrySet()) {
+                sb.append("        option ")
+                  .append(entry.getKey())
+                  .append(" ")
+                  .append(entry.getValue())
+                  .append('\n');
+            }
+        }
     }
 
 }

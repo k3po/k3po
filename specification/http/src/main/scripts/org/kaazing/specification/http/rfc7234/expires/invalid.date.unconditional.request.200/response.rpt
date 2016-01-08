@@ -1,0 +1,30 @@
+property earlier "Wed, 18 Nov 2015 01:10:45 GMT"
+property now "Wed, 18 Nov 2015 01:10:46 GMT"
+property invalidExpires "Sun, 30 Feb 2015 01:10.56 GMT"
+property expires "Wed, 18 Nov 2015 01:10.56 GMT"
+
+accept http://localhost:8000/index.html
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+
+write status "200" "OK"
+write header "Date" ${earlier}
+write header "Expires" ${invalidExpires}
+write header content-length
+write flush
+
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+
+write status "200" "OK"
+write header "Date" ${now}
+write header "Expires" ${expires}
+write flush

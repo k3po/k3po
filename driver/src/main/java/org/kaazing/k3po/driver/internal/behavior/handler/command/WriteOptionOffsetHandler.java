@@ -46,8 +46,8 @@ public class WriteOptionOffsetHandler extends AbstractCommandHandler {
     }
 
     @Override
-    public String toString() {
-        return "write option offset = " + offset;
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("write option offset " + offset);
     }
 
 }

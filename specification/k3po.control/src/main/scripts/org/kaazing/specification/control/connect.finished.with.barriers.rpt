@@ -71,4 +71,10 @@ read "write \"echo\"\n"
 read "read \"echo\"\n"
 read "closed\n"
 
+write "DISPOSE\n"
+write "\n"
+
+read "DISPOSED\n"
+read "\n"
+
 close

@@ -1,0 +1,8 @@
+connect await BOUND
+        tcp://localhost:8080
+connected
+
+write await CLOSEABLE
+
+close
+closed

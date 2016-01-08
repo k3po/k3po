@@ -48,6 +48,7 @@ import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.Robot;
 import org.kaazing.k3po.driver.internal.control.AwaitMessage;
+import org.kaazing.k3po.driver.internal.control.DisposedMessage;
 import org.kaazing.k3po.driver.internal.control.ErrorMessage;
 import org.kaazing.k3po.driver.internal.control.FinishedMessage;
 import org.kaazing.k3po.driver.internal.control.NotifiedMessage;
@@ -82,12 +83,17 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     }
 
     @Override
-    public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+    public void channelClosed(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
         if (robot != null) {
-            robot.destroy();
+            robot.dispose().addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    channelClosedFuture.setSuccess();
+                    ctx.sendUpstream(e);
+                }
+            });
         }
-        channelClosedFuture.setSuccess();
-        ctx.sendUpstream(e);
+
     }
 
     @Override
@@ -110,10 +116,20 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         robot = new Robot();
         whenAbortedOrFinished = whenAbortedOrFinished(ctx);
 
+        String originScript = "";
+        String origin = prepare.getOrigin();
+        if (origin != null) {
+            try {
+                originScript = OriginScript.get(origin);
+            } catch (URISyntaxException e) {
+                throw new Exception("Could not find origin: ", e);
+            }
+        }
+
         ChannelFuture prepareFuture;
         try {
 
-            final String aggregatedScript = aggregateScript(scriptNames, scriptLoader);
+            final String aggregatedScript = originScript + aggregateScript(scriptNames, scriptLoader);
 
             if (scriptLoader != null) {
                 Thread currentThread = currentThread();
@@ -121,12 +137,10 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 try {
                     currentThread.setContextClassLoader(scriptLoader);
                     prepareFuture = robot.prepare(aggregatedScript);
-                }
-                finally {
+                } finally {
                     currentThread.setContextClassLoader(contextClassLoader);
                 }
-            }
-            else {
+            } else {
                 prepareFuture = robot.prepare(aggregatedScript);
             }
 
@@ -148,8 +162,8 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     /*
      * Public static because it is used in test utils
      */
-    public static String aggregateScript(List<String> scriptNames, ClassLoader scriptLoader) throws URISyntaxException,
-            IOException {
+    public static String aggregateScript(List<String> scriptNames, ClassLoader scriptLoader)
+            throws URISyntaxException, IOException {
         final StringBuilder aggregatedScript = new StringBuilder();
         for (String scriptName : scriptNames) {
             String scriptNameWithExtension = format("%s.rpt", scriptName);
@@ -190,7 +204,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     private static String readScript(Path scriptPath) throws IOException {
         List<String> lines = Files.readAllLines(scriptPath, UTF_8);
         StringBuilder sb = new StringBuilder();
-        for (String line: lines) {
+        for (String line : lines) {
             sb.append(line);
             sb.append("\n");
         }
@@ -209,8 +223,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                     if (f.isSuccess()) {
                         final StartedMessage started = new StartedMessage();
                         Channels.write(ctx, Channels.future(null), started);
-                    }
-                    else {
+                    } else {
                         sendErrorMessage(ctx, f.getCause());
                     }
                 }
@@ -226,8 +239,8 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     @Override
     public void abortReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
-        if (logger.isDebugEnabled()) {
-            logger.debug("ABORT");
+        if (logger.isInfoEnabled()) {
+            logger.info("ABORT");
         }
         assert whenAbortedOrFinished != null;
         robot.abort().addListener(whenAbortedOrFinished);
@@ -275,6 +288,22 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 }
             }
         });
+    }
+
+    @Override
+    public void disposeReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
+        robot.dispose().addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                writeDisposed(ctx);
+            }
+        });
+    }
+
+    private void writeDisposed(ChannelHandlerContext ctx) {
+        Channel channel = ctx.getChannel();
+        DisposedMessage disposedMessage = new DisposedMessage();
+        channel.write(disposedMessage);
     }
 
     private ChannelFutureListener whenAbortedOrFinished(final ChannelHandlerContext ctx) {

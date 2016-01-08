@@ -27,6 +27,7 @@ import static org.kaazing.k3po.junit.rules.ScriptRunner.BarrierState.INITIAL;
 import static org.kaazing.k3po.junit.rules.ScriptRunner.BarrierState.NOTIFIED;
 import static org.kaazing.k3po.junit.rules.ScriptRunner.BarrierState.NOTIFYING;
 
+import java.lang.management.ManagementFactory;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -56,6 +57,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
     private volatile boolean abortScheduled;
     private volatile Map<String, BarrierStateMachine> barriers;
+    private static final int DISPOSE_TIMEOUT = isDebugging() ? 0: 5000;
 
     ScriptRunner(URL controlURL, List<String> names, Latch latch) {
 
@@ -128,14 +130,12 @@ final class ScriptRunner implements Callable<ScriptPair> {
                         break;
                     case STARTED:
                         break;
-                        // DPW TODO combine this into one command
                     case NOTIFIED:
                         NotifiedEvent notifiedEvent = (NotifiedEvent) event;
                         String barrier = notifiedEvent.getBarrier();
                         BarrierStateMachine stateMachine = barriers.get(barrier);
                         stateMachine.notified();
                         break;
-                        // DPW TODO combine this into one command
                     case ERROR:
                         ErrorEvent error = (ErrorEvent) event;
                         throw new SpecificationException(format("%s:%s", error.getSummary(), error.getDescription()));
@@ -170,7 +170,6 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
         } finally {
             latch.notifyFinished();
-            controller.disconnect();
         }
     }
 
@@ -312,5 +311,35 @@ final class ScriptRunner implements Callable<ScriptPair> {
                 stateListeners.add(stateListener);
             }
         }
+    }
+
+    public void dispose() throws Exception {
+        controller.dispose();
+        try {
+            CommandEvent event = controller.readEvent();
+
+            // ensure it is the correct event
+            switch (event.getKind()) {
+            case DISPOSED:
+                latch.notifyDisposed();
+                break;
+            default:
+                throw new IllegalArgumentException("Unrecognized event kind: " + event.getKind());
+            }
+        } finally {
+            controller.disconnect();
+        }
+    }
+
+    private static boolean isDebugging() {
+        List<String> arguments = ManagementFactory.getRuntimeMXBean().getInputArguments();
+        for (final String argument : arguments) {
+            if ("-Xdebug".equals(argument)) {
+                return true;
+            } else if (argument.startsWith("-agentlib:jdwp")) {
+                return true;
+            }
+        }
+        return false;
     }
 }

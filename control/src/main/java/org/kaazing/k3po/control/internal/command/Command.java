@@ -53,7 +53,11 @@ public abstract class Command {
         /**
          * Notify command.
          */
-        NOTIFY
+        NOTIFY,
+        /**
+         * Dispose command
+         */
+        DISPOSE
     }
 
     /**

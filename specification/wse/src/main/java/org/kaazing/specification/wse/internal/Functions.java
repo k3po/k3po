@@ -16,6 +16,11 @@
 
 package org.kaazing.specification.wse.internal;
 
+import static java.util.Arrays.asList;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import org.kaazing.k3po.lang.el.Function;
@@ -36,6 +41,59 @@ public final class Functions {
         byte[] bytes = new byte[length];
         for (int i = 0; i < length; i++) {
             bytes[i] = (byte) RANDOM.nextInt(0x100);
+        }
+        return bytes;
+    }
+
+    @Function
+    public static byte[] randomBytesIncludingNumberOfEscapedBytes(int length, int numberOfEscapedBytesToInclude) {
+        byte[] bytes = new byte[length];
+        byte[] escapedBytes = {0b00000000, 0b00001101, 0b00001010, 0b01111111};
+
+        for (int i = 0; i < length; i++) {
+            if ((length - i) / 2 < numberOfEscapedBytesToInclude) {
+                bytes[i] = escapedBytes[RANDOM.nextInt(escapedBytes.length)];
+                numberOfEscapedBytesToInclude--;
+            } else {
+                byte randomByte = (byte) RANDOM.nextInt(100);
+                switch (randomByte) {
+                case 0b00000000:
+                case 0b00001101:
+                case 0b00001010:
+                case 0b01111111:
+                    if (numberOfEscapedBytesToInclude > 0) {
+                        bytes[i] = randomByte;
+                        numberOfEscapedBytesToInclude--;
+                    } else {
+                        i--;
+                    }
+                    break;
+                default:
+                    bytes[i] = randomByte;
+
+                }
+            }
+        }
+        return bytes;
+    }
+
+    @Function
+    public static byte[] escapeBytes(byte[] bytes) {
+        List<Byte> listOfEscapedBytes = new ArrayList<Byte>();
+        for (int i = 0; i < bytes.length; i++) {
+            switch (bytes[i]) {
+            case 0b00000000:
+            case 0b00001101:
+            case 0b00001010:
+            case 0b01111111:
+                listOfEscapedBytes.add(new Byte((byte) 0b01111111));
+            default:
+                listOfEscapedBytes.add(new Byte(bytes[i]));
+            }
+        }
+        bytes = new byte[listOfEscapedBytes.size()];
+        for (int i = 0; i < listOfEscapedBytes.size(); i++) {
+            bytes[i] = listOfEscapedBytes.get(i);
         }
         return bytes;
     }

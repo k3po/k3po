@@ -76,9 +76,7 @@ public class RobotIT {
         }
 
         server.close();
-        do {
-            robot.destroy();
-        } while (!robot.isDestroyed());
+        robot.dispose().await();
     }
 
     @Test
@@ -207,7 +205,6 @@ public class RobotIT {
         Pattern p = Pattern.compile(expected);
         assertTrue(p.matcher(observedScript).matches());
 
-        assertEquals(-1, accepted.getInputStream().read());
     }
 
     @Test
@@ -244,7 +241,6 @@ public class RobotIT {
 
         String observedScript = robot.getObservedScript();
         assertEquals(expected, observedScript);
-        assertEquals(-1, client.getInputStream().read());
     }
 
     @Test
@@ -426,7 +422,6 @@ public class RobotIT {
         String observedScript = robot.getObservedScript();
 
         assertEquals(expected, observedScript);
-        assertEquals(-1, accepted.getInputStream().read());
     }
 
     @Test
@@ -1550,7 +1545,6 @@ public class RobotIT {
 
         assertNotEquals(script, robot.getObservedScript());
 
-        assertEquals(-1, accepted.getInputStream().read());
     }
 
     @Test
@@ -1614,7 +1608,6 @@ public class RobotIT {
 
         assertNotEquals(script, robot.getObservedScript());
 
-        assertEquals(-1, accepted.getInputStream().read());
     }
 
     @Test

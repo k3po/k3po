@@ -55,9 +55,9 @@ public abstract class CommandEvent {
          */
         NOTIFIED,
         /**
-         * Event for if a barrier has been triggered after a await command
+         * Event for when the K3po Driver has been disposed of
          */
-        NOTIFY
+        DISPOSED
     }
 
     /**

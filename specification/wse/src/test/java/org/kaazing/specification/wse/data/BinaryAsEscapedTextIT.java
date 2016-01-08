@@ -19,6 +19,7 @@ package org.kaazing.specification.wse.data;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -36,10 +37,26 @@ public class BinaryAsEscapedTextIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
+    @Specification({"echo.non.escaped.characters/request",
+        "echo.non.escaped.characters/response" })
+    public void shouldEchoNonEscapedCharacters() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
     @Specification({
         "echo.payload.length.0/request",
         "echo.payload.length.0/response" })
     public void shouldEchoFrameWithPayloadLength0() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Ignore("Escaping is underspecified, see https://github.com/k3po/k3po/pull/280/files")
+    @Specification({
+        "echo.payload.length.127/request",
+        "echo.payload.length.127/response" })
+    public void shouldEchoFrameWithPayloadLength127() throws Exception {
         k3po.finish();
     }
 
