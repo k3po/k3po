@@ -32,6 +32,9 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jboss.netty.channel.Channel;
@@ -63,6 +66,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     private Robot robot;
     private ChannelFutureListener whenAbortedOrFinished;
+    private BlockingQueue<CountDownLatch> notifiedLatches = new LinkedBlockingQueue<CountDownLatch>();
 
     private final ChannelFuture channelClosedFuture = Channels.future(null);
 
@@ -265,14 +269,22 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     }
 
     private void writeNotifiedOnBarrier(final String barrier, final ChannelHandlerContext ctx) throws Exception {
+        final CountDownLatch latch = new CountDownLatch(1);
+        // Make sure finished message does not get sent before this notified message
+        notifiedLatches.add(latch);
         robot.awaitBarrier(barrier).addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
-                if (future.isSuccess()) {
-                    logger.debug("sending NOTIFIED: " + barrier);
-                    final NotifiedMessage notified = new NotifiedMessage();
-                    notified.setBarrier(barrier);
-                    Channels.write(ctx, Channels.future(null), notified);
+                try {
+                    if (future.isSuccess()) {
+                        logger.debug("sending NOTIFIED: " + barrier);
+                        final NotifiedMessage notified = new NotifiedMessage();
+                        notified.setBarrier(barrier);
+                        Channels.write(ctx, Channels.future(null), notified);
+                    }
+                }
+                finally {
+                    latch.countDown();
                 }
             }
         });
@@ -295,11 +307,14 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     }
 
     private ChannelFutureListener whenAbortedOrFinished(final ChannelHandlerContext ctx) {
-        final AtomicBoolean latch = new AtomicBoolean();
+        final AtomicBoolean oneTimeOnly = new AtomicBoolean();
         return new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
-                if (latch.compareAndSet(false, true)) {
+                if (oneTimeOnly.compareAndSet(false, true)) {
+                    for (CountDownLatch latch : notifiedLatches) {
+                        latch.await();
+                    }
                     sendFinishedMessage(ctx);
                 }
             }
