@@ -34,13 +34,15 @@ write "HTTP/1.1 302 Found\r\n"
 write "Location: http://localhost:8080/echo\r\n"
 write "\r\n"
 
+write [0x88 0x02 0x03 0xe8]
+
 read [0x88 0x02]
 read [(:maskingKey){4}]
 read option mask ${maskingKey}
-read [0x03 0xf3]
+read [0x03 0xe8]
 read option mask [0x00 0x00 0x00 0x00]
 
-write [0x88 0x02 0x03 0xf3]
+close
 
 accept http://localhost:8080/echo
 accepted
