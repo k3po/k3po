@@ -642,14 +642,19 @@ interpret character code zero as end-of-response, truncating any body content fo
 canonicalizes carriage return and linefeed characters as all carriage returns.  Conversely, IE9 strict document mode 
 canonicalizes carriage return and linefeed characters as all linefeeds.
 
-Therefore, the server MUST escape these characters must as follows:
+Therefore, the client and server MUST escape these characters as follows (in both upstream and downstream):
 
-| Byte Value | Character | Escaped Byte Sequence | Escaped Characters |
-|------------|-----------|-----------------------|--------------------|
-| 0x00       | \0        | 0x7f 0x3f             | DEL 0              |
-| 0x0d       | \r        | 0x7f 0x72             | DEL r              |
-| 0x0a       | \n        | 0x7f 0x63             | DEL n              |
-| 0x7f       | DEL       | 0x7f 0x7f             | DEL DEL            |
+| Byte Value | Character | UTF-8 Escaped Byte Sequence | Windows-1252 Escaped Byte Sequence | Escaped Characters |
+|------------|-----------|-----------------------------|------------------------------------|--------------------|
+| 0x00       | \0        | 0x7f 0x00                   | 0x7f 0x30                          | DEL 0              |
+| 0x0d       | \r        | 0x7f 0x72                   | 0x7f 0x00                          | DEL r              |
+| 0x0a       | \n        | 0x7f 0x6e                   | 0x7f 0x00                          | DEL n              |
+| 0x7f       | DEL       | 0x7f 0x7f                   | 0x7f 0x00                          | DEL DEL            |
+
+Reference: [utf-8](https://en.wikipedia.org/wiki/UTF-8), [windows-1252](https://en.wikipedia.org/wiki/Windows-1252)
+
+Websocket frame length must calculated prior to escaping the bytes.  Thus a frame with a delivered (already escaped)
+payload of `0x7f 0x7f` has a size of 1.
 
 For clients requiring escaped text responses, the initial handshake uses a different derived location path.
 ```
@@ -682,7 +687,7 @@ Connection: close
 [emulated websocket frames]
 ```
 
-However, the client MUST also unescape the `DEL 0`, `DEL r`, `DEL n` and `DEL DEL` escaped character sequences to
+However, the client and server MUST also unescape the `DEL 0`, `DEL r`, `DEL n` and `DEL DEL` escaped character sequences to
 get the logical bytes transfered.
 
 ### Binary as Mixed Text
