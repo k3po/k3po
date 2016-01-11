@@ -642,7 +642,7 @@ interpret character code zero as end-of-response, truncating any body content fo
 canonicalizes carriage return and linefeed characters as all carriage returns.  Conversely, IE9 strict document mode 
 canonicalizes carriage return and linefeed characters as all linefeeds.
 
-Therefore, the client and server MUST escape these characters must as follows (in both upstream and downstream):
+Therefore, the client and server MUST escape these characters as follows (in both upstream and downstream):
 
 | Byte Value | Character | UTF-8 Escaped Byte Sequence | Windows-1252 Escaped Byte Sequence | Escaped Characters |
 |------------|-----------|-----------------------------|------------------------------------|--------------------|
