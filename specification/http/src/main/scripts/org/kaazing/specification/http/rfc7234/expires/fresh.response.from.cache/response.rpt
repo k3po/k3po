@@ -1,0 +1,16 @@
+property now "Wed, 18 Nov 2015 01:10:45 GMT"
+property expires "Wed, 18 Nov 2015 01:10:55 GMT"
+
+accept http://localhost:8000/index.html
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+
+write status "200" "OK"
+write header "Date" ${now}
+write header "Expires" ${expires}
+write header content-length
+write flush
