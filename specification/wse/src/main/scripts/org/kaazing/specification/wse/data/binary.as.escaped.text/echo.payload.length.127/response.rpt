@@ -58,7 +58,7 @@ write flush
 
 write await DATA_RECEIVED
 write [0x80 0x7F]
-write ${wse:unescapeBytesAndConvertToEscapedWindows1252(server127)}
+write ${wse:convertEscapedUtf8BytesToEscapedWindows1252(server127)}
 write flush
 
 # Upstream

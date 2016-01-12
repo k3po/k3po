@@ -74,7 +74,17 @@ public final class Functions {
     }
 
     @Function
-    public static byte[] escapeBytes(byte[] bytes) {
+    public static byte[] convertEscapedUtf8BytesToEscapedWindows1252(byte[] in) {
+        byte[] out = new byte[in.length];
+
+        for (int i = 0; i < in.length; i++) {
+            out[i] = in[i] == 0x00 ? 0x30 : in[i];
+        }
+        return out;
+    }
+
+    @Function
+    public static byte[] escapeBytesForUtf8(byte[] bytes) {
         List<Byte> listOfEscapedBytes = new ArrayList<Byte>();
         for (int i = 0; i < bytes.length; i++) {
             switch (bytes[i]) {
@@ -85,6 +95,28 @@ public final class Functions {
                 listOfEscapedBytes.add(new Byte((byte) 0b01111111));
             default:
                 listOfEscapedBytes.add(new Byte(bytes[i]));
+            }
+        }
+        bytes = new byte[listOfEscapedBytes.size()];
+        for (int i = 0; i < listOfEscapedBytes.size(); i++) {
+            bytes[i] = listOfEscapedBytes.get(i);
+        }
+        return bytes;
+    }
+
+    @Function
+    public static byte[] escapeBytesForWindows1252(byte[] bytes) {
+        List<Byte> listOfEscapedBytes = new ArrayList<Byte>();
+        for (int i = 0; i < bytes.length; i++) {
+            switch (bytes[i]) {
+            case 0b00000000:
+            case 0b00001101:
+            case 0b00001010:
+            case 0b01111111:
+                listOfEscapedBytes.add(new Byte((byte) 0b01111111));
+            default:
+                byte b = bytes[i] == 0b00000000 ? 0x30 : bytes[i];
+                listOfEscapedBytes.add(new Byte(b));
             }
         }
         bytes = new byte[listOfEscapedBytes.size()];
