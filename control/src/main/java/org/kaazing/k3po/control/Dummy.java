@@ -1,6 +1,5 @@
-package org.kaazing.k3po.control;
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +13,7 @@ package org.kaazing.k3po.control;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.kaazing.k3po.control;
 
 /**
  * This project has no public api.  This class is only here to get javadoc to compile, as required for Sonatype.
