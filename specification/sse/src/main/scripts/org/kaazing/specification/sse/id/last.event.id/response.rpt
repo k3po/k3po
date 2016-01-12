@@ -21,6 +21,3 @@ write "id:105"
 write "event:e1\n"
 write "data:Message id field for a named server-sent event e1\n"
 write "\n"
-
-close
-closed

@@ -22,6 +22,3 @@ read "\n"
 
 read "data:Message for unnamed server-sent event!\n"
 read "\n"
-
-close
-closed

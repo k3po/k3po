@@ -20,6 +20,3 @@ write "id:\n"
 write "event:empty-id\n"
 write "data:Message with a blank id field for a named server-sent event empty-id!\n"
 write "\n"
-
-close
-closed

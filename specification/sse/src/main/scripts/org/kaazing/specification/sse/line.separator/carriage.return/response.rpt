@@ -19,6 +19,3 @@ write "\r\n"
 write "event:e1\r"
 write "data:Message using carriage-return as line separator for a named server-sent event e1!\r"
 write "\r"
-
-close
-closed

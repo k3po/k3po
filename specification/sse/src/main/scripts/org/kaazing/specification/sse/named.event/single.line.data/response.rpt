@@ -19,6 +19,3 @@ write "\r\n"
 write "event:e1\n"
 write "data:Single line message for named server-sent event e1!\n"
 write "\n"
-
-close
-closed

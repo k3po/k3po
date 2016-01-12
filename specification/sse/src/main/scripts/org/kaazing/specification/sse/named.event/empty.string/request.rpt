@@ -16,6 +16,3 @@ read "\r\n"
 read "event:\n"
 read "data:Message for a server-sent event with no name!\n"
 read "\n"
-
-close
-closed

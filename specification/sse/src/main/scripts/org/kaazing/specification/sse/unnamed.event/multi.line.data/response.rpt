@@ -19,6 +19,3 @@ write "\r\n"
 write "data:Multi-line message for unnamed server-side event\n"
 write "data:continued message for the unnamed server-side event\n"
 write "\n"
-
-close
-closed

@@ -28,6 +28,3 @@ write "\n"
 write "event:e3\n"
 write "data:Message for named server-sent event e3!\n"
 write "\n"
-
-close
-closed

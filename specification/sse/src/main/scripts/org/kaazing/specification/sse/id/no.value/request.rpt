@@ -17,6 +17,3 @@ read "id:\n"
 read "event:empty-id\n"
 read "data:Message with a blank id field for a named server-sent event empty-id!\n"
 read "\n"
-
-close
-closed

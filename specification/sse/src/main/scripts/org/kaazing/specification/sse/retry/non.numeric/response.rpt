@@ -18,6 +18,3 @@ write "\r\n"
 
 write "retry:non-numeric-value-should-be-ignored\n"
 write "\n"
-
-close
-closed

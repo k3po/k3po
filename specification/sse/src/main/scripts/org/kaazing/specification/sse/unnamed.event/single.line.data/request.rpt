@@ -15,6 +15,3 @@ read "\r\n"
 
 read "data:Single line message for an unnamed server-sent event!\n"
 read "\n"
-
-close
-closed

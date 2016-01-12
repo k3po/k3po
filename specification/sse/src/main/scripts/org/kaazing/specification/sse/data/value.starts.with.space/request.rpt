@@ -16,6 +16,3 @@ read "\r\n"
 read "event:e1\n"
 read "data:  Message with leading whitespace in the data field for a named server-sent event e1\n"
 read "\n"
-
-close
-closed

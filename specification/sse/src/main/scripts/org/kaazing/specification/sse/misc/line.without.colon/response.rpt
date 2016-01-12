@@ -20,6 +20,3 @@ write "id\n"
 write "event:e1\n"
 write "data:Message with id field without a colon for a named server-sent event e1!\n"
 write "\n"
-
-close
-closed

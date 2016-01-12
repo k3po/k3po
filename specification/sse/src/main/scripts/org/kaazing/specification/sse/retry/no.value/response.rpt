@@ -18,6 +18,3 @@ write "\r\n"
 
 write "retry:\n"
 write "\n"
-
-close
-closed

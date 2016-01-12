@@ -16,6 +16,3 @@ read "\r\n"
 read "event:e1\r"
 read "data:Message using carriage-return as line separator for a named server-sent event e1!\r"
 read "\r"
-
-close
-closed

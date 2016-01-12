@@ -16,6 +16,3 @@ read "\r\n"
 read "data:Multi-line message for unnamed server-side event\n"
 read "data:continued message for the unnamed server-side event\n"
 read "\n"
-
-close
-closed

@@ -18,6 +18,3 @@ write "\r\n"
 
 write "data:Single line message for an unnamed server-sent event!\n"
 write "\n"
-
-close
-closed

@@ -19,6 +19,3 @@ write "\r\n"
 write "event:empty-data\n"
 write "data:\n"
 write "\n"
-
-close
-closed

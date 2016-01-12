@@ -15,6 +15,3 @@ read "\r\n"
 
 read "retry:    5000\n"
 read "\n"
-
-close
-closed

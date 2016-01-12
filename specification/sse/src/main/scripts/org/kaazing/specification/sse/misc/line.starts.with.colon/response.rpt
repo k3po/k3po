@@ -18,6 +18,3 @@ write "\r\n"
 
 write ": Comments start with a colon\n"
 write "\n"
-
-close
-closed

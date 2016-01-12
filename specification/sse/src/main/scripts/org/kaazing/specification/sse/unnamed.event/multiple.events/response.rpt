@@ -25,6 +25,3 @@ write "\n"
 
 write "data:Message for unnamed server-sent event!\n"
 write "\n"
-
-close
-closed

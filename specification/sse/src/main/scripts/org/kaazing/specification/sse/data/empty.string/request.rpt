@@ -16,6 +16,3 @@ read "\r\n"
 read "event:empty-data\n"
 read "data:\n"
 read "\n"
-
-close
-closed

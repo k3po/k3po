@@ -20,6 +20,3 @@ write "event:e1\n"
 write "data:Multi-line message for named server-side event e1\n"
 write "data:continued message for named server-side event e1\n"
 write "\n"
-
-close
-closed

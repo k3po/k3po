@@ -17,6 +17,3 @@ read "event:e1\n"
 read "data:Multi-line message for named server-side event e1\n"
 read "data:continued message for named server-side event e1\n"
 read "\n"
-
-close
-closed
