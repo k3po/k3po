@@ -647,9 +647,9 @@ Therefore, the client and server MUST escape these characters as follows (in bot
 | Byte Value | Character | UTF-8 Escaped Byte Sequence | Windows-1252 Escaped Byte Sequence | Escaped Characters |
 |------------|-----------|-----------------------------|------------------------------------|--------------------|
 | 0x00       | \0        | 0x7f 0x00                   | 0x7f 0x30                          | DEL 0              |
-| 0x0d       | \r        | 0x7f 0x72                   | 0x7f 0x00                          | DEL r              |
-| 0x0a       | \n        | 0x7f 0x6e                   | 0x7f 0x00                          | DEL n              |
-| 0x7f       | DEL       | 0x7f 0x7f                   | 0x7f 0x00                          | DEL DEL            |
+| 0x0d       | \r        | 0x7f 0x72                   | 0x7f 0x72                          | DEL r              |
+| 0x0a       | \n        | 0x7f 0x6e                   | 0x7f 0x6e                          | DEL n              |
+| 0x7f       | DEL       | 0x7f 0x7f                   | 0x7f 0x7f                          | DEL DEL            |
 
 Reference: [utf-8](https://en.wikipedia.org/wiki/UTF-8), [windows-1252](https://en.wikipedia.org/wiki/Windows-1252)
 
