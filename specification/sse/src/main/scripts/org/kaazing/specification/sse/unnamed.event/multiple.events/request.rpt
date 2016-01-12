@@ -1,0 +1,27 @@
+connect tcp://localhost:8000
+connected
+
+write "GET /sse HTTP/1.1\r\n"
+write "Host: localhost:8000\r\n"
+write "Accept: text/event-stream\r\n"
+write "\r\n"
+
+read "HTTP/1.1 200 OK\r\n"
+read "Content-Type: text/event-stream\r\n"
+read "Cache-Control: no-cache\r\n"
+read "Connection: keep-alive\r\n"
+read /Date:.*/ "\r\n"
+read "\r\n"
+
+read "data:Message for unnamed server-sent event!\n"
+read "\n"
+
+read "data:Message for unnamed server-sent event!\n"
+read "data:continued message for unnamed server-sent event!\n"
+read "\n"
+
+read "data:Message for unnamed server-sent event!\n"
+read "\n"
+
+close
+closed

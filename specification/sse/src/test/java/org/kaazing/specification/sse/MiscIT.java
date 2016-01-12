@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.specification.sse;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -27,18 +26,34 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
-public class SpecificationIT {
-
-    private final K3poRule robot = new K3poRule();
-
+public class MiscIT {
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/sse/misc");
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
     @Rule
-    public final TestRule chain = outerRule(robot).around(timeout);
+    public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({"accept", "connect"})
-    public void shouldPass() throws Exception {
-        robot.finish();
+    @Specification({
+        "custom.fields/request",
+        "custom.fields/response" })
+    public void shouldReceiveMessageWithCustomFields() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "line.starts.with.colon/request",
+        "line.starts.with.colon/response" })
+    public void shouldReceiveComment() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "line.without.colon/request",
+        "line.without.colon/response" })
+    public void shouldReceiveFieldWithoutColon() throws Exception {
+        k3po.finish();
     }
 }
