@@ -16,7 +16,8 @@
 
 property sequence ${wse:randomInt(100)}
 property client127 ${wse:randomBytesIncludingNumberOfEscapedBytes(127, 4)}
-property escapedClient127 ${wse:escapeBytes(client127)}
+property escapedUtf8Client127 ${wse:escapeBytesForUtf8(client127)}
+property escaped1252Client127 ${wse:escapeBytesForWindows1252(client127)}
 
 connect http://localhost:8080/path/;e/cte?query
 connected
@@ -55,7 +56,7 @@ read header "Content-Type" "text/plain;charset=windows-1252"
 read header "Connection" "close"
 
 read [0x80 0x7F]
-read [0..127]
+read ${escaped1252Client127}
 
 # Upstream
 connect await CREATED
@@ -69,6 +70,6 @@ write header "Content-Type" "text/plain;charset=utf-8"
 write header "X-Sequence-No" ${wse:asString(sequence + 1)}
 write header content-length
 
-write [0xC2 0x80 0x7F] ${escapedClient127}
+write [0xC2 0x80 0x7F] ${escapedUtf8Client127}
 write flush
 
