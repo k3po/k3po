@@ -26,6 +26,11 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
+/**
+ * W3C Server-Sent Events specification - https://www.w3.org/TR/eventsource:
+ *     Section 6 - Parsing an event stream 
+ *     Section 7 - Interpreting an event stream
+ */
 public class UnnamedEventIT {
     private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/sse/unnamed.event");
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
