@@ -15,7 +15,7 @@
 #
 
 property sequence ${wse:randomInt(100)}
-property invalidUTF8  ${randomBytesInvalidUTF8(20)}
+property invalidUTF8  ${ws:randomBytesInvalidUTF8(20)}
 
 connect http://localhost:8080/path/;e/cb?query
 connected
