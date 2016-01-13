@@ -426,6 +426,17 @@ The client requirements for data frame syntax are defined by
 The server requirements for data frame syntax are defined by 
 [Draft-76, Section 5.3](http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76#section-5.3).
 
+Binary frames are represented using frame type 0x80.
+
+Text frames may be represented in one of two ways:
+
+* Delimited: the frame type byte is 0x00, with the 0xFF delimiter marking end of data
+* Specified length: the frame type is 0x81, which, according to the rules of the above referenced sections of [Draft-76](http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76), implies that the length is specified at the start of frame.
+
+The payload of all text frames MUST be UTF-8. 
+
+If the server receives a text frame that contains invalid UTF-8, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
+
 ## Command Frames
 
 The frames used by an emulated WebSocket connection for upstream and downstream data transfer extend those defined by 
