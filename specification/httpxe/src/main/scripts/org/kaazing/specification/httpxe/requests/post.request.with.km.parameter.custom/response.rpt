@@ -21,3 +21,6 @@ connected
 read parameter ".km" "(CUSTOM)"
 read method "POST"
 read version "HTTP/1.1"
+
+write status "200" "OK"
+write close

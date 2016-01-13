@@ -19,11 +19,12 @@ connected
 
 write method "GET"
 write version "HTTP/1.1"
+write header host
 write flush
 
 read status "200" "OK"
 read header "Content-Type" "application/x-message-http"
 
-read "101 Switching Protocols HTTP/1.1\r\n"
+read "HTTP/1.1 101 Switching Protocols\r\n"
 read "Content-Type: text/html\r\n"
 

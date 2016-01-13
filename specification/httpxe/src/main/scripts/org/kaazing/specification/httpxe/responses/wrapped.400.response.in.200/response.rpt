@@ -25,7 +25,7 @@ write status "200" "OK"
 write header "Content-Type" "application/x-message-http"
 write header content-length
 
-write "400 Bad Request HTTP/1.1\r\n"
+write "HTTP/1.1 400 Bad Request\r\n"
 write "Content-Type: text/html\r\n"
 write flush
 
