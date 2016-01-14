@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.specification.wse.data;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -37,6 +35,12 @@ public class BinaryAsEscapedTextIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
+    @Specification({"echo.escaped.characters/request",
+        "echo.escaped.characters/response" })
+    public void shouldEchoEscapedCharacters() throws Exception {
+        k3po.finish();
+    }
+
     @Specification({"echo.non.escaped.characters/request",
         "echo.non.escaped.characters/response" })
     public void shouldEchoNonEscapedCharacters() throws Exception {
@@ -52,7 +56,6 @@ public class BinaryAsEscapedTextIT {
     }
 
     @Test
-    @Ignore("Escaping is underspecified, see https://github.com/k3po/k3po/pull/280/files")
     @Specification({
         "echo.payload.length.127/request",
         "echo.payload.length.127/response" })
