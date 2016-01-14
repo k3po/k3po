@@ -19,6 +19,9 @@ property downstreamId ${wse:uniqueId()}
 property upstream ${wse:append("http://localhost:8080/path/", upstreamId)}
 property downstream ${wse:append("http://localhost:8080/path/", downstreamId)}
 
+property allPossibleBytes ${wse:allBytes()}
+property utf8AllBytes ${wse:encodeBytesAsUtf8(allPossibleBytes)}
+
 accept http://localhost:8080/path/;e/cte?query
 accepted
 connected
@@ -57,8 +60,8 @@ write header "Connection" "close"
 write flush
 
 write await DATA_RECEIVED
-write [0x80 0x7F]
-write ${wse:convertEscapedUtf8BytesToEscapedWindows1252(server127)}
+write [0x80 0x82 0x00]
+write ${allPossibleBytes}
 write flush
 
 # Upstream
@@ -72,7 +75,8 @@ read version "HTTP/1.1"
 read header "Content-Type" /text\/plain;charset=(?i)utf-8/
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
-read [0xC2 0x80 0x7F]
-read ([0..131] :server127)
+read [0xC2 0x80 0xC2 0x82 0x00]
+# Encoded data length is 3 * 128 because half the bytes have leading bit set so need 2 bytes in UTF-8
+read ${utf8AllBytes}
 read notify DATA_RECEIVED
 

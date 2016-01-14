@@ -1,4 +1,4 @@
-this#
+#
 # Copyright 2007-2015, Kaazing Corporation. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +15,8 @@ this#
 #
 
 property sequence ${wse:randomInt(100)}
-property client127 ${wse:randomBytesIncludingNumberOfEscapedBytes(127, 4)}
-property escapedUtf8Client127 ${wse:escapeBytesForUtf8(client127)}
-property escaped1252Client127 ${wse:escapeBytesForWindows1252(client127)}
 
-connect http://localhost:8080/path/;e/cte?query
+connect http://localhost:8080/path/;e/ctm?query
 connected
 
 write method "POST"
@@ -55,8 +52,8 @@ read status "200" /.+/
 read header "Content-Type" "text/plain;charset=windows-1252"
 read header "Connection" "close"
 
-read [0x80 0x7F]
-read ${escaped1252Client127}
+read [0x80 0x00]
+
 
 # Upstream
 connect await CREATED
@@ -70,6 +67,5 @@ write header "Content-Type" "text/plain;charset=utf-8"
 write header "X-Sequence-No" ${wse:asString(sequence + 1)}
 write header content-length
 
-write [0xC2 0x80 0x7F] ${escapedUtf8Client127}
+write [0xC2 0x80 0x00]
 write flush
-

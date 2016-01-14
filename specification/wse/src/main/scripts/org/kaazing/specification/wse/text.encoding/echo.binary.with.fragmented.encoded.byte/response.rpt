@@ -19,7 +19,7 @@ property downstreamId ${wse:uniqueId()}
 property upstream ${wse:append("http://localhost:8080/path/", upstreamId)}
 property downstream ${wse:append("http://localhost:8080/path/", downstreamId)}
 
-accept http://localhost:8080/path/;e/cte?query
+accept http://localhost:8080/path/;e/ctm?query
 accepted
 connected
 
@@ -57,9 +57,8 @@ write header "Connection" "close"
 write flush
 
 write await DATA_RECEIVED
-write [0x80 0x7F]
-write ${wse:convertEscapedUtf8BytesToEscapedWindows1252(server127)}
-write flush
+write [0x80 0x01 0x84]
+
 
 # Upstream
 accept ${upstream}
@@ -72,7 +71,5 @@ read version "HTTP/1.1"
 read header "Content-Type" /text\/plain;charset=(?i)utf-8/
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
-read [0xC2 0x80 0x7F]
-read ([0..131] :server127)
+read [0xC2 0x80 0x01 0xC2 0x84]
 read notify DATA_RECEIVED
-

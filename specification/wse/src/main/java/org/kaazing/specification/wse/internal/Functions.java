@@ -16,7 +16,6 @@
 package org.kaazing.specification.wse.internal;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -26,11 +25,28 @@ import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
 public final class Functions {
     private static final Random RANDOM = new Random();
 
+    private static final byte[] allBytes = new byte[256];
+
+    static {
+        for (int i = 0; i < 256; i++) {
+            allBytes[i] = (byte) i;
+        }
+    }
+
     @Function
     public static byte[] uniqueId() {
         byte[] bytes = new byte[16];
         RANDOM.nextBytes(bytes);
         return Base64.encode(bytes);
+    }
+
+    @Function
+    public static byte[] allBytes() {
+        byte[] bytes = new byte[256];
+        for (int i = 0; i < 256; i++) {
+            bytes[i] = (byte) i;
+        }
+        return bytes;
     }
 
     @Function
@@ -85,25 +101,13 @@ public final class Functions {
     }
 
     @Function
+    public static byte[] decodeUtf8Bytes(byte[] bytes) {
+        return Encoding.UTF8.decode(bytes);
+    }
+
+    @Function
     public static byte[] encodeBytesAsUtf8(byte[] bytes) {
-        List<Byte> out = new ArrayList<Byte>(bytes.length * 2);
-        for (int i = 0; i < bytes.length; i++) {
-            byte b = bytes[i];
-            if ((b & 0x80) != 0) {
-                byte encodedByte0 = (byte) ((((b & 0xff) >> 6) & 0x03) | 0xc0);
-                byte encodedByte1 = (byte) (b & 0xbf);
-                out.add(encodedByte0);
-                out.add(encodedByte1);
-            }
-            else {
-                out.add(b);
-            }
-        }
-        byte[] result = new byte[out.size()];
-        for (int i = 0; i < out.size(); i++) {
-            result[i] = out.get(i);
-        }
-        return result;
+        return Encoding.UTF8.encode(bytes);
     }
 
 

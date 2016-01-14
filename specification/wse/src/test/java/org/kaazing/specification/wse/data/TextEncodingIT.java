@@ -43,4 +43,23 @@ public class TextEncodingIT {
         k3po.finish();
     }
 
+    @Test
+    @Specification({
+        "echo.binary.payload.all.byte.values/request",
+        "echo.binary.payload.all.byte.values/response" })
+    public void shouldEchoFrameWithAllByteValues() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "echo.binary.with.fragmented.encoded.byte/request",
+        "echo.binary.with.fragmented.encoded.byte/response" })
+    public void shouldEchoFrameFragmentedEncodedByte() throws Exception {
+        k3po.start();
+        Thread.sleep(1000);
+        k3po.notifyBarrier("WRITE_SECOND_FRAGMENT");
+        k3po.finish();
+    }
+
 }
