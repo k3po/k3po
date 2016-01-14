@@ -74,7 +74,7 @@ public class RequestsIT {
     @Specification({
         "post.request.with.path.encoded.post/request",
         "post.request.with.path.encoded.post/response"})
-    public void shouldProcessPathEncodedGetRequestAsPostRequest() throws Exception {
+    public void shouldProcessPathEncodedPostRequestAsPostRequest() throws Exception {
         k3po.finish();
     }
 
