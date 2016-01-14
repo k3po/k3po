@@ -26,40 +26,20 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
-public class BinaryAsEscapedTextIT {
-    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/wse/data/binary.as.escaped.text");
+public class TextEncodingIT {
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/wse/text.encoding");
 
-    private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
+    private final TestRule timeout = new DisableOnDebug(
+            new Timeout(5, SECONDS));
 
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({"echo.escaped.characters/request",
-        "echo.escaped.characters/response" })
-    public void shouldEchoEscapedCharacters() throws Exception {
-        k3po.finish();
-    }
-
-    @Specification({"echo.non.escaped.characters/request",
-        "echo.non.escaped.characters/response" })
-    public void shouldEchoNonEscapedCharacters() throws Exception {
-        k3po.finish();
-    }
-
-    @Test
     @Specification({
-        "echo.payload.length.0/request",
-        "echo.payload.length.0/response" })
+        "echo.binary.payload.length.0/request",
+        "echo.binary.payload.length.0/response" })
     public void shouldEchoFrameWithPayloadLength0() throws Exception {
-        k3po.finish();
-    }
-
-    @Test
-    @Specification({
-        "echo.payload.length.127/request",
-        "echo.payload.length.127/response" })
-    public void shouldEchoFrameWithPayloadLength127() throws Exception {
         k3po.finish();
     }
 

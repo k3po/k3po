@@ -15,8 +15,9 @@
 #
 
 property sequence ${wse:randomInt(100)}
+property invalidUTF8  ${ws:randomBytesInvalidUTF8(20)}
 
-connect http://localhost:8080/path/;e/cb?query
+connect http://localhost:8080/path/;e/cbm?query
 connected
 
 write method "POST"
@@ -52,7 +53,9 @@ read status "200" /.+/
 read header "Content-Type" "application/octet-stream"
 read header "Connection" "close"
 
-read [0x00 0xFF]
+read [0x01 0x30 0x32 0xFF]
+read [0x01 0x30 0x31 0xFF]
+read closed
 
 # Upstream
 connect await CREATED
@@ -66,5 +69,8 @@ write header "Content-Type" "application/octet-stream"
 write header "X-Sequence-No" ${wse:asString(sequence + 1)}
 write header content-length
 
-write [0x00 0xFF]
-write flush
+write [0x81 0x14] ${invalidUTF8}
+write close
+
+read status "400" /.+/
+read closed

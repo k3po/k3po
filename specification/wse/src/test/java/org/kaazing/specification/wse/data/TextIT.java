@@ -29,7 +29,7 @@ import org.kaazing.k3po.junit.rules.K3poRule;
 public class TextIT {
 
     private final K3poRule k3po = new K3poRule()
-            .setScriptRoot("org/kaazing/specification/wse/data/text");
+            .setScriptRoot("org/kaazing/specification/wse/data");
 
     private final TestRule timeout = new DisableOnDebug(
             new Timeout(5, SECONDS));
@@ -39,41 +39,51 @@ public class TextIT {
 
     @Test
     @Specification({
-        "echo.payload.length.0/request",
-        "echo.payload.length.0/response" })
+        "client.send.text.invalid.utf8/request",
+        "client.send.text.invalid.utf8/response" })
+    public void clientSendTextInvalidUTF8() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "echo.text.payload.length.0/request",
+        "echo.text.payload.length.0/response" })
     public void shouldEchoFrameWithPayloadLength0() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "echo.payload.length.127/request",
-        "echo.payload.length.127/response" })
+        "echo.text.payload.length.127/request",
+        "echo.text.payload.length.127/response" })
     public void shouldEchoFrameWithPayloadLength127() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "echo.payload.length.128/request",
-        "echo.payload.length.128/response" })
+        "echo.text.payload.length.128/request",
+        "echo.text.payload.length.128/response" })
     public void shouldEchoFrameWithPayloadLength128() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "echo.payload.length.65535/request",
-        "echo.payload.length.65535/response" })
+        "echo.text.payload.length.65535/request",
+        "echo.text.payload.length.65535/response" })
     public void shouldEchoFrameWithPayloadLength65535() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "echo.payload.length.65536/request",
-        "echo.payload.length.65536/response" })
+        "echo.text.payload.length.65536/request",
+        "echo.text.payload.length.65536/response" })
     public void shouldEchoFrameWithPayloadLength65536() throws Exception {
         k3po.finish();
     }
+
+
 }

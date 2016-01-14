@@ -16,6 +16,7 @@
 package org.kaazing.specification.wse.internal;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -82,6 +83,29 @@ public final class Functions {
         }
         return out;
     }
+
+    @Function
+    public static byte[] encodeBytesAsUtf8(byte[] bytes) {
+        List<Byte> out = new ArrayList<Byte>(bytes.length * 2);
+        for (int i = 0; i < bytes.length; i++) {
+            byte b = bytes[i];
+            if ((b & 0x80) != 0) {
+                byte encodedByte0 = (byte) ((((b & 0xff) >> 6) & 0x03) | 0xc0);
+                byte encodedByte1 = (byte) (b & 0xbf);
+                out.add(encodedByte0);
+                out.add(encodedByte1);
+            }
+            else {
+                out.add(b);
+            }
+        }
+        byte[] result = new byte[out.size()];
+        for (int i = 0; i < out.size(); i++) {
+            result[i] = out.get(i);
+        }
+        return result;
+    }
+
 
     @Function
     public static byte[] escapeBytesForUtf8(byte[] bytes) {

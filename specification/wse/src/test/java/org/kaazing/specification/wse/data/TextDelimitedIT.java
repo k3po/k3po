@@ -29,7 +29,7 @@ import org.kaazing.k3po.junit.rules.K3poRule;
 public class TextDelimitedIT {
 
     private final K3poRule k3po = new K3poRule()
-            .setScriptRoot("org/kaazing/specification/wse/data/text.delimited");
+            .setScriptRoot("org/kaazing/specification/wse/data");
 
     private final TestRule timeout = new DisableOnDebug(
             new Timeout(5, SECONDS));
@@ -39,24 +39,24 @@ public class TextDelimitedIT {
 
     @Test
     @Specification({
-        "client.send.invalid.utf8/request",
-        "client.send.invalid.utf8/response" })
+        "client.send.text.delimited.invalid.utf8/request",
+        "client.send.text.delimited.invalid.utf8/response" })
     public void clientSendInvalidUTF8() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "echo.payload.length.0/request",
-        "echo.payload.length.0/response" })
+        "echo.text.delimited.payload.length.0/request",
+        "echo.text.delimited.payload.length.0/response" })
     public void shouldEchoFrameWithPayloadLength0() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "echo.payload.length.20/request",
-        "echo.payload.length.20/response" })
+        "echo.text.delimited.payload.length.20/request",
+        "echo.text.delimited.payload.length.20/response" })
     public void shouldEchoFrameWithPayloadLength127() throws Exception {
         k3po.finish();
     }
