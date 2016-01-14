@@ -323,7 +323,7 @@ The downstream response MAY use `Connection: close` or `Transfer-Encoding: chunk
 
 See [Buffering Proxies](#buffering-proxies) for further client requirements when attaching the downstream.
 
-If the downstream HTTP response transfer is complete, or else complete but does not end in a `RECONNECT` command frame, then the client should consider this as unexpected connection loss for the emulated WebSocket connection.
+If the downstream HTTP response transfer is complete but does not end in a `RECONNECT` command frame, then the client should consider this as unexpected connection loss for the emulated WebSocket connection.
 
 If the client receives any frames on the HTTP downstream response after the `RECONNECT` frame, the client should fail the
 emulated WebSocket connection.
@@ -427,7 +427,7 @@ Binary frames are represented using frame type 0x80.
 Text frames may be represented in one of two formats:
 
 * Delimited: the frame type byte is 0x00, with the 0xFF delimiter marking end of data
-* Specified length: the frame type is 0x81, which, according to the rules of the above referenced sections of [Draft-76](http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76), implies that the length is specified at the start of frame.
+* Specified length: the frame type is 0x81, which, according to the rules of the above referenced sections of [Draft-76](http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76), implies that the length is specified at the start of frame. This particular frame type byte value is specific to the present specification. But it still conforms to Draft-76 since that specification only mentions the leading bit of the frame type byte and poses no constraints on the other bits. 
 
 Text frames on the downstream MUST use the specified length format. Text frames on the upstream usually use the specified length format, but MAY use the delimited format.
 
