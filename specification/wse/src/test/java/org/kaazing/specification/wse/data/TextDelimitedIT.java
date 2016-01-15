@@ -57,7 +57,7 @@ public class TextDelimitedIT {
     @Specification({
         "echo.text.delimited.payload.length.20/request",
         "echo.text.delimited.payload.length.20/response" })
-    public void shouldEchoFrameWithPayloadLength127() throws Exception {
+    public void shouldEchoFrameWithPayloadLength20() throws Exception {
         k3po.finish();
     }
 

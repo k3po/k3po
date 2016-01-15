@@ -16,9 +16,10 @@
 
 property sequence ${wse:randomInt(100)}
 property allPossibleBytes ${wse:allBytes()}
-property utf8AllBytes ${wse:encodeBytesAsUtf8(allPossibleBytes)}
+property escapedUtf8AllBytes ${wse:escapeBytesForUtf8(wse:encodeBytesAsUtf8(allPossibleBytes))}
+property escaped1252AllBytes ${wse:escapeBytesForWindows1252(allPossibleBytes)}
 
-connect http://localhost:8080/path/;e/ctm?query
+connect http://localhost:8080/path/;e/ctem?query
 connected
 
 write method "POST"
@@ -55,7 +56,7 @@ read header "Content-Type" "text/plain;charset=windows-1252"
 read header "Connection" "close"
 
 read [0x80 0x82 0x00]
-read ${allPossibleBytes}
+read ${escaped1252AllBytes}
 
 # Upstream
 connect await CREATED
@@ -71,6 +72,6 @@ write header content-length
 
 # Unencoded form is 0x80 0x82 0x00
 # Frame length is 256 (logical number of bytes)
-write [0xC2 0x80 0xC2 0x82 0x00] ${utf8AllBytes}
+write [0xC2 0x80 0xC2 0x82 0x00] ${escapedUtf8AllBytes}
 write flush
 

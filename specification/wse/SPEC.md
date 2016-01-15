@@ -650,7 +650,7 @@ IE8+ `XDomainRequest` can distinguish all 256 byte-as-character-code values, for
 However, the `XDomainRequest` `POST` request cannot specify content-type, and so `text/plain;charset=UTF-8` is assumed, but a bug remains where the `\0` (NUL) character cannot be included in the `POST` body since the text is then clipped at the `\0`.
 
 Rather than escaping the `\0` (NUL) byte-as-character-code, the client MAY use character code `256` to represent zero, so the
-client MAY send a `\u0100` character for each `\u0000` character.
+client MAY send a `\u0100` character for each `\u0000` character (in UTF-8 `\u0100` is `0xC4 0x80`)
 
 The server MUST decode the binary-as-mixed-text upstream such that each character codepoint is computed `mod 0x0100` to determine each originally intended byte value.
 
@@ -658,7 +658,7 @@ The upstream HTTP request MUST have content type `text/plain;charset=utf-8`. The
 
 * If the leading (most significant) bit is set, then the byte MUST the encoded as two bytes, in the form `1100 00?? 10?? ????` where `?` represents one bit of the original byte
 * If the leading bit is not set, then the byte is encoded as is
-* If the byte value is 0x00 it MAY be encoded as 0xC4 0x80 (instead of 0x00)
+* If the byte value is `0x00` it MAY be encoded as `0xC4 0x80` (instead of 0x00)
 
 Note that this implies that multibyte UTF-8 characters inside an emulated text frame will be further encoded (each byte will become two).
 

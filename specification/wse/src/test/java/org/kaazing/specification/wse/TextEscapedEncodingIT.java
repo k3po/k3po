@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.specification.wse.data;
+package org.kaazing.specification.wse;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
@@ -41,9 +41,33 @@ public class TextEscapedEncodingIT {
         k3po.finish();
     }
 
-    @Specification({"echo.non.escaped.characters/request",
-        "echo.non.escaped.characters/response" })
-    public void shouldEchoNonEscapedCharacters() throws Exception {
+    @Test
+    @Specification({
+        "echo.binary.payload.all.byte.values/request",
+        "echo.binary.payload.all.byte.values/response" })
+    public void shouldEchoFrameWithAllByteValues() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "echo.binary.with.fragmented.encoded.byte/request",
+        "echo.binary.with.fragmented.encoded.byte/response" })
+    public void shouldEchoBinaryWithFragmentedEncodedByte() throws Exception {
+        k3po.start();
+        Thread.sleep(1000);
+        k3po.notifyBarrier("WRITE_SECOND_FRAGMENT");
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "echo.binary.with.fragmented.escaped.byte/request",
+        "echo.binary.with.fragmented.escaped.byte/response" })
+    public void shouldEchoBinaryWithFragmentedEscapedByte() throws Exception {
+        k3po.start();
+        Thread.sleep(1000);
+        k3po.notifyBarrier("WRITE_SECOND_FRAGMENT");
         k3po.finish();
     }
 
@@ -52,14 +76,6 @@ public class TextEscapedEncodingIT {
         "echo.binary.payload.length.0/request",
         "echo.binary.payload.length.0/response" })
     public void shouldEchoFrameWithPayloadLength0() throws Exception {
-        k3po.finish();
-    }
-
-    @Test
-    @Specification({
-        "echo.binary.payload.length.127/request",
-        "echo.binary.payload.length.127/response" })
-    public void shouldEchoFrameWithPayloadLength127() throws Exception {
         k3po.finish();
     }
 

@@ -53,7 +53,7 @@ read status "200" /.+/
 read header "Content-Type" "application/octet-stream"
 read header "Connection" "close"
 
-read [0x00] ${client20} [0xff]
+read [0x81 0x14] ${client20}
 
 # Upstream
 connect await CREATED
@@ -67,5 +67,5 @@ write header "Content-Type" "application/octet-stream"
 write header "X-Sequence-No" ${wse:asString(sequence + 1)}
 write header content-length
 
-write [0x81 0x14] ${client20}
+write [0x00] ${client20} [0xff]
 write flush
