@@ -2,7 +2,25 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-8...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-9...HEAD)
+
+**Closed issues:**
+
+- httpx specification and tests should require the server to close the websocket connection after issuing a redirect \(302\) [\#283](https://github.com/k3po/k3po/issues/283)
+- WSE specification does not specify the behavior for invalid upstream command frames [\#282](https://github.com/k3po/k3po/issues/282)
+
+**Merged pull requests:**
+
+- Wse: improve spec and tests [\#290](https://github.com/k3po/k3po/pull/290) ([cmebarrow](https://github.com/cmebarrow))
+- Wse binary as escaped text: spec and test fixes [\#289](https://github.com/k3po/k3po/pull/289) ([cmebarrow](https://github.com/cmebarrow))
+- Update comunity dependency from 2.15 to 2.18, add license to two wse … [\#288](https://github.com/k3po/k3po/pull/288) ([cmebarrow](https://github.com/cmebarrow))
+- Issue 282 wse invalid upstream body [\#287](https://github.com/k3po/k3po/pull/287) ([cmebarrow](https://github.com/cmebarrow))
+- Update community and license [\#286](https://github.com/k3po/k3po/pull/286) ([cmebarrow](https://github.com/cmebarrow))
+- Issue \#283: HTTPX specification and test changes to mandate that server [\#285](https://github.com/k3po/k3po/pull/285) ([cmebarrow](https://github.com/cmebarrow))
+- Added interpretation to wse spec on correct behavior.  [\#280](https://github.com/k3po/k3po/pull/280) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-9](https://github.com/k3po/k3po/tree/3.0.0-alpha-9) (2016-01-08)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-8...3.0.0-alpha-9)
 
 **Merged pull requests:**
 

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.kaazing</groupId>
         <artifactId>k3po.parent</artifactId>
-        <version>3.0.0-alpha-9</version>
+        <version>3.0.0-alpha-11</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 

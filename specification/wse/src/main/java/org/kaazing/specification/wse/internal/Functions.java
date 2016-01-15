@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.specification.wse.internal;
 
-import static java.util.Arrays.asList;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -29,11 +25,28 @@ import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
 public final class Functions {
     private static final Random RANDOM = new Random();
 
+    private static final byte[] allBytes = new byte[256];
+
+    static {
+        for (int i = 0; i < 256; i++) {
+            allBytes[i] = (byte) i;
+        }
+    }
+
     @Function
     public static byte[] uniqueId() {
         byte[] bytes = new byte[16];
         RANDOM.nextBytes(bytes);
         return Base64.encode(bytes);
+    }
+
+    @Function
+    public static byte[] allBytes() {
+        byte[] bytes = new byte[256];
+        for (int i = 0; i < 256; i++) {
+            bytes[i] = (byte) i;
+        }
+        return bytes;
     }
 
     @Function
@@ -78,7 +91,28 @@ public final class Functions {
     }
 
     @Function
-    public static byte[] escapeBytes(byte[] bytes) {
+    public static byte[] convertEscapedUtf8BytesToEscapedWindows1252(byte[] in) {
+        byte[] out = new byte[in.length];
+
+        for (int i = 0; i < in.length; i++) {
+            out[i] = in[i] == 0x00 ? 0x30 : in[i];
+        }
+        return out;
+    }
+
+    @Function
+    public static byte[] decodeUtf8Bytes(byte[] bytes) {
+        return Encoding.UTF8.decode(bytes);
+    }
+
+    @Function
+    public static byte[] encodeBytesAsUtf8(byte[] bytes) {
+        return Encoding.UTF8.encode(bytes);
+    }
+
+
+    @Function
+    public static byte[] escapeBytesForUtf8(byte[] bytes) {
         List<Byte> listOfEscapedBytes = new ArrayList<Byte>();
         for (int i = 0; i < bytes.length; i++) {
             switch (bytes[i]) {
@@ -89,6 +123,28 @@ public final class Functions {
                 listOfEscapedBytes.add(new Byte((byte) 0b01111111));
             default:
                 listOfEscapedBytes.add(new Byte(bytes[i]));
+            }
+        }
+        bytes = new byte[listOfEscapedBytes.size()];
+        for (int i = 0; i < listOfEscapedBytes.size(); i++) {
+            bytes[i] = listOfEscapedBytes.get(i);
+        }
+        return bytes;
+    }
+
+    @Function
+    public static byte[] escapeBytesForWindows1252(byte[] bytes) {
+        List<Byte> listOfEscapedBytes = new ArrayList<Byte>();
+        for (int i = 0; i < bytes.length; i++) {
+            switch (bytes[i]) {
+            case 0b00000000:
+            case 0b00001101:
+            case 0b00001010:
+            case 0b01111111:
+                listOfEscapedBytes.add(new Byte((byte) 0b01111111));
+            default:
+                byte b = bytes[i] == 0b00000000 ? 0x30 : bytes[i];
+                listOfEscapedBytes.add(new Byte(b));
             }
         }
         bytes = new byte[listOfEscapedBytes.size()];
