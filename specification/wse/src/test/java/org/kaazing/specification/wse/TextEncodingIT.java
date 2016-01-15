@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.specification.wse.data;
+package org.kaazing.specification.wse;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
@@ -26,10 +26,8 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
-public class BinaryIT {
-
-    private final K3poRule k3po = new K3poRule()
-            .setScriptRoot("org/kaazing/specification/wse/data");
+public class TextEncodingIT {
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/wse/text.encoding");
 
     private final TestRule timeout = new DisableOnDebug(
             new Timeout(5, SECONDS));
@@ -47,33 +45,29 @@ public class BinaryIT {
 
     @Test
     @Specification({
-        "echo.binary.payload.length.127/request",
-        "echo.binary.payload.length.127/response" })
-    public void shouldEchoFrameWithPayloadLength127() throws Exception {
+        "echo.binary.payload.all.byte.values/request",
+        "echo.binary.payload.all.byte.values/response" })
+    public void shouldEchoFrameWithAllByteValues() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "echo.binary.payload.length.128/request",
-        "echo.binary.payload.length.128/response" })
-    public void shouldEchoFrameWithPayloadLength128() throws Exception {
+        "echo.binary.with.fragmented.encoded.byte/request",
+        "echo.binary.with.fragmented.encoded.byte/response" })
+    public void shouldEchoBinaryWithFragmentedEncodedByte() throws Exception {
+        k3po.start();
+        Thread.sleep(1000);
+        k3po.notifyBarrier("WRITE_SECOND_FRAGMENT");
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "echo.binary.payload.length.65535/request",
-        "echo.binary.payload.length.65535/response" })
-    public void shouldEchoFrameWithPayloadLength65535() throws Exception {
+        "echo.text.with.multibyte.utf8/request",
+        "echo.text.with.multibyte.utf8/response" })
+    public void shouldEchoTextFrameWithMultibyteUtf8Character() throws Exception {
         k3po.finish();
     }
 
-    @Test
-    @Specification({
-        "echo.binary.payload.length.65536/request",
-        "echo.binary.payload.length.65536/response" })
-    public void shouldEchoFrameWithPayloadLength65536() throws Exception {
-        k3po.finish();
-    }
 }

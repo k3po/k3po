@@ -26,7 +26,7 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
-public class BinaryIT {
+public class TextDelimitedIT {
 
     private final K3poRule k3po = new K3poRule()
             .setScriptRoot("org/kaazing/specification/wse/data");
@@ -39,41 +39,26 @@ public class BinaryIT {
 
     @Test
     @Specification({
-        "echo.binary.payload.length.0/request",
-        "echo.binary.payload.length.0/response" })
+        "client.send.text.delimited.invalid.utf8/request",
+        "client.send.text.delimited.invalid.utf8/response" })
+    public void clientSendInvalidUTF8() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "echo.text.delimited.payload.length.0/request",
+        "echo.text.delimited.payload.length.0/response" })
     public void shouldEchoFrameWithPayloadLength0() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "echo.binary.payload.length.127/request",
-        "echo.binary.payload.length.127/response" })
-    public void shouldEchoFrameWithPayloadLength127() throws Exception {
+        "echo.text.delimited.payload.length.20/request",
+        "echo.text.delimited.payload.length.20/response" })
+    public void shouldEchoFrameWithPayloadLength20() throws Exception {
         k3po.finish();
     }
 
-    @Test
-    @Specification({
-        "echo.binary.payload.length.128/request",
-        "echo.binary.payload.length.128/response" })
-    public void shouldEchoFrameWithPayloadLength128() throws Exception {
-        k3po.finish();
-    }
-
-    @Test
-    @Specification({
-        "echo.binary.payload.length.65535/request",
-        "echo.binary.payload.length.65535/response" })
-    public void shouldEchoFrameWithPayloadLength65535() throws Exception {
-        k3po.finish();
-    }
-
-    @Test
-    @Specification({
-        "echo.binary.payload.length.65536/request",
-        "echo.binary.payload.length.65536/response" })
-    public void shouldEchoFrameWithPayloadLength65536() throws Exception {
-        k3po.finish();
-    }
 }

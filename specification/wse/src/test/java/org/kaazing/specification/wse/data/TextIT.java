@@ -26,7 +26,7 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
-public class BinaryIT {
+public class TextIT {
 
     private final K3poRule k3po = new K3poRule()
             .setScriptRoot("org/kaazing/specification/wse/data");
@@ -39,41 +39,62 @@ public class BinaryIT {
 
     @Test
     @Specification({
-        "echo.binary.payload.length.0/request",
-        "echo.binary.payload.length.0/response" })
+        "echo.text.payload.length.0/request",
+        "echo.text.payload.length.0/response" })
     public void shouldEchoFrameWithPayloadLength0() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "echo.binary.payload.length.127/request",
-        "echo.binary.payload.length.127/response" })
+        "echo.text.payload.length.127/request",
+        "echo.text.payload.length.127/response" })
     public void shouldEchoFrameWithPayloadLength127() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "echo.binary.payload.length.128/request",
-        "echo.binary.payload.length.128/response" })
+        "echo.text.payload.length.128/request",
+        "echo.text.payload.length.128/response" })
     public void shouldEchoFrameWithPayloadLength128() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "echo.binary.payload.length.65535/request",
-        "echo.binary.payload.length.65535/response" })
+        "echo.text.payload.length.65535/request",
+        "echo.text.payload.length.65535/response" })
     public void shouldEchoFrameWithPayloadLength65535() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "echo.binary.payload.length.65536/request",
-        "echo.binary.payload.length.65536/response" })
+        "echo.text.payload.length.65536/request",
+        "echo.text.payload.length.65536/response" })
     public void shouldEchoFrameWithPayloadLength65536() throws Exception {
         k3po.finish();
     }
+
+    @Test
+    @Specification({
+        "client.send.text.invalid.utf8/request",
+        "client.send.text.invalid.utf8/response" })
+    public void clientSendTextInvalidUTF8() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "echo.text.with.fragmented.character/request",
+        "echo.text.with.fragmented.character/response" })
+    public void shouldEchoTextWithFragmentedCharacter() throws Exception {
+        k3po.start();
+        Thread.sleep(1000);
+        k3po.notifyBarrier("WRITE_SECOND_FRAGMENT");
+        k3po.finish();
+    }
+
+
 }

@@ -25,11 +25,28 @@ import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
 public final class Functions {
     private static final Random RANDOM = new Random();
 
+    private static final byte[] allBytes = new byte[256];
+
+    static {
+        for (int i = 0; i < 256; i++) {
+            allBytes[i] = (byte) i;
+        }
+    }
+
     @Function
     public static byte[] uniqueId() {
         byte[] bytes = new byte[16];
         RANDOM.nextBytes(bytes);
         return Base64.encode(bytes);
+    }
+
+    @Function
+    public static byte[] allBytes() {
+        byte[] bytes = new byte[256];
+        for (int i = 0; i < 256; i++) {
+            bytes[i] = (byte) i;
+        }
+        return bytes;
     }
 
     @Function
@@ -82,6 +99,17 @@ public final class Functions {
         }
         return out;
     }
+
+    @Function
+    public static byte[] decodeUtf8Bytes(byte[] bytes) {
+        return Encoding.UTF8.decode(bytes);
+    }
+
+    @Function
+    public static byte[] encodeBytesAsUtf8(byte[] bytes) {
+        return Encoding.UTF8.encode(bytes);
+    }
+
 
     @Function
     public static byte[] escapeBytesForUtf8(byte[] bytes) {
