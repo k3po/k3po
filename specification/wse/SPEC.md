@@ -404,7 +404,8 @@ If `X-Sequence-No` header is missing in upstream request, then the server MUST g
 If the sequence number received via `X-Sequence-No` header is out of order or invalid, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. Please see [Request Sequencing](#request-sequencing) for details.
 
 Otherwise, the server decodes the emulated WebSocket frames from the upstream request body and generates an HTTP upstream 
-response as follows.
+response. If the upstream request body is invalid, for example, it contains an invalid emulated WebSocket frame, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. Otherwise the following applies:
+
 * the upstream HTTP response body MUST have status code `200` 
 * the upstream HTTP response body MUST be empty with a `Content-Length` header value of `0` 
 
