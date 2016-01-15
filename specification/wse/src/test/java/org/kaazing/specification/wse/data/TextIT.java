@@ -39,14 +39,6 @@ public class TextIT {
 
     @Test
     @Specification({
-        "client.send.text.invalid.utf8/request",
-        "client.send.text.invalid.utf8/response" })
-    public void clientSendTextInvalidUTF8() throws Exception {
-        k3po.finish();
-    }
-
-    @Test
-    @Specification({
         "echo.text.payload.length.0/request",
         "echo.text.payload.length.0/response" })
     public void shouldEchoFrameWithPayloadLength0() throws Exception {
@@ -82,6 +74,25 @@ public class TextIT {
         "echo.text.payload.length.65536/request",
         "echo.text.payload.length.65536/response" })
     public void shouldEchoFrameWithPayloadLength65536() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "client.send.text.invalid.utf8/request",
+        "client.send.text.invalid.utf8/response" })
+    public void clientSendTextInvalidUTF8() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "echo.text.with.fragmented.character/request",
+        "echo.text.with.fragmented.character/response" })
+    public void shouldEchoTextWithFragmentedCharacter() throws Exception {
+        k3po.start();
+        Thread.sleep(1000);
+        k3po.notifyBarrier("WRITE_SECOND_FRAGMENT");
         k3po.finish();
     }
 

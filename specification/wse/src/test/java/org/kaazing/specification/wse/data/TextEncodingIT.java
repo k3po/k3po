@@ -55,10 +55,18 @@ public class TextEncodingIT {
     @Specification({
         "echo.binary.with.fragmented.encoded.byte/request",
         "echo.binary.with.fragmented.encoded.byte/response" })
-    public void shouldEchoFrameFragmentedEncodedByte() throws Exception {
+    public void shouldEchoBinaryWithFragmentedEncodedByte() throws Exception {
         k3po.start();
         Thread.sleep(1000);
         k3po.notifyBarrier("WRITE_SECOND_FRAGMENT");
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "echo.text.with.multibyte.utf8/request",
+        "echo.text.with.multibyte.utf8/response" })
+    public void shouldEchoTextFrameWithMultibyteUtf8Character() throws Exception {
         k3po.finish();
     }
 

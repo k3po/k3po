@@ -52,7 +52,6 @@ read status "200" /.+/
 read header "Content-Type" "text/plain;charset=windows-1252"
 read header "Connection" "close"
 
-# The following text frame contains the characters "ABC" plus the Euro sign (0xE2 0x82 0xAC in UTF-8)
 read [0x81 0x04 0x41 0x42 0x43 0xE2 0x82 0xAC]
 
 
@@ -66,7 +65,11 @@ write version "HTTP/1.1"
 write header host
 write header "Content-Type" "text/plain;charset=utf-8"
 write header "X-Sequence-No" ${wse:asString(sequence + 1)}
-write header content-length
+write header "content-length" "8"
 
-write [0xC2 0x81 0x04 0x41 0x42 0x43 0xC3 0xA2 0xC2 0x82 0xC2 0xAC]
-write flush
+# The following text frame contains the characters "ABC" plus the Euro sign (0xE2 0x82 0xAC in UTF-8),
+# which we split between packets
+write  [0x81 0x04 0x41 0x42 0x43 0xE2 0x82]
+write await WRITE_SECOND_FRAGMENT
+write [0xAC]
+
