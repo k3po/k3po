@@ -59,7 +59,7 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
-import org.jboss.netty.handler.codec.http.QueryStringEncoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.QueryStringEncoder;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChildChannel.HttpReadState;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 

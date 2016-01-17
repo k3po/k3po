@@ -21,7 +21,7 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
-import org.jboss.netty.handler.codec.http.QueryStringEncoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.QueryStringEncoder;
 
 public interface HttpChannelConfig extends ChannelConfig {
 
