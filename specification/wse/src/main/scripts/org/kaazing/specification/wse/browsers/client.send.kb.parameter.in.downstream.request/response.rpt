@@ -43,7 +43,7 @@ accept ${downstream}
 accepted
 connected
 
-read parameter ".kb" "256"
+read parameter ".kb" "1"
 read method "GET"
 read version "HTTP/1.1"
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
@@ -56,7 +56,7 @@ write header "Connection" "close"
 write flush
 
 write await DATA_RECEIVED
-write [0x80 0x82 0x00] ${server256}
+write [0x80 0x82 0x00] ${server1024}
 write [0x01 0x30 0x31 0xFF]
 write close
 
@@ -71,7 +71,7 @@ read header "Content-Type" "application/octet-stream"
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
 read [0x80 0x82 0x00]
-read ([0..256] :server256)
+read ([0..1024] :server1024)
 read [0x01 0x30 0x31 0xFF]
 read notify DATA_RECEIVED
 read closed
