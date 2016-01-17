@@ -54,7 +54,7 @@ read status "200" /.+/
 read header "Content-Type" "application/octet-stream"
 read header "Connection" "close"
 
-read [0x80 0x82 0x00]
+read [0x80 0x88 0x00]
 read ${client1024}
 read [0x01 0x30 0x31 0xFF]
 read closed
@@ -71,7 +71,7 @@ write header "Content-Type" "application/octet-stream"
 write header "X-Sequence-No" ${wse:asString(sequence + 1)}
 write header content-length
 
-write [0x80 0x82 0x00] ${client1024}
+write [0x80 0x88 0x00] ${client1024}
 write [0x01 0x30 0x31 0xFF]
 write close
 
