@@ -45,9 +45,25 @@ public class ClosingIT {
 
     @Test
     @Specification({
+        "client.send.close.no.reply.from.server/request",
+        "client.send.close.no.reply.from.server/response" })
+    public void clientShouldCloseIfServerDoesNotEchoCloseFrame() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "server.send.close/request",
         "server.send.close/response" })
     public void shouldEchoServerCloseFrame() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "server.send.close.no.reply.from.client/request",
+        "server.send.close.no.reply.from.client/response" })
+    public void serverShouldCloseIfClientDoesNotEchoCloseFrame() throws Exception {
         k3po.finish();
     }
 
