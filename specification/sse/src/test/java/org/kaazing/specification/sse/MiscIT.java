@@ -61,4 +61,12 @@ public class MiscIT {
     public void shouldReceiveFieldWithoutColon() throws Exception {
         k3po.finish();
     }
+    
+    @Test
+    @Specification({
+        "not.event.stream/request",
+        "not.event.stream/response" })
+    public void shouldFailConnectionWhenContentTypeIsNotEventStream() throws Exception {
+        k3po.finish();
+    }
 }
