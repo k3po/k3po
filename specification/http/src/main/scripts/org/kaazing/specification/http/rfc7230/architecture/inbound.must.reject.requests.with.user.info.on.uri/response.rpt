@@ -17,8 +17,8 @@
 accept tcp://localhost:8080
 accepted
 connected
-read "GET / HTTP/1.1\r\n"
-read "Host: http://localhost:8000@username:password\r\n"
+read "GET http://username:password@localhost:8000/ HTTP/1.1\r\n"
+read "Host: localhost:8000\r\n"
 read "\r\n"
 
 write "HTTP/1.1 400 Bad Request" "\r\n"
