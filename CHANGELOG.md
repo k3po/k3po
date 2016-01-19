@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-9...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-11...HEAD)
+
+**Merged pull requests:**
+
+- Update userinfo to precede hostname and port in rfc7230 scripts [\#294](https://github.com/k3po/k3po/pull/294) ([jfallows](https://github.com/jfallows))
+
+## [3.0.0-alpha-11](https://github.com/k3po/k3po/tree/3.0.0-alpha-11) (2016-01-15)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-9...3.0.0-alpha-11)
 
 **Closed issues:**
 
