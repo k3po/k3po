@@ -53,7 +53,15 @@ public class NamedEventIT {
     public void shouldReceiveMessageWhenEventFieldFollowsDataField() throws Exception {
         k3po.finish();
     }
-    
+
+    @Test
+    @Specification({
+        "invalid.utf8/request",
+        "invalid.utf8/response" })
+    public void shouldFailConnectionWhenEventFieldContainsInvalidUTF8() throws Exception {
+        k3po.finish();
+    }
+
     @Test
     @Specification({
         "multi.line.data/request",

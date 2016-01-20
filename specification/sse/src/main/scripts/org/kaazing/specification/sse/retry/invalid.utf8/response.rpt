@@ -15,6 +15,10 @@
 #
 
 property date "Mon, 1 Jan 2015 01:23:45 GMT"
+# Use the following line with an EL function once issue https://github.com/k3po/k3po/issues/295
+# is resolved. Until then, we will hardcode the usage of invalid UTF8.
+# property retryWithInvalidUTF8 ${sse:randomBytesInvalidUTF8(4)}
+property retryWithInvalidUTF8 [0x34 0x35 0x30 0x80]
 
 accept tcp://localhost:8000
 accepted
@@ -23,7 +27,6 @@ connected
 read "GET /sse HTTP/1.1\r\n"
 read "Host: localhost:8000\r\n"
 read "Accept: text/event-stream\r\n"
-read "Last-Event-ID: 100\r\n"
 read "\r\n"
 
 write "HTTP/1.1 200 OK\r\n"
@@ -33,7 +36,5 @@ write "Connection: keep-alive\r\n"
 write "Date: " ${date} "\r\n"
 write "\r\n"
 
-write "id:105\n"
-write "event:e1\n"
-write "data:Message id field for a named server-sent event e1\n"
+write "retry:" ${retryWithInvalidUTF8} "\n"
 write "\n"

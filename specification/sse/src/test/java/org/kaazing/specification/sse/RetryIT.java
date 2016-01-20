@@ -40,6 +40,14 @@ public class RetryIT {
 
     @Test
     @Specification({
+        "invalid.utf8/request",
+        "invalid.utf8/response" })
+    public void shouldFailConnectionWhenRetryFieldContainsInvalidUTF8() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "no.value/request",
         "no.value/response" })
     public void shouldHandleEmptyRetryField() throws Exception {

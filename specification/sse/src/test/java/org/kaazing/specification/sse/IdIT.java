@@ -40,6 +40,14 @@ public class IdIT {
 
     @Test
     @Specification({
+        "invalid.utf8/request",
+        "invalid.utf8/response" })
+    public void shouldFailConnectionWhenIdFieldContainsInvalidUTF8() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "last.event.id/request",
         "last.event.id/response" })
     public void shouldReceiveMessageBasedOnLastSeenId() throws Exception {

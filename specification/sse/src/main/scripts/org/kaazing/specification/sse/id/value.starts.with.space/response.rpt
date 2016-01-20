@@ -32,7 +32,7 @@ write "Connection: keep-alive\r\n"
 write "Date: " ${date} "\r\n"
 write "\r\n"
 
-write "id:   100"
+write "id:   100\n"
 write "event:e1\n"
 write "data:Message with leading whitespace in the id field for a named server-sent event e1\n"
 write "\n"

@@ -48,6 +48,14 @@ public class DataIT {
 
     @Test
     @Specification({
+        "invalid.utf8/request",
+        "invalid.utf8/response" })
+    public void shouldFailConnectionWhenDataFieldContainsInvalidUTF8() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "value.starts.with.space/request",
         "value.starts.with.space/response" })
     public void shouldReceiveMessageStartsWithWhitespace() throws Exception {

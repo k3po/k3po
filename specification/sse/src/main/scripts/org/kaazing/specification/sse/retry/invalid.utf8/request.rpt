@@ -29,7 +29,5 @@ read "Connection: keep-alive\r\n"
 read /Date:.*/ "\r\n"
 read "\r\n"
 
-read "id:   100\n"
-read "event:e1\n"
-read "data:Message with leading whitespace in the id field for a named server-sent event e1\n"
+read /retry:.*/"\n"
 read "\n"

@@ -30,7 +30,7 @@ read "Connection: keep-alive\r\n"
 read /Date:.*/ "\r\n"
 read "\r\n"
 
-read "id:105"
+read "id:105\n"
 read "event:e1\n"
 read "data:Message id field for a named server-sent event e1\n"
 read "\n"
