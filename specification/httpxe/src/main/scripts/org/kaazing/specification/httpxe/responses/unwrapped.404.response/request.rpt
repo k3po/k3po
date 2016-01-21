@@ -14,22 +14,18 @@
 # limitations under the License.
 #
 
-accept http://localhost:8000/path
-accepted
+connect http://localhost:8000/path
 connected
 
-read method "GET"
-read version "HTTP/1.1"
-read header "Content-Type" "application/x-message-http"
-read header "X-Next-Protocol" "httpxe/1.1"
-read "GET /path HTTP/1.1\r\n"
-     "Content-Length: 0\r\n"
-     "\r\n"
-read closed
-
-write status "200" "OK"
-write header "Content-Type" "text/plain"
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "Content-Type" "application/x-message-http"
+write header "X-Next-Protocol" "httpxe/1.1"
 write header content-length
-write "HTTP/1.1 101 Switching Protocols\r\n"
-      "Content-Type: text/html\r\n"
-write flush
+write "GET /path HTTP/1.1\r\n"
+      "Content-Length: 0\r\n"
+      "\r\n"
+write close
+
+read status "404" "Not Found"

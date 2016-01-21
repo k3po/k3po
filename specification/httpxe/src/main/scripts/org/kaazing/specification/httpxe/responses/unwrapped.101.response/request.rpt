@@ -28,8 +28,4 @@ write "GET /path HTTP/1.1\r\n"
       "\r\n"
 write close
 
-read status "200" "OK"
-read header "Content-Type" "text/plain"
-
-read "HTTP/1.1 101 Switching Protocols\r\n"
-read "Content-Type: text/html\r\n"
+read status "101" "Switching Protocols"
