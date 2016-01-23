@@ -25,4 +25,4 @@ write header "X-Origin" "http://localhost:8000"
 write header "X-Origin-http%3A%2F%2Flocalhost%3A8000" "http://localhost:8000"
 write flush
 
-read status "200" "OK"
+read status "200" /.*/

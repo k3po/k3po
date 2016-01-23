@@ -25,5 +25,5 @@ write header "Referer" "http://localhost:8000/any/path?query=any"
 write header content-length
 write flush
 
-read status "200" "OK"
+read status "200" /.*/
 

@@ -26,6 +26,6 @@ write header "Origin" "http://localhost:8000"
 write header content-length
 write flush
 
-read status "200" "OK"
+read status "200" /.*/
 read header "Access-Control-Allow-Origin" "http://localhost:8000"
 read header "Access-Control-Allow-Credentials" "true"

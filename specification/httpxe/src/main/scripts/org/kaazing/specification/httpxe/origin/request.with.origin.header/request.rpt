@@ -24,4 +24,4 @@ write header "Origin" "http://source.example.com:80"
 write header content-length
 write flush
 
-read status "200" "OK"
+read status "200" /.*/

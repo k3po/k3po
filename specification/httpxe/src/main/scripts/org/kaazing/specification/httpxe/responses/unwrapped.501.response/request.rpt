@@ -28,5 +28,5 @@ write "GET /path HTTP/1.1\r\n"
       "\r\n"
 write close
 
-read status "501" "Not Implemented"
+read status "501" /.*/
 
