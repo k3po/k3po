@@ -50,7 +50,7 @@ public class LimitsIT {
     @Specification({
         "should.fail.binary.payload.length.131073/handshake.request.and.frame",
         "should.fail.binary.payload.length.131073/handshake.response.and.frame" })
-    public void shouldRefuseBinaryFrameWithPayloadLengthExceeding131072() throws Exception {
+    public void shouldRefuseBinaryFrameWithPayloadLengthExceeding128KiB() throws Exception {
         k3po.finish();
     }
 
@@ -66,7 +66,7 @@ public class LimitsIT {
     @Specification({
         "should.fail.text.payload.length.131073/handshake.request.and.frame",
         "should.fail.text.payload.length.131073/handshake.response.and.frame" })
-    public void shouldRefuseTextFrameWithPayloadLengthExceeding131072() throws Exception {
+    public void shouldRefuseTextFrameWithPayloadLengthExceeding128KiB() throws Exception {
         k3po.finish();
     }
 
