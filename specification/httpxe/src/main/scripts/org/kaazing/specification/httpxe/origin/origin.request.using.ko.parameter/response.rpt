@@ -24,3 +24,5 @@ read version "HTTP/1.1"
 read header "HOST" "localhost:8000"
 read header "Referer" "http://localhost:8000/any/path?query=any"
 
+write status "200" "OK"
+write close
