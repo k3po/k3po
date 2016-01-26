@@ -14,13 +14,24 @@
 # limitations under the License.
 #
 
-accept tcp://localhost:8080
+property date "Mon, 1 Jan 2015 01:23:45 GMT"
+
+accept tcp://localhost:8000
 accepted
 connected
-read "GET http://username:password@localhost:8000/ HTTP/1.1\r\n"
+
+read "GET /sse HTTP/1.1\r\n"
 read "Host: localhost:8000\r\n"
+read "Accept: text/event-stream\r\n"
 read "\r\n"
 
-write "HTTP/1.1 400 Bad Request" "\r\n"
+write "HTTP/1.1 200 OK\r\n"
+write "Content-Type: text/event-stream\r\n"
+write "Cache-Control: no-cache\r\n"
+write "Connection: keep-alive\r\n"
+write "Date: " ${date} "\r\n"
 write "\r\n"
 
+write "event:empty-data\n"
+write "data:\n"
+write "\n"

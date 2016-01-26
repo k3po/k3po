@@ -14,13 +14,21 @@
 # limitations under the License.
 #
 
-accept tcp://localhost:8080
-accepted
+connect tcp://localhost:8000
 connected
-read "GET http://username:password@localhost:8000/ HTTP/1.1\r\n"
-read "Host: localhost:8000\r\n"
-read "\r\n"
 
-write "HTTP/1.1 400 Bad Request" "\r\n"
+write "GET /sse HTTP/1.1\r\n"
+write "Host: localhost:8000\r\n"
+write "Accept: text/event-stream\r\n"
 write "\r\n"
 
+read "HTTP/1.1 200 OK\r\n"
+read "Content-Type: text/event-stream\r\n"
+read "Cache-Control: no-cache\r\n"
+read "Connection: keep-alive\r\n"
+read /Date:.*/ "\r\n"
+read "\r\n"
+
+read "event:  e1\n"
+read "data:Message for a named server-sent event e1 with leading whitespace in the event field!\n"
+read "\n"

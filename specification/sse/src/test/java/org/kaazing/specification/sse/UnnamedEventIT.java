@@ -26,18 +26,39 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
-public class SpecificationIT {
-
-    private final K3poRule robot = new K3poRule();
-
+/**
+ * W3C Server-Sent Events specification - https://www.w3.org/TR/eventsource:
+ *     Section 6 - Parsing an event stream 
+ *     Section 7 - Interpreting an event stream
+ */
+public class UnnamedEventIT {
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/sse/unnamed.event");
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
     @Rule
-    public final TestRule chain = outerRule(robot).around(timeout);
+    public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
-    @Specification({"accept", "connect"})
-    public void shouldPass() throws Exception {
-        robot.finish();
+    @Specification({
+        "multi.line.data/request",
+        "multi.line.data/response" })
+    public void shouldReceiveMessageWithMultipleDataFields() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "multiple.events/request",
+        "multiple.events/response" })
+    public void shouldReceiveMessagesWithMultipleEventsInAStream() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "single.line.data/request",
+        "single.line.data/response" })
+    public void shouldReceiveMessageWithSingleDataField() throws Exception {
+        k3po.finish();
     }
 }
