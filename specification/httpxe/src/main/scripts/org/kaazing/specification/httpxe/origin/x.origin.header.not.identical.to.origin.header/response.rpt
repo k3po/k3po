@@ -22,5 +22,7 @@ read method "POST"
 read version "HTTP/1.1"
 read header "HOST" "localhost:8000"
 read header "Origin" "http://localhost:8000"
-read header "X-Origin" "http://source.examples.com:80"
+read header "X-Origin" "http://source.example.com:80"
 
+write status "200" "OK"
+write close

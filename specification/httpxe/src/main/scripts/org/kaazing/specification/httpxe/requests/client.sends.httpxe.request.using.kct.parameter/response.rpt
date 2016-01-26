@@ -18,11 +18,15 @@ accept http://localhost:8000/path
 accepted
 connected
 
-read parameter ".kct" "application/x-message-http"
 read method "POST"
 read version "HTTP/1.1"
+read parameter ".kct" "application/x-message-http"
+read header "X-Next-Protocol" "httpxe/1.1"
+read "POST /path HTTP/1.1\r\n"
+     "Content-Type: text/plain\r\n"
+     "Content-Length: 12\r\n"
+     "\r\n"
+     "Hello World!"
 
-read "POST HTTP/1.1\r\n"
-read "Authorization: Basic " ${httpxe:loginBase64Encoder("joe:welcome")} "\r\n"
-read "Content-Type: text/plain\r\n"
-
+write status "200" "OK"
+write close

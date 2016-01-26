@@ -20,12 +20,12 @@ connected
 
 read method "GET"
 read version "HTTP/1.1"
+read header "Content-Type" "application/x-message-http"
+read header "X-Next-Protocol" "httpxe/1.1"
+read "GET /path HTTP/1.1\r\n"
+     "Content-Length: 0\r\n"
+     "\r\n"
+read closed
 
-write status "200" "OK"
-write header "Content-Type" "application/x-message-http"
-write header content-length
-
-write "501 Not Implemented HTTP/1.1\r\n"
-write "Content-Type: text/html\r\n"
+write status "101" "Switching Protocols"
 write flush
-
