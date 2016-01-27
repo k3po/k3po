@@ -2,7 +2,16 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-11...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-12...HEAD)
+
+**Merged pull requests:**
+
+- Added ws spec test LimitsIT plus scripts to test for ws frames exceed… [\#296](https://github.com/k3po/k3po/pull/296) ([cmebarrow](https://github.com/cmebarrow))
+- Httpxe specification tests [\#293](https://github.com/k3po/k3po/pull/293) ([jitsni](https://github.com/jitsni))
+- SSE spec tests [\#291](https://github.com/k3po/k3po/pull/291) ([sanjay-saxena](https://github.com/sanjay-saxena))
+
+## [3.0.0-alpha-12](https://github.com/k3po/k3po/tree/3.0.0-alpha-12) (2016-01-19)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-11...3.0.0-alpha-12)
 
 **Merged pull requests:**
 

@@ -19,11 +19,15 @@ connected
 
 write method "POST"
 write version "HTTP/1.1"
+write header host
 write header "Content-Type" "application/x-message-http"
+write header "X-Next-Protocol" "httpxe/1.1"
 write header content-length
+write "POST /path HTTP/1.1\r\n"
+      "Content-Type: text/plain\r\n"
+      "Content-Length: 12\r\n"
+      "\r\n"
+      "Hello World!"
+write close
 
-write "POST HTTP/1.1\r\n"
-write "Authorization: Basic " ${httpxe:loginBase64Encoder("joe:welcome")} "\r\n"
-write "Content-Type: text/plain"
-write flush
-
+read status "200" /.*/

@@ -25,6 +25,7 @@ read header "Referer" "http://source.example.com:80"
 read header "Origin" "http://localhost:8000"
 
 write status "200" "OK"
-write header "Access-Control-Allow-Origin" "*"
+write header "Access-Control-Allow-Credentials" "true"
+write header "Access-Control-Allow-Origin" "http://localhost:8000"
 write flush
 
