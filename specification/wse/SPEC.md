@@ -116,7 +116,7 @@ These subprotocol names should follow the guidelines described by the WebSocket 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and 
 "OPTIONAL" in this document are to be interpreted as described in [[RFC 6455]][RFC6455].
 
-## WebSocket Emulatation URIs
+## WebSocket Emulation URIs
 
 The WebSocket Emulation protocol uses WebSocket protocol URIs, as defined by
 [RFC 6455, Section 3](https://tools.ietf.org/html/rfc6455#section-3).
@@ -128,7 +128,7 @@ The WebSocket Emulation protocol uses WebSocket protocol URIs, as defined by
 To establish an emulated WebSocket connection, a client makes an HTTP handshake request.
 
 * the HTTP handshake request uri scheme MUST be derived from the WebSocket URL by changing `ws` to `http`, or `wss` to `https`
-* the HTTP handshake request method MUST be `POST` 
+* the HTTP handshake request method SHOULD be `POST` but MAY be `GET`
 * the HTTP handshake request uri path MUST be derived from the WebSocket URL by appending a suitable handshake encoding path 
   suffix which indicates the create encoding.
   * For connections allowing binary and text frames (mixed):
@@ -156,7 +156,7 @@ WebSocket connection.
 Clients SHOULD send the `X-Accept-Commands` HTTP header with the value `ping` to indicate that both `PING` and `PONG` frames 
 are understood by the client.
 
-Clients MUST send an empty handshake request body.
+Clients SHOULD send an empty handshake request body.
 
 For example, given the WebSocket Emulation URL `ws://host.example.com:8080/path?query` and binary encoding.
 
@@ -289,7 +289,8 @@ original handshake request URL path.
 
 Once the emulated WebSocket connection is established, the client MUST send an HTTP request for downstream data
 transfer.
-* the HTTP downstream request method MUST be `GET` 
+* the HTTP downstream request method SHOULD be `GET`
+* clients unable to use `GET` MAY use `POST`, in which case the request body SHOULD be empty but MAY be non-empty
 * the HTTP downstream request `Origin` header MUST be present with the source origin for browser clients
 * Clients MUST send the `X-Sequence-No` HTTP header. Please see [Request Sequencing](#request-sequencing) for details.
 
@@ -527,7 +528,7 @@ initial downstream HTTP response is completed normally with a `RECONNECT` comman
 response body through any buffering proxy.
 
 Then, the response to the second downstream request either redirects the client to an encrypted location for secure streaming, 
-or fall back to long-polling as a last resort.
+or falls back to long-polling as a last resort.
 
 When long-polling, any frame sent to the client triggers a controlled reconnect in the same way as
 [Garbage Collection](#garbage-collection).  In this case, the `Content-Length` downstream HTTP response header SHOULD be

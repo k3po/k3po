@@ -103,9 +103,17 @@ public class OpeningIT {
 
     @Test
     @Specification({
-        "request.method.not.post/handshake.request",
-        "request.method.not.post/handshake.response" })
-    public void shouldFailHandshakeWhenRequestMethodNotPost() throws Exception {
+        "request.method.get/handshake.request",
+        "request.method.get/handshake.response" })
+    public void shouldEstablishConnectionWhenRequestMethodIsGet() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "request.method.not.post.or.get/handshake.request",
+        "request.method.not.post.or.get/handshake.response" })
+    public void shouldFailHandshakeWhenRequestMethodNotPostOrGet() throws Exception {
         k3po.finish();
     }
 

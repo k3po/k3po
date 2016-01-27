@@ -36,7 +36,6 @@ write header content-length
 
 write ${upstream} "\n"
 write ${downstream} "\n"
-write notify CREATE_COMPLETED
 write close
 
 # Downstream
@@ -44,10 +43,8 @@ accept ${downstream}
 accepted
 connected
 
-read await CREATE_COMPLETED
-read method "GET"
+read method "POST"
 read version "HTTP/1.1"
-read header "Origin" "http://localhost:8080"
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 read closed
 
