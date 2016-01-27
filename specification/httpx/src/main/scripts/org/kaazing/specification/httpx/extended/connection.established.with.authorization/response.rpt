@@ -72,3 +72,5 @@ write "Server: Kaazing Gateway\r\n"
 write "Upgrade: websocket\r\n"
 write "\r\n"
 
+write [0x82 0x00]
+

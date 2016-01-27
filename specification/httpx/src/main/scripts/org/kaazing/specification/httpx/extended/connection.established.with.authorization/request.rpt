@@ -69,3 +69,5 @@ read /Server:.+\r\n/
 read "Upgrade: websocket\r\n"
 read "\r\n"
 
+read [0x82 0x00]
+

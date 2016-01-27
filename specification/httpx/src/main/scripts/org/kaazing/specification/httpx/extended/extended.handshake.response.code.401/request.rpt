@@ -50,3 +50,5 @@ read "Content-Length: 64\r\n"
 read "\r\n"
 read "<html><head></head><body><h1>401 Unauthorized</h1></body></html>"
 
+read [0x82 0x00]
+

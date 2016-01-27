@@ -52,6 +52,8 @@ read "Content-Length: 64\r\n"
 read "\r\n"
 read "<html><head></head><body><h1>401 Unauthorized</h1></body></html>"
 
+read [0x82 0x00]
+
 # 401 Challenge Response
 write [0x82 0xF3] ${writeMask}
 write option mask ${writeMask}
@@ -71,4 +73,6 @@ read "Sec-WebSocket-Extensions: x-kaazing-idle-timeout\r\n" #Example Extension
 read /Server:.+\r\n/
 read "Upgrade: websocket\r\n"
 read "\r\n"
+
+read [0x82 0x00]
 

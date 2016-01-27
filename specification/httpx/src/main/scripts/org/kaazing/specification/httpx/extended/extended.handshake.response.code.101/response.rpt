@@ -46,4 +46,13 @@ read option mask [0x00 0x00 0x00 0x00]
 
 write [0x82 0x7E 0x00 0xC9]
 write "HTTP/1.1 101 WebSocket Protocol Handshake\r\n"
+write "Connection: Upgrade\r\n"
+write "Date: " ${httpx:getDate()} "\r\n"
+write "Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n"
+write "Server: Kaazing Gateway\r\n"
+write "Upgrade: websocket\r\n"
+write "\r\n"
+
+write [0x82 0x00]
+
 

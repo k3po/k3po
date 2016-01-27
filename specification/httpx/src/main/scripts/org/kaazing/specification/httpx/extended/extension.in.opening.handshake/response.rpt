@@ -55,6 +55,8 @@ write "Content-Length: 64\r\n"
 write "\r\n"
 write "<html><head></head><body><h1>401 Unauthorized</h1></body></html>"
 
+write [0x82 0x00]
+
 # 401 Challenge Response
 read [0x82 0xBD]
 read [(:maskingKey){4}]
@@ -73,4 +75,6 @@ write "Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n"
 write "Server: Kaazing Gateway\r\n"
 write "Upgrade: websocket\r\n"
 write "\r\n"
+
+write [0x82 0x00]
 

@@ -51,6 +51,8 @@ read /Server:.+\r\n/
 read "Upgrade: websocket\r\n"
 read "\r\n"
 
+read [0x82 0x00]
+
 write [0x88 0x02] ${writeMask}
 write option mask ${writeMask}
 write [0x03 0xf3]

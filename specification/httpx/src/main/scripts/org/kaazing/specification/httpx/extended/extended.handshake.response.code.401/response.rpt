@@ -52,3 +52,5 @@ write "Content-Length: 64\r\n"
 write "\r\n"
 write "<html><head></head><body><h1>401 Unauthorized</h1></body></html>"
 
+write [0x82 0x00]
+
