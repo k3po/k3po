@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.kaazing</groupId>
         <artifactId>k3po.parent</artifactId>
-        <version>develop-SNAPSHOT</version>
+        <version>5.0.1.45</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
