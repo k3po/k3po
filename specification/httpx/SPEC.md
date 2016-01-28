@@ -120,6 +120,7 @@ The client then receives the extended handshake response message.  The client mu
 * the raw WebSocket opened during the opening handshake is closed
 * the _extended handshake failed_
 * the Sec-WebSocket-Extensions selected by the server are not a subset of those requested
+* the extended handshake response does not end with an empty WebSocket binary frame
 
 At this point, if the WebSocket is not closed, it is said that the _extended handshake is completed_.
 

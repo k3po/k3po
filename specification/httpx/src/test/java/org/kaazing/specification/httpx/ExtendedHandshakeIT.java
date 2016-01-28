@@ -84,7 +84,8 @@ public class ExtendedHandshakeIT {
     }
 
     @Test
-    @Specification({"extension.in.opening.handshake/request",
+    @Specification({
+        "extension.in.opening.handshake/request",
         "extension.in.opening.handshake/response" })
     public void shouldPassWhenExtensionIsNegotiatedInOpeningHandshake() throws Exception {
         k3po.finish();
@@ -130,5 +131,11 @@ public class ExtendedHandshakeIT {
         k3po.finish();
     }
 
+    @Test
+    @Specification({
+        "missing.terminal.frame.in.extended.handshake.response/request",
+        "missing.terminal.frame.in.extended.handshake.response/response" })
+    public void shouldFailWhenExtendedHandshakeResponseDoesNotEndWithAnEmptyBinaryFrame() throws Exception {
+        k3po.finish();
+    }
 }
-
