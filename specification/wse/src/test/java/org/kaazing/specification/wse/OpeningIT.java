@@ -105,7 +105,8 @@ public class OpeningIT {
     @Specification({
         "request.method.get/handshake.request",
         "request.method.get/handshake.response" })
-    public void shouldEstablishConnectionWhenRequestMethodIsGet() throws Exception {
+    // Server only test. Spec compliant clients ALWAYS use POST.
+    public void serverShouldTolerateRequestMethodGet() throws Exception {
         k3po.finish();
     }
 

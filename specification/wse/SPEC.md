@@ -128,7 +128,7 @@ The WebSocket Emulation protocol uses WebSocket protocol URIs, as defined by
 To establish an emulated WebSocket connection, a client makes an HTTP handshake request.
 
 * the HTTP handshake request uri scheme MUST be derived from the WebSocket URL by changing `ws` to `http`, or `wss` to `https`
-* the HTTP handshake request method SHOULD be `POST` but MAY be `GET`
+* the HTTP handshake request method MUST be `POST`
 * the HTTP handshake request uri path MUST be derived from the WebSocket URL by appending a suitable handshake encoding path 
   suffix which indicates the create encoding.
   * For connections allowing binary and text frames (mixed):
@@ -242,7 +242,8 @@ process the handshake request to generate a handshake response.
 If the server determines that any of the following conditions are not met by the HTTP handshake request, then the server MUST
 send an HTTP response with a `4xx` status code, such as `400 Bad Request`.
 
-* the HTTP handshake request method MUST be `POST` 
+* the HTTP handshake request method SHOULD be `POST`
+* for compatibility with existing clients that are not fully compliant with this specification, the HTTP handshake request method MAY be `GET`
 * the HTTP handshake request header `X-WebSocket-Version` MUST have the value `wseb-1.0`
 * the HTTP handshake request header `X-Sequence-No` MUST be a valid sequence number. Please see [Request Sequencing](#request-sequencing) for details.
 * the HTTP handshake request header `X-WebSocket-Protocol` is OPTIONAL, and when present indicates a list of alternative 
