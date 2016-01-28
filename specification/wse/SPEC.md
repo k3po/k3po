@@ -156,7 +156,7 @@ WebSocket connection.
 Clients SHOULD send the `X-Accept-Commands` HTTP header with the value `ping` to indicate that both `PING` and `PONG` frames 
 are understood by the client.
 
-Clients SHOULD send an empty handshake request body.
+Clients MUST send an empty handshake request body.
 
 For example, given the WebSocket Emulation URL `ws://host.example.com:8080/path?query` and binary encoding.
 
@@ -242,7 +242,8 @@ process the handshake request to generate a handshake response.
 If the server determines that any of the following conditions are not met by the HTTP handshake request, then the server MUST
 send an HTTP response with a `4xx` status code, such as `400 Bad Request`.
 
-* the HTTP handshake request method SHOULD be `POST`
+* the HTTP handshake request method SHOULD be `POST` with an empty request body
+* for compatibility with existing clients that are not fully compliant with this specification, the request body MAY not be empty
 * for compatibility with existing clients that are not fully compliant with this specification, the HTTP handshake request method MAY be `GET`
 * the HTTP handshake request header `X-WebSocket-Version` MUST have the value `wseb-1.0`
 * the HTTP handshake request header `X-Sequence-No` MUST be a valid sequence number. Please see [Request Sequencing](#request-sequencing) for details.
