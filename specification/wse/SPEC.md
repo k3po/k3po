@@ -128,7 +128,7 @@ The WebSocket Emulation protocol uses WebSocket protocol URIs, as defined by
 To establish an emulated WebSocket connection, a client makes an HTTP handshake request.
 
 * the HTTP handshake request uri scheme MUST be derived from the WebSocket URL by changing `ws` to `http`, or `wss` to `https`
-* the HTTP handshake request method SHOULD be `POST` but MAY be `GET`
+* the HTTP handshake request method MUST be `POST`
 * the HTTP handshake request uri path MUST be derived from the WebSocket URL by appending a suitable handshake encoding path 
   suffix which indicates the create encoding.
   * For connections allowing binary and text frames (mixed):
@@ -156,7 +156,7 @@ WebSocket connection.
 Clients SHOULD send the `X-Accept-Commands` HTTP header with the value `ping` to indicate that both `PING` and `PONG` frames 
 are understood by the client.
 
-Clients SHOULD send an empty handshake request body.
+Clients MUST send an empty handshake request body.
 
 For example, given the WebSocket Emulation URL `ws://host.example.com:8080/path?query` and binary encoding.
 
@@ -242,7 +242,9 @@ process the handshake request to generate a handshake response.
 If the server determines that any of the following conditions are not met by the HTTP handshake request, then the server MUST
 send an HTTP response with a `4xx` status code, such as `400 Bad Request`.
 
-* the HTTP handshake request method MUST be `POST` 
+* the HTTP handshake request method SHOULD be `POST` with an empty request body
+* for compatibility with existing clients that are not fully compliant with this specification, the request body MAY not be empty
+* for compatibility with existing clients that are not fully compliant with this specification, the HTTP handshake request method MAY be `GET`
 * the HTTP handshake request header `X-WebSocket-Version` MUST have the value `wseb-1.0`
 * the HTTP handshake request header `X-Sequence-No` MUST be a valid sequence number. Please see [Request Sequencing](#request-sequencing) for details.
 * the HTTP handshake request header `X-WebSocket-Protocol` is OPTIONAL, and when present indicates a list of alternative 
@@ -289,8 +291,7 @@ original handshake request URL path.
 
 Once the emulated WebSocket connection is established, the client MUST send an HTTP request for downstream data
 transfer.
-* the HTTP downstream request method SHOULD be `GET`
-* clients unable to use `GET` MAY use `POST`, in which case the request body SHOULD be empty but MAY be non-empty
+* the HTTP downstream request method MUST be `GET`
 * the HTTP downstream request `Origin` header MUST be present with the source origin for browser clients
 * Clients MUST send the `X-Sequence-No` HTTP header. Please see [Request Sequencing](#request-sequencing) for details.
 
@@ -337,12 +338,14 @@ See [Text Encoding](#text-encoding) for details of processing a text HTTP downst
 
 See [Text Escaped Encoding](#text-escaped-encoding) for details of processing an escaped text HTTP downstream request.
 
-If the emulated WebSocket cannot be located for the HTTP downstream request path, then the server MUST generate an HTTP response
-with a `404 Not Found` status code.
+The Incoming downstream request is validated as follows:
 
-If `X-Sequence-No` header is missing in downstream request, then the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
-
-If the sequence number received in `X-Sequence-No` header is out of order or invalid, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. Please see [Request Sequencing](#request-sequencing) for details.
+* The request method SHOULD be `GET`. 
+* For compatibility with existing clients that are not fully compliant with this specification, the request method MAY be `POST` (with or without content, any content is ignored).
+* If the request method is neither `GET` nor `POST`, then the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
+* If the emulated WebSocket cannot be located for the HTTP downstream request path, then the server MUST generate an HTTP response with a `404 Not Found` status code.
+* If `X-Sequence-No` header is missing in downstream request, then the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
+* If the sequence number received in `X-Sequence-No` header is out of order or invalid, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. Please see [Request Sequencing](#request-sequencing) for details.
 
 If the `.ki` query parameter is present with value `p`, see [Buffering Proxies](#buffering-proxies) for further server 
 requirements when attaching the downstream.
