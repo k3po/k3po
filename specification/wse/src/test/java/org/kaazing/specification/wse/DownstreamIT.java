@@ -75,7 +75,8 @@ public class DownstreamIT {
     @Specification({
         "binary/request.method.post/downstream.request",
         "binary/request.method.post/downstream.response" })
-    public void shouldConnectWithDownstreamRequestMethodPost()
+    // Server only test. Spec compliant clients ALWAYS use GET.
+    public void serverShouldTolerateDownstreamRequestMethodPost()
             throws Exception {
         k3po.finish();
     }
@@ -84,7 +85,8 @@ public class DownstreamIT {
     @Specification({
         "binary/request.method.post.with.body/downstream.request",
         "binary/request.method.post.with.body/downstream.response" })
-    public void shouldConnectWithDownstreamRequestMethodPostWithBody()
+    // Server only test. Spec compliant clients ALWAYS use GET.
+    public void serverShouldTolerateDownstreamRequestMethodPostWithBody()
             throws Exception {
         k3po.finish();
     }

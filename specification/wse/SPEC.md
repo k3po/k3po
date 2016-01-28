@@ -290,8 +290,7 @@ original handshake request URL path.
 
 Once the emulated WebSocket connection is established, the client MUST send an HTTP request for downstream data
 transfer.
-* the HTTP downstream request method SHOULD be `GET`
-* clients unable to use `GET` MAY use `POST`, in which case the request body SHOULD be empty but MAY be non-empty
+* the HTTP downstream request method MUST be `GET`
 * the HTTP downstream request `Origin` header MUST be present with the source origin for browser clients
 * Clients MUST send the `X-Sequence-No` HTTP header. Please see [Request Sequencing](#request-sequencing) for details.
 
@@ -338,12 +337,14 @@ See [Text Encoding](#text-encoding) for details of processing a text HTTP downst
 
 See [Text Escaped Encoding](#text-escaped-encoding) for details of processing an escaped text HTTP downstream request.
 
-If the emulated WebSocket cannot be located for the HTTP downstream request path, then the server MUST generate an HTTP response
-with a `404 Not Found` status code.
+The Incoming downstream request is validated as follows:
 
-If `X-Sequence-No` header is missing in downstream request, then the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
-
-If the sequence number received in `X-Sequence-No` header is out of order or invalid, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. Please see [Request Sequencing](#request-sequencing) for details.
+* The request method SHOULD be `GET`. 
+* For compatibility with existing clients that are not fully compliant with this specification, the request method MAY be `POST` (with or without content, any content is ignored).
+* If the request method is neither `GET` nor `POST`, then the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
+* If the emulated WebSocket cannot be located for the HTTP downstream request path, then the server MUST generate an HTTP response with a `404 Not Found` status code.
+* If `X-Sequence-No` header is missing in downstream request, then the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
+* If the sequence number received in `X-Sequence-No` header is out of order or invalid, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. Please see [Request Sequencing](#request-sequencing) for details.
 
 If the `.ki` query parameter is present with value `p`, see [Buffering Proxies](#buffering-proxies) for further server 
 requirements when attaching the downstream.
