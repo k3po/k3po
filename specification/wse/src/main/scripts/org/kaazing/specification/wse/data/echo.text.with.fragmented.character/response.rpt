@@ -19,7 +19,7 @@ property downstreamId ${wse:uniqueId()}
 property upstream ${wse:append("http://localhost:8080/path/", upstreamId)}
 property downstream ${wse:append("http://localhost:8080/path/", downstreamId)}
 
-accept http://localhost:8080/path/;e/ctm?query
+accept http://localhost:8080/path/;e/cbm?query
 accepted
 connected
 
@@ -52,12 +52,12 @@ read closed
 
 write status "200" "OK"
 write version "HTTP/1.1"
-write header "Content-Type" "text/plain;charset=windows-1252"
+write header "Content-Type" "application/octet-stream"
 write header "Connection" "close"
 write flush
 
 write await DATA_RECEIVED
-write [0x81 0x04 0x41 0x42 0x43 0xE2 0x82 0xAC]
+write [0x81 0x06 0x41 0x42 0x43 0xE2 0x82 0xAC]
 
 
 # Upstream
@@ -68,8 +68,8 @@ connected
 read await CREATE_COMPLETED
 read method "POST"
 read version "HTTP/1.1"
-read header "Content-Type" /text\/plain;charset=(?i)utf-8/
+read header "Content-Type" "application/octet-stream"
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
-read [0x81 0x04 0x41 0x42 0x43 0xE2 0x82 0xAC]
+read [0x81 0x06 0x41 0x42 0x43 0xE2 0x82 0xAC]
 read notify DATA_RECEIVED
