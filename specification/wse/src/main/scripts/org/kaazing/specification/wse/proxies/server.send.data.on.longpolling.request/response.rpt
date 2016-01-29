@@ -60,7 +60,7 @@ write flush
 write notify DOWNSTREAM_OPENED
 
 write await LONG_POLLING_REQUEST_RECEIVED
-write [0x80 0x7f] ${data}
+write [0x80 0x05] "data1"
 write [0x01 0x30 0x31 0xFF]
 write close
 write notify DOWNSTREAM_CLOSED 
@@ -84,6 +84,6 @@ write version "HTTP/1.1"
 write header "Content-Type" "application/octet-stream"
 write header content-length
 
-write [0x80 0x7f] ${data}
+write [0x80 0x05] "data2"
 write [0x01 0x30 0x31 0xFF]
 write close
