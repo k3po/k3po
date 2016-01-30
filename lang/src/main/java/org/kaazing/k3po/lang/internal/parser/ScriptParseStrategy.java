@@ -33,6 +33,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
 import org.kaazing.k3po.lang.internal.RegionInfo;
+import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
 import org.kaazing.k3po.lang.internal.ast.AstBarrierNode;
@@ -92,6 +94,8 @@ import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 import org.kaazing.k3po.lang.internal.regex.NamedGroupPattern;
 import org.kaazing.k3po.lang.parser.v2.RobotBaseVisitor;
 import org.kaazing.k3po.lang.parser.v2.RobotParser;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.AbortNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.AbortedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.AcceptNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.AcceptableNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.BarrierNodeContext;
@@ -265,7 +269,17 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstCloseNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
                 throws RecognitionException {
-            return new AstCloseNodeVisitor(elFactory, elContext).visit(parser.closeNode());
+            AstCloseNodeVisitor astCloseNodeVisitor = new AstCloseNodeVisitor(elFactory, elContext);
+            return astCloseNodeVisitor.visit(parser.closeNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstAbortNode> ABORT = new ScriptParseStrategy<AstAbortNode>() {
+        @Override
+        public AstAbortNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                throws RecognitionException {
+            AstAbortNodeVisitor astAbortNodeVisitor = new AstAbortNodeVisitor(elFactory, elContext);
+            return astAbortNodeVisitor.visit(parser.abortNode());
         }
     };
 
@@ -322,6 +336,15 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstClosedNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
                 throws RecognitionException {
             return new AstClosedNodeVisitor(elFactory, elContext).visit(parser.closedNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstAbortedNode> ABORTED = new ScriptParseStrategy<AstAbortedNode>() {
+        @Override
+        public AstAbortedNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                throws RecognitionException {
+            AstAbortedNodeVisitor astAbortedNodeVisitor = new AstAbortedNodeVisitor(elFactory, elContext);
+            return astAbortedNodeVisitor.visit(parser.abortedNode());
         }
     };
 
@@ -1330,6 +1353,18 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             return closeNode;
         }
 
+        @Override
+        public AstAbortNode visitAbortNode(AbortNodeContext ctx) {
+
+            AstAbortNodeVisitor visitor = new AstAbortNodeVisitor(elFactory, elContext);
+            AstAbortNode abortNode = visitor.visitAbortNode(ctx);
+            if (abortNode != null) {
+                childInfos().add(abortNode.getRegionInfo());
+            }
+
+            return abortNode;
+        }
+
         // HTTP commands
 
         @Override
@@ -1445,6 +1480,21 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
     }
 
+    private static class AstAbortNodeVisitor extends AstNodeVisitor<AstAbortNode> {
+
+        public AstAbortNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+            super(elFactory, elContext);
+        }
+
+        @Override
+        public AstAbortNode visitAbortNode(AbortNodeContext ctx) {
+            node = new AstAbortNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return node;
+        }
+
+    }
+
     private static class AstDisconnectNodeVisitor extends AstNodeVisitor<AstDisconnectNode> {
 
         public AstDisconnectNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
@@ -1553,6 +1603,22 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstClosedNode visitClosedNode(ClosedNodeContext ctx) {
             node = new AstClosedNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return node;
+        }
+
+    }
+
+
+    private static class AstAbortedNodeVisitor extends AstNodeVisitor<AstAbortedNode> {
+
+        public AstAbortedNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+            super(elFactory, elContext);
+        }
+
+        @Override
+        public AstAbortedNode visitAbortedNode(AbortedNodeContext ctx) {
+            node = new AstAbortedNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return node;
         }
