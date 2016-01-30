@@ -45,7 +45,7 @@ public class TextEscapedEncodingIT {
     @Specification({
         "echo.binary.payload.all.byte.values/request",
         "echo.binary.payload.all.byte.values/response" })
-    public void shouldEchoFrameWithAllByteValues() throws Exception {
+    public void shouldEchoBinaryFrameWithAllByteValues() throws Exception {
         k3po.finish();
     }
 

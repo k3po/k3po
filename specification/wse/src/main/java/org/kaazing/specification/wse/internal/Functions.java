@@ -27,6 +27,8 @@ public final class Functions {
 
     private static final byte[] allBytes = new byte[256];
 
+    private static final Byte BYTE_7F = new Byte((byte) 0x7f);
+
     static {
         for (int i = 0; i < 256; i++) {
             allBytes[i] = (byte) i;
@@ -110,19 +112,30 @@ public final class Functions {
         return Encoding.UTF8.encode(bytes);
     }
 
-
     @Function
     public static byte[] escapeBytesForUtf8(byte[] bytes) {
         List<Byte> listOfEscapedBytes = new ArrayList<Byte>();
         for (int i = 0; i < bytes.length; i++) {
-            switch (bytes[i]) {
-            case 0b00000000:
-            case 0b00001101:
-            case 0b00001010:
-            case 0b01111111:
-                listOfEscapedBytes.add(new Byte((byte) 0b01111111));
+            byte b = bytes[i];
+            switch (b) {
+            case 0x00:
+                listOfEscapedBytes.add(BYTE_7F);
+                listOfEscapedBytes.add(new Byte((byte) 0x00));
+                break;
+            case 0x0a:
+                listOfEscapedBytes.add(BYTE_7F);
+                listOfEscapedBytes.add(new Byte((byte) 0x6e));
+                break;
+            case 0x0d:
+                listOfEscapedBytes.add(BYTE_7F);
+                listOfEscapedBytes.add(new Byte((byte) 0x72));
+                break;
+            case 0x7f:
+                listOfEscapedBytes.add(BYTE_7F);
+                listOfEscapedBytes.add(BYTE_7F);
+                break;
             default:
-                listOfEscapedBytes.add(new Byte(bytes[i]));
+                listOfEscapedBytes.add(new Byte(b));
             }
         }
         bytes = new byte[listOfEscapedBytes.size()];
@@ -136,14 +149,25 @@ public final class Functions {
     public static byte[] escapeBytesForWindows1252(byte[] bytes) {
         List<Byte> listOfEscapedBytes = new ArrayList<Byte>();
         for (int i = 0; i < bytes.length; i++) {
-            switch (bytes[i]) {
-            case 0b00000000:
-            case 0b00001101:
-            case 0b00001010:
-            case 0b01111111:
-                listOfEscapedBytes.add(new Byte((byte) 0b01111111));
+            byte b = bytes[i];
+            switch (b) {
+            case 0x00:
+                listOfEscapedBytes.add(BYTE_7F);
+                listOfEscapedBytes.add(new Byte((byte) 0x30));
+                break;
+            case 0x0a:
+                listOfEscapedBytes.add(BYTE_7F);
+                listOfEscapedBytes.add(new Byte((byte) 0x6e));
+                break;
+            case 0x0d:
+                listOfEscapedBytes.add(BYTE_7F);
+                listOfEscapedBytes.add(new Byte((byte) 0x72));
+                break;
+            case 0x7f:
+                listOfEscapedBytes.add(BYTE_7F);
+                listOfEscapedBytes.add(BYTE_7F);
+                break;
             default:
-                byte b = bytes[i] == 0b00000000 ? 0x30 : bytes[i];
                 listOfEscapedBytes.add(new Byte(b));
             }
         }
