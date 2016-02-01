@@ -12,7 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ */
+/*
  * This variant of the Netty class is altered to correctly handle the case where the
  * the uri passed in to the constructor already contains a query string, so that
  * if for example it is http://localhost:8080/path?query and a parameter is added
