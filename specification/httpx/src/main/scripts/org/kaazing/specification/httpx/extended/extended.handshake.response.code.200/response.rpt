@@ -14,13 +14,13 @@
 # limitations under the License.
 #
 
-accept http://localhost:8000/echo
+accept http://localhost:8001/echo
 accepted
 connected
 
 read method "GET"
 read version "HTTP/1.1"
-read header "Host" "localhost:8000"
+read header "Host" "localhost:8001"
 read header "Upgrade" "websocket"
 read header "Connection" "Upgrade"
 read header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
@@ -54,8 +54,6 @@ write "Server: Kaazing Gateway\r\n"
 write "Upgrade: websocket\r\n"
 write "\r\n"
 
-write [0x82 0x00]
-
 read [0x88 0x02]
 read [(:maskingKey){4}]
 read option mask ${maskingKey}
@@ -63,4 +61,3 @@ read [0x03 0xf3]
 read option mask [0x00 0x00 0x00 0x00]
 
 write [0x88 0x02 0x03 0xf3]
-

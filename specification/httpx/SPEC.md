@@ -73,10 +73,6 @@ The extended handshake WebSocket payloads take the form of HTTP Requests (for ex
 | Http Request/Response |
 
 
-The extended handshake response can be split across multiple WebSocket binary frames. Regardless of whether the extended handshake response is split across multiple WebSocket binary frames, an empty WebSocket binary frame MUST be used to indicate the end of the extended handshake response. The following WebSocket binary frame with no payload indicates the end of the extended handshake response:
-
-`0x82 0x00`
-
 If protocol negotiation was specified in the opening handshake, any protocols requested other than "x-kaazing-handshake" MUST be included in the extended handshake request as values in the header:
 
 	Sec-WebSocket-Protocol:

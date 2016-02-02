@@ -15,7 +15,7 @@
 #
 
 property writeMask ${httpx:randomBytes(4)}
-connect http://localhost:8000/echo
+connect http://localhost:8001/echo
 connected
 
 write method "GET"
@@ -51,6 +51,3 @@ read "Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n"
 read /Server:.+\r\n/
 read "Upgrade: websocket\r\n"
 read "\r\n"
-
-read [0x82 0x00]
-

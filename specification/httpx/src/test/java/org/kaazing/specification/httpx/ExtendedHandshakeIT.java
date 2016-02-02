@@ -130,12 +130,4 @@ public class ExtendedHandshakeIT {
     public void shouldPassWhenWebSocketProtocolGets401StatusCode() throws Exception {
         k3po.finish();
     }
-
-    @Test
-    @Specification({
-        "missing.terminal.frame.in.extended.handshake.response/request",
-        "missing.terminal.frame.in.extended.handshake.response/response" })
-    public void shouldFailWhenExtendedHandshakeResponseDoesNotEndWithAnEmptyBinaryFrame() throws Exception {
-        k3po.finish();
-    }
 }

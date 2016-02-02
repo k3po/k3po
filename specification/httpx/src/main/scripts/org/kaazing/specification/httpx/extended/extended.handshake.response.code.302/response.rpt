@@ -14,13 +14,13 @@
 # limitations under the License.
 #
 
-accept http://localhost:8000/echo
+accept http://localhost:8001/echo
 accepted
 connected
 
 read method "GET"
 read version "HTTP/1.1"
-read header "Host" "localhost:8000"
+read header "Host" "localhost:8001"
 read header "Upgrade" "websocket"
 read header "Connection" "Upgrade"
 read header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
@@ -50,8 +50,6 @@ write "HTTP/1.1 302 Found\r\n"
 write "Location: http://localhost:8080/echo\r\n"
 write "\r\n"
 
-write [0x82 0x00]
-
 write [0x88 0x02 0x03 0xe8]
 
 read [0x88 0x02]
@@ -74,4 +72,3 @@ read header "Connection" "Upgrade"
 read header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
 read header "Sec-WebSocket-Version" "13"
 read header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
-
