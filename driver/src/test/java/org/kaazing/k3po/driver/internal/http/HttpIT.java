@@ -255,4 +255,39 @@ public class HttpIT {
         k3po.finish();
     }
 
+    @Test
+    @TestSpecification({
+        "http.server.channel.abort/request",
+        "http.server.channel.abort/response"
+    })
+    public void testHttpServerChannelAbort() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.server.channel.aborted/request",
+        "http.server.channel.aborted/response"
+    })
+    public void testHttpServerChannelAborted() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.client.channel.abort/request",
+        "http.client.channel.abort/response"
+    })
+    public void testHttpClientChannelAbort() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.client.channel.aborted/request",
+        "http.client.channel.aborted/response"
+    })
+    public void testHttpClientChannelAborted() throws Exception {
+        k3po.finish();
+    }
 }
