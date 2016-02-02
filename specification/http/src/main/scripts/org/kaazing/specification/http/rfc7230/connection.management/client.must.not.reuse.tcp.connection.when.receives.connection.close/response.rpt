@@ -1,0 +1,15 @@
+accept http://localhost:8080/path
+accepted
+connected
+
+read method "GET"
+read closed
+
+write status "200" "OK"
+write header "connection" "close"
+write close
+
+accept http://localhost:8080/path2
+accepted
+connected
+read method "GET"
