@@ -275,12 +275,6 @@ public class HttpClientChannelSink extends AbstractChannelSink {
                 chainFutures(disconnect, evt.getFuture());
             }
         });
-//    transport.disconnect().addListener(new ChannelFutureListener() {
-//        @Override
-//        public void operationComplete(ChannelFuture future) throws Exception {
-//            evt.getFuture().setSuccess();
-//        }
-//    });
     };
 
     @Override

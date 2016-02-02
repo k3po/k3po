@@ -457,13 +457,7 @@ public class Robot {
         return new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture connectFuture) throws Exception {
-                if (connectFuture.isCancelled()) {
-                    // This is more that the connect never really fired, as in the case of a barrier, or the the connect
-                    // is still in process here, so an empty line annotates that it did not do a connect, an actual
-                    // connect
-                    // failure should fail the future
-                    progress.addScriptFailure(regionInfo, "");
-                } else if (!connectFuture.isSuccess()) {
+                if (!connectFuture.isSuccess()) {
                     Throwable cause = connectFuture.getCause();
                     String message = format("connect failed: %s", cause.getMessage());
                     progress.addScriptFailure(regionInfo, message);
