@@ -56,6 +56,9 @@ write header "Content-Type" "application/octet-stream"
 write header "Connection" "close"
 write flush
 
+write await UPSTREAM_DATA_RECEIVED
+write ${receivedData}
+
 write await OVERLAPPING_UPSTREAM_RESPONSE_SENT
 write [0x01 0x30 0x32 0xFF]
 write [0x01 0x30 0x31 0xFF]
@@ -66,13 +69,15 @@ accept ${upstream}
 accepted
 connected
 
-read await CREATE_COMPLETED
+# read await CREATE_COMPLETED
 read method "POST"
 read version "HTTP/1.1"
 read header "Content-Type" "application/octet-stream"
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
-read [0x80 0x05] [0..5]
+read [0x80 0x05] ([0..5] :receivedData)
+read notify UPSTREAM_DATA_RECEIVED
+
 read [0x01 0x30 0x31 0xFF]
 read closed
 

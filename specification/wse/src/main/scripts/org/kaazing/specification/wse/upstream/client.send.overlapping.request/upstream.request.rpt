@@ -32,14 +32,14 @@ read status "201" /.+/
 read version "HTTP/1.1"
 read header "Content-Type" /text\/plain;charset=(?i)utf-8/
 
-read /(?<upstream>http:\/\/localhost:8080\/path\/.+)/ "\n"
-read /(?<downstream>http:\/\/localhost:8080\/path\/.+)/ "\n"
+read /(?<upstreamUrl>http:\/\/localhost:8080\/path\/.+)/ "\n"
+read /(?<downstreamUrl>http:\/\/localhost:8080\/path\/.+)/ "\n"
 read notify CREATED
 read closed
 
 # Downstream
 connect await CREATED
-connect ${downstream}
+        ${downstreamUrl}
 connected
 
 write method "GET"
@@ -53,6 +53,10 @@ read status "200" /.+/
 read header "Content-Type" "application/octet-stream"
 read header "Connection" "close"
 
+# read data from first upstream
+read [0x80 0x05] ${data}
+read notify FIRST_UPSTREAM_OPEN
+
 read [0x01 0x30 0x32 0xFF]
 read [0x01 0x30 0x31 0xFF]
 read closed
@@ -60,7 +64,7 @@ read closed
 
 # Upstream
 connect await CREATED
-connect ${upstream}
+        ${upstreamUrl}
 connected
 
 write method "POST"
@@ -70,10 +74,10 @@ write header "Content-Type" "application/octet-stream"
 write header "X-Sequence-No" ${wse:asString(sequence + 1)}
 write header "Content-Length" "11"
 write flush
-write notify FIRST_UPSTREAM_FLUSHED
-
-write await SECOND_UPSTREAM_COMPLETED
 write [0x80 0x05] ${data}
+write flush
+
+#write await SECOND_UPSTREAM_COMPLETED
 write [0x01 0x30 0x31 0xFF]
 write close
 
@@ -82,8 +86,8 @@ read version "HTTP/1.1"
 read closed
 
 # Overlapping Upstream
-connect await FIRST_UPSTREAM_FLUSHED
-connect ${upstream}
+connect await FIRST_UPSTREAM_OPEN
+        ${upstreamUrl}
 connected
 
 write method "POST"
