@@ -151,8 +151,8 @@ public class HttpClientChannelSink extends AbstractChannelSink {
                     httpConnectChannel.setRemoteAddress(httpRemoteAddress);
                     httpConnectChannel.setConnected();
 
-                    fireChannelConnected(httpConnectChannel, httpRemoteAddress);
                     httpConnectFuture.setSuccess();
+                    fireChannelConnected(httpConnectChannel, httpRemoteAddress);
                 } else {
                     httpConnectFuture.setFailure(connectFuture.getCause());
                 }
