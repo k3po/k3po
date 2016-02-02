@@ -14,11 +14,11 @@
 # limitations under the License.
 #
 
-accept tcp://localhost:8080
-accepted
+connect http://localhost:8080/path
 connected
-read "GET /path HTTP/1.1\r\n"
-read "Host: localhost:8080\r\n"
-read "\r\n"
 
-closed
+write method "GET"
+write header host
+write close
+abort
+

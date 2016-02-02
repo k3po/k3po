@@ -43,7 +43,6 @@ import java.util.NavigableMap;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelConfig;
-import org.jboss.netty.channel.ChannelException;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -108,9 +107,7 @@ public class HttpChildChannelSource extends HttpChannelHandler {
             case CONTENT_COMPLETE:
                 break;
             default:
-                ChannelException exception = new ChannelException("Channel closed unexpectedly");
-                exception.fillInStackTrace();
-                fireExceptionCaught(httpChildChannel, exception);
+                Channels.fireChannelAborted(httpChildChannel);
                 break;
             }
 

@@ -251,7 +251,7 @@ public class HttpIT {
     @TestSpecification({
         "read.content.length.via.regex/request",
         "read.content.length.via.regex/response" })
-    public void testReadContentLengthViaAVariable() throws Exception {
+    public void readContentLengthViaAVariable() throws Exception {
         k3po.finish();
     }
 
@@ -260,7 +260,7 @@ public class HttpIT {
         "http.server.channel.abort/request",
         "http.server.channel.abort/response"
     })
-    public void testHttpServerChannelAbort() throws Exception {
+    public void httpServerChannelAbort() throws Exception {
         k3po.finish();
     }
 
@@ -269,7 +269,7 @@ public class HttpIT {
         "http.server.channel.aborted/request",
         "http.server.channel.aborted/response"
     })
-    public void testHttpServerChannelAborted() throws Exception {
+    public void httpServerChannelAborted() throws Exception {
         k3po.finish();
     }
 
@@ -278,7 +278,7 @@ public class HttpIT {
         "http.client.channel.abort/request",
         "http.client.channel.abort/response"
     })
-    public void testHttpClientChannelAbort() throws Exception {
+    public void httpClientChannelAbort() throws Exception {
         k3po.finish();
     }
 
@@ -287,7 +287,8 @@ public class HttpIT {
         "http.client.channel.aborted/request",
         "http.client.channel.aborted/response"
     })
-    public void testHttpClientChannelAborted() throws Exception {
+    public void httpClientChannelAborted() throws Exception {
         k3po.finish();
     }
+
 }
