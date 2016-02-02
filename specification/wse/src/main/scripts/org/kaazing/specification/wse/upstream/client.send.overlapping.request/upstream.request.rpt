@@ -63,14 +63,16 @@ connect await CREATED
 connect ${upstream}
 connected
 
-write notify FIRST_UPSTREAM_CONNECTED
 write method "POST"
 write version "HTTP/1.1"
 write header host
 write header "Content-Type" "application/octet-stream"
 write header "X-Sequence-No" ${wse:asString(sequence + 1)}
-write header content-length
+write header "Content-Length" "11"
+write flush
+write notify FIRST_UPSTREAM_FLUSHED
 
+write await SECOND_UPSTREAM_COMPLETED
 write [0x80 0x05] ${data}
 write [0x01 0x30 0x31 0xFF]
 write close
@@ -80,7 +82,7 @@ read version "HTTP/1.1"
 read closed
 
 # Overlapping Upstream
-connect await FIRST_UPSTREAM_CONNECTED
+connect await FIRST_UPSTREAM_FLUSHED
 connect ${upstream}
 connected
 
@@ -96,4 +98,5 @@ write [0x01 0x30 0x31 0xFF]
 write close
 
 read status /4\d\d/ /.+/
+read notify SECOND_UPSTREAM_COMPLETED
 read closed
