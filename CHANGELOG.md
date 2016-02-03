@@ -1,8 +1,7 @@
 # Change Log
 
-## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
-
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-14...HEAD)
+## [3.0.0-alpha-15](https://github.com/k3po/k3po/tree/3.0.0-alpha-15) (2016-02-03)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-14...3.0.0-alpha-15)
 
 **Fixed bugs:**
 
