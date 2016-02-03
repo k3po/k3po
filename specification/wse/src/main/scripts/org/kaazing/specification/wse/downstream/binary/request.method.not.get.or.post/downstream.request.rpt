@@ -14,40 +14,38 @@
 # limitations under the License.
 #
 
-property upstreamId ${wse:uniqueId()}
-property downstreamId ${wse:uniqueId()}
-property upstream ${wse:append("http://localhost:8080/path/", upstreamId)}
-property downstream ${wse:append("http://localhost:8080/path/", downstreamId)}
+property sequence ${wse:randomInt(100)}
 
-accept http://localhost:8080/path/;e/cb?query
-accepted
+connect http://localhost:8080/path/;e/cb?query
 connected
 
-read method "POST"
-read version "HTTP/1.1"
-read header "X-WebSocket-Version" "wseb-1.0"
-read header "X-Sequence-No" /(?<sequence>[0-9]{1,3})/
-read closed
-
-write status "201" "Created" 
+write method "POST"
 write version "HTTP/1.1"
-write header "Content-Type" "text/plain;charset=utf-8"
+write header host
 write header content-length
-
-write ${upstream} "\n"
-write ${downstream} "\n"
+write header "X-WebSocket-Version" "wseb-1.0"
+write header "X-Sequence-No" ${wse:asString(sequence)}
 write close
+
+read status "201" /.+/
+read version "HTTP/1.1"
+read header "Content-Type" /text\/plain;charset=(?i)utf-8/
+
+read /(?<upstream>http:\/\/localhost:8080\/path\/.+)/ "\n"
+read /(?<downstream>http:\/\/localhost:8080\/path\/.+)/ "\n"
+read notify CREATED
+read closed
 
 # Downstream
-accept ${downstream}
-accepted
+connect await CREATED
+connect ${downstream}
 connected
 
-read method /(?!GET)/
-read version "HTTP/1.1"
-read header "X-Sequence-No" ${wse:asString(sequence + 1)}
-read closed
-
-write status "400" "Bad Request" 
+write method "HEAD"
+write version "HTTP/1.1"
+write header host
+write header "X-Sequence-No" ${wse:asString(sequence + 1)}
 write header content-length
 write close
+
+read status /4\d\d/ /.+/

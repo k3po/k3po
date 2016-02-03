@@ -2,7 +2,23 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-13...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-14...HEAD)
+
+**Fixed bugs:**
+
+- BehaviorIT.testDelayedHttpClientConnect Specified behavior sporadic failures [\#194](https://github.com/k3po/k3po/issues/194)
+
+**Closed issues:**
+
+- Add ability to load an origin page on demand [\#272](https://github.com/k3po/k3po/issues/272)
+
+**Merged pull requests:**
+
+- Adds abort and aborted command [\#303](https://github.com/k3po/k3po/pull/303) ([dpwspoon](https://github.com/dpwspoon))
+- \(\#298\) Changed WSE SPEC.md to allow clients to include a request body… [\#300](https://github.com/k3po/k3po/pull/300) ([cmebarrow](https://github.com/cmebarrow))
+
+## [3.0.0-alpha-14](https://github.com/k3po/k3po/tree/3.0.0-alpha-14) (2016-02-03)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-13...3.0.0-alpha-14)
 
 **Implemented enhancements:**
 

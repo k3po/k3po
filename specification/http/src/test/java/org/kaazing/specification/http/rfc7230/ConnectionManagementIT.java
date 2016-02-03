@@ -18,7 +18,6 @@ package org.kaazing.specification.http.rfc7230;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -168,7 +167,6 @@ public class ConnectionManagementIT {
     @Specification({
         "client.with.pipelining.must.not.retry.pipelining.immediately.after.failure/request",
         "client.with.pipelining.must.not.retry.pipelining.immediately.after.failure/response" })
-    @Ignore("Requires enhancement k3po/132")
     public void clientWithPipeliningMustNotRetryPipeliningImmediatelyAfterFailure() throws Exception {
         k3po.finish();
     }
@@ -186,7 +184,6 @@ public class ConnectionManagementIT {
     @Specification({
         "server.must.close.its.half.of.connection.after.sending.response.if.it.receives.a.close/request",
         "server.must.close.its.half.of.connection.after.sending.response.if.it.receives.a.close/response" })
-    @Ignore("Requires enhancement k3po/132")
     public void serverMustCloseItsHalfOfConnectionAfterSendingResponseIfItReceivesAClose() throws Exception {
         k3po.finish();
     }
@@ -201,10 +198,9 @@ public class ConnectionManagementIT {
      */
     @Test
     @Specification({
-        "client.must.stop.pipelining.requests.if.it.receives.a.close.in.a.response/request",
-        "client.must.stop.pipelining.requests.if.it.receives.a.close.in.a.response/response" })
-    @Ignore("Requires enhancement k3po/132")
-    public void clientMustStopPipeliningRequestsIfItReceivesACloseInAResponse() throws Exception {
+        "client.must.not.reuse.tcp.connection.when.receives.connection.close/request",
+        "client.must.not.reuse.tcp.connection.when.receives.connection.close/response" })
+    public void clientMustNotReuseTcpConnectionWhenReceivesConnectionClose() throws Exception {
         k3po.finish();
     }
 

@@ -54,6 +54,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannelSink;
+import org.kaazing.k3po.driver.internal.netty.channel.AbortEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.FlushEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownOutputEvent;
 
@@ -175,6 +176,16 @@ public class HttpChildChannelSink extends AbstractChannelSink {
         HttpChildChannel httpChildChannel = (HttpChildChannel) pipeline.getChannel();
         ChannelFuture httpFuture = evt.getFuture();
         flushRequested(httpChildChannel, httpFuture);
+    }
+
+    @Override
+    protected void abortRequested(ChannelPipeline pipeline, final AbortEvent evt) throws Exception {
+        transport.close().addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                evt.getFuture().setSuccess();
+            }
+        });
     }
 
     @Override

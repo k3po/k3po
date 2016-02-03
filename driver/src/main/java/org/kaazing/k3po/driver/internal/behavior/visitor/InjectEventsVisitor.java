@@ -18,6 +18,8 @@ package org.kaazing.k3po.driver.internal.behavior.visitor;
 import java.util.List;
 
 import org.kaazing.k3po.driver.internal.behavior.visitor.InjectEventsVisitor.State;
+import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
@@ -226,6 +228,21 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
     }
 
     @Override
+    public AstScriptNode visit(AstAbortNode node, State state) throws Exception {
+
+        switch (state.connectivityState) {
+        case CONNECTED:
+            state.streamables.add(node);
+            break;
+
+        default:
+            throw new IllegalStateException("Unexpected abort before connected");
+        }
+
+        return null;
+    }
+
+    @Override
     public AstScriptNode visit(AstChildOpenedNode childOpenedNode, State state) throws Exception {
         state.streamables.add(childOpenedNode);
         return null;
@@ -387,6 +404,21 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
         default:
             throw new IllegalStateException("Unexpected event: closed");
+        }
+
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstAbortedNode node, State state) throws Exception {
+
+        switch (state.connectivityState) {
+        case CONNECTED:
+            state.streamables.add(node);
+            break;
+
+        default:
+            throw new IllegalStateException("Unexpected aborted before connected");
         }
 
         return null;

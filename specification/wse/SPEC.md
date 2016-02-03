@@ -116,7 +116,7 @@ These subprotocol names should follow the guidelines described by the WebSocket 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and 
 "OPTIONAL" in this document are to be interpreted as described in [[RFC 6455]][RFC6455].
 
-## WebSocket Emulatation URIs
+## WebSocket Emulation URIs
 
 The WebSocket Emulation protocol uses WebSocket protocol URIs, as defined by
 [RFC 6455, Section 3](https://tools.ietf.org/html/rfc6455#section-3).
@@ -128,7 +128,7 @@ The WebSocket Emulation protocol uses WebSocket protocol URIs, as defined by
 To establish an emulated WebSocket connection, a client makes an HTTP handshake request.
 
 * the HTTP handshake request uri scheme MUST be derived from the WebSocket URL by changing `ws` to `http`, or `wss` to `https`
-* the HTTP handshake request method MUST be `POST` 
+* the HTTP handshake request method MUST be `POST`
 * the HTTP handshake request uri path MUST be derived from the WebSocket URL by appending a suitable handshake encoding path 
   suffix which indicates the create encoding.
   * For connections allowing binary and text frames (mixed):
@@ -242,7 +242,9 @@ process the handshake request to generate a handshake response.
 If the server determines that any of the following conditions are not met by the HTTP handshake request, then the server MUST
 send an HTTP response with a `4xx` status code, such as `400 Bad Request`.
 
-* the HTTP handshake request method MUST be `POST` 
+* the HTTP handshake request method SHOULD be `POST` with an empty request body
+* for compatibility with existing clients that are not fully compliant with this specification, the request body MAY not be empty
+* for compatibility with existing clients that are not fully compliant with this specification, the HTTP handshake request method MAY be `GET`
 * the HTTP handshake request header `X-WebSocket-Version` MUST have the value `wseb-1.0`
 * the HTTP handshake request header `X-Sequence-No` MUST be a valid sequence number. Please see [Request Sequencing](#request-sequencing) for details.
 * the HTTP handshake request header `X-WebSocket-Protocol` is OPTIONAL, and when present indicates a list of alternative 
@@ -289,7 +291,7 @@ original handshake request URL path.
 
 Once the emulated WebSocket connection is established, the client MUST send an HTTP request for downstream data
 transfer.
-* the HTTP downstream request method MUST be `GET` 
+* the HTTP downstream request method MUST be `GET`
 * the HTTP downstream request `Origin` header MUST be present with the source origin for browser clients
 * Clients MUST send the `X-Sequence-No` HTTP header. Please see [Request Sequencing](#request-sequencing) for details.
 
@@ -336,12 +338,14 @@ See [Text Encoding](#text-encoding) for details of processing a text HTTP downst
 
 See [Text Escaped Encoding](#text-escaped-encoding) for details of processing an escaped text HTTP downstream request.
 
-If the emulated WebSocket cannot be located for the HTTP downstream request path, then the server MUST generate an HTTP response
-with a `404 Not Found` status code.
+The Incoming downstream request is validated as follows:
 
-If `X-Sequence-No` header is missing in downstream request, then the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
-
-If the sequence number received in `X-Sequence-No` header is out of order or invalid, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. Please see [Request Sequencing](#request-sequencing) for details.
+* The request method SHOULD be `GET`. 
+* For compatibility with existing clients that are not fully compliant with this specification, the request method MAY be `POST` (with or without content, any content is ignored).
+* If the request method is neither `GET` nor `POST`, then the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
+* If the emulated WebSocket cannot be located for the HTTP downstream request path, then the server MUST generate an HTTP response with a `404 Not Found` status code.
+* If `X-Sequence-No` header is missing in downstream request, then the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
+* If the sequence number received in `X-Sequence-No` header is out of order or invalid, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. Please see [Request Sequencing](#request-sequencing) for details.
 
 If the `.ki` query parameter is present with value `p`, see [Buffering Proxies](#buffering-proxies) for further server 
 requirements when attaching the downstream.
@@ -527,7 +531,7 @@ initial downstream HTTP response is completed normally with a `RECONNECT` comman
 response body through any buffering proxy.
 
 Then, the response to the second downstream request either redirects the client to an encrypted location for secure streaming, 
-or fall back to long-polling as a last resort.
+or falls back to long-polling as a last resort.
 
 When long-polling, any frame sent to the client triggers a controlled reconnect in the same way as
 [Garbage Collection](#garbage-collection).  In this case, the `Content-Length` downstream HTTP response header SHOULD be

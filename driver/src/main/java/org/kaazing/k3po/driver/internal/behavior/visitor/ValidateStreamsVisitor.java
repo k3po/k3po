@@ -15,6 +15,8 @@
  */
 package org.kaazing.k3po.driver.internal.behavior.visitor;
 
+import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
@@ -153,6 +155,32 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
 
     @Override
     public AstScriptNode visit(AstWriteCloseNode node, State state) throws Exception {
+
+        switch (state.writeState) {
+        case OPEN:
+            state.writeState = StreamState.CLOSED;
+            break;
+        default:
+            throw new IllegalStateException(unexpectedWriteEvent(node, state));
+        }
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstAbortNode node, State state) throws Exception {
+        switch (state.writeState) {
+        case OPEN:
+        case CLOSED:
+            state.writeState = StreamState.CLOSED;
+            break;
+        default:
+            throw new IllegalStateException(unexpectedWriteEvent(node, state));
+        }
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstAbortedNode node, State state) throws Exception {
 
         switch (state.writeState) {
         case OPEN:

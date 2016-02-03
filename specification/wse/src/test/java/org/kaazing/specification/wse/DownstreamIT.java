@@ -64,9 +64,38 @@ public class DownstreamIT {
 
     @Test
     @Specification({
-        "binary/request.method.not.get/downstream.request",
-        "binary/request.method.not.get/downstream.response" })
-    public void shouldRespondWithBadRequestWhenBinaryDownstreamRequestMethodNotGet()
+        "binary/request.header.origin/downstream.request",
+        "binary/request.header.origin/downstream.response" })
+    public void shouldConnectWithDownstreamRequestOriginHeaderSet()
+            throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "binary/request.method.post/downstream.request",
+        "binary/request.method.post/downstream.response" })
+    // Server only test. Spec compliant clients ALWAYS use GET.
+    public void serverShouldTolerateDownstreamRequestMethodPost()
+            throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "binary/request.method.post.with.body/downstream.request",
+        "binary/request.method.post.with.body/downstream.response" })
+    // Server only test. Spec compliant clients ALWAYS use GET.
+    public void serverShouldTolerateDownstreamRequestMethodPostWithBody()
+            throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "binary/request.method.not.get.or.post/downstream.request",
+        "binary/request.method.not.get.or.post/downstream.response" })
+    public void shouldRespondWithBadRequestWhenDownstreamRequestMethodNotGetOrPost()
             throws Exception {
         k3po.finish();
     }
