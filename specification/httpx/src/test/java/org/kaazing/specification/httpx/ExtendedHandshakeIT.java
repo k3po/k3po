@@ -84,7 +84,8 @@ public class ExtendedHandshakeIT {
     }
 
     @Test
-    @Specification({"extension.in.opening.handshake/request",
+    @Specification({
+        "extension.in.opening.handshake/request",
         "extension.in.opening.handshake/response" })
     public void shouldPassWhenExtensionIsNegotiatedInOpeningHandshake() throws Exception {
         k3po.finish();
@@ -129,6 +130,4 @@ public class ExtendedHandshakeIT {
     public void shouldPassWhenWebSocketProtocolGets401StatusCode() throws Exception {
         k3po.finish();
     }
-
 }
-

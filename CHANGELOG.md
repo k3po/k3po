@@ -2,7 +2,24 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-12...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-13...HEAD)
+
+**Implemented enhancements:**
+
+- Ability for http scripts to force a tcp close: abort command [\#132](https://github.com/k3po/k3po/issues/132)
+- Provide HTTP-level examples that demonstrate ground-up Robot Capabilities [\#11](https://github.com/k3po/k3po/issues/11)
+- Provide TCP-level examples that demonstrate ground-up Robot Capabilities [\#10](https://github.com/k3po/k3po/issues/10)
+
+**Closed issues:**
+
+- HTTPX: x-kaazing-handshake protocol - Empty WebSocket binary frame marks the end of extended handshake response [\#299](https://github.com/k3po/k3po/issues/299)
+
+**Merged pull requests:**
+
+- Updated the port numbers and the paths in the scripts to match the ones used in client itests [\#302](https://github.com/k3po/k3po/pull/302) ([sanjay-saxena](https://github.com/sanjay-saxena))
+
+## [3.0.0-alpha-13](https://github.com/k3po/k3po/tree/3.0.0-alpha-13) (2016-01-27)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-12...3.0.0-alpha-13)
 
 **Merged pull requests:**
 
