@@ -180,9 +180,7 @@ public class HttpChildChannelSink extends AbstractChannelSink {
 
     @Override
     protected void abortRequested(ChannelPipeline pipeline, final AbortEvent evt) throws Exception {
-        HttpChildChannel httpChildChannel = (HttpChildChannel) pipeline.getChannel();
-        Channel parent = httpChildChannel.getParent();
-        parent.close().addListener(new ChannelFutureListener() {
+        transport.close().addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
                 evt.getFuture().setSuccess();
