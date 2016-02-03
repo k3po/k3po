@@ -14,25 +14,39 @@
 # limitations under the License.
 #
 
+# ideally this would be http based so the reads would be consistent
 connect tcp://localhost:8080
 connected
+write "GET /request1 HTTP/1.1" "\r\n"
+write "Host: localhost:8080" "\r\n"
+write "Connection: close" "\r\n"
+write "\r\n"
 
-write "GET /path HTTP/1.1\r\n"
-write "Host: localhost:8080\r\n"
-write "Connection: close\r\n"
+write "GET /request2 HTTP/1.1" "\r\n"
+write "Host: localhost:8080" "\r\n"
+write "Connection: close" "\r\n"
 write "\r\n"
 
 read "HTTP/1.1 200 OK\r\n"
-read "connection: close\r\n"
+read "Content-Length: 8\r\n"
 read "\r\n"
-read notify START_CONNECTION_2
+read "request1"
+
+read notify REPLAY_REQUEST_2
 closed
 
-connect await START_CONNECTION_2
+connect await REPLAY_REQUEST_2
 connect tcp://localhost:8080
 connected
-write "GET /path2 HTTP/1.1\r\n"
-write "Host: localhost:8080\r\n"
-write "Connection: close\r\n"
+
+write "GET /request2 HTTP/1.1" "\r\n"
+write "Host: localhost:8080" "\r\n"
+write "Connection: close" "\r\n"
 write "\r\n"
+
+read "HTTP/1.1 200 OK\r\n"
+read "Content-Length: 8\r\n"
+read "\r\n"
+read "request2"
+
 
