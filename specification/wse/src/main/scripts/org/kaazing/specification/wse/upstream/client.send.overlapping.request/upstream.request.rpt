@@ -24,8 +24,9 @@ write method "POST"
 write version "HTTP/1.1"
 write header host
 write header content-length
-write header "X-WebSocket-Version" "wseb-1.0"
+write header "X-Next-Protocol" "wse/1.0"
 write header "X-Sequence-No" ${wse:asString(sequence)}
+write header "X-WebSocket-Version" "wseb-1.0"
 write close
 
 read status "201" /.+/
@@ -45,6 +46,7 @@ connected
 write method "GET"
 write version "HTTP/1.1"
 write header host
+write header "X-Next-Protocol" "wse/1.0"
 write header "X-Sequence-No" ${wse:asString(sequence + 1)}
 write header content-length
 write close
@@ -55,7 +57,7 @@ read header "Connection" "close"
 
 # read data from first upstream
 read [0x80 0x05] ${data}
-read notify FIRST_UPSTREAM_OPEN
+read notify FIRST_UPSTREAM_CONNECTED
 
 read [0x01 0x30 0x32 0xFF]
 read [0x01 0x30 0x31 0xFF]
@@ -71,13 +73,13 @@ write method "POST"
 write version "HTTP/1.1"
 write header host
 write header "Content-Type" "application/octet-stream"
+write header "Transfer-Encoding" "chunked"
+write header "X-Next-Protocol" "wse/1.0"
 write header "X-Sequence-No" ${wse:asString(sequence + 1)}
-write header "Content-Length" "11"
-write flush
-write [0x80 0x05] ${data}
-write flush
 
-#write await SECOND_UPSTREAM_COMPLETED
+write [0x80 0x05] ${data}
+
+write await SECOND_UPSTREAM_COMPLETE
 write [0x01 0x30 0x31 0xFF]
 write close
 
@@ -86,7 +88,7 @@ read version "HTTP/1.1"
 read closed
 
 # Overlapping Upstream
-connect await FIRST_UPSTREAM_OPEN
+connect await FIRST_UPSTREAM_CONNECTED
         ${upstreamUrl}
 connected
 
@@ -94,13 +96,13 @@ write method "POST"
 write version "HTTP/1.1"
 write header host
 write header "Content-Type" "application/octet-stream"
+write header "X-Next-Protocol" "wse/1.0"
 write header "X-Sequence-No" ${wse:asString(sequence + 2)}
 write header content-length
 
-write [0x80 0x05] ${data}
 write [0x01 0x30 0x31 0xFF]
 write close
 
 read status /4\d\d/ /.+/
-read notify SECOND_UPSTREAM_COMPLETED
+read notify SECOND_UPSTREAM_COMPLETE
 read closed

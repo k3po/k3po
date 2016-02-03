@@ -24,6 +24,7 @@ write method "POST"
 write version "HTTP/1.1"
 write header host
 write header content-length
+write header "X-Next-Protocol" "wse/1.0"
 write header "X-WebSocket-Version" "wseb-1.0"
 write header "X-Sequence-No" ${wse:asString(sequence)}
 write close
@@ -45,6 +46,7 @@ connected
 write method "GET"
 write version "HTTP/1.1"
 write header host
+write header "X-Next-Protocol" "wse/1.0"
 write header "X-Sequence-No" ${wse:asString(sequence + 1)}
 write header content-length
 write close
@@ -65,7 +67,9 @@ write version "HTTP/1.1"
 write header host
 write header "Content-Type" "application/octet-stream"
 write header "X-Sequence-No" ${wse:asString(sequence + 1)}
-write header content-length
+#write header content-length
+write header "X-Next-Protocol" "wse/1.0"
+write header "Transfer-Encoding" "chunked"
 
 write [0x80 0x7F] ${client127}
-write flush
+#write flush
