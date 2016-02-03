@@ -15,7 +15,7 @@
 #
 
 property writeMask ${httpx:randomBytes(4)}
-connect http://localhost:8000/echoauth
+connect http://localhost:8004/echoAuth
 connected
 
 write method "GET"
@@ -38,15 +38,15 @@ read header "Date" /.+/
 
 write [0x82 0x9a] ${writeMask}
 write option mask ${writeMask}
-write "GET /echoauth HTTP/1.1\r\n"
+write "GET /echoAuth HTTP/1.1\r\n"
 write "\r\n"
 write option mask [0x00 0x00 0x00 0x00]
 
 # 401 Challenge
-read [0x82 0x7e 0x00 0xcc]
+read [0x82 0x7e 0x00 0xd6]
 read "HTTP/1.1 401 Unauthorized\r\n"
 read "Content-Type: text/html\r\n"
-read "WWW-Authenticate: Application Basic realm=\"Kaazing Gateway Demo\"\r\n"
+read "WWW-Authenticate: Application Basic realm=\"Kaazing WebSocket Gateway Demo\"\r\n"
 read "Content-Length: 64\r\n"
 read "\r\n"
 read "<html><head></head><body><h1>401 Unauthorized</h1></body></html>"
@@ -54,7 +54,7 @@ read "<html><head></head><body><h1>401 Unauthorized</h1></body></html>"
 # 401 Challenge Response
 write [0x82 0xc1] ${writeMask}
 write option mask ${writeMask}
-write "GET /echoauth HTTP/1.1\r\n"
+write "GET /echoAuth HTTP/1.1\r\n"
 write "Authorization: Basic am9lOndlbGNvbWU=\r\n"
 write "\r\n"
 write option mask [0x00 0x00 0x00 0x00]
@@ -68,4 +68,3 @@ read "Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n"
 read /Server:.+\r\n/
 read "Upgrade: websocket\r\n"
 read "\r\n"
-
