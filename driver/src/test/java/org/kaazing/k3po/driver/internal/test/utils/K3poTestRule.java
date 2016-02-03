@@ -93,9 +93,9 @@ public class K3poTestRule extends Verifier {
     }
 
     /**
-     * Notify barrier to fire
-     * @param string
-     * @throws Exception
+     * Notify barrier to fire.
+     * @param barrierName is the name of the barrier
+     * @throws Exception when barrier is failed to notify
      */
     public void notifyBarrier(String barrierName) throws Exception {
         k3poTestStatement.notifyBarrier(barrierName);

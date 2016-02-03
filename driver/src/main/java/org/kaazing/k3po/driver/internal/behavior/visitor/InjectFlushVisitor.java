@@ -18,6 +18,8 @@ package org.kaazing.k3po.driver.internal.behavior.visitor;
 import java.util.List;
 
 import org.kaazing.k3po.driver.internal.behavior.visitor.InjectFlushVisitor.State;
+import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
@@ -198,6 +200,19 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     @Override
     public AstScriptNode visit(AstCloseNode node, State state) throws Exception {
 
+        state.streamables.add(node);
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstAbortNode node, State state) throws Exception {
+
+        state.streamables.add(node);
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstAbortedNode node, State state) throws Exception {
         state.streamables.add(node);
         return null;
     }

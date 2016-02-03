@@ -31,6 +31,9 @@ public class SimpleChannelDownstreamHandler extends org.jboss.netty.channel.Simp
         else if (e instanceof FlushEvent) {
             flushRequested(ctx, (FlushEvent) e);
         }
+        else if (e instanceof AbortEvent) {
+            abortRequested(ctx, (AbortEvent) e);
+        }
         else {
             super.handleDownstream(ctx, e);
         }
@@ -45,6 +48,10 @@ public class SimpleChannelDownstreamHandler extends org.jboss.netty.channel.Simp
     }
 
     public void shutdownOutputRequested(ChannelHandlerContext ctx, ShutdownOutputEvent e) {
+        ctx.sendDownstream(e);
+    }
+
+    public void abortRequested(ChannelHandlerContext ctx, AbortEvent e) {
         ctx.sendDownstream(e);
     }
 
