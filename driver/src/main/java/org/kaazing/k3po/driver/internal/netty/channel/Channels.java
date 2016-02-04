@@ -174,6 +174,22 @@ public final class Channels {
                 new DownstreamFlushEvent(ctx.getChannel(), future));
     }
 
+    public static ChannelFuture abort(Channel channel) {
+        ChannelFuture future = future(channel);
+        channel.getPipeline().sendDownstream(
+                new DownstreamAbortEvent(channel, future));
+        return future;
+    }
+
+
+    public static void abort(ChannelHandlerContext ctx, ChannelFuture future) {
+        ctx.sendDownstream(new DownstreamAbortEvent(ctx.getChannel(), future));
+    }
+
+    public static void fireChannelAborted(Channel channel) {
+        channel.getPipeline().sendUpstream(new UpstreamAbortEvent(channel));
+    }
+
     private Channels() {
         // no instances
     }

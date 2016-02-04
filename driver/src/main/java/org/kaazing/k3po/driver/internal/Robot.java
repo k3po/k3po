@@ -375,7 +375,9 @@ public class Robot {
             }
 
             for (ChannelFuture connectFuture : connectFutures) {
-                connectFuture.cancel();
+                if (connectFuture.cancel()) {
+                    LOGGER.debug("Cancelled connect future: " + connectFuture.getChannel().getRemoteAddress());
+                }
             }
         }
     }

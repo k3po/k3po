@@ -91,6 +91,16 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
     }
 
     @Override
+    public AstAbortNodeBuilder.StreamNested<AstConnectNodeBuilder> addAbortCommand() {
+        return new AstAbortNodeBuilder.StreamNested<>(this);
+    }
+
+    @Override
+    public AstAbortedNodeBuilder.StreamNested<AstConnectNodeBuilder> addAbortedEvent() {
+        return new AstAbortedNodeBuilder.StreamNested<>(this);
+    }
+
+    @Override
     public AstReadAwaitNodeBuilder.StreamNested<AstConnectNodeBuilder> addReadAwaitBarrier() {
         return new AstReadAwaitNodeBuilder.StreamNested<>(this);
     }
@@ -229,6 +239,16 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         @Override
         public AstCloseNodeBuilder.StreamNested<ScriptNested<R>> addCloseCommand() {
             return new AstCloseNodeBuilder.StreamNested<>(this);
+        }
+
+        @Override
+        public AstAbortNodeBuilder.StreamNested<ScriptNested<R>> addAbortCommand() {
+            return new AstAbortNodeBuilder.StreamNested<>(this);
+        }
+
+        @Override
+        public AstAbortedNodeBuilder.StreamNested<ScriptNested<R>> addAbortedEvent() {
+            return new AstAbortedNodeBuilder.StreamNested<>(this);
         }
 
         @Override

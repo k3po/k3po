@@ -32,6 +32,9 @@ public class SimpleChannelHandler extends org.jboss.netty.channel.SimpleChannelH
         else if (e instanceof FlushEvent) {
             flushed(ctx, (FlushEvent) e);
         }
+        else if (e instanceof AbortEvent) {
+            abort(ctx, (AbortEvent) e);
+        }
         else {
             super.handleUpstream(ctx, e);
         }
@@ -49,6 +52,10 @@ public class SimpleChannelHandler extends org.jboss.netty.channel.SimpleChannelH
         ctx.sendUpstream(e);
     }
 
+    public void abort(ChannelHandlerContext ctx, AbortEvent e) {
+        ctx.sendUpstream(e);
+    }
+
     @Override
     public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
         if (e instanceof ShutdownInputEvent) {
@@ -59,6 +66,9 @@ public class SimpleChannelHandler extends org.jboss.netty.channel.SimpleChannelH
         }
         else if (e instanceof FlushEvent) {
             flushRequested(ctx, (FlushEvent) e);
+        }
+        else if (e instanceof AbortEvent) {
+            abortRequested(ctx, (AbortEvent) e);
         }
         else {
             super.handleDownstream(ctx, e);
@@ -74,6 +84,10 @@ public class SimpleChannelHandler extends org.jboss.netty.channel.SimpleChannelH
     }
 
     public void shutdownOutputRequested(ChannelHandlerContext ctx, ShutdownOutputEvent e) {
+        ctx.sendDownstream(e);
+    }
+
+    public void abortRequested(ChannelHandlerContext ctx, AbortEvent e) {
         ctx.sendDownstream(e);
     }
 

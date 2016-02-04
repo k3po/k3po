@@ -118,6 +118,7 @@ commandNode
     | writeHttpRequestNode
     | writeHttpStatusNode
     | writeHttpVersionNode
+    | abortNode
     ;
 
 eventNode
@@ -134,6 +135,7 @@ eventNode
     | readHttpParameterNode
     | readHttpVersionNode
     | readHttpStatusNode
+    | abortedNode
     ;
 
 barrierNode
@@ -191,6 +193,14 @@ disconnectedNode
 
 openedNode
     : k=OpenedKeyword
+    ;
+
+abortNode
+    : k=AbortKeyword
+    ;
+
+abortedNode
+    : k=AbortedKeyword
     ;
 
 readClosedNode: 
@@ -440,6 +450,14 @@ DisconnectKeyword
 
 DisconnectedKeyword
     : 'disconnected'
+    ;
+
+AbortKeyword
+    : 'abort'
+    ;
+
+AbortedKeyword
+    : 'aborted'
     ;
 
 FlushKeyword
