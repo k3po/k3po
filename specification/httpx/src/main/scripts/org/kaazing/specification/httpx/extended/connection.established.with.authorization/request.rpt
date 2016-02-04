@@ -15,7 +15,7 @@
 #
 
 property writeMask ${httpx:randomBytes(4)}
-connect http://localhost:8004/echoAuth
+connect http://localhost:8080/auth
 connected
 
 write method "GET"
@@ -36,9 +36,9 @@ read header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
 read header "Server" /.+/
 read header "Date" /.+/
 
-write [0x82 0x9a] ${writeMask}
+write [0x82 0x96] ${writeMask}
 write option mask ${writeMask}
-write "GET /echoAuth HTTP/1.1\r\n"
+write "GET /auth HTTP/1.1\r\n"
 write "\r\n"
 write option mask [0x00 0x00 0x00 0x00]
 
@@ -52,9 +52,9 @@ read "\r\n"
 read "<html><head></head><body><h1>401 Unauthorized</h1></body></html>"
 
 # 401 Challenge Response
-write [0x82 0xc1] ${writeMask}
+write [0x82 0xbd] ${writeMask}
 write option mask ${writeMask}
-write "GET /echoAuth HTTP/1.1\r\n"
+write "GET /auth HTTP/1.1\r\n"
 write "Authorization: Basic am9lOndlbGNvbWU=\r\n"
 write "\r\n"
 write option mask [0x00 0x00 0x00 0x00]
