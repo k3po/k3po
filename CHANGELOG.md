@@ -1,5 +1,20 @@
 # Change Log
 
+## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
+
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-16...HEAD)
+
+**Implemented enhancements:**
+
+- Http Sematics to support chunked encoding extensions and trailer [\#136](https://github.com/k3po/k3po/issues/136)
+
+**Merged pull requests:**
+
+- Reverted the port numbers and the paths for extended handshake script… [\#304](https://github.com/k3po/k3po/pull/304) ([sanjay-saxena](https://github.com/sanjay-saxena))
+
+## [3.0.0-alpha-16](https://github.com/k3po/k3po/tree/3.0.0-alpha-16) (2016-02-03)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-15...3.0.0-alpha-16)
+
 ## [3.0.0-alpha-15](https://github.com/k3po/k3po/tree/3.0.0-alpha-15) (2016-02-03)
 [Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-14...3.0.0-alpha-15)
 

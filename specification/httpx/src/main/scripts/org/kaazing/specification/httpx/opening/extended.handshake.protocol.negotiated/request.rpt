@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect http://localhost:8001/echo
+connect http://localhost:8080/path
 connected
 
 write method "GET"
@@ -34,4 +34,3 @@ read header "Sec-WebSocket-Accept" "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
 read header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
 read header "Server" /.+/
 read header "Date" /.+/
-
