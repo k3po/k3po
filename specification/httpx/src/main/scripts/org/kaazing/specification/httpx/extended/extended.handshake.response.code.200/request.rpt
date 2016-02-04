@@ -15,7 +15,7 @@
 #
 
 property writeMask ${httpx:randomBytes(4)}
-connect http://localhost:8001/echo
+connect http://localhost:8000/echo
 connected
 
 write method "GET"
@@ -57,4 +57,3 @@ write [0x03 0xf3]
 write option mask [0x00 0x00 0x00 0x00]
 
 read [0x88 0x02 0x03 0xf3]
-

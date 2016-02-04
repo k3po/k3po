@@ -15,7 +15,7 @@
 #
 
 property writeMask ${httpx:randomBytes(4)}
-connect http://localhost:8001/echo
+connect http://localhost:8000/echo
 connected
 
 write method "GET"
@@ -72,4 +72,3 @@ write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
 write header "Sec-WebSocket-Version" "13"
 write header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
 write flush
-

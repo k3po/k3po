@@ -14,13 +14,13 @@
 # limitations under the License.
 #
 
-accept http://localhost:8004/echoAuth
+accept http://localhost:8000/echoauth
 accepted
 connected
 
 read method "GET"
 read version "HTTP/1.1"
-read header "Host" "localhost:8004"
+read header "Host" "localhost:8000"
 read header "Upgrade" "websocket"
 read header "Connection" "Upgrade"
 read header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
@@ -40,7 +40,7 @@ write flush
 read [0x82 0x9a]
 read [(:maskingKey){4}]
 read option mask ${writeMask}
-read "GET /echoAuth HTTP/1.1\r\n"
+read "GET /echoauth HTTP/1.1\r\n"
 read "\r\n"
 read option mask [0x00 0x00 0x00 0x00]
 
@@ -57,7 +57,7 @@ write "<html><head></head><body><h1>401 Unauthorized</h1></body></html>"
 read [0x82 0xc1]
 read [(:maskingKey){4}]
 read option mask ${writeMask}
-read "GET /echoAuth HTTP/1.1\r\n"
+read "GET /echoauth HTTP/1.1\r\n"
 read "Authorization: Basic am9lOndlbGNvbWU=\r\n"
 read "\r\n"
 read option mask [0x00 0x00 0x00 0x00]
