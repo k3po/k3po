@@ -14,13 +14,13 @@
 # limitations under the License.
 #
 
-accept http://localhost:8000/echoauth
+accept http://localhost:8080/auth
 accepted
 connected
 
 read method "GET"
 read version "HTTP/1.1"
-read header "Host" "localhost:8000"
+read header "Host" "localhost:8080"
 read header "Upgrade" "websocket"
 read header "Connection" "Upgrade"
 read header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
@@ -37,10 +37,10 @@ write header "Server" "Kaazing Gateway"
 write header "Date" ${httpx:getDate()}
 write flush
 
-read [0x82 0x9a]
+read [0x82 0x96]
 read [(:maskingKey){4}]
 read option mask ${writeMask}
-read "GET /echoauth HTTP/1.1\r\n"
+read "GET /auth HTTP/1.1\r\n"
 read "\r\n"
 read option mask [0x00 0x00 0x00 0x00]
 

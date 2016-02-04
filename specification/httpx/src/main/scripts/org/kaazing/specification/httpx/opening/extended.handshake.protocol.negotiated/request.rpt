@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect http://localhost:8000/echo
+connect http://localhost:8080/path
 connected
 
 write method "GET"
