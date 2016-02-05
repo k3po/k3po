@@ -48,7 +48,6 @@ public class ClosingIT {
     @Specification({
         "client.send.close.no.reply.from.server/request",
         "client.send.close.no.reply.from.server/response" })
-    @Ignore("This will not work until k3po #132 is resolved (allow http script to force tcp close)")
     public void clientShouldCloseIfServerDoesNotEchoCloseFrame() throws Exception {
         k3po.finish();
     }
@@ -57,7 +56,6 @@ public class ClosingIT {
     @Specification({
         "client.abruptly.closes.downstream/request",
         "client.abruptly.closes.downstream/response" })
-    @Ignore("This will not work until k3po #132 is resolved (support http abort command to force tcp close)")
     public void clientAbruptlyClosesDownstream() throws Exception {
         k3po.finish();
     }

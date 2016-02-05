@@ -54,7 +54,9 @@ read header "Connection" "close"
 read notify DOWNSTREAM_OPENED
 
 write await CLOSE_SENT
-close
+
+# Client abruptly closes the downstream without responding to the close handshake
+abort
 
 
 # Upstream

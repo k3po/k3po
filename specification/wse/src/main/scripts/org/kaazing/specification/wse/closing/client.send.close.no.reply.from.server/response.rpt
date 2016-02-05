@@ -54,6 +54,8 @@ write header "Content-Type" "application/octet-stream"
 write header "Connection" "close"
 write flush
 
+aborted
+
 
 # Upstream
 accept ${upstream}
