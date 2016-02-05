@@ -15,7 +15,6 @@
 #
 
 property sequence ${wse:randomInt(100)}
-property client127 ${wse:randomBytes(127)}
 
 connect http://localhost:8080/path/;e/cb?query
 connected
@@ -24,7 +23,6 @@ write method "POST"
 write version "HTTP/1.1"
 write header host
 write header content-length
-write header "X-Next-Protocol" "wse/1.0"
 write header "X-WebSocket-Version" "wseb-1.0"
 write header "X-Sequence-No" ${wse:asString(sequence)}
 write close
@@ -46,7 +44,6 @@ connected
 write method "GET"
 write version "HTTP/1.1"
 write header host
-write header "X-Next-Protocol" "wse/1.0"
 write header "X-Sequence-No" ${wse:asString(sequence + 1)}
 write header content-length
 write close
@@ -55,7 +52,12 @@ read status "200" /.+/
 read header "Content-Type" "application/octet-stream"
 read header "Connection" "close"
 
-read [0x80 0x7f] ${client127}
+read await UPSTREAM_ABORT
+read [0x01 0x30 0x32 0xFF]
+read [0x01 0x30 0x31 0xFF]
+read closed
+
+closed
 
 # Upstream
 connect await CREATED
@@ -66,9 +68,11 @@ write method "POST"
 write version "HTTP/1.1"
 write header host
 write header "Content-Type" "application/octet-stream"
-write header "X-Sequence-No" ${wse:asString(sequence + 1)}
-write header "X-Next-Protocol" "wse/1.0"
 write header "Transfer-Encoding" "chunked"
+write header "X-Next-Protocol" "wse/1.0"
+write header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
-write [0x80 0x7F] ${client127}
+abort
+write notify UPSTREAM_ABORT
+
 
