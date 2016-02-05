@@ -50,7 +50,7 @@ read closed
 
 write status "200" "OK"
 write version "HTTP/1.1"
-write header "Content-Type" "not-application/octet-stream"
+write header "Content-Type" "application/octet-stream"
 write header "Connection" "close"
 write flush
 

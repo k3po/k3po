@@ -48,7 +48,7 @@ read version "HTTP/1.1"
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 read closed
 
-write status "209" "OK"
+write status "206" "OK"
 write version "HTTP/1.1"
 write header "Content-Type" "application/octet-stream"
 write header "Connection" "close"
