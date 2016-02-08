@@ -216,9 +216,9 @@ public class OpeningIT {
 
     @Test
     @Specification({
-        "response.header.x.websocket.extensions.not.negotiated/handshake.request",
-        "response.header.x.websocket.extensions.not.negotiated/handshake.response" })
-    public void shouldFailConnectionWhenXWebSocketExtensionsNotNegotiated()
+        "response.header.x.websocket.extensions.not.requested/handshake.request",
+        "response.header.x.websocket.extensions.not.requested/handshake.response" })
+    public void shouldFailConnectionWhenXWebSocketExtensionsNotRequested()
             throws Exception {
         k3po.finish();
     }
