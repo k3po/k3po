@@ -18,6 +18,7 @@ package org.kaazing.specification.wse;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -234,6 +235,16 @@ public class OpeningIT {
 
     @Test
     @Specification({
+        "response.body.create.https.has.upstream.with.scheme.not.https/handshake.request",
+        "response.body.create.https.has.upstream.with.scheme.not.https/handshake.response" })
+    @Ignore("k3po does not yet support https")
+    public void shouldFailConnectionWhenCreateHttpsResponseBodyHasUpstreamWithSchemeNotHttps()
+            throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "response.body.has.upstream.with.scheme.not.http.or.https/handshake.request",
         "response.body.has.upstream.with.scheme.not.http.or.https/handshake.response" })
     public void shouldFailConnectionWhenResponseBodyHasUpstreamWithSchemeNotHttpOrHttps()
@@ -255,6 +266,16 @@ public class OpeningIT {
         "response.body.has.upstream.with.different.path.prefix/handshake.request",
         "response.body.has.upstream.with.different.path.prefix/handshake.response" })
     public void shouldFailConnectionWhenResponseBodyHasUpstreamWithDifferentPathPrefix()
+            throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "response.body.create.https.has.downstream.with.scheme.not.https/handshake.request",
+        "response.body.create.https.has.downstream.with.scheme.not.https/handshake.response" })
+    @Ignore("k3po does not yet support https")
+    public void shouldFailConnectionWhenCreateHttpsResponseBodyHasDownstreamWithSchemeNotHttps()
             throws Exception {
         k3po.finish();
     }
