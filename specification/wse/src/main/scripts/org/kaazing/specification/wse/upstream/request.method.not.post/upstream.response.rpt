@@ -19,7 +19,7 @@ property downstreamId ${wse:uniqueId()}
 property upstreamUrl ${wse:append("http://localhost:8080/path/", upstreamId)}
 property downstreamUrl ${wse:append("http://localhost:8080/path/", downstreamId)}
 
-accept http://localhost:8080/path/;e/cb?query
+accept http://localhost:8080/path/;e/cbm?query
 accepted
 connected
 
