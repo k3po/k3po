@@ -399,6 +399,80 @@ public class HttpScriptParserTest {
         assertEquals(0, actual.getRegionInfo().children.size());
     }
 
+    @Test
+    public void shouldParseWriteOptionChunkExtension() throws Exception {
+
+        String scriptFragment = "write option chunkExtension chunkKeyWord";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteCloseNode actual = parser.parseWithStrategy(scriptFragment, WRITE_CLOSE);
+
+        // @formatter:off
+        AstWriteCloseNode expected = new AstWriteCloseNodeBuilder()
+                .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+        assertEquals(0, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseReadOptionChunkExtension() throws Exception {
+
+        String scriptFragment = "read option chunkExtension chunkKeyWord";
+
+        // DPW TODO
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteCloseNode actual = parser.parseWithStrategy(scriptFragment, WRITE_CLOSE);
+
+        // @formatter:off
+        AstWriteCloseNode expected = new AstWriteCloseNodeBuilder()
+                .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+        assertEquals(0, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseWriteChunkTrailer() throws Exception {
+
+        String scriptFragment = "write trailer name value";
+
+        // DPW TODO
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteCloseNode actual = parser.parseWithStrategy(scriptFragment, WRITE_CLOSE);
+
+        // @formatter:off
+        AstWriteCloseNode expected = new AstWriteCloseNodeBuilder()
+                .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+        assertEquals(0, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseReadChunkTrailer() throws Exception {
+
+        String scriptFragment = "read trailer name value";
+
+        // DPW TODO
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteCloseNode actual = parser.parseWithStrategy(scriptFragment, WRITE_CLOSE);
+
+        // @formatter:off
+        AstWriteCloseNode expected = new AstWriteCloseNodeBuilder()
+                .done();
+        // @formatter:on
+
+        assertEquals(expected, actual);
+        assertEquals(0, actual.getRegionInfo().children.size());
+    }
+
      @Test
      public void shouldParseHttpReadRequestWriteResponseScript() throws Exception {
          // @formatter:off

@@ -374,6 +374,26 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
                 }
             };
 
+    public static final ScriptParseStrategy<AstReadConfigNode> READ_CHUNK_EXTENSION =
+            new ScriptParseStrategy<AstReadConfigNode>() {
+        // DPW TODO
+                @Override
+                public AstReadConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstReadHttpConfigNodeVisitor(elFactory, elContext).visit(parser.readHttpHeaderNode());
+                }
+            };
+
+    public static final ScriptParseStrategy<AstReadConfigNode> WRITE_CHUNK_EXTENSION =
+            new ScriptParseStrategy<AstReadConfigNode>() {
+        // DPW TODO
+                @Override
+                public AstReadConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstReadHttpConfigNodeVisitor(elFactory, elContext).visit(parser.readHttpHeaderNode());
+                }
+            };
+
     public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_CONTENT_LENGTH =
             new ScriptParseStrategy<AstWriteConfigNode>() {
                 @Override
@@ -590,8 +610,8 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
                 @Override
                 public AstVariableLengthBytesMatcher parse(RobotParser parser, ExpressionFactory elFactory,
                     ExpressionContext elContext) throws RecognitionException {
-                    return new AstVariableLengthBytesMatcherVisitor(elFactory, elContext).visit(parser
-                            .variableLengthBytesMatcher());
+                    return new AstVariableLengthBytesMatcherVisitor(elFactory, elContext)
+                            .visit(parser.variableLengthBytesMatcher());
                 }
             };
 
@@ -630,8 +650,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
                 }
             };
 
-    public static final ScriptParseStrategy<AstReadOptionNode> READ_MASK_OPTION =
-            new ScriptParseStrategy<AstReadOptionNode>() {
+    public static final ScriptParseStrategy<AstReadOptionNode> READ_MASK_OPTION = new ScriptParseStrategy<AstReadOptionNode>() {
         @Override
         public AstReadOptionNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
                 throws RecognitionException {
@@ -639,14 +658,19 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         }
     };
 
-    public static final ScriptParseStrategy<AstWriteOptionNode> WRITE_MASK_OPTION =
+    public static final ScriptParseStrategy<AstWriteOptionNode> WRITE_MASK_OPTION = 
             new ScriptParseStrategy<AstWriteOptionNode>() {
-        @Override
-        public AstWriteOptionNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
-                throws RecognitionException {
-            return (AstWriteOptionNode) new AstOptionNodeVisitor(elFactory, elContext).visit(parser.writeOptionMaskNode());
-        }
-    };
+                @Override
+                public AstWriteOptionNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return (AstWriteOptionNode) new AstOptionNodeVisitor(elFactory, elContext)
+                            .visit(parser.writeOptionMaskNode());
+                }
+            };
+
+    public static final ScriptParseStrategy<AstReadOptionNode> READ_CHUNK_EXTENSION_OPTION = READ_MASK_OPTION;
+
+    public static final ScriptParseStrategy<AstWriteOptionNode> WRITE_CHUNK_EXTENSION_OPTION = WRITE_MASK_OPTION;
 
     public abstract T parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
             throws RecognitionException;
@@ -1559,6 +1583,21 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
     }
 
+    private static class AstAbortedNodeVisitor extends AstNodeVisitor<AstAbortedNode> {
+
+        public AstAbortedNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+            super(elFactory, elContext);
+        }
+
+        @Override
+        public AstAbortedNode visitAbortedNode(AbortedNodeContext ctx) {
+            node = new AstAbortedNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return node;
+        }
+
+    }
+
     private static class AstConnectedNodeVisitor extends AstNodeVisitor<AstConnectedNode> {
 
         public AstConnectedNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
@@ -2016,7 +2055,6 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             return value;
         }
     }
-
 
     private static class AstValueVisitor extends AstVisitor<AstValue> {
 

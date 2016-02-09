@@ -14,14 +14,12 @@
 # limitations under the License.
 #
 
-accept http://localhost:8080/
-accepted
+# CLIENT
+connect http://localhost:8080/resource
 connected
-
-read method "POST"
-read header "Content-length" "0"
-read closed
-
-write status "200" "OK"
+write method "GET"
+write header host
+write header "via" "1.1 proxy1"
 write close
+read header "via" "1.1 proxy3"
 

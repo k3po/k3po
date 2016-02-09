@@ -14,14 +14,16 @@
 # limitations under the License.
 #
 
-accept http://localhost:8080/
+#SERVER
+accept http://localhost:8081/resource
 accepted
 connected
-
-read method "POST"
-read header "Content-length" "0"
+read method "GET"
+read header "Host" "localhost:8081"
+read header "via" "1.1 pseudonym1, 1.1 my-pseudonym"
 read closed
-
 write status "200" "OK"
+write header content-length
+write header "via" "1.1 back-domain:80"
 write close
 
