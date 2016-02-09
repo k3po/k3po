@@ -56,6 +56,15 @@ public class ProxiesIT {
 
     @Test
     @Specification({
+        "server.send.secure.downstream.redirect/request",
+        "server.send.secure.downstream.redirect/response" })
+    public void shouldReceiveSecureRedirectFromServerOnProxyModeRequest()
+            throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "client.request.heartbeat.interval/request",
         "client.request.heartbeat.interval/response" })
     public void shouldSendHeartbeatToClient() throws Exception {
