@@ -37,6 +37,26 @@ read /(?<downstream>http:\/\/localhost:8080\/path\/.+)/ "\n"
 read notify CREATED
 read closed
 
+# Downstream
+connect await CREATED
+        ${downstream}
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "X-Next-Protocol" "wse/1.0"
+write header "X-Sequence-No" ${wse:asString(sequence + 1)}
+write header content-length
+write close
+
+read status "200" /.+/
+read header "Content-Type" "application/octet-stream"
+read header "Connection" "close"
+
+write await READ_BAD_STATUS
+abort
+
 # Upstream
 connect await CREATED
 connect ${upstream}
@@ -55,5 +75,6 @@ write [0x01 0x30 0x31 0xFF]
 write close
 
 read status /(?!200)/ /.+/
+read notify READ_BAD_STATUS
 read version "HTTP/1.1"
 read closed
