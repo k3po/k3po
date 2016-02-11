@@ -85,4 +85,12 @@ public class UpstreamIT {
     public void shouldAllowMultipleSequentialUpstreamRequests() throws Exception {
         k3po.finish();
     }
+
+    @Test
+    @Specification({
+        "zero.content.length.request/upstream.request",
+        "zero.content.length.request/upstream.response" })
+    public void shouldRejectZeroContentLengthUpstreamRequest() throws Exception {
+        k3po.finish();
+    }
 }
