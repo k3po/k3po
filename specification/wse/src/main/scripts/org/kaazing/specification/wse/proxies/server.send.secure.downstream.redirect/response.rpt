@@ -18,7 +18,7 @@ property upstreamId ${wse:uniqueId()}
 property downstreamId ${wse:uniqueId()}
 property upstream ${wse:append("http://localhost:8080/path/", upstreamId)}
 property downstream ${wse:append("http://localhost:8080/path/", downstreamId)}
-property secureDownstream ${wse:append("https://localhost:8080/path/", downstreamId)}
+property secureDownstream ${wse:append("https://localhost:8443/path/", downstreamId)}
 
 accept http://localhost:8080/path/;e/cb?query
 accepted

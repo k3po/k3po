@@ -73,5 +73,5 @@ write close
 write notify OVERLAPPING_DOWNSTREAM_REQUEST
 
 read status "301" /.+/
-read header "Location" /https:\/\/localhost:8080\/path\/.+/
+read header "Location" /https:\/\/localhost:8443\/path\/.+/
 read closed
