@@ -36,6 +36,6 @@ write header "X-WebSocket-Protocol" "primary"
 write header "Content-Type" "text/plain;charset=utf-8"
 write header content-length
 
-write "http://localhost:8080/path/uofdbnreiodfkbqi\n"
-write "https://localhost:8443/path/kwebfbkjwehkdsfa\n"
+write ${upstream} "\n"
+write ${downstream} "\n"
 write close

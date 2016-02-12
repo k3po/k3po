@@ -2,7 +2,18 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-16...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-17...HEAD)
+
+**Implemented enhancements:**
+
+- Specification.k3po.control - Enhance control protocol to support overriding default property values [\#154](https://github.com/k3po/k3po/issues/154)
+
+**Merged pull requests:**
+
+- Wse spec test fixes [\#305](https://github.com/k3po/k3po/pull/305) ([cmebarrow](https://github.com/cmebarrow))
+
+## [3.0.0-alpha-17](https://github.com/k3po/k3po/tree/3.0.0-alpha-17) (2016-02-04)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-16...3.0.0-alpha-17)
 
 **Implemented enhancements:**
 

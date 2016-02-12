@@ -109,6 +109,15 @@ public class HttpIT {
 
     @Test
     @TestSpecification({
+        "http.connect.with.parameter.write.parameter",
+        "tcp.accept.read.two.parameters" })
+    public void shouldAcceptWriteParameterOnConnectWithParameter() throws Exception {
+
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
         "http.accept.get.request.with.no.content.on.response",
         "tcp.connect.get.request.with.no.content.on.response" })
     public void shouldReceiveGetRequestAndProvideResponse() throws Exception {

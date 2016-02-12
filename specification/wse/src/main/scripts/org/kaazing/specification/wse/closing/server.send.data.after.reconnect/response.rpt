@@ -21,7 +21,7 @@ property downstream ${wse:append("http://localhost:8080/path/", downstreamId)}
 
 property data ${wse:randomBytes(127)}
 
-accept http://localhost:8080/path/;e/cb?query
+accept http://localhost:8080/path/;e/cbm?query
 accepted
 connected
 

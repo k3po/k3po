@@ -365,10 +365,11 @@ attaching the downstream.
 
 ### Client Upstream Requirements
 
-Any upstream data frames are sent in the payload of a transient HTTP upstream request.
+Any upstream data frames are sent in the payload of one or more HTTP upstream requests.
 * the HTTP upstream request method MUST be `POST`
 * the HTTP upstream request `Content-Type` HTTP header MUST be `application/octet-stream` for default (binary) create handshake encoding. See [Text Encoding](#text-encoding) and [Text Escaped Encoding](#text-escaped-encoding) for text encoding upstream requirements.
 * Clients MUST send the `X-Sequence-No` HTTP header. Please see [Request Sequencing](#request-sequencing) for details.
+* Clients MAY use request HTTP header `Transfer-Encoding: chunked` to provide a continuously streaming upstream to the server. If not, upstream requests MUST be completed in order to send data by specifying the `Content-Length` HTTP header and ending the request body with the RECONNECT command (see [Command Frames](#command-frames)).
 
 For example, with an upstream data transfer URL `http://host.example.com:8080/path/uofdbnreiodfkbqi`.
 ```
