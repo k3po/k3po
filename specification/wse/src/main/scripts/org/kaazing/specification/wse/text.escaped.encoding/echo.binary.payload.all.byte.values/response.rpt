@@ -62,7 +62,7 @@ write header "Connection" "close"
 write flush
 
 write await DATA_RECEIVED
-write [0x80 0x82 0x00]
+write [0x80 0x82 0x7f 0x30]
 write ${escaped1252AllBytes}
 write flush
 

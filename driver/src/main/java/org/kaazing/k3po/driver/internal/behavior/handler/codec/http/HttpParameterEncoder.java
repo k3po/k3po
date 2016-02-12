@@ -23,7 +23,6 @@ import java.net.URI;
 import java.util.List;
 
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.handler.codec.http.QueryStringEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageEncoder;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChannelConfig;

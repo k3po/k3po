@@ -16,7 +16,7 @@
 
 property sequence ${wse:randomInt(100)}
 
-connect http://localhost:8080/path/;e/cb?query
+connect http://localhost:8080/path/;e/cbm?query
 connected
 
 write method "POST"

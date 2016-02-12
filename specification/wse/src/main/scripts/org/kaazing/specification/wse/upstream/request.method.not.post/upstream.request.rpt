@@ -17,7 +17,7 @@
 property sequence ${wse:randomInt(100)}
 property data ${wse:randomBytes(5)}
 
-connect http://localhost:8080/path/;e/cb?query
+connect http://localhost:8080/path/;e/cbm?query
 connected
 
 write method "POST"
@@ -53,13 +53,15 @@ read status "200" /.+/
 read header "Content-Type" "application/octet-stream"
 read header "Connection" "close"
 
+read notify DOWNSTREAM_CONNECTED
+
 read [0x01 0x30 0x32 0xFF]
 read [0x01 0x30 0x31 0xFF]
 read closed
 
 
 # Upstream
-connect await CREATED
+connect await DOWNSTREAM_CONNECTED
 connect ${upstream}
 connected
 
