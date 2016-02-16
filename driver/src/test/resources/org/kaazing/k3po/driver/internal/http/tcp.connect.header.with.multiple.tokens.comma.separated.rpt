@@ -14,25 +14,23 @@
 # limitations under the License.
 #
 
-property sequence ${wse:randomInt(100)}
-
-connect http://localhost:8080/path/;e/cb?query
+connect tcp://localhost:8000
 connected
+write "GET / HTTP/1.1\r\n"
+write "Host: localhost:8000\r\n"
 
-write method "POST"
-write version "HTTP/1.1"
-write header host
-write header content-length
-write header "X-WebSocket-Version" "wseb-1.0"
-write header "X-Sequence-No" ${wse:asString(sequence)}
-write header "X-WebSocket-Extensions" "primary" "secondary"
-write close
+write "Color: red, blue\r\n"
 
-read status "201" /.+/
-read version "HTTP/1.1"
-read header "X-WebSocket-Extensions" /primary|secondary/
-read header "Content-Type" /text\/plain;charset=(?i)utf-8/
+# If the following is used the test passes:
+#write "color: red\r\n"
+#write "color: blue\r\n"
 
-read /http:\/\/localhost:8080\/path\/.+?\n/
-read /http:\/\/localhost:8080\/path\/.+?\n/
-read closed
+write "\r\n"
+read "HTTP/1.1 200 OK\r\n"
+read "Color: red\r\n"
+read "Color: blue\r\n"
+read "Content-Length: 0\r\n"
+read "\r\n"
+close
+closed
+

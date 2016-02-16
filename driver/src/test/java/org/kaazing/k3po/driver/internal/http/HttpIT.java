@@ -83,6 +83,16 @@ public class HttpIT {
 
     @Test
     @TestSpecification({
+        "http.accept.header.with.multiple.tokens.comma.separated",
+        "tcp.connect.header.with.multiple.tokens.comma.separated" })
+    @Ignore("#306 reading a list header expressed as a single header with comma separate values does not work")
+    public void shouldAcceptHeaderWithMultipleTokensCommaSeparated() throws Exception {
+
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
         "http.accept.websocket.handshake.then.client.hard.close",
         "http.connect.websocket.handshake.then.client.hard.close" })
     public void shouldAcceptWebsocketHandshakeThenClientHardClose() throws Exception {
