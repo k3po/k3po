@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-17...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-18...HEAD)
+
+**Merged pull requests:**
+
+- More wse spec test fixes [\#307](https://github.com/k3po/k3po/pull/307) ([cmebarrow](https://github.com/cmebarrow))
+
+## [3.0.0-alpha-18](https://github.com/k3po/k3po/tree/3.0.0-alpha-18) (2016-02-12)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-17...3.0.0-alpha-18)
 
 **Implemented enhancements:**
 

@@ -14,25 +14,14 @@
 # limitations under the License.
 #
 
-property sequence ${wse:randomInt(100)}
-
-connect http://localhost:8080/path/;e/cb?query
+accept http://localhost:8000/
+accepted
 connected
+read method "GET"
 
-write method "POST"
-write version "HTTP/1.1"
-write header host
-write header content-length
-write header "X-WebSocket-Version" "wseb-1.0"
-write header "X-Sequence-No" ${wse:asString(sequence)}
-write header "X-WebSocket-Extensions" "primary" "secondary"
-write close
+read header "Color" "red" "blue"
 
-read status "201" /.+/
-read version "HTTP/1.1"
-read header "X-WebSocket-Extensions" /primary|secondary/
-read header "Content-Type" /text\/plain;charset=(?i)utf-8/
-
-read /http:\/\/localhost:8080\/path\/.+?\n/
-read /http:\/\/localhost:8080\/path\/.+?\n/
 read closed
+write header "Color" "red" "blue"
+write header content-length
+write close
