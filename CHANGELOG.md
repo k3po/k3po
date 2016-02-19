@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-18...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-19...HEAD)
+
+**Merged pull requests:**
+
+- Fixed wseb spec test script client.abruptly.closes.upstream/request  [\#308](https://github.com/k3po/k3po/pull/308) ([cmebarrow](https://github.com/cmebarrow))
+
+## [3.0.0-alpha-19](https://github.com/k3po/k3po/tree/3.0.0-alpha-19) (2016-02-16)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-18...3.0.0-alpha-19)
 
 **Merged pull requests:**
 

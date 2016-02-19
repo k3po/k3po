@@ -52,6 +52,8 @@ read status "200" /.+/
 read header "Content-Type" "application/octet-stream"
 read header "Connection" "close"
 
+read notify DOWNSTREAM_CONNECTED
+
 read await UPSTREAM_ABORT
 read [0x01 0x30 0x32 0xFF]
 read [0x01 0x30 0x31 0xFF]
@@ -60,7 +62,7 @@ read closed
 closed
 
 # Upstream
-connect await CREATED
+connect await DOWNSTREAM_CONNECTED
 connect ${upstream}
 connected
 
