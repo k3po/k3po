@@ -74,8 +74,7 @@ public class ScriptParserImpl implements ScriptParser {
         }
     }
 
-    // package-private for unit testing
-    <T extends AstRegion> T parseWithStrategy(String input, ScriptParseStrategy<T> strategy)
+    public <T extends AstRegion> T parseWithStrategy(String input, ScriptParseStrategy<T> strategy)
             throws ScriptParseException {
         return parseWithStrategy(
                 new ByteArrayInputStream(input.getBytes(UTF_8)), strategy);

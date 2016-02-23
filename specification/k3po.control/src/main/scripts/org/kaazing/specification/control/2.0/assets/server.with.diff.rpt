@@ -1,6 +1,5 @@
 # server
-property hostname "localhost"
-accept tcp://${hostname}:8000
+accept tcp://localhost:8000
 accepted
 connected
 read "echo"

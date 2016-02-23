@@ -18,7 +18,7 @@ connect tcp://localhost:12345
 connected
 
 write "PREPARE\n"
-write "version:2.0\n"
+write "version:2.1\n"
 write "\n"
 
 read "PREPARED\n"

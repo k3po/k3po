@@ -33,8 +33,8 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.driver.internal.test.utils.K3poTestRule;
 import org.kaazing.k3po.driver.internal.test.utils.TestSpecification;
 
-public class K3poIT {
-    private final K3poTestRule k3po = new K3poTestRule().setScriptRoot("org/kaazing/specification/control");
+public class K3poControlBackwardsCompatibilityIT {
+    private final K3poTestRule k3po = new K3poTestRule().setScriptRoot("org/kaazing/specification/control/2.0");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(3, SECONDS));
 
@@ -65,12 +65,6 @@ public class K3poIT {
     @TestSpecification("connect.finished")
     @Test
     public void connectFinished() throws Exception {
-        k3po.finish();
-    }
-
-    @TestSpecification("connect.finished.with.override.properties")
-    @Test
-    public void connectFinishedWithOverrideProperties() throws Exception {
         k3po.finish();
     }
 

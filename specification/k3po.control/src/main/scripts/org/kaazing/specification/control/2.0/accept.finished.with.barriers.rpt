@@ -19,13 +19,15 @@ accepted
 connected
 
 read "PREPARE\n"
-read "version:2.1\n"
-read "name:path/to/script/server\n"
-read "name:path/to/script/client\n"
+read "version:2.0\n"
+read "name:org/kaazing/specification/control/2.0/assets/server\n"
+read "name:org/kaazing/specification/control/2.0/assets/client.with.barriers\n"
 read "\n"
 
 write "PREPARED\n"
-write "content-length:176\n"
+write "barrier:AWAITING_BARRIER\n"
+write "barrier:NOTIFYING_BARRIER\n"
+write "content-length:233\n"
 write "\n"
 write "# server\n"
 write "accept tcp://localhost:8000\n"
@@ -38,6 +40,8 @@ write "closed\n"
 write "# client\n"
 write "connect tcp://localhost:8000\n"
 write "connected\n"
+write "read notify NOTIFYING_BARRIER\n"
+write "write await AWAITING_BARRIER\n"
 write "write \"echo\"\n"
 write "read \"echo\"\n"
 write "closed\n"
@@ -48,8 +52,24 @@ read "\n"
 write "STARTED\n"
 write "\n"
 
+read "AWAIT\n"
+read "barrier:NOTIFYING_BARRIER\n"
+read "\n"
+
+write "NOTIFIED\n"
+write "barrier:NOTIFYING_BARRIER\n"
+write "\n"
+
+read "NOTIFY\n"
+read "barrier:AWAITING_BARRIER\n"
+read "\n"
+
+write "NOTIFIED\n"
+write "barrier:AWAITING_BARRIER\n"
+write "\n"
+
 write "FINISHED\n"
-write "content-length:176\n"
+write "content-length:233\n"
 write "\n"
 write "# server\n"
 write "accept tcp://localhost:8000\n"
@@ -62,8 +82,10 @@ write "closed\n"
 write "# client\n"
 write "connect tcp://localhost:8000\n"
 write "connected\n"
+write "read notify NOTIFYING_BARRIER\n"
+write "write await AWAITING_BARRIER\n"
 write "write \"echo\"\n"
-write "read \"huh?\"\n"
+write "read \"echo\"\n"
 write "closed\n"
 
 read "DISPOSE\n"
@@ -73,4 +95,4 @@ write "DISPOSED\n"
 write "\n"
 
 close
-closed
+

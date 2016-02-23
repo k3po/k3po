@@ -19,6 +19,7 @@ import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.FileSystems.newFileSystem;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.PROPERTY_NODE;
 
 import java.io.IOException;
 import java.net.URI;
@@ -35,6 +36,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -56,6 +58,7 @@ import org.kaazing.k3po.driver.internal.control.PrepareMessage;
 import org.kaazing.k3po.driver.internal.control.PreparedMessage;
 import org.kaazing.k3po.driver.internal.control.StartedMessage;
 import org.kaazing.k3po.lang.internal.parser.ScriptParseException;
+import org.kaazing.k3po.lang.internal.parser.ScriptParserImpl;
 
 public class ControlServerHandler extends ControlUpstreamHandler {
 
@@ -102,7 +105,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
         // enforce control protocol version
         String version = prepare.getVersion();
-        if (!"2.0".equals(version)) {
+        if (!"2.0".equals(version) && !"2.1".equals(version)) {
             sendVersionError(ctx);
             return;
         }
@@ -129,6 +132,16 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         try {
 
             final String aggregatedScript = originScript + aggregateScript(scriptNames, scriptLoader);
+            List<String> properyOverrides = prepare.getProperties();
+            // consider hard fail in the future, when test frameworks support
+            // override per test method
+
+            // Checks that it is a supported version
+            if (!"2.0".equals(version) && !"2.1".equals(version)) {
+                sendVersionError(ctx);
+            }
+
+            injectOverridenProperties(version, aggregatedScript, properyOverrides);
 
             if (scriptLoader != null) {
                 Thread currentThread = currentThread();
@@ -155,6 +168,47 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         } catch (Exception e) {
             sendErrorMessage(ctx, e);
             return;
+        }
+    }
+
+    private void injectOverridenProperties(String version, final String aggregatedScript, List<String> scriptProperties)
+            throws Exception, ScriptParseException {
+
+        // Backward compatibility
+        boolean warnOnFailedPropertySubstituion = true;
+        if ("2.0".equals(version)) {
+            if (!scriptProperties.isEmpty()) {
+                // a well implemented test frameworks should never do this, i.e
+                // be version 2.0 and send overwritten properties
+                throw new Exception("Control protocol version " + version
+                        + " is attempting to overwrite properties when feature was only made available in 2.1 and above");
+            } else {
+                // for backwards compatibility with old versions we will set the value of the standard ${hostname}
+                // property to localhost
+                scriptProperties.add("property hostname \"localhost\"");
+                warnOnFailedPropertySubstituion = false;
+            }
+        }
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+
+        for (String propertyToInject : scriptProperties) {
+            String propertyName = parser.parseWithStrategy(propertyToInject, PROPERTY_NODE).getPropertyName();
+            StringBuilder replacementScript = new StringBuilder();
+            Pattern pattern = Pattern.compile("property\\s+" + propertyName + "\\s+.+");
+            boolean matchFound = false;
+            for (String scriptLine : aggregatedScript.split("\\r?\\n")) {
+                if (pattern.matcher(scriptLine).matches()) {
+                    matchFound = true;
+                    replacementScript.append(propertyToInject + "\n");
+                } else {
+                    replacementScript.append(scriptLine + "\n");
+                }
+            }
+            if (!matchFound && warnOnFailedPropertySubstituion) {
+                // Perhaps in the future we will want to have scripts that force injecting it (i.e. no default)
+                logger.warn("Received " + propertyToInject + " in PREPARE but found no where to substitute it");
+            }
         }
     }
 
