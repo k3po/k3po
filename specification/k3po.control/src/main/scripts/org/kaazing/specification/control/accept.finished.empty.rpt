@@ -19,7 +19,7 @@ accepted
 connected
 
 read "PREPARE\n"
-read "version:2.1\n"
+read "version:2.0\n"
 read "\n"
 
 write "PREPARED\n"

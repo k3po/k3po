@@ -1,8 +1,0 @@
-# server
-accept tcp://localhost:8000
-accepted
-connected
-read "echo"
-write "echo"
-close
-closed

@@ -137,11 +137,11 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             // override per test method
 
             // Checks that it is a supported version
-            if (!"2.0".equals(version) && !"2.1".equals(version)) {
+            if (!"2.0".equals(version)) {
                 sendVersionError(ctx);
             }
 
-            aggregatedScript = injectOverridenProperties(version, aggregatedScript, properyOverrides);
+            aggregatedScript = injectOverridenProperties(aggregatedScript, properyOverrides);
 
             if (scriptLoader != null) {
                 Thread currentThread = currentThread();
@@ -172,24 +172,8 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         }
     }
 
-    private String injectOverridenProperties(String version, String aggregatedScript, List<String> scriptProperties)
+    private String injectOverridenProperties(String aggregatedScript, List<String> scriptProperties)
             throws Exception, ScriptParseException {
-
-        // Backward compatibility
-        boolean warnOnFailedPropertySubstituion = true;
-        if ("2.0".equals(version)) {
-            if (!scriptProperties.isEmpty()) {
-                // a well implemented test frameworks should never do this, i.e
-                // be version 2.0 and send overwritten properties
-                throw new Exception("Control protocol version " + version
-                        + " is attempting to overwrite properties when feature was only made available in 2.1 and above");
-            } else {
-                // for backwards compatibility with old versions we will set the value of the standard ${hostname}
-                // property to localhost
-                scriptProperties.add("property hostname \"localhost\"");
-                warnOnFailedPropertySubstituion = false;
-            }
-        }
 
         ScriptParserImpl parser = new ScriptParserImpl();
 
@@ -206,9 +190,10 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                     replacementScript.append(scriptLine + "\n");
                 }
             }
-            if (!matchFound && warnOnFailedPropertySubstituion) {
-                // Perhaps in the future we will want to have scripts that force injecting it (i.e. no default)
-                logger.warn("Received " + propertyToInject + " in PREPARE but found no where to substitute it");
+            if (!matchFound) {
+                String errorMsg = "Received " + propertyToInject + " in PREPARE but found no where to substitute it";
+                logger.error(errorMsg);
+                throw new Exception(errorMsg);
             }
             aggregatedScript = replacementScript.toString();
         }

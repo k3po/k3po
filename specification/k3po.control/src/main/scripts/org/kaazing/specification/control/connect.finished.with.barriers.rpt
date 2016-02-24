@@ -18,7 +18,7 @@ connect tcp://localhost:12345
 connected
 
 write "PREPARE\n"
-write "version:2.1\n"
+write "version:2.0\n"
 write "name:org/kaazing/specification/control/assets/server\n"
 write "name:org/kaazing/specification/control/assets/client.with.barriers\n"
 write "\n"

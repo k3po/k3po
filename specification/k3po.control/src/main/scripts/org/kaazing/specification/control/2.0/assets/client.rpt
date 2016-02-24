@@ -1,6 +1,0 @@
-# client
-connect tcp://localhost:8000
-connected
-write "echo"
-read "echo"
-closed
