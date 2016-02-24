@@ -131,7 +131,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         ChannelFuture prepareFuture;
         try {
 
-            final String aggregatedScript = originScript + aggregateScript(scriptNames, scriptLoader);
+            String aggregatedScript = originScript + aggregateScript(scriptNames, scriptLoader);
             List<String> properyOverrides = prepare.getProperties();
             // consider hard fail in the future, when test frameworks support
             // override per test method
@@ -141,7 +141,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 sendVersionError(ctx);
             }
 
-            injectOverridenProperties(version, aggregatedScript, properyOverrides);
+            aggregatedScript = injectOverridenProperties(version, aggregatedScript, properyOverrides);
 
             if (scriptLoader != null) {
                 Thread currentThread = currentThread();
@@ -156,11 +156,12 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 prepareFuture = robot.prepare(aggregatedScript);
             }
 
+            final String scriptToRun = aggregatedScript;
             prepareFuture.addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(final ChannelFuture f) {
                     PreparedMessage prepared = new PreparedMessage();
-                    prepared.setScript(aggregatedScript);
+                    prepared.setScript(scriptToRun);
                     prepared.getBarriers().addAll(robot.getBarriersByName().keySet());
                     Channels.write(ctx, Channels.future(null), prepared);
                 }
@@ -171,7 +172,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         }
     }
 
-    private void injectOverridenProperties(String version, final String aggregatedScript, List<String> scriptProperties)
+    private String injectOverridenProperties(String version, String aggregatedScript, List<String> scriptProperties)
             throws Exception, ScriptParseException {
 
         // Backward compatibility
@@ -209,7 +210,9 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 // Perhaps in the future we will want to have scripts that force injecting it (i.e. no default)
                 logger.warn("Received " + propertyToInject + " in PREPARE but found no where to substitute it");
             }
+            aggregatedScript = replacementScript.toString();
         }
+        return aggregatedScript;
     }
 
     /*

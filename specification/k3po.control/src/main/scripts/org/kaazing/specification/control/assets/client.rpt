@@ -1,6 +1,6 @@
 # client
-property hostname "localhost"
-connect tcp://${hostname}:8000
+property uri "tcp://localhost:8000"
+connect ${uri}
 connected
 write "echo"
 read "echo"
