@@ -17,7 +17,6 @@ package org.kaazing.k3po.control.internal.command;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -27,7 +26,7 @@ import java.util.Objects;
 public final class PrepareCommand extends Command {
 
     private final List<String> names;
-    private Map<String, String> overriddenScriptProperties;
+    private List<String> overriddenScriptProperties;
 
     /**
      * Constructs the Prepare Command.
@@ -80,11 +79,11 @@ public final class PrepareCommand extends Command {
         return super.equalTo(that) && Objects.equals(this.names, that.names);
     }
 
-    public Map<String, String> getOverriddenScriptProperties() {
+    public List<String> getOverriddenScriptProperties() {
         return overriddenScriptProperties;
     }
 
-    public void setOverriddenScriptProperties(Map<String, String> overriddenScriptProperties) {
+    public void setOverriddenScriptProperties(List<String> overriddenScriptProperties) {
         this.overriddenScriptProperties = overriddenScriptProperties;
     }
 

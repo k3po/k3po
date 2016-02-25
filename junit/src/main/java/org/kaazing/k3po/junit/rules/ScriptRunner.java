@@ -51,10 +51,10 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
     private volatile boolean abortScheduled;
     private volatile Map<String, BarrierStateMachine> barriers;
-    private final Map<String, String> overridenScriptProperties;
+    private final List<String> overridenScriptProperties;
     private static final int DISPOSE_TIMEOUT = isDebugging() ? 0: 5000;
 
-    ScriptRunner(URL controlURL, List<String> names, Latch latch, Map<String, String> overridenScriptProperties) {
+    ScriptRunner(URL controlURL, List<String> names, Latch latch, List<String> overridenScriptProperties) {
 
         if (names == null) {
             throw new NullPointerException("names");

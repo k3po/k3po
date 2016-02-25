@@ -34,6 +34,7 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -212,13 +213,13 @@ public final class Control {
         Writer textOut = new OutputStreamWriter(bytesOut, encoder);
 
         Iterable<String> names = prepare.getNames();
-        Map<String, String> overriddenScriptProperties = prepare.getOverriddenScriptProperties();
+        List<String> overriddenScriptProperties = prepare.getOverriddenScriptProperties();
 
         int contentLength = 0;
         StringBuilder content = new StringBuilder();
         if (overriddenScriptProperties != null) {
-            for (Entry<String, String> property : overriddenScriptProperties.entrySet()) {
-                content.append(format("property %s \"%s\"\n", property.getKey(), property.getValue()));
+            for (String property : overriddenScriptProperties) {
+                content.append(format("property %s\n", property));
             }
             contentLength = content.length();
         }

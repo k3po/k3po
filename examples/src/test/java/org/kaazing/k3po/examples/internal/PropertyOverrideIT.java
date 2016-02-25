@@ -30,15 +30,13 @@ import org.junit.rules.DisableOnDebug;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
-import org.kaazing.k3po.junit.annotation.OverrideProperty;
+import org.kaazing.k3po.junit.annotation.ScriptProperty;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
 public class PropertyOverrideIT {
 
-    private static final String RESPONSE = "Let's take a selfie";
-
-    private final K3poRule k3po = new K3poRule().overrideScriptProperty("RESPONSE", RESPONSE);
+    private final K3poRule k3po = new K3poRule().scriptProperty("RESPONSE 'Let\\'s take a selfie'");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -46,8 +44,8 @@ public class PropertyOverrideIT {
     public final TestRule chain = RuleChain.outerRule(k3po).around(timeout);
 
     @Test
-    @OverrideProperty("LOCATION tcp://localhost:8005")
     @Specification("server.hello.world")
+    @ScriptProperty("location 'tcp://localhost:8005'")
     public void testHelloWorld() throws Exception {
 
         // Create client connection
@@ -60,7 +58,7 @@ public class PropertyOverrideIT {
         writer.flush();
 
         // read hello client or fail
-        String expected = RESPONSE;
+        String expected = "Let's take a selfie";
         char[] cbuf = new char[expected.length()];
         in.read(cbuf, 0, expected.length());
         String actual = new String(cbuf);

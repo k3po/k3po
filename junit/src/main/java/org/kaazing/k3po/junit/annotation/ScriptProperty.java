@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })
-public @interface OverrideProperty {
+public @interface ScriptProperty {
     /**
      * Gets the "key \"value\"" that the property is overridden with.
      */

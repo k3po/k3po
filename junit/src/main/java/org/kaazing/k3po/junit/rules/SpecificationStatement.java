@@ -38,7 +38,7 @@ final class SpecificationStatement extends Statement {
     private final ScriptRunner scriptRunner;
 
     SpecificationStatement(Statement statement, URL controlURL, List<String> scriptNames, Latch latch,
-            Map<String, String> overridenScriptProperties) {
+            List<String> overridenScriptProperties) {
         this.statement = statement;
         this.latch = latch;
         this.scriptRunner = new ScriptRunner(controlURL, scriptNames, latch, overridenScriptProperties);
