@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
@@ -36,10 +37,11 @@ final class SpecificationStatement extends Statement {
     private final Latch latch;
     private final ScriptRunner scriptRunner;
 
-    SpecificationStatement(Statement statement, URL controlURL, List<String> scriptNames, Latch latch) {
+    SpecificationStatement(Statement statement, URL controlURL, List<String> scriptNames, Latch latch,
+            Map<String, String> overridenScriptProperties) {
         this.statement = statement;
         this.latch = latch;
-        this.scriptRunner = new ScriptRunner(controlURL, scriptNames, latch);
+        this.scriptRunner = new ScriptRunner(controlURL, scriptNames, latch, overridenScriptProperties);
     }
 
     @Override

@@ -127,6 +127,7 @@ public class ControlTest {
         final byte[] expectedPrepare =
                 ("PREPARE\n" +
                  "version:2.0\n" +
+                 "content-length:0\n" +
                  "name:" + path + "\n" +
                  "\n").getBytes(UTF_8);
 

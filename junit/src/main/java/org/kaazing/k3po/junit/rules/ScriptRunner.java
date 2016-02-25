@@ -51,9 +51,10 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
     private volatile boolean abortScheduled;
     private volatile Map<String, BarrierStateMachine> barriers;
+    private final Map<String, String> overridenScriptProperties;
     private static final int DISPOSE_TIMEOUT = isDebugging() ? 0: 5000;
 
-    ScriptRunner(URL controlURL, List<String> names, Latch latch) {
+    ScriptRunner(URL controlURL, List<String> names, Latch latch, Map<String, String> overridenScriptProperties) {
 
         if (names == null) {
             throw new NullPointerException("names");
@@ -67,6 +68,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
         this.names = names;
         this.latch = latch;
         this.barriers = new HashMap<String, ScriptRunner.BarrierStateMachine>();
+        this.overridenScriptProperties = overridenScriptProperties;
     }
 
     public void abort() {
@@ -88,6 +90,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
             // send PREPARE command
             PrepareCommand prepare = new PrepareCommand();
             prepare.setNames(names);
+            prepare.setOverriddenScriptProperties(overridenScriptProperties);
 
             controller.writeCommand(prepare);
 

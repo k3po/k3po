@@ -14,9 +14,11 @@
 # limitations under the License.
 #
 
-accept tcp://localhost:8001
+property LOCATION "tcp://localhost:8001"
+property RESPONSE "hello client"
+accept ${LOCATION}
 accepted
 connected
 read "hello world"
-write "hello client"
+write ${RESPONSE}
 closed

@@ -105,7 +105,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
         // enforce control protocol version
         String version = prepare.getVersion();
-        if (!"2.0".equals(version) && !"2.1".equals(version)) {
+        if (!"2.0".equals(version)) {
             sendVersionError(ctx);
             return;
         }
