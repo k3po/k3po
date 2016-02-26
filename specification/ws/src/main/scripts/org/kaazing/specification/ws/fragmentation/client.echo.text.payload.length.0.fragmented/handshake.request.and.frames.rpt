@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+property location 'http://localhost:8080/echo'
 property key ${ws:handshakeKey()}
 property writeMaskA ${ws:randomBytes(4)}
 property writeMaskB ${ws:randomBytes(4)}
@@ -21,7 +22,7 @@ property writeMaskC ${ws:randomBytes(4)}
 property writeMaskD ${ws:randomBytes(4)}
 property writeMaskE ${ws:randomBytes(4)}
 
-connect http://localhost:8080/echo
+connect ${location}
 connected
 
 write method "GET"

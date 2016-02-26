@@ -14,10 +14,11 @@
 # limitations under the License.
 #
 
+property location 'http://localhost:8080/echo'
 property writeMaskA ${ws:randomBytes(4)}
 property client25a ${ws:randomBytes(25)}
 
-accept http://localhost:8080/echo
+accept ${location}
 accepted
 connected
 
