@@ -64,4 +64,10 @@ public class ControlIT {
     public void shouldPrepareStartThenFinishedWithBarriers() throws Exception {
         robot.finish();
     }
+
+    @Test
+    @TestSpecification({ "accept.finished.with.override.properties", "connect.finished.with.override.properties" })
+    public void shouldOverrideProperties() throws Exception {
+        robot.finish();
+    }
 }

@@ -26,6 +26,7 @@ import java.util.Objects;
 public final class PrepareCommand extends Command {
 
     private final List<String> names;
+    private List<String> overriddenScriptProperties;
 
     /**
      * Constructs the Prepare Command.
@@ -77,4 +78,13 @@ public final class PrepareCommand extends Command {
     protected boolean equalTo(PrepareCommand that) {
         return super.equalTo(that) && Objects.equals(this.names, that.names);
     }
+
+    public List<String> getOverriddenScriptProperties() {
+        return overriddenScriptProperties;
+    }
+
+    public void setOverriddenScriptProperties(List<String> overriddenScriptProperties) {
+        this.overriddenScriptProperties = overriddenScriptProperties;
+    }
+
 }

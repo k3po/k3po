@@ -14,7 +14,8 @@
 # limitations under the License.
 #
 
-accept http://localhost:8080/path?query
+property location 'http://localhost:8080/path?query'
+accept ${location}
 accepted
 connected
 

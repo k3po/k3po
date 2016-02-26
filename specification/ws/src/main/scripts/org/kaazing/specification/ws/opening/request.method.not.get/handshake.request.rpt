@@ -14,7 +14,8 @@
 # limitations under the License.
 #
 
-connect http://localhost:8080/path?query
+property location 'http://localhost:8080/path?query'
+connect ${location}
 connected
 
 write method ${ws:randomMethodNot("GET")}

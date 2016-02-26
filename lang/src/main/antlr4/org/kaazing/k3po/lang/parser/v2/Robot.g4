@@ -618,6 +618,7 @@ Digit
 
 TextLiteral
     : '"' (EscapeSequence | ~('\\' | '\r' | '\n' | '"'))+ '"'
+    | '\'' (EscapeSequence | ~('\\' | '\r' | '\n' | '\''))+ '\''
     ;
     
 // Any additions to the escaping need to be accounted for in

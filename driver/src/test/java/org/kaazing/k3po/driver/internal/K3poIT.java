@@ -68,6 +68,12 @@ public class K3poIT {
         k3po.finish();
     }
 
+    @TestSpecification("connect.finished.with.override.properties")
+    @Test
+    public void connectFinishedWithOverrideProperties() throws Exception {
+        k3po.finish();
+    }
+
     @TestSpecification("connect.finished.with.barriers")
     @Test
     public void connectFinishedWithBarriers() throws Exception {

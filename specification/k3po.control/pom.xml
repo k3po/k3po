@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.kaazing</groupId>
         <artifactId>k3po.parent</artifactId>
-        <version>3.0.0-alpha-20</version>
+        <version>3.0.0-alpha-21</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -49,6 +49,7 @@
                 <configuration>
                     <excludes combine.children="append">
                         <exclude>src/main/scripts/org/kaazing/specification/control/assets/**/*.rpt</exclude>
+                        <exclude>src/main/scripts/org/kaazing/specification/control/2.0/assets/**/*.rpt</exclude>
                     </excludes>
                 </configuration>
             </plugin>

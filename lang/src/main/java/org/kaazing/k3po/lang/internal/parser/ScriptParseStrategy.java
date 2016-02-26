@@ -159,7 +159,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteOptionMaskNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteOptionOffsetNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteValueContext;
 
-abstract class ScriptParseStrategy<T extends AstRegion> {
+public abstract class ScriptParseStrategy<T extends AstRegion> {
 
     public static final ScriptParseStrategy<AstScriptNode> SCRIPT = new ScriptParseStrategy<AstScriptNode>() {
         @Override

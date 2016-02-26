@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-19...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-20...HEAD)
+
+**Merged pull requests:**
+
+- Parameterized scripts to use location property in accept and connects [\#310](https://github.com/k3po/k3po/pull/310) ([dpwspoon](https://github.com/dpwspoon))
+- Add ability to override property from control [\#309](https://github.com/k3po/k3po/pull/309) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-20](https://github.com/k3po/k3po/tree/3.0.0-alpha-20) (2016-02-19)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-19...3.0.0-alpha-20)
 
 **Merged pull requests:**
 
