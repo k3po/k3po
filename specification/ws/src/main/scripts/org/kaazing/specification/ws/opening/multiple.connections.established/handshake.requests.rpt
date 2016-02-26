@@ -14,7 +14,8 @@
 # limitations under the License.
 #
 
-connect http://localhost:8080/path?query
+property location 'http://localhost:8080/path?query'
+connect ${location}
 connected
 
 write method "GET"
@@ -33,7 +34,7 @@ read header "Sec-WebSocket-Accept" "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
 read notify FIRST_CONNECTION_ESTABLISHED
 
 
-connect http://localhost:8080/path?query
+connect ${location}
 connected
 
 write await FIRST_CONNECTION_ESTABLISHED

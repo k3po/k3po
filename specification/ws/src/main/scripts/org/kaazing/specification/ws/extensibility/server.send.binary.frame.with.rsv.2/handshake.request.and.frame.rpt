@@ -14,10 +14,11 @@
 # limitations under the License.
 #
 
+property location 'http://localhost:8080/echo'
 property key ${ws:handshakeKey()}
 property writeMask ${ws:randomBytes(4)}
 
-connect http://localhost:8080/echo
+connect ${location}
 connected
 
 write method "GET"
