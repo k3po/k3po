@@ -117,6 +117,19 @@ public class ScriptParserImplTest {
     }
 
     @Test
+    public void shouldParseLiteralTextSingleQuote() throws Exception {
+
+        String scriptFragment = "'012345 test, here!!'";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstLiteralTextValue actual = parser.parseWithStrategy(scriptFragment, LITERAL_TEXT_VALUE);
+
+        AstLiteralTextValue expected = new AstLiteralTextValue("012345 test, here!!");
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void shouldParseComplexLiteralText() throws Exception {
 
         String scriptFragment =

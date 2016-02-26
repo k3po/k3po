@@ -34,6 +34,9 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -102,19 +105,16 @@ public final class Control {
             try {
                 if (connection instanceof Closeable) {
                     ((Closeable) connection).close();
-                }
-                else {
+                } else {
                     try {
                         connection.getInputStream().close();
-                    }
-                    catch (IOException e) {
+                    } catch (IOException e) {
                         // ignore
                     }
 
                     try {
                         connection.getOutputStream().close();
-                    }
-                    catch (IOException e) {
+                    } catch (IOException e) {
                         // ignore
                     }
                 }
@@ -213,13 +213,25 @@ public final class Control {
         Writer textOut = new OutputStreamWriter(bytesOut, encoder);
 
         Iterable<String> names = prepare.getNames();
+        List<String> overriddenScriptProperties = prepare.getOverriddenScriptProperties();
+
+        int contentLength = 0;
+        StringBuilder content = new StringBuilder();
+        if (overriddenScriptProperties != null) {
+            for (String property : overriddenScriptProperties) {
+                content.append(format("property %s\n", property));
+            }
+            contentLength = content.length();
+        }
 
         textOut.append("PREPARE\n");
         textOut.append("version:2.0\n");
+        textOut.append(String.format("content-length:%s\n", contentLength));
         for (String name : names) {
             textOut.append(format("name:%s\n", name));
         }
         textOut.append("\n");
+        textOut.append(content.toString());
         textOut.flush();
     }
 

@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import org.junit.rules.Verifier;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runners.model.Statement;
+import org.kaazing.k3po.junit.annotation.ScriptProperty;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.net.URLFactory;
 
@@ -65,12 +67,14 @@ public class K3poRule extends Verifier {
     private String scriptRoot;
     private URL controlURL;
     private SpecificationStatement statement;
+    private List<String> classOverriddenProperties;
 
     /**
      * Allocates a new K3poRule.
      */
     public K3poRule() {
         latch = new Latch();
+        classOverriddenProperties = new ArrayList<>();
     }
 
     /**
@@ -98,6 +102,14 @@ public class K3poRule extends Verifier {
 
         Specification specification = description.getAnnotation(Specification.class);
         String[] scripts = (specification != null) ? specification.value() : null;
+        ScriptProperty overriddenProperty = description.getAnnotation(ScriptProperty.class);
+        String[] overriddenProperties = (overriddenProperty != null) ? overriddenProperty.value() : null;
+        List<String> methodOverridenScriptProperties = new ArrayList<>();
+        if (overriddenProperties != null) {
+            for (String prop : overriddenProperties) {
+                methodOverridenScriptProperties.add(prop);
+            }
+        }
 
         if (scripts != null) {
             // decorate with K3PO behavior only if @Specification annotation is present
@@ -125,7 +137,9 @@ public class K3poRule extends Verifier {
                 controlURL = createURL("tcp://localhost:11642");
             }
 
-            this.statement = new SpecificationStatement(statement, controlURL, scriptNames, latch);
+            methodOverridenScriptProperties.addAll(classOverriddenProperties);
+            this.statement =
+                    new SpecificationStatement(statement, controlURL, scriptNames, latch, methodOverridenScriptProperties);
             statement = this.statement;
         }
 
@@ -175,6 +189,16 @@ public class K3poRule extends Verifier {
      */
     public void awaitBarrier(String barrierName) throws InterruptedException {
         statement.awaitBarrier(barrierName);
+    }
+
+    /**
+     * Overrides a script property.
+     * @param property of script
+     * @return K3po rule for convenience
+     */
+    public K3poRule scriptProperty(String property) {
+        this.classOverriddenProperties.add(property);
+        return this;
     }
 
     /**

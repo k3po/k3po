@@ -1,5 +1,6 @@
 # server
-accept tcp://localhost:8000
+property uri "tcp://localhost:8000"
+accept ${uri}
 accepted
 connected
 read "echo"

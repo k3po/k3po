@@ -24,6 +24,7 @@ public class PrepareMessage extends ControlMessage {
     private List<String> names;
     private String version;
     private String origin;
+    private List<String> properties = new ArrayList<>();
 
     public PrepareMessage() {
         this.names = new ArrayList<>(5);
@@ -71,6 +72,14 @@ public class PrepareMessage extends ControlMessage {
 
     public void setOrigin(String origin) {
         this.origin = origin;
+    }
+
+    public void setProperties(List<String> properties) {
+        this.properties = properties;
+    }
+
+    public List<String> getProperties() {
+        return properties;
     }
 
 }
