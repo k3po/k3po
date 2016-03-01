@@ -17,20 +17,12 @@
 connect http://localhost:8000/path
 connected
 
-write method "GET"
+write method "POST"
 write version "HTTP/1.1"
 write header host
-write header "Content-Type" "application/x-message-http"
-write header "X-Next-Protocol" "httpxe/1.1"
+write header "Origin" "http://unknownsource.example.com:80"
+write header "X-Origin" "http://unknownsource.example.com:80"
 write header content-length
-write "GET /path HTTP/1.1\r\n"
-      "Content-Length: 0\r\n"
-      "\r\n"
-write close
+write flush
 
-read status "200" /.*/
-read header "Content-Type" "text/plain"
-read header "Connection" "keep-alive"
-
-read "HTTP/1.1 400 Bad Request\r\n"
-read "Content-Type: text/html\r\n"
+read status "403" /.*/
