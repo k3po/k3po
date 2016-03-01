@@ -14,10 +14,11 @@
 # limitations under the License.
 #
 
+property location 'http://localhost:8080/echo'
 property server25a ${ws:randomBytesUTF8(25)}
 property server25b ${ws:randomBytesUTF8(25)}
 
-accept http://localhost:8080/echo
+accept ${location}
 accepted
 connected
 

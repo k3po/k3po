@@ -14,10 +14,11 @@
 # limitations under the License.
 #
 
+property location 'http://localhost:8080/echo'
 property server125 ${ws:randomBytes(125)}
 property serverWriteMask ${ws:randomBytes(4)}
 
-accept http://localhost:8080/echo
+accept ${location}
 accepted
 connected
 

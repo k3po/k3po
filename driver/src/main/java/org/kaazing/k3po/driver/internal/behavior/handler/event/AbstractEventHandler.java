@@ -65,7 +65,7 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
 
     public enum ChannelEventKind {
         CHILD_OPEN, CHILD_CLOSED, OPEN, BOUND, CONNECTED, MESSAGE, WRITE_COMPLETED, DISCONNECTED, UNBOUND, CLOSED, EXCEPTION,
-        INTEREST_OPS, IDLE_STATE, INPUT_SHUTDOWN, OUTPUT_SHUTDOWN, FLUSHED, UNKNOWN
+        INTEREST_OPS, IDLE_STATE, INPUT_SHUTDOWN, OUTPUT_SHUTDOWN, FLUSHED, UNKNOWN, ABORTED
     };
 
     private final Set<ChannelEventKind> interestEvents;

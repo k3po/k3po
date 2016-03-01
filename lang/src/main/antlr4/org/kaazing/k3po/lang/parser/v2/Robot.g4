@@ -129,6 +129,7 @@ commandNode
     | writeHttpRequestNode
     | writeHttpStatusNode
     | writeHttpVersionNode
+    | abortNode
     ;
 
 eventNode
@@ -146,6 +147,7 @@ eventNode
     | readHttpParameterNode
     | readHttpVersionNode
     | readHttpStatusNode
+    | abortedNode
     ;
 
 barrierNode
@@ -203,6 +205,14 @@ disconnectedNode
 
 openedNode
     : k=OpenedKeyword
+    ;
+
+abortNode
+    : k=AbortKeyword
+    ;
+
+abortedNode
+    : k=AbortedKeyword
     ;
 
 readClosedNode: 
@@ -464,6 +474,14 @@ DisconnectedKeyword
     : 'disconnected'
     ;
 
+AbortKeyword
+    : 'abort'
+    ;
+
+AbortedKeyword
+    : 'aborted'
+    ;
+
 FlushKeyword
     : 'flush'
     ;
@@ -626,6 +644,7 @@ Digit
 
 TextLiteral
     : '"' (EscapeSequence | ~('\\' | '\r' | '\n' | '"'))+ '"'
+    | '\'' (EscapeSequence | ~('\\' | '\r' | '\n' | '\''))+ '\''
     ;
     
 // Any additions to the escaping need to be accounted for in

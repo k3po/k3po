@@ -39,22 +39,4 @@ write ${downstream} "\n"
 write notify CREATE_COMPLETED
 write close
 
-# upstream
-accept ${upstream}
-accepted
-connected
 
-read await CREATE_COMPLETED
-read method "POST"
-read version "HTTP/1.1"
-read header "Content-Type" "application/octet-stream"
-read header "X-Sequence-No" ${wse:asString(sequence + 1)}
-
-read [0x01 0x30 0x32 0xFF]
-read [0x01 0x30 0x31 0xFF]
-read closed
-
-write status "200" "OK"
-write version "HTTP/1.1"
-write header content-length
-write close

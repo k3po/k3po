@@ -15,6 +15,8 @@
  */
 package org.kaazing.k3po.lang.internal.ast.builder;
 
+import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
 import org.kaazing.k3po.lang.internal.ast.AstCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
@@ -76,6 +78,12 @@ public abstract class AbstractAstStreamNodeBuilder<T extends AstStreamNode, R> e
 
     public abstract AbstractAstStreamableNodeBuilder<AstCloseNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
             addCloseCommand();
+
+    public abstract AbstractAstStreamableNodeBuilder<AstAbortNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
+            addAbortCommand();
+
+    public abstract AbstractAstStreamableNodeBuilder<AstAbortedNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
+            addAbortedEvent();
 
     public abstract AbstractAstStreamableNodeBuilder<AstReadAwaitNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
             addReadAwaitBarrier();

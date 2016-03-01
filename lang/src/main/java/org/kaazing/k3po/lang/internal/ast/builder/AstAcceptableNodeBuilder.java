@@ -86,6 +86,16 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
     }
 
     @Override
+    public AstAbortNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addAbortCommand() {
+        return new AstAbortNodeBuilder.StreamNested<>(this);
+    }
+
+    @Override
+    public AstAbortedNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addAbortedEvent() {
+        return new AstAbortedNodeBuilder.StreamNested<>(this);
+    }
+
+    @Override
     public AstReadAwaitNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addReadAwaitBarrier() {
         return new AstReadAwaitNodeBuilder.StreamNested<>(this);
     }
@@ -217,6 +227,16 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         }
 
         @Override
+        public AstAbortNodeBuilder.StreamNested<ScriptNested<R>> addAbortCommand() {
+            return new AstAbortNodeBuilder.StreamNested<>(this);
+        }
+
+        @Override
+        public AstAbortedNodeBuilder.StreamNested<ScriptNested<R>> addAbortedEvent() {
+            return new AstAbortedNodeBuilder.StreamNested<>(this);
+        }
+
+        @Override
         public AstReadAwaitNodeBuilder.StreamNested<ScriptNested<R>> addReadAwaitBarrier() {
             return new AstReadAwaitNodeBuilder.StreamNested<>(this);
         }
@@ -344,6 +364,16 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         @Override
         public AstCloseNodeBuilder.StreamNested<AcceptNested<R>> addCloseCommand() {
             return new AstCloseNodeBuilder.StreamNested<>(this);
+        }
+
+        @Override
+        public AstAbortNodeBuilder.StreamNested<AcceptNested<R>> addAbortCommand() {
+            return new AstAbortNodeBuilder.StreamNested<>(this);
+        }
+
+        @Override
+        public AstAbortedNodeBuilder.StreamNested<AcceptNested<R>> addAbortedEvent() {
+            return new AstAbortedNodeBuilder.StreamNested<>(this);
         }
 
         @Override

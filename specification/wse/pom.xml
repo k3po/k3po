@@ -46,6 +46,13 @@
         </resources>
         <plugins>
             <plugin>
+               <dependencies>
+                    <dependency>
+                        <groupId>org.kaazing</groupId>
+                        <artifactId>specification.ws</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
                 <groupId>org.kaazing</groupId>
                 <artifactId>k3po-maven-plugin</artifactId>
                 <version>${project.version}</version>

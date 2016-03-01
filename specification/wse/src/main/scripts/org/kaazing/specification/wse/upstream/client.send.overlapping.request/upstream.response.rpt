@@ -19,7 +19,7 @@ property downstreamId ${wse:uniqueId()}
 property upstream ${wse:append("http://localhost:8080/path/", upstreamId)}
 property downstream ${wse:append("http://localhost:8080/path/", downstreamId)}
 
-accept http://localhost:8080/path/;e/cb?query
+accept http://localhost:8080/path/;e/cbm?query
 accepted
 connected
 
@@ -56,6 +56,9 @@ write header "Content-Type" "application/octet-stream"
 write header "Connection" "close"
 write flush
 
+write await UPSTREAM_DATA_RECEIVED
+write [0x80 0x05] ${receivedData}
+
 write await OVERLAPPING_UPSTREAM_RESPONSE_SENT
 write [0x01 0x30 0x32 0xFF]
 write [0x01 0x30 0x31 0xFF]
@@ -72,7 +75,8 @@ read version "HTTP/1.1"
 read header "Content-Type" "application/octet-stream"
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
-read [0x80 0x05] [0..5]
+read [0x80 0x05] ([0..5] :receivedData)
+read notify UPSTREAM_DATA_RECEIVED
 read [0x01 0x30 0x31 0xFF]
 read closed
 
@@ -91,7 +95,6 @@ read version "HTTP/1.1"
 read header "Content-Type" "application/octet-stream"
 read header "X-Sequence-No" ${wse:asString(sequence + 2)}
 
-read [0x80 0x05] [0..5]
 read [0x01 0x30 0x31 0xFF]
 read closed
 

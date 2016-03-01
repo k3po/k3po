@@ -19,6 +19,7 @@ import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.FileSystems.newFileSystem;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.PROPERTY_NODE;
 
 import java.io.IOException;
 import java.net.URI;
@@ -35,6 +36,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -56,6 +58,7 @@ import org.kaazing.k3po.driver.internal.control.PrepareMessage;
 import org.kaazing.k3po.driver.internal.control.PreparedMessage;
 import org.kaazing.k3po.driver.internal.control.StartedMessage;
 import org.kaazing.k3po.lang.internal.parser.ScriptParseException;
+import org.kaazing.k3po.lang.internal.parser.ScriptParserImpl;
 
 public class ControlServerHandler extends ControlUpstreamHandler {
 
@@ -128,7 +131,17 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         ChannelFuture prepareFuture;
         try {
 
-            final String aggregatedScript = originScript + aggregateScript(scriptNames, scriptLoader);
+            String aggregatedScript = originScript + aggregateScript(scriptNames, scriptLoader);
+            List<String> properyOverrides = prepare.getProperties();
+            // consider hard fail in the future, when test frameworks support
+            // override per test method
+
+            // Checks that it is a supported version
+            if (!"2.0".equals(version)) {
+                sendVersionError(ctx);
+            }
+
+            aggregatedScript = injectOverridenProperties(aggregatedScript, properyOverrides);
 
             if (scriptLoader != null) {
                 Thread currentThread = currentThread();
@@ -143,11 +156,12 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 prepareFuture = robot.prepare(aggregatedScript);
             }
 
+            final String scriptToRun = aggregatedScript;
             prepareFuture.addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(final ChannelFuture f) {
                     PreparedMessage prepared = new PreparedMessage();
-                    prepared.setScript(aggregatedScript);
+                    prepared.setScript(scriptToRun);
                     prepared.getBarriers().addAll(robot.getBarriersByName().keySet());
                     Channels.write(ctx, Channels.future(null), prepared);
                 }
@@ -156,6 +170,34 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             sendErrorMessage(ctx, e);
             return;
         }
+    }
+
+    private String injectOverridenProperties(String aggregatedScript, List<String> scriptProperties)
+            throws Exception, ScriptParseException {
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+
+        for (String propertyToInject : scriptProperties) {
+            String propertyName = parser.parseWithStrategy(propertyToInject, PROPERTY_NODE).getPropertyName();
+            StringBuilder replacementScript = new StringBuilder();
+            Pattern pattern = Pattern.compile("property\\s+" + propertyName + "\\s+.+");
+            boolean matchFound = false;
+            for (String scriptLine : aggregatedScript.split("\\r?\\n")) {
+                if (pattern.matcher(scriptLine).matches()) {
+                    matchFound = true;
+                    replacementScript.append(propertyToInject + "\n");
+                } else {
+                    replacementScript.append(scriptLine + "\n");
+                }
+            }
+            if (!matchFound) {
+                String errorMsg = "Received " + propertyToInject + " in PREPARE but found no where to substitute it";
+                logger.error(errorMsg);
+                throw new Exception(errorMsg);
+            }
+            aggregatedScript = replacementScript.toString();
+        }
+        return aggregatedScript;
     }
 
     /*

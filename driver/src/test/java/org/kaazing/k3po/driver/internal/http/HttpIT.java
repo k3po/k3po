@@ -83,6 +83,16 @@ public class HttpIT {
 
     @Test
     @TestSpecification({
+        "http.accept.header.with.multiple.tokens.comma.separated",
+        "tcp.connect.header.with.multiple.tokens.comma.separated" })
+    @Ignore("#306 reading a list header expressed as a single header with comma separate values does not work")
+    public void shouldAcceptHeaderWithMultipleTokensCommaSeparated() throws Exception {
+
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
         "http.accept.websocket.handshake.then.client.hard.close",
         "http.connect.websocket.handshake.then.client.hard.close" })
     public void shouldAcceptWebsocketHandshakeThenClientHardClose() throws Exception {
@@ -103,6 +113,15 @@ public class HttpIT {
         "http.connect.write.parameter.with.multiple.tokens",
         "tcp.accept.read.parameter.with.multiple.tokens" })
     public void shouldAcceptWriteParameterWithMultipleTokens() throws Exception {
+
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.connect.with.parameter.write.parameter",
+        "tcp.accept.read.two.parameters" })
+    public void shouldAcceptWriteParameterOnConnectWithParameter() throws Exception {
 
         k3po.finish();
     }
@@ -251,7 +270,43 @@ public class HttpIT {
     @TestSpecification({
         "read.content.length.via.regex/request",
         "read.content.length.via.regex/response" })
-    public void testReadContentLengthViaAVariable() throws Exception {
+    public void readContentLengthViaAVariable() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.server.channel.abort/request",
+        "http.server.channel.abort/response"
+    })
+    public void httpServerChannelAbort() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.server.channel.aborted/request",
+        "http.server.channel.aborted/response"
+    })
+    public void httpServerChannelAborted() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.client.channel.abort/request",
+        "http.client.channel.abort/response"
+    })
+    public void httpClientChannelAbort() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "http.client.channel.aborted/request",
+        "http.client.channel.aborted/response"
+    })
+    public void httpClientChannelAborted() throws Exception {
         k3po.finish();
     }
 

@@ -33,6 +33,8 @@ public abstract class AstNode extends AstRegion {
         R visit(AstDisconnectNode node, P parameter) throws Exception;
         R visit(AstUnbindNode node, P parameter) throws Exception;
         R visit(AstCloseNode node, P parameter) throws Exception;
+        R visit(AstAbortNode astAbortNode, P parameter) throws Exception;
+        R visit(AstAbortedNode astAbortNode, P parameter) throws Exception;
 
         R visit(AstChildOpenedNode node, P parameter) throws Exception;
         R visit(AstChildClosedNode node, P parameter) throws Exception;

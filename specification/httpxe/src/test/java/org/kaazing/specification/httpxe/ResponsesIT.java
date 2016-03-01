@@ -40,9 +40,9 @@ public class ResponsesIT {
 
     @Test
     @Specification({
-        "wrapped.101.response.in.200/request",
-        "wrapped.101.response.in.200/response"})
-    public void shouldPassWithWrapped101ResponseIn200() throws Exception {
+        "unwrapped.101.response/request",
+        "unwrapped.101.response/response"})
+    public void shouldPassWithUnwrapped101Response() throws Exception {
         k3po.finish();
     }
 
@@ -64,6 +64,14 @@ public class ResponsesIT {
 
     @Test
     @Specification({
+        "unwrapped.304.response/request",
+        "unwrapped.304.response/response"})
+    public void shouldPassWithUnwrapped304Response() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "wrapped.400.response.in.200/request",
         "wrapped.400.response.in.200/response"})
     public void shouldPassWithWrapped400ResponseIn200() throws Exception {
@@ -72,9 +80,17 @@ public class ResponsesIT {
 
     @Test
     @Specification({
-        "wrapped.501.response.in.200/request",
-        "wrapped.501.response.in.200/response"})
-    public void shouldPassWithWrapped501ResponseIn200() throws Exception {
+        "unwrapped.404.response/request",
+        "unwrapped.404.response/response"})
+    public void shouldPassWithUnwrapped404Response() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "unwrapped.501.response/request",
+        "unwrapped.501.response/response"})
+    public void shouldPassWithUnwrapped501Response() throws Exception {
         k3po.finish();
     }
 

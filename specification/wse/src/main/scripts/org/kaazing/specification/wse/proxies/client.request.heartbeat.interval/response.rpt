@@ -43,7 +43,7 @@ accept ${downstream}
 accepted
 connected
 
-read parameter ".kkt" "10"
+read parameter ".kkt" "1"
 read method "GET"
 read version "HTTP/1.1"
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
