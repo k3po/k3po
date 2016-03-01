@@ -237,7 +237,7 @@ readHttpHeaderNode
     ;
 
 readHttpChunkTrailerNode
-    : k=ReadKeyword HttpTrailerKeyword name=literalText (HttpMissingKeyword | matcher+)
+    : k=ReadKeyword HttpChunkTrailerKeyword name=literalText (HttpMissingKeyword | matcher+)
     ;
 
 writeHttpHeaderNode

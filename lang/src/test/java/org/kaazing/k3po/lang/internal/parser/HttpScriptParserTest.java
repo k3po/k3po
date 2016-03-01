@@ -15,6 +15,7 @@
  */
 package org.kaazing.k3po.lang.internal.parser;
 
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_CHUNK_TRAILER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_CLOSED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_HTTP_HEADER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_HTTP_METHOD;
@@ -39,16 +40,20 @@ import java.net.URI;
 import org.junit.Test;
 import org.kaazing.k3po.lang.internal.ast.AstReadClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteFlushNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteOptionNode;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadClosedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadConfigNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstReadOptionNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstScriptNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteCloseNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteConfigNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteFlushNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstWriteOptionNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocationLiteral;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
@@ -402,75 +407,78 @@ public class HttpScriptParserTest {
     @Test
     public void shouldParseWriteOptionChunkExtension() throws Exception {
 
-        String scriptFragment = "write option chunkExtension chunkKeyWord";
+        String scriptFragment = "write option chunkExtension \"chunkextension\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstWriteCloseNode actual = parser.parseWithStrategy(scriptFragment, WRITE_CLOSE);
+        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, ScriptParseStrategy.WRITE_CHUNK_EXTENSION_OPTION);
 
         // @formatter:off
-        AstWriteCloseNode expected = new AstWriteCloseNodeBuilder()
+        AstWriteOptionNode expected = new AstWriteOptionNodeBuilder()
+                    .setOptionName("chunkExtension")
+                    .setOptionValue("chunkextension")
                 .done();
         // @formatter:on
 
         assertEquals(expected, actual);
-        assertEquals(0, actual.getRegionInfo().children.size());
+        assertEquals(1, actual.getRegionInfo().children.size());
     }
 
     @Test
     public void shouldParseReadOptionChunkExtension() throws Exception {
 
-        String scriptFragment = "read option chunkExtension chunkKeyWord";
-
-        // DPW TODO
+        String scriptFragment = "read option chunkExtension \"chunkextension\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstWriteCloseNode actual = parser.parseWithStrategy(scriptFragment, WRITE_CLOSE);
+        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, ScriptParseStrategy.READ_CHUNK_EXTENSION_OPTION);
 
         // @formatter:off
-        AstWriteCloseNode expected = new AstWriteCloseNodeBuilder()
+        AstReadOptionNode expected = new AstReadOptionNodeBuilder()
+//                .
                 .done();
         // @formatter:on
 
         assertEquals(expected, actual);
-        assertEquals(0, actual.getRegionInfo().children.size());
+        assertEquals(1, actual.getRegionInfo().children.size());
     }
 
     @Test
     public void shouldParseWriteChunkTrailer() throws Exception {
 
-        String scriptFragment = "write trailer name value";
-
-        // DPW TODO
+        String scriptFragment = "write trailer \"checksum\" \"value\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstWriteCloseNode actual = parser.parseWithStrategy(scriptFragment, WRITE_CLOSE);
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, ScriptParseStrategy.WRITE_CHUNK_TRAILER);
 
         // @formatter:off
-        AstWriteCloseNode expected = new AstWriteCloseNodeBuilder()
+        AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
+                .setType("trailer")
+                .setName("name", "checksum")
+                .addValue("value")
                 .done();
         // @formatter:on
 
         assertEquals(expected, actual);
-        assertEquals(0, actual.getRegionInfo().children.size());
+        assertEquals(2, actual.getRegionInfo().children.size());
     }
 
     @Test
     public void shouldParseReadChunkTrailer() throws Exception {
 
-        String scriptFragment = "read trailer name value";
-
-        // DPW TODO
+        String scriptFragment = "read trailer \"checksum\" \"value\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstWriteCloseNode actual = parser.parseWithStrategy(scriptFragment, WRITE_CLOSE);
+        AstReadConfigNode actual = parser.parseWithStrategy(scriptFragment, READ_CHUNK_TRAILER);
 
         // @formatter:off
-        AstWriteCloseNode expected = new AstWriteCloseNodeBuilder()
-                .done();
+        AstReadConfigNode expected = new AstReadConfigNodeBuilder()
+            .setType("trailer")
+            .setValueExactText("name", "checksum")
+            .addMatcherExactText("value")
+        .done();
         // @formatter:on
 
         assertEquals(expected, actual);
-        assertEquals(0, actual.getRegionInfo().children.size());
+        assertEquals(2, actual.getRegionInfo().children.size());
     }
 
      @Test
