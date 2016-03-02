@@ -45,9 +45,25 @@ public class OriginSecurityIT {
 
     @Test
     @Specification({
+            "unauthorized.request.with.origin.header/request",
+            "unauthorized.request.with.origin.header/response"})
+    public void shouldFailWithOriginRequestHeader() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "request.with.origin.header.and.x.origin.header/request",
         "request.with.origin.header.and.x.origin.header/response"})
     public void shouldPassWithOriginAndXoriginRequests() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+            "unauthorized.request.with.origin.header.and.x.origin.header/request",
+            "unauthorized.request.with.origin.header.and.x.origin.header/response"})
+    public void shouldFailWithOriginAndXoriginRequests() throws Exception {
         k3po.finish();
     }
 
