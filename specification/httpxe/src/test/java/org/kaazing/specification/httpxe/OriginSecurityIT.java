@@ -45,8 +45,8 @@ public class OriginSecurityIT {
 
     @Test
     @Specification({
-            "bad.request.with.origin.header/request",
-            "bad.request.with.origin.header/response"})
+            "unauthorized.request.with.origin.header/request",
+            "unauthorized.request.with.origin.header/response"})
     public void shouldFailWithOriginRequestHeader() throws Exception {
         k3po.finish();
     }
@@ -61,8 +61,8 @@ public class OriginSecurityIT {
 
     @Test
     @Specification({
-            "bad.request.with.origin.header.and.x.origin.header/request",
-            "bad.request.with.origin.header.and.x.origin.header/response"})
+            "unauthorized.request.with.origin.header.and.x.origin.header/request",
+            "unauthorized.request.with.origin.header.and.x.origin.header/response"})
     public void shouldFailWithOriginAndXoriginRequests() throws Exception {
         k3po.finish();
     }
