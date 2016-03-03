@@ -24,6 +24,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -1105,12 +1106,15 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         }
         case "trailer": {
             AstValue name = node.getName("name");
-            AstValue value = node.getValue();
 
             MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
-            MessageEncoder valueEncoder = value.accept(new GenerateWriteEncoderVisitor(), state.configuration);
 
-            WriteConfigHandler handler = new WriteConfigHandler(new HttpTrailerEncoder(nameEncoder, valueEncoder));
+            List<MessageEncoder> valueEncoders = new ArrayList<>();
+            for (AstValue value : node.getValues()) {
+                valueEncoders.add(value.accept(new GenerateWriteEncoderVisitor(), state.configuration));
+            }
+
+            WriteConfigHandler handler = new WriteConfigHandler(new HttpTrailerEncoder(nameEncoder, valueEncoders));
             String handlerName = String.format("writeConfig#%d (http trailer)", state.pipelineAsMap.size() + 1);
             state.pipelineAsMap.put(handlerName, handler);
             return state.configuration;
