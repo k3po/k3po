@@ -571,7 +571,7 @@ POST /path HTTP/1.1
 Host: target.example.com:80
 Origin: http://source.example.com:80
 ```
-If the authoritative source origin cannot be determined, then the server MUST response with status code `400 Bad Request`.
+If the authoritative source origin cannot be determined, then the server MUST responsd with 4xx status code (either `403 Forbidden` or `400 Bad Request`).
 
 ### Origin Query Parameter
 If the `.ko` query parameter is present and both the `Origin` and `X-Origin` headers are not present and the `Referer` header 

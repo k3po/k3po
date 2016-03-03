@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-20...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-21...HEAD)
+
+**Merged pull requests:**
+
+- Adding some more negative tests for httpxe [\#312](https://github.com/k3po/k3po/pull/312) ([jitsni](https://github.com/jitsni))
+- Adding couple of negative tests for origin security [\#311](https://github.com/k3po/k3po/pull/311) ([jitsni](https://github.com/jitsni))
+
+## [3.0.0-alpha-21](https://github.com/k3po/k3po/tree/3.0.0-alpha-21) (2016-02-26)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-20...3.0.0-alpha-21)
 
 **Merged pull requests:**
 

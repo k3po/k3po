@@ -45,9 +45,25 @@ public class OriginSecurityIT {
 
     @Test
     @Specification({
+            "unauthorized.request.with.origin.header/request",
+            "unauthorized.request.with.origin.header/response"})
+    public void shouldFailWithOriginRequestHeader() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "request.with.origin.header.and.x.origin.header/request",
         "request.with.origin.header.and.x.origin.header/response"})
     public void shouldPassWithOriginAndXoriginRequests() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+            "unauthorized.request.with.origin.header.and.x.origin.header/request",
+            "unauthorized.request.with.origin.header.and.x.origin.header/response"})
+    public void shouldFailWithOriginAndXoriginRequests() throws Exception {
         k3po.finish();
     }
 
@@ -69,9 +85,25 @@ public class OriginSecurityIT {
 
     @Test
     @Specification({
+            "unauthorized.origin.request.using.referer/request",
+            "unauthorized.origin.request.using.referer/response"})
+    public void shouldFailWithOnlyRefererAndXoriginRequest() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "x.origin.header.not.identical.to.origin.header/request",
         "x.origin.header.not.identical.to.origin.header/response"})
     public void shouldPassWhenXoriginHeaderDiffersFromOriginHeader() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+            "unauthorized.x.origin.header.not.identical.to.origin.header/request",
+            "unauthorized.x.origin.header.not.identical.to.origin.header/response"})
+    public void shouldFailWhenXoriginHeaderDiffersFromOriginHeader() throws Exception {
         k3po.finish();
     }
 
@@ -88,6 +120,30 @@ public class OriginSecurityIT {
         "x.origin.encoded.request.header/request",
         "x.origin.encoded.request.header/response"})
     public void shouldPassWithEncodedXoriginRequest() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+            "unauthorized.x.origin.encoded.request.header/request",
+            "unauthorized.x.origin.encoded.request.header/response"})
+    public void shouldFailWithEncodedXoriginRequest() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+            "unauthorized.x.origin.encoded.request.header.1/request",
+            "unauthorized.x.origin.encoded.request.header.1/response"})
+    public void shouldFailWithEncodedXoriginRequest1() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+            "unauthorized.x.origin.encoded.request.header.2/request",
+            "unauthorized.x.origin.encoded.request.header.2/response"})
+    public void shouldFailWithEncodedXoriginRequest2() throws Exception {
         k3po.finish();
     }
 
