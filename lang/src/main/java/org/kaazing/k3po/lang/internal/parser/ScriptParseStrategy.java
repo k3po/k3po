@@ -125,6 +125,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.OptionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.PropertyNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadAwaitNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadClosedNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpChunkTrailerNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpHeaderNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpMethodNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpParameterNodeContext;
@@ -147,6 +148,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.VariableLengthBytesMatcherCon
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteAwaitNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteCloseNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteFlushNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpChunkTrailerNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpContentLengthNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpHeaderNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpHostNodeContext;
@@ -716,17 +718,11 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
     public static final ScriptParseStrategy<AstReadConfigNode> READ_CHUNK_TRAILER =
             new ScriptParseStrategy<AstReadConfigNode>() {
-        @Override
-        public AstReadConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
-                throws RecognitionException {
-            return new AstReadHttpConfigNodeVisitor(elFactory, elContext).visit(parser.readHttpChunkTrailerNode());
-        }
-//                @Override
-//                public AstReadConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
-//                        throws RecognitionException {
-//                    return (AstReadConfigNode) new AstReadHttpConfigNodeVisitor(elFactory, elContext)
-//                            .visit(parser.readHttpChunkTrailerNode());
-//                }
+                @Override
+                public AstReadConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstReadHttpConfigNodeVisitor(elFactory, elContext).visit(parser.readHttpChunkTrailerNode());
+                }
             };
 
     public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_CHUNK_TRAILER =
@@ -1384,6 +1380,18 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             return readHttpStatusNode;
         }
 
+        @Override
+        public AstReadConfigNode visitReadHttpChunkTrailerNode(ReadHttpChunkTrailerNodeContext ctx) {
+
+            AstReadHttpConfigNodeVisitor visitor = new AstReadHttpConfigNodeVisitor(elFactory, elContext);
+            AstReadConfigNode readHttpTrailerNode = visitor.visitReadHttpChunkTrailerNode(ctx);
+            if (readHttpTrailerNode != null) {
+                childInfos().add(readHttpTrailerNode.getRegionInfo());
+            }
+
+            return readHttpTrailerNode;
+        }
+
     }
 
     private static class AstCommandNodeVisitor extends AstNodeVisitor<AstCommandNode> {
@@ -1553,6 +1561,18 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
             AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(elFactory, elContext);
             AstWriteConfigNode writeHttpStatusNode = visitor.visitWriteHttpStatusNode(ctx);
+            if (writeHttpStatusNode != null) {
+                childInfos().add(writeHttpStatusNode.getRegionInfo());
+            }
+
+            return writeHttpStatusNode;
+        }
+
+        @Override
+        public AstWriteConfigNode visitWriteHttpChunkTrailerNode(WriteHttpChunkTrailerNodeContext ctx) {
+
+            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(elFactory, elContext);
+            AstWriteConfigNode writeHttpStatusNode = visitor.visitWriteHttpChunkTrailerNode(ctx);
             if (writeHttpStatusNode != null) {
                 childInfos().add(writeHttpStatusNode.getRegionInfo());
             }
