@@ -24,5 +24,4 @@ read "content"
 read closed
 	
 write status "405" "Method Not Allowed"
-write header content-length
 write close

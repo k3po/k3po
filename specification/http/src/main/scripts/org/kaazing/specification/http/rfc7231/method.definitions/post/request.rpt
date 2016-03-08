@@ -23,6 +23,5 @@ write "content"
 write close
 	
 read status "200" "OK"
-read closed
 
 
