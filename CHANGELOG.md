@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-21...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-22...HEAD)
+
+**Merged pull requests:**
+
+- http method testing for GET,POST,OUT,HEAD [\#315](https://github.com/k3po/k3po/pull/315) ([ilyaanisimov-kaazing](https://github.com/ilyaanisimov-kaazing))
+
+## [3.0.0-alpha-22](https://github.com/k3po/k3po/tree/3.0.0-alpha-22) (2016-03-03)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-21...3.0.0-alpha-22)
 
 **Merged pull requests:**
 
