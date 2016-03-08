@@ -42,7 +42,7 @@ public class RequestMethodsIT {
     @Specification({
         "501/request",
         "501/response" })
-    public void serverMustRespondToUnknownMethodWith501() throws Exception {
+    public void serverMustRespondWith501ToNotImplementedMethods() throws Exception {
         // When a request method is received
         // that is unrecognized or not implemented by an origin server, the
         // origin server SHOULD respond with the 501 (Not Implemented) status
@@ -86,7 +86,7 @@ public class RequestMethodsIT {
     @Specification({
         "405/request",
         "405/response" })
-    public void serverShouldRespondWith405ToUnrecognizedMethods() throws Exception {
+    public void serverMustRespondWith405ToNotAllowedMethods() throws Exception {
         k3po.finish();
     }
 }
