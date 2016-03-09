@@ -34,6 +34,29 @@ public final class Functions {
     private static final int MAX_ACCEPTABLE_HEADER_LENGTH = 200;
 
     @Function
+    public static String loginBase64Encoder(String login) {
+        byte[] bytes = login.getBytes();
+        return bytesToString(Base64.encode(bytes));
+    }
+
+    private static String bytesToString(byte[] x) {
+        String answer = "";
+        for (byte aX : x) {
+            answer += (char) aX;
+        }
+        return answer;
+    }
+
+    @Function
+    public static String append(String... strings) {
+        StringBuilder x = new StringBuilder();
+        for (String s:strings) {
+            x.append(s);
+        }
+        return x.toString();
+    }
+
+    @Function
     public static byte[] handshakeKey() {
         byte[] bytes = new byte[16];
         RANDOM.nextBytes(bytes);
