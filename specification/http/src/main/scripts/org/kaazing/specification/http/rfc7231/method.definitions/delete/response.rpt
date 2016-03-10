@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-accept http://localhost:8000/index.html
+accept http://localhost:8000/resource
 accepted
 connected
 
