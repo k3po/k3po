@@ -2,7 +2,7 @@ property key ${ws:handshakeKey()}
 property validCredentials ${ws:loginBase64Encoder("joe:welcome")}
 property authHeader ${ws:append("Basic ", validCredentials)}
 
-connect http://localhost:8001/echoAuth
+connect http://localhost:8080/echoAuth
 connected
 
 write method "GET"

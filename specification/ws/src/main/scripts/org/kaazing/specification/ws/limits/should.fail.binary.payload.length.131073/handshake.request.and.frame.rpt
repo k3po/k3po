@@ -18,7 +18,7 @@ property key ${ws:handshakeKey()}
 property writeMask ${ws:randomBytes(4)}
 property client131073 ${ws:randomBytes(131073)}
 
-connect http://localhost:8081/echo
+connect http://localhost:8080/echo
 connected
 
 write method "GET"
