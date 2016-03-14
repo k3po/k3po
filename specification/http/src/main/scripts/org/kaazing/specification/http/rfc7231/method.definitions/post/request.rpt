@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect http://localhost:8000/index.html
+connect http://localhost:8000/resource
 connected
 
 write method "POST"

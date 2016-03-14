@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-accept http://localhost:8000/index.html
+accept http://localhost:8000/resource
 accepted
 connected
 
@@ -24,6 +24,6 @@ read "content"
 read closed
 	
 write status "200" "OK"
-write header content-length
-write "content"
+#write header content-length
+#write "content"
 write close
