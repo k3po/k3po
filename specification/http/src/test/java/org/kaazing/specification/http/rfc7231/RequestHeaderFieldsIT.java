@@ -48,6 +48,7 @@ public class RequestHeaderFieldsIT {
      * @throws Exception when k3po fails.
      */
     @Test
+    @Ignore("not complete")
     @Specification({"server.responds.to.unmeetable.expect.with.417/request",
                     "server.responds.to.unmeetable.expect.with.417/response" })
     public void serverRespondsToUnmeetableExpectWith417() throws Exception {
