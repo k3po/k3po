@@ -14,27 +14,17 @@
 # limitations under the License.
 #
 
-connect tcp://localhost:8000
+connect http://localhost:8080/
 connected
 
-write "POST / HTTP/1.1\r\n"
-write "Host: localhost:8000\r\n"
-write "Content-Type: text/plain\r\n"
-write "Transfer-Encoding: chunked\r\n"
-write "\r\n"
-write "7\r\n"
-write "Chunk A\r\n"
-write "7\r\n"
-write "Chunk B\r\n"
-write "7\r\n"
-write "Chunk C\r\n"
-write "0\r\n"
-write "\r\n"
+write method "POST"
+write header host
+write header "Content-Type" "text/plain"
+write header "Transfer-Encoding" "chunked"
+write "Chunk A"
+write "Chunk B"
+write "Chunk C"
+write close
 
-read "HTTP/1.1 200 OK\r\n"
-read /Content-Length: *0 *\r\n/
-read "\r\n"
-
-close
-closed
+read status "200" "OK"
 

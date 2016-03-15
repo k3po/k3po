@@ -985,8 +985,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 valueDecoders.add(matcher.accept(new GenerateReadDecoderVisitor(), state.configuration));
             }
 
+            HttpTrailerDecoder httpTrailerDecoder = new HttpTrailerDecoder(name.getValue(), valueDecoders);
             ReadHttpTrailersHandler handler =
-                    new ReadHttpTrailersHandler(new HttpTrailerDecoder(name.getValue(), valueDecoders));
+                    new ReadHttpTrailersHandler(httpTrailerDecoder);
 
             // Ideally we could use a ReadConfigHandler as follows, but the trailers come insync with
             // with the channel close, which completes the composite future of all handlers and checks
@@ -995,6 +996,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             // decoder.setRegionInfo(node.getRegionInfo());
             // ReadConfigHandler handler = new ReadConfigHandler(decoder);
 
+            httpTrailerDecoder.setRegionInfo(node.getRegionInfo());
             handler.setRegionInfo(node.getRegionInfo());
             Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
             String handlerName = String.format("readConfig#%d (http status)", pipelineAsMap.size() + 1);

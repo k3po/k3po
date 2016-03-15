@@ -331,4 +331,13 @@ public class HttpIT {
     public void httpServerPostChunkingWithTrailerAndExtensions() throws Exception {
         k3po.finish();
     }
+
+    @Test
+    @TestSpecification({
+        "response.transfer.encoding.chunked.with.trailer/request",
+        "response.transfer.encoding.chunked.with.trailer/response"
+    })
+    public void httpResponseWithEncodingChunked() throws Exception {
+        k3po.finish();
+    }
 }

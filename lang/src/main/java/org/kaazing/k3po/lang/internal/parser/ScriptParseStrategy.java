@@ -404,7 +404,6 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
     public static final ScriptParseStrategy<AstReadConfigNode> READ_CHUNK_EXTENSION =
             new ScriptParseStrategy<AstReadConfigNode>() {
-        // DPW TODO
                 @Override
                 public AstReadConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
                         throws RecognitionException {
@@ -414,7 +413,6 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
     public static final ScriptParseStrategy<AstReadConfigNode> WRITE_CHUNK_EXTENSION =
             new ScriptParseStrategy<AstReadConfigNode>() {
-        // DPW TODO
                 @Override
                 public AstReadConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
                         throws RecognitionException {

@@ -42,41 +42,45 @@ public class TransferCodingsIT {
 
     @Test
     @Specification({
-        "should.process.request.transfer.encoding.chunked/request",
-        "should.process.request.transfer.encoding.chunked/response" })
-    public void shouldProcessRequestTransferEncodingChunked() throws Exception {
+        "request.transfer.encoding.chunked/request",
+        "request.transfer.encoding.chunked/response" })
+    public void requestTransferEncodingChunked() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "should.process.response.transfer.encoding.chunked/request",
-        "should.process.response.transfer.encoding.chunked/response" })
-    public void shouldProcessResponseTransferEncodingChunked() throws Exception {
+        "response.transfer.encoding.chunked/request",
+        "response.transfer.encoding.chunked/response" })
+    public void responseTransferEncodingChunked() throws Exception {
         k3po.finish();
     }
 
     @Test
-    @Ignore("requires enhancement https://github.com/k3po/k3po/issues/136")
-    public void shouldProcessRequestTransferEncodingChunkedExtension() throws Exception {
+    @Ignore("requires enhancement https://github.com/k3po/k3po/issues/313")
+    public void requestTransferEncodingChunkedExtension() throws Exception {
         k3po.finish();
     }
 
     @Test
-    @Ignore("requires enhancement https://github.com/k3po/k3po/issues/136")
-    public void shouldProcessResponseTransferEncodingChunkedExtension() throws Exception {
+    @Ignore("requires enhancement https://github.com/k3po/k3po/issues/313")
+    public void responseTransferEncodingChunkedExtension() throws Exception {
         k3po.finish();
     }
 
     @Test
-    @Ignore("requires enhancement https://github.com/k3po/k3po/issues/136")
-    public void shouldProcessRequestTransferEncodingChunkedWithTrailer() throws Exception {
+    @Specification({
+        "request.transfer.encoding.chunked.with.trailer/request",
+        "request.transfer.encoding.chunked.with.trailer/response" })
+    public void requestTransferEncodingChunkedWithTrailer() throws Exception {
         k3po.finish();
     }
 
     @Test
-    @Ignore("requires enhancement https://github.com/k3po/k3po/issues/136")
-    public void shouldProcessResponseTransferEncodingChunkedWithTrailer() throws Exception {
+    @Specification({
+        "response.transfer.encoding.chunked.with.trailer/request",
+        "response.transfer.encoding.chunked.with.trailer/response" })
+    public void responseTransferEncodingChunkedWithTrailer() throws Exception {
         k3po.finish();
     }
 
