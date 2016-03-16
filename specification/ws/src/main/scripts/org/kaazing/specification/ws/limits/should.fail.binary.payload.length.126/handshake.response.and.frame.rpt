@@ -15,7 +15,6 @@
 #
 
 property location 'http://localhost:8080/echo'
-property server126 ${ws:randomBytesUTF8(126)}
 
 accept ${location}
 accepted
