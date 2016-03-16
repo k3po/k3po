@@ -14,10 +14,11 @@
 # limitations under the License.
 #
 
-property location 'http://localhost:8080/echo'
+property location 'http://localhost:8080/echoAuth'
 property key ${ws:handshakeKey()}
-property writeMask ${ws:randomBytes(4)}
-property client131073 ${ws:randomBytes(131073)}
+property validCredentials ${ws:base64Encode("joe:welcome")}
+property authHeader ${ws:append("Basic ", validCredentials)}
+
 
 connect ${location}
 connected
@@ -29,6 +30,7 @@ write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Key" ${key}
 write header "Sec-WebSocket-Version" "13"
+write header "Authorization" ${authHeader}
 
 read status "101" /.+/
 read version "HTTP/1.1"
@@ -36,11 +38,13 @@ read header "Upgrade" /(?i:websocket)/
 read header "Connection" /(?i:Upgrade)/
 read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
 
+# the read notifies that the handshake is complete
+read notify HANDSHAKE_COMPLETE
 
-write [0x82 0xff 0x00 0x00 0x00 0x00 0x00 0x02 0x00 0x01] ${writeMask}
+# clean close
+read [0x88 0x02 0x03 0xe8]
 
-write option mask ${writeMask}
-write ${client131073}
-write option mask [0x00 0x00 0x00 0x00]
+# notify that the close has been received
+read notify CLOSE_RECEIVED
 
-read [0x88 0x02 0x03 0xf1]
+write [0x88 0x02 0x03 0xe8]

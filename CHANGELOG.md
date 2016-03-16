@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-22...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-23...HEAD)
+
+**Merged pull requests:**
+
+- moved scripts from gateway transport http to k3po [\#318](https://github.com/k3po/k3po/pull/318) ([ilyaanisimov-kaazing](https://github.com/ilyaanisimov-kaazing))
+- Added tests for WS compliance \(maximum message size and maximum lifetime\) [\#316](https://github.com/k3po/k3po/pull/316) ([NicoletaOita](https://github.com/NicoletaOita))
+
+## [3.0.0-alpha-23](https://github.com/k3po/k3po/tree/3.0.0-alpha-23) (2016-03-08)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-22...3.0.0-alpha-23)
 
 **Merged pull requests:**
 

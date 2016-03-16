@@ -15,6 +15,7 @@
 #
 
 property location 'http://localhost:8080/echo'
+
 accept ${location}
 accepted
 connected
