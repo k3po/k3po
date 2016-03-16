@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior.handler;
 
-import static java.lang.String.format;
 import static org.kaazing.k3po.driver.internal.channel.Channels.prepare;
+import static org.kaazing.k3po.driver.internal.netty.channel.ChannelFutures.describeFuture;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.DefaultChannelFuture;
 import org.jboss.netty.channel.LifeCycleAwareChannelHandler;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.behavior.ScriptProgressException;
-import org.kaazing.k3po.driver.internal.behavior.handler.barrier.AwaitBarrierDownstreamHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.prepare.PreparationEvent;
 import org.kaazing.k3po.driver.internal.behavior.handler.prepare.SimplePrepareUpstreamHandler;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 
 public class ExecutionHandler extends SimplePrepareUpstreamHandler implements LifeCycleAwareChannelHandler {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(AwaitBarrierDownstreamHandler.class);
 
     private ChannelFuture handlerFuture;
     private ChannelFuture pipelineFuture;
@@ -91,22 +84,6 @@ public class ExecutionHandler extends SimplePrepareUpstreamHandler implements Li
                 return ExecutionHandler.this.toString();
             }
         };
-
-        handlerFuture.addListener(new ChannelFutureListener() {
-
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
-                Channel channel = future.getChannel();
-                int id = (channel != null) ? channel.getId() : 0;
-                if (future.isSuccess()) {
-                    LOGGER.debug(format("[id: 0x%08x] %s", id, ExecutionHandler.this));
-                }
-                else {
-                    LOGGER.debug(format("[id: 0x%08x] %s [FAILED], pipelineFuture:\n%s",
-                            id, ExecutionHandler.this, pipelineFuture));
-                }
-            }
-        });
     }
 
     @Override
@@ -124,9 +101,6 @@ public class ExecutionHandler extends SimplePrepareUpstreamHandler implements Li
 
         assert handlerFuture != null;
         if (!handlerFuture.isDone()) {
-            int id = (channel != null) ? channel.getId() : 0;
-            LOGGER.debug(format("[id: 0x%08x] %s [FAILED during remove], pipelineFuture:\n%s",
-                    id, ExecutionHandler.this, pipelineFuture));
             ScriptProgressException exception = new ScriptProgressException(getRegionInfo(), "");
             exception.fillInStackTrace();
             handlerFuture.setFailure(exception);
@@ -165,5 +139,16 @@ public class ExecutionHandler extends SimplePrepareUpstreamHandler implements Li
         super.handleUpstream0(ctx, e);
     }
 
+    @Override
+    public final String toString() {
+        return describe(new StringBuilder())
+                .append(" (")
+                .append(describeFuture(getHandlerFuture()))
+                .append(')')
+                .toString();
+    }
 
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("execution");
+    }
 }

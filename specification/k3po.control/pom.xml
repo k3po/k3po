@@ -43,6 +43,16 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <excludes combine.children="append">
+                        <exclude>src/main/scripts/org/kaazing/specification/control/assets/**/*.rpt</exclude>
+                        <exclude>src/main/scripts/org/kaazing/specification/control/2.0/assets/**/*.rpt</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

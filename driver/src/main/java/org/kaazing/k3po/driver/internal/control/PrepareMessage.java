@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.control;
 
 import java.util.ArrayList;
@@ -24,6 +23,8 @@ public class PrepareMessage extends ControlMessage {
 
     private List<String> names;
     private String version;
+    private String origin;
+    private List<String> properties = new ArrayList<>();
 
     public PrepareMessage() {
         this.names = new ArrayList<>(5);
@@ -63,6 +64,22 @@ public class PrepareMessage extends ControlMessage {
 
     protected final boolean equals(PrepareMessage that) {
         return super.equalTo(that) && Objects.equals(this.names, that.names);
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    public void setProperties(List<String> properties) {
+        this.properties = properties;
+    }
+
+    public List<String> getProperties() {
+        return properties;
     }
 
 }

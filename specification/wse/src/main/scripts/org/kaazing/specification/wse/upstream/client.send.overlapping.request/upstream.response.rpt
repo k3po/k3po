@@ -1,9 +1,25 @@
+#
+# Copyright 2007-2015, Kaazing Corporation. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 property upstreamId ${wse:uniqueId()}
 property downstreamId ${wse:uniqueId()}
 property upstream ${wse:append("http://localhost:8080/path/", upstreamId)}
 property downstream ${wse:append("http://localhost:8080/path/", downstreamId)}
 
-accept http://localhost:8080/path/;e/cb?query
+accept http://localhost:8080/path/;e/cbm?query
 accepted
 connected
 
@@ -40,6 +56,9 @@ write header "Content-Type" "application/octet-stream"
 write header "Connection" "close"
 write flush
 
+write await UPSTREAM_DATA_RECEIVED
+write [0x80 0x05] ${receivedData}
+
 write await OVERLAPPING_UPSTREAM_RESPONSE_SENT
 write [0x01 0x30 0x32 0xFF]
 write [0x01 0x30 0x31 0xFF]
@@ -56,7 +75,8 @@ read version "HTTP/1.1"
 read header "Content-Type" "application/octet-stream"
 read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
-read [0x80 0x05] [0..5]
+read [0x80 0x05] ([0..5] :receivedData)
+read notify UPSTREAM_DATA_RECEIVED
 read [0x01 0x30 0x31 0xFF]
 read closed
 
@@ -75,7 +95,6 @@ read version "HTTP/1.1"
 read header "Content-Type" "application/octet-stream"
 read header "X-Sequence-No" ${wse:asString(sequence + 2)}
 
-read [0x80 0x05] [0..5]
 read [0x01 0x30 0x31 0xFF]
 read closed
 

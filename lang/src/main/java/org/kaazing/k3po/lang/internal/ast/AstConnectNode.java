@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.lang.internal.ast;
 
-import static java.lang.String.format;
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
 import java.util.LinkedHashMap;
@@ -121,10 +119,19 @@ public class AstConnectNode extends AstStreamNode {
     @Override
     protected void describeLine(StringBuilder sb) {
         super.describeLine(sb);
-        if (awaitName == null) {
-            sb.append(format("connect %s\n", location));
-        } else {
-            sb.append(format("connect awaitName %s\nconnect %s\n", awaitName, location));
+        sb.append("connect ");
+        if (awaitName != null) {
+            sb.append("await ").append(awaitName).append("\n        ");
+        }
+        sb.append(location).append('\n');
+        if (options != null) {
+            for (Map.Entry<String, Object> entry : options.entrySet()) {
+                sb.append("        option ")
+                  .append(entry.getKey())
+                  .append(" ")
+                  .append(entry.getValue())
+                  .append('\n');
+            }
         }
     }
 

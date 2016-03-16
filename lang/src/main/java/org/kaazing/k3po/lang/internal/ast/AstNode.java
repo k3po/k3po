@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.lang.internal.ast;
 
 
@@ -34,6 +33,8 @@ public abstract class AstNode extends AstRegion {
         R visit(AstDisconnectNode node, P parameter) throws Exception;
         R visit(AstUnbindNode node, P parameter) throws Exception;
         R visit(AstCloseNode node, P parameter) throws Exception;
+        R visit(AstAbortNode astAbortNode, P parameter) throws Exception;
+        R visit(AstAbortedNode astAbortNode, P parameter) throws Exception;
 
         R visit(AstChildOpenedNode node, P parameter) throws Exception;
         R visit(AstChildClosedNode node, P parameter) throws Exception;

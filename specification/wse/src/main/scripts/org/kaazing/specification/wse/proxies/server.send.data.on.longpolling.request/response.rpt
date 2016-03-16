@@ -1,3 +1,19 @@
+#
+# Copyright 2007-2015, Kaazing Corporation. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 property upstreamId ${wse:uniqueId()}
 property downstreamId ${wse:uniqueId()}
 property upstream ${wse:append("http://localhost:8080/path/", upstreamId)}
@@ -41,33 +57,31 @@ write version "HTTP/1.1"
 write header "Content-Type" "application/octet-stream"
 write header "Connection" "close"
 write flush
-write notify DOWNSTREAM_OPENED
 
-write await LONG_POLLING_REQUEST_RECEIVED
-write [0x80 0x7f] ${data}
+write [0x80 0x05] "data1"
+write notify FIRST_DATA_SENT
 write [0x01 0x30 0x31 0xFF]
 write close
-write notify DOWNSTREAM_CLOSED 
+write notify FIRST_DOWNSTREAM_CLOSED 
 
 
 # Overlapping Downstream (Longpolling)
 accepted
 connected
 
-read await DOWNSTREAM_OPENED
+read await FIRST_DATA_SENT
 read parameter ".ki" "p"
 read method "GET"
 read version "HTTP/1.1"
 read header "X-Sequence-No" ${wse:asString(sequence + 2)}
 read closed
-read notify LONG_POLLING_REQUEST_RECEIVED
 
-write await DOWNSTREAM_CLOSED
 write status "200" "OK"
 write version "HTTP/1.1"
 write header "Content-Type" "application/octet-stream"
 write header content-length
 
-write [0x80 0x7f] ${data}
+write await FIRST_DOWNSTREAM_CLOSED
+write [0x80 0x05] "data2"
 write [0x01 0x30 0x31 0xFF]
 write close

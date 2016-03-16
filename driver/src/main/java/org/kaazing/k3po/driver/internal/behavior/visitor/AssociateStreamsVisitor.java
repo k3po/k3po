@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior.visitor;
 
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
@@ -24,6 +23,8 @@ import java.util.Map;
 
 import org.kaazing.k3po.driver.internal.behavior.visitor.AssociateStreamsVisitor.State;
 import org.kaazing.k3po.lang.internal.RegionInfo;
+import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
@@ -229,6 +230,13 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
     }
 
     @Override
+    public AstScriptNode visit(AstAbortNode node, State state) throws Exception {
+        state.streamables.add(node);
+        return null;
+    }
+
+
+    @Override
     public AstScriptNode visit(AstChildOpenedNode childOpenedNode, State state) throws Exception {
 
         state.streamables.add(childOpenedNode);
@@ -239,6 +247,12 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
     public AstScriptNode visit(AstChildClosedNode childClosedNode, State state) throws Exception {
 
         state.streamables.add(childClosedNode);
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstAbortedNode node, State state) throws Exception {
+        state.streamables.add(node);
         return null;
     }
 

@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.control.handler;
 
 import static java.lang.String.format;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.PROPERTY_NODE;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
@@ -33,6 +36,8 @@ import org.kaazing.k3po.driver.internal.control.NotifyMessage;
 import org.kaazing.k3po.driver.internal.control.PrepareMessage;
 import org.kaazing.k3po.driver.internal.control.PreparedMessage;
 import org.kaazing.k3po.driver.internal.control.StartMessage;
+import org.kaazing.k3po.lang.internal.parser.ScriptParseException;
+import org.kaazing.k3po.lang.internal.parser.ScriptParserImpl;
 
 public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
 
@@ -62,8 +67,7 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
     }
 
     @Override
-    protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, State state)
-            throws Exception {
+    protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, State state) throws Exception {
 
         switch (state) {
         case READ_INITIAL: {
@@ -227,6 +231,15 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
             case "name":
                 prepareMessage.getNames().add(headerValue);
                 break;
+            case "origin":
+                prepareMessage.setOrigin(headerValue);
+                break;
+            case "content-length":
+                contentLength = Integer.parseInt(headerValue);
+                if (contentLength > maxContentLength) {
+                    throw new IllegalArgumentException("Content too long");
+                }
+                break;
             }
             break;
         case PREPARED:
@@ -266,7 +279,7 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
         return State.READ_HEADER;
     }
 
-    private State readContent(ChannelBuffer buffer) {
+    private State readContent(ChannelBuffer buffer) throws ScriptParseException {
 
         assert contentLength > 0;
 
@@ -276,6 +289,17 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
 
         String content = buffer.readBytes(contentLength).toString(UTF_8);
         switch (message.getKind()) {
+        case PREPARE:
+            PrepareMessage prepareMessage = (PrepareMessage) message;
+            ScriptParserImpl parser = new ScriptParserImpl();
+            List<String> properties = new ArrayList<>();
+            for (String scriptFragment : content.split("\\r?\\n")) {
+                // confirm parse-able
+                parser.parseWithStrategy(scriptFragment, PROPERTY_NODE);
+                properties.add(scriptFragment);
+            }
+            prepareMessage.setProperties(properties);
+            break;
         case PREPARED:
             PreparedMessage preparedMessage = (PreparedMessage) message;
             preparedMessage.setScript(content);

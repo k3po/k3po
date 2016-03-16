@@ -1,10 +1,26 @@
-accept http://localhost:8000/echo
+#
+# Copyright 2007-2015, Kaazing Corporation. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+accept http://localhost:8080/path
 accepted
 connected
 
 read method "GET"
 read version "HTTP/1.1"
-read header "Host" "localhost:8000"
+read header "Host" "localhost:8080"
 read header "Upgrade" "websocket"
 read header "Connection" "Upgrade"
 read header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
@@ -24,34 +40,35 @@ write flush
 read [0x82 0x96]
 read [(:maskingKey){4}]
 read option mask ${writeMask}
-read "GET /echo HTTP/1.1\r\n"
+read "GET /path HTTP/1.1\r\n"
 read "\r\n"
 read option mask [0x00 0x00 0x00 0x00]
 
 # 302 response
 write [0x82 0x3C]
 write "HTTP/1.1 302 Found\r\n"
-write "Location: http://localhost:8080/echo\r\n"
+write "Location: http://localhost:8090/path\r\n"
 write "\r\n"
+
+write [0x88 0x02 0x03 0xe8]
 
 read [0x88 0x02]
 read [(:maskingKey){4}]
 read option mask ${maskingKey}
-read [0x03 0xf3]
+read [0x03 0xe8]
 read option mask [0x00 0x00 0x00 0x00]
 
-write [0x88 0x02 0x03 0xf3]
+close
 
-accept http://localhost:8080/echo
+accept http://localhost:8090/path
 accepted
 connected
 
 read method "GET"
 read version "HTTP/1.1"
-read header "Host" "localhost:8080"
+read header "Host" "localhost:8090"
 read header "Upgrade" "websocket"
 read header "Connection" "Upgrade"
 read header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
 read header "Sec-WebSocket-Version" "13"
 read header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
-

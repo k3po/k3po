@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.netty.bootstrap.http;
 
 import static java.util.Objects.requireNonNull;
@@ -55,6 +54,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannelSink;
+import org.kaazing.k3po.driver.internal.netty.channel.AbortEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.FlushEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownOutputEvent;
 
@@ -176,6 +176,16 @@ public class HttpChildChannelSink extends AbstractChannelSink {
         HttpChildChannel httpChildChannel = (HttpChildChannel) pipeline.getChannel();
         ChannelFuture httpFuture = evt.getFuture();
         flushRequested(httpChildChannel, httpFuture);
+    }
+
+    @Override
+    protected void abortRequested(ChannelPipeline pipeline, final AbortEvent evt) throws Exception {
+        transport.close().addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                evt.getFuture().setSuccess();
+            }
+        });
     }
 
     @Override

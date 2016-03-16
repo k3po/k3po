@@ -1,3 +1,19 @@
+#
+# Copyright 2007-2015, Kaazing Corporation. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 property upstreamId ${wse:uniqueId()}
 property downstreamId ${wse:uniqueId()}
 property upstream ${wse:append("http://localhost:8080/path/", upstreamId)}
@@ -19,26 +35,5 @@ write header content-length
 
 write ${upstream} "\n"
 write ${downstream} "\n"
-write notify CREATE_COMPLETED
 write close
 
-
-# upstream
-accept ${upstream}
-accepted
-connected
-
-read await CREATE_COMPLETED
-read method "POST"
-read version "HTTP/1.1"
-read header "Content-Type" "application/octet-stream"
-read header "X-Sequence-No" ${wse:asString(sequence + 1)}
-
-read [0x01 0x30 0x32 0xFF]
-read [0x01 0x30 0x31 0xFF]
-read closed
-
-write status "200" "OK"
-write version "HTTP/1.1"
-write header content-length
-write close

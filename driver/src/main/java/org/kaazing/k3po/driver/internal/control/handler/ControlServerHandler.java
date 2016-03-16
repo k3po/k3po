@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.control.handler;
 
 import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.FileSystems.newFileSystem;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.PROPERTY_NODE;
 
 import java.io.IOException;
 import java.net.URI;
@@ -32,7 +32,11 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -54,6 +58,7 @@ import org.kaazing.k3po.driver.internal.control.PrepareMessage;
 import org.kaazing.k3po.driver.internal.control.PreparedMessage;
 import org.kaazing.k3po.driver.internal.control.StartedMessage;
 import org.kaazing.k3po.lang.internal.parser.ScriptParseException;
+import org.kaazing.k3po.lang.internal.parser.ScriptParserImpl;
 
 public class ControlServerHandler extends ControlUpstreamHandler {
 
@@ -63,6 +68,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     private Robot robot;
     private ChannelFutureListener whenAbortedOrFinished;
+    private BlockingQueue<CountDownLatch> notifiedLatches = new LinkedBlockingQueue<CountDownLatch>();
 
     private final ChannelFuture channelClosedFuture = Channels.future(null);
 
@@ -112,10 +118,30 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         robot = new Robot();
         whenAbortedOrFinished = whenAbortedOrFinished(ctx);
 
+        String originScript = "";
+        String origin = prepare.getOrigin();
+        if (origin != null) {
+            try {
+                originScript = OriginScript.get(origin);
+            } catch (URISyntaxException e) {
+                throw new Exception("Could not find origin: ", e);
+            }
+        }
+
         ChannelFuture prepareFuture;
         try {
 
-            final String aggregatedScript = aggregateScript(scriptNames, scriptLoader);
+            String aggregatedScript = originScript + aggregateScript(scriptNames, scriptLoader);
+            List<String> properyOverrides = prepare.getProperties();
+            // consider hard fail in the future, when test frameworks support
+            // override per test method
+
+            // Checks that it is a supported version
+            if (!"2.0".equals(version)) {
+                sendVersionError(ctx);
+            }
+
+            aggregatedScript = injectOverridenProperties(aggregatedScript, properyOverrides);
 
             if (scriptLoader != null) {
                 Thread currentThread = currentThread();
@@ -123,20 +149,19 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 try {
                     currentThread.setContextClassLoader(scriptLoader);
                     prepareFuture = robot.prepare(aggregatedScript);
-                }
-                finally {
+                } finally {
                     currentThread.setContextClassLoader(contextClassLoader);
                 }
-            }
-            else {
+            } else {
                 prepareFuture = robot.prepare(aggregatedScript);
             }
 
+            final String scriptToRun = aggregatedScript;
             prepareFuture.addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(final ChannelFuture f) {
                     PreparedMessage prepared = new PreparedMessage();
-                    prepared.setScript(aggregatedScript);
+                    prepared.setScript(scriptToRun);
                     prepared.getBarriers().addAll(robot.getBarriersByName().keySet());
                     Channels.write(ctx, Channels.future(null), prepared);
                 }
@@ -147,11 +172,39 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         }
     }
 
+    private String injectOverridenProperties(String aggregatedScript, List<String> scriptProperties)
+            throws Exception, ScriptParseException {
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+
+        for (String propertyToInject : scriptProperties) {
+            String propertyName = parser.parseWithStrategy(propertyToInject, PROPERTY_NODE).getPropertyName();
+            StringBuilder replacementScript = new StringBuilder();
+            Pattern pattern = Pattern.compile("property\\s+" + propertyName + "\\s+.+");
+            boolean matchFound = false;
+            for (String scriptLine : aggregatedScript.split("\\r?\\n")) {
+                if (pattern.matcher(scriptLine).matches()) {
+                    matchFound = true;
+                    replacementScript.append(propertyToInject + "\n");
+                } else {
+                    replacementScript.append(scriptLine + "\n");
+                }
+            }
+            if (!matchFound) {
+                String errorMsg = "Received " + propertyToInject + " in PREPARE but found no where to substitute it";
+                logger.error(errorMsg);
+                throw new Exception(errorMsg);
+            }
+            aggregatedScript = replacementScript.toString();
+        }
+        return aggregatedScript;
+    }
+
     /*
      * Public static because it is used in test utils
      */
-    public static String aggregateScript(List<String> scriptNames, ClassLoader scriptLoader) throws URISyntaxException,
-            IOException {
+    public static String aggregateScript(List<String> scriptNames, ClassLoader scriptLoader)
+            throws URISyntaxException, IOException {
         final StringBuilder aggregatedScript = new StringBuilder();
         for (String scriptName : scriptNames) {
             String scriptNameWithExtension = format("%s.rpt", scriptName);
@@ -192,7 +245,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     private static String readScript(Path scriptPath) throws IOException {
         List<String> lines = Files.readAllLines(scriptPath, UTF_8);
         StringBuilder sb = new StringBuilder();
-        for (String line: lines) {
+        for (String line : lines) {
             sb.append(line);
             sb.append("\n");
         }
@@ -211,8 +264,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                     if (f.isSuccess()) {
                         final StartedMessage started = new StartedMessage();
                         Channels.write(ctx, Channels.future(null), started);
-                    }
-                    else {
+                    } else {
                         sendErrorMessage(ctx, f.getCause());
                     }
                 }
@@ -258,14 +310,22 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     }
 
     private void writeNotifiedOnBarrier(final String barrier, final ChannelHandlerContext ctx) throws Exception {
+        final CountDownLatch latch = new CountDownLatch(1);
+        // Make sure finished message does not get sent before this notified message
+        notifiedLatches.add(latch);
         robot.awaitBarrier(barrier).addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
-                if (future.isSuccess()) {
-                    logger.debug("sending NOTIFIED: " + barrier);
-                    final NotifiedMessage notified = new NotifiedMessage();
-                    notified.setBarrier(barrier);
-                    Channels.write(ctx, Channels.future(null), notified);
+                try {
+                    if (future.isSuccess()) {
+                        logger.debug("sending NOTIFIED: " + barrier);
+                        final NotifiedMessage notified = new NotifiedMessage();
+                        notified.setBarrier(barrier);
+                        Channels.write(ctx, Channels.future(null), notified);
+                    }
+                }
+                finally {
+                    latch.countDown();
                 }
             }
         });
@@ -288,11 +348,14 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     }
 
     private ChannelFutureListener whenAbortedOrFinished(final ChannelHandlerContext ctx) {
-        final AtomicBoolean latch = new AtomicBoolean();
+        final AtomicBoolean oneTimeOnly = new AtomicBoolean();
         return new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
-                if (latch.compareAndSet(false, true)) {
+                if (oneTimeOnly.compareAndSet(false, true)) {
+                    for (CountDownLatch latch : notifiedLatches) {
+                        latch.await();
+                    }
                     sendFinishedMessage(ctx);
                 }
             }

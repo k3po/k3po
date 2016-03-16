@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.netty.bootstrap.http;
 
 import static java.lang.String.format;
@@ -44,7 +43,6 @@ import java.util.NavigableMap;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelConfig;
-import org.jboss.netty.channel.ChannelException;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -60,9 +58,10 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
-import org.jboss.netty.handler.codec.http.QueryStringEncoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.QueryStringEncoder;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChildChannel.HttpReadState;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
+import org.kaazing.k3po.driver.internal.netty.channel.Channels;
 
 public class HttpChildChannelSource extends HttpChannelHandler {
 
@@ -108,9 +107,7 @@ public class HttpChildChannelSource extends HttpChannelHandler {
             case CONTENT_COMPLETE:
                 break;
             default:
-                ChannelException exception = new ChannelException("Channel closed unexpectedly");
-                exception.fillInStackTrace();
-                fireExceptionCaught(httpChildChannel, exception);
+                Channels.fireChannelAborted(httpChildChannel);
                 break;
             }
 
@@ -126,9 +123,7 @@ public class HttpChildChannelSource extends HttpChannelHandler {
             case CONTENT_COMPLETE:
                 break;
             default:
-                ChannelException exception = new ChannelException("Channel closed unexpectedly");
-                exception.fillInStackTrace();
-                fireExceptionCaught(httpChildChannel, exception);
+                Channels.fireChannelAborted(httpChildChannel);
                 break;
             }
         }

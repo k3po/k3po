@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.lang.internal.ast.value;
 
-import static java.lang.String.format;
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
 import javax.el.ValueExpression;
@@ -66,6 +64,6 @@ public class AstLocationExpression extends AstLocation {
 
     @Override
     protected void describe(StringBuilder buf) {
-        buf.append(format("(%s)%s", value.getExpectedType().getSimpleName(), value.getExpressionString()));
+        buf.append(value.getExpressionString());
     }
 }

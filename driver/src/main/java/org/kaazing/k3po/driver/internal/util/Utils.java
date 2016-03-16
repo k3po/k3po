@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.util;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -22,12 +21,11 @@ public final class Utils {
 
     public static String byteArrayToString(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
-        // int count = 0;
-        for (byte b : bytes) {
-            // if( count % 2 == 0 ) {
-            // sb.append( " 0x");
-            // }
-            sb.append(String.format("0x%02x ", b & 0xff));
+        for (int i = 0; i < bytes.length; i++) {
+            if (i > 0) {
+                sb.append(' ');
+            }
+            sb.append(String.format("0x%02x ", bytes[i] & 0xff));
         }
 
         return sb.toString();

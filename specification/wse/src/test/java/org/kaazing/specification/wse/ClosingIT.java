@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.specification.wse;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -40,7 +40,47 @@ public class ClosingIT {
     @Specification({
         "client.send.close/request",
         "client.send.close/response" })
-    public void shouldEchoClientCloseFrame() throws Exception {
+    public void shouldPerformClientInitiatedClose() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "client.send.close.no.reply.from.server/request",
+        "client.send.close.no.reply.from.server/response" })
+    public void clientShouldCloseIfServerDoesNotEchoCloseFrame() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "client.abruptly.closes.downstream/request",
+        "client.abruptly.closes.downstream/response" })
+    public void clientAbruptlyClosesDownstream() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "client.abruptly.closes.upstream/request",
+        "client.abruptly.closes.upstream/response" })
+    public void clientAbruptlyClosesUpstream() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "server.abruptly.closes.downstream/request",
+        "server.abruptly.closes.downstream/response" })
+    public void serverAbruptlyClosesDownstream() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "server.abruptly.closes.upstream/request",
+        "server.abruptly.closes.upstream/response" })
+    public void serverAbruptlyClosesUpstream() throws Exception {
         k3po.finish();
     }
 
@@ -48,7 +88,15 @@ public class ClosingIT {
     @Specification({
         "server.send.close/request",
         "server.send.close/response" })
-    public void shouldEchoServerCloseFrame() throws Exception {
+    public void shouldPerformServerInitiatedClose() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "server.send.close.no.reply.from.client/request",
+        "server.send.close.no.reply.from.client/response" })
+    public void serverShouldCloseIfClientDoesNotEchoCloseFrame() throws Exception {
         k3po.finish();
     }
 

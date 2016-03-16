@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.specification.control;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -63,6 +62,12 @@ public class ControlIT {
     @Test
     @TestSpecification({ "accept.finished.with.barriers", "connect.finished.with.barriers" })
     public void shouldPrepareStartThenFinishedWithBarriers() throws Exception {
+        robot.finish();
+    }
+
+    @Test
+    @TestSpecification({ "accept.finished.with.override.properties", "connect.finished.with.override.properties" })
+    public void shouldOverrideProperties() throws Exception {
         robot.finish();
     }
 }

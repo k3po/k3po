@@ -43,9 +43,8 @@ Copyright (c) 2008 Kaazing Corporation. All rights reserved.
     * [Server Close Requirements](#server-close-requirements)
   * [Browser Considerations](#browser-considerations)
     * [Content Type Sniffing](#content-type-sniffing)
-    * [Binary as Text](#binary-as-text)
-    * [Binary as Escaped Text](#binary-as-escaped-text)
-    * [Binary as Mixed Text](#binary-as-mixed-text)
+    * [Text Encoding](#text-encoding)
+    * [Text Escaped Encoding](#text-escaped-encoding)
     * [Garbage Collection](#garbage-collection)
   * [Proxy Considerations](#proxy-considerations)
     * [Buffering Proxies](#buffering-proxies)
@@ -117,7 +116,7 @@ These subprotocol names should follow the guidelines described by the WebSocket 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and 
 "OPTIONAL" in this document are to be interpreted as described in [[RFC 6455]][RFC6455].
 
-## WebSocket Emulatation URIs
+## WebSocket Emulation URIs
 
 The WebSocket Emulation protocol uses WebSocket protocol URIs, as defined by
 [RFC 6455, Section 3](https://tools.ietf.org/html/rfc6455#section-3).
@@ -129,13 +128,17 @@ The WebSocket Emulation protocol uses WebSocket protocol URIs, as defined by
 To establish an emulated WebSocket connection, a client makes an HTTP handshake request.
 
 * the HTTP handshake request uri scheme MUST be derived from the WebSocket URL by changing `ws` to `http`, or `wss` to `https`
-* the HTTP handshake request method MUST be `POST` 
+* the HTTP handshake request method MUST be `POST`
 * the HTTP handshake request uri path MUST be derived from the WebSocket URL by appending a suitable handshake encoding path 
-  suffix
-  * `/;e/cb` for binary encoding
-  * `/;e/ct` for text encoding  (see [Binary as Text](#binary-as-text))
-  * `/;e/cte` for escaped text encoding  (see [Binary as Escaped Text](#binary-as-escaped-text)) 
-  * `/;e/ctm` for mixed text encoding  (see [Binary as Mixed Text](#binary-as-mixed-text))
+  suffix which indicates the create encoding.
+  * For connections allowing binary and text frames (mixed):
+    * `/;e/cbm` for default (binary) encoding
+    * `/;e/ctm` for text encoding (see [Text Encoding](#text-encoding))
+    * `/;e/ctem` for text-escaped encoding  (see [Text Escaped Encoding](#text-escaped-encoding))
+  * For connections using binary websocket frames only:
+    * `/;e/cb` for binary encoding
+    * `/;e/ct` for text encoding  (see [Text Encoding](#text-encoding))
+    * `/;e/cte` for text-escaped encoding  (see [Text Escaped Encoding](#text-escaped-encoding))
 * the HTTP handshake request path query parameters MUST include all query parameters from the WebSocket URL
 
 Browser clients MUST send the `Origin` HTTP header with the source origin.
@@ -158,7 +161,7 @@ Clients MUST send an empty handshake request body.
 For example, given the WebSocket Emulation URL `ws://host.example.com:8080/path?query` and binary encoding.
 
 ```
-POST /path/;e/cb?query HTTP/1.1
+POST /path/;e/cbm?query HTTP/1.1
 Host: host.example.com:8080
 Origin: [source-origin]
 Content-Length: 0
@@ -239,7 +242,9 @@ process the handshake request to generate a handshake response.
 If the server determines that any of the following conditions are not met by the HTTP handshake request, then the server MUST
 send an HTTP response with a `4xx` status code, such as `400 Bad Request`.
 
-* the HTTP handshake request method MUST be `POST` 
+* the HTTP handshake request method SHOULD be `POST` with an empty request body
+* for compatibility with existing clients that are not fully compliant with this specification, the request body MAY not be empty
+* for compatibility with existing clients that are not fully compliant with this specification, the HTTP handshake request method MAY be `GET`
 * the HTTP handshake request header `X-WebSocket-Version` MUST have the value `wseb-1.0`
 * the HTTP handshake request header `X-Sequence-No` MUST be a valid sequence number. Please see [Request Sequencing](#request-sequencing) for details.
 * the HTTP handshake request header `X-WebSocket-Protocol` is OPTIONAL, and when present indicates a list of alternative 
@@ -286,7 +291,7 @@ original handshake request URL path.
 
 Once the emulated WebSocket connection is established, the client MUST send an HTTP request for downstream data
 transfer.
-* the HTTP downstream request method MUST be `GET` 
+* the HTTP downstream request method MUST be `GET`
 * the HTTP downstream request `Origin` header MUST be present with the source origin for browser clients
 * Clients MUST send the `X-Sequence-No` HTTP header. Please see [Request Sequencing](#request-sequencing) for details.
 
@@ -306,8 +311,7 @@ that the downstream HTTP response is ready to deliver emulated WebSocket frames 
 
 For any downstream HTTP response status code other than `200`, the client MUST fail the emulated WebSocket connection.
 
-For any binary downstream response content type other than `application/octet-stream`, the client MUST fail the emulated 
-WebSocket connection.
+in case of default (binary) create handshake encoding, if the downstream response content type is other than `application/octet-stream`, the client MUST fail the emulated WebSocket connection. For other handshake encodings, the client MUST also fail the emulated WebSocket connection if the downstream response content type is unexpected.
 
 ```
 HTTP/1.1 200 OK
@@ -317,33 +321,31 @@ Connection: close
 [emulated websocket frames]
 ```
 
-The downstream response MAY use `Connection: close` or `Transfer-Encoding: chunked` to provide a continuously streaming response
-to the client.
+The downstream response MAY use `Connection: close` or `Transfer-Encoding: chunked` to provide a continuously streaming response to the client.
 
 See [Buffering Proxies](#buffering-proxies) for further client requirements when attaching the downstream.
 
-If the downstream HTTP response transfer is complete, or else complete but does not end in a `RECONNECT` command frame, then the 
-client should consider this as unexpected connection loss for the emulated WebSocket connection.
+If the downstream HTTP response transfer is complete but does not end in a `RECONNECT` command frame, then the client should consider this as unexpected connection loss for the emulated WebSocket connection.
 
 If the client receives any frames on the HTTP downstream response after the `RECONNECT` frame, the client should fail the
 emulated WebSocket connection.
 
 ### Server Downstream Requirements
 
-When processing a binary HTTP downstream request the server generates an HTTP downstream response for the emulated WebSocket.
+When processing a binary HTTP downstream request the server generates an HTTP downstream response for the emulated WebSocket. For default (binary) encoding the response content type MUST be `application/octet-stream`.
 
-See [Binary as Text](#binary-as-text) for details of processing a text HTTP downstream request.
+See [Text Encoding](#text-encoding) for details of processing a text HTTP downstream request.
 
-See [Binary as Escaped Text](#binary-as-escaped-text) for details of processing an escaped text HTTP downstream request.
+See [Text Escaped Encoding](#text-escaped-encoding) for details of processing an escaped text HTTP downstream request.
 
-See [Binary as Mixed Text](#binary-as-mixed-text) for details of processing a mixed text HTTP downstream request.
+The Incoming downstream request is validated as follows:
 
-If the emulated WebSocket cannot be located for the HTTP downstream request path, then the server MUST generate an HTTP response
-with a `404 Not Found` status code.
-
-If `X-Sequence-No` header is missing in downstream request, then the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
-
-If the sequence number received in `X-Sequence-No` header is out of order or invalid, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. Please see [Request Sequencing](#request-sequencing) for details.
+* The request method SHOULD be `GET`. 
+* For compatibility with existing clients that are not fully compliant with this specification, the request method MAY be `POST` (with or without content, any content is ignored).
+* If the request method is neither `GET` nor `POST`, then the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
+* If the emulated WebSocket cannot be located for the HTTP downstream request path, then the server MUST generate an HTTP response with a `404 Not Found` status code.
+* If `X-Sequence-No` header is missing in downstream request, then the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
+* If the sequence number received in `X-Sequence-No` header is out of order or invalid, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. Please see [Request Sequencing](#request-sequencing) for details.
 
 If the `.ki` query parameter is present with value `p`, see [Buffering Proxies](#buffering-proxies) for further server 
 requirements when attaching the downstream.
@@ -363,10 +365,11 @@ attaching the downstream.
 
 ### Client Upstream Requirements
 
-Any upstream data frames are sent in the payload of a transient HTTP upstream request.
+Any upstream data frames are sent in the payload of one or more HTTP upstream requests.
 * the HTTP upstream request method MUST be `POST`
-* the HTTP upstream request `Content-Type` HTTP header MUST be `application/octet-stream`
+* the HTTP upstream request `Content-Type` HTTP header MUST be `application/octet-stream` for default (binary) create handshake encoding. See [Text Encoding](#text-encoding) and [Text Escaped Encoding](#text-escaped-encoding) for text encoding upstream requirements.
 * Clients MUST send the `X-Sequence-No` HTTP header. Please see [Request Sequencing](#request-sequencing) for details.
+* Clients MAY use request HTTP header `Transfer-Encoding: chunked` to provide a continuously streaming upstream to the server. If not, upstream requests MUST be completed in order to send data by specifying the `Content-Length` HTTP header and ending the request body with the RECONNECT command (see [Command Frames](#command-frames)).
 
 For example, with an upstream data transfer URL `http://host.example.com:8080/path/uofdbnreiodfkbqi`.
 ```
@@ -391,11 +394,9 @@ The client MUST NOT send another upstream request before the previous upstream r
 
 When processing a binary HTTP upstream request the server generates an HTTP upstream response for the emulated WebSocket.
 
-See [Binary as Text](#binary-as-text) for details of processing a text HTTP upstream request.
+See [Text Encoding](#text-encoding) for details of processing a text HTTP upstream request.
 
-See [Binary as Escaped Text](#binary-as-escaped-text) for details of processing an escaped text HTTP upstream request.
-
-See [Binary as Mixed Text](#binary-as-mixed-text) for details of processing a mixed text HTTP upstream request.
+See [Text Escaped Encoding](#text-escaped-encoding) for details of processing an escaped text HTTP upstream request.
 
 If the emulated WebSocket cannot be located for the HTTP upstream request path, then the server MUST generate an HTTP response
 with a `404 Not Found` status code.
@@ -408,7 +409,8 @@ If `X-Sequence-No` header is missing in upstream request, then the server MUST g
 If the sequence number received via `X-Sequence-No` header is out of order or invalid, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. Please see [Request Sequencing](#request-sequencing) for details.
 
 Otherwise, the server decodes the emulated WebSocket frames from the upstream request body and generates an HTTP upstream 
-response as follows.
+response. If the upstream request body is invalid, for example, it contains an invalid emulated WebSocket frame, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection. Otherwise the following applies:
+
 * the upstream HTTP response body MUST have status code `200` 
 * the upstream HTTP response body MUST be empty with a `Content-Length` header value of `0` 
 
@@ -426,12 +428,25 @@ The client requirements for data frame syntax are defined by
 The server requirements for data frame syntax are defined by 
 [Draft-76, Section 5.3](http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76#section-5.3).
 
+Binary frames are represented using frame type 0x80.
+
+Text frames may be represented in one of two formats:
+
+* Delimited: the frame type byte is 0x00, with the 0xFF delimiter marking end of data
+* Specified length: the frame type is 0x81, which, according to the rules of the above referenced sections of [Draft-76](http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76), implies that the length is specified at the start of frame. This particular frame type byte value is specific to the present specification. But it still conforms to Draft-76 since that specification only mentions the leading bit of the frame type byte and poses no constraints on the other bits. 
+
+Text frames on the downstream MUST use the specified length format. Text frames on the upstream usually use the specified length format, but MAY use the delimited format.
+
+The payload of all text frames MUST be UTF-8. 
+
+If the server receives a text frame that contains invalid UTF-8, the server MUST generate an HTTP response with a `400 Bad Request` status code and fail the WSE connection.
+
 ## Command Frames
 
 The frames used by an emulated WebSocket connection for upstream and downstream data transfer extend those defined by 
 [Draft-76](http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76), by adding a command frame.
 
-The text-based command frame has frame type `0x01`, which masks to `0x00` indicating text content.
+The text-based command frame has frame type `0x01`, which does not have the leading bit set so masks to `0x00` indicating text content.
 
 The content of each command frame is a sequence of bytes encoded as hex.  For example, the bytes `5` `B` (`0x35 0x42`) decode to 
 the hypothetical command hex code `0x5B`. 
@@ -517,7 +532,7 @@ initial downstream HTTP response is completed normally with a `RECONNECT` comman
 response body through any buffering proxy.
 
 Then, the response to the second downstream request either redirects the client to an encrypted location for secure streaming, 
-or fall back to long-polling as a last resort.
+or falls back to long-polling as a last resort.
 
 When long-polling, any frame sent to the client triggers a controlled reconnect in the same way as
 [Garbage Collection](#garbage-collection).  In this case, the `Content-Length` downstream HTTP response header SHOULD be
@@ -595,17 +610,17 @@ X-Content-Type-Nosniff: [long text string]
 [emulated websocket frames]
 ```
 
-### Binary as Text
+### Text Encoding
 The JavaScript execution environment provided by browsers did not historically have support for binary data types, so all HTTP 
-responses accessible to JavaScript were described as strings.
+responses accessible to JavaScript were described as strings. For text encoding, the create handshake uses encoded path suffix `/;e/ctm` (or `/;e/ct` if only binary WebSocket frames are to be used).
 
 ```
-POST /path/;e/ct HTTP/1.1
+POST /path/;e/ctm HTTP/1.1
 Host: host.example.com:8080
 Origin: [source-origin]
 Content-Length: 0
 ```
-Here, the handshake request location path uses `/;e/ct` instead
+Here, the handshake request location path uses `/;e/ctm` to signal text encoding
 
 ```
 HTTP/1.1 201 Created
@@ -617,7 +632,7 @@ http://host.example.com:8080/path/uofdbnreiodfkbqi
 https://host.example.com:8443/path/kwebfbkjwehkdsfa
 ```
 
-The binary-as-text downstream HTTP response MUST have content type `text/plain;charset=windows-1252`.
+The downstream HTTP response MUST have content type `text/plain;charset=windows-1252`.
 ```
 GET /path/kwebfbkjwehkdsfa HTTP/1.1
 Host: host.example.com:8443
@@ -635,30 +650,66 @@ because each character is represented by a single byte and exactly 256 distinct 
 character codes match their byte representations when processed by the client.  The remaining character codes can be mapped to
 the corresponding binary representations accordingly.
 
-### Binary as Escaped Text
+IE8+ `XDomainRequest` can distinguish all 256 byte-as-character-code values, for a downstream response body with content-type 
+`text/plain;charset=windows-1252`.
+
+However, the `XDomainRequest` `POST` request cannot specify content-type, and so `text/plain;charset=UTF-8` is assumed, but a bug remains where the `\0` (NUL) character cannot be included in the `POST` body since the text is then clipped at the `\0`.
+
+Rather than escaping the `\0` (NUL) byte-as-character-code, the client MAY use character code `256` to represent zero, so the
+client MAY send a `\u0100` character for each `\u0000` character (in UTF-8 `\u0100` is `0xC4 0x80`)
+
+The server MUST decode the binary-as-mixed-text upstream such that each character codepoint is computed `mod 0x0100` to determine each originally intended byte value.
+
+The upstream HTTP request MUST have content type `text/plain;charset=utf-8`. The upstream request body MUST contain one or more valid emulated WebSocket frames encoded into valid UTF-8 by transforming each byte as follows:
+
+* If the leading (most significant) bit is set, then the byte MUST the encoded as two bytes, in the form `1100 00?? 10?? ????` where `?` represents one bit of the original byte
+* If the leading bit is not set, then the byte is encoded as is
+* If the byte value is `0x00` it MAY be encoded as `0xC4 0x80` (instead of 0x00)
+
+Note that this implies that multibyte UTF-8 characters inside an emulated text frame will be further encoded (each byte will become two).
+
+#### Example
+
+The client wishes to send a specified length text frame with the payload being the four characters "ABC€". The last character is  the Euro sign, Unicode code point U+20AC, which is encoded in UTF-8 as 0xE2 0x82 0xAC. The frame before text encoding is as follows: 
+
+`0x81 0x04 0x41 0x42 0x43 0xE2 0x82 0xAC`
+
+The text encoded form which must be sent on the wire would be:
+
+`0xC2 0x81 0x04 0x41 0x42 0x43 0xC3 0xA2 0xC2 0x82 0xC2 0xAC`
+
+### Text Escaped Encoding
+
+This follows the same rules as text encoding except that certain special characters must be escaped.
 
 Some browsers have difficulty representing a few specific character codes in the HTTP response text.  For example, IE6+ will 
 interpret character code zero as end-of-response, truncating any body content following that character.  IE6+ also automatically
 canonicalizes carriage return and linefeed characters as all carriage returns.  Conversely, IE9 strict document mode 
 canonicalizes carriage return and linefeed characters as all linefeeds.
 
-Therefore, the server MUST escape these characters must as follows:
+Therefore, the client and server MUST escape these characters as follows (in both upstream and downstream):
 
-| Byte Value | Character | Escaped Byte Sequence | Escaped Characters |
-|------------|-----------|-----------------------|--------------------|
-| 0x00       | \0        | 0x7f 0x3f             | DEL 0              |
-| 0x0d       | \r        | 0x7f 0x72             | DEL r              |
-| 0x0a       | \n        | 0x7f 0x63             | DEL n              |
-| 0x7f       | DEL       | 0x7f 0x7f             | DEL DEL            |
+| Byte Value | Character | UTF-8 Escaped Byte Sequence | Windows-1252 Escaped Byte Sequence | Escaped Characters |
+|------------|-----------|-----------------------------|------------------------------------|--------------------|
+| 0x00       | \0        | 0x7f 0x00                   | 0x7f 0x30                          | DEL 0              |
+| 0x0d       | \r        | 0x7f 0x72                   | 0x7f 0x72                          | DEL r              |
+| 0x0a       | \n        | 0x7f 0x6e                   | 0x7f 0x6e                          | DEL n              |
+| 0x7f       | DEL       | 0x7f 0x7f                   | 0x7f 0x7f                          | DEL DEL            |
 
-For clients requiring escaped text responses, the initial handshake uses a different derived location path.
+Reference: [utf-8](https://en.wikipedia.org/wiki/UTF-8), [windows-1252](https://en.wikipedia.org/wiki/Windows-1252)
+
+The Websocket frame length must calculated prior to escaping the bytes.  Thus a frame with a delivered (already escaped)
+payload of `0x7f 0x7f` has a size of 1.
+
+For clients requiring escaped text upstream and downstream, the create handshake uses encoded path suffix if`/;e/ctem` (or `/;e/cte` if only binary WebSocket frames are to be used)
+
 ```
-POST /path/;e/cte HTTP/1.1
+POST /path/;e/ctem HTTP/1.1
 Host: host.example.com:8080
 Origin: [source-origin]
 Content-Length: 0
 ```
-Here, the handshake request location path uses `/;e/cte` instead
+
 ```
 HTTP/1.1 201 Created
 Content-Type: text/plain;charset=utf-8
@@ -668,7 +719,7 @@ http://host.example.com:8080/path/uofdbnreiodfkbqi
 https://host.example.com:8443/path/kwebfbkjwehkdsfa
 ```
 
-The binary-as-escaped-text downstream HTTP response MUST have content type `text/plain;charset=windows-1252`.
+The text-escaped encoding downstream HTTP response MUST have content type `text/plain;charset=windows-1252`.
 ```
 GET /path/kwebfbkjwehkdsfa HTTP/1.1
 Host: host.example.com:8443
@@ -682,53 +733,7 @@ Connection: close
 [emulated websocket frames]
 ```
 
-However, the client MUST also unescape the `DEL 0`, `DEL r`, `DEL n` and `DEL DEL` escaped character sequences to
-get the logical bytes transfered.
-
-### Binary as Mixed Text
-
-For clients requiring mixed text responses, the initial handshake uses a different derived location path.
-```
-POST /path/;e/ctm HTTP/1.1
-Host: host.example.com:8080
-Origin: [source-origin]
-Content-Length: 0
-```
-Here, the handshake request location path uses `/;e/ctm` instead
-```
-HTTP/1.1 201 Created
-Content-Type: text/plain;charset=utf-8
-Content-Length: 105
-
-http://host.example.com:8080/path/uofdbnreiodfkbqi
-https://host.example.com:8443/path/kwebfbkjwehkdsfa
-```
-
-The binary-as-mixed-text downstream HTTP response MUST have content type `text/plain;charset=windows-1252`.
-```
-GET /path/kwebfbkjwehkdsfa HTTP/1.1
-Host: host.example.com:8443
-Origin: [source-origin]
-```
-```
-HTTP/1.1 200 OK
-Content-Type: text/plain;charset=windows-1252
-Connection: close
-
-[emulated websocket frames]
-```
-
-IE8+ `XDomainRequest` can distinguish all 256 byte-as-character-code values, for a downstream response body with content-type 
-`text/plain;charset=windows-1252`.
-
-However, the `XDomainRequest` `POST` request cannot specify content-type, and so `text/plain;charset=UTF-8` is assumed, but a
-bug remains where the `\0` (NUL) character cannot be included in the `POST` body since the text is then clipped at the `\0`.
-
-Rather than escaping the `\0` (NUL) byte-as-character-code, the client MUST use character code `256` to represent zero, so the
-client MUST send a `\u0100` character for each `\u0000` character.
-
-The server MUST decode the binary-as-mixed-text upstream such that each character codepoint is computed `mod 0x0100` to determine 
-each originally intended byte value.
+When reading data from the other end, the client and server MUST unescape the `DEL 0`, `DEL r`, `DEL n` and `DEL DEL` escaped character sequences, and decode the UTF-8 format in the server case, to get the logical bytes transfered. This MUST be done *before* decoding the HTTP request or response body into WebSocket frames.
 
 ### Garbage Collection
 Most HTTP client runtimes such as Flash, Silverlight and Java have a streaming capable HTTP response implementation, meaning that

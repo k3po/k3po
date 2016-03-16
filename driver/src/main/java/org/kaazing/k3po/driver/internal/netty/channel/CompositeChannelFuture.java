@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.netty.channel;
+
+import static java.util.Collections.unmodifiableCollection;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,9 +48,9 @@ public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChan
     private final AtomicInteger unnotified = new AtomicInteger();
     private volatile boolean constructionFinished;
     private final Collection<E> kids;
-    private int successCount;
-    private int failedCount;
-    private int cancelledCount;
+    private volatile int successCount;
+    private volatile int failedCount;
+    private volatile int cancelledCount;
     private final boolean failFast;
 
     public CompositeChannelFuture(Channel channel, Collection<E> kids) {
@@ -61,11 +62,11 @@ public class CompositeChannelFuture<E extends ChannelFuture> extends DefaultChan
         super(channel, false);
 
         this.failFast = failFast;
-        this.kids = new ArrayList<>(kids);
+        this.kids = unmodifiableCollection(new ArrayList<>(kids));
 
         for (E k : kids) {
-            k.addListener(listener);
             unnotified.incrementAndGet();
+            k.addListener(listener);
         }
         /*
          * Note that a composite with no children will be automatically set to

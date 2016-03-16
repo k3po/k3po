@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.lang.internal.ast.builder;
 
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
@@ -84,6 +83,16 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
     @Override
     public AstCloseNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addCloseCommand() {
         return new AstCloseNodeBuilder.StreamNested<>(this);
+    }
+
+    @Override
+    public AstAbortNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addAbortCommand() {
+        return new AstAbortNodeBuilder.StreamNested<>(this);
+    }
+
+    @Override
+    public AstAbortedNodeBuilder.StreamNested<AstAcceptableNodeBuilder> addAbortedEvent() {
+        return new AstAbortedNodeBuilder.StreamNested<>(this);
     }
 
     @Override
@@ -218,6 +227,16 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         }
 
         @Override
+        public AstAbortNodeBuilder.StreamNested<ScriptNested<R>> addAbortCommand() {
+            return new AstAbortNodeBuilder.StreamNested<>(this);
+        }
+
+        @Override
+        public AstAbortedNodeBuilder.StreamNested<ScriptNested<R>> addAbortedEvent() {
+            return new AstAbortedNodeBuilder.StreamNested<>(this);
+        }
+
+        @Override
         public AstReadAwaitNodeBuilder.StreamNested<ScriptNested<R>> addReadAwaitBarrier() {
             return new AstReadAwaitNodeBuilder.StreamNested<>(this);
         }
@@ -345,6 +364,16 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
         @Override
         public AstCloseNodeBuilder.StreamNested<AcceptNested<R>> addCloseCommand() {
             return new AstCloseNodeBuilder.StreamNested<>(this);
+        }
+
+        @Override
+        public AstAbortNodeBuilder.StreamNested<AcceptNested<R>> addAbortCommand() {
+            return new AstAbortNodeBuilder.StreamNested<>(this);
+        }
+
+        @Override
+        public AstAbortedNodeBuilder.StreamNested<AcceptNested<R>> addAbortedEvent() {
+            return new AstAbortedNodeBuilder.StreamNested<>(this);
         }
 
         @Override

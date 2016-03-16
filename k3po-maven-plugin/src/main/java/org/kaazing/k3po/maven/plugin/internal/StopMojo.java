@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.maven.plugin.internal;
 
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.System.identityHashCode;
+import static org.apache.maven.plugins.annotations.LifecyclePhase.POST_INTEGRATION_TEST;
+import static org.apache.maven.plugins.annotations.ResolutionScope.TEST;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Mojo;
 import org.kaazing.k3po.driver.internal.RobotServer;
 
-/**
- * Stop K3PO
- *
- * @goal stop
- * @phase post-integration-test
- *
- * @requiresDependencyResolution test
- */
+@Mojo(name = "stop", defaultPhase = POST_INTEGRATION_TEST, requiresDependencyResolution = TEST)
 public class StopMojo extends AbstractMojo {
 
     protected void executeImpl() throws MojoExecutionException {

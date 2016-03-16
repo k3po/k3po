@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 
 import static java.lang.String.format;
@@ -72,7 +71,7 @@ public class ReadExactTextDecoder extends MessageDecoder {
     @Override
     public String toString() {
         // note: assumes charset UTF-8
-        return expected.toString(UTF_8);
+        return String.format("\"%s\"", expected.toString(UTF_8));
     }
 
     // unit tests

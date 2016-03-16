@@ -1,7 +1,0 @@
-connect tcp://localhost:8080
-connected
-write "client data 1"
-read "server data 1"
-write "client data 2"
-read "server data 2"
-

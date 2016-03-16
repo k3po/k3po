@@ -1,3 +1,19 @@
+#
+# Copyright 2007-2015, Kaazing Corporation. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 property key ${ws:handshakeKey()}
 property writeMask ${ws:randomBytes(4)}
 
@@ -18,24 +34,27 @@ read version "HTTP/1.1"
 read header "Upgrade" /(?i:websocket)/
 read header "Connection" /(?i:Upgrade)/
 read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
-# The 4 control bytes for ping-pong extension are 0x01010102:
-read header "Sec-WebSocket-Extensions" "x-kaazing-ping-pong; 01010102"
+read header "Sec-WebSocket-Extensions" /x-kaazing-ping-pong; *(?<controlBytes>[a-fA-F0-9]{8})/
 
 # Send a text message starting with the control bytes and followed by "ABC" 
 write [0x81 0x84] ${writeMask}
 write option mask ${writeMask}
-write [0x01 0x01 0x01 0x02]
+write ${pp:parseHexString(controlBytes)}
 write option mask [0x00 0x00 0x00 0x00]
 
 write [0x81 0x87] ${writeMask}
 write option mask ${writeMask}
-write [0x01 0x01 0x01 0x02]
+write ${pp:parseHexString(controlBytes)}
 write [0x41 0x42 0x43]
 write option mask [0x00 0x00 0x00 0x00]
 
 # Expect echoed response, starting with the escape frame
-read [0x81 0x04 0x01 0x01 0x01 0x02]
-read [0x81 0x07 0x01 0x01 0x01 0x02]
+read [0x81 0x04]
+read ${pp:parseHexString(controlBytes)}
+
+read [0x81 0x07]
+read ${pp:parseHexString(controlBytes)}
+
 read "ABC"
 
 # Do clean close

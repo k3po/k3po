@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior.visitor;
 
 import static java.lang.String.format;
@@ -79,6 +78,7 @@ import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpStatusDe
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpStatusEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpVersionDecoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpVersionEncoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.command.AbortHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.CloseHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.DisconnectHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.FlushHandler;
@@ -89,6 +89,7 @@ import org.kaazing.k3po.driver.internal.behavior.handler.command.UnbindHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteConfigHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteOptionOffsetHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.event.AbortedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.BoundHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ChildClosedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ChildOpenedHandler;
@@ -107,6 +108,8 @@ import org.kaazing.k3po.driver.internal.resolver.LocationResolver;
 import org.kaazing.k3po.driver.internal.resolver.OptionsResolver;
 import org.kaazing.k3po.driver.internal.resolver.ServerBootstrapResolver;
 import org.kaazing.k3po.lang.internal.RegionInfo;
+import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
@@ -588,6 +591,21 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     }
 
     @Override
+    public Configuration visit(AstAbortNode node, State state) throws Exception {
+
+        RegionInfo regionInfo = node.getRegionInfo();
+
+        AbortHandler handler = new AbortHandler();
+        handler.setRegionInfo(regionInfo);
+
+        Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+        String handlerName = String.format("abort#%d", pipelineAsMap.size() + 1);
+        pipelineAsMap.put(handlerName, handler);
+
+        return state.configuration;
+    }
+
+    @Override
     public Configuration visit(AstChildOpenedNode node, State state) throws Exception {
 
         RegionInfo regionInfo = node.getRegionInfo();
@@ -826,6 +844,21 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("closed#%d", pipelineAsMap.size() + 1);
+        pipelineAsMap.put(handlerName, handler);
+
+        return state.configuration;
+    }
+
+    @Override
+    public Configuration visit(AstAbortedNode node, State state) throws Exception {
+
+        RegionInfo regionInfo = node.getRegionInfo();
+
+        AbortedHandler handler = new AbortedHandler();
+        handler.setRegionInfo(regionInfo);
+
+        Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+        String handlerName = String.format("aborted#%d", pipelineAsMap.size() + 1);
         pipelineAsMap.put(handlerName, handler);
 
         return state.configuration;

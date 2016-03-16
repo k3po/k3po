@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.maven.plugin.internal;
 
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
-import static java.lang.System.identityHashCode;
 import static org.apache.maven.plugins.annotations.LifecyclePhase.PRE_INTEGRATION_TEST;
 import static org.apache.maven.plugins.annotations.ResolutionScope.TEST;
 import static org.jboss.netty.logging.InternalLoggerFactory.setDefaultFactory;
@@ -30,8 +28,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -97,11 +97,14 @@ public class StartMojo extends AbstractMojo {
             server.start();
             float duration = (currentTimeMillis() - checkpoint) / 1000.0f;
             if (log.isDebugEnabled()) {
+                Map<?, ?> pluginsAsMap = project.getBuild().getPluginsAsMap();
+                Plugin plugin = (Plugin) pluginsAsMap.get("org.kaazing:k3po-maven-plugin");
+                String version = (plugin != null) ? plugin.getVersion() : "unknown";
                 if (!daemon) {
-                    log.debug(format("K3PO [%08x] started in %.3fsec (CTRL+C to stop)", identityHashCode(server), duration));
+                    log.debug(format("K3PO [%s] started in %.3fsec (CTRL+C to stop)", version, duration));
                 }
                 else {
-                    log.debug(format("K3PO [%08x] started in %.3fsec", identityHashCode(server), duration));
+                    log.debug(format("K3PO [%s] started in %.3fsec", version, duration));
                 }
             } else {
                 if (!daemon) {

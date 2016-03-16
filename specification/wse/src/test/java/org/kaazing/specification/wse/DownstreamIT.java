@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.specification.wse;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -38,8 +37,8 @@ public class DownstreamIT {
 
     @Test
     @Specification({
-        "binary/response.header.content.type.has.unexpected.value/downstream.request",
-        "binary/response.header.content.type.has.unexpected.value/downstream.response" })
+        "response.header.content.type.has.unexpected.value/downstream.request",
+        "response.header.content.type.has.unexpected.value/downstream.response" })
     public void shouldCloseConnectionWhenBinaryDownstreamResponseContentTypeHasUnexpectedValue()
             throws Exception {
         k3po.finish();
@@ -47,8 +46,8 @@ public class DownstreamIT {
 
     @Test
     @Specification({
-        "binary/response.status.code.not.200/downstream.request",
-        "binary/response.status.code.not.200/downstream.response" })
+        "response.status.code.not.200/downstream.request",
+        "response.status.code.not.200/downstream.response" })
     public void shouldCloseConnectionWhenBinaryDownstreamResponseStatusCodeNot200()
             throws Exception {
         k3po.finish();
@@ -56,8 +55,8 @@ public class DownstreamIT {
 
     @Test
     @Specification({
-        "binary/server.send.frame.after.reconnect/downstream.request",
-        "binary/server.send.frame.after.reconnect/downstream.response" })
+        "server.send.frame.after.reconnect/downstream.request",
+        "server.send.frame.after.reconnect/downstream.response" })
     public void shouldCloseConnectionWhenBinaryDownstreamResponseContainsFrameAfterReconnectFrame()
             throws Exception {
         k3po.finish();
@@ -65,33 +64,71 @@ public class DownstreamIT {
 
     @Test
     @Specification({
-        "binary/request.method.not.get/downstream.request",
-        "binary/request.method.not.get/downstream.response" })
-    public void shouldRespondWithBadRequestWhenBinaryDownstreamRequestMethodNotGet()
+        "request.header.origin/downstream.request",
+        "request.header.origin/downstream.response" })
+    public void shouldConnectWithDownstreamRequestOriginHeaderSet()
             throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "binary/request.out.of.order/downstream.request",
-        "binary/request.out.of.order/downstream.response" })
+        "request.method.post/downstream.request",
+        "request.method.post/downstream.response" })
+    // Server only test. Spec compliant clients ALWAYS use GET.
+    public void serverShouldTolerateDownstreamRequestMethodPost()
+            throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "request.method.post.with.body/downstream.request",
+        "request.method.post.with.body/downstream.response" })
+    // Server only test. Spec compliant clients ALWAYS use GET.
+    public void serverShouldTolerateDownstreamRequestMethodPostWithBody()
+            throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "request.method.not.get.or.post/downstream.request",
+        "request.method.not.get.or.post/downstream.response" })
+    public void shouldRespondWithBadRequestWhenDownstreamRequestMethodNotGetOrPost()
+            throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "request.out.of.order/downstream.request",
+        "request.out.of.order/downstream.response" })
     public void shouldCloseConnectionWhenBinaryDownstreamRequestIsOutOfOrder() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "binary/subsequent.request.out.of.order/request",
-        "binary/subsequent.request.out.of.order/response" })
+        "subsequent.request.out.of.order/request",
+        "subsequent.request.out.of.order/response" })
     public void shouldCloseConnectionWhenSubsequentBinaryDownstreamRequestIsOutOfOrder() throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "binary.as.escaped.text/response.header.content.type.has.unexpected.value/downstream.request",
-        "binary.as.escaped.text/response.header.content.type.has.unexpected.value/downstream.response" })
+        "text.encoding/response.header.content.type.has.unexpected.value/downstream.request",
+        "text.encoding/response.header.content.type.has.unexpected.value/downstream.response" })
+    public void shouldCloseConnectionWhenTextDownstreamResponseContentTypeHasUnexpectedValue()
+            throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "text.escaped.encoding/response.header.content.type.has.unexpected.value/downstream.request",
+        "text.escaped.encoding/response.header.content.type.has.unexpected.value/downstream.response" })
     public void shouldCloseConnectionWhenEscapedTextDownstreamResponseContentTypeHasUnexpectedValue()
             throws Exception {
         k3po.finish();
@@ -99,18 +136,27 @@ public class DownstreamIT {
 
     @Test
     @Specification({
-        "binary.as.mixed.text/response.header.content.type.has.unexpected.value/downstream.request",
-        "binary.as.mixed.text/response.header.content.type.has.unexpected.value/downstream.response" })
-    public void shouldCloseConnectionWhenMixedTextDownstreamResponseContentTypeHasUnexpectedValue()
+        "binary.frames.only/binary.encoding/response.header.content.type.has.unexpected.value/downstream.request",
+        "binary.frames.only/binary.encoding/response.header.content.type.has.unexpected.value/downstream.response" })
+    public void shouldCloseConnectionWhenBinaryFramesOnlyBinaryDownstreamResponseContentTypeHasUnexpectedValue()
             throws Exception {
         k3po.finish();
     }
 
     @Test
     @Specification({
-        "binary.as.text/response.header.content.type.has.unexpected.value/downstream.request",
-        "binary.as.text/response.header.content.type.has.unexpected.value/downstream.response" })
-    public void shouldCloseConnectionWhenTextDownstreamResponseContentTypeHasUnexpectedValue()
+        "binary.frames.only/text.encoding/response.header.content.type.has.unexpected.value/downstream.request",
+        "binary.frames.only/text.encoding/response.header.content.type.has.unexpected.value/downstream.response" })
+    public void shouldCloseConnectionWhenBinaryFramesOnlyTextDownstreamResponseContentTypeHasUnexpectedValue()
+            throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "binary.frames.only/text.escaped.encoding/response.header.content.type.has.unexpected.value/downstream.request",
+        "binary.frames.only/text.escaped.encoding/response.header.content.type.has.unexpected.value/downstream.response" })
+    public void shouldCloseConnectionWhenBinaryFramesOnlyTextEscapedDownstreamResponseContentTypeHasUnexpectedValue()
             throws Exception {
         k3po.finish();
     }

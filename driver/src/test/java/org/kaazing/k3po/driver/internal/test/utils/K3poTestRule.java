@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.test.utils;
 
 import static java.lang.String.format;
@@ -94,9 +93,9 @@ public class K3poTestRule extends Verifier {
     }
 
     /**
-     * Notify barrier to fire
-     * @param string
-     * @throws Exception
+     * Notify barrier to fire.
+     * @param barrierName is the name of the barrier
+     * @throws Exception when barrier is failed to notify
      */
     public void notifyBarrier(String barrierName) throws Exception {
         k3poTestStatement.notifyBarrier(barrierName);
