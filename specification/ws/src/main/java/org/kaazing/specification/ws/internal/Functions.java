@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.specification.ws.internal;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -34,17 +33,9 @@ public final class Functions {
     private static final int MAX_ACCEPTABLE_HEADER_LENGTH = 200;
 
     @Function
-    public static String loginBase64Encoder(String login) {
+    public static String base64Encode(String login) {
         byte[] bytes = login.getBytes();
-        return bytesToString(Base64.encode(bytes));
-    }
-
-    private static String bytesToString(byte[] x) {
-        String answer = "";
-        for (byte aX : x) {
-            answer += (char) aX;
-        }
-        return answer;
+        return new String(Base64.encode(bytes));
     }
 
     @Function

@@ -1,5 +1,5 @@
 property key ${ws:handshakeKey()}
-property validCredentials ${ws:loginBase64Encoder("joe:welcome")}
+property validCredentials ${ws:base64Encode("joe:welcome")}
 property authHeader ${ws:append("Basic ", validCredentials)}
 
 accept http://localhost:8080/echoAuth
@@ -21,11 +21,7 @@ write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
 
-write notify HANDSHAKE_COMPLETE
-
 # clean close
 write [0x88 0x02 0x03 0xe8]
-
-write notify CLOSE_RECEIVED
 
 read [0x88 0x02 0x03 0xe8]

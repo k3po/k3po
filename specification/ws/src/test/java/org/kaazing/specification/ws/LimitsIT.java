@@ -74,7 +74,8 @@ public class LimitsIT {
     @Specification({
         "should.fail.max.lifetime.exceeded/handshake.request.and.frame",
         "should.fail.max.lifetime.exceeded/handshake.response.and.frame" })
-    public void shouldFailSendingMessageAfterSessionLifetimeIsUp() throws Exception {
+    public void shouldCloseWebSocketConnectionAfterSessionLifetimeIsUp() throws Exception {
         k3po.finish();
     }
+
 }

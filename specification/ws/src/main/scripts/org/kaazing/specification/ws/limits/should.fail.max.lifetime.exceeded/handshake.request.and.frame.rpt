@@ -1,5 +1,5 @@
 property key ${ws:handshakeKey()}
-property validCredentials ${ws:loginBase64Encoder("joe:welcome")}
+property validCredentials ${ws:base64Encode("joe:welcome")}
 property authHeader ${ws:append("Basic ", validCredentials)}
 
 connect http://localhost:8080/echoAuth
