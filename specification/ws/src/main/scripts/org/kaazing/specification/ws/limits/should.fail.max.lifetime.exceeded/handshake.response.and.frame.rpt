@@ -14,7 +14,10 @@
 # limitations under the License.
 #
 
-property location 'http://localhost:8080/echo'
+property location 'http://localhost:8080/echoAuth'
+property key ${ws:handshakeKey()}
+property validCredentials ${ws:base64Encode("joe:welcome")}
+property authHeader ${ws:append("Basic ", validCredentials)}
 
 accept ${location}
 accepted
@@ -27,6 +30,7 @@ read header "Upgrade" /(?i:websocket)/
 read header "Connection" /(?i:Upgrade)/
 read header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
 read header "Sec-WebSocket-Version" "13"
+read header "Authorization" ${authHeader}
 
 write status "101" "Switching Protocols"
 write version "HTTP/1.1"
@@ -34,10 +38,7 @@ write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
 
-read [0x82 0xff 0x00 0x00 0x00 0x00 0x00 0x02 0x00 0x01] ([0..4] :readMask)
+# clean close
+write [0x88 0x02 0x03 0xe8]
 
-read option mask ${readMask}
-read ([0..131073] :server131073)
-read option mask [0x00 0x00 0x00 0x00]
-
-write [0x88 0x02 0x03 0xf1]
+read [0x88 0x02 0x03 0xe8]
