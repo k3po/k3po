@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
+import org.kaazing.k3po.junit.annotation.ScriptProperty;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
@@ -42,18 +43,21 @@ public class AmqpIndenityTcpIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     @Test
+    @ScriptProperty({ "connectLocation \"tcp://localhost:8011\"", "acceptLocation \"tcp://localhost:8011\"" })
     @Specification({ "open/tcp.connect", "open/identity/request", "open/tcp.accept", "open/identity/response" })
     public void connectWithIdentity() throws Exception {
         k3po.finish();
     }
 
     @Test
+    @ScriptProperty({ "connectLocation \"tcp://localhost:8011\"", "acceptLocation \"tcp://localhost:8011\"" })
     @Specification({ "open/tcp.connect", "open/noidentity/request", "open/tcp.accept",  "open/noidentity/response" })
     public void connectWithNoIdentity() throws Exception {
         k3po.finish();
     }
 
     @Test
+    @ScriptProperty({ "connectLocation \"tcp://localhost:8001\"", "acceptLocation \"tcp://localhost:8001\"" })
     @Specification({ "open/tcp.connect", "open/identity/request", "close/request",
         "open/tcp.accept", "open/identity/response", "close/response" })
     public void closeConnection() throws Exception {

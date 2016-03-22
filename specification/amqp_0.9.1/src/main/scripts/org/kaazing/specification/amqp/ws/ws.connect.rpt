@@ -15,12 +15,12 @@
 #
 
 
-property location 'http://localhost:8001/amqp'
+property connectLocation 'http://localhost:8001/amqp'
 property key ${ws:handshakeKey()}
 property writeMask ${ws:randomBytes(4)}
 property client125 ${ws:randomBytes(125)}
 
-connect ${location}
+connect ${connectLocation}
 connected
 
 write method "GET"

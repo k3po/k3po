@@ -14,5 +14,6 @@
 # limitations under the License.
 #
 
-connect tcp://127.0.0.1:8011
+property connectLocation "tcp://localhost:8010"
+connect ${connectLocation}
 connected

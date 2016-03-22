@@ -14,8 +14,8 @@
 # limitations under the License.
 #
 
-property location 'http://localhost:8001/amqp'
-accept ${location}
+property acceptLocation 'http://localhost:8001/amqp'
+accept ${acceptLocation}
 accepted
 connected
 
@@ -26,6 +26,8 @@ read header "Upgrade" /(?i:websocket)/
 read header "Connection" /(?i:Upgrade)/
 read header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
 read header "Sec-WebSocket-Version" "13"
+read header "Authorization" "Basic am9lOndlbGNvbWU="
+
 
 write status "101" "Switching Protocols"
 write version "HTTP/1.1"
