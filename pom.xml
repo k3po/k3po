@@ -32,6 +32,7 @@
         <module>junit</module>
         <module>examples</module>
         <module>k3po.pcap.converter</module>
+        <module>specification/amqp_0.9.1</module>
         <module>specification/amqp_1_0.jms</module>
         <module>specification/bbosh</module>
         <module>specification/http</module>
