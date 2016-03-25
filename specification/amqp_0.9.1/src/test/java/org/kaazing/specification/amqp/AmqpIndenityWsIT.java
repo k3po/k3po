@@ -35,7 +35,7 @@ import org.kaazing.k3po.junit.rules.K3poRule;
  */
 public class AmqpIndenityWsIT {
 
-    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/amqp");
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/amqp/ws");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -44,23 +44,21 @@ public class AmqpIndenityWsIT {
 
     @Test
     @ScriptProperty({ "connectLocation \"http://localhost:8001/amqp\"", "acceptLocation \"http://localhost:8001/amqp\"" })
-    @Specification({ "ws/ws.connect", "tcp/open/identity/request",
-                    "ws/ws.accept", "tcp/open/identity/response" })
+    @Specification({ "open/identity/request", "open/identity/response" })
     public void connectWithIdentity() throws Exception {
         k3po.finish();
     }
 
     @Test
     @ScriptProperty({ "connectLocation \"http://localhost:8001/amqp\"", "acceptLocation \"http://localhost:8001/amqp\"" })
-    @Specification({ "ws/ws.connect", "tcp/open/noidentity/request",
-                    "ws/ws.accept",  "tcp/open/noidentity/response" })
+    @Specification({ "open/noidentity/request",  "open/noidentity/response" })
     public void connectWithNoIdentity() throws Exception {
         k3po.finish();
     }
 
     @Test
-    @Specification({ "ws/ws.connect", "ws/open/identity/request", "ws/close/request",
-                    "ws/ws.accept", "ws/open/identity/response", "ws/close/response" })
+    @Specification({ "open/identity/request", "close/request",
+                    "open/identity/response", "close/response" })
     public void closeConnection() throws Exception {
         k3po.finish();
     }

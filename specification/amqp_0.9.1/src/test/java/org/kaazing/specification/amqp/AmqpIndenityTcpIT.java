@@ -44,22 +44,22 @@ public class AmqpIndenityTcpIT {
 
     @Test
     @ScriptProperty({ "connectLocation \"tcp://localhost:8011\"", "acceptLocation \"tcp://localhost:8011\"" })
-    @Specification({ "open/tcp.connect", "open/identity/request", "open/tcp.accept", "open/identity/response" })
+    @Specification({ "open/identity/request", "open/identity/response" })
     public void connectWithIdentity() throws Exception {
         k3po.finish();
     }
 
     @Test
     @ScriptProperty({ "connectLocation \"tcp://localhost:8011\"", "acceptLocation \"tcp://localhost:8011\"" })
-    @Specification({ "open/tcp.connect", "open/noidentity/request", "open/tcp.accept",  "open/noidentity/response" })
+    @Specification({ "open/noidentity/request", "open/noidentity/response" })
     public void connectWithNoIdentity() throws Exception {
         k3po.finish();
     }
 
     @Test
     @ScriptProperty({ "connectLocation \"tcp://localhost:8001\"", "acceptLocation \"tcp://localhost:8001\"" })
-    @Specification({ "open/tcp.connect", "open/identity/request", "close/request",
-        "open/tcp.accept", "open/identity/response", "close/response" })
+    @Specification({ "open/identity/request", "close/request",
+                    "open/identity/response", "close/response" })
     public void closeConnection() throws Exception {
         k3po.finish();
     }
