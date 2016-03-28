@@ -19,8 +19,6 @@ property connectLocation "http://localhost:8001/amqp"
 property key ${ws:handshakeKey()}
 property writeMask ${ws:randomBytes(4)}
 property client125 ${ws:randomBytes(125)}
-property validCredentials ${ws:base64Encode("joe:welcome")} #am9lOndlbGNvbWU=
-property authHeader ${ws:append("Basic ", validCredentials)}
 
 connect ${connectLocation}
 connected
