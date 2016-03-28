@@ -15,6 +15,9 @@
 #
 
 property acceptLocation "http://localhost:8001/amqp"
+property validCredentials ${ws:base64Encode("joe:welcome")} #am9lOndlbGNvbWU=
+property authHeader ${ws:append("Basic ", validCredentials)}
+
 accept ${acceptLocation}
 accepted
 connected
