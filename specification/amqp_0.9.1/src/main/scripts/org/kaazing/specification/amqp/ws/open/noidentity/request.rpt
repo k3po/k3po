@@ -19,6 +19,8 @@ property connectLocation "http://localhost:8001/amqp"
 property key ${ws:handshakeKey()}
 property writeMask ${ws:randomBytes(4)}
 property client125 ${ws:randomBytes(125)}
+property validCredentials ${ws:base64Encode("joe:welcome")} #am9lOndlbGNvbWU=
+property authHeader ${ws:append("Basic ", validCredentials)}
 
 connect ${connectLocation}
 connected
@@ -30,7 +32,6 @@ write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Key" ${key}
 write header "Sec-WebSocket-Version" "13"
-write header "Authorization" "Basic am9lOndlbGNvbWU="
 
 read status "101" /.+/
 read version "HTTP/1.1"

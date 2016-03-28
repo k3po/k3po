@@ -26,7 +26,6 @@ read header "Upgrade" /(?i:websocket)/
 read header "Connection" /(?i:Upgrade)/
 read header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
 read header "Sec-WebSocket-Version" "13"
-read header "Authorization" "Basic am9lOndlbGNvbWU="
 
 
 write status "101" "Switching Protocols"
