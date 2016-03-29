@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>k3po.parent</artifactId>
-    <version>3.0.0-alpha-24</version>
+    <version>3.0.0-alpha-25</version>
 
     <name>k3po/parent</name>
     <url>https://github.com/kaazing/k3po</url>
@@ -32,6 +32,7 @@
         <module>junit</module>
         <module>examples</module>
         <module>k3po.pcap.converter</module>
+        <module>specification/amqp_0.9.1</module>
         <module>specification/amqp_1_0.jms</module>
         <module>specification/bbosh</module>
         <module>specification/http</module>

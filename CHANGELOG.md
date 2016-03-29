@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-23...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-24...HEAD)
+
+**Merged pull requests:**
+
+- amqp tests scripts fixed [\#321](https://github.com/k3po/k3po/pull/321) ([ilyaanisimov-kaazing](https://github.com/ilyaanisimov-kaazing))
+
+## [3.0.0-alpha-24](https://github.com/k3po/k3po/tree/3.0.0-alpha-24) (2016-03-16)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-23...3.0.0-alpha-24)
 
 **Merged pull requests:**
 
