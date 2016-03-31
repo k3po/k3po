@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-24...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-25...HEAD)
+
+**Merged pull requests:**
+
+- Sec-WebSocket-Protocol header contains comma separated value list. [\#322](https://github.com/k3po/k3po/pull/322) ([jitsni](https://github.com/jitsni))
+
+## [3.0.0-alpha-25](https://github.com/k3po/k3po/tree/3.0.0-alpha-25) (2016-03-29)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-24...3.0.0-alpha-25)
 
 **Merged pull requests:**
 
