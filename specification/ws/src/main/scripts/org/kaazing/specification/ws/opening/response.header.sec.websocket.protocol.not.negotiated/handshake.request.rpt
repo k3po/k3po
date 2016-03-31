@@ -25,7 +25,8 @@ write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
 write header "Sec-WebSocket-Version" "13"
-write header "Sec-WebSocket-Protocol" "primary, secondary"
+write header "Sec-WebSocket-Protocol" "primary"
+write header "Sec-WebSocket-Protocol" "secondary"
 
 read status "101" /.+/
 read version "HTTP/1.1"
