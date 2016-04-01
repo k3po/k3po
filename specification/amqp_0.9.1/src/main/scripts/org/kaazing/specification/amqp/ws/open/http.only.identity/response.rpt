@@ -17,6 +17,7 @@
 property acceptLocation "http://localhost:8001/amqp"
 property validCredentials ${ws:base64Encode("joe:welcome")} #am9lOndlbGNvbWU=
 property authHeader ${ws:append("Basic ", validCredentials)}
+property webSocketExtensionHeader "test"
 
 accept ${acceptLocation}
 accepted
@@ -30,14 +31,14 @@ read header "Connection" /(?i:Upgrade)/
 read header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
 read header "Sec-WebSocket-Version" "13"
 read header "Authorization" ${authHeader}
-read header "Sec-WebSocket-Extensions" "x-kaazing-http-revalidate"
+write header "Sec-WebSocket-Extensions" ${webSocketExtensionHeader}
 
 write status "101" "Switching Protocols"
 write version "HTTP/1.1"
 write header "Upgrade" "websocket"
 write header "Connection" "Upgrade"
 write header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
-write header "Sec-WebSocket-Extensions" "x-kaazing-http-revalidate"
+write header "Sec-WebSocket-Extensions" ${webSocketExtensionHeader}
 
 # AMQP
 read [0x82 0x88] ([0..4] :readMask)
