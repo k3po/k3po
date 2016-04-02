@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-25...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-26...HEAD)
+
+**Merged pull requests:**
+
+- Http only identity for amqp identity promotion [\#324](https://github.com/k3po/k3po/pull/324) ([ilyaanisimov-kaazing](https://github.com/ilyaanisimov-kaazing))
+
+## [3.0.0-alpha-26](https://github.com/k3po/k3po/tree/3.0.0-alpha-26) (2016-03-31)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-25...3.0.0-alpha-26)
 
 **Merged pull requests:**
 
