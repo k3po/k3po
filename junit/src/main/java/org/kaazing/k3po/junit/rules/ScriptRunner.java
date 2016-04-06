@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.Logger;
 
 import org.kaazing.k3po.control.internal.Control;
 import org.kaazing.k3po.control.internal.command.AbortCommand;
@@ -260,7 +261,6 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
         @Override
         public void initial() {
-            System.out.println("Hello");
             synchronized (this) {
                 this.state = NOTIFYING;
                 for (BarrierStateListener listener : stateListeners) {
@@ -323,7 +323,15 @@ final class ScriptRunner implements Callable<ScriptPair> {
             default:
                 throw new IllegalArgumentException("Unrecognized event kind: " + event.getKind());
             }
-        } finally {
+        } catch (Exception e) {
+            // TODO log this when we get a logger added to Junit, or remove need for this which always clean
+            // shutdown of k3po channels
+            e.printStackTrace();
+            // NOOP swallow exception as this is a clean up task that may fail in case setup didn't complete,
+            // expressions didn't get resolved. Etc.  This happens frequently when Junit Assume is used, as K3po
+            // will have inited the accept channels outside of the test method.
+        }
+        finally {
             controller.disconnect();
         }
     }

@@ -20,6 +20,9 @@ import java.net.URI;
 import javax.el.ELContext;
 import javax.el.ValueExpression;
 
+import org.jboss.netty.logging.InternalLogger;
+import org.jboss.netty.logging.InternalLoggerFactory;
+import org.kaazing.k3po.driver.internal.Robot;
 import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocationExpression;
@@ -36,6 +39,7 @@ import org.kaazing.k3po.lang.internal.ast.value.AstLocationLiteral;
 public class LocationResolver {
 
     private static final LocationVisitorImpl VISITOR = new LocationVisitorImpl();
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(LocationResolver.class);
 
     private final AstLocation location;
     private final ELContext environment;
@@ -66,9 +70,14 @@ public class LocationResolver {
             Object location;
 
             // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
-            synchronized (environment) {
-                ValueExpression expression = value.getValue();
-                location = expression.getValue(environment);
+            try {
+                synchronized (environment) {
+                    ValueExpression expression = value.getValue();
+                    location = expression.getValue(environment);
+                }
+            } catch (javax.el.PropertyNotFoundException e) {
+                LOGGER.warn(e.getMessage());
+                location = null;
             }
 
             if (location == null) {
