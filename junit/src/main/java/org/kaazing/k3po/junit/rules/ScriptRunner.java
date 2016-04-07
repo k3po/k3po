@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-import java.util.logging.Logger;
 
 import org.kaazing.k3po.control.internal.Control;
 import org.kaazing.k3po.control.internal.command.AbortCommand;
