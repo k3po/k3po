@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-26...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-27...HEAD)
+
+**Merged pull requests:**
+
+- Caught exceptions that cause catostrophic failures in K3po and thus c… [\#325](https://github.com/k3po/k3po/pull/325) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-27](https://github.com/k3po/k3po/tree/3.0.0-alpha-27) (2016-04-02)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-26...3.0.0-alpha-27)
 
 **Merged pull requests:**
 
