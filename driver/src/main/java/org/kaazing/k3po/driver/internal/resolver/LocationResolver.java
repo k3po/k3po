@@ -76,7 +76,7 @@ public class LocationResolver {
                     location = expression.getValue(environment);
                 }
             } catch (PropertyNotFoundException e) {
-                LOGGER.warn(e.getMessage());
+                LOGGER.warn(e.getMessage(), e);
                 location = null;
             }
 
