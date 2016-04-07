@@ -354,15 +354,19 @@ public class Robot {
 
             // clear out the pipelines for new connections to avoid impacting the observed script
             for (ServerBootstrapResolver serverResolver : configuration.getServerResolvers()) {
-                ServerBootstrap server = serverResolver.resolve();
-                server.setPipelineFactory(pipelineFactory(pipeline(closeOnExceptionHandler)));
+                try {
+                    ServerBootstrap server = serverResolver.resolve();
+                    server.setPipelineFactory(pipelineFactory(pipeline(closeOnExceptionHandler)));
+                } catch (RuntimeException e) {
+                    LOGGER.warn("Exception caught while trying to stop server pipelies", e);
+                }
             }
             for (ClientBootstrapResolver clientResolver : configuration.getClientResolvers()) {
                 try {
                     ClientBootstrap client = clientResolver.resolve();
                     client.setPipelineFactory(pipelineFactory(pipeline(closeOnExceptionHandler)));
                 } catch (RuntimeException e) {
-                    LOGGER.warn("Exception caught while trying to stop client pipelies: " + e);
+                    LOGGER.warn("Exception caught while trying to stop client pipelies", e);
                 }
             }
 
