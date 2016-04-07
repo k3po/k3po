@@ -18,11 +18,11 @@ package org.kaazing.k3po.driver.internal.resolver;
 import java.net.URI;
 
 import javax.el.ELContext;
+import javax.el.PropertyNotFoundException;
 import javax.el.ValueExpression;
 
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-import org.kaazing.k3po.driver.internal.Robot;
 import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 import org.kaazing.k3po.lang.internal.ast.value.AstLocationExpression;
@@ -75,7 +75,7 @@ public class LocationResolver {
                     ValueExpression expression = value.getValue();
                     location = expression.getValue(environment);
                 }
-            } catch (javax.el.PropertyNotFoundException e) {
+            } catch (PropertyNotFoundException e) {
                 LOGGER.warn(e.getMessage());
                 location = null;
             }
