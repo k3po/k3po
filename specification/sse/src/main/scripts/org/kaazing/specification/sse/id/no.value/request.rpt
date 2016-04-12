@@ -26,7 +26,7 @@ read "HTTP/1.1 200 OK\r\n"
 read "Content-Type: text/event-stream\r\n"
 read "Cache-Control: no-cache\r\n"
 read "Connection: keep-alive\r\n"
-read /Date:.*/ "\r\n"
+read /Date:.*\r\n/
 read "\r\n"
 
 read "id:\n"

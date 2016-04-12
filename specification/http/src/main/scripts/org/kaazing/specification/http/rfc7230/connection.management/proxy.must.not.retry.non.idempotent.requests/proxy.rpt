@@ -18,8 +18,8 @@ accept tcp://localhost:8080
 accepted
 connected
 
-read "POST" /.*/ "\r\n"
-read "Host:" /.*/ "\r\n"
+read "POST" /.*\r\n/
+read "Host:" /.*\r\n/
 read "Content-Length: " "17" "\r\n"
 read "\r\n"
 read "This is some data"
