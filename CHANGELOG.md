@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-27...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-28...HEAD)
+
+**Merged pull requests:**
+
+- Removed all instance where fragmentation in regex could cause a test … [\#328](https://github.com/k3po/k3po/pull/328) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-28](https://github.com/k3po/k3po/tree/3.0.0-alpha-28) (2016-04-07)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-27...3.0.0-alpha-28)
 
 **Merged pull requests:**
 

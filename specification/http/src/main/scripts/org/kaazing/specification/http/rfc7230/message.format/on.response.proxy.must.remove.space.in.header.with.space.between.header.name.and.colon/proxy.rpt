@@ -33,7 +33,7 @@ write "Host: localhost:8081" "\r\n"
 write "\r\n"
 
 read "HTTP/1.1 200 OK" "\r\n"
-read "some : " /(?<header>.*)/ "\r\n"
+read "some : " /(?<header>.*)\r\n/
 read "Content-Length: 0\r\n"
 read "\r\n"
 read notify SERVER_RESPONSE_READ
