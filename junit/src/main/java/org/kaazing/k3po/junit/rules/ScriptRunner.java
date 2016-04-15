@@ -310,8 +310,8 @@ final class ScriptRunner implements Callable<ScriptPair> {
     }
 
     public void dispose() throws Exception {
-        controller.dispose();
         try {
+            controller.dispose();
             CommandEvent event = controller.readEvent();
 
             // ensure it is the correct event
