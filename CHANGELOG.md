@@ -2,7 +2,19 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-28...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-29...HEAD)
+
+**Closed issues:**
+
+- Sporadic NPE in Control.java on Ubuntu 14.04 [\#330](https://github.com/k3po/k3po/issues/330)
+
+**Merged pull requests:**
+
+- Moved controller.dispose into proper try catch block [\#331](https://github.com/k3po/k3po/pull/331) ([dpwspoon](https://github.com/dpwspoon))
+- fixed regex issue [\#329](https://github.com/k3po/k3po/pull/329) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-29](https://github.com/k3po/k3po/tree/3.0.0-alpha-29) (2016-04-13)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-28...3.0.0-alpha-29)
 
 **Merged pull requests:**
 
