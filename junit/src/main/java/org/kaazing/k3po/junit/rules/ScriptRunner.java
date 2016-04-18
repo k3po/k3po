@@ -72,6 +72,12 @@ final class ScriptRunner implements Callable<ScriptPair> {
     }
 
     public void abort() {
+        // logging with system.out as I don't believe there is a standard junit logger
+        System.out.println(
+                "K3po Script Runner is sending an abort!\n Aborts may cause K3po to falsely fail the test if K3po\n"
+                + "is still processing a backlog of messages.  This is often the case in junit tests that have low\n"
+                + "timeout exceptions (less than 5 secs) and are running on somewhat limited hardware (travis CI and build machines)\n"
+                + "see https://github.com/k3po/k3po/issues/332 for more details");
         this.abortScheduled = true;
         latch.notifyAbort();
     }
