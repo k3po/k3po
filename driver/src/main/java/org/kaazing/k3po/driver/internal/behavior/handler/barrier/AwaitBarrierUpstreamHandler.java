@@ -50,10 +50,7 @@ public class AwaitBarrierUpstreamHandler extends AbstractBarrierHandler implemen
             public void operationComplete(final ChannelFuture f) throws Exception {
                 if (f.isCancelled()) {
                     handlerFuture.cancel();
-                    // periodically after barriers I have debugged this and seen that the future
-                    // is still incomplete, this is our own CompositeFuture which is breaking the
-                    // contract here and already has bugs filed for it.
-                } else if (!f.isDone() && !f.isSuccess()) {
+                } else if (!f.isSuccess()) {
                     handlerFuture.setFailure(f.getCause());
                 } else {
                     // on success or incomplete
