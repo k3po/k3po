@@ -120,6 +120,8 @@ public class HttpClientChannelSource extends HttpChannelHandler {
             fireInputShutdown(httpClientChannel);
 
             if (httpClientChannel.setClosed()) {
+                fireChannelDisconnected(httpClientChannel);
+                fireChannelUnbound(httpClientChannel);
                 fireChannelClosed(httpClientChannel);
             }
         }
