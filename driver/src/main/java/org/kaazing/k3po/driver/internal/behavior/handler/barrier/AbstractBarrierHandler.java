@@ -20,7 +20,7 @@ import org.kaazing.k3po.driver.internal.behavior.handler.ExecutionHandler;
 
 public abstract class AbstractBarrierHandler extends ExecutionHandler {
 
-    private final Barrier barrier;
+    protected final Barrier barrier;
 
     public AbstractBarrierHandler(Barrier barrier) {
         if (barrier == null) {

@@ -50,10 +50,13 @@ public class AwaitBarrierUpstreamHandler extends AbstractBarrierHandler implemen
             public void operationComplete(final ChannelFuture f) throws Exception {
                 if (f.isCancelled()) {
                     handlerFuture.cancel();
+                    // periodically after barriers I have debugged this and seen that the future
+                    // is still incomplete, this is our own CompositeFuture which is breaking the
+                    // contract here and already has bugs filed for it.
                 } else if (!f.isDone() && !f.isSuccess()) {
                     handlerFuture.setFailure(f.getCause());
                 } else {
-                    // on success or incomplete add to barrier,
+                    // on success or incomplete
                     // when barrier future complete, trigger handler future
                     Barrier barrier = getBarrier();
                     ChannelFuture barrierFuture = barrier.getFuture();
@@ -68,9 +71,9 @@ public class AwaitBarrierUpstreamHandler extends AbstractBarrierHandler implemen
 
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
-                // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
                 synchronized (ctx) {
                     if (future.isSuccess()) {
+                        // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
                         Queue<ChannelEvent> pending = queue;
                         queue = null;
                         for (ChannelEvent evt : pending) {
