@@ -44,6 +44,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelException;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ChildChannelStateEvent;
@@ -98,6 +99,14 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
             handleUnexpectedEvent(ctx, evt);
         } else {
             ChannelFuture pipelineFuture = getPipelineFuture();
+            if (!pipelineFuture.isDone()) {
+                pipelineFuture.addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        handleUpstream1(ctx, evt);
+                    }
+                });
+            }
             if (!pipelineFuture.isSuccess()) {
                 // expected event arrived too early
                 Exception exception = new ScriptProgressException(getRegionInfo(), format("%s", this));

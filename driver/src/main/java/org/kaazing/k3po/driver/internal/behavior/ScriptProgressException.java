@@ -17,15 +17,25 @@ package org.kaazing.k3po.driver.internal.behavior;
 
 import static java.util.Objects.requireNonNull;
 
+import org.kaazing.k3po.driver.internal.Robot;
 import org.kaazing.k3po.lang.internal.RegionInfo;
+import org.jboss.netty.logging.InternalLogger;
+import org.jboss.netty.logging.InternalLoggerFactory;
 
 @SuppressWarnings("serial")
 public class ScriptProgressException extends Exception {
 
     private final RegionInfo regionInfo;
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ScriptProgressException.class);
 
     public ScriptProgressException(RegionInfo regionInfo, String message) {
         super(message);
+        if (LOGGER.isDebugEnabled()) {
+            // add this while debugging a race between this being thrown and
+            // actually getting script progress (on Aborts), thus this
+            // is good to know
+            LOGGER.debug("Script Progress Exception: " + message);
+        }
         this.regionInfo = requireNonNull(regionInfo);
     }
 
