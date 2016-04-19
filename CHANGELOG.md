@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-29...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-30...HEAD)
+
+**Merged pull requests:**
+
+- Fix where barrierFuture should be listened to even if handler future … [\#333](https://github.com/k3po/k3po/pull/333) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-30](https://github.com/k3po/k3po/tree/3.0.0-alpha-30) (2016-04-15)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-29...3.0.0-alpha-30)
 
 **Closed issues:**
 
