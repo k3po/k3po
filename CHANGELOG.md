@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-30...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-31...HEAD)
+
+**Merged pull requests:**
+
+- Fixed if else statements to be inclusive [\#334](https://github.com/k3po/k3po/pull/334) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-31](https://github.com/k3po/k3po/tree/3.0.0-alpha-31) (2016-04-19)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-30...3.0.0-alpha-31)
 
 **Merged pull requests:**
 
