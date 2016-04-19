@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-31...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-32...HEAD)
+
+**Merged pull requests:**
+
+- Reverted fix as it was incorrect, events that arrive too early should fail [\#335](https://github.com/k3po/k3po/pull/335) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-32](https://github.com/k3po/k3po/tree/3.0.0-alpha-32) (2016-04-19)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-31...3.0.0-alpha-32)
 
 **Merged pull requests:**
 
