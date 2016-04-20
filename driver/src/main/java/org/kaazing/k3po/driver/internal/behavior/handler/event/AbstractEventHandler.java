@@ -98,7 +98,6 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
         } else if (!expectedEvents.contains(eventAsKind)) {
             handleUnexpectedEvent(ctx, evt);
         } else {
-            ChannelFuture pipelineFuture = getPipelineFuture();
             super.handleUpstream1(ctx, evt);
         }
     }
