@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-32...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-33...HEAD)
+
+**Merged pull requests:**
+
+- Removed checking of event to early as this is done with implicit barr… [\#336](https://github.com/k3po/k3po/pull/336) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-33](https://github.com/k3po/k3po/tree/3.0.0-alpha-33) (2016-04-19)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-32...3.0.0-alpha-33)
 
 **Merged pull requests:**
 
