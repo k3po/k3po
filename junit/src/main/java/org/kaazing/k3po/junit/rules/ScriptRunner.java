@@ -320,7 +320,14 @@ final class ScriptRunner implements Callable<ScriptPair> {
     public void dispose() throws Exception {
         try {
             controller.dispose();
-            CommandEvent event = controller.readEvent();
+
+            CommandEvent event = null;
+            do {
+                event = controller.readEvent();
+                // finished may arrive if there was an abort, in which
+                // case we allow 5 seconds for a finished and then send
+                // dispose.  Sometimes the finished still comes
+            } while (event.getKind() == CommandEvent.Kind.FINISHED);
 
             // ensure it is the correct event
             switch (event.getKind()) {
