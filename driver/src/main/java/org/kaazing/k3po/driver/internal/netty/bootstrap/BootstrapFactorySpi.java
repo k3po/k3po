@@ -15,6 +15,7 @@
  */
 package org.kaazing.k3po.driver.internal.netty.bootstrap;
 
+import org.jboss.netty.bootstrap.Bootstrap;
 import org.jboss.netty.util.ExternalResourceReleasable;
 
 
@@ -33,7 +34,14 @@ public abstract class BootstrapFactorySpi implements ExternalResourceReleasable 
     /**
      * Returns a {@link ServerBootstrap} instance for the named transport.
      */
-    public abstract ServerBootstrap newServerBootstrap() throws Exception;
+    public abstract Bootstrap newServerBootstrap() throws Exception;
+
+    /**
+     * Returns a {@link ConnectionlessBootstrap} instance for the named transport.
+     *
+    public ConnectionlessBootstrap newConnectionlessBootstrap() throws Exception {
+        return null;
+    }*/
 
     public abstract void shutdown();
 

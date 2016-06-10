@@ -20,6 +20,7 @@ import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
 import static org.jboss.netty.channel.Channels.write;
 import static org.kaazing.k3po.driver.internal.behavior.handler.codec.Masker.IDENTITY_MASKER;
 
+import java.net.SocketAddress;
 import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -44,6 +45,7 @@ public class WriteHandler extends AbstractCommandHandler {
 
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("JITU WriteHandler#invokeCommand address = " + ctx.getChannel().getAttachment());
         ChannelBuffer[] buffers = new ChannelBuffer[encoders.size()];
         int idx = 0;
         for (MessageEncoder encoder : encoders) {
@@ -54,12 +56,12 @@ public class WriteHandler extends AbstractCommandHandler {
         if (masker == IDENTITY_MASKER) {
             // avoid unnecessary copy when masking disabled
             ChannelBuffer bytes = wrappedBuffer(buffers);
-            write(ctx, getHandlerFuture(), bytes);
+            write(ctx, getHandlerFuture(), bytes, (SocketAddress) ctx.getChannel().getAttachment());
         }
         else {
             ChannelBuffer bytes = copiedBuffer(buffers);
             ChannelBuffer maskedBytes = masker.applyMask(bytes);
-            write(ctx, getHandlerFuture(), maskedBytes);
+            write(ctx, getHandlerFuture(), maskedBytes, (SocketAddress) ctx.getChannel().getAttachment());
         }
     }
 

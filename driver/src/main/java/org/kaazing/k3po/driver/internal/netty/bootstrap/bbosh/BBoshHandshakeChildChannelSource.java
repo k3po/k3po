@@ -188,7 +188,7 @@ public class BBoshHandshakeChildChannelSource extends SimpleChannelHandler {
 
         final URI httpConnectionLocalURI = httpHandshakeLocalURI.resolve(connectionPath);
         final ChannelAddress httpConnectionLocalAddress = addressFactory.newChannelAddress(httpConnectionLocalURI);
-        ServerBootstrap server = bootstrapFactory.newServerBootstrap("http");
+        ServerBootstrap server = (ServerBootstrap) bootstrapFactory.newServerBootstrap("http");
         server.setPipeline(pipeline(new BBoshPollingChildChannelSource(channel)));
         ChannelFuture httpBindFuture = server.bindAsync(httpConnectionLocalAddress);
         httpBindFuture.addListener(new ChannelFutureListener() {

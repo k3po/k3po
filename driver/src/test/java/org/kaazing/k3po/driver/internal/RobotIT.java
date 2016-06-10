@@ -28,6 +28,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -53,6 +55,7 @@ public class RobotIT {
 
     private Robot robot;
     private Socket client;
+    private DatagramSocket udpClient;
     private ServerSocket server;
     private Socket accepted;
 
@@ -64,11 +67,13 @@ public class RobotIT {
         robot = new Robot();
         client = new Socket();
         server = new ServerSocket();
+        udpClient = new DatagramSocket();
     }
 
     @After
     public void shutdown() throws Exception {
         client.close();
+        udpClient.close();
 
         if (accepted != null) {
             accepted.close();
@@ -463,6 +468,36 @@ public class RobotIT {
 
         robot.prepareAndStart(script).await();
         robot.finish().await();
+
+        assertEquals(expected, robot.getObservedScript());
+    }
+
+    @Test
+    public void shouldEchoUdp() throws Exception {
+        // @formatter:off
+        String script =
+                "accept udp://localhost:8080\n" +
+                        "accepted\n" +
+                        "connected\n" +
+                        "read \"Hello\"\n" +
+                        "write \"Hello World!\"\n";
+
+        String expected = script;
+        // @formatter:on
+
+        robot.prepareAndStart(script).await();
+Thread.sleep(2000);
+        udpClient.connect(new InetSocketAddress("localhost", 8080));
+        byte[] buf = "Hello".getBytes();
+        DatagramPacket dp = new DatagramPacket(buf, buf.length);
+        udpClient.send(dp);
+        buf = new byte[20];
+        dp = new DatagramPacket(buf, 0, buf.length);
+        //udpClient.receive(dp);
+
+        robot.finish().await();
+
+        //assertEquals("Hello World!".length(), dp.getLength());
 
         assertEquals(expected, robot.getObservedScript());
     }

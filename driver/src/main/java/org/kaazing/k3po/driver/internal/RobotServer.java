@@ -104,7 +104,7 @@ public class RobotServer {
         bootstrapFactory = BootstrapFactory.newBootstrapFactory(injectables);
 
         String transportName = controlURI.getScheme();
-        ServerBootstrap server = bootstrapFactory.newServerBootstrap(transportName);
+        ServerBootstrap server = (ServerBootstrap) bootstrapFactory.newServerBootstrap(transportName);
 
         server.setPipelineFactory(new ChannelPipelineFactory() {
 
