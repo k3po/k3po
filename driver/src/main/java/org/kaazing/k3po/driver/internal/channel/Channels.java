@@ -50,7 +50,7 @@ public final class Channels {
         return channelAddress(channel, remoteAddress);
     }
 
-    private static ChannelAddress channelAddress(Channel channel, SocketAddress address) {
+    public static ChannelAddress channelAddress(Channel channel, SocketAddress address) {
         if (address instanceof ChannelAddress) {
             return (ChannelAddress) address;
         }

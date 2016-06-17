@@ -11,7 +11,7 @@
     <artifactId>specification.udp</artifactId>
     <packaging>jar</packaging>
 
-    <name>TCP Protocol Specification</name>
+    <name>UDP Protocol Specification</name>
     <url>https://github.com/k3po/specification.udp</url>
     <description>Specification for UDP protocol</description>
 

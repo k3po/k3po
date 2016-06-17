@@ -17,16 +17,12 @@ package org.kaazing.k3po.driver.internal.netty.channel;
 
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.MessageEvent;
 
 public class SimpleChannelUpstreamHandler extends org.jboss.netty.channel.SimpleChannelUpstreamHandler {
 
     @Override
     public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e)
             throws Exception {
-
-        System.out.println("JITU ************ e = " + e);
-
         if (e instanceof ShutdownInputEvent) {
             inputShutdown(ctx, (ShutdownInputEvent) e);
         }
@@ -38,9 +34,6 @@ public class SimpleChannelUpstreamHandler extends org.jboss.netty.channel.Simple
         }
         else if (e instanceof AbortEvent) {
             aborted(ctx, (AbortEvent) e);
-        }
-        else if (e instanceof MessageEvent) {
-            super.handleUpstream(ctx, e);
         }
         else {
             super.handleUpstream(ctx, e);

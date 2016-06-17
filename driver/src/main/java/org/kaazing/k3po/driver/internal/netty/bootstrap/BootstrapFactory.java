@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import org.jboss.netty.bootstrap.Bootstrap;
 import org.jboss.netty.util.ExternalResourceReleasable;
 import org.kaazing.k3po.driver.internal.executor.ExecutorServiceFactory;
 
@@ -79,7 +78,7 @@ public final class BootstrapFactory implements ExternalResourceReleasable {
         }
     }
 
-    public Bootstrap newServerBootstrap(String transportName) throws Exception {
+    public ServerBootstrap newServerBootstrap(String transportName) throws Exception {
 
         BootstrapFactorySpi bootstrapFactory = findBootstrapFactory(transportName);
         return bootstrapFactory.newServerBootstrap();

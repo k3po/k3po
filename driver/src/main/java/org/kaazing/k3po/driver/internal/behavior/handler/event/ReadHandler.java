@@ -58,8 +58,6 @@ public class ReadHandler extends AbstractEventHandler {
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        System.out.println("JITU ReadHandler e = " + e);
-        ctx.getChannel().setAttachment(e.getRemoteAddress());
         messageReceived(ctx, e, false);
     }
 

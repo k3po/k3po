@@ -15,6 +15,18 @@
  */
 package org.kaazing.k3po.driver.internal.netty.bootstrap.udp;
 
+import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.socket.nio.NioDatagramChannelFactory;
+import org.jboss.netty.channel.socket.nio.NioDatagramWorkerPool;
+import org.jboss.netty.util.ExternalResourceReleasable;
+import org.kaazing.k3po.driver.internal.executor.ExecutorServiceFactory;
+import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactorySpi;
+import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
+import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
+import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
+
+import javax.annotation.Resource;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URI;
@@ -22,35 +34,12 @@ import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
 
-import javax.annotation.Resource;
-
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.socket.ClientSocketChannelFactory;
-import org.jboss.netty.channel.socket.ServerSocketChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioClientBossPool;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioDatagramChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioDatagramWorkerPool;
-import org.jboss.netty.channel.socket.nio.NioServerBossPool;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioWorkerPool;
-import org.jboss.netty.util.ExternalResourceReleasable;
-import org.kaazing.k3po.driver.internal.executor.ExecutorServiceFactory;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactorySpi;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.ConnectionlessBootstrap;
-import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
-
 public final class UdpBootstrapFactorySpi extends BootstrapFactorySpi implements ExternalResourceReleasable {
 
     private final Collection<ChannelFactory> channelFactories;
     private ExecutorServiceFactory executorServiceFactory;
     private NioDatagramChannelFactory clientChannelFactory;
-    private NioDatagramChannelFactory serverChannelFactory;
+    private UdpServerChannelFactory serverChannelFactory;
 
     public UdpBootstrapFactorySpi() {
         channelFactories = new ConcurrentLinkedDeque<>();
@@ -60,16 +49,6 @@ public final class UdpBootstrapFactorySpi extends BootstrapFactorySpi implements
     public void setExecutorServiceFactory(ExecutorServiceFactory executorServiceFactory) {
         this.executorServiceFactory = executorServiceFactory;
     }
-
-//    @Resource
-//    public void setNioClientSocketChannelFactory(NioClientSocketChannelFactory clientChannelFactory) {
-//        this.clientChannelFactory = clientChannelFactory;
-//    }
-
-//    @Resource
-//    public void setNioServerSocketChannelFactory(NioServerSocketChannelFactory serverChannelFactory) {
-//        this.serverChannelFactory = serverChannelFactory;
-//    }
 
     /**
      * Returns the name of the transport provided by factories using this service provider.
@@ -99,11 +78,7 @@ public final class UdpBootstrapFactorySpi extends BootstrapFactorySpi implements
     @Override
     public synchronized ClientBootstrap newClientBootstrap() throws Exception {
 
-        NioDatagramChannelFactory clientChannelFactory = this.clientChannelFactory;
-
         if (clientChannelFactory == null) {
-            Executor bossExecutor = executorServiceFactory.newExecutorService("boss.client");
-            NioClientBossPool bossPool = new NioClientBossPool(bossExecutor, 1);
             Executor workerExecutor = executorServiceFactory.newExecutorService("worker.client");
             NioDatagramWorkerPool workerPool = new NioDatagramWorkerPool(workerExecutor, 1);
             clientChannelFactory = new NioDatagramChannelFactory(workerPool);
@@ -126,64 +101,17 @@ public final class UdpBootstrapFactorySpi extends BootstrapFactorySpi implements
      * Returns a {@link ServerBootstrap} instance for the named transport.
      */
     @Override
-    public synchronized ConnectionlessBootstrap newServerBootstrap() throws Exception {
-        NioDatagramChannelFactory serverChannelFactory = this.serverChannelFactory;
-
+    public synchronized ServerBootstrap newServerBootstrap() throws Exception {
         if (serverChannelFactory == null) {
-            Executor bossExecutor = executorServiceFactory.newExecutorService("boss.server");
-            NioServerBossPool bossPool = new NioServerBossPool(bossExecutor, 1);
             Executor workerExecutor = executorServiceFactory.newExecutorService("worker.server");
             NioDatagramWorkerPool workerPool = new NioDatagramWorkerPool(workerExecutor, 1);
-            serverChannelFactory = new NioDatagramChannelFactory(workerPool);
+            serverChannelFactory = new UdpServerChannelFactory(new UdpServerChannelSink(workerPool));
 
             // unshared
             channelFactories.add(serverChannelFactory);
         }
 
-        return new ConnectionlessBootstrap(serverChannelFactory) {
-
-            @Override
-            public Channel bind(SocketAddress localAddress) {
-                Channel channel = super.bind(toInetSocketAddress(localAddress));
-                Channels.fireChannelConnected(channel, new InetSocketAddress("localhost", 2222));
-                return channel;
-            }
-
-        };
-    }
-
-//    @Override
-//    public synchronized ConnectionlessBootstrap newConnectionlessBootstrap() throws Exception {
-//
-//        NioDatagramChannelFactory serverChannelFactory = this.serverChannelFactory;
-//
-//        if (serverChannelFactory == null) {
-//            Executor bossExecutor = executorServiceFactory.newExecutorService("boss.server");
-//            NioServerBossPool bossPool = new NioServerBossPool(bossExecutor, 1);
-//            Executor workerExecutor = executorServiceFactory.newExecutorService("worker.server");
-//            NioDatagramWorkerPool workerPool = new NioDatagramWorkerPool(workerExecutor, 1);
-//            serverChannelFactory = new NioDatagramChannelFactory(workerPool);
-//
-//            // unshared
-//            channelFactories.add(serverChannelFactory);
-//        }
-//
-//        return new ConnectionlessBootstrap(serverChannelFactory) {
-//
-//            @Override
-//            public Channel bind(SocketAddress localAddress) {
-//                return super.bind(toInetSocketAddress(localAddress));
-//            }
-//
-//        };
-//    }
-
-    private static InetSocketAddress toInetSocketAddress(final SocketAddress localAddress) {
-        if (localAddress instanceof ChannelAddress) {
-            return toInetSocketAddress((ChannelAddress) localAddress);
-        } else {
-            return (InetSocketAddress) localAddress;
-        }
+        return new ServerBootstrap(serverChannelFactory);
     }
 
     private static InetSocketAddress toInetSocketAddress(ChannelAddress channelAddress) {

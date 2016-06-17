@@ -36,7 +36,7 @@ public class UdpIT {
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
     @Rule
-    public final TestRule chain = outerRule(k3po).around(timeout);
+    public final TestRule chain = outerRule(timeout).around(k3po);
 
     @Test
     @Specification({
@@ -56,7 +56,7 @@ public class UdpIT {
 
     @Test
     @Specification({
-        //"client.sent.data/client",
+        "client.sent.data/client",
         "client.sent.data/server" })
     public void shouldReceiveClientSentData() throws Exception {
         k3po.finish();

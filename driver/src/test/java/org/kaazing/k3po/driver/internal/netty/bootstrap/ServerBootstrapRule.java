@@ -51,7 +51,7 @@ public class ServerBootstrapRule implements TestRule {
 
             @Override
             public void evaluate() throws Throwable {
-                bootstrap = (ServerBootstrap) bootstrapFactory.newServerBootstrap(transportName);
+                bootstrap = bootstrapFactory.newServerBootstrap(transportName);
                 try {
                     base.evaluate();
                 } finally {

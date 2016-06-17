@@ -182,7 +182,6 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
                 return value != null ? BOUND : UNBOUND;
 
             case CONNECTED:
-                System.out.println("JITU AbstractEventHandler#asEventKind " + value);
                 return value != null ? CONNECTED : DISCONNECTED;
 
             case INTEREST_OPS:

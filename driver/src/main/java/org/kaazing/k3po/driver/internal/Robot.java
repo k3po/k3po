@@ -33,8 +33,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.sun.corba.se.spi.activation.Server;
-import org.jboss.netty.bootstrap.Bootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
@@ -62,7 +60,6 @@ import org.kaazing.k3po.driver.internal.behavior.parser.ScriptValidator;
 import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.ConnectionlessBootstrap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
 import org.kaazing.k3po.driver.internal.netty.channel.CompositeChannelFuture;
@@ -221,8 +218,8 @@ public class Robot {
 
                                 @Override
                                 public void operationComplete(ChannelGroupFuture future) throws Exception {
-                                    clientChannels.close();
                                     try {
+                                        clientChannels.close();
                                         bootstrapFactory.shutdown();
                                         bootstrapFactory.releaseExternalResources();
 
@@ -274,59 +271,37 @@ public class Robot {
 
         /* Accept's ... Robot acting as a server */
         for (ServerBootstrapResolver serverResolver : configuration.getServerResolvers()) {
-            Bootstrap aserver = serverResolver.resolve();
-            if (aserver instanceof ServerBootstrap) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Binding to address " + aserver.getOption("localAddress"));
-                }
-                ServerBootstrap server = (ServerBootstrap) aserver;
-                /* Keep track of the client channels */
-                server.setParentHandler(new SimpleChannelHandler() {
-                    @Override
-                    public void childChannelOpen(ChannelHandlerContext ctx, ChildChannelStateEvent e) throws Exception {
-                        clientChannels.add(e.getChildChannel());
-                    }
-
-                    @Override
-                    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-                        Channel channel = ctx.getChannel();
-                        channel.close();
-                    }
-                });
-
-                // Bind Asynchronously
-                ChannelFuture bindFuture = server.bindAsync();
-
-                // Add to out serverChannel Group
-                serverChannels.add(bindFuture.getChannel());
-
-                // Add to our list of bindFutures so we can cancel them later on a possible abort
-                bindFutures.add(bindFuture);
-
-                // Listen for the bindFuture.
-                RegionInfo regionInfo = (RegionInfo) server.getOption("regionInfo");
-                bindFuture.addListener(createBindCompleteListener(regionInfo, serverResolver.getNotifyBarrier()));
-            } else {
-                ConnectionlessBootstrap server = (ConnectionlessBootstrap) aserver;
-System.out.println("Binding to address " + server.getOption("localAddress"));
-
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Binding to address " + server.getOption("localAddress"));
-                }
-
-                // Bind Asynchronously
-                ChannelFuture bindFuture = server.bindAsync();
-
-                // Add to out serverChannel Group
-                serverChannels.add(bindFuture.getChannel());
-
-                // Add to our list of bindFutures so we can cancel them later on a possible abort
-                bindFutures.add(bindFuture);
-
-                // Listen for the bindFuture.
-                RegionInfo regionInfo = (RegionInfo) server.getOption("regionInfo");
-                bindFuture.addListener(createBindCompleteListener(regionInfo, serverResolver.getNotifyBarrier()));
+            ServerBootstrap server = serverResolver.resolve();
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Binding to address " + server.getOption("localAddress"));
             }
+
+            /* Keep track of the client channels */
+            server.setParentHandler(new SimpleChannelHandler() {
+                @Override
+                public void childChannelOpen(ChannelHandlerContext ctx, ChildChannelStateEvent e) throws Exception {
+                    clientChannels.add(e.getChildChannel());
+                }
+
+                @Override
+                public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+                    Channel channel = ctx.getChannel();
+                    channel.close();
+                }
+            });
+
+            // Bind Asynchronously
+            ChannelFuture bindFuture = server.bindAsync();
+
+            // Add to out serverChannel Group
+            serverChannels.add(bindFuture.getChannel());
+
+            // Add to our list of bindFutures so we can cancel them later on a possible abort
+            bindFutures.add(bindFuture);
+
+            // Listen for the bindFuture.
+            RegionInfo regionInfo = (RegionInfo) server.getOption("regionInfo");
+            bindFuture.addListener(createBindCompleteListener(regionInfo, serverResolver.getNotifyBarrier()));
         }
 
         return new CompositeChannelFuture<>(channel, bindFutures);
@@ -380,7 +355,7 @@ System.out.println("Binding to address " + server.getOption("localAddress"));
             // clear out the pipelines for new connections to avoid impacting the observed script
             for (ServerBootstrapResolver serverResolver : configuration.getServerResolvers()) {
                 try {
-                    Bootstrap server = serverResolver.resolve();
+                    ServerBootstrap server = serverResolver.resolve();
                     server.setPipelineFactory(pipelineFactory(pipeline(closeOnExceptionHandler)));
                 } catch (RuntimeException e) {
                     LOGGER.warn("Exception caught while trying to stop server pipelies", e);

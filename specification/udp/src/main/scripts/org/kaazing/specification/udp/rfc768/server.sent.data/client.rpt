@@ -15,6 +15,6 @@
 #
 
 connect await BOUND
-        tcp://localhost:8080
+        udp://localhost:8080
 connected
 read "server data"

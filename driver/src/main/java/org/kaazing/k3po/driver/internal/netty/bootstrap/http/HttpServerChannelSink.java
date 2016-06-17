@@ -81,7 +81,7 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
             String schemeName = address.getLocation().getScheme();
             String httpSchemeName = httpLocalAddress.getLocation().getScheme();
 
-            ServerBootstrap bootstrap = (ServerBootstrap) bootstrapFactory.newServerBootstrap(schemeName);
+            ServerBootstrap bootstrap = bootstrapFactory.newServerBootstrap(schemeName);
             bootstrap.setParentHandler(createParentHandler(httpBindChannel, address));
             bootstrap.setPipelineFactory(pipelineFactory);
             bootstrap.setOption(format("%s.nextProtocol", schemeName), httpSchemeName);

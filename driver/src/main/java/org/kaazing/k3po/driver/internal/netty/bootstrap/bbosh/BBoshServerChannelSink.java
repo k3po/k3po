@@ -85,7 +85,7 @@ public class BBoshServerChannelSink extends AbstractServerChannelSink<BBoshServe
         String schemeName = address.getLocation().getScheme();
         String bboshSchemeName = bboshLocalAddress.getLocation().getScheme();
 
-        ServerBootstrap bootstrap = (ServerBootstrap) bootstrapFactory.newServerBootstrap(schemeName);
+        ServerBootstrap bootstrap = bootstrapFactory.newServerBootstrap(schemeName);
         bootstrap.setParentHandler(createParentHandler(bboshBindChannel));
         bootstrap.setPipelineFactory(pipelineFactory);
         bootstrap.setOption(format("%s.nextProtocol", schemeName), bboshSchemeName);

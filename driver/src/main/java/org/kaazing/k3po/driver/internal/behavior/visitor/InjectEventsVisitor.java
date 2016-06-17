@@ -170,8 +170,6 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
     @Override
     public AstScriptNode visit(AstWriteValueNode node, State state) throws Exception {
 
-        state.streamables.add(node);
-        /*
         switch (state.connectivityState) {
         case CONNECTED:
             state.streamables.add(node);
@@ -179,7 +177,7 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
         default:
             throw new IllegalStateException("Unexpected write before connected");
-        }*/
+        }
 
         return null;
     }
@@ -329,8 +327,7 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
     @Override
     public AstScriptNode visit(AstReadValueNode node, State state) throws Exception {
-        state.streamables.add(node);
-/*
+
         switch (state.connectivityState) {
             case CONNECTED:
             state.streamables.add(node);
@@ -339,7 +336,7 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
         default:
             throw new IllegalStateException("Unexpected read before connected");
         }
-*/
+
         return null;
     }
 
