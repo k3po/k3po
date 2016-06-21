@@ -37,6 +37,7 @@ import org.kaazing.k3po.control.internal.command.AbortCommand;
 import org.kaazing.k3po.control.internal.command.PrepareCommand;
 import org.kaazing.k3po.control.internal.command.StartCommand;
 import org.kaazing.k3po.control.internal.event.CommandEvent;
+import org.kaazing.k3po.control.internal.event.CommandEvent.Kind;
 import org.kaazing.k3po.control.internal.event.ErrorEvent;
 import org.kaazing.k3po.control.internal.event.FinishedEvent;
 import org.kaazing.k3po.control.internal.event.NotifiedEvent;
@@ -52,7 +53,6 @@ final class ScriptRunner implements Callable<ScriptPair> {
     private volatile boolean abortScheduled;
     private volatile Map<String, BarrierStateMachine> barriers;
     private final List<String> overridenScriptProperties;
-    private static final int DISPOSE_TIMEOUT = isDebugging() ? 0: 5000;
 
     ScriptRunner(URL controlURL, List<String> names, Latch latch, List<String> overridenScriptProperties) {
 
@@ -67,19 +67,13 @@ final class ScriptRunner implements Callable<ScriptPair> {
         this.controller = new Control(controlURL);
         this.names = names;
         this.latch = latch;
-        this.barriers = new HashMap<String, ScriptRunner.BarrierStateMachine>();
+        this.barriers = new HashMap<>();
         this.overridenScriptProperties = overridenScriptProperties;
     }
 
     public void abort() {
         // logging with system.out as I don't believe there is a standard junit logger, in the future
         // we will send this on the wire to appear in the diff (https://github.com/k3po/k3po/issues/332)
-        System.out.println(
-                "K3po Script Runner is sending an abort!\n Aborts may cause K3po to falsely fail the test if K3po\n"
-                + "is still processing a backlog of messages.  This is often the case in junit tests that have low\n"
-                + "timeout exceptions (less than 5 secs) and are running on somewhat limited hardware (travis CI and build"
-                + " machines)\n"
-                + "see https://github.com/k3po/k3po/issues/332 for more details");
         this.abortScheduled = true;
         latch.notifyAbort();
     }
@@ -322,12 +316,10 @@ final class ScriptRunner implements Callable<ScriptPair> {
             controller.dispose();
             CommandEvent event = controller.readEvent();
 
-            // ensure it is the correct event
-            switch (event.getKind()) {
-            case DISPOSED:
+            Kind kind = event.getKind();
+            if (kind == Kind.DISPOSED) {
                 latch.notifyDisposed();
-                break;
-            default:
+            } else {
                 throw new IllegalArgumentException("Unrecognized event kind: " + event.getKind());
             }
         } catch (Exception e) {
@@ -343,15 +335,4 @@ final class ScriptRunner implements Callable<ScriptPair> {
         }
     }
 
-    private static boolean isDebugging() {
-        List<String> arguments = ManagementFactory.getRuntimeMXBean().getInputArguments();
-        for (final String argument : arguments) {
-            if ("-Xdebug".equals(argument)) {
-                return true;
-            } else if (argument.startsWith("-agentlib:jdwp")) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

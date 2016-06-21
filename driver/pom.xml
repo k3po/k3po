@@ -20,7 +20,6 @@
         <connection>scm:git:https://github.com/k3po/k3po.git</connection>
         <developerConnection>${project.scm.connection}</developerConnection>
     </scm>
-
     <dependencies>
         <dependency>
             <groupId>org.kaazing</groupId>

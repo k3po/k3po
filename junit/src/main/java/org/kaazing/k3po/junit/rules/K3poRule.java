@@ -22,9 +22,11 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.AssumptionViolatedException;
 import org.junit.rules.Verifier;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
@@ -39,6 +41,8 @@ import org.kaazing.net.URLFactory;
  */
 public class K3poRule extends Verifier {
 
+    private static final String VERSION_SEP = "-";
+
     /*
      * For some reason earlier versions of JUnit will cause tests to either hang or succeed incorrectly without ever
      * talking to the K3PO. I'm not sure why but the apply method does not seem to be called. So we need to require
@@ -51,15 +55,13 @@ public class K3poRule extends Verifier {
         Integer[] versionsInt = new Integer[versionTokens.length];
         for (int i = 0; i < versionTokens.length; i++) {
             String versionToken = versionTokens[i];
-            if (versionToken.contains("-")) {
-                versionToken = versionToken.substring(0, versionToken.indexOf("-"));
+            if (versionToken.contains(VERSION_SEP)) {
+                versionToken = versionToken.substring(0, versionToken.indexOf(VERSION_SEP));
             }
             versionsInt[i] = Integer.parseInt(versionToken);
         }
-        if (versionsInt[0] < 5) {
-            if (versionsInt.length == 1 || versionsInt[0] < 4 || versionsInt[1] < 10) {
-                throw new AssertionError("JUnit library 4.10+ required. Found version " + version);
-            }
+        if (versionsInt[0] < 5 && (versionsInt.length == 1 || versionsInt[0] < 4 || versionsInt[1] < 10)) {
+            throw new AssertionError("JUnit library 4.10+ required. Found version " + version);
         }
     }
 
@@ -91,59 +93,77 @@ public class K3poRule extends Verifier {
      * Sets the URI on which to communicate to the k3po driver.
      * @param controlURI the URI on which to connect
      * @return an instance of K3poRule for convenience
+     * @throws MalformedURLException 
      */
-    public K3poRule setControlURI(URI controlURI) {
-        this.controlURL = createURL(controlURI.toString());
+    public K3poRule setControlURI(URI controlURI) throws MalformedURLException {
+        this.controlURL = URLFactory.createURL(controlURI.toString());
         return this;
     }
 
     @Override
     public Statement apply(Statement statement, final Description description) {
 
-        Specification specification = description.getAnnotation(Specification.class);
-        String[] scripts = (specification != null) ? specification.value() : null;
-        ScriptProperty overriddenProperty = description.getAnnotation(ScriptProperty.class);
-        String[] overriddenProperties = (overriddenProperty != null) ? overriddenProperty.value() : null;
-        List<String> methodOverridenScriptProperties = new ArrayList<>();
-        if (overriddenProperties != null) {
-            for (String prop : overriddenProperties) {
-                methodOverridenScriptProperties.add(prop);
-            }
-        }
+        String[] scriptNames = getScriptNames(description);
+        // decorate with K3PO behavior only if @Specification annotation is present
+        if (scriptNames != null) {
 
-        if (scripts != null) {
-            // decorate with K3PO behavior only if @Specification annotation is present
-            String packagePath = this.scriptRoot;
-            if (packagePath == null) {
-                Class<?> testClass = description.getTestClass();
-                String packageName = testClass.getPackage().getName();
-                packagePath = packageName.replaceAll("\\.", "/");
-            }
+            List<String> methodOverridenScriptProperties = getOverridenProperties(description);
 
-            List<String> scriptNames = new LinkedList<>();
-            for (String script : scripts) {
-                // strict compatibility (relax to support fully qualified paths later)
-                if (script.startsWith("/")) {
-                    throw new IllegalArgumentException("Script path must be relative");
-                }
+            List<String> scriptLocations = getScriptLocations(description, scriptNames);
 
-                String scriptName = format("%s/%s", packagePath, script);
-                scriptNames.add(scriptName);
-            }
-
-            URL controlURL = this.controlURL;
-            if (controlURL == null) {
-                // lazy dependency on TCP scheme
-                controlURL = createURL("tcp://localhost:11642");
-            }
+            setControlURL();
 
             methodOverridenScriptProperties.addAll(classOverriddenProperties);
             this.statement =
-                    new SpecificationStatement(statement, controlURL, scriptNames, latch, methodOverridenScriptProperties);
-            statement = this.statement;
+                    new SpecificationStatement(statement, controlURL, scriptLocations, latch, methodOverridenScriptProperties);
         }
 
-        return super.apply(statement, description);
+        return super.apply(this.statement, description);
+    }
+
+    private void setControlURL() {
+        if (this.controlURL == null) {
+            try {
+                this.controlURL = URLFactory.createURL("tcp://localhost:11642");
+            } catch (MalformedURLException e) {
+                throw new AssumptionViolatedException("K3po Control URL could not be set", e);
+            }
+        }
+    }
+
+    private String[] getScriptNames(final Description description) {
+        Specification specification = description.getAnnotation(Specification.class);
+        return (specification != null) ? specification.value() : null;
+    }
+
+    private List<String> getScriptLocations(final Description description, String[] scriptNames) {
+        String packagePath = this.scriptRoot;
+        if (packagePath == null) {
+            Class<?> testClass = description.getTestClass();
+            String packageName = testClass.getPackage().getName();
+            packagePath = packageName.replaceAll("\\.", "/");
+        }
+
+        List<String> scriptLocations = new LinkedList<>();
+        for (String script : scriptNames) {
+            // strict compatibility (relax to support fully qualified paths later)
+            if (script.startsWith("/")) {
+                throw new IllegalArgumentException("Script path must be relative");
+            }
+
+            String scriptName = format("%s/%s", packagePath, script);
+            scriptLocations.add(scriptName);
+        }
+        return scriptLocations;
+    }
+
+    private List<String> getOverridenProperties(final Description description) {
+        List<String> methodOverridenScriptProperties = new ArrayList<>();
+        ScriptProperty annotation = description.getAnnotation(ScriptProperty.class);
+        if (annotation != null && annotation.value() != null) {
+            methodOverridenScriptProperties.addAll(Arrays.asList(annotation.value()));
+        }
+        return methodOverridenScriptProperties;
     }
 
     /**
@@ -172,14 +192,6 @@ public class K3poRule extends Verifier {
         latch.notifyStartable();
 
         latch.awaitFinished();
-    }
-
-    private static URL createURL(String location) {
-        try {
-            return URLFactory.createURL("tcp://localhost:11642");
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**

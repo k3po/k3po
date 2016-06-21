@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
