@@ -27,8 +27,6 @@ import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
 class UdpServerChannel extends AbstractServerChannel<ChannelConfig> {
 
-    private NioDatagramChannel datagramChannel;
-
     UdpServerChannel(ChannelFactory factory, ChannelPipeline pipeline, ChannelSink sink) {
         super(factory, pipeline, sink, new DefaultServerChannelConfig());
     }
@@ -56,14 +54,6 @@ class UdpServerChannel extends AbstractServerChannel<ChannelConfig> {
     @Override
     protected Channel getTransport() {
         return super.getTransport();
-    }
-
-    void setDatagramChannel(NioDatagramChannel datagramChannel) {
-        this.datagramChannel = datagramChannel;
-    }
-
-    NioDatagramChannel getDatagramChannel() {
-        return datagramChannel;
     }
 
 }

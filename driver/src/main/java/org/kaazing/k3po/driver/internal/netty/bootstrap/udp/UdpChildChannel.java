@@ -15,20 +15,19 @@
  */
 package org.kaazing.k3po.driver.internal.netty.bootstrap.udp;
 
-import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelConfig;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelSink;
-import org.jboss.netty.channel.DefaultServerChannelConfig;
 import org.jboss.netty.channel.ServerChannel;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannel;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractServerChannel;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
-public class UdpChildChannel extends AbstractChannel<ChannelConfig> {
+class UdpChildChannel extends AbstractChannel<ChannelConfig> {
 
-    public UdpChildChannel(ServerChannel parent, ChannelFactory factory, ChannelPipeline pipeline,
+    private long lastAccessTime;
+
+    UdpChildChannel(ServerChannel parent, ChannelFactory factory, ChannelPipeline pipeline,
             ChannelSink sink, ChannelConfig config) {
         super(parent, factory, pipeline, sink, config);
     }
@@ -51,6 +50,15 @@ public class UdpChildChannel extends AbstractChannel<ChannelConfig> {
     @Override
     protected void setRemoteAddress(ChannelAddress remoteAddress) {
         super.setRemoteAddress(remoteAddress);
+    }
+
+    void setLastAccessTime(long lastAccessTime) {
+        System.out.println("Updating last access time for " + this);
+        this.lastAccessTime = lastAccessTime;
+    }
+
+    long getLastAccessTime() {
+        return lastAccessTime;
     }
 
 }

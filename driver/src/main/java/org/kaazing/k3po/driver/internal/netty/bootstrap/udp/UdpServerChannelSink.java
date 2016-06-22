@@ -40,22 +40,25 @@ class UdpServerChannelSink extends AbstractServerChannelSink<UdpServerChannel> {
 
     @Override
     protected void bindRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
+        ChannelAddress localAddress = (ChannelAddress) evt.getValue();
+
         // Use ConnectionlessBootstrap to create a NioDatagramChannel for an UdpServerChannel
         UdpServerChannel serverChannel = (UdpServerChannel) evt.getChannel();
         ConnectionlessBootstrap bootstrap = new ConnectionlessBootstrap(serverChannelFactory);
         DatagramChannelPipelineFactory pipelineFactory = new DatagramChannelPipelineFactory(serverChannel);
         bootstrap.setPipelineFactory(pipelineFactory);
-        ChannelAddress localAddress = (ChannelAddress) evt.getValue();
         NioDatagramChannel datagramChannel = (NioDatagramChannel) bootstrap.bind(toInetSocketAddress(localAddress));
-        serverChannel.setDatagramChannel(datagramChannel);
 
+        serverChannel.setLocalAddress(localAddress);
+        serverChannel.setTransport(datagramChannel);
+        serverChannel.setBound();
         evt.getFuture().setSuccess();
     }
 
     @Override
     protected void unbindRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
         UdpServerChannel serverChannel = (UdpServerChannel) evt.getChannel();
-        serverChannel.getDatagramChannel().unbind();
+        serverChannel.getTransport().unbind();
 
         fireChannelUnbound(serverChannel);
         evt.getFuture().setSuccess();
@@ -66,7 +69,7 @@ class UdpServerChannelSink extends AbstractServerChannelSink<UdpServerChannel> {
         UdpServerChannel serverChannel = (UdpServerChannel) evt.getChannel();
 
         // Close underlying NioDatagramChannel
-        serverChannel.getDatagramChannel().close();
+        serverChannel.getTransport().close();
 
         // setClosed() (but *not* evt.getFuture().setSuccess()) triggers the ChannelFuture's success
         serverChannel.setClosed();

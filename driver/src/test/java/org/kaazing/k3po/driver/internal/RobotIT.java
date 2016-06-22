@@ -475,6 +475,7 @@ public class RobotIT {
         // @formatter:off
         String script =
                 "accept udp://localhost:8080\n" +
+                "       option timeout 100\n" +
                 "accepted\n" +
                 "connected\n" +
                 "read \"Hello11\"\n" +

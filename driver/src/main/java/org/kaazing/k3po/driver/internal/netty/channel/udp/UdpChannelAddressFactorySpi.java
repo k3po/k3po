@@ -15,12 +15,12 @@
  */
 package org.kaazing.k3po.driver.internal.netty.channel.udp;
 
-import java.net.URI;
-import java.util.Map;
-
 import org.jboss.netty.channel.ChannelException;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactorySpi;
+
+import java.net.URI;
+import java.util.Map;
 
 public class UdpChannelAddressFactorySpi extends ChannelAddressFactorySpi {
 
@@ -48,6 +48,10 @@ public class UdpChannelAddressFactorySpi extends ChannelAddressFactorySpi {
             throw new ChannelException(String.format("%s path \"%s\" unexpected", getSchemeName(), path));
         }
 
-        return super.newChannelAddress0(location, transport, options);
+        Long timeout = (Long) options.get("timeout");
+        long timeoutValue = timeout == null ? 0 : timeout;
+
+        return new UdpChannelAddress(location, transport, timeoutValue);
     }
+
 }

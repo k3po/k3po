@@ -847,6 +847,10 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
                 AstExpressionValue writerValue = writerVisitor.visit(ctx.writer);
                 node.getOptions().put("writer", writerValue);
             }
+            Token timeout = ctx.timeout;
+            if (timeout != null) {
+                node.getOptions().put("timeout", Long.parseLong(timeout.getText()));
+            }
             super.visitAcceptNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
             return node;
@@ -926,6 +930,10 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             Token size = ctx.size;
             if (size != null) {
                 node.getOptions().put("size", Long.parseLong(size.getText()));
+            }
+            Token timeout = ctx.timeout;
+            if (timeout != null) {
+                node.getOptions().put("timeout", Long.parseLong(timeout.getText()));
             }
             ExpressionValueContext reader = ctx.reader;
             if (reader != null) {
