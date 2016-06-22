@@ -481,6 +481,8 @@ public class RobotIT {
                 "read \"Hello12\"\n" +
                 "write \"Hello World11\"\n" +
                 "write \"Hello World12\"\n" +
+                "close\n" +
+                "closed\n" +
 
                 "accepted\n" +
                 "connected\n" +
@@ -488,6 +490,8 @@ public class RobotIT {
                 "read \"Hello22\"\n" +
                 "write \"Hello World21\"\n" +
                 "write \"Hello World22\"\n" +
+                "close\n" +
+                "closed\n" +
 
                 "accept udp://localhost:8081\n" +
                 "accepted\n" +
@@ -495,8 +499,9 @@ public class RobotIT {
                 "read \"Hello31\"\n" +
                 "read \"Hello32\"\n" +
                 "write \"Hello World31\"\n" +
-                "write \"Hello World32\"\n";
-
+                "write \"Hello World32\"\n" +
+                "close\n" +
+                "closed\n";
 
         String expected = script;
         // @formatter:on
@@ -542,6 +547,8 @@ public class RobotIT {
                 "read \"Hello1\"\n" +
                 "write \"Hello11\"\n" +
                 "read \"Hello11\"\n" +
+                "close\n" +
+                "closed\n" +
 
                 "connect udp://localhost:8080\n" +
                 "connected\n" +
@@ -549,13 +556,17 @@ public class RobotIT {
                 "read \"Hello2\"\n" +
                 "write \"Hello22\"\n" +
                 "read \"Hello22\"\n" +
+                "close\n" +
+                "closed\n" +
 
                 "connect udp://localhost:8080\n" +
                 "connected\n" +
                 "write \"Hello3\"\n" +
                 "read \"Hello3\"\n" +
                 "write \"Hello33\"\n" +
-                "read \"Hello33\"\n";
+                "read \"Hello33\"\n" +
+                "close\n" +
+                "closed\n";
 
 
         String expected = script;

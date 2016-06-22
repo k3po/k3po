@@ -24,7 +24,6 @@ read "Hello"
 write "Hello"
 read "Goodbye"
 write "Goodbye"
-closed
 
 # Stream 2
 accepted
@@ -33,7 +32,6 @@ read "Hello"
 write "Hello"
 read "Goodbye"
 write "Goodbye"
-closed
 
 # Stream 3
 accepted
@@ -42,5 +40,4 @@ read "Hello"
 write "Hello"
 read "Goodbye"
 write "Goodbye"
-closed
 
