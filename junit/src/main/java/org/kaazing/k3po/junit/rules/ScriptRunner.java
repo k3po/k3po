@@ -33,6 +33,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
 import org.kaazing.k3po.control.internal.Control;
+import org.kaazing.k3po.control.internal.TransportException;
 import org.kaazing.k3po.control.internal.command.AbortCommand;
 import org.kaazing.k3po.control.internal.command.PrepareCommand;
 import org.kaazing.k3po.control.internal.command.StartCommand;
@@ -159,14 +160,10 @@ final class ScriptRunner implements Callable<ScriptPair> {
                 }
             }
         } catch (ConnectException e) {
-            Exception exception = new Exception("Failed to connect. Is K3PO ready?", e);
+            TransportException exception = new TransportException("Failed to connect. Is K3PO ready?", e);
             exception.fillInStackTrace();
-            latch.notifyException(exception);
+            latch.setException(exception);
             throw e;
-        } catch (Exception e) {
-            latch.notifyException(e);
-            throw e;
-
         } finally {
             latch.notifyFinished();
         }
@@ -205,7 +202,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
         try {
             controller.await(barrierName);
         } catch (Exception e) {
-            latch.notifyException(e);
+            latch.setException(new TransportException("Could not await barrier " + barrierName, e));
         }
         notifiedLatch.await();
     }
@@ -226,7 +223,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
                 try {
                     controller.notifyBarrier(barrierName);
                 } catch (Exception e) {
-                    latch.notifyException(e);
+                    latch.setException(new TransportException("Could not notify barrier: " + barrierName, e));
                 }
             }
 
@@ -319,17 +316,8 @@ final class ScriptRunner implements Callable<ScriptPair> {
             Kind kind = event.getKind();
             if (kind == Kind.DISPOSED) {
                 latch.notifyDisposed();
-            } else {
-                throw new IllegalArgumentException("Unrecognized event kind: " + event.getKind());
-            }
-        } catch (Exception e) {
-            // TODO log this when we get a logger added to Junit, or remove need for this which always clean
-            // shutdown of k3po channels
-            e.printStackTrace();
-            // NOOP swallow exception as this is a clean up task that may fail in case setup didn't complete,
-            // expressions didn't get resolved. Etc.  This happens frequently when Junit Assume is used, as K3po
-            // will have inited the accept channels outside of the test method.
-        }
+            } // even if not disposed there is nothing we can do, just disconnect (no logger in Junit)
+        } 
         finally {
             controller.disconnect();
         }

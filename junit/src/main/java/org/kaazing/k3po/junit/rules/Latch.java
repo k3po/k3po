@@ -16,13 +16,18 @@
 package org.kaazing.k3po.junit.rules;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import org.kaazing.k3po.control.internal.TransportException;
 
 class Latch {
 
-    enum State { INIT, PREPARED, STARTABLE, FINISHED }
+    enum State {
+        INIT, PREPARED, STARTABLE, FINISHED
+    }
 
     private volatile State state;
-    private volatile Exception exception;
+    private volatile TransportException exception;
 
     private final CountDownLatch prepared;
     private final CountDownLatch startable;
@@ -40,21 +45,16 @@ class Latch {
     }
 
     void notifyPrepared() {
-        switch (state) {
-        case INIT:
+        if (state == State.INIT) {
             state = State.PREPARED;
             prepared.countDown();
-            break;
-        default:
+        } else {
             throw new IllegalStateException(state.name());
         }
     }
 
-    void awaitPrepared() throws Exception {
-        prepared.await();
-        if (exception != null) {
-            throw exception;
-        }
+    void awaitPrepared() throws TransportException {
+        await(prepared, "prepared");
     }
 
     boolean isPrepared() {
@@ -80,15 +80,12 @@ class Latch {
         }
     }
 
-    void awaitStartable() throws Exception {
-        startable.await();
-        if (exception != null) {
-            throw exception;
-        }
-    }
-
     boolean isStartable() {
         return startable.getCount() == 0L;
+    }
+
+    void awaitStartable() throws TransportException {
+        await(startable, "startable");
     }
 
     void notifyFinished() {
@@ -111,6 +108,8 @@ class Latch {
         switch (state) {
         case INIT:
             notifyPrepared();
+            notifyStartable();
+            break;
         case PREPARED:
             notifyStartable();
             break;
@@ -118,12 +117,23 @@ class Latch {
         }
     }
 
-    void awaitFinished() throws Exception {
-        finished.await();
+    void awaitFinished() throws TransportException {
+        await(finished, "finished");
     }
 
-    void awaitDisposed() throws Exception {
-        disposed.await();
+    void awaitDisposed() throws TransportException {
+        await(disposed, "disposed");
+    }
+
+    private void await(CountDownLatch latch, String name) throws TransportException {
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            if (exception != null) {
+                exception = new TransportException(String.format("Failed to await %s", name), e);
+            }
+        }
         if (exception != null) {
             throw exception;
         }
@@ -137,7 +147,7 @@ class Latch {
         return exception != null;
     }
 
-    void notifyException(Exception exception) {
+    void setException(TransportException exception) {
         this.exception = exception;
         prepared.countDown();
         startable.countDown();

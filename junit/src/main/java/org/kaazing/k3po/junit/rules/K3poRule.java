@@ -101,7 +101,7 @@ public class K3poRule extends Verifier {
     }
 
     @Override
-    public Statement apply(Statement statement, final Description description) {
+    public Statement apply(Statement callersStatement, final Description description) {
 
         String[] scriptNames = getScriptNames(description);
         // decorate with K3PO behavior only if @Specification annotation is present
@@ -114,11 +114,13 @@ public class K3poRule extends Verifier {
             setControlURL();
 
             methodOverridenScriptProperties.addAll(classOverriddenProperties);
-            this.statement =
-                    new SpecificationStatement(statement, controlURL, scriptLocations, latch, methodOverridenScriptProperties);
+            this.statement = new SpecificationStatement(callersStatement, controlURL, scriptLocations, latch,
+                    methodOverridenScriptProperties);
+            return super.apply(this.statement, description);
+        } else {
+            return super.apply(callersStatement, description);
         }
 
-        return super.apply(this.statement, description);
     }
 
     private void setControlURL() {
