@@ -475,14 +475,14 @@ public class RobotIT {
         // @formatter:off
         String script =
                 "accept udp://localhost:8080\n" +
-                "       option timeout 100\n" +
+                "       option timeout 1000\n" +
                 "accepted\n" +
                 "connected\n" +
                 "read \"Hello11\"\n" +
                 "read \"Hello12\"\n" +
                 "write \"Hello World11\"\n" +
                 "write \"Hello World12\"\n" +
-                "close\n" +
+                // Gets closed because of idle timeout
                 "closed\n" +
 
                 "accepted\n" +

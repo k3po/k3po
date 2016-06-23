@@ -25,8 +25,6 @@ import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
 class UdpChildChannel extends AbstractChannel<ChannelConfig> {
 
-    private long lastAccessTime;
-
     UdpChildChannel(ServerChannel parent, ChannelFactory factory, ChannelPipeline pipeline,
             ChannelSink sink, ChannelConfig config) {
         super(parent, factory, pipeline, sink, config);
@@ -50,15 +48,6 @@ class UdpChildChannel extends AbstractChannel<ChannelConfig> {
     @Override
     protected void setRemoteAddress(ChannelAddress remoteAddress) {
         super.setRemoteAddress(remoteAddress);
-    }
-
-    void setLastAccessTime(long lastAccessTime) {
-        System.out.println("Updating last access time for " + this);
-        this.lastAccessTime = lastAccessTime;
-    }
-
-    long getLastAccessTime() {
-        return lastAccessTime;
     }
 
 }

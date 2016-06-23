@@ -26,12 +26,20 @@ import org.jboss.netty.channel.DefaultChannelConfig;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.socket.nio.NioDatagramChannel;
+import org.jboss.netty.handler.timeout.IdleStateAwareChannelHandler;
+import org.jboss.netty.handler.timeout.IdleStateEvent;
+import org.jboss.netty.handler.timeout.IdleStateHandler;
+import org.jboss.netty.util.HashedWheelTimer;
+import org.jboss.netty.util.Timer;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.SimpleChannelHandler;
+import org.kaazing.k3po.driver.internal.netty.channel.udp.UdpChannelAddress;
 
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import static org.jboss.netty.channel.Channels.fireChannelBound;
 import static org.jboss.netty.channel.Channels.fireChannelClosed;
@@ -40,16 +48,26 @@ import static org.jboss.netty.channel.Channels.fireChannelOpen;
 import static org.jboss.netty.channel.Channels.fireExceptionCaught;
 import static org.jboss.netty.channel.Channels.fireMessageReceived;
 import static org.kaazing.k3po.driver.internal.channel.Channels.channelAddress;
+import static org.kaazing.k3po.driver.internal.channel.Channels.toInetSocketAddress;
 
 // Creates a channel for each remote address
 // Netty doesn't have this feature yet (https://github.com/netty/netty/issues/344)
 class UdpChildChannelSource extends SimpleChannelHandler {
+
+    // remote address --> child channel
     private final Map<SocketAddress, UdpChildChannel> childChannels = new ConcurrentHashMap<>();
 
-    private final UdpServerChannel serverChannel;
+    final UdpServerChannel serverChannel;
+    private final Timer timer;
 
     UdpChildChannelSource(UdpServerChannel serverChannel) {
         this.serverChannel = serverChannel;
+        timer = new HashedWheelTimer();     // todo one instance
+    }
+
+    void closeChildChannel(UdpChildChannel childChannel) {
+        InetSocketAddress socketAddress = toInetSocketAddress(childChannel.getRemoteAddress());
+        childChannels.remove(socketAddress);
     }
 
     @Override
@@ -76,6 +94,8 @@ class UdpChildChannelSource extends SimpleChannelHandler {
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         SocketAddress remoteAddress = e.getRemoteAddress();
         NioDatagramChannel datagramChannel = (NioDatagramChannel) e.getChannel();
+        UdpChannelAddress localAddress = serverChannel.getLocalAddress();
+        long timeout = localAddress.timeout();
 
         UdpChildChannel udpChildChannel = childChannels.computeIfAbsent(remoteAddress, x -> {
             ChannelPipelineFactory pipelineFactory = serverChannel.getConfig().getPipelineFactory();
@@ -85,8 +105,15 @@ class UdpChildChannelSource extends SimpleChannelHandler {
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
+
+            if (timeout != 0) {
+                IdleStateHandler idleStateHandler = new IdleStateHandler(timer, 0, 0, timeout, TimeUnit.MILLISECONDS);
+                pipeline.addFirst("idleHandler", new IdleHandler());
+                pipeline.addFirst("idleStateHandler", idleStateHandler);
+            }
+
             ChannelConfig config = new DefaultChannelConfig();
-            ChannelSink sink = new UdpChildChannelSink(datagramChannel);
+            ChannelSink sink = new UdpChildChannelSink(this);
 
             UdpChildChannel childChannel = new UdpChildChannel(serverChannel, null, pipeline, sink, config);
             fireChannelOpen(childChannel);
@@ -96,7 +123,6 @@ class UdpChildChannelSource extends SimpleChannelHandler {
             fireChannelBound(childChannel, e.getRemoteAddress());
 
             ChannelAddress address = channelAddress(datagramChannel, e.getRemoteAddress());
-
             childChannel.setRemoteAddress(address);
             childChannel.setConnected();
             fireChannelConnected(childChannel, e.getRemoteAddress());
@@ -105,6 +131,14 @@ class UdpChildChannelSource extends SimpleChannelHandler {
         });
 
         fireMessageReceived(udpChildChannel, e.getMessage());
+    }
+
+    private class IdleHandler extends IdleStateAwareChannelHandler {
+        @Override
+        public void channelIdle(ChannelHandlerContext ctx, IdleStateEvent e) {
+            // Close idle UdpChildChannel
+            e.getChannel().close();
+        }
     }
 
 }

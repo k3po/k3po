@@ -24,12 +24,10 @@ import org.jboss.netty.channel.socket.nio.NioDatagramWorkerPool;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractServerChannelSink;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
-import java.net.InetSocketAddress;
-import java.net.URI;
-
 import static org.jboss.netty.channel.Channels.fireChannelClosed;
 import static org.jboss.netty.channel.Channels.fireChannelDisconnected;
 import static org.jboss.netty.channel.Channels.fireChannelUnbound;
+import static org.kaazing.k3po.driver.internal.channel.Channels.toInetSocketAddress;
 
 class UdpServerChannelSink extends AbstractServerChannelSink<UdpServerChannel> {
     private final NioDatagramChannelFactory serverChannelFactory;
@@ -76,16 +74,6 @@ class UdpServerChannelSink extends AbstractServerChannelSink<UdpServerChannel> {
         fireChannelDisconnected(serverChannel);
         fireChannelUnbound(serverChannel);
         fireChannelClosed(serverChannel);
-    }
-
-    private static InetSocketAddress toInetSocketAddress(ChannelAddress channelAddress) {
-        if (channelAddress == null) {
-            return null;
-        }
-        URI location = channelAddress.getLocation();
-        String hostname = location.getHost();
-        int port = location.getPort();
-        return new InetSocketAddress(hostname, port);
     }
 
 }

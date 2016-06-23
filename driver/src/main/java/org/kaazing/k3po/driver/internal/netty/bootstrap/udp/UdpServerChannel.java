@@ -24,6 +24,7 @@ import org.jboss.netty.channel.DefaultServerChannelConfig;
 import org.jboss.netty.channel.socket.nio.NioDatagramChannel;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractServerChannel;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
+import org.kaazing.k3po.driver.internal.netty.channel.udp.UdpChannelAddress;
 
 class UdpServerChannel extends AbstractServerChannel<ChannelConfig> {
 
@@ -34,6 +35,11 @@ class UdpServerChannel extends AbstractServerChannel<ChannelConfig> {
     @Override
     protected void setLocalAddress(ChannelAddress localAddress) {
         super.setLocalAddress(localAddress);
+    }
+
+    @Override
+    public UdpChannelAddress getLocalAddress() {
+        return (UdpChannelAddress) super.getLocalAddress();
     }
 
     @Override
@@ -52,8 +58,8 @@ class UdpServerChannel extends AbstractServerChannel<ChannelConfig> {
     }
 
     @Override
-    protected Channel getTransport() {
-        return super.getTransport();
+    protected NioDatagramChannel getTransport() {
+        return (NioDatagramChannel) super.getTransport();
     }
 
 }

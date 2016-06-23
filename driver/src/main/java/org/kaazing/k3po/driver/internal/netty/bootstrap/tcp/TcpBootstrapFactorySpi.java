@@ -40,6 +40,8 @@ import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
+import static org.kaazing.k3po.driver.internal.channel.Channels.toInetSocketAddress;
+
 public final class TcpBootstrapFactorySpi extends BootstrapFactorySpi implements ExternalResourceReleasable {
 
     private final Collection<ChannelFactory> channelFactories;
@@ -146,21 +148,4 @@ public final class TcpBootstrapFactorySpi extends BootstrapFactorySpi implements
         };
     }
 
-    private static InetSocketAddress toInetSocketAddress(final SocketAddress localAddress) {
-        if (localAddress instanceof ChannelAddress) {
-            return toInetSocketAddress((ChannelAddress) localAddress);
-        } else {
-            return (InetSocketAddress) localAddress;
-        }
-    }
-
-    private static InetSocketAddress toInetSocketAddress(ChannelAddress channelAddress) {
-        if (channelAddress == null) {
-            return null;
-        }
-        URI location = channelAddress.getLocation();
-        String hostname = location.getHost();
-        int port = location.getPort();
-        return new InetSocketAddress(hostname, port);
-    }
 }
