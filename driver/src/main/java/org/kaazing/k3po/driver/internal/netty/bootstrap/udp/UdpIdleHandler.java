@@ -16,29 +16,14 @@
 
 package org.kaazing.k3po.driver.internal.netty.bootstrap.udp;
 
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelSink;
-import org.jboss.netty.channel.ServerChannelFactory;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.handler.timeout.IdleStateAwareChannelHandler;
+import org.jboss.netty.handler.timeout.IdleStateEvent;
 
-class UdpServerChannelFactory implements ServerChannelFactory {
-
-    private final ChannelSink channelSink;
-
-    UdpServerChannelFactory(UdpServerChannelSink channelSink) {
-        this.channelSink = channelSink;
-    }
-
+class UdpIdleHandler extends IdleStateAwareChannelHandler {
     @Override
-    public UdpServerChannel newChannel(ChannelPipeline pipeline) {
-        return new UdpServerChannel(this, pipeline, channelSink);
+    public void channelIdle(ChannelHandlerContext ctx, IdleStateEvent e) {
+        // Close idle UdpChildChannel (on server side) or NioDatagramChannel (client side)
+        e.getChannel().close();
     }
-
-    @Override
-    public void shutdown() {
-    }
-
-    @Override
-    public void releaseExternalResources() {
-    }
-
 }

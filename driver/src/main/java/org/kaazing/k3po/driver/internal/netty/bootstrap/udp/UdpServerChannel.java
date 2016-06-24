@@ -26,6 +26,14 @@ import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractServerCh
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.udp.UdpChannelAddress;
 
+/*
+ * Virtual server channel for a single UDP accept. UdpServerChannelSink sets up a corresponding
+ * NioDatagramChannel
+ *
+ * Pipeline for UdpServerChannel :
+ * ServerBootStrap.Binder
+ *
+ */
 class UdpServerChannel extends AbstractServerChannel<ChannelConfig> {
 
     UdpServerChannel(ChannelFactory factory, ChannelPipeline pipeline, ChannelSink sink) {

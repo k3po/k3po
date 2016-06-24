@@ -543,12 +543,13 @@ public class RobotIT {
         // @formatter:off
         String script =
                 "connect udp://localhost:8080\n" +
+                "        option timeout 1000\n" +
                 "connected\n" +
                 "write \"Hello1\"\n" +
                 "read \"Hello1\"\n" +
                 "write \"Hello11\"\n" +
                 "read \"Hello11\"\n" +
-                "close\n" +
+                // Gets closed because of idle timeout
                 "closed\n" +
 
                 "connect udp://localhost:8080\n" +
@@ -561,12 +562,13 @@ public class RobotIT {
                 "closed\n" +
 
                 "connect udp://localhost:8080\n" +
+                "        option timeout 1500\n" +
                 "connected\n" +
                 "write \"Hello3\"\n" +
                 "read \"Hello3\"\n" +
                 "write \"Hello33\"\n" +
-                "read \"Hello33\"\n" +
-                "close\n" +
+                "read \"Hello33\"\n"  +
+                // Gets closed because of idle timeout
                 "closed\n";
 
 

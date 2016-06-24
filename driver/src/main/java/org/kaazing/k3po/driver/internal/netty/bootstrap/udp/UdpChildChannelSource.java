@@ -26,10 +26,7 @@ import org.jboss.netty.channel.DefaultChannelConfig;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.socket.nio.NioDatagramChannel;
-import org.jboss.netty.handler.timeout.IdleStateAwareChannelHandler;
-import org.jboss.netty.handler.timeout.IdleStateEvent;
 import org.jboss.netty.handler.timeout.IdleStateHandler;
-import org.jboss.netty.util.HashedWheelTimer;
 import org.jboss.netty.util.Timer;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.SimpleChannelHandler;
@@ -50,8 +47,12 @@ import static org.jboss.netty.channel.Channels.fireMessageReceived;
 import static org.kaazing.k3po.driver.internal.channel.Channels.channelAddress;
 import static org.kaazing.k3po.driver.internal.channel.Channels.toInetSocketAddress;
 
-// Creates a channel for each remote address
-// Netty doesn't have this feature yet (https://github.com/netty/netty/issues/344)
+/*
+ * UdpServerChannelSink sets up NioDatagramChannel with this handler as the pipeline
+ *
+ * This handler creates a channel (UdpChildChannel) for each remote address
+ * Netty doesn't have this feature yet (https://github.com/netty/netty/issues/344)
+ */
 class UdpChildChannelSource extends SimpleChannelHandler {
 
     // remote address --> child channel
@@ -60,9 +61,9 @@ class UdpChildChannelSource extends SimpleChannelHandler {
     final UdpServerChannel serverChannel;
     private final Timer timer;
 
-    UdpChildChannelSource(UdpServerChannel serverChannel) {
+    UdpChildChannelSource(UdpServerChannel serverChannel, Timer timer) {
         this.serverChannel = serverChannel;
-        timer = new HashedWheelTimer();     // todo one instance
+        this.timer = timer;
     }
 
     void closeChildChannel(UdpChildChannel childChannel) {
@@ -108,7 +109,7 @@ class UdpChildChannelSource extends SimpleChannelHandler {
 
             if (timeout != 0) {
                 IdleStateHandler idleStateHandler = new IdleStateHandler(timer, 0, 0, timeout, TimeUnit.MILLISECONDS);
-                pipeline.addFirst("idleHandler", new IdleHandler());
+                pipeline.addFirst("idleHandler", new UdpIdleHandler());
                 pipeline.addFirst("idleStateHandler", idleStateHandler);
             }
 
@@ -131,14 +132,6 @@ class UdpChildChannelSource extends SimpleChannelHandler {
         });
 
         fireMessageReceived(udpChildChannel, e.getMessage());
-    }
-
-    private class IdleHandler extends IdleStateAwareChannelHandler {
-        @Override
-        public void channelIdle(ChannelHandlerContext ctx, IdleStateEvent e) {
-            // Close idle UdpChildChannel
-            e.getChannel().close();
-        }
     }
 
 }

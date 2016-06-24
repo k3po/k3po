@@ -218,8 +218,8 @@ public class Robot {
 
                                 @Override
                                 public void operationComplete(ChannelGroupFuture future) throws Exception {
+                                    clientChannels.close();
                                     try {
-                                        clientChannels.close();
                                         bootstrapFactory.shutdown();
                                         bootstrapFactory.releaseExternalResources();
 

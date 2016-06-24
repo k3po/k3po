@@ -15,7 +15,6 @@
  */
 package org.kaazing.k3po.driver.internal.netty.bootstrap.udp;
 
-import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;

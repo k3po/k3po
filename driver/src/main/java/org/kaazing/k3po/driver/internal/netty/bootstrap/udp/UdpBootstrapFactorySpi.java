@@ -15,16 +15,23 @@
  */
 package org.kaazing.k3po.driver.internal.netty.bootstrap.udp;
 
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelPipelineException;
 import org.jboss.netty.channel.socket.nio.NioDatagramChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioDatagramWorkerPool;
+import org.jboss.netty.handler.timeout.IdleStateHandler;
 import org.jboss.netty.util.ExternalResourceReleasable;
+import org.jboss.netty.util.HashedWheelTimer;
+import org.jboss.netty.util.Timer;
 import org.kaazing.k3po.driver.internal.executor.ExecutorServiceFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactorySpi;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
+import org.kaazing.k3po.driver.internal.netty.channel.udp.UdpChannelAddress;
 
 import javax.annotation.Resource;
 import java.net.InetSocketAddress;
@@ -33,6 +40,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 public final class UdpBootstrapFactorySpi extends BootstrapFactorySpi implements ExternalResourceReleasable {
 
@@ -40,9 +48,11 @@ public final class UdpBootstrapFactorySpi extends BootstrapFactorySpi implements
     private ExecutorServiceFactory executorServiceFactory;
     private NioDatagramChannelFactory clientChannelFactory;
     private UdpServerChannelFactory serverChannelFactory;
+    private final Timer timer;
 
     public UdpBootstrapFactorySpi() {
         channelFactories = new ConcurrentLinkedDeque<>();
+        timer = new HashedWheelTimer();
     }
 
     @Resource
@@ -70,6 +80,7 @@ public final class UdpBootstrapFactorySpi extends BootstrapFactorySpi implements
         for (ChannelFactory channelFactory : channelFactories) {
             channelFactory.releaseExternalResources();
         }
+        timer.stop();
     }
 
     /**
@@ -87,14 +98,7 @@ public final class UdpBootstrapFactorySpi extends BootstrapFactorySpi implements
             channelFactories.add(clientChannelFactory);
         }
 
-        return new ClientBootstrap(clientChannelFactory) {
-            @Override
-            public ChannelFuture connect(final SocketAddress localAddress, final SocketAddress remoteAddress) {
-                final InetSocketAddress localChannelAddress = toInetSocketAddress((ChannelAddress) localAddress);
-                final InetSocketAddress remoteChannelAddress = toInetSocketAddress((ChannelAddress) remoteAddress);
-                return super.connect(localChannelAddress, remoteChannelAddress);
-            }
-        };
+        return new UdpClientBootstrap(clientChannelFactory, timer);
     }
 
     /**
@@ -105,7 +109,7 @@ public final class UdpBootstrapFactorySpi extends BootstrapFactorySpi implements
         if (serverChannelFactory == null) {
             Executor workerExecutor = executorServiceFactory.newExecutorService("worker.server");
             NioDatagramWorkerPool workerPool = new NioDatagramWorkerPool(workerExecutor, 1);
-            serverChannelFactory = new UdpServerChannelFactory(new UdpServerChannelSink(workerPool));
+            serverChannelFactory = new UdpServerChannelFactory(new UdpServerChannelSink(workerPool, timer));
 
             // unshared
             channelFactories.add(serverChannelFactory);
@@ -123,4 +127,65 @@ public final class UdpBootstrapFactorySpi extends BootstrapFactorySpi implements
         int port = location.getPort();
         return new InetSocketAddress(hostname, port);
     }
+
+    // Subclassing for two reasons:
+    // 1) uses InetSocketAddress for local and remote addresses
+    // 2) Adds IdleStateHandler filter to track UDP idle client connections
+    private static class UdpClientBootstrap extends ClientBootstrap {
+
+        private final Timer timer;
+
+        UdpClientBootstrap(ChannelFactory channelFactory, Timer timer) {
+            super(channelFactory);
+            this.timer = timer;
+        }
+
+        @Override
+        public ChannelFuture connect(final SocketAddress remoteChannelAddress, final SocketAddress localChannelAddress) {
+
+
+            InetSocketAddress localAddress = toInetSocketAddress((ChannelAddress) localChannelAddress);
+            InetSocketAddress remoteAddress = toInetSocketAddress((ChannelAddress) remoteChannelAddress);
+
+            if (remoteAddress == null) {
+                throw new NullPointerException("remoteAddress");
+            }
+
+            ChannelPipeline pipeline;
+            try {
+                pipeline = getPipelineFactory().getPipeline();
+            } catch (Exception e) {
+                throw new ChannelPipelineException("Failed to initialize a pipeline.", e);
+            }
+
+            long timeout = ((UdpChannelAddress) remoteChannelAddress).timeout();
+            if (timeout != 0) {
+                IdleStateHandler idleStateHandler = new IdleStateHandler(timer, 0, 0, timeout, TimeUnit.MILLISECONDS);
+                pipeline.addFirst("idleHandler", new UdpIdleHandler());
+                pipeline.addFirst("idleStateHandler", idleStateHandler);
+            }
+            setPipeline(pipeline);
+
+            // Set the options.
+            Channel ch = getFactory().newChannel(pipeline);
+            boolean success = false;
+            try {
+                ch.getConfig().setOptions(getOptions());
+                success = true;
+            } finally {
+                if (!success) {
+                    ch.close();
+                }
+            }
+
+            // Bind.
+            if (localAddress != null) {
+                ch.bind(localAddress);
+            }
+
+            // Connect.
+            return ch.connect(remoteAddress);
+        }
+    }
+
 }

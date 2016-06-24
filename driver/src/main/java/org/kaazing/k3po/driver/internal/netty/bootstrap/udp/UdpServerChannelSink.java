@@ -21,6 +21,7 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.socket.nio.NioDatagramChannel;
 import org.jboss.netty.channel.socket.nio.NioDatagramChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioDatagramWorkerPool;
+import org.jboss.netty.util.Timer;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractServerChannelSink;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
@@ -31,9 +32,11 @@ import static org.kaazing.k3po.driver.internal.channel.Channels.toInetSocketAddr
 
 class UdpServerChannelSink extends AbstractServerChannelSink<UdpServerChannel> {
     private final NioDatagramChannelFactory serverChannelFactory;
+    private final Timer timer;
 
-    UdpServerChannelSink(NioDatagramWorkerPool workerPool) {
+    UdpServerChannelSink(NioDatagramWorkerPool workerPool, Timer timer) {
         serverChannelFactory = new NioDatagramChannelFactory(workerPool);
+        this.timer = timer;
     }
 
     @Override
@@ -43,7 +46,7 @@ class UdpServerChannelSink extends AbstractServerChannelSink<UdpServerChannel> {
         // Use ConnectionlessBootstrap to create a NioDatagramChannel for an UdpServerChannel
         UdpServerChannel serverChannel = (UdpServerChannel) evt.getChannel();
         ConnectionlessBootstrap bootstrap = new ConnectionlessBootstrap(serverChannelFactory);
-        DatagramChannelPipelineFactory pipelineFactory = new DatagramChannelPipelineFactory(serverChannel);
+        DatagramChannelPipelineFactory pipelineFactory = new DatagramChannelPipelineFactory(serverChannel, timer);
         bootstrap.setPipelineFactory(pipelineFactory);
         NioDatagramChannel datagramChannel = (NioDatagramChannel) bootstrap.bind(toInetSocketAddress(localAddress));
 

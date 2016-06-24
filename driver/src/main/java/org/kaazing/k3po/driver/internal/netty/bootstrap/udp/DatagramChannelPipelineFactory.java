@@ -17,20 +17,23 @@ package org.kaazing.k3po.driver.internal.netty.bootstrap.udp;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.util.Timer;
 
 import static org.jboss.netty.channel.Channels.pipeline;
 
-final class DatagramChannelPipelineFactory implements ChannelPipelineFactory {
+class DatagramChannelPipelineFactory implements ChannelPipelineFactory {
 
     private final UdpServerChannel serverChannel;
+    private final Timer timer;
 
-    public DatagramChannelPipelineFactory(UdpServerChannel serverChannel) {
+    DatagramChannelPipelineFactory(UdpServerChannel serverChannel, Timer timer) {
         this.serverChannel = serverChannel;
+        this.timer = timer;
     }
 
     @Override
     public ChannelPipeline getPipeline() throws Exception {
-        return pipeline(new UdpChildChannelSource(serverChannel));
+        return pipeline(new UdpChildChannelSource(serverChannel, timer));
     }
 
 }

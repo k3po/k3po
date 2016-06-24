@@ -23,6 +23,13 @@ import org.jboss.netty.channel.ServerChannel;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannel;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
+/*
+ * A single NioDatagramChannel is divided into multiple UdpChildChannel based on the
+ * remote address
+ *
+ * Pipeline for UdpChildChannel :
+ * IdleStateHandler (optional), UdpIdleHandler (optional), script pipeline
+ */
 class UdpChildChannel extends AbstractChannel<ChannelConfig> {
 
     UdpChildChannel(ServerChannel parent, ChannelFactory factory, ChannelPipeline pipeline,
