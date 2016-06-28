@@ -15,7 +15,6 @@
  */
 package org.kaazing.k3po.driver.internal;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.regex.Pattern.compile;
 import static org.junit.Assert.assertArrayEquals;
@@ -29,8 +28,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -466,129 +463,6 @@ public class RobotIT {
 
         robot.prepareAndStart(script).await();
         robot.finish().await();
-
-        assertEquals(expected, robot.getObservedScript());
-    }
-
-    @Test
-    public void testUdpServer() throws Exception {
-        // @formatter:off
-        String script =
-                "accept udp://localhost:8080\n" +
-                "       option timeout 1000\n" +
-                "accepted\n" +
-                "connected\n" +
-                "read \"Hello11\"\n" +
-                "read \"Hello12\"\n" +
-                "write \"Hello World11\"\n" +
-                "write \"Hello World12\"\n" +
-                // Gets closed because of idle timeout
-                "closed\n" +
-
-                "accepted\n" +
-                "connected\n" +
-                "read \"Hello21\"\n" +
-                "read \"Hello22\"\n" +
-                "write \"Hello World21\"\n" +
-                "write \"Hello World22\"\n" +
-                "close\n" +
-                "closed\n" +
-
-                "accept udp://localhost:8081\n" +
-                "accepted\n" +
-                "connected\n" +
-                "read \"Hello31\"\n" +
-                "read \"Hello32\"\n" +
-                "write \"Hello World31\"\n" +
-                "write \"Hello World32\"\n" +
-                "close\n" +
-                "closed\n";
-
-        String expected = script;
-        // @formatter:on
-
-        robot.prepareAndStart(script).await();
-
-        udpClient(8080, "Hello1", "Hello World1");
-        udpClient(8080, "Hello2", "Hello World2");
-        udpClient(8081, "Hello3", "Hello World3");
-
-        robot.finish().await();
-
-        assertEquals(expected, robot.getObservedScript());
-    }
-
-    private void udpClient(int port, String read, String write) throws Exception {
-        DatagramSocket udpClient = new DatagramSocket();
-        udpClient.connect(new InetSocketAddress("localhost", port));
-        for (int i = 1; i < 3; i++) {
-            String readI = read + i;
-            byte[] buf = readI.getBytes(UTF_8);
-            DatagramPacket dp = new DatagramPacket(buf, buf.length);
-            udpClient.send(dp);
-        }
-
-        for (int i = 1; i < 3; i++) {
-            byte[] buf = new byte[20];
-            DatagramPacket dp = new DatagramPacket(buf, 0, buf.length);
-            udpClient.receive(dp);
-            String got = new String(dp.getData(), dp.getOffset(), dp.getLength(), UTF_8);
-            assertEquals(write + i, got);
-        }
-        udpClient.close();
-    }
-
-    @Test
-    public void testUdpClient() throws Exception {
-        // @formatter:off
-        String script =
-                "connect udp://localhost:8080\n" +
-                "        option timeout 1000\n" +
-                "connected\n" +
-                "write \"Hello1\"\n" +
-                "read \"Hello1\"\n" +
-                "write \"Hello11\"\n" +
-                "read \"Hello11\"\n" +
-                // Gets closed because of idle timeout
-                "closed\n" +
-
-                "connect udp://localhost:8080\n" +
-                "connected\n" +
-                "write \"Hello2\"\n" +
-                "read \"Hello2\"\n" +
-                "write \"Hello22\"\n" +
-                "read \"Hello22\"\n" +
-                "close\n" +
-                "closed\n" +
-
-                "connect udp://localhost:8080\n" +
-                "        option timeout 1500\n" +
-                "connected\n" +
-                "write \"Hello3\"\n" +
-                "read \"Hello3\"\n" +
-                "write \"Hello33\"\n" +
-                "read \"Hello33\"\n"  +
-                // Gets closed because of idle timeout
-                "closed\n";
-
-
-        String expected = script;
-        // @formatter:on
-
-        DatagramSocket udpServer = new DatagramSocket(new InetSocketAddress("localhost", 8080));
-
-        robot.prepareAndStart(script).await();
-
-        for (int i = 0; i < 6; i++) {
-            byte[] buf = new byte[20];
-            DatagramPacket dp = new DatagramPacket(buf, 0, buf.length);
-            udpServer.receive(dp);
-            udpServer.send(dp);
-        }
-
-        robot.finish().await();
-
-        udpServer.close();
 
         assertEquals(expected, robot.getObservedScript());
     }

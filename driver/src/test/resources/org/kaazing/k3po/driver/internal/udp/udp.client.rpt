@@ -1,0 +1,44 @@
+#
+# Copyright 2007-2015, Kaazing Corporation. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+connect udp://localhost:8080
+        option timeout 1000
+connected
+write "Hello1"
+read "Hello1"
+write "Hello11"
+read "Hello11"
+# closed because of idle timeout
+closed
+
+connect udp://localhost:8080
+connected
+write "Hello2"
+read "Hello2"
+write "Hello22"
+read "Hello22"
+close
+closed
+
+connect udp://localhost:8080
+        option timeout 1500
+connected
+write "Hello3"
+read "Hello3"
+write "Hello33"
+read "Hello33"
+# closed because of idle timeout
+closed

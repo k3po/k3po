@@ -67,6 +67,10 @@ class Latch {
             state = State.STARTABLE;
             startable.countDown();
             break;
+        case STARTABLE:
+        case FINISHED:
+            // its all right to call this multiple times if its prepared
+            break;
         default:
             throw new IllegalStateException(state.name());
         }
