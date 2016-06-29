@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.control.handler;
 
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -40,6 +39,9 @@ public class ControlDownstreamHandler extends SimpleChannelDownstreamHandler {
         case ERROR:
             writeErrorRequested(ctx, e);
             break;
+        case NOTIFY:
+            writeNotifyRequested(ctx, e);
+            break;
         default:
             throw new IllegalArgumentException(String.format("Unexpected control message: %s", message.getKind()));
         }
@@ -62,4 +64,7 @@ public class ControlDownstreamHandler extends SimpleChannelDownstreamHandler {
         super.writeRequested(ctx, e);
     }
 
+    public void writeNotifyRequested(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+        super.writeRequested(ctx, e);
+    }
 }

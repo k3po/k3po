@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.specification.wse;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -79,7 +79,8 @@ public class OpeningIT {
     @Specification({
         "request.with.body/handshake.request",
         "request.with.body/handshake.response" })
-    public void shouldEstablishConnectionWithNonEmptyRequestBody()
+    // Server only test. Spec compliant clients ALWAYS use a POST request with an empty body.
+    public void serverShouldTolerateNonEmptyRequestBody()
             throws Exception {
         k3po.finish();
     }
@@ -104,9 +105,18 @@ public class OpeningIT {
 
     @Test
     @Specification({
-        "request.method.not.post/handshake.request",
-        "request.method.not.post/handshake.response" })
-    public void shouldFailHandshakeWhenRequestMethodNotPost() throws Exception {
+        "request.method.get/handshake.request",
+        "request.method.get/handshake.response" })
+    // Server only test. Spec compliant clients ALWAYS use POST.
+    public void serverShouldTolerateRequestMethodGet() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "request.method.not.post.or.get/handshake.request",
+        "request.method.not.post.or.get/handshake.response" })
+    public void shouldFailHandshakeWhenRequestMethodNotPostOrGet() throws Exception {
         k3po.finish();
     }
 
@@ -198,15 +208,6 @@ public class OpeningIT {
 
     @Test
     @Specification({
-        "response.header.x.websocket.version.not.matching/handshake.request",
-        "response.header.x.websocket.version.not.matching/handshake.response" })
-    public void shouldFailConnectionWhenResponseHeaderXWebSocketVersionNotMatching()
-            throws Exception {
-        k3po.finish();
-    }
-
-    @Test
-    @Specification({
         "response.header.x.websocket.protocol.not.negotiated/handshake.request",
         "response.header.x.websocket.protocol.not.negotiated/handshake.response" })
     public void shouldFailConnectionWhenXWebSocketProtocolNotNegotiated()
@@ -216,9 +217,9 @@ public class OpeningIT {
 
     @Test
     @Specification({
-        "response.header.x.websocket.extensions.not.negotiated/handshake.request",
-        "response.header.x.websocket.extensions.not.negotiated/handshake.response" })
-    public void shouldFailConnectionWhenXWebSocketExtensionsNotNegotiated()
+        "response.header.x.websocket.extensions.not.requested/handshake.request",
+        "response.header.x.websocket.extensions.not.requested/handshake.response" })
+    public void shouldFailConnectionWhenXWebSocketExtensionsNotRequested()
             throws Exception {
         k3po.finish();
     }
@@ -228,6 +229,16 @@ public class OpeningIT {
         "response.body.with.no.downstream/handshake.request",
         "response.body.with.no.downstream/handshake.response" })
     public void shouldFailConnectionWhenResponseBodyHasNoDownstream()
+            throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "response.body.create.https.has.upstream.with.scheme.not.https/handshake.request",
+        "response.body.create.https.has.upstream.with.scheme.not.https/handshake.response" })
+    @Ignore("k3po does not yet support https")
+    public void shouldFailConnectionWhenCreateHttpsResponseBodyHasUpstreamWithSchemeNotHttps()
             throws Exception {
         k3po.finish();
     }
@@ -255,6 +266,16 @@ public class OpeningIT {
         "response.body.has.upstream.with.different.path.prefix/handshake.request",
         "response.body.has.upstream.with.different.path.prefix/handshake.response" })
     public void shouldFailConnectionWhenResponseBodyHasUpstreamWithDifferentPathPrefix()
+            throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "response.body.create.https.has.downstream.with.scheme.not.https/handshake.request",
+        "response.body.create.https.has.downstream.with.scheme.not.https/handshake.response" })
+    @Ignore("k3po does not yet support https")
+    public void shouldFailConnectionWhenCreateHttpsResponseBodyHasDownstreamWithSchemeNotHttps()
             throws Exception {
         k3po.finish();
     }

@@ -1,0 +1,81 @@
+#
+# Copyright 2007-2015, Kaazing Corporation. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+property key ${ws:handshakeKey()}
+property writeMask ${ws:randomBytes(4)}
+
+connect http://localhost:8001/echo
+connected
+
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Key" ${key}
+write header "Sec-WebSocket-Version" "13"
+write header "Sec-WebSocket-Extensions" "x-kaazing-idle-timeout"
+
+read status "101" /.+/
+read version "HTTP/1.1"
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
+read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
+read header "Sec-WebSocket-Extensions" "x-kaazing-idle-timeout; timeout=2000"
+
+################################################################
+# Send random data from client at regular intervals so server does not ping
+
+write await SEND_ONE
+# Send random data from client
+write [0x82 0x82] ${writeMask}
+write option mask ${writeMask}
+write [0x11 0x11]
+write option mask [0x00 0x00 0x00 0x00]
+################################################################
+write await SEND_TWO
+# Send random data from client
+write [0x82 0x82] ${writeMask}
+write option mask ${writeMask}
+write [0x11 0x11]
+write option mask [0x00 0x00 0x00 0x00]
+
+# Expect PONG @ SEND_TWO
+read [0x8a 0x00]
+################################################################
+write await SEND_THREE
+# Send random data from client
+write [0x82 0x82] ${writeMask}
+write option mask ${writeMask}
+write [0x11 0x11]
+write option mask [0x00 0x00 0x00 0x00]
+################################################################
+write await SEND_FOUR
+# Send random data from client
+write [0x82 0x82] ${writeMask}
+write option mask ${writeMask}
+write [0x11 0x11]
+write option mask [0x00 0x00 0x00 0x00]
+
+# Expect PONG @ SEND_FOUR
+read [0x8a 0x00]
+################################################################
+
+# Close the ws connection cleanly
+write [0x88 0x80] ${writeMask}
+read [0x88 0x00]
+
+closed

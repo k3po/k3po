@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior.handler.prepare;
 
 import java.util.Collection;
@@ -32,7 +31,7 @@ public abstract class AbstractPreparationEvent implements PreparationEvent {
     public AbstractPreparationEvent(Channel channel, ChannelFuture future) {
         this.channel = channel;
         this.future = future;
-        this.pipelineFutures = new LinkedHashSet<ChannelFuture>();
+        this.pipelineFutures = new LinkedHashSet<>();
     }
 
     @Override
@@ -55,7 +54,7 @@ public abstract class AbstractPreparationEvent implements PreparationEvent {
 
         // We set the composite to failFast. This is so that as soon as one handler future fails ... any pipelinefutures
         // that contain it will also fail. This is needed so that the listener in the CompletionHandler will fire
-        ChannelFuture pipelineFuture = new CompositeChannelFuture<ChannelFuture>(channel, pipelineFutures, true);
+        ChannelFuture pipelineFuture = new CompositeChannelFuture<>(channel, pipelineFutures, true);
 
         // Note: add handler future to pipeline futures afterwards
         // so pipelineFuture represents all members of

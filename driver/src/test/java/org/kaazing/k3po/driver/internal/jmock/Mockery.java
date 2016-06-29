@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.jmock;
 
 import java.lang.reflect.Field;
@@ -42,19 +41,7 @@ public class Mockery extends org.jmock.Mockery {
                 }
 
             }
-            catch (SecurityException e) {
-                throw new RuntimeException(e);
-
-            }
-            catch (NoSuchFieldException e) {
-                throw new RuntimeException(e);
-
-            }
-            catch (IllegalArgumentException e) {
-                throw new RuntimeException(e);
-
-            }
-            catch (IllegalAccessException e) {
+            catch (SecurityException | IllegalAccessException | IllegalArgumentException | NoSuchFieldException e) {
                 throw new RuntimeException(e);
             }
         }

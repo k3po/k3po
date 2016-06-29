@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior.handler.command;
 
 import static java.lang.Boolean.TRUE;
@@ -116,7 +115,7 @@ public class WriteHandlerTest {
 
         execution = new ExecutionHandler();
 
-        List<MessageEncoder> encoders = new ArrayList<MessageEncoder>();
+        List<MessageEncoder> encoders = new ArrayList<>();
         encoders.add(new WriteBytesEncoder(new byte[] { 0x01, 0x02, 0x03 }));
         encoders.add(new WriteTextEncoder("Hello, world", UTF_8));
 

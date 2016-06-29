@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.netty.bootstrap.bbosh;
 
 import static java.lang.String.format;
@@ -197,7 +196,7 @@ public class BBoshHandshakeChildChannelSource extends SimpleChannelHandler {
             public void operationComplete(ChannelFuture httpBindFuture) throws Exception {
                 if (httpBindFuture.isSuccess()) {
                     final URI connectionLocalURI = handshakeLocalURI.resolve(connectionPath);
-                    Map<String, Object> options = new HashMap<String, Object>();
+                    Map<String, Object> options = new HashMap<>();
                     options.put("bbosh.transport", httpConnectionLocalURI);
                     ChannelAddress connectionLocalAddress = addressFactory.newChannelAddress(connectionLocalURI, options);
                     channel.setLocalAddress(connectionLocalAddress);
@@ -243,7 +242,7 @@ public class BBoshHandshakeChildChannelSource extends SimpleChannelHandler {
 
     private static List<BBoshStrategy> readAcceptStrategies(HttpHeaders httpHeaders) {
         List<String> strategyValues = httpHeaders.getAll(Names.X_ACCEPT_STRATEGY);
-        List<BBoshStrategy> strategies = new ArrayList<BBoshStrategy>(3);
+        List<BBoshStrategy> strategies = new ArrayList<>(3);
         for (String strategyValue : strategyValues) {
             String[] strategyValueParts = strategyValue.split(",\\s+");
             for (String strategyValuePart : strategyValueParts) {

@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.pcap.converter.internal.author.emitter;
 
 public interface Emitter {
     
-    public void add(String str);
+    void add(String str);
     
-    public void clearBuffer();
+    void clearBuffer();
     
-    public String getBuffer();
+    String getBuffer();
 
-    public void commitToFile();
+    void commitToFile();
 }

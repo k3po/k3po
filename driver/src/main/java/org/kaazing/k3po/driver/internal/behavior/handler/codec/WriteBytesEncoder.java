@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 
 import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
-import static org.kaazing.k3po.driver.internal.util.Utils.byteArrayToString;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.kaazing.k3po.driver.internal.util.Utils;
 
 public class WriteBytesEncoder implements MessageEncoder {
 
@@ -36,7 +35,7 @@ public class WriteBytesEncoder implements MessageEncoder {
 
     @Override
     public String toString() {
-        return byteArrayToString(bytes);
+        return Utils.format(bytes);
     }
 
 }

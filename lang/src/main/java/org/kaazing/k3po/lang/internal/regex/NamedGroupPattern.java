@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.lang.internal.regex;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -51,7 +50,7 @@ public class NamedGroupPattern {
             TokenStream tokens = new CommonTokenStream(lexer);
             RegexParser parser = new RegexParser(tokens);
             parser.setErrorHandler(new BailErrorStrategy());
-            final List<String> groupNames = new ArrayList<String>();
+            final List<String> groupNames = new ArrayList<>();
             parser.addParseListener(new RegexBaseListener() {
                 @Override
                 public void exitGroupN(GroupNContext ctx) {

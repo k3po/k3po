@@ -1,0 +1,7 @@
+# client
+property uri "tcp://localhost:8000"
+connect ${uri}
+connected
+write "echo"
+read "echo"
+closed

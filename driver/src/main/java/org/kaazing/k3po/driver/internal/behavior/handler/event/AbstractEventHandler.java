@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior.handler.event;
 
 import static java.lang.Boolean.TRUE;
@@ -45,6 +44,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelException;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ChildChannelStateEvent;
@@ -62,11 +62,11 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
 
     protected static final EnumSet<ChannelEventKind> DEFAULT_INTERESTED_EVENTS =
             complementOf(of(CHILD_OPEN, CHILD_CLOSED, WRITE_COMPLETED, INTEREST_OPS, EXCEPTION, IDLE_STATE,
-                            OUTPUT_SHUTDOWN, UNKNOWN));
+                            OUTPUT_SHUTDOWN, FLUSHED, UNKNOWN));
 
-    public static enum ChannelEventKind {
+    public enum ChannelEventKind {
         CHILD_OPEN, CHILD_CLOSED, OPEN, BOUND, CONNECTED, MESSAGE, WRITE_COMPLETED, DISCONNECTED, UNBOUND, CLOSED, EXCEPTION,
-        INTEREST_OPS, IDLE_STATE, INPUT_SHUTDOWN, OUTPUT_SHUTDOWN, FLUSHED, UNKNOWN
+        INTEREST_OPS, IDLE_STATE, INPUT_SHUTDOWN, OUTPUT_SHUTDOWN, FLUSHED, UNKNOWN, ABORTED
     };
 
     private final Set<ChannelEventKind> interestEvents;
@@ -98,14 +98,7 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
         } else if (!expectedEvents.contains(eventAsKind)) {
             handleUnexpectedEvent(ctx, evt);
         } else {
-            ChannelFuture pipelineFuture = getPipelineFuture();
-            if (!pipelineFuture.isSuccess()) {
-                // expected event arrived too early
-                Exception exception = new ScriptProgressException(getRegionInfo(), format("%s", this));
-                handlerFuture.setFailure(exception.fillInStackTrace());
-            } else {
-                super.handleUpstream1(ctx, evt);
-            }
+            super.handleUpstream1(ctx, evt);
         }
     }
 

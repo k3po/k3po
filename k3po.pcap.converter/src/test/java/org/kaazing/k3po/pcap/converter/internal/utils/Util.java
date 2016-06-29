@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.pcap.converter.internal.utils;
 
 public class Util {
@@ -21,7 +20,7 @@ public class Util {
     public final static String CLOSE_READ = "# close-read";
     public final static String CLOSE_WRITE= "# close-write";
     
-    public final static String getHexFromBytes(byte[] bytes) {
+    public static String getHexFromBytes(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
             sb.append(String.format("0x%02X ", b));

@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior.handler.event;
 
 import static java.util.EnumSet.of;
@@ -21,12 +20,8 @@ import static java.util.EnumSet.of;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
 
 public class DisconnectedHandler extends AbstractEventHandler {
-
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(DisconnectedHandler.class);
 
     public DisconnectedHandler() {
         super(of(ChannelEventKind.DISCONNECTED));
@@ -34,16 +29,13 @@ public class DisconnectedHandler extends AbstractEventHandler {
 
     @Override
     public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-
-        LOGGER.debug("channel disconnected");
-
         ChannelFuture handlerFuture = getHandlerFuture();
         assert handlerFuture != null;
         handlerFuture.setSuccess();
     }
 
     @Override
-    public String toString() {
-        return "disconnected";
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("disconnected");
     }
 }

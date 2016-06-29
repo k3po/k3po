@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior.handler.event;
 
 import static java.lang.System.currentTimeMillis;
@@ -322,11 +321,12 @@ public class FlushedHandlerTest {
     }
 
     @Test
-    public void shouldConsumeUpstreamFlushedEvent() throws Exception {
+    public void shouldPropagateUpstreamFlushedEvent() throws Exception {
 
         context.checking(new Expectations() {
             {
                 oneOf(upstream).handleUpstream(with(any(ChannelHandlerContext.class)), with(any(PreparationEvent.class)));
+                oneOf(upstream).handleUpstream(with(any(ChannelHandlerContext.class)), with(any(FlushEvent.class)));
             }
         });
 
@@ -334,8 +334,7 @@ public class FlushedHandlerTest {
         ChannelFuture handlerFuture = handler.getHandlerFuture();
         fireFlushed(channel);
 
-        assertTrue(handlerFuture.isDone());
-        assertTrue(handlerFuture.isSuccess());
+        assertFalse(handlerFuture.isDone());
 
         context.assertIsSatisfied();
     }
@@ -397,20 +396,4 @@ public class FlushedHandlerTest {
         context.assertIsSatisfied();
     }
 
-    @Test
-    public void shouldPropagateUpstreamFlushedEventAfterFutureDone() throws Exception {
-
-        context.checking(new Expectations() {
-            {
-                oneOf(upstream).handleUpstream(with(any(ChannelHandlerContext.class)), with(any(PreparationEvent.class)));
-                oneOf(upstream).handleUpstream(with(any(ChannelHandlerContext.class)), with(any(FlushEvent.class)));
-            }
-        });
-
-        Channel channel = channelFactory.newChannel(pipeline);
-        fireFlushed(channel);
-        fireFlushed(channel);
-
-        context.assertIsSatisfied();
-    }
 }

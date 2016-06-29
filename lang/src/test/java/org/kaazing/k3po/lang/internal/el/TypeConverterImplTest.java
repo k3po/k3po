@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.lang.internal.el;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
@@ -79,7 +78,7 @@ public class TypeConverterImplTest {
 
         assertArrayEquals(expected, (byte[]) o);
 
-        Long lg = new Long(l);
+        Long lg = l;
 
         o = converter.convert(lg, byte[].class);
 
@@ -100,7 +99,7 @@ public class TypeConverterImplTest {
 
         assertArrayEquals(expected, (byte[]) o);
 
-        Integer lg = new Integer(l);
+        Integer lg = l;
 
         o = converter.convert(lg, byte[].class);
 
@@ -121,7 +120,7 @@ public class TypeConverterImplTest {
 
         assertArrayEquals(expected, (byte[]) o);
 
-        Short lg = new Short(l);
+        Short lg = l;
 
         o = converter.convert(lg, byte[].class);
 
@@ -142,7 +141,7 @@ public class TypeConverterImplTest {
 
         assertArrayEquals(expected, (byte[]) o);
 
-        Byte lg = new Byte(l);
+        Byte lg = l;
 
         o = converter.convert(lg, byte[].class);
 

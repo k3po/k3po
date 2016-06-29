@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.pcap.converter.internal.parser;
 
 import java.io.IOException;
@@ -42,8 +41,8 @@ public class Parser {
     private final static Logger LOG = Logger.getLogger(Parser.class.getName());
     private final XmlPullParser parser;
     private final TcpdumpReader tcpdumpReader;
-    private final Stack<String> protoStack = new Stack<String>();
-    private final Stack<String> fieldStack = new Stack<String>();
+    private final Stack<String> protoStack = new Stack<>();
+    private final Stack<String> fieldStack = new Stack<>();
 
     private static XmlPullParserFactory xppFactory;
 
@@ -188,9 +187,9 @@ public class Parser {
 
     private Packet setProtoProperties(XmlStartTag st, Packet currentPacket) throws XmlPullParserException {
         parser.readStartTag(st);
-        XmlAttributesHashMap<String, String> attributes = new XmlAttributesHashMap<String, String>();
+        XmlAttributesHashMap<String, String> attributes = new XmlAttributesHashMap<>();
         for (int i = 0; i < st.getAttributeCount(); i++) {
-            attributes.put(st.getAttributeLocalName(i).trim(), st.getAttributeValue(i).trim().toString());
+            attributes.put(st.getAttributeLocalName(i).trim(), st.getAttributeValue(i).trim());
         }
 
         protoStack.push(attributes.get("name"));
@@ -220,9 +219,9 @@ public class Parser {
 
     private Packet setFieldProperties(XmlStartTag st, Packet currentPacket) throws XmlPullParserException {
         parser.readStartTag(st);
-        XmlAttributesHashMap<String, String> attributes = new XmlAttributesHashMap<String, String>();
+        XmlAttributesHashMap<String, String> attributes = new XmlAttributesHashMap<>();
         for (int i = 0; i < st.getAttributeCount(); i++) {
-            attributes.put(st.getAttributeLocalName(i).trim(), st.getAttributeValue(i).trim().toString());
+            attributes.put(st.getAttributeLocalName(i).trim(), st.getAttributeValue(i).trim());
         }
         //tcp
         if ( attributes.checkIfEqual("name", "tcp.srcport") ) {
@@ -320,10 +319,10 @@ public class Parser {
 
         parser.readStartTag(st);
 
-        XmlAttributesHashMap<String, String> attributes = new XmlAttributesHashMap<String, String>();
+        XmlAttributesHashMap<String, String> attributes = new XmlAttributesHashMap<>();
 
         for (int i = 0; i < st.getAttributeCount(); i++) {
-            attributes.put(st.getAttributeLocalName(i).trim(), st.getAttributeValue(i).trim().toString());
+            attributes.put(st.getAttributeLocalName(i).trim(), st.getAttributeValue(i).trim());
         }
 
         // used for id
@@ -355,6 +354,9 @@ public class Parser {
      * @param <V> This was designed/tested for strings only
      */
     private class XmlAttributesHashMap<K, V> extends HashMap<K, V> {
+
+        private static final long serialVersionUID = 1L;
+
         public XmlAttributesHashMap() {
             super();
         }

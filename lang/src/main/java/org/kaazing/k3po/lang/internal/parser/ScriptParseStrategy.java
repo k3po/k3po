@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.lang.internal.parser;
 
 import static java.lang.Integer.parseInt;
@@ -34,6 +33,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
 import org.kaazing.k3po.lang.internal.RegionInfo;
+import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
 import org.kaazing.k3po.lang.internal.ast.AstBarrierNode;
@@ -93,6 +94,8 @@ import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 import org.kaazing.k3po.lang.internal.regex.NamedGroupPattern;
 import org.kaazing.k3po.lang.parser.v2.RobotBaseVisitor;
 import org.kaazing.k3po.lang.parser.v2.RobotParser;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.AbortNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.AbortedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.AcceptNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.AcceptableNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.BarrierNodeContext;
@@ -114,6 +117,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.ExpressionValueContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.FixedLengthBytesMatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralBytesContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralTextContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.LocationContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.MatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.OpenedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.OptionNodeContext;
@@ -127,7 +131,8 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpStatusNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpVersionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadNotifyNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadOptionNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadOptionMaskNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadOptionOffsetNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.RegexMatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ScriptNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ServerStreamableNodeContext;
@@ -150,10 +155,11 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpStatusNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpVersionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteNotifyNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteOptionNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteOptionMaskNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteOptionOffsetNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteValueContext;
 
-abstract class ScriptParseStrategy<T extends AstRegion> {
+public abstract class ScriptParseStrategy<T extends AstRegion> {
 
     public static final ScriptParseStrategy<AstScriptNode> SCRIPT = new ScriptParseStrategy<AstScriptNode>() {
         @Override
@@ -263,7 +269,17 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstCloseNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
                 throws RecognitionException {
-            return new AstCloseNodeVisitor(elFactory, elContext).visit(parser.closeNode());
+            AstCloseNodeVisitor astCloseNodeVisitor = new AstCloseNodeVisitor(elFactory, elContext);
+            return astCloseNodeVisitor.visit(parser.closeNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstAbortNode> ABORT = new ScriptParseStrategy<AstAbortNode>() {
+        @Override
+        public AstAbortNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                throws RecognitionException {
+            AstAbortNodeVisitor astAbortNodeVisitor = new AstAbortNodeVisitor(elFactory, elContext);
+            return astAbortNodeVisitor.visit(parser.abortNode());
         }
     };
 
@@ -320,6 +336,15 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstClosedNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
                 throws RecognitionException {
             return new AstClosedNodeVisitor(elFactory, elContext).visit(parser.closedNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstAbortedNode> ABORTED = new ScriptParseStrategy<AstAbortedNode>() {
+        @Override
+        public AstAbortedNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                throws RecognitionException {
+            AstAbortedNodeVisitor astAbortedNodeVisitor = new AstAbortedNodeVisitor(elFactory, elContext);
+            return astAbortedNodeVisitor.visit(parser.abortedNode());
         }
     };
 
@@ -628,19 +653,21 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
                 }
             };
 
-    public static final ScriptParseStrategy<AstReadOptionNode> READ_OPTION = new ScriptParseStrategy<AstReadOptionNode>() {
+    public static final ScriptParseStrategy<AstReadOptionNode> READ_MASK_OPTION =
+            new ScriptParseStrategy<AstReadOptionNode>() {
         @Override
         public AstReadOptionNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
                 throws RecognitionException {
-            return (AstReadOptionNode) new AstOptionNodeVisitor(elFactory, elContext).visit(parser.readOptionNode());
+            return (AstReadOptionNode) new AstOptionNodeVisitor(elFactory, elContext).visit(parser.readOptionMaskNode());
         }
     };
 
-    public static final ScriptParseStrategy<AstWriteOptionNode> WRITE_OPTION = new ScriptParseStrategy<AstWriteOptionNode>() {
+    public static final ScriptParseStrategy<AstWriteOptionNode> WRITE_MASK_OPTION =
+            new ScriptParseStrategy<AstWriteOptionNode>() {
         @Override
         public AstWriteOptionNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
                 throws RecognitionException {
-            return (AstWriteOptionNode) new AstOptionNodeVisitor(elFactory, elContext).visit(parser.writeOptionNode());
+            return (AstWriteOptionNode) new AstOptionNodeVisitor(elFactory, elContext).visit(parser.writeOptionMaskNode());
         }
     };
 
@@ -792,12 +819,33 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstAcceptNode visitAcceptNode(AcceptNodeContext ctx) {
             AstLocationVisitor locationVisitor = new AstLocationVisitor(elFactory, elContext);
-            AstLocation location = locationVisitor.visit(ctx.location());
+            AstLocation location = locationVisitor.visit(ctx.acceptURI);
             node = new AstAcceptNode();
             node.setLocation(location);
             node.setEnvironment(elContext);
-            if (ctx.text != null) {
-                node.setAcceptName(ctx.text.getText());
+            if (ctx.as != null) {
+                node.setAcceptName(ctx.as.getText());
+            }
+            if (ctx.notify != null) {
+                node.setNotifyName(ctx.notify.getText());
+            }
+            LocationContext transport = ctx.transport;
+            if (transport != null) {
+                AstLocationVisitor transportVisitor = new AstLocationVisitor(elFactory, elContext);
+                AstLocation transportLocation = transportVisitor.visit(ctx.transport);
+                node.getOptions().put("transport", transportLocation);
+            }
+            ExpressionValueContext reader = ctx.reader;
+            if (reader != null) {
+                AstExpressionValueVisitor readerVisitor = new AstExpressionValueVisitor(elFactory, elContext, Object.class);
+                AstExpressionValue readerValue = readerVisitor.visit(ctx.reader);
+                node.getOptions().put("reader", readerValue);
+            }
+            ExpressionValueContext writer = ctx.writer;
+            if (writer != null) {
+                AstExpressionValueVisitor writerVisitor = new AstExpressionValueVisitor(elFactory, elContext, Object.class);
+                AstExpressionValue writerValue = writerVisitor.visit(ctx.writer);
+                node.getOptions().put("writer", writerValue);
             }
             super.visitAcceptNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
@@ -856,15 +904,40 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstConnectNode visitConnectNode(ConnectNodeContext ctx) {
             AstLocationVisitor locationVisitor = new AstLocationVisitor(elFactory, elContext);
-            AstLocation location = locationVisitor.visit(ctx.location());
+            AstLocation location = locationVisitor.visit(ctx.connectURI);
             node = new AstConnectNode();
             node.setLocation(location);
             node.setEnvironment(elContext);
             super.visitConnectNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
-            Token barrier = ctx.barrier;
-            if (barrier != null) {
-                node.setBarrier(barrier.getText());
+            if (ctx.await != null) {
+                node.setAwaitName(ctx.await.getText());
+            }
+            LocationContext transport = ctx.transport;
+            if (transport != null) {
+                AstLocationVisitor transportVisitor = new AstLocationVisitor(elFactory, elContext);
+                AstLocation transportLocation = transportVisitor.visit(ctx.transport);
+                node.getOptions().put("transport", transportLocation);
+            }
+            Token mode = ctx.fmode;
+            if (mode != null) {
+                node.getOptions().put("mode", mode.getText());
+            }
+            Token size = ctx.size;
+            if (size != null) {
+                node.getOptions().put("size", Long.parseLong(size.getText()));
+            }
+            ExpressionValueContext reader = ctx.reader;
+            if (reader != null) {
+                AstExpressionValueVisitor readerVisitor = new AstExpressionValueVisitor(elFactory, elContext, Object.class);
+                AstExpressionValue readerValue = readerVisitor.visit(ctx.reader);
+                node.getOptions().put("reader", readerValue);
+            }
+            ExpressionValueContext writer = ctx.writer;
+            if (writer != null) {
+                AstExpressionValueVisitor writerVisitor = new AstExpressionValueVisitor(elFactory, elContext, Object.class);
+                AstExpressionValue writerValue = writerVisitor.visit(ctx.writer);
+                node.getOptions().put("writer", writerValue);
             }
             return node;
         }
@@ -937,7 +1010,7 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
-        public AstOptionNode visitReadOptionNode(ReadOptionNodeContext ctx) {
+        public AstOptionNode visitReadOptionMaskNode(ReadOptionMaskNodeContext ctx) {
 
             AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
             AstValue value = visitor.visit(ctx);
@@ -952,8 +1025,37 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
-        public AstOptionNode visitWriteOptionNode(WriteOptionNodeContext ctx) {
+        public AstOptionNode visitReadOptionOffsetNode(ReadOptionOffsetNodeContext ctx) {
 
+            AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
+            AstValue value = visitor.visit(ctx);
+            childInfos().add(value.getRegionInfo());
+
+            node = new AstReadOptionNode();
+            node.setOptionName(ctx.name.getText());
+            node.setOptionValue(value);
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+
+            return node;
+        }
+
+        @Override
+        public AstOptionNode visitWriteOptionMaskNode(WriteOptionMaskNodeContext ctx) {
+
+            AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
+            AstValue value = visitor.visit(ctx);
+            childInfos().add(value.getRegionInfo());
+
+            node = new AstWriteOptionNode();
+            node.setOptionName(ctx.name.getText());
+            node.setOptionValue(value);
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+
+            return node;
+        }
+
+        @Override
+        public AstOptionNode visitWriteOptionOffsetNode(WriteOptionOffsetNodeContext ctx) {
             AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
             AstValue value = visitor.visit(ctx);
             childInfos().add(value.getRegionInfo());
@@ -1251,6 +1353,18 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
             return closeNode;
         }
 
+        @Override
+        public AstAbortNode visitAbortNode(AbortNodeContext ctx) {
+
+            AstAbortNodeVisitor visitor = new AstAbortNodeVisitor(elFactory, elContext);
+            AstAbortNode abortNode = visitor.visitAbortNode(ctx);
+            if (abortNode != null) {
+                childInfos().add(abortNode.getRegionInfo());
+            }
+
+            return abortNode;
+        }
+
         // HTTP commands
 
         @Override
@@ -1366,6 +1480,21 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
 
     }
 
+    private static class AstAbortNodeVisitor extends AstNodeVisitor<AstAbortNode> {
+
+        public AstAbortNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+            super(elFactory, elContext);
+        }
+
+        @Override
+        public AstAbortNode visitAbortNode(AbortNodeContext ctx) {
+            node = new AstAbortNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return node;
+        }
+
+    }
+
     private static class AstDisconnectNodeVisitor extends AstNodeVisitor<AstDisconnectNode> {
 
         public AstDisconnectNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
@@ -1474,6 +1603,22 @@ abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstClosedNode visitClosedNode(ClosedNodeContext ctx) {
             node = new AstClosedNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return node;
+        }
+
+    }
+
+
+    private static class AstAbortedNodeVisitor extends AstNodeVisitor<AstAbortedNode> {
+
+        public AstAbortedNodeVisitor(ExpressionFactory elFactory, ExpressionContext elContext) {
+            super(elFactory, elContext);
+        }
+
+        @Override
+        public AstAbortedNode visitAbortedNode(AbortedNodeContext ctx) {
+            node = new AstAbortedNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return node;
         }

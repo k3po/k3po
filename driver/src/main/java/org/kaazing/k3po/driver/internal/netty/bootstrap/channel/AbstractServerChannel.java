@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.netty.bootstrap.channel;
 
 import static org.jboss.netty.channel.Channels.fireChannelOpen;
@@ -27,6 +26,7 @@ import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelSink;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
+import org.kaazing.k3po.driver.internal.netty.channel.agrona.AgronaChannelAddress;
 
 public class AbstractServerChannel<T extends ChannelConfig> extends org.jboss.netty.channel.AbstractServerChannel {
 
@@ -37,15 +37,22 @@ public class AbstractServerChannel<T extends ChannelConfig> extends org.jboss.ne
     private volatile ChannelAddress localAddress;
     private volatile Channel transport;
 
-    public AbstractServerChannel(ChannelFactory factory, ChannelPipeline pipeline, ChannelSink sink, T config) {
+    protected AbstractServerChannel(ChannelFactory factory, ChannelPipeline pipeline, ChannelSink sink, T config) {
+        this(factory, pipeline, sink, config, true);
+    }
+
+    protected AbstractServerChannel(ChannelFactory factory, ChannelPipeline pipeline, ChannelSink sink, T config,
+            boolean fireChannelOpen) {
         super(factory, pipeline, sink);
 
         this.config = config;
         this.bound = new AtomicBoolean();
         this.bindCount = new AtomicInteger();
 
-        // required by ServerBootstrap
-        fireChannelOpen(this);
+        if (fireChannelOpen) {
+            // required by ServerBootstrap
+            fireChannelOpen(this);
+        }
     }
 
     @Override
@@ -59,7 +66,7 @@ public class AbstractServerChannel<T extends ChannelConfig> extends org.jboss.ne
     }
 
     @Override
-    public ChannelAddress getRemoteAddress() {
+    public AgronaChannelAddress getRemoteAddress() {
         return null;
     }
 

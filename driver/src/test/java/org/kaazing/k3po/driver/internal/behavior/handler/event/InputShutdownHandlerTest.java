@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior.handler.event;
 
 import static java.lang.System.currentTimeMillis;
@@ -60,6 +59,7 @@ import org.kaazing.k3po.driver.internal.behavior.handler.TestChannelEvent;
 import org.kaazing.k3po.driver.internal.behavior.handler.prepare.PreparationEvent;
 import org.kaazing.k3po.driver.internal.jmock.Expectations;
 import org.kaazing.k3po.driver.internal.jmock.Mockery;
+import org.kaazing.k3po.driver.internal.netty.channel.FlushEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownInputEvent;
 
 public class InputShutdownHandlerTest {
@@ -323,20 +323,18 @@ public class InputShutdownHandlerTest {
     }
 
     @Test
-    public void shouldConsumeUpstreamFlushedEvent() throws Exception {
+    public void shouldPropagateUpstreamFlushedEventAfterFutureDone() throws Exception {
 
         context.checking(new Expectations() {
             {
                 oneOf(upstream).handleUpstream(with(any(ChannelHandlerContext.class)), with(any(PreparationEvent.class)));
+                oneOf(upstream).handleUpstream(with(any(ChannelHandlerContext.class)), with(any(FlushEvent.class)));
             }
         });
 
         Channel channel = channelFactory.newChannel(pipeline);
-        ChannelFuture handlerFuture = handler.getHandlerFuture();
+        fireInputShutdown(channel);
         fireFlushed(channel);
-
-        assertTrue(handlerFuture.isDone());
-        assertFalse(handlerFuture.isSuccess());
 
         context.assertIsSatisfied();
     }

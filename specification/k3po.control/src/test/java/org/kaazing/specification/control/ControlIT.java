@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,50 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.specification.control;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.DisableOnDebug;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
-import org.junit.rules.Timeout;
-import org.kaazing.k3po.junit.annotation.Specification;
-import org.kaazing.k3po.junit.rules.K3poRule;
-
+/**
+ * This specification is tested in K3po driver.  As it is needed there to validate the control protocol, but would create
+ * a un-compilable circular dependency if it was tested here.  See driver/src/test/java/org/kaazing/specification/
+ *
+ */
 public class ControlIT {
 
-    private final K3poRule robot = new K3poRule();
-
-    private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
-
-    @Rule
-    public final TestRule chain = RuleChain.outerRule(robot).around(timeout);
-
-    @Test
-    @Specification
-    public void shouldBeEmpty() throws Exception {
-        robot.finish();
-    }
-
-    @Test
-    @Specification({"accept.finished.empty", "connect.finished.empty"})
-    public void shouldPrepareStartThenFinishedEmpty() throws Exception {
-        robot.finish();
-    }
-
-    @Test
-    @Specification({"accept.finished", "connect.finished"})
-    public void shouldPrepareStartThenFinished() throws Exception {
-        robot.finish();
-    }
-
-    @Test
-    @Specification({"accept.finished.with.diff", "connect.finished.with.diff"})
-    public void shouldPrepareStartThenFinishedWithDiff() throws Exception {
-        robot.finish();
-    }
 }

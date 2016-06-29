@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior;
 
 import static java.util.Objects.requireNonNull;
@@ -36,7 +35,7 @@ public class ScriptProgress {
     public ScriptProgress(RegionInfo scriptInfo, String expectedScript) {
         this.expectedScript = expectedScript;
         this.scriptInfo = requireNonNull(scriptInfo);
-        this.failureInfos = new ConcurrentHashMap<RegionInfo, String>();
+        this.failureInfos = new ConcurrentHashMap<>();
     }
 
     public void addScriptFailure(RegionInfo regionInfo) {

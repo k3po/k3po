@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.pcap.converter.internal.author.composer;
 
 import org.kaazing.k3po.pcap.converter.internal.packet.Packet;
@@ -24,28 +23,28 @@ public interface Composer {
      * Returns this nodes IP
      * @return
      */
-    public String getIp();
+    String getIp();
     
     /**
      * Emits the conversation of a script
      * @param packet
      */
-    public void emitConversation(Packet packet);
+    void emitConversation(Packet packet);
     
     /**
      * Tells whether all script segments are in a finished state (i.e. at a rupert Closed)
      * @return
      */
-    public boolean isFinished();
+    boolean isFinished();
     
     /**
      * Will write all script fragments it has to file
      */
-    public void writeToFile();
+    void writeToFile();
     
     /**
      * Will return a copy of the script which will be the sum total of the fragments
      */
-    public String getScript();
+    String getScript();
     
 }

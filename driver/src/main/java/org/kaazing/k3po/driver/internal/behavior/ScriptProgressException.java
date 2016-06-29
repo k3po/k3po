@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior;
 
 import static java.util.Objects.requireNonNull;
 
+import org.kaazing.k3po.driver.internal.Robot;
 import org.kaazing.k3po.lang.internal.RegionInfo;
+import org.jboss.netty.logging.InternalLogger;
+import org.jboss.netty.logging.InternalLoggerFactory;
 
 @SuppressWarnings("serial")
 public class ScriptProgressException extends Exception {
 
     private final RegionInfo regionInfo;
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ScriptProgressException.class);
 
     public ScriptProgressException(RegionInfo regionInfo, String message) {
         super(message);
+        if (LOGGER.isDebugEnabled()) {
+            // add this while debugging a race between this being thrown and
+            // actually getting script progress (on Aborts), thus this
+            // is good to know
+            LOGGER.debug("Script Progress Exception: " + message);
+        }
         this.regionInfo = requireNonNull(regionInfo);
     }
 

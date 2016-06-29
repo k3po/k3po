@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.resolver;
 
 import java.net.URI;
+import java.util.Map;
 
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.logging.InternalLogger;
@@ -40,28 +40,32 @@ public class ClientBootstrapResolver {
     private final ChannelAddressFactory addressFactory;
     private final ChannelPipelineFactory pipelineFactory;
     private final LocationResolver locationResolver;
-    private final Barrier barrier;
+    private final Barrier awaitBarrier;
     private final RegionInfo regionInfo;
+    private final OptionsResolver optionsResolver;
 
     private ClientBootstrap bootstrap;
 
     public ClientBootstrapResolver(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory,
-            ChannelPipelineFactory pipelineFactory, LocationResolver locationResolver, Barrier barrier,
+            ChannelPipelineFactory pipelineFactory, LocationResolver locationResolver,
+            OptionsResolver optionsResolver, Barrier awaitBarrier,
             RegionInfo regionInfo) {
         this.bootstrapFactory = bootstrapFactory;
         this.addressFactory = addressFactory;
         this.pipelineFactory = pipelineFactory;
         this.locationResolver = locationResolver;
-        this.barrier = barrier;
+        this.optionsResolver = optionsResolver;
+        this.awaitBarrier = awaitBarrier;
         this.regionInfo = regionInfo;
     }
 
     public ClientBootstrap resolve() throws Exception {
         if (bootstrap == null) {
-            URI connectUri = locationResolver.resolve();
-            ChannelAddress remoteAddress = addressFactory.newChannelAddress(connectUri);
+            URI connectURI = locationResolver.resolve();
+            Map<String, Object> connectOptions = optionsResolver.resolve();
+            ChannelAddress remoteAddress = addressFactory.newChannelAddress(connectURI, connectOptions);
             LOGGER.debug("Initializing client Bootstrap connecting to remoteAddress " + remoteAddress);
-            ClientBootstrap clientBootstrapCandidate = bootstrapFactory.newClientBootstrap(connectUri.getScheme());
+            ClientBootstrap clientBootstrapCandidate = bootstrapFactory.newClientBootstrap(connectURI.getScheme());
             clientBootstrapCandidate.setPipelineFactory(pipelineFactory);
             clientBootstrapCandidate.setOption("remoteAddress", remoteAddress);
             bootstrap = clientBootstrapCandidate;
@@ -69,8 +73,8 @@ public class ClientBootstrapResolver {
         return bootstrap;
     }
 
-    public Barrier getBarrier() {
-        return this.barrier;
+    public Barrier getAwaitBarrier() {
+        return this.awaitBarrier;
     }
 
     public RegionInfo getRegionInfo() {

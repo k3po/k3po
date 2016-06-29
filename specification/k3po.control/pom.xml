@@ -20,12 +20,6 @@
     </scm>
 
     <dependencies>
-        <dependency>
-            <groupId>org.kaazing</groupId>
-            <artifactId>k3po.junit</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -35,22 +29,6 @@
             </resource>
         </resources>
         <plugins>
-            <plugin>
-                <groupId>org.kaazing</groupId>
-                <artifactId>k3po-maven-plugin</artifactId>
-                <version>${project.version}</version>
-                <configuration>
-                    <skipTests>${skipITs}</skipTests>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>start</goal>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
@@ -64,6 +42,16 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <excludes combine.children="append">
+                        <exclude>src/main/scripts/org/kaazing/specification/control/assets/**/*.rpt</exclude>
+                        <exclude>src/main/scripts/org/kaazing/specification/control/2.0/assets/**/*.rpt</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>

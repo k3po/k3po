@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior;
 
 import java.util.ArrayList;
@@ -38,22 +37,23 @@ public class Configuration {
     private Set<Barrier> barriers;
     private ExpressionFactory factory;
     private Map<RegionInfo, List<ChannelPipeline>> serverPipelinesByRegion;
+    private List<AutoCloseable> resources;
 
     public List<ChannelPipeline> getClientAndServerPipelines() {
         if (pipelines == null) {
-            pipelines = new ArrayList<ChannelPipeline>();
+            pipelines = new ArrayList<>();
         }
         return pipelines;
     }
 
     public List<ChannelPipeline> getServerPipelines(RegionInfo regionInfo) {
         if (serverPipelinesByRegion == null) {
-            serverPipelinesByRegion = new HashMap<RegionInfo, List<ChannelPipeline>>();
+            serverPipelinesByRegion = new HashMap<>();
         }
 
         List<ChannelPipeline> serverPipelines = serverPipelinesByRegion.get(regionInfo);
         if (serverPipelines == null) {
-            serverPipelines = new ArrayList<ChannelPipeline>();
+            serverPipelines = new ArrayList<>();
             serverPipelinesByRegion.put(regionInfo, serverPipelines);
         }
         return serverPipelines;
@@ -69,7 +69,7 @@ public class Configuration {
 
     public List<ServerBootstrapResolver> getServerResolvers() {
         if (serverResolvers == null) {
-            serverResolvers = new ArrayList<ServerBootstrapResolver>();
+            serverResolvers = new ArrayList<>();
         }
 
         return serverResolvers;
@@ -77,7 +77,7 @@ public class Configuration {
 
     public List<ClientBootstrapResolver> getClientResolvers() {
         if (clientResolvers == null) {
-            clientResolvers = new ArrayList<ClientBootstrapResolver>();
+            clientResolvers = new ArrayList<>();
         }
 
         return clientResolvers;
@@ -85,9 +85,16 @@ public class Configuration {
 
     public Set<Barrier> getBarriers() {
         if (barriers == null) {
-            barriers = new HashSet<Barrier>();
+            barriers = new HashSet<>();
         }
         return barriers;
+    }
+
+    public List<AutoCloseable> getResources() {
+        if (resources == null) {
+            resources = new ArrayList<>();
+        }
+        return resources;
     }
 
 }

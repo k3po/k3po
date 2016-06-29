@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.netty.channel;
 
 import static org.jboss.netty.channel.Channels.future;
@@ -173,6 +172,22 @@ public final class Channels {
     public static void flush(ChannelHandlerContext ctx, ChannelFuture future) {
         ctx.sendDownstream(
                 new DownstreamFlushEvent(ctx.getChannel(), future));
+    }
+
+    public static ChannelFuture abort(Channel channel) {
+        ChannelFuture future = future(channel);
+        channel.getPipeline().sendDownstream(
+                new DownstreamAbortEvent(channel, future));
+        return future;
+    }
+
+
+    public static void abort(ChannelHandlerContext ctx, ChannelFuture future) {
+        ctx.sendDownstream(new DownstreamAbortEvent(ctx.getChannel(), future));
+    }
+
+    public static void fireChannelAborted(Channel channel) {
+        channel.getPipeline().sendUpstream(new UpstreamAbortEvent(channel));
     }
 
     private Channels() {

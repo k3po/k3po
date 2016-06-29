@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.pcap.converter.internal.author.script;
 
 import java.util.HashMap;
@@ -32,7 +31,7 @@ import org.kaazing.k3po.pcap.converter.internal.packet.Packet;
  */
 public abstract class TcpScript extends AbstractScript{
     private ScriptState state;
-    private final HashMap<Long, Integer> seqNumbers = new HashMap<Long, Integer>();
+    private final HashMap<Long, Integer> seqNumbers = new HashMap<>();
     private final static Logger LOG = Logger.getLogger(TcpScript.class.getName());
     private Long closingReadAck = null;
     private Long closingWriteAck = null;
@@ -66,7 +65,7 @@ public abstract class TcpScript extends AbstractScript{
             writeWaitAndSwapDate(packet.getTimeInMicroSecondsFromEpoch());
             int payloadLength = packet.getTcpPayloadSize();
             byte[] payload = packet.getTcpPayload();
-            Map<Integer, Integer> httpFields = new TreeMap<Integer, Integer>(packet.getHttpFieldPositionsAndSize());
+            Map<Integer, Integer> httpFields = new TreeMap<>(packet.getHttpFieldPositionsAndSize());
             int currentPos = 0;
             Iterator<Entry<Integer, Integer>> iter = httpFields.entrySet().iterator();
             Map.Entry<Integer, Integer> entry = iter.next();
@@ -113,7 +112,7 @@ public abstract class TcpScript extends AbstractScript{
             writeWaitAndSwapDate(packet.getTimeInMicroSecondsFromEpoch());
             int payloadLength = packet.getTcpPayloadSize();
             byte[] payload = packet.getTcpPayload();
-            Map<Integer, Integer> httpFields = new TreeMap<Integer, Integer>(packet.getHttpFieldPositionsAndSize());
+            Map<Integer, Integer> httpFields = new TreeMap<>(packet.getHttpFieldPositionsAndSize());
             int currentPos = 0;
             Iterator<Entry<Integer, Integer>> iter = httpFields.entrySet().iterator();
             Map.Entry<Integer, Integer> entry = iter.next();
@@ -227,14 +226,14 @@ public abstract class TcpScript extends AbstractScript{
     	if(!closedRead){
     		closingScript = true;
     	}
-        closingWriteAck = new Long(closingAck + 1L);
+        closingWriteAck = closingAck + 1L;
     }
     
     public final void setClosingReadAck(long closingAck) {
         if(closingReadAck != null){
             return;
         }
-        closingReadAck = new Long(closingAck + 1L);
+        closingReadAck = closingAck + 1L;
     }
     
     @Override

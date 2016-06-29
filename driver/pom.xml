@@ -87,6 +87,16 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.kaazing</groupId>
+            <artifactId>specification.k3po.control</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>uk.co.real-logic</groupId>
+            <artifactId>Agrona</artifactId>
+            <version>0.4.5</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -102,6 +112,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <excludes combine.children="append">
+                        <exclude>src/test/scripts/org/kaazing/robot/driver/**/*.rpt</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>

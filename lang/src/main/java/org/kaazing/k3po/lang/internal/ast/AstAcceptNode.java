@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.lang.internal.ast;
 
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
@@ -29,12 +28,25 @@ import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 
 public class AstAcceptNode extends AstStreamNode {
 
-    private Map<String, Object> options;
     private String acceptName;
+    private String notifyName;
+    private Map<String, Object> options;
     private List<AstAcceptableNode> acceptables;
 
     private AstLocation location;
     private ELContext environment;
+
+    public AstAcceptNode() {
+    }
+
+    public AstAcceptNode(AstAcceptNode acceptNode) {
+        this.regionInfo = acceptNode.regionInfo;
+        this.location = acceptNode.location;
+        this.environment = acceptNode.environment;
+        this.acceptName = acceptNode.acceptName;
+        this.notifyName = acceptNode.notifyName;
+        this.options = acceptNode.options;
+    }
 
     public AstLocation getLocation() {
         return location;
@@ -52,9 +64,17 @@ public class AstAcceptNode extends AstStreamNode {
         this.acceptName = acceptName;
     }
 
+    public String getNotifyName() {
+        return notifyName;
+    }
+
+    public void setNotifyName(String notifyName) {
+        this.notifyName = notifyName;
+    }
+
     public Map<String, Object> getOptions() {
         if (options == null) {
-            options = new LinkedHashMap<String, Object>();
+            options = new LinkedHashMap<>();
         }
 
         return options;
@@ -70,7 +90,7 @@ public class AstAcceptNode extends AstStreamNode {
 
     public List<AstAcceptableNode> getAcceptables() {
         if (acceptables == null) {
-            acceptables = new LinkedList<AstAcceptableNode>();
+            acceptables = new LinkedList<>();
         }
 
         return acceptables;
@@ -98,6 +118,11 @@ public class AstAcceptNode extends AstStreamNode {
         if (acceptName != null) {
             hashCode <<= 4;
             hashCode ^= acceptName.hashCode();
+        }
+
+        if (notifyName != null) {
+            hashCode <<= 4;
+            hashCode ^= notifyName.hashCode();
         }
 
         if (acceptables != null) {
@@ -139,16 +164,23 @@ public class AstAcceptNode extends AstStreamNode {
     @Override
     protected void describeLine(StringBuilder sb) {
         super.describeLine(sb);
-        sb.append("accept ");
-        sb.append(location);
+        sb.append("accept ").append(location);
 
         if (acceptName != null) {
-            sb.append(" as ");
-            sb.append(acceptName);
+            sb.append(" as ").append(acceptName);
         }
 
         sb.append('\n');
-    }
 
+        if (options != null) {
+            for (Map.Entry<String, Object> entry : options.entrySet()) {
+                sb.append("        option ")
+                  .append(entry.getKey())
+                  .append(" ")
+                  .append(entry.getValue())
+                  .append('\n');
+            }
+        }
+    }
 
 }

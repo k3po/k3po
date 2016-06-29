@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.specification.ws.internal;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -32,6 +31,21 @@ public final class Functions {
     private static final byte[] WEBSOCKET_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11".getBytes(UTF_8);
     private static final Random RANDOM = new Random();
     private static final int MAX_ACCEPTABLE_HEADER_LENGTH = 200;
+
+    @Function
+    public static String base64Encode(String login) {
+        byte[] bytes = login.getBytes();
+        return new String(Base64.encode(bytes));
+    }
+
+    @Function
+    public static String append(String... strings) {
+        StringBuilder x = new StringBuilder();
+        for (String s:strings) {
+            x.append(s);
+        }
+        return x.toString();
+    }
 
     @Function
     public static byte[] handshakeKey() {

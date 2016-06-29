@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.pcap.converter.internal.author.emitter;
 
 public interface EmitterFactory {
-    public Emitter getRptScriptEmitter(OutputType ot, String name);
-    public Emitter getNoteEmitter(OutputType ot, String noteHeader);
-	public void setMemSaver(boolean b);
+    Emitter getRptScriptEmitter(OutputType ot, String name);
+    Emitter getNoteEmitter(OutputType ot, String noteHeader);
+	void setMemSaver(boolean b);
 }
     

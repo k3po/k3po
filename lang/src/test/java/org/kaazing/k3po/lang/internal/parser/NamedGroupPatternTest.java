@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.lang.internal.parser;
 
 import static java.lang.String.format;
@@ -143,7 +142,7 @@ public class NamedGroupPatternTest {
 
     @Test
     public void shouldParseRegex4() throws Exception {
-        ArrayList<String> groupNames = new ArrayList<String>(1);
+        ArrayList<String> groupNames = new ArrayList<>(1);
         groupNames.add("hello");
         groupNames.add("reason");
         String scriptText = format("(?<hello>HTTP\\/1.1\\s401\\s(?<reason>.*)\\r\\n\\r\\n)");

@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,24 +24,24 @@ public interface Coordinator {
      * Starts a script fragments / init state
      * @param packet
      */
-    public abstract void startScript(Packet packet);
+    void startScript(Packet packet);
 
     /**
      * Handles a conversation fragment of packet
      * @param packet
      */
-    public abstract void conversation(Packet packet);
+    void conversation(Packet packet);
 
     /**
      * Returns whether all script fragments completed with a closed
      * @return
      */
-    public abstract boolean isFinished();
+    boolean isFinished();
 
     /**
      * Flushes all script fragments to files
      */
-    public abstract void commitToFile();
+    void commitToFile();
 
     /**
      * Adds scripts to emitter that match ip
@@ -49,16 +49,16 @@ public interface Coordinator {
      * @param ip
      * @return
      */
-    public Emitter addScriptToEmitter(Emitter emitter, String ip, String protocol);
+    Emitter addScriptToEmitter(Emitter emitter, String ip, String protocol);
 
     /**
      * Gets Script By Ip
      * @param ip
      * @return
      */
-    public abstract String getScriptsByIp(String ip);
+    String getScriptsByIp(String ip);
 
-    public abstract String getServerScriptsByIp(String ip);
+    String getServerScriptsByIp(String ip);
 
-    public abstract String getClientScriptsByIp(String ip);
+    String getClientScriptsByIp(String ip);
 }

@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.pcap.converter.internal.author;
 
 import java.util.HashMap;
@@ -60,7 +59,7 @@ public class RptScriptCreator {
         ComposerFactory composerFactory = new GenericComposerFactory(emitterFactory);
         coordinatorFactory = new CoordinatorFactoryImpl(composerFactory, emitterFactory);
         creatorNote = emitterFactory.getNoteEmitter(OutputType.CREATOR, CREATOR_NOTE_HEADER);
-        coordinators = new HashMap<ConversationId, Stack<Coordinator>>();
+        coordinators = new HashMap<>();
 
     }
     
@@ -68,7 +67,7 @@ public class RptScriptCreator {
         this.emitterFactory = emitterFactory;
         this.coordinatorFactory = coordinatorFactory;
         creatorNote = emitterFactory.getNoteEmitter(OutputType.CREATOR, CREATOR_NOTE_HEADER);
-        coordinators = new HashMap<ConversationId, Stack<Coordinator>>();
+        coordinators = new HashMap<>();
     }
 
     public void addPacketToScripts(Packet packet) {
@@ -148,6 +147,8 @@ public class RptScriptCreator {
      * 
      */
     private class KeyToEmitterHashMap extends HashMap<String, Emitter> {
+
+        private static final long serialVersionUID = 1L;
 
         @Override
         public Emitter put(String key, Emitter value) {

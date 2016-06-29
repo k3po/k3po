@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,8 @@ public class TcpCoordinator extends AbstractCoordinator implements Coordinator {
         super(emitterFactory, emitterFactory.getRptScriptEmitter(OutputType.TCP_COORDINATOR,
                 conversationId.getIpAddr1()), emitterFactory.getRptScriptEmitter(OutputType.TCP_COORDINATOR,
                 conversationId.getIpAddr2()), conversationId, composerFactory);
-        clients = new HashMap<String, Composer>(2);
-        servers = new HashMap<String, Composer>(2);
+        clients = new HashMap<>(2);
+        servers = new HashMap<>(2);
 
     }
 

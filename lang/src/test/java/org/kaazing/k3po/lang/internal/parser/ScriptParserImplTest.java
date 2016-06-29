@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.lang.internal.parser;
 
 import static org.junit.Assert.assertEquals;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.ABORT;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.ABORTED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.ACCEPT;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.CLOSE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.CLOSED;
@@ -29,14 +30,14 @@ import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.LITERAL_
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.PROPERTY_NODE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_AWAIT;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_MASK_OPTION;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_NOTIFY;
-import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_OPTION;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.SCRIPT;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.VARIABLE_LENGTH_BYTES_MATCHER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_AWAIT;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_MASK_OPTION;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_NOTIFY;
-import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_OPTION;
 import static org.kaazing.k3po.lang.internal.regex.NamedGroupPattern.compile;
 import static org.kaazing.k3po.lang.internal.test.junit.Assert.assertEquals;
 
@@ -49,6 +50,8 @@ import javax.el.ValueExpression;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
@@ -63,6 +66,8 @@ import org.kaazing.k3po.lang.internal.ast.AstWriteAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteValueNode;
+import org.kaazing.k3po.lang.internal.ast.builder.AstAbortNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstAbortedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstAcceptNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstCloseNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstClosedNodeBuilder;
@@ -102,6 +107,19 @@ public class ScriptParserImplTest {
     public void shouldParseLiteralText() throws Exception {
 
         String scriptFragment = "\"012345 test, here!!\"";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstLiteralTextValue actual = parser.parseWithStrategy(scriptFragment, LITERAL_TEXT_VALUE);
+
+        AstLiteralTextValue expected = new AstLiteralTextValue("012345 test, here!!");
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseLiteralTextSingleQuote() throws Exception {
+
+        String scriptFragment = "'012345 test, here!!'";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstLiteralTextValue actual = parser.parseWithStrategy(scriptFragment, LITERAL_TEXT_VALUE);
@@ -842,6 +860,32 @@ public class ScriptParserImplTest {
     }
 
     @Test
+    public void shouldParseAbort() throws Exception {
+
+        String scriptFragment = "abort";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstAbortNode actual = parser.parseWithStrategy(scriptFragment, ABORT);
+
+        AstAbortNode expected = new AstAbortNodeBuilder().done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseAborted() throws Exception {
+
+        String scriptFragment = "aborted";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstAbortedNode actual = parser.parseWithStrategy(scriptFragment, ABORTED);
+
+        AstAbortedNode expected = new AstAbortedNodeBuilder().done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void shouldParseClosed() throws Exception {
 
         String scriptFragment = "closed";
@@ -1242,6 +1286,34 @@ public class ScriptParserImplTest {
     }
 
     @Test
+    public void shouldParseConnectScriptWithOptions() throws Exception {
+
+        String script =
+                "connect http://localhost:7788\n" +
+                "        option transport tcp://localhost:8888\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+        AstLocation location = new AstLocationLiteral(URI.create("http://localhost:7788"));
+        AstLocation transport = new AstLocationLiteral(URI.create("tcp://localhost:8888"));
+
+        AstScriptNode expected = new AstScriptNodeBuilder()
+                .addConnectStream()
+                    .setLocation(location)
+                    .setTransport(transport)
+                    .addConnectedEvent().done()
+                    .addCloseCommand().done()
+                    .addClosedEvent().done()
+                .done()
+        .done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void shouldParseAcceptScript() throws Exception {
 
         String script =
@@ -1254,6 +1326,38 @@ public class ScriptParserImplTest {
         AstScriptNode expected = new AstScriptNodeBuilder().addAcceptStream()
                 .setLocation(new AstLocationLiteral(URI.create("tcp://localhost:7788"))).done().addAcceptedStream()
                 .addConnectedEvent().done().addCloseCommand().done().addClosedEvent().done().done().done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseAcceptScriptWithOptions() throws Exception {
+
+        String script =
+                "# tcp.client.accept-then-close\n" +
+                "accept http://localhost:7788\n" +
+                "       option transport tcp://localhost:8000\n" +
+                "accepted\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+        AstLocation location = new AstLocationLiteral(URI.create("http://localhost:7788"));
+        AstLocation transport = new AstLocationLiteral(URI.create("tcp://localhost:8000"));
+
+        AstScriptNode expected = new AstScriptNodeBuilder()
+                .addAcceptStream()
+                    .setLocation(location)
+                    .setTransport(transport)
+                .done()
+                .addAcceptedStream()
+                    .addConnectedEvent().done()
+                    .addCloseCommand().done()
+                    .addClosedEvent().done()
+                .done()
+        .done();
 
         assertEquals(expected, actual);
     }
@@ -1384,7 +1488,7 @@ public class ScriptParserImplTest {
     }
 
     @Ignore("Not implemented and perhaps not designed correctly.  "
-            + "Need to access the use and proper syntax for child channels - DPW")
+            + "Need to access the use and proper syntax for child channels")
     @Test
     public void shouldParseScript() throws Exception {
 
@@ -1460,7 +1564,7 @@ public class ScriptParserImplTest {
         String scriptFragment = "read option mask [0x01 0x02 0x03 0x04]";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_OPTION);
+        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_MASK_OPTION);
 
         AstReadOptionNode expected =
                 new AstReadOptionNodeBuilder().setOptionName("mask").setOptionValue(new byte[]{0x01, 0x02, 0x03, 0x04}).done();
@@ -1477,7 +1581,7 @@ public class ScriptParserImplTest {
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
 
-        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_OPTION);
+        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_MASK_OPTION);
 
         AstReadOptionNode expected =
                 new AstReadOptionNodeBuilder()
@@ -1494,7 +1598,7 @@ public class ScriptParserImplTest {
         String scriptFragment = "write option mask [0x01 0x02 0x03 0x04]";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_OPTION);
+        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_MASK_OPTION);
 
         AstWriteOptionNode expected =
                 new AstWriteOptionNodeBuilder().setOptionName("mask").setOptionValue(new byte[]{0x01, 0x02, 0x03, 0x04}).done();
@@ -1511,7 +1615,7 @@ public class ScriptParserImplTest {
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
 
-        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_OPTION);
+        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_MASK_OPTION);
 
         AstWriteOptionNode expected =
                 new AstWriteOptionNodeBuilder()

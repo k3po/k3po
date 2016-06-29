@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.netty.bootstrap.http;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -75,7 +74,7 @@ import com.sun.net.httpserver.HttpServer;
 @SuppressWarnings("restriction")
 public class HttpClientBootstrapTest {
 
-    private static enum ContentStrategy {
+    private enum ContentStrategy {
         CHUNKED, BUFFERED, EXPLICIT
     }
 
@@ -113,7 +112,7 @@ public class HttpClientBootstrapTest {
         ChannelAddressFactory channelAddressFactory = newChannelAddressFactory();
         ChannelAddress channelAddress = channelAddressFactory.newChannelAddress(URI.create("http://localhost:8000/path"));
 
-        final AtomicReference<String> messageRef = new AtomicReference<String>();
+        final AtomicReference<String> messageRef = new AtomicReference<>();
         HttpContext httpContext = httpServer.createContext("/path");
         httpContext.setHandler(new HttpHandler() {
 

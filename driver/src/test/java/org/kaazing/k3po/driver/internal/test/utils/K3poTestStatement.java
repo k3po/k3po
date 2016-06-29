@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.test.utils;
 
 import static java.lang.String.format;
@@ -36,6 +35,7 @@ public class K3poTestStatement extends Statement {
     private final Latch latch;
 
     private final List<String> scriptNames;
+    private Robot robot;
 
     public K3poTestStatement(Statement statement, Latch latch, List<String> scriptNames) {
         this.latch = latch;
@@ -46,9 +46,9 @@ public class K3poTestStatement extends Statement {
     @Override
     public void evaluate() throws Throwable {
 
-        Robot robot = new Robot();
+        robot = new Robot();
         ScriptTestRunner scriptRunner = new ScriptTestRunner(scriptNames, latch, robot);
-        FutureTask<ScriptPair> scriptFuture = new FutureTask<ScriptPair>(scriptRunner);
+        FutureTask<ScriptPair> scriptFuture = new FutureTask<>(scriptRunner);
 
         try {
             // start the script execution
@@ -123,7 +123,16 @@ public class K3poTestStatement extends Statement {
         } finally {
             // clean up the task if it is still running
             scriptFuture.cancel(true);
-            robot.destroy();
+            robot.dispose().await();
         }
     }
+
+    public void awaitBarrier(String barrierName) throws Exception {
+        robot.awaitBarrier(barrierName);
+    }
+
+    public void notifyBarrier(String barrierName) throws Exception {
+        robot.notifyBarrier(barrierName);
+    }
+
 }

@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.pcap.converter.internal.packet;
 
 import java.util.Date;
@@ -293,7 +292,7 @@ public class Packet {
     //HTTP
     
     private RequestType requestType;
-    private LinkedList<HttpField> listOfHttpFields = new LinkedList<HttpField>();
+    private LinkedList<HttpField> listOfHttpFields = new LinkedList<>();
     private String requestURI;
     
     public RequestType getHttpRequestType() {
@@ -387,7 +386,7 @@ public class Packet {
     }
     
     public Map<Integer, Integer> getHttpFieldPositionsAndSize(){
-        Map<Integer, Integer> posAndSize = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> posAndSize = new HashMap<>();
         for(HttpField iter: listOfHttpFields){
             if(!posAndSize.containsKey(iter.getPos())){
                 posAndSize.put(iter.getPos(), iter.getSize());

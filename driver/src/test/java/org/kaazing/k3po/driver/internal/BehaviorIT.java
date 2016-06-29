@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -56,6 +55,33 @@ public class BehaviorIT {
 
     @Test
     @TestSpecification({
+        "notifying.accept" })
+    public void testNotifyingAccept() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "delayed.connect.via.testframework" })
+    public void testDelayedClientConnectViaTestFramework() throws Exception {
+        k3po.notifyBarrier("NOTIFY_FROM_FRAMEWORK");
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "duplicate.awaits.notified.from.test.framework" })
+    public void testDuplicateAwaitsNotifiedFromTestFramework() throws Exception {
+        /*
+         * No special logic for this (like we don't throw a error or warning). All that would happen is the client would
+         * be notified multiple times. I don't think its necessarily beneficial to throw a error or anything,
+         */
+        k3po.notifyBarrier("NOTIFY_FROM_FRAMEWORK");
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
         "delayed.http.connect" })
     public void testDelayedHttpClientConnect() throws Exception {
         k3po.finish();
@@ -72,6 +98,21 @@ public class BehaviorIT {
     @TestSpecification({
         "accept.expression" })
     public void testAcceptWithExpression() throws Exception {
+        k3po.finish();
+    }
+
+    @TestSpecification("test.barrier.passing.from.test.framework")
+    @Test
+    public void testPassingBarriers() throws Exception {
+        k3po.notifyBarrier("AWAITING_BARRIER");
+        k3po.awaitBarrier("NOTIFYING_BARRIER");
+        k3po.finish();
+    }
+
+    @TestSpecification("delayed.client.close")
+    @Test
+    public void delayedClientClose() throws Exception {
+        k3po.notifyBarrier("CLOSE_REQUESTED");
         k3po.finish();
     }
 }

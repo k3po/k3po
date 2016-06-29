@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior.visitor;
 
 import java.util.List;
 
 import org.kaazing.k3po.driver.internal.behavior.visitor.InjectEventsVisitor.State;
+import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
@@ -54,7 +55,7 @@ import org.kaazing.k3po.lang.internal.ast.AstWriteValueNode;
 
 public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State> {
 
-    public static enum ConnectivityState {
+    public enum ConnectivityState {
         NONE, OPENED, BOUND, CONNECTED, DISCONNECTED, UNBOUND, CLOSED
     }
 
@@ -90,11 +91,7 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
         state.connectivityState = ConnectivityState.NONE;
 
-        AstAcceptNode newAcceptNode = new AstAcceptNode();
-        newAcceptNode.setRegionInfo(acceptNode.getRegionInfo());
-        newAcceptNode.setAcceptName(acceptNode.getAcceptName());
-        newAcceptNode.setLocation(acceptNode.getLocation());
-        newAcceptNode.setEnvironment(acceptNode.getEnvironment());
+        AstAcceptNode newAcceptNode = new AstAcceptNode(acceptNode);
 
         state.streamables = newAcceptNode.getStreamables();
         for (AstStreamableNode streamable : acceptNode.getStreamables()) {
@@ -134,11 +131,7 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
         state.connectivityState = ConnectivityState.NONE;
 
-        AstConnectNode newConnectNode = new AstConnectNode();
-        newConnectNode.setRegionInfo(connectNode.getRegionInfo());
-        newConnectNode.setLocation(connectNode.getLocation());
-        newConnectNode.setEnvironment(connectNode.getEnvironment());
-        newConnectNode.setBarrier(connectNode.getBarrier());
+        AstConnectNode newConnectNode = new AstConnectNode(connectNode);
 
         state.streamables = newConnectNode.getStreamables();
         for (AstStreamableNode streamable : connectNode.getStreamables()) {
@@ -229,6 +222,21 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
         default:
             throw new IllegalStateException("Unexpected close before connected");
+        }
+
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstAbortNode node, State state) throws Exception {
+
+        switch (state.connectivityState) {
+        case CONNECTED:
+            state.streamables.add(node);
+            break;
+
+        default:
+            throw new IllegalStateException("Unexpected abort before connected");
         }
 
         return null;
@@ -396,6 +404,21 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
         default:
             throw new IllegalStateException("Unexpected event: closed");
+        }
+
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstAbortedNode node, State state) throws Exception {
+
+        switch (state.connectivityState) {
+        case CONNECTED:
+            state.streamables.add(node);
+            break;
+
+        default:
+            throw new IllegalStateException("Unexpected aborted before connected");
         }
 
         return null;

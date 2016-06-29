@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.lang.internal.el;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +25,7 @@ public class VariableMapper extends javax.el.VariableMapper {
     protected final ConcurrentMap<String, ValueExpression> variables;
 
     public VariableMapper() {
-        variables = new ConcurrentHashMap<String, ValueExpression>();
+        variables = new ConcurrentHashMap<>();
     }
 
     @Override

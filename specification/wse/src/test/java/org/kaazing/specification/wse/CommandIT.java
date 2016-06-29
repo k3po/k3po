@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.specification.wse;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -41,7 +40,7 @@ public class CommandIT {
     @Specification({
         "server.send.nop/request",
         "server.send.nop/response" })
-    public void sholdReceiveNop() throws Exception {
+    public void shouldReceiveNop() throws Exception {
         k3po.finish();
     }
 
@@ -49,7 +48,7 @@ public class CommandIT {
     @Specification({
         "server.send.reconnect/request",
         "server.send.reconnect/response" })
-    public void sholdReceiveReconnect() throws Exception {
+    public void shouldReceiveReconnect() throws Exception {
         k3po.finish();
     }
 
@@ -57,7 +56,7 @@ public class CommandIT {
     @Specification({
         "server.send.close/request",
         "server.send.close/response" })
-    public void sholdReceiveClose() throws Exception {
+    public void shouldReceiveClose() throws Exception {
         k3po.finish();
     }
 }

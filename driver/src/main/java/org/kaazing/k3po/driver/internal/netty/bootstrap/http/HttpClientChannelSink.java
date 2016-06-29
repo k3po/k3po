@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.netty.bootstrap.http;
 
 import static java.lang.String.format;
@@ -50,6 +49,7 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.DefaultHttpChunk;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
@@ -59,9 +59,10 @@ import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.jboss.netty.handler.codec.http.QueryStringEncoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.QueryStringEncoder;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannelSink;
+import org.kaazing.k3po.driver.internal.netty.channel.AbortEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.FlushEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownOutputEvent;
@@ -150,8 +151,8 @@ public class HttpClientChannelSink extends AbstractChannelSink {
                     httpConnectChannel.setRemoteAddress(httpRemoteAddress);
                     httpConnectChannel.setConnected();
 
-                    fireChannelConnected(httpConnectChannel, httpRemoteAddress);
                     httpConnectFuture.setSuccess();
+                    fireChannelConnected(httpConnectChannel, httpRemoteAddress);
                 } else {
                     httpConnectFuture.setFailure(connectFuture.getCause());
                 }
@@ -262,10 +263,28 @@ public class HttpClientChannelSink extends AbstractChannelSink {
     }
 
     @Override
+    protected void abortRequested(ChannelPipeline pipeline, final AbortEvent evt) throws Exception {
+        HttpClientChannel channel = (HttpClientChannel) pipeline.getChannel();
+        // We flush before an abort, as we don't expect script authors
+        // to purposely add a write before an abort and not expect it
+        // to make it on the wire
+        ChannelFuture flushFuture = Channels.future(channel);
+        flushRequested(channel, flushFuture);
+        flushFuture.addListener(new ChannelFutureListener() {
+
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                ChannelFuture disconnect = transport.disconnect();
+                chainFutures(disconnect, evt.getFuture());
+            }
+        });
+    };
+
+    @Override
     protected void closeRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
         HttpClientChannel httpClientChannel = (HttpClientChannel) pipeline.getChannel();
         ChannelFuture httpFuture = evt.getFuture();
-        assert httpFuture == httpClientChannel.getCloseFuture();
+        httpFuture.setSuccess();
 
         switch (httpClientChannel.state()) {
         case UPGRADEABLE:

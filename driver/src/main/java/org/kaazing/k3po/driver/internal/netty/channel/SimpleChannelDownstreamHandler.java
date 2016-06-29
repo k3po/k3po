@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.netty.channel;
 
 import org.jboss.netty.channel.ChannelEvent;
@@ -32,6 +31,9 @@ public class SimpleChannelDownstreamHandler extends org.jboss.netty.channel.Simp
         else if (e instanceof FlushEvent) {
             flushRequested(ctx, (FlushEvent) e);
         }
+        else if (e instanceof AbortEvent) {
+            abortRequested(ctx, (AbortEvent) e);
+        }
         else {
             super.handleDownstream(ctx, e);
         }
@@ -46,6 +48,10 @@ public class SimpleChannelDownstreamHandler extends org.jboss.netty.channel.Simp
     }
 
     public void shutdownOutputRequested(ChannelHandlerContext ctx, ShutdownOutputEvent e) {
+        ctx.sendDownstream(e);
+    }
+
+    public void abortRequested(ChannelHandlerContext ctx, AbortEvent e) {
         ctx.sendDownstream(e);
     }
 

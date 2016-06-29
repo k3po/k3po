@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.netty.channel;
 
 import java.net.SocketAddress;
 import java.net.URI;
+import java.util.Comparator;
 import java.util.Objects;
 
 import org.jboss.netty.channel.ChannelException;
@@ -25,6 +25,25 @@ import org.jboss.netty.channel.ChannelException;
 public class ChannelAddress extends SocketAddress {
 
     private static final long serialVersionUID = 1L;
+
+    public static final Comparator<ChannelAddress> ADDRESS_COMPARATOR = new Comparator<ChannelAddress>() {
+        @Override
+        public int compare(ChannelAddress o1, ChannelAddress o2) {
+            if (o1 == null && o2 == null) {
+                return 0;
+            } else if (o1 == null) {
+                return -1;
+            } else if (o2 == null) {
+                return 1;
+            }
+            int status = o1.getLocation().compareTo(o2.getLocation());
+            if (status == 0) {
+                status = this.compare(o1.getTransport(), o2.getTransport());
+            }
+            return status;
+        }
+    };
+
 
     private final URI location;
     private final boolean ephemeral;

@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior.handler.codec.http;
 
 import java.net.URI;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
-import org.jboss.netty.handler.codec.http.QueryStringEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigEncoder;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannel;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChannelConfig;
@@ -32,7 +30,7 @@ public class HttpHostEncoder implements ConfigEncoder {
     @SuppressWarnings("unchecked")
     public void encode(Channel channel) throws Exception {
         AbstractChannel<HttpChannelConfig> httpChannel = (AbstractChannel<HttpChannelConfig>) channel;
-        HttpChannelConfig httpConfig = (HttpChannelConfig) httpChannel.getConfig();
+        HttpChannelConfig httpConfig = httpChannel.getConfig();
         QueryStringEncoder query = httpConfig.getWriteQuery();
         ChannelAddress httpRemoteAddress = httpChannel.getRemoteAddress();
         URI httpRemoteURI = query != null ? query.toUri() : httpRemoteAddress.getLocation();

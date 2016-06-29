@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.netty.bootstrap.bbosh;
 
 import static java.lang.String.format;
@@ -66,8 +65,8 @@ public class BBoshPollingChildChannelSink extends AbstractChannelSink {
 
     public BBoshPollingChildChannelSink(int nextSequenceNo) {
         this.nextSequenceNo = new AtomicInteger(nextSequenceNo);
-        this.httpChannelRef = new AtomicReference<HttpChildChannel>();
-        this.messages = new ConcurrentLinkedDeque<MessageEvent>();
+        this.httpChannelRef = new AtomicReference<>();
+        this.messages = new ConcurrentLinkedDeque<>();
     }
 
     @Override

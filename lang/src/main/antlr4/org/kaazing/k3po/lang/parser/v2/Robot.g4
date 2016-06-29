@@ -32,7 +32,11 @@ streamNode
     ;
 
 acceptNode
-    : k=AcceptKeyword acceptURI=location ( AsKeyword text=Name )?
+    : k=AcceptKeyword (AwaitKeyword await=Name)? acceptURI=location (AsKeyword as=Name)?
+      (NotifyKeyword notify=Name)? 
+      (OptionKeyword TransportKeyword transport=location)?
+      (OptionKeyword ReaderKeyword reader=expressionValue)?
+      (OptionKeyword WriterKeyword writer=expressionValue)?
       serverStreamableNode*
     ;
 
@@ -41,7 +45,13 @@ acceptableNode
     ;
 
 connectNode
-    : k=ConnectKeyword (AwaitKeyword barrier=Name ConnectKeyword)? connectURI=location  streamableNode+
+    : k=ConnectKeyword (AwaitKeyword await=Name ConnectKeyword?)? connectURI=location
+                       (OptionKeyword TransportKeyword transport=location)?
+                       (OptionKeyword SizeKeyword size=DecimalLiteral)?
+                       (OptionKeyword ModeKeyword fmode=ModeValue)?
+                       (OptionKeyword ReaderKeyword reader=expressionValue)?
+                       (OptionKeyword WriterKeyword writer=expressionValue)?
+        streamableNode+
     ;
 
 serverStreamableNode
@@ -52,15 +62,27 @@ serverStreamableNode
     ;
     
 optionNode 
-    : readOptionNode
-    | writeOptionNode
+    : readOptionMaskNode
+    | readOptionOffsetNode
+    | writeOptionMaskNode
+    | writeOptionOffsetNode
     ;
 
-writeOptionNode: 
-    k=WriteKeyword OptionKeyword name=MaskKeyword value=writeValue;
+readOptionMaskNode
+    : k=ReadKeyword OptionKeyword name=MaskKeyword value=writeValue
+    ;
 
-readOptionNode: 
-    k=ReadKeyword OptionKeyword name=MaskKeyword value=writeValue;
+readOptionOffsetNode
+    : k=ReadKeyword OptionKeyword name=OffsetKeyword value=writeValue
+    ;
+
+writeOptionMaskNode
+    : k=WriteKeyword OptionKeyword name=MaskKeyword value=writeValue
+    ;
+
+writeOptionOffsetNode
+    : k=WriteKeyword OptionKeyword name=OffsetKeyword value=writeValue
+    ;
 
 serverCommandNode
     : unbindNode
@@ -96,6 +118,7 @@ commandNode
     | writeHttpRequestNode
     | writeHttpStatusNode
     | writeHttpVersionNode
+    | abortNode
     ;
 
 eventNode
@@ -112,6 +135,7 @@ eventNode
     | readHttpParameterNode
     | readHttpVersionNode
     | readHttpStatusNode
+    | abortedNode
     ;
 
 barrierNode
@@ -169,6 +193,14 @@ disconnectedNode
 
 openedNode
     : k=OpenedKeyword
+    ;
+
+abortNode
+    : k=AbortKeyword
+    ;
+
+abortedNode
+    : k=AbortedKeyword
     ;
 
 readClosedNode: 
@@ -334,13 +366,27 @@ SignedDecimalLiteral
 //    |  DecimalLiteral
     ;
 
+MaskKeyword: 'mask';
+
+ModeKeyword: 'mode';
+
+OffsetKeyword : 'offset';
+
 OptionKeyword: 'option';
 
-MaskKeyword: 'mask';
+ReaderKeyword: 'reader';
+
+SizeKeyword: 'size';
 
 ShortKeyword
     : 'short'
     ;
+
+TransportKeyword
+    : 'transport'
+    ;
+
+WriterKeyword: 'writer';
 
 IntKeyword
     : 'int'
@@ -404,6 +450,14 @@ DisconnectKeyword
 
 DisconnectedKeyword
     : 'disconnected'
+    ;
+
+AbortKeyword
+    : 'abort'
+    ;
+
+AbortedKeyword
+    : 'aborted'
     ;
 
 FlushKeyword
@@ -476,6 +530,11 @@ HttpStatusKeyword
 
 HttpVersionKeyword
     : 'version'
+    ;
+
+ModeValue
+    : 'r'
+    | 'rw'
     ;
 
 // URI cannot begin with any of our data type delimiters, and MUST contain a colon.
@@ -559,6 +618,7 @@ Digit
 
 TextLiteral
     : '"' (EscapeSequence | ~('\\' | '\r' | '\n' | '"'))+ '"'
+    | '\'' (EscapeSequence | ~('\\' | '\r' | '\n' | '\''))+ '\''
     ;
     
 // Any additions to the escaping need to be accounted for in

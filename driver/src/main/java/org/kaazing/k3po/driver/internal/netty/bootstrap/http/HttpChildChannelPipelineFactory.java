@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.netty.bootstrap.http;
 
 import static org.jboss.netty.channel.Channels.pipeline;
 
-import java.net.URI;
 import java.util.NavigableMap;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
+import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
 final class HttpChildChannelPipelineFactory implements ChannelPipelineFactory {
 
-    private final NavigableMap<URI, HttpServerChannel> httpBindings;
+    private final NavigableMap<ChannelAddress, HttpServerChannel> httpBindings;
 
-    public HttpChildChannelPipelineFactory(NavigableMap<URI, HttpServerChannel> httpBindings) {
+    public HttpChildChannelPipelineFactory(NavigableMap<ChannelAddress, HttpServerChannel> httpBindings) {
         this.httpBindings = httpBindings;
     }
 

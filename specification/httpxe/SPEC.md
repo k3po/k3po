@@ -202,7 +202,7 @@ is treated equivalently to
 ```
 PUT /path HTTP/1.1
 ```
-by the server.
+by the server when `X-Origin-[origin]` header is present and matches `X-Origin header` - see [Origin Security](#origin-security).
 
 #### DELETE
 The following `POST` request
@@ -263,7 +263,7 @@ is treated equivalently to
 ```
 TRACE /path HTTP/1.1
 ```
-by the server when `X-Origin-[origin]` header is present and matches `X-Origin` header - see [Origin Security](#origin-security).
+by the server.
 
 The request path may also be used to encode the request method.  A path-encoded `TRACE` method MUST be represented by a `POST` 
 method.
@@ -276,7 +276,7 @@ is treated equivalently to
 ```
 TRACE /path HTTP/1.1
 ```
-by the server.
+by the server when `X-Origin-[origin]` header is present and matches `X-Origin header` - see [Origin Security](#origin-security).
 
 Responses to this method MUST NOT be cached, therefore the emulated `POST` response MUST NOT include any headers making the response cacheable.
 
@@ -324,8 +324,7 @@ such an HTTP header, then the `.knp` query parameter MUST be present with with v
 parameter are present.  Clients relying on such inference are _not_ considered compliant with this specification.
 
 The HTTP content-type for an HTTPXE request MUST be `application/x-message-http`. This MUST either specified using the 
-`Content-Type` header, or the `Content-Type` MUST be omitted and the HTTP content-type MUST be specified in the value of 
-the `.kct` query parameter instead.
+`Content-Type` header, or in the value of the `.kct` query parameter instead.
 
 Some client HTTP runtimes may have limited support for large HTTP headers, such that the aggregate length of all HTTP headers 
 cannot exceed a maximum number of bytes.
@@ -398,18 +397,18 @@ Content-Length: 6
 
 Responses are generally enveloped as shown below: 
 ```
-200 OK HTTP/1.1
+HTTP/1.1 200 OK
 Content-Type: application/x-message-http
 Content-Length: ...
 
-201 Created HTTP/1.1
+HTTP/1.1 201 Created
 Content-Type: ...
 Content-Length: 33
 
 ```
 is treated equivalently to
 ```
-201 Created HTTP/1.1
+HTTP/1.1 201 Created
 Content-Type: ...
 Content-Length: 33
 
@@ -464,12 +463,12 @@ describes both the wrapped status code and headers in ASCII character set, and t
 A text-based content type, such as `text/xml;charset=UTF-8`, MUST be canonicalized as `text/plain;charset=UTF-8` for the wrapped 
 response, while the original content-type MUST be retained in the wrapped headers.
 ```
-200 OK HTTP/1.1
+HTTP/1.1 200 OK
 ...
 Content-Type: text/plain;charset=UTF-8
 Content-Length: 67
 
-201 Created HTTP/1.1
+HTTP/1.1 201 Created
 Content-Type: text/xml;charset=UTF-8
 Content-Length: 33
 
@@ -478,12 +477,12 @@ Content-Length: 33
 ```
 A binary content type, such as `application/octet-stream`, MUST be retained unmodified.
 ```
-200 OK HTTP/1.1
+HTTP/1.1 200 OK
 ...
 Content-Type: application/octet-stream
 Content-Length: 67
 
-201 Created HTTP/1.1
+HTTP/1.1 201 Created
 Content-Type: application/octet-stream
 Content-Length: 33
 
@@ -572,7 +571,7 @@ POST /path HTTP/1.1
 Host: target.example.com:80
 Origin: http://source.example.com:80
 ```
-If the authoritative source origin cannot be determined, then the server MUST response with status code `400 Bad Request`.
+If the authoritative source origin cannot be determined, then the server MUST responsd with 4xx status code (either `403 Forbidden` or `400 Bad Request`).
 
 ### Origin Query Parameter
 If the `.ko` query parameter is present and both the `Origin` and `X-Origin` headers are not present and the `Referer` header 

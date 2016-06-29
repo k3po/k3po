@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.pcap.converter.internal;
 
 import org.jmock.Mockery;
@@ -37,11 +36,11 @@ public class TcpCoordinatorTest extends AbstractTcpTest {
             super(emitterFactory, conversationId, composerFactory);
         }
 
-        public static final String clientNameStub(Packet p) {
+        public static String clientNameStub(Packet p) {
             return clientName(p);
         }
 
-        public static final String serverNameStub(Packet p) {
+        public static String serverNameStub(Packet p) {
             return serverName(p);
         }
     }

@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.control;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class PreparedMessage extends ControlMessage {
 
     private String script = "";
+    private final List<String> barriers;
+
+    public PreparedMessage() {
+        barriers = new ArrayList<>();
+    }
 
     public String getScript() {
         return script;
@@ -47,6 +53,10 @@ public class PreparedMessage extends ControlMessage {
 
     protected final boolean equals(PreparedMessage that) {
         return super.equalTo(that) && Objects.equals(this.script, that.script);
+    }
+
+    public List<String> getBarriers() {
+        return barriers;
     }
 
 }

@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.lang.internal.regex;
 
 import java.util.HashSet;
@@ -24,7 +23,7 @@ import java.util.regex.Matcher;
 public class NamedGroupMatcher implements NamedGroupMatchResult {
 
     private final Matcher matcher;
-    private final Set<String> groupNames = new HashSet<String>();
+    private final Set<String> groupNames = new HashSet<>();
 
     NamedGroupMatcher(Matcher matcher, List<String> groupNames) {
         this.matcher = matcher;

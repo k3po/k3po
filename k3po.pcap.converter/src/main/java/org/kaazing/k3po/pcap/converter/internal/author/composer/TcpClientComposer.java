@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import org.kaazing.k3po.pcap.converter.internal.packet.Packet;
  */
 public class TcpClientComposer extends AbstractComposer {
 
-    private final Map<Integer, TcpClientScript> scripts = new HashMap<Integer, TcpClientScript>();
+    private final Map<Integer, TcpClientScript> scripts = new HashMap<>();
     private final static Logger LOG = Logger.getLogger(TcpClientComposer.class.getName());
     protected final static OutputType OUTPUT_TYPE = OutputType.TCP_CLIENT_SCRIPT;
 
@@ -163,11 +163,11 @@ public class TcpClientComposer extends AbstractComposer {
         }
     }
 
-    protected static final String formatFragmentName(String ipAddr, Integer clientPort) {
+    protected static String formatFragmentName(String ipAddr, Integer clientPort) {
         return formatFragmentName(ipAddr, clientPort.toString());
     }
 
-    protected static final String formatFragmentName(String ipAddr, String clientPort) {
+    protected static String formatFragmentName(String ipAddr, String clientPort) {
         return ipAddr + SEP + clientPort;
     }
 }

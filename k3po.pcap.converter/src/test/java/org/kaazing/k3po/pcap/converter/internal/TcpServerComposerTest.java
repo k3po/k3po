@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.pcap.converter.internal;
 
 import java.util.LinkedList;
@@ -55,11 +54,11 @@ public class TcpServerComposerTest extends AbstractTcpTest {
         
         context.assertIsSatisfied();   
         
-        List<String> expectedScript = new LinkedList<String>();
+        List<String> expectedScript = new LinkedList<>();
         expectedScript.add("accept tcp://" + SERVER_IP + ":" + SERVER_PORT);
         expectedScript.add("accepted");
         
-        List<String> expectedScript2 = new LinkedList<String>();
+        List<String> expectedScript2 = new LinkedList<>();
         expectedScript2.add("accept tcp://" + SERVER_IP + ":" + SERVER_PORT);
         expectedScript2.add("accepted");
         assertTrue(ScriptTestUtil.scriptIsInstanceOfScript(serverEmitter1.getBuffer(), expectedScript));
@@ -92,7 +91,7 @@ public class TcpServerComposerTest extends AbstractTcpTest {
         tcpServerComposer.emitConversation(SERVER_ACK_PACKET);
         tcpServerComposer.emitConversation(synAck);
         context.assertIsSatisfied();
-        List<String> expectedScript = new LinkedList<String>();
+        List<String> expectedScript = new LinkedList<>();
         expectedScript.add("accept tcp://" + SERVER_IP + ":" + SERVER_PORT);
         expectedScript.add("accepted");
         expectedScript.add("connected");

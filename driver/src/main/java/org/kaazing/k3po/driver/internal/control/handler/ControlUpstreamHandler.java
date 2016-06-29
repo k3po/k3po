@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.control.handler;
 
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -42,6 +41,15 @@ public class ControlUpstreamHandler extends SimpleChannelUpstreamHandler {
         case ABORT:
             abortReceived(ctx, e);
             break;
+        case NOTIFY:
+            notifyReceived(ctx, e);
+            break;
+        case AWAIT:
+            awaitReceived(ctx, e);
+            break;
+        case DISPOSE:
+            disposeReceived(ctx, e);
+            break;
         default:
             throw new IllegalArgumentException(String.format("Unexpected control message: %s", message.getKind()));
         }
@@ -57,6 +65,18 @@ public class ControlUpstreamHandler extends SimpleChannelUpstreamHandler {
     }
 
     public void abortReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+        super.messageReceived(ctx, e);
+    }
+
+    public void notifyReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+        super.messageReceived(ctx, e);
+    }
+
+    public void awaitReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+        super.messageReceived(ctx, e);
+    }
+
+    public void disposeReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         super.messageReceived(ctx, e);
     }
 

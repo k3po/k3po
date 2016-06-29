@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.netty.channel;
 
 import java.net.URI;
@@ -37,7 +36,7 @@ public final class ChannelAddressFactory {
 
         // load ChannelAddressFactorySpi instances
         ConcurrentMap<String, ChannelAddressFactorySpi> channelAddressFactories =
-                new ConcurrentHashMap<String, ChannelAddressFactorySpi>();
+                new ConcurrentHashMap<>();
         for (ChannelAddressFactorySpi channelAddressFactorySpi : loader) {
             String schemeName = channelAddressFactorySpi.getSchemeName();
             ChannelAddressFactorySpi oldChannelAddressFactorySpi = channelAddressFactories.putIfAbsent(schemeName,

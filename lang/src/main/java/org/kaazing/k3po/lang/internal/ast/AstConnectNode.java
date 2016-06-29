@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.lang.internal.ast;
 
-import static java.lang.String.format;
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
 import java.util.LinkedHashMap;
@@ -29,14 +27,49 @@ import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
 public class AstConnectNode extends AstStreamNode {
 
     private Map<String, Object> options;
-    private String barrier;
+    private String awaitName;
 
     private AstLocation location;
     private ELContext environment;
 
+    public AstConnectNode() {
+    }
+
+    public AstConnectNode(AstConnectNode connectNode) {
+        this.regionInfo = connectNode.regionInfo;
+        this.location = connectNode.location;
+        this.environment = connectNode.environment;
+        this.awaitName = connectNode.awaitName;
+        this.options = connectNode.options;
+    }
+
+    public String getAwaitName() {
+        return awaitName;
+    }
+
+    public void setAwaitName(String awaitName) {
+        this.awaitName = awaitName;
+    }
+
+    public AstLocation getLocation() {
+        return location;
+    }
+
+    public void setLocation(AstLocation location) {
+        this.location = location;
+    }
+
+    public ELContext getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(ELContext expressionContext) {
+        this.environment = expressionContext;
+    }
+
     public Map<String, Object> getOptions() {
         if (options == null) {
-            options = new LinkedHashMap<String, Object>();
+            options = new LinkedHashMap<>();
         }
 
         return options;
@@ -61,6 +94,11 @@ public class AstConnectNode extends AstStreamNode {
             hashCode ^= options.hashCode();
         }
 
+        if (awaitName != null) {
+            hashCode <<= 4;
+            hashCode ^= awaitName.hashCode();
+        }
+
         return hashCode;
     }
 
@@ -81,34 +119,20 @@ public class AstConnectNode extends AstStreamNode {
     @Override
     protected void describeLine(StringBuilder sb) {
         super.describeLine(sb);
-        if (barrier == null) {
-            sb.append(format("connect %s\n", location));
-        } else {
-            sb.append(format("connect await %s\nconnect %s\n", barrier, location));
+        sb.append("connect ");
+        if (awaitName != null) {
+            sb.append("await ").append(awaitName).append("\n        ");
+        }
+        sb.append(location).append('\n');
+        if (options != null) {
+            for (Map.Entry<String, Object> entry : options.entrySet()) {
+                sb.append("        option ")
+                  .append(entry.getKey())
+                  .append(" ")
+                  .append(entry.getValue())
+                  .append('\n');
+            }
         }
     }
 
-    public String getBarrier() {
-        return barrier;
-    }
-
-    public void setBarrier(String barrier) {
-        this.barrier = barrier;
-    }
-
-    public AstLocation getLocation() {
-        return location;
-    }
-
-    public void setLocation(AstLocation location) {
-        this.location = location;
-    }
-
-    public ELContext getEnvironment() {
-        return environment;
-    }
-
-    public void setEnvironment(ELContext expressionContext) {
-        this.environment = expressionContext;
-    }
 }

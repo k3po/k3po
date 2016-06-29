@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.specification.wse;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -76,6 +75,22 @@ public class UpstreamIT {
         "subsequent.request.out.of.order/request",
         "subsequent.request.out.of.order/response" })
     public void shouldCloseConnectionWhenSubsequentUpstreamRequestIsOutOfOrder() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "client.send.multiple.requests/upstream.request",
+        "client.send.multiple.requests/upstream.response" })
+    public void shouldAllowMultipleSequentialUpstreamRequests() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "zero.content.length.request/upstream.request",
+        "zero.content.length.request/upstream.response" })
+    public void shouldRejectZeroContentLengthUpstreamRequest() throws Exception {
         k3po.finish();
     }
 }

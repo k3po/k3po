@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.specification.wse;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -51,6 +50,15 @@ public class ProxiesIT {
         "server.send.data.on.longpolling.request/request",
         "server.send.data.on.longpolling.request/response" })
     public void shouldReceiveDataFromServerOnLongpollingRequest()
+            throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "server.send.secure.downstream.redirect/request",
+        "server.send.secure.downstream.redirect/response" })
+    public void shouldReceiveSecureRedirectFromServerOnProxyModeRequest()
             throws Exception {
         k3po.finish();
     }

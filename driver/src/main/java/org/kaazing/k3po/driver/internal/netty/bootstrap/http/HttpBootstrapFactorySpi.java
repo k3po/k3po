@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.netty.bootstrap.http;
 
 import javax.annotation.Resource;
@@ -70,11 +69,11 @@ public class HttpBootstrapFactorySpi extends BootstrapFactorySpi {
 
     @Override
     public void shutdown() {
-        // ignore
+        // ignore, no external resources to shutdown as it always runs on top of another transport (tcp)
     }
 
     @Override
     public void releaseExternalResources() {
-        // ignore
+        // ignore, no external resources to shutdown as it always runs on top of another transport (tcp)
     }
 }

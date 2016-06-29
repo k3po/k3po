@@ -1,5 +1,5 @@
-/*
- * Copyright 2014, Kaazing Corporation. All rights reserved.
+/**
+ * Copyright 2007-2015, Kaazing Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kaazing.k3po.driver.internal.behavior.handler.barrier;
 
 import static java.lang.String.format;
@@ -49,15 +48,12 @@ public class AwaitBarrierUpstreamHandler extends AbstractBarrierHandler implemen
         pipelineFuture.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(final ChannelFuture f) throws Exception {
-
-                // If the pipeline was not complete successfully we dont want nor need to wait for the barrier
-                if (!f.isSuccess()) {
-                    if (f.isCancelled()) {
-                        handlerFuture.cancel();
-                    } else {
-                        handlerFuture.setFailure(f.getCause());
-                    }
+                if (f.isCancelled()) {
+                    handlerFuture.cancel();
+                } else if (!f.isSuccess()) {
+                    handlerFuture.setFailure(f.getCause());
                 } else {
+                    // on success or incomplete
                     // when barrier future complete, trigger handler future
                     Barrier barrier = getBarrier();
                     ChannelFuture barrierFuture = barrier.getFuture();
@@ -67,14 +63,14 @@ public class AwaitBarrierUpstreamHandler extends AbstractBarrierHandler implemen
         });
 
         // when handler future complete, flush queued channel events
-        queue = new ConcurrentLinkedQueue<ChannelEvent>();
+        queue = new ConcurrentLinkedQueue<>();
         handlerFuture.addListener(new ChannelFutureListener() {
 
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
-                if (future.isSuccess()) {
-                    // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
-                    synchronized (ctx) {
+                synchronized (ctx) {
+                    if (future.isSuccess()) {
+                        // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
                         Queue<ChannelEvent> pending = queue;
                         queue = null;
                         for (ChannelEvent evt : pending) {
@@ -88,8 +84,8 @@ public class AwaitBarrierUpstreamHandler extends AbstractBarrierHandler implemen
     }
 
     @Override
-    public String toString() {
-        return format("read await %s", getBarrier());
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append(format("read await %s", getBarrier()));
     }
 
     @Override
