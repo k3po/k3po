@@ -15,8 +15,17 @@
  */
 package org.kaazing.specification.http.rfc7231;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.rules.RuleChain.outerRule;
+
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.DisableOnDebug;
+import org.junit.rules.TestRule;
+import org.junit.rules.Timeout;
+import org.kaazing.k3po.junit.annotation.Specification;
+import org.kaazing.k3po.junit.rules.K3poRule;
 
 /**
  * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc7231#section-5">RFC 7231 section 5:
@@ -24,32 +33,46 @@ import org.junit.Test;
  */
 public class RequestHeaderFieldsIT {
 
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/http/rfc7231/request.header");
+
+    private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
+
+    @Rule
+    public final TestRule chain = outerRule(k3po).around(timeout);
+
     /**
      * See <a href="https://tools.ietf.org/html/rfc7231#section-5.1">RFC 7230 section 5.1: Controls</a>.
      */
     @Test
-    @Ignore("Not Implemented")
-    public void serverShouldRespondToMeetableExpectWith417() {
+    @Specification({
+        "expectation.responds.with.417/request",
+        "expectation.responds.with.417/response"})
+    public void serverShouldRespondToMeetableExpectWith417() throws Exception {
         // A server that receives an Expect field-value other than 100-continue
         // MAY respond with a 417 (Expectation Failed) status code to indicate
         // that the unexpected expectation cannot be met.
+        k3po.finish();
     }
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc7231#section-5.1">RFC 7230 section 5.1: Controls</a>.
      */
     @Test
-    @Ignore("Not Implemented")
-    public void intermediaryMustDecrementMaxForwardHeaderOnOptionsOrTraceRequest() {
-
+    @Specification({
+        "intermediary.decrement.max.forward.header/request",
+        "intermediary.decrement.max.forward.header/response"})
+    public void intermediaryMustDecrementMaxForwardHeaderOnOptionsOrTraceRequest() throws Exception {
+        k3po.finish();
     }
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc7231#section-5.1">RFC 7230 section 5.1: Controls</a>.
      */
     @Test
-    @Ignore("Not Implemented")
-    public void intermediaryThatReceivesMaxForwardOfZeroOnOptionsOrTraceMustRespondToRequest() {
-
+    @Specification({
+        "intermediary.responds.zero.max.forward/request",
+        "intermediary.responds.zero.max.forward/response"})
+    public void intermediaryThatReceivesMaxForwardOfZeroOnOptionsOrTraceMustRespondToRequest() throws Exception {
+        k3po.finish();
     }
 }
