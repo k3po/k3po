@@ -24,6 +24,5 @@ write "content"
 write close
 	
 read status "206" "Partial Content"
-#read closed
 
 

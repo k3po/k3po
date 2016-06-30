@@ -24,6 +24,5 @@ write close
 	
 read status "200" "OK"
 read header "server" /.+/ 
-#read closed
 
 
