@@ -46,7 +46,7 @@ public class RequestHeaderFieldsIT {
     @Test
     @Specification({
         "expectation.responds.with.417/request",
-        "expectation.responds.with.417/response"})
+        "expectation.responds.with.417/response" })
     public void serverShouldRespondToMeetableExpectWith417() throws Exception {
         // A server that receives an Expect field-value other than 100-continue
         // MAY respond with a 417 (Expectation Failed) status code to indicate
@@ -60,7 +60,7 @@ public class RequestHeaderFieldsIT {
     @Test
     @Specification({
         "intermediary.decrement.max.forward.header/request",
-        "intermediary.decrement.max.forward.header/response"})
+        "intermediary.decrement.max.forward.header/response" })
     public void intermediaryMustDecrementMaxForwardHeaderOnOptionsOrTraceRequest() throws Exception {
         k3po.finish();
     }
@@ -71,7 +71,7 @@ public class RequestHeaderFieldsIT {
     @Test
     @Specification({
         "intermediary.responds.zero.max.forward/request",
-        "intermediary.responds.zero.max.forward/response"})
+        "intermediary.responds.zero.max.forward/response" })
     public void intermediaryThatReceivesMaxForwardOfZeroOnOptionsOrTraceMustRespondToRequest() throws Exception {
         k3po.finish();
     }

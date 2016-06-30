@@ -32,34 +32,34 @@ import org.kaazing.k3po.junit.rules.K3poRule;
  *  See <a href="https://tools.ietf.org/html/rfc7231#section-7">RFC 7230 section 7: Response Header Fields</a>.
  */
 public class ResponseHeaderFieldsIT {
-    
+
     private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/http/rfc7231/response.header");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
-    
+
     /**
      * See <a href="https://tools.ietf.org/html/rfc7231#section-7.4.1">RFC 7231 section 7.4.1</a>.
      */
     @Test
     @Specification({
         "allow.lists.resource.methods/request",
-        "allow.lists.resource.methods/response"})
+        "allow.lists.resource.methods/response" })
     public void allowHeaderInformsMethodsAssociatedWithResource() throws Exception {
         k3po.finish();
     }
-    
+
     /**
      * See <a href="https://tools.ietf.org/html/rfc7231#section-7.4.2">RFC 7231 section 7.4.2</a>.
      */
     @Test
     @Specification({
         "server.header.lists.software.used.by.server/request",
-        "server.header.lists.software.used.by.server/response"})
+        "server.header.lists.software.used.by.server/response" })
     public void serverHeaderContainsInformationAboutSoftwareUsedByServer() throws Exception {
         k3po.finish();
     }
-    
+
 }

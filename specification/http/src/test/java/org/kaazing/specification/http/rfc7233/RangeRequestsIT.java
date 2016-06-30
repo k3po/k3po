@@ -32,57 +32,57 @@ import org.kaazing.k3po.junit.rules.K3poRule;
  *   Hypertext Transfer Protocol (HTTP/1.1): Range Requests</a>.
  */
 public class RangeRequestsIT {
-    
+
     private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/http/rfc7233/range.requests");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
-    
+
     /**
      * See <a href="https://tools.ietf.org/html/rfc7233#section-3.1">RFC 7233 section 3</a>.
      */
     @Test
     @Specification({
         "range.request/request",
-        "range.request/response"})
+        "range.request/response" })
     public void rangeRequest() throws Exception {
         k3po.finish();
     }
-    
+
     /**
      * See <a href="https://tools.ietf.org/html/rfc7233#section-3.1">RFC 7233 section 3</a>.
      */
     @Test
     @Specification({
         "unsatisfactory.range.gives.416/request",
-        "unsatisfactory.range.gives.416/response"})
+        "unsatisfactory.range.gives.416/response" })
     public void shouldGive416IfRangeIsNotSatisfactory() throws Exception {
         k3po.finish();
     }
-    
+
     /**
      * See <a href="https://tools.ietf.org/html/rfc7233#section-3.2">RFC 7233 section 3</a>.
      */
     @Test
     @Specification({
         "ignore.if-range.without.range.header/request",
-        "ignore.if-range.without.range.header/response"})
+        "ignore.if-range.without.range.header/response" })
     public void serverIgnoresIfRangeRequestWithoutRangeHeader() throws Exception {
         k3po.finish();
     }
-    
+
     /**
      * See <a href="https://tools.ietf.org/html/rfc7233#section-3.2">RFC 7233 section 3</a>.
      */
     @Test
     @Specification({
         "partial.range.request/request",
-        "partial.range.request/response"})
+        "partial.range.request/response" })
     public void partialRangeRequest() throws Exception {
         k3po.finish();
     }
-    
+
 }
 
