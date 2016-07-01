@@ -1,0 +1,51 @@
+#
+# Copyright 2007-2015, Kaazing Corporation. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+property lastModified "Mon, 1 Jan 2015 01:23:45 GMT"
+property date "Wed, 18 Nov 2015 01:10:45 GMT"
+property invalidExpires "Sun, 30 Feb 2015 01:10.56 GMT"
+property expiresPlusTenSeconds "Wed, 18 Nov 2015 01:10:55 GMT"
+
+accept http://localhost:8000/resource
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+
+write status "200" "OK"
+write header "Date" ${date}
+write header "Expires" ${date}
+write header "Last-Modified" ${lastModified}
+write header content-length
+write flush
+
+accepted
+connected
+
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+read header "If-Modified-Since" ${lastModified}
+
+write status "304" "Not Modified"
+write header "Last-Modified" ${lastModified}
+write header "Expires" ${expiresPlusTenSeconds}
+write header "Warning" "110 - Response is Stale"
+write close
+
+

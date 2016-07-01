@@ -43,4 +43,54 @@ public class WarningIT {
     public void shouldReceiveResponseWithWarningHeader() throws Exception {
         k3po.finish();
     }
+
+    @Test
+    @Specification({
+        "110.response.stale.from.cache/request",
+        "110.response.stale.from.cache/response" })
+    public void shouldReceiveResponseWithStaleHeader() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "111.revalidation.failed.from.cache/request",
+        "111.revalidation.failed.from.cache/response" })
+    public void shouldReceiveResponseWithRevalidateHeader() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "112.disconnected.operation.from.cache/request",
+        "112.disconnected.operation.from.cache/response" })
+    public void shouldReceiveResponseWithDisconnectedHeader() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "113.heuristic.expiration.from.cache/request",
+        "113.heuristic.expiration.from.cache/response" })
+    public void shouldReceiveResponseWithHeuristicHeader() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "214.transformation.applied.from.cache/request",
+        "214.transformation.applied.from.cache/response" })
+    public void shouldReceiveResponseWithTransformationHeader() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "299.misc.persistent.warning/request",
+        "299.misc.persistent.warning/response" })
+    public void shouldReceiveResponseWithMiscPersistentWarning() throws Exception {
+        k3po.finish();
+    }
+
+
 }
