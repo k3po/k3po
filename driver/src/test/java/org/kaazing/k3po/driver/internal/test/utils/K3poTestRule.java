@@ -72,6 +72,15 @@ public class K3poTestRule extends Verifier {
         return super.apply(statement, description);
     }
 
+    public void start() {
+        // script should already be prepared before annotated test can execute
+        assertTrue(format("Did you call start() from outside @%s test?", TestSpecification.class.getSimpleName()),
+                latch.isPrepared());
+
+        // notify script to start
+        latch.notifyStartable();
+    }
+
     public void finish() throws Exception {
         assertTrue(format("Did you call finish() from outside @%s test?", TestSpecification.class.getSimpleName()),
                 latch.isPrepared());

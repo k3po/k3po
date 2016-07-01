@@ -40,6 +40,24 @@ public final class Channels {
         return future;
     }
 
+    public static InetSocketAddress toInetSocketAddress(final SocketAddress localAddress) {
+        if (localAddress instanceof ChannelAddress) {
+            return toInetSocketAddress((ChannelAddress) localAddress);
+        } else {
+            return (InetSocketAddress) localAddress;
+        }
+    }
+
+    public static InetSocketAddress toInetSocketAddress(ChannelAddress channelAddress) {
+        if (channelAddress == null) {
+            return null;
+        }
+        URI location = channelAddress.getLocation();
+        String hostname = location.getHost();
+        int port = location.getPort();
+        return new InetSocketAddress(hostname, port);
+    }
+
     public static ChannelAddress localAddress(Channel channel) {
         SocketAddress localAddress = channel.getLocalAddress();
         return channelAddress(channel, localAddress);
@@ -50,7 +68,7 @@ public final class Channels {
         return channelAddress(channel, remoteAddress);
     }
 
-    private static ChannelAddress channelAddress(Channel channel, SocketAddress address) {
+    public static ChannelAddress channelAddress(Channel channel, SocketAddress address) {
         if (address instanceof ChannelAddress) {
             return (ChannelAddress) address;
         }
