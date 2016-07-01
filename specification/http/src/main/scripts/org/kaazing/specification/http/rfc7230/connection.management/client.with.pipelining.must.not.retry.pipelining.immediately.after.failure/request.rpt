@@ -31,9 +31,7 @@ read "HTTP/1.1 200 OK\r\n"
 read "Content-Length: 8\r\n"
 read "\r\n"
 read "request1"
-
 read notify REPLAY_REQUEST_2
-closed
 
 connect await REPLAY_REQUEST_2
 connect tcp://localhost:8080
