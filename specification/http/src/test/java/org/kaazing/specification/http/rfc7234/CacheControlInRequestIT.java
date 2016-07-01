@@ -166,4 +166,28 @@ public class CacheControlInRequestIT {
     public void shouldReceiveCachedResponseWithOnlyIfCachedAndReachableCache() throws Exception {
         k3po.finish();
     }
+
+    @Test
+    @Specification({
+        "max-stale.with.warn-code.110/request",
+        "max-stale.with.warn-code.110/response" })
+    public void shouldGiveWarningCode110WithMaxStale() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "max-stale.with.warn-code.112/request",
+        "max-stale.with.warn-code.112/response" })
+    public void shouldGiveWarningCode112WithMaxStale() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "only-if-cached.504/request",
+        "only-if-cached.504/response" })
+    public void shouldRespondToOnlyIfCachedWith504() throws Exception {
+        k3po.finish();
+    }
 }
