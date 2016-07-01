@@ -19,9 +19,16 @@ accepted
 connected
 
 read method "POST"
-read header "Content-length" "0"
+read header "Content-Type" "text/plain"
+read header "Transfer-Encoding" "chunked"
+read header "Trailer" "Trailing-Header"
+read "Chunk A"
+read "Chunk B"
+read "Chunk C"
+read trailer "Trailing-Header" "trailer-value"
 read closed
 
 write status "200" "OK"
+write header content-length
 write close
 

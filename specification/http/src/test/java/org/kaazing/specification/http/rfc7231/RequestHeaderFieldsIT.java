@@ -37,13 +37,20 @@ public class RequestHeaderFieldsIT {
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
+
+    /**
+     * starts k3po rule.
+     */
+
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc7231#section-5.1">RFC 7230 section 5.1: Controls</a>.
+     * @throws Exception when k3po fails.
      */
     @Test
+
     @Specification({
         "expectation.responds.with.417/request",
         "expectation.responds.with.417/response" })
@@ -56,6 +63,7 @@ public class RequestHeaderFieldsIT {
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc7231#section-5.1">RFC 7230 section 5.1: Controls</a>.
+     * @throws Exception when k3po fails.
      */
     @Test
     @Specification({
@@ -67,6 +75,7 @@ public class RequestHeaderFieldsIT {
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc7231#section-5.1">RFC 7230 section 5.1: Controls</a>.
+     * @throws Exception when k3po fails.
      */
     @Test
     @Specification({

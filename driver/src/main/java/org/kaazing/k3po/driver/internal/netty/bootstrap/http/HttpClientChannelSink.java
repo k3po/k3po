@@ -52,6 +52,7 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.DefaultHttpChunk;
+import org.jboss.netty.handler.codec.http.DefaultHttpChunkTrailer;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
@@ -313,7 +314,10 @@ public class HttpClientChannelSink extends AbstractChannelSink {
     private void shutdownOutputRequested(HttpClientChannel httpClientChannel, ChannelFuture httpFuture) throws Exception {
         switch (httpClientChannel.state()) {
         case CONTENT_CHUNKED:
-            ChannelFuture future = transport.write(DefaultHttpChunk.LAST_CHUNK);
+            DefaultHttpChunkTrailer trailingChunk = new DefaultHttpChunkTrailer();
+            HttpHeaders writeTrailers = httpClientChannel.getConfig().getWriteTrailers();
+            trailingChunk.trailingHeaders().add(writeTrailers);
+            ChannelFuture future = transport.write(trailingChunk);
             httpClientChannel.state(CONTENT_COMPLETE);
             chainFutures(future, httpFuture);
             break;

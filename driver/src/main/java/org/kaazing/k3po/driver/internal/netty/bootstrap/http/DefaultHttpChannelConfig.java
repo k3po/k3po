@@ -35,6 +35,7 @@ public class DefaultHttpChannelConfig extends DefaultChannelConfig implements Ht
     private int maximumBufferedContentLength;
     private QueryStringDecoder readQuery;
     private QueryStringEncoder writeQuery;
+    private HttpHeaders writeTrailers;
 
     @Override
     public void setMethod(HttpMethod method) {
@@ -130,5 +131,21 @@ public class DefaultHttpChannelConfig extends DefaultChannelConfig implements Ht
     @Override
     public QueryStringEncoder getWriteQuery() {
         return writeQuery;
+    }
+
+    @Override
+    public HttpHeaders getWriteTrailers() {
+        if (writeTrailers == null) {
+            writeTrailers = new DefaultHttpHeaders();
+        }
+        return writeTrailers;
+    }
+
+    @Override
+    public HttpHeaders getReadTrailers() {
+        if (readHeaders == null) {
+            readHeaders = new DefaultHttpHeaders();
+        }
+        return readHeaders;
     }
 }

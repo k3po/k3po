@@ -126,9 +126,10 @@ public class MessageRoutingIT {
      */
     @Test
     @Specification({
-        "proxy.must.attach.appropriate.via.headers.even.when.others/request",
-        "proxy.must.attach.appropriate.via.headers.even.when.others/response" })
-    @Ignore("Not Implemented")
+        "proxy.must.attach.appropriate.via.headers.even.when.others/client",
+        "proxy.must.attach.appropriate.via.headers.even.when.others/proxy",
+        "proxy.must.attach.appropriate.via.headers.even.when.others/server",
+    })
     public void proxyMustAttachAppropriateViaHeadersEvenWhenOthers() throws Exception {
         k3po.finish();
     }
@@ -138,9 +139,9 @@ public class MessageRoutingIT {
      */
     @Test
     @Specification({
-        "gateway.must.attach.appropriate.via.header.on.request.and.may.attach.on.response/request",
-        "gateway.must.attach.appropriate.via.header.on.request.and.may.attach.on.response/response" })
-    @Ignore("Not Implemented")
+        "gateway.must.attach.appropriate.via.header.on.request.and.may.attach.on.response/client",
+        "gateway.must.attach.appropriate.via.header.on.request.and.may.attach.on.response/proxy",
+        "gateway.must.attach.appropriate.via.header.on.request.and.may.attach.on.response/server" })
     public void gatewayMustAttachAppropriateViaHeaderOnRequestAndMayAttachOnResponse() throws Exception {
         k3po.finish();
     }
@@ -155,9 +156,9 @@ public class MessageRoutingIT {
      */
     @Test
     @Specification({
-        "firewall.intermediary.should.replace.host.in.via.header.with.pseudonym/request",
-        "firewall.intermediary.should.replace.host.in.via.header.with.pseudonym/response" })
-    @Ignore("Not Implemented")
+        "firewall.intermediary.should.replace.host.in.via.header.with.pseudonym/client",
+        "firewall.intermediary.should.replace.host.in.via.header.with.pseudonym/proxy",
+        "firewall.intermediary.should.replace.host.in.via.header.with.pseudonym/server" })
     public void firewallIntermediaryShouldReplaceHostInViaHeaderWithPseudonym() throws Exception {
         k3po.finish();
     }

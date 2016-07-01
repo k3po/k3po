@@ -20,5 +20,5 @@ connected
 write method "GET"
 write header host
 write close
-read header "via" "1.1 nameOfProxy"
+read header "via" "1.1 localhost:8080"
 

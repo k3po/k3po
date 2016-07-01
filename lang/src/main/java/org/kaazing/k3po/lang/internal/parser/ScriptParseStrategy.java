@@ -32,6 +32,7 @@ import javax.el.ValueExpression;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
 import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
@@ -124,6 +125,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.OptionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.PropertyNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadAwaitNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadClosedNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpChunkTrailerNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpHeaderNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpMethodNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpParameterNodeContext;
@@ -131,6 +133,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpStatusNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpVersionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadNotifyNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadOptionHttpChunkExtensionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadOptionMaskNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadOptionOffsetNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.RegexMatcherContext;
@@ -145,6 +148,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.VariableLengthBytesMatcherCon
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteAwaitNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteCloseNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteFlushNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpChunkTrailerNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpContentLengthNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpHeaderNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpHostNodeContext;
@@ -155,6 +159,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpStatusNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpVersionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteNotifyNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteOptionHttpChunkExtensionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteOptionMaskNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteOptionOffsetNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteValueContext;
@@ -397,6 +402,24 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
                 }
             };
 
+    public static final ScriptParseStrategy<AstReadConfigNode> READ_CHUNK_EXTENSION =
+            new ScriptParseStrategy<AstReadConfigNode>() {
+                @Override
+                public AstReadConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstReadHttpConfigNodeVisitor(elFactory, elContext).visit(parser.readHttpHeaderNode());
+                }
+            };
+
+    public static final ScriptParseStrategy<AstReadConfigNode> WRITE_CHUNK_EXTENSION =
+            new ScriptParseStrategy<AstReadConfigNode>() {
+                @Override
+                public AstReadConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstReadHttpConfigNodeVisitor(elFactory, elContext).visit(parser.readHttpHeaderNode());
+                }
+            };
+
     public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_CONTENT_LENGTH =
             new ScriptParseStrategy<AstWriteConfigNode>() {
                 @Override
@@ -613,8 +636,8 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
                 @Override
                 public AstVariableLengthBytesMatcher parse(RobotParser parser, ExpressionFactory elFactory,
                     ExpressionContext elContext) throws RecognitionException {
-                    return new AstVariableLengthBytesMatcherVisitor(elFactory, elContext).visit(parser
-                            .variableLengthBytesMatcher());
+                    return new AstVariableLengthBytesMatcherVisitor(elFactory, elContext)
+                            .visit(parser.variableLengthBytesMatcher());
                 }
             };
 
@@ -653,8 +676,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
                 }
             };
 
-    public static final ScriptParseStrategy<AstReadOptionNode> READ_MASK_OPTION =
-            new ScriptParseStrategy<AstReadOptionNode>() {
+    public static final ScriptParseStrategy<AstReadOptionNode> READ_MASK_OPTION = new ScriptParseStrategy<AstReadOptionNode>() {
         @Override
         public AstReadOptionNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
                 throws RecognitionException {
@@ -664,12 +686,53 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
     public static final ScriptParseStrategy<AstWriteOptionNode> WRITE_MASK_OPTION =
             new ScriptParseStrategy<AstWriteOptionNode>() {
-        @Override
-        public AstWriteOptionNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
-                throws RecognitionException {
-            return (AstWriteOptionNode) new AstOptionNodeVisitor(elFactory, elContext).visit(parser.writeOptionMaskNode());
-        }
-    };
+                @Override
+                public AstWriteOptionNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return (AstWriteOptionNode) new AstOptionNodeVisitor(elFactory, elContext)
+                            .visit(parser.writeOptionMaskNode());
+                }
+            };
+
+    public static final ScriptParseStrategy<AstReadOptionNode> READ_CHUNK_EXTENSION_OPTION =
+            new ScriptParseStrategy<AstReadOptionNode>() {
+                @Override
+                public AstReadOptionNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return (AstReadOptionNode) new AstOptionNodeVisitor(elFactory, elContext)
+                            .visit(parser.readOptionHttpChunkExtensionNode());
+                }
+            };
+
+    public static final ScriptParseStrategy<AstWriteOptionNode> WRITE_CHUNK_EXTENSION_OPTION =
+            new ScriptParseStrategy<AstWriteOptionNode>() {
+                @Override
+                public AstWriteOptionNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return (AstWriteOptionNode) new AstOptionNodeVisitor(elFactory, elContext)
+                            .visit(parser.writeOptionHttpChunkExtensionNode());
+                }
+            };
+
+    public static final ScriptParseStrategy<AstReadConfigNode> READ_CHUNK_TRAILER =
+            new ScriptParseStrategy<AstReadConfigNode>() {
+                @Override
+                public AstReadConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return new AstReadHttpConfigNodeVisitor(elFactory, elContext).visit(parser.readHttpChunkTrailerNode());
+                }
+            };
+
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_CHUNK_TRAILER =
+            new ScriptParseStrategy<AstWriteConfigNode>() {
+                @Override
+                public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
+                        throws RecognitionException {
+                    return (AstWriteConfigNode) new AstWriteConfigNodeVisitor(elFactory, elContext)
+                            .visit(parser.writeHttpChunkTrailerNode());
+                }
+            };
+
 
     public abstract T parse(RobotParser parser, ExpressionFactory elFactory, ExpressionContext elContext)
             throws RecognitionException;
@@ -1067,6 +1130,34 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
             return node;
         }
+
+        @Override
+        public AstOptionNode visitWriteOptionHttpChunkExtensionNode(WriteOptionHttpChunkExtensionNodeContext ctx) {
+            AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
+            AstValue value = visitor.visit(ctx);
+            childInfos().add(value.getRegionInfo());
+
+            node = new AstWriteOptionNode();
+            node.setOptionName(ctx.name.getText());
+            node.setOptionValue(value);
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+
+            return node;
+        }
+
+        @Override
+        public AstOptionNode visitReadOptionHttpChunkExtensionNode(ReadOptionHttpChunkExtensionNodeContext ctx) {
+            AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
+            AstValue value = visitor.visit(ctx);
+            childInfos().add(value.getRegionInfo());
+
+            node = new AstReadOptionNode();
+            node.setOptionName(ctx.name.getText());
+            node.setOptionValue(value);
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+
+            return node;
+        }
     }
 
     private static class AstBarrierNodeVisitor extends AstNodeVisitor<AstBarrierNode> {
@@ -1287,6 +1378,18 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             return readHttpStatusNode;
         }
 
+        @Override
+        public AstReadConfigNode visitReadHttpChunkTrailerNode(ReadHttpChunkTrailerNodeContext ctx) {
+
+            AstReadHttpConfigNodeVisitor visitor = new AstReadHttpConfigNodeVisitor(elFactory, elContext);
+            AstReadConfigNode readHttpTrailerNode = visitor.visitReadHttpChunkTrailerNode(ctx);
+            if (readHttpTrailerNode != null) {
+                childInfos().add(readHttpTrailerNode.getRegionInfo());
+            }
+
+            return readHttpTrailerNode;
+        }
+
     }
 
     private static class AstCommandNodeVisitor extends AstNodeVisitor<AstCommandNode> {
@@ -1456,6 +1559,18 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
             AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(elFactory, elContext);
             AstWriteConfigNode writeHttpStatusNode = visitor.visitWriteHttpStatusNode(ctx);
+            if (writeHttpStatusNode != null) {
+                childInfos().add(writeHttpStatusNode.getRegionInfo());
+            }
+
+            return writeHttpStatusNode;
+        }
+
+        @Override
+        public AstWriteConfigNode visitWriteHttpChunkTrailerNode(WriteHttpChunkTrailerNodeContext ctx) {
+
+            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(elFactory, elContext);
+            AstWriteConfigNode writeHttpStatusNode = visitor.visitWriteHttpChunkTrailerNode(ctx);
             if (writeHttpStatusNode != null) {
                 childInfos().add(writeHttpStatusNode.getRegionInfo());
             }
@@ -2083,7 +2198,6 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
     }
 
-
     private static class AstValueVisitor extends AstVisitor<AstValue> {
 
         private final Class<?> expectedType;
@@ -2297,6 +2411,23 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             return node;
         }
 
+        @Override
+        public AstReadConfigNode visitReadHttpChunkTrailerNode(@NotNull RobotParser.ReadHttpChunkTrailerNodeContext ctx) {
+            AstLiteralTextValueVisitor visitor = new AstLiteralTextValueVisitor(elFactory, elContext);
+            AstLiteralTextValue value = visitor.visit(ctx.name);
+            childInfos().add(value.getRegionInfo());
+
+            node = new AstReadConfigNode();
+            node.setType("trailer");
+            node.setValue("name", value);
+
+            super.visitReadHttpChunkTrailerNode(ctx);
+
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+
+            return node;
+        }
+
     }
 
     private static class AstWriteConfigNodeVisitor extends AstNodeVisitor<AstWriteConfigNode> {
@@ -2431,6 +2562,36 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             }
 
             return node;
+        }
+
+        @Override
+        public AstWriteConfigNode visitWriteHttpChunkTrailerNode(RobotParser.WriteHttpChunkTrailerNodeContext ctx) {
+            AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
+            AstValue value = visitor.visit(ctx.name);
+            childInfos().add(value.getRegionInfo());
+
+            node = new AstWriteConfigNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            node.setType("trailer");
+            node.setName("name", value);
+
+            super.visitWriteHttpChunkTrailerNode(ctx);
+
+            return node;
+//            AstValueVisitor visitor = new AstValueVisitor(elFactory, elContext);
+//            AstValue name = visitor.visit(ctx.name);
+////            AstValue value = visitor.visit(ctx.)
+////            childInfos().add(name.getRegionInfo());
+//
+////            node = new AstWriteConfigNode();
+//            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+//            node.setType("chunkTrailer");
+//            node.setName("name", name);
+////            node.addValue(value);
+//
+//            AstWriteConfigNode hmm = super.visitWriteHttpChunkTrailerNode(ctx);
+//
+//            return node;
         }
     }
 

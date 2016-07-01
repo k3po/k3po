@@ -60,4 +60,8 @@ public interface HttpChannelConfig extends ChannelConfig {
     void setRequestForm(HttpRequestForm requestForm);
 
     HttpRequestForm getRequestForm();
+
+    HttpHeaders getWriteTrailers();
+
+    HttpHeaders getReadTrailers();
 }

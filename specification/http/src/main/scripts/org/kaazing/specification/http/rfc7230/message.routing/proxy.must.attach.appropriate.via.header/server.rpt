@@ -20,7 +20,7 @@ accepted
 connected
 read method "GET"
 read header "Host" "localhost:8081"
-write header "via" "1.1 nameOfProxy"
+write header "via" "1.1 localhost:8080"
 read closed
 write status "200" "OK"
 write header content-length

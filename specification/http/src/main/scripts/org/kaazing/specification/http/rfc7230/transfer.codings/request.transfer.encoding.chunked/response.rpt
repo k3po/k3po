@@ -14,28 +14,19 @@
 # limitations under the License.
 #
 
-# PROXY
-# Accept request from client
-accept http://localhost:8080/resource
+accept http://localhost:8080/
 accepted
 connected
-read method "GET"
-read notify CLIENT_REQUEST
-write await BACKEND_RESPONSE
+
+read method "POST"
+read header "Content-Type" "text/plain"
+read header "Transfer-Encoding" "chunked"
+read "Chunk A"
+read "Chunk B"
+read "Chunk C"
+read closed
+
 write status "200" "OK"
 write header content-length
-write header "via" "1.1 localhost:8080"
 write close
-
-# Connect to backend
-connect http://localhost:8081/resource
-connected
-write await CLIENT_REQUEST
-write method "GET"
-write header "Host" "localhost:8081"
-write header "via" "1.1 localhost:8080"
-write close
-read status "200" "OK"
-read notify BACKEND_RESPONSE
-read closed
 
