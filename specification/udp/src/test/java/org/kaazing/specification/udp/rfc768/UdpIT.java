@@ -42,7 +42,6 @@ public class UdpIT {
     @Specification({
         "establish.connection/client",
         "establish.connection/server" })
-    @org.junit.Ignore("TODO")
     public void shouldEstablishConnection() throws Exception {
         k3po.finish();
     }
@@ -51,7 +50,6 @@ public class UdpIT {
     @Specification({
         "server.sent.data/client",
         "server.sent.data/server" })
-    @org.junit.Ignore("TODO")
     public void shouldReceiveServerSentData() throws Exception {
         k3po.finish();
     }
@@ -77,7 +75,6 @@ public class UdpIT {
     @Specification({
         "server.close/client",
         "server.close/server" })
-    @org.junit.Ignore("TODO")
     public void shouldInitiateServerClose() throws Exception {
         k3po.finish();
     }
@@ -86,7 +83,6 @@ public class UdpIT {
     @Specification({
         "client.close/client",
         "client.close/server" })
-    @org.junit.Ignore("TODO")
     public void shouldInitiateClientClose() throws Exception {
         k3po.finish();
     }
@@ -96,6 +92,14 @@ public class UdpIT {
         "concurrent.connections/client",
         "concurrent.connections/server" })
     public void shouldEstablishConcurrentConnections() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "idle.concurrent.connections/client",
+        "idle.concurrent.connections/server" })
+    public void shouldCloseIdleConcurrentConnections() throws Exception {
         k3po.finish();
     }
 

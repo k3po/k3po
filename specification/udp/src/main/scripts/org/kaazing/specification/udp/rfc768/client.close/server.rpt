@@ -20,6 +20,4 @@ accept udp://localhost:8080
 accepted
 connected
 
-read notify CLOSEABLE
-
-closed
+read "client data"
