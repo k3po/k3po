@@ -14,9 +14,36 @@
 # limitations under the License.
 #
 
-connect await BOUND
-        udp://localhost:8080
-connected
+accept udp://localhost:8080
+       option timeout 1000
 
-# server creates a connection based on the following write
-write "client data"
+# stream 1
+accepted
+connected
+read "client data11"
+read "client data12"
+write "server data11"
+write "server data12"
+# closed because of idle timeout
+closed
+
+# stream 2
+accepted
+connected
+read "client data21"
+read "client data22"
+write "server data21"
+write "server data22"
+# closed because of idle timeout
+closed
+
+# stream 3
+accept udp://localhost:8081
+accepted
+connected
+read "client data31"
+read "client data32"
+write "server data31"
+write "server data32"
+close
+closed

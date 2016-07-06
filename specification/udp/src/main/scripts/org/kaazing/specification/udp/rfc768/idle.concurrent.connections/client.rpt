@@ -14,9 +14,32 @@
 # limitations under the License.
 #
 
-connect await BOUND
-        udp://localhost:8080
+# Stream 1
+connect udp://localhost:8080
 connected
+write "client data11"
+write "client data12"
+read "server data11"
+read "server data12"
+close
+closed
 
-# server creates a connection based on the following write
-write "client data"
+# Stream 2
+connect udp://localhost:8080
+connected
+write "client data21"
+write "client data22"
+read "server data21"
+read "server data22"
+close
+closed
+
+# Stream 3
+connect udp://localhost:8081
+connected
+write "client data31"
+write "client data32"
+read "server data31"
+read "server data32"
+close
+closed

@@ -16,11 +16,12 @@
 
 accept udp://localhost:8080
        notify BOUND
+       option timeout 1000
 
 accepted
 connected
 
-write await CLOSEABLE
+read "client data"
 
-close
+# idle times out and gets closed
 closed

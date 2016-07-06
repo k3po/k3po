@@ -17,4 +17,5 @@
 connect await BOUND
         udp://localhost:8080
 connected
+write "client data"
 read "server data"

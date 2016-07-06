@@ -16,9 +16,10 @@
 
 connect await BOUND
         udp://localhost:8080
+        option timeout 1000
 connected
 
-write await CLOSEABLE
+write "client data"
 
-close
+# idle times out and gets closed
 closed
