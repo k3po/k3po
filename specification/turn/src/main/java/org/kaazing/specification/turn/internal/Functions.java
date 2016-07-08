@@ -15,6 +15,8 @@
  */
 package org.kaazing.specification.turn.internal;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,6 +27,45 @@ import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
 public final class Functions {
 
     private static final Random RANDOM = new Random();
+    
+    @Function
+    public static byte[] ipAddressXORWithMagicCookie(String ip) {
+        byte[] x = new byte[4];
+        byte[] holder = new byte[4];
+        try{
+            String[] ints = ip.split(".");
+            for(int i = 0; i < holder.length; i++) {
+                holder[i] = Byte.parseByte(ints[i]);
+            }
+        }catch(Exception e) {
+        }
+        byte magic_cookie_0 = 0x21;
+        byte magic_cookie_1 = 0x12;
+        byte magic_cookie_2 = (byte)(0xA4);
+        byte magic_cookie_3 = 0x42;
+        
+        x[0] = (byte)(magic_cookie_0 ^ holder[0]);
+        x[0] = (byte)(magic_cookie_1 ^ holder[1]);
+        x[0] = (byte)(magic_cookie_2 ^ holder[2]);
+        x[0] = (byte)(magic_cookie_3 ^ holder[3]);
+        return x;
+    }
+
+    @Function
+    public static byte[] messageDigestMD5Encoding(String in) {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            return null;
+        }
+
+        md.update((in).getBytes());
+
+        byte[] mdbytes = md.digest();
+
+        return mdbytes;
+    }
 
     @Function
     public static String loginBase64Encoder(String login) {
@@ -78,6 +119,15 @@ public final class Functions {
             result[i] = (byte) alphabet.charAt(r.nextInt(alphabet.length()));
         }
         return result;
+    }
+
+    @Function
+    public static byte[] generateTransactionId() {
+        byte[] bytes = new byte[12];
+        for (int i = 0; i < 12; i++) {
+            bytes[i] = (byte) RANDOM.nextInt(0x100);
+        }
+        return bytes;
     }
 
     public static class Mapper extends FunctionMapperSpi.Reflective {

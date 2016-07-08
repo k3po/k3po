@@ -49,5 +49,16 @@ public class AllocationsIT {
         k3po.finish();
     }
 
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766#section-5">RFC 5766 section 2.2: Address Allocations</a>.
+     */
+    @Test
+    @Specification({
+        "generic.stun.header/request",
+        "generic.stun.header/response" })
+    public void shouldSucceedWithGenericSTUNHeader() throws Exception {
+        k3po.finish();
+    }
+
 }
 
