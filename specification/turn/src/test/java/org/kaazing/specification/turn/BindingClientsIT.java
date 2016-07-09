@@ -38,16 +38,5 @@ public class BindingClientsIT {
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
 
-    /**
-     * See <a href="https://tools.ietf.org/html/rfc5766#section-2">RFC 5766 section 2: Binding</a>.
-     */
-    @Test
-    @Specification({
-        "",
-        "" })
-    public void outboundMustSendVersion() throws Exception {
-        k3po.finish();
-    }
-
 }
 

@@ -38,16 +38,5 @@ public class CandidateAddressIT {
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
 
-    /**
-     * See <a href="https://tools.ietf.org/html/rfc5766#section-2.4">RFC 5766 section 2.4: Candidate Addresses</a>.
-     */
-    @Test
-    @Specification({
-        "",
-        "" })
-    public void outboundMustSendVersion() throws Exception {
-        k3po.finish();
-    }
-
 }
 

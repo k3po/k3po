@@ -17,7 +17,7 @@
 property realm "example.com"
 property nonce "adl7W7PeDU4hKE72jdaQvbAMcr6h39sm"
 
-accept tcp://localhost:8001
+accept tcp://localhost:3478
 accepted
 connected
 
