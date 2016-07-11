@@ -49,5 +49,38 @@ public class PeerConnectionIT {
         k3po.finish();
     }
 
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+        "no.peer.address.with.permissions.responds.400/request",
+        "no.peer.address.with.permissions.responds.400/response" })
+    public void shouldRespond400ToNoPeerAddressInPermissionRequest() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+        "no.channel.number.with.binding.request.responds.400/request",
+        "no.channel.number.with.binding.request.responds.400/response" })
+    public void shouldRespond400ToNoChannelNumberInBindingRequest() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+        "no.peer.address.with.binding.request.responds.400/request",
+        "no.peer.address.with.binding.request.responds.400/response" })
+    public void shouldRespond400ToNoPeerAddressInBindingRequest() throws Exception {
+        k3po.finish();
+    }
+
 }
 
