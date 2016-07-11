@@ -14,12 +14,13 @@
 # limitations under the License.
 #
 
-accept tcp://localhost:8001
+accept tcp://localhost:3478
 accepted
 connected
 
 ##Allocation request
-read [0x00] [0x00] [0x00] [0x03] (byte:message_length)
+read [0x00] [0x03] #Message Type 
+read [0x00] [0x00] #Message Length 
 read [0x21] [0x12] [0xa4] [0x42] #Magic cookie
 read ([0..12]:transactionID)
 
