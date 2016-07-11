@@ -18,6 +18,5 @@ connect await BOUND
         udp://localhost:8080
 connected
 
-read notify CLOSEABLE
+write "client data"
 
-closed
