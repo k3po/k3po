@@ -29,14 +29,25 @@ import org.kaazing.k3po.junit.rules.K3poRule;
 /**
  * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: TURN</a> through TCP.
  */
-public class BindingClientsIT {
+public class PeerConnectionIT {
 
-    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/turn/binding.clients");
+    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/turn/peer.connection");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
     @Rule
     public final TestRule chain = outerRule(k3po).around(timeout);
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+        "correct.turn.protocol/request",
+        "correct.turn.protocol/response" })
+    public void shouldSucceedWithCorrectTURNProcess() throws Exception {
+        k3po.finish();
+    }
 
 }
 

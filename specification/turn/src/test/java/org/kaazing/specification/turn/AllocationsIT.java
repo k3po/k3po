@@ -39,24 +39,101 @@ public class AllocationsIT {
     public final TestRule chain = outerRule(k3po).around(timeout);
 
     /**
-     * See <a href="https://tools.ietf.org/html/rfc5766#section-5">RFC 5766 section 2.2: Address Allocations</a>.
+     * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
     @Test
     @Specification({
-        "example.turn.process/request",
-        "example.turn.process/response" })
-    public void shouldSucceedWithCorrectTURNProcess() throws Exception {
+        "simple.allocate.method/request",
+        "simple.allocate.method/response" })
+    public void shouldSucceedWithGenericSTUNHeader() throws Exception {
         k3po.finish();
     }
 
     /**
-     * See <a href="https://tools.ietf.org/html/rfc5766#section-5">RFC 5766 section 2.2: Address Allocations</a>.
+     * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
     @Test
     @Specification({
-        "generic.stun.header/request",
-        "generic.stun.header/response" })
-    public void shouldSucceedWithGenericSTUNHeader() throws Exception {
+        "two.allocate.methods.with.no.credentials/request",
+        "two.allocate.methods.with.no.credentials/response" })
+    public void shouldRespondWithTwo401sWhenGivenAllocateMethodsWithNoCred() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
+     */
+    @Test
+    @Specification({
+        "allocate.method.with.requested.transport.attribute/request",
+        "allocate.method.with.requested.transport.attribute/response" })
+    public void shouldSucceedWithOnlyTransportAttribute() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
+     */
+    @Test
+    @Specification({
+        "correct.allocation.method/request",
+        "correct.allocation.method/response" })
+    public void shouldSucceedWithCorrectAllocation() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
+     */
+    @Test
+    @Specification({
+        "incorrect.length.given/request",
+        "incorrect.length.given/response" })
+    public void shouldGive400WithIncorrectLength() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
+     */
+    @Test
+    @Specification({
+        "incorrect.length.given/request",
+        "incorrect.length.given/response" })
+    public void shouldGive401IfDirectlyGivesCredentials() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
+     */
+    @Test
+    @Specification({
+        "multiple.connections.with.same.credentials.responds.437/request",
+        "multiple.connections.with.same.credentials.responds.437/response" })
+    public void shouldRespond437ToMultipleConnectionsWithSameCredentials() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
+     */
+    @Test
+    @Specification({
+        "wrong.credentials.responds.441/request",
+        "wrong.credentials.responds.441/response" })
+    public void shouldRespond441ToWrongCredentials() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
+     */
+    @Test
+    @Specification({
+        "extra.bytes.responds.420/request",
+        "extra.bytes.responds.420/response" })
+    public void shouldRespond420ToExtraBytes() throws Exception {
         k3po.finish();
     }
 
