@@ -71,7 +71,7 @@ read [0x00] [0x08] [0x00] (byte:length)
 read ([0..${length}]:messageDigest)
 
 #441 Allocate Error Response
-write [0x01] [0x03] [0x00] [0x50] #Type|Length
+write [0x01] [0x13] [0x00] [0x50] #Type|Length
 write [0x21] [0x12] [0xa4] [0x42] #Magic Cookie
 write ${transactionID}
 #Attributes

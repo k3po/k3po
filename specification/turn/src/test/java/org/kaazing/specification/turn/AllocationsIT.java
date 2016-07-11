@@ -137,5 +137,16 @@ public class AllocationsIT {
         k3po.finish();
     }
 
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
+     */
+    @Test
+    @Specification({
+        "no.requested.transport.attribute.responds.400/request",
+        "no.requested.transport.attribute.responds.400/response" })
+    public void shouldRespond400ToAllocateWithNoRequestedTransportAttribute() throws Exception {
+        k3po.finish();
+    }
+
 }
 

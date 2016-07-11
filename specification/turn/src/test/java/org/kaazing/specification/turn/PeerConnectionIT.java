@@ -82,5 +82,27 @@ public class PeerConnectionIT {
         k3po.finish();
     }
 
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+        "invalid.channel.number.responds.400/request",
+        "invalid.channel.number.responds.400/response" })
+    public void shouldRespond400ToInvalidChannelNumber() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+        "correct.turn.protocol.with.sent.data/request",
+        "correct.turn.protocol.with.sent.data/response" })
+    public void shouldSuccessfullySendData() throws Exception {
+        k3po.finish();
+    }
+
 }
 
