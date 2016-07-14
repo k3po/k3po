@@ -14,11 +14,11 @@
 # limitations under the License.
 #
 
-accept tcp://localhost:8080
-accepted
+connect tcp://localhost:8080
 connected
-read "GET"
-
-write "HTTP/1.1 505 HTTP Version Not Supported" "\r\n"
+write "GET / " ${http:randomInvalidVersion()} "\r\n"
+write "Host: localhost:8080\r\n"
 write "\r\n"
+
+read "HTTP/1.1 400"
 

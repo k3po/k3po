@@ -61,6 +61,8 @@
         <require.java.version>1.8+</require.java.version>
         <!-- animal sniffer does not yet support Java8, see MANIMALSNIFFER-45 -->
         <animal.sniffer.skip>true</animal.sniffer.skip>
+	<!-- skipping because eclipse complains about javadoc and other non errors -->
+        <checkstyle.skip>true</checkstyle.skip>
     </properties>
 
     <profiles>

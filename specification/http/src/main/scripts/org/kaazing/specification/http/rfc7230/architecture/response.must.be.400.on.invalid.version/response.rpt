@@ -14,11 +14,11 @@
 # limitations under the License.
 #
 
-connect tcp://localhost:8080
+accept tcp://localhost:8080
+accepted
 connected
-write "GET / " ${http:randomInvalidVersion()} "\r\n"
-write "Host: localhost:8080\r\n"
-write "\r\n"
+read "GET"
 
-read "HTTP/1.1 505"
+write "HTTP/1.1 400 Bad Request" "\r\n"
+write "\r\n"
 
