@@ -15,31 +15,34 @@
 #
 
 # Stream 1
-connect udp://localhost:8080
+connect await BOUND
+        udp://localhost:8080
 connected
-write "client data11"
-write "client data12"
-read "server data11"
-read "server data12"
+write "Hello"
+read "Hello"
+write "Goodbye"
+read "Goodbye"
 close
 closed
 
 # Stream 2
-connect udp://localhost:8080
+connect await BOUND
+        udp://localhost:8080
 connected
-write "client data21"
-write "client data22"
-read "server data21"
-read "server data22"
+write "Hello"
+read "Hello"
+write "Goodbye"
+read "Goodbye"
 close
 closed
 
 # Stream 3
-connect udp://localhost:8081
+connect await BOUND1
+        udp://localhost:8081
 connected
-write "client data31"
-write "client data32"
-read "server data31"
-read "server data32"
+write "Hello"
+read "Hello"
+write "Goodbye"
+read "Goodbye"
 close
 closed

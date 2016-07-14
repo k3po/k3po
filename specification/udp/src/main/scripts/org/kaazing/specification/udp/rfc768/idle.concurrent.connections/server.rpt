@@ -15,35 +15,37 @@
 #
 
 accept udp://localhost:8080
+       notify BOUND
        option timeout 1000
 
 # stream 1
 accepted
 connected
-read "client data11"
-read "client data12"
-write "server data11"
-write "server data12"
+read "Hello"
+write "Hello"
+read "Goodbye"
+write "Goodbye"
 # closed because of idle timeout
 closed
 
 # stream 2
 accepted
 connected
-read "client data21"
-read "client data22"
-write "server data21"
-write "server data22"
+read "Hello"
+write "Hello"
+read "Goodbye"
+write "Goodbye"
 # closed because of idle timeout
 closed
 
 # stream 3
 accept udp://localhost:8081
+       notify BOUND1
 accepted
 connected
-read "client data31"
-read "client data32"
-write "server data31"
-write "server data32"
+read "Hello"
+write "Hello"
+read "Goodbye"
+write "Goodbye"
 close
 closed
