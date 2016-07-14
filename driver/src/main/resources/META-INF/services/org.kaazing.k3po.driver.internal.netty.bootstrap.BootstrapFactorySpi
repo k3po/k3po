@@ -1,4 +1,5 @@
 org.kaazing.k3po.driver.internal.netty.bootstrap.tcp.TcpBootstrapFactorySpi
+org.kaazing.k3po.driver.internal.netty.bootstrap.udp.UdpBootstrapFactorySpi
 org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpBootstrapFactorySpi
 org.kaazing.k3po.driver.internal.netty.bootstrap.bbosh.BBoshBootstrapFactorySpi
 org.kaazing.k3po.driver.internal.netty.bootstrap.file.FileBootstrapFactorySpi

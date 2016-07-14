@@ -37,6 +37,7 @@ acceptNode
       (OptionKeyword TransportKeyword transport=location)?
       (OptionKeyword ReaderKeyword reader=expressionValue)?
       (OptionKeyword WriterKeyword writer=expressionValue)?
+      (OptionKeyword TimeoutKeyword timeout=DecimalLiteral)?
       serverStreamableNode*
     ;
 
@@ -51,6 +52,8 @@ connectNode
                        (OptionKeyword ModeKeyword fmode=ModeValue)?
                        (OptionKeyword ReaderKeyword reader=expressionValue)?
                        (OptionKeyword WriterKeyword writer=expressionValue)?
+                       (OptionKeyword TimeoutKeyword timeout=DecimalLiteral)?
+
         streamableNode+
     ;
 
@@ -384,6 +387,10 @@ ShortKeyword
 
 TransportKeyword
     : 'transport'
+    ;
+
+TimeoutKeyword
+    : 'timeout'
     ;
 
 WriterKeyword: 'writer';

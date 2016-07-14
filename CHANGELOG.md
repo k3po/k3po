@@ -2,7 +2,21 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-33...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-34...HEAD)
+
+**Closed issues:**
+
+- K3po Abort command races backlogged messages. [\#332](https://github.com/k3po/k3po/issues/332)
+
+**Merged pull requests:**
+
+- Some more changes for udp specification scripts. [\#345](https://github.com/k3po/k3po/pull/345) ([jitsni](https://github.com/jitsni))
+- Adding spec tests for UDP [\#344](https://github.com/k3po/k3po/pull/344) ([jitsni](https://github.com/jitsni))
+- UDP support [\#341](https://github.com/k3po/k3po/pull/341) ([jitsni](https://github.com/jitsni))
+- Upgrading to netty 3.10.5 [\#340](https://github.com/k3po/k3po/pull/340) ([jitsni](https://github.com/jitsni))
+
+## [3.0.0-alpha-34](https://github.com/k3po/k3po/tree/3.0.0-alpha-34) (2016-04-20)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-33...3.0.0-alpha-34)
 
 **Merged pull requests:**
 

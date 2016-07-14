@@ -69,9 +69,8 @@ public class HttpClientChannel extends AbstractChannel<HttpChannelConfig> {
         return super.setClosed();
     }
 
-    @Override
     protected void setInterestOpsNow(int interestOps) {
-        super.setInterestOpsNow(interestOps);
+        super.setInternalInterestOps(interestOps);
     }
 
 }
