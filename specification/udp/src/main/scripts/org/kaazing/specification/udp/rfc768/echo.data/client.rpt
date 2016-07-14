@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect
+connect await BOUND
         udp://localhost:8080
 connected
 write "client data 1"

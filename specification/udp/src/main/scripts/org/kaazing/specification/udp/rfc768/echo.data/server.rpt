@@ -15,6 +15,7 @@
 #
 
 accept udp://localhost:8080
+       notify BOUND
 accepted
 connected
 read "client data 1"
