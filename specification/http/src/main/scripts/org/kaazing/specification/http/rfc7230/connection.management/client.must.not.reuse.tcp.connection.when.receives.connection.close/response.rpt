@@ -22,7 +22,8 @@ read method "GET"
 read closed
 
 write status "200" "OK"
-write header "connection" "close"
+write header "Connection" "close"
+write header content-length
 write close
 
 accept http://localhost:8080/path2

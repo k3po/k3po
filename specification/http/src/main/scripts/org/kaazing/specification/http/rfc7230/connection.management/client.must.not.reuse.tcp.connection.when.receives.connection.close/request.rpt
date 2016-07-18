@@ -23,7 +23,8 @@ write "Connection: close\r\n"
 write "\r\n"
 
 read "HTTP/1.1 200 OK\r\n"
-read "connection: close\r\n"
+read "Connection: close\r\n"
+read "Content-Length: 0\r\n"
 read "\r\n"
 read notify START_CONNECTION_2
 closed
@@ -34,5 +35,6 @@ connected
 write "GET /path2 HTTP/1.1\r\n"
 write "Host: localhost:8080\r\n"
 write "Connection: close\r\n"
+write "Content-Length: 0\r\n"
 write "\r\n"
 

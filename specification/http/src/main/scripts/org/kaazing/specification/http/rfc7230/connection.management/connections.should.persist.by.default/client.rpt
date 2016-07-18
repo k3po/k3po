@@ -23,6 +23,7 @@ write "Host: localhost:8080" "\r\n"
 write "\r\n"
 
 read "HTTP/1.1 200 OK\r\n"
+read "Content-Length: 0" "\r\n"
 read "\r\n"
 
 # Request 2
@@ -32,6 +33,7 @@ write "Connection: close" "\r\n"
 write "\r\n"
 
 read "HTTP/1.1 200 OK\r\n"
+read "Content-Length: 0" "\r\n"
 read "\r\n"
 
 # Request 3
@@ -41,4 +43,5 @@ write "Connection: close" "\r\n"
 write "\r\n"
 
 read "HTTP/1.1 200 OK\r\n"
+read "Content-Length: 0" "\r\n"
 

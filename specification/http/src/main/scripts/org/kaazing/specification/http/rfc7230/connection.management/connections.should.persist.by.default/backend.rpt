@@ -20,6 +20,7 @@ connected
 read method "GET"
 read closed
 write status "200" "OK"
+write header content-length
 write close
 
 accepted
@@ -27,6 +28,7 @@ connected
 read method "GET"
 read closed
 write status "200" "OK"
+write header content-length
 write close
 
 accepted
@@ -34,5 +36,6 @@ connected
 read method "GET"
 read closed
 write status "200" "OK"
+write header content-length
 write close
 
