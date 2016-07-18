@@ -25,5 +25,5 @@ read closed
 	
 write status "502" "Bad gateway"
 write header "Warning" "112 - Disconnected Operation"
-
+write close
 

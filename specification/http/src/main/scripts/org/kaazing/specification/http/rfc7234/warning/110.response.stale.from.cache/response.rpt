@@ -46,5 +46,6 @@ write status "304" "Not Modified"
 write header "Last-Modified" ${lastModified}
 write header "Expires" ${expiresPlusTenSeconds}
 write header "Warning" "110 - Response is Stale"
+write close
 
 

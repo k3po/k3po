@@ -42,5 +42,5 @@ write status "504" "Gateway Timeout"
 write header "ETag" ${entityTag}
 write header "Cache-Control" "must-revalidate, max-age=10"
 write header "Warning" "111 - Revalidation Failed"
-
+write flush
 

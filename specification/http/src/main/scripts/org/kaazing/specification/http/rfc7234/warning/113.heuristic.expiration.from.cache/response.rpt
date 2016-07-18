@@ -26,5 +26,5 @@ read closed
 	
 write status "200" "OK"
 write header "Warning" "113 - Heuristic Expiration"
-
+write close
 

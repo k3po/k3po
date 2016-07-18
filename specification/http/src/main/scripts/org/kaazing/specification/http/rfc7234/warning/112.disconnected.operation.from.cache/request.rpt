@@ -26,4 +26,3 @@ write close
 read status "502" /.+/
 read header "Warning" /.+/
 
-

@@ -24,5 +24,5 @@ write flush
 
 read status "400" /.*/
 read header "Warning" /.+/
-
+read closed
 

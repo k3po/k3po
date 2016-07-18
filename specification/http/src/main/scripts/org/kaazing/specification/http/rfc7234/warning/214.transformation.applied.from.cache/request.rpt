@@ -24,4 +24,3 @@ write close
 read status "305" /.+/
 read header "Warning" /.+/
 
-

@@ -19,12 +19,10 @@ connect tcp://localhost:8080
 connected
 write "GET /request1 HTTP/1.1" "\r\n"
 write "Host: localhost:8080" "\r\n"
-write "Connection: close" "\r\n"
 write "\r\n"
 
 write "GET /request2 HTTP/1.1" "\r\n"
 write "Host: localhost:8080" "\r\n"
-write "Connection: close" "\r\n"
 write "\r\n"
 
 read "HTTP/1.1 200 OK\r\n"
