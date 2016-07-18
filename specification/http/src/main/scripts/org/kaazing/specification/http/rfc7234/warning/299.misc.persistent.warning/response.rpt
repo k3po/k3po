@@ -23,4 +23,4 @@ read version "HTTP/1.1"
 	
 write status "400" "Bad Request"
 write header "Warning" "299 - Miscellaneous Persistent Warning"
-write close
+

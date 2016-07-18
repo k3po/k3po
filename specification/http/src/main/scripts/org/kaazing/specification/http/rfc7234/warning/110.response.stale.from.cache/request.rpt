@@ -42,6 +42,5 @@ read status "304" /.*/
 read header "Last-Modified" /.+/
 read header "Expires" /.+/
 read header "Warning" "110" /.+/
-read closed
 
 

@@ -25,4 +25,5 @@ read closed
 	
 write status "305" "Use Proxy"
 write header "Warning" "214 - Transformation Applied"
-write close
+
+
