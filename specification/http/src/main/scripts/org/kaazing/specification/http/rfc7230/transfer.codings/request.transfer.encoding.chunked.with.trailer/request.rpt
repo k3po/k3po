@@ -21,11 +21,11 @@ write method "POST"
 write header host
 write header "Content-Type" "text/plain"
 write header "Transfer-Encoding" "chunked"
-write header "Trailer" "Trailing-Header"
+write header "Trailer" "Connection"
 write "Chunk A"
 write "Chunk B"
 write "Chunk C"
-write trailer "Trailing-Header" "trailer-value"
+write trailer "Connection" "close"
 write close
 
 read status "200" "OK"
