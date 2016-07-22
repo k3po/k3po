@@ -15,6 +15,12 @@
  */
 package org.kaazing.k3po.driver.internal.functions.agrona;
 
+import org.agrona.concurrent.AtomicBuffer;
+import org.agrona.concurrent.broadcast.BroadcastReceiver;
+import org.agrona.concurrent.broadcast.BroadcastTransmitter;
+import org.agrona.concurrent.broadcast.CopyBroadcastReceiver;
+import org.agrona.concurrent.ringbuffer.ManyToOneRingBuffer;
+import org.agrona.concurrent.ringbuffer.OneToOneRingBuffer;
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.BroadcastTransmitterChannelWriter;
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.ChannelReader;
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.ChannelWriter;
@@ -24,13 +30,17 @@ import org.kaazing.k3po.driver.internal.netty.channel.agrona.RingBufferChannelWr
 import org.kaazing.k3po.lang.el.Function;
 import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
 
-import uk.co.real_logic.agrona.concurrent.AtomicBuffer;
-import uk.co.real_logic.agrona.concurrent.broadcast.BroadcastReceiver;
-import uk.co.real_logic.agrona.concurrent.broadcast.BroadcastTransmitter;
-import uk.co.real_logic.agrona.concurrent.broadcast.CopyBroadcastReceiver;
-import uk.co.real_logic.agrona.concurrent.ringbuffer.ManyToOneRingBuffer;
-
 public final class Functions {
+
+    @Function
+    public static ChannelReader oneToOneReader(AtomicBuffer buffer) {
+        return new RingBufferChannelReader(new OneToOneRingBuffer(buffer));
+    }
+
+    @Function
+    public static ChannelWriter oneToOneWriter(AtomicBuffer buffer) {
+        return new RingBufferChannelWriter(new OneToOneRingBuffer(buffer));
+    }
 
     @Function
     public static ChannelReader manyToOneReader(AtomicBuffer buffer) {
