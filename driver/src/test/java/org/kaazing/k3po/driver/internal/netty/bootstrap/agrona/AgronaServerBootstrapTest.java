@@ -74,15 +74,15 @@ import org.kaazing.k3po.driver.internal.netty.channel.agrona.RingBufferChannelRe
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.RingBufferChannelWriter;
 import org.mockito.InOrder;
 
-import uk.co.real_logic.agrona.MutableDirectBuffer;
-import uk.co.real_logic.agrona.concurrent.MessageHandler;
-import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
-import uk.co.real_logic.agrona.concurrent.broadcast.BroadcastBufferDescriptor;
-import uk.co.real_logic.agrona.concurrent.broadcast.BroadcastReceiver;
-import uk.co.real_logic.agrona.concurrent.broadcast.BroadcastTransmitter;
-import uk.co.real_logic.agrona.concurrent.broadcast.CopyBroadcastReceiver;
-import uk.co.real_logic.agrona.concurrent.ringbuffer.ManyToOneRingBuffer;
-import uk.co.real_logic.agrona.concurrent.ringbuffer.RingBufferDescriptor;
+import org.agrona.MutableDirectBuffer;
+import org.agrona.concurrent.MessageHandler;
+import org.agrona.concurrent.UnsafeBuffer;
+import org.agrona.concurrent.broadcast.BroadcastBufferDescriptor;
+import org.agrona.concurrent.broadcast.BroadcastReceiver;
+import org.agrona.concurrent.broadcast.BroadcastTransmitter;
+import org.agrona.concurrent.broadcast.CopyBroadcastReceiver;
+import org.agrona.concurrent.ringbuffer.ManyToOneRingBuffer;
+import org.agrona.concurrent.ringbuffer.RingBufferDescriptor;
 
 @RunWith(Theories.class)
 public class AgronaServerBootstrapTest {

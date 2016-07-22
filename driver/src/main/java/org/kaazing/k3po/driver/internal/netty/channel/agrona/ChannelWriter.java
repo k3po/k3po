@@ -15,7 +15,7 @@
  */
 package org.kaazing.k3po.driver.internal.netty.channel.agrona;
 
-import uk.co.real_logic.agrona.DirectBuffer;
+import org.agrona.DirectBuffer;
 
 public interface ChannelWriter {
 
