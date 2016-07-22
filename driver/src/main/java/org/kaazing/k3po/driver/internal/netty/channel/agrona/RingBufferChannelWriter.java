@@ -15,8 +15,8 @@
  */
 package org.kaazing.k3po.driver.internal.netty.channel.agrona;
 
-import uk.co.real_logic.agrona.DirectBuffer;
-import uk.co.real_logic.agrona.concurrent.ringbuffer.RingBuffer;
+import org.agrona.DirectBuffer;
+import org.agrona.concurrent.ringbuffer.RingBuffer;
 
 public final class RingBufferChannelWriter implements ChannelWriter {
 

@@ -24,7 +24,7 @@ import static org.jboss.netty.channel.Channels.fireChannelUnbound;
 import static org.jboss.netty.channel.Channels.fireWriteComplete;
 import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireFlushed;
 import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireOutputShutdown;
-import static uk.co.real_logic.agrona.BitUtil.SIZE_OF_INT;
+import static org.agrona.BitUtil.SIZE_OF_INT;
 
 import java.util.Deque;
 import java.util.Set;
@@ -39,9 +39,9 @@ import org.kaazing.k3po.driver.internal.netty.channel.agrona.AgronaChannelAddres
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.ChannelReader;
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.ChannelWriter;
 
-import uk.co.real_logic.agrona.concurrent.BackoffIdleStrategy;
-import uk.co.real_logic.agrona.concurrent.IdleStrategy;
-import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
+import org.agrona.concurrent.BackoffIdleStrategy;
+import org.agrona.concurrent.IdleStrategy;
+import org.agrona.concurrent.UnsafeBuffer;
 
 public final class AgronaWorker implements Runnable {
 

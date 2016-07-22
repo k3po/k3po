@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-34...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-35...HEAD)
+
+**Merged pull requests:**
+
+- Upgrade to Agrona 0.5.2, consuming Agrona package name change [\#347](https://github.com/k3po/k3po/pull/347) ([jfallows](https://github.com/jfallows))
+
+## [3.0.0-alpha-35](https://github.com/k3po/k3po/tree/3.0.0-alpha-35) (2016-07-14)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-34...3.0.0-alpha-35)
 
 **Closed issues:**
 
