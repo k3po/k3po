@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-35...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-36...HEAD)
+
+**Merged pull requests:**
+
+- Wrong header parameter "Host:" [\#348](https://github.com/k3po/k3po/pull/348) ([DoruM](https://github.com/DoruM))
+
+## [3.0.0-alpha-36](https://github.com/k3po/k3po/tree/3.0.0-alpha-36) (2016-07-22)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-35...3.0.0-alpha-36)
 
 **Merged pull requests:**
 
