@@ -17,7 +17,7 @@
 connect http://localhost:8000/resource
 connected
 
-write method "POST"
+write method "PUT"
 write header content-length
 write "content"
 write close

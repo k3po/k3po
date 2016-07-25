@@ -18,6 +18,6 @@ accept tcp://localhost:8080
 accepted
 connected
 
-read /[a-zA-Z]+/ " / HTTP/1.1" "\r\n"
+read "POST / HTTP/1.1" "\r\n"
 read "Host: localhost:8080" "\r\n"
 
