@@ -26,9 +26,9 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
-public class SpecificationIT {
+public class HandshakeIT {
 
-    private final K3poRule robot = new K3poRule();
+    private final K3poRule robot = new K3poRule().setScriptRoot("org/kaazing/specification/tls/handshake");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -36,8 +36,8 @@ public class SpecificationIT {
     public final TestRule chain = outerRule(robot).around(timeout);
 
     @Test
-    @Specification({"accept", "connect"})
-    public void shouldPass() throws Exception {
+    @Specification({"hello.request/accept", "hello.request/connect"})
+    public void shouldPassWithSimpleHelloRequest() throws Exception {
         robot.finish();
     }
 }
