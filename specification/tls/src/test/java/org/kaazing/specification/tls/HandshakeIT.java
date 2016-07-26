@@ -36,8 +36,20 @@ public class HandshakeIT {
     public final TestRule chain = outerRule(robot).around(timeout);
 
     @Test
-    @Specification({"hello.request/accept", "hello.request/connect"})
+    @Specification({"hello.request/client", "hello.request/server"})
     public void shouldPassWithSimpleHelloRequest() throws Exception {
+        robot.finish();
+    }
+
+    @Test
+    @Specification({"only.client.hello/client", "only.client.hello/server"})
+    public void shouldPassWithSimpleClientHello() throws Exception {
+        robot.finish();
+    }
+
+    @Test
+    @Specification({"client.server.hello/client", "client.server.hello/server"})
+    public void shouldPassWithClientServerHelloCommunicate() throws Exception {
         robot.finish();
     }
 }
