@@ -14,24 +14,60 @@
 # limitations under the License.
 #
 
-connect tcp://localhost:8080
+accept tcp://localhost:8080
+accepted
 connected
 
-##Content Type
-#Content Type 1 byte
+##1
+read [0x16]
+read [0x03] [0x03]
+read [0x00] [0x2a]
+
+read [0x01]
+read [0x00] [0x00] [0x26]
+read [0x03] [0x03]
+read ([0..4]:unixTime) ([0..28]:randomBytes)
+read [0x00]
+read [0x00] [0x00]
+read [0x00]
+
+##2
+#Content Type
 write [0x16]
-#Version 2 bytes
 write [0x03] [0x03]
-#Length 2 bytes
-write [0x00] [0x04]
+write [0x00] [0x2a] #length
 
-##TLS Plain Text
-#Content Type (Ex Handshake Hello)
+#Body Server Hello
+write [0x02]
+write [0x00] [0x00] [0x26] #length
+write [0x03] [0x03]
+write ${tls:gmt_unix_time()} ${tls:randomBytesUTF8(28)}
 write [0x00]
-#Length (24 bits)
-write [0x00] [0x00] [0x00]
+write [0x00] [0x00]
+write [0x00]
 
-close
+#Content Type
+#Body Certificate
+
+#Content Type
+#Body Server Key Exchange
+
+#Content Type
+#Body Certificate Request
+
+#Content Type
+#Body Server Hello Done
+
+##3
+
+##4
+#Content Type
+#Server Finished
+
+##5 DATA CONNECTION
+
 closed
+
+
 
 

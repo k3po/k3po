@@ -17,21 +17,53 @@
 connect tcp://localhost:8080
 connected
 
-##Content Type
-#Content Type 1 byte
+##1
+#Content Type
 write [0x16]
-#Version 2 bytes
 write [0x03] [0x03]
-#Length 2 bytes
-write [0x00] [0x04]
+write [0x00] [0x2a] #length
 
-##TLS Plain Text
-#Content Type (Ex Handshake Hello)
+#Body Client Hello
+write [0x01]
+write [0x00] [0x00] [0x26] #length
+write [0x03] [0x03]
+write ${tls:gmt_unix_time()} ${tls:randomBytesUTF8(28)}
 write [0x00]
-#Length (24 bits)
-write [0x00] [0x00] [0x00]
+write [0x00] [0x00]
+write [0x00]
+
+##2
+read [0x16]
+read [0x03] [0x03]
+read [0x00] [0x2a]
+
+read [0x02]
+read [0x00] [0x00] [0x26]
+read [0x03] [0x03]
+read ([0..4]:unixTime) ([0..28]:randomBytes)
+read [0x00]
+read [0x00] [0x00]
+read [0x00]
+
+##3
+#Content Type
+#Body Certificate
+
+#Content Type
+#Body Client Key Exchange
+
+#Content type
+#Body Certificate Verify
+
+#Content Type
+#Client Finished
+
+##4
+
+##5 DATA CONNECTION
 
 close
 closed
+
 
 
