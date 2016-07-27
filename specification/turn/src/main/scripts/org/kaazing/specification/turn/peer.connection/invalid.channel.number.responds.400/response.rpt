@@ -16,8 +16,9 @@
 
 property realm "example.com"
 property nonce "adl7W7PeDU4hKE72jdaQvbAMcr6h39sm"
+property acceptURI "tcp://localhost:3478"
 
-accept tcp://localhost:3478
+accept ${acceptURI}
 accepted
 connected
 

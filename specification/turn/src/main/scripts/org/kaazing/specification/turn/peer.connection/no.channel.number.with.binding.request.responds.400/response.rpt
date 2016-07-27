@@ -16,8 +16,9 @@
 
 property realm "example.com"
 property nonce "adl7W7PeDU4hKE72jdaQvbAMcr6h39sm"
+property acceptURI "tcp://localhost:3478"
 
-accept tcp://localhost:3478
+accept ${acceptURI}
 accepted
 connected
 
@@ -125,7 +126,7 @@ write [0x00] [0x08] [0x00] ${length}
 write ${messageDigest}
 
 #binds to peer
-read [0x00] [0x09] [0x00] [0x58]
+read [0x00] [0x09] [0x00] [0x5C]
 read [0x21] [0x12] [0xa4] [0x42]
 read ([0..12]:transactionID)
 #Attribute XOR-Peer-Address

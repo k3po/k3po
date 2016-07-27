@@ -14,7 +14,8 @@
 # limitations under the License.
 #
 
-connect tcp://localhost:3478
+property connectURI "tcp://localhost:3478"
+connect ${connectURI}
 connected
 
 ##Allocation request
