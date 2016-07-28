@@ -16,8 +16,9 @@
 
 property realm "example.com"
 property nonce "adl7W7PeDU4hKE72jdaQvbAMcr6h39sm"
+property acceptURI "tcp://localhost:3478"
 
-accept tcp://localhost:3478
+accept ${acceptURI}
 accepted
 connected
 
@@ -85,11 +86,11 @@ write [0x00] [0x0d] [0x00] [0x04]
 write [0x00] [0x00] [0x0c] [0x08] #3080 seconds
 #Attribute XOR-Relayed-Address
 write [0x00] [0x16] [0x00] [0x08]
-write [0xff] [0x01] ${turn:portXOR(8080)} #port 8080
+write [0x00] [0x01] ${turn:portXOR(8080)} #port 8080
 write ${turn:ipXOR("192.0.2.15")}
 #Attribute XOR-Mapped-Address
 write [0x00] [0x20] [0x00] [0x08]
-write [0xff] [0x01] ${turn:portXOR(8080)} #port 8080
+write [0x00] [0x01] ${turn:portXOR(8080)} #port 8080
 write ${turn:ipXOR("192.0.2.15")}
 #Attribute Message-Integrity
 write [0x00] [0x08] [0x00] ${length}

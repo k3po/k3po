@@ -14,7 +14,9 @@
 # limitations under the License.
 #
 
-accept tcp://localhost:3478
+property acceptURI "tcp://localhost:3478"
+
+accept ${acceptURI}
 accepted
 connected
 
