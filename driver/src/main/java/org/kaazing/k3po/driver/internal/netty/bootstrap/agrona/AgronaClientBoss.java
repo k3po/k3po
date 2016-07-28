@@ -26,8 +26,8 @@ import java.util.concurrent.CountDownLatch;
 import org.jboss.netty.channel.ChannelFuture;
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.AgronaChannelAddress;
 
-import uk.co.real_logic.agrona.concurrent.BackoffIdleStrategy;
-import uk.co.real_logic.agrona.concurrent.IdleStrategy;
+import org.agrona.concurrent.BackoffIdleStrategy;
+import org.agrona.concurrent.IdleStrategy;
 
 public final class AgronaClientBoss implements Runnable {
 

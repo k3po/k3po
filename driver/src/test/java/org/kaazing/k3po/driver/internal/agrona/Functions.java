@@ -15,9 +15,9 @@
  */
 package org.kaazing.k3po.driver.internal.agrona;
 
-import static uk.co.real_logic.agrona.IoUtil.mapExistingFile;
-import static uk.co.real_logic.agrona.IoUtil.mapNewFile;
-import static uk.co.real_logic.agrona.IoUtil.unmap;
+import static org.agrona.IoUtil.mapExistingFile;
+import static org.agrona.IoUtil.mapNewFile;
+import static org.agrona.IoUtil.unmap;
 
 import java.io.File;
 import java.nio.MappedByteBuffer;
@@ -26,10 +26,10 @@ import java.util.Random;
 import org.kaazing.k3po.lang.el.Function;
 import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
 
-import uk.co.real_logic.agrona.concurrent.AtomicBuffer;
-import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
-import uk.co.real_logic.agrona.concurrent.broadcast.BroadcastBufferDescriptor;
-import uk.co.real_logic.agrona.concurrent.ringbuffer.RingBufferDescriptor;
+import org.agrona.concurrent.AtomicBuffer;
+import org.agrona.concurrent.UnsafeBuffer;
+import org.agrona.concurrent.broadcast.BroadcastBufferDescriptor;
+import org.agrona.concurrent.ringbuffer.RingBufferDescriptor;
 
 public final class Functions {
 

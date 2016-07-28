@@ -15,8 +15,8 @@
  */
 package org.kaazing.k3po.driver.internal.netty.channel.agrona;
 
-import uk.co.real_logic.agrona.DirectBuffer;
-import uk.co.real_logic.agrona.concurrent.broadcast.BroadcastTransmitter;
+import org.agrona.DirectBuffer;
+import org.agrona.concurrent.broadcast.BroadcastTransmitter;
 
 public final class BroadcastTransmitterChannelWriter implements ChannelWriter {
 

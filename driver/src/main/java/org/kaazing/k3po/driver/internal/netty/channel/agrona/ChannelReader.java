@@ -15,7 +15,7 @@
  */
 package org.kaazing.k3po.driver.internal.netty.channel.agrona;
 
-import uk.co.real_logic.agrona.concurrent.MessageHandler;
+import org.agrona.concurrent.MessageHandler;
 
 public interface ChannelReader {
 
