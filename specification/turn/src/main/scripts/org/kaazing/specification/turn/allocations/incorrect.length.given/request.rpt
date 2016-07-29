@@ -53,11 +53,12 @@ read ([0..32]:nonce)
 
 ##Allocation request (w/ cred)
 #STUN Message type | Message Length (***CONFIRM***)
-write [0x00] [0x03] [0x00] [0x84]
+write [0x00] [0x03] [0x00] [0x64]
 #Magic Cookie
 write [0x21] [0x12] [0xa4] [0x42]
 #Transaction ID
 write ${turn:generateTransactionId()}
+
 #Attribute Lifetime
 write [0x00] [0x0d] [0x00] [0x04]
 write [0x00] [0x00] [0x0e] [0x10] #3600 seconds
@@ -76,8 +77,9 @@ write ${realm} [0x00]
 write [0x00] [0x15] [0x00] [0x20]
 write ${nonce}
 #Attribute Message-Integrity
-write [0x00] [0x08] [0x00] [0x10]
-write ${turn:messageDigestMD5Encoding("joe:example.com:welcome")}
+write [0x00] [0x08] [0x00] [0x20]
+write ${turn:messageDigestMD5Encoding("joseph:example.com:welcome")}
+write ${turn:messageDigestMD5Encoding("joseph:example.com:welcome")}
 
 #400 Allocation error response
 read [0x01] [0x13] [0x00] [0x48]

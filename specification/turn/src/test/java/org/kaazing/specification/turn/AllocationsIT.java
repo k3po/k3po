@@ -120,11 +120,8 @@ public class AllocationsIT {
      */
     @Test
     @Specification({
-        "extra.bytes.responds.420/request",
-        "extra.bytes.responds.420/response" })
-    // TODO, change to 2 tests, One is invalid attribute test
-    // One is a test that has Stun message length x  
-    // but an attribute at the end makes it say it has total length x+y
+        "unknown.attribute.responds.420/request",
+        "unknown.attribute.responds.420/response" })
     public void shouldRespond420ToExtraBytes() throws Exception {
         k3po.finish();
     }
