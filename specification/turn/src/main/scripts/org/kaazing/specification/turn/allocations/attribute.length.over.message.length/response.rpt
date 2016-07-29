@@ -23,7 +23,7 @@ accepted
 connected
 
 ##Allocation request
-read [0x00] [0x03] [0x00] [0x10] #Type|MessageLength
+read [0x00] [0x03] [0x00] [0x14] #Type|MessageLength
 read [0x21] [0x12] [0xa4] [0x42] #Magic cookie
 read ([0..12]:transactionID)
 #Attributes
