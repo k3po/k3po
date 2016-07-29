@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-36...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-37...HEAD)
+
+**Merged pull requests:**
+
+- K3po.turn.spec [\#350](https://github.com/k3po/k3po/pull/350) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-37](https://github.com/k3po/k3po/tree/3.0.0-alpha-37) (2016-07-25)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-36...3.0.0-alpha-37)
 
 **Merged pull requests:**
 
