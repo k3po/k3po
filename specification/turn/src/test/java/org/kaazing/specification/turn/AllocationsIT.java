@@ -87,8 +87,8 @@ public class AllocationsIT {
      */
     @Test
     @Specification({
-        "incorrect.length.given/request",
-        "incorrect.length.given/response" })
+        "attribute.length.over.message.length/request",
+        "attribute.length.over.message.length/response" })
     public void shouldGive400WithIncorrectLength() throws Exception {
         k3po.finish();
     }
