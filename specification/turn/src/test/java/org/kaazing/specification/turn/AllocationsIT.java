@@ -98,17 +98,6 @@ public class AllocationsIT {
      */
     @Test
     @Specification({
-        "incorrect.length.given/request",
-        "incorrect.length.given/response" })
-    public void shouldGive401IfDirectlyGivesCredentials() throws Exception {
-        k3po.finish();
-    }
-
-    /**
-     * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
-     */
-    @Test
-    @Specification({
         "multiple.connections.with.same.credentials.responds.437/request",
         "multiple.connections.with.same.credentials.responds.437/response" })
     public void shouldRespond437ToMultipleConnectionsWithSameCredentials() throws Exception {
@@ -133,6 +122,9 @@ public class AllocationsIT {
     @Specification({
         "extra.bytes.responds.420/request",
         "extra.bytes.responds.420/response" })
+    // TODO, change to 2 tests, One is invalid attribute test
+    // One is a test that has Stun message length x  
+    // but an attribute at the end makes it say it has total length x+y
     public void shouldRespond420ToExtraBytes() throws Exception {
         k3po.finish();
     }

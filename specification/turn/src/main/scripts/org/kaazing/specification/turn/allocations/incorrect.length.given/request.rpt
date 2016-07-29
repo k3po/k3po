@@ -18,6 +18,8 @@ property connectURI "tcp://localhost:3478"
 connect ${connectURI}
 connected
 
+# TODO fix this please
+
 ##Allocation request
 #STUN Message type | Message Length (***CONFIRM***)
 write [0x00] [0x03] [0x00] [0x10]
