@@ -36,6 +36,8 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.handler.codec.http.HttpChunk;
+import org.jboss.netty.handler.codec.http.HttpChunkTrailer;
+import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseDecoder;
@@ -116,6 +118,10 @@ public class HttpClientChannelSource extends HttpChannelHandler {
         boolean last = httpChunk.isLast();
         if (last) {
             HttpClientChannel httpClientChannel = this.httpClientChannel;
+            if (httpChunk instanceof HttpChunkTrailer) {
+                HttpHeaders trailingHeaders = ((HttpChunkTrailer) httpChunk).trailingHeaders();
+                httpClientChannel.getConfig().getReadTrailers().set(trailingHeaders);
+            }
             this.httpClientChannel = null;
             fireInputShutdown(httpClientChannel);
 

@@ -28,3 +28,4 @@ write status "400" "Bad Request"
 write header "Warning" "199 - " ${warning} ${date}
 write header content-length
 write close
+

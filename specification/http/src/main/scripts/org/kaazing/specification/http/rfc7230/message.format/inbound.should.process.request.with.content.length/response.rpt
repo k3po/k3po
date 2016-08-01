@@ -21,7 +21,6 @@ connected
 read method "POST"
 read header "Content-length" /(?<length>.*)/
 read [0..${length}]
-read closed
 
 write status "200" "OK"
 write close

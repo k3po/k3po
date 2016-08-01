@@ -310,4 +310,34 @@ public class HttpIT {
         k3po.finish();
     }
 
+    @Test
+    // The extensions part of this test has been commented out due to
+    // https://github.com/k3po/k3po/issues/313
+    @TestSpecification({
+        "http.client.post.chunking.with.trailer.and.extensions/request",
+        "http.client.post.chunking.with.trailer.and.extensions/response"
+    })
+    public void httpClientPostChunkingWithTrailerAndExtensions() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    // The extensions part of this test has been commented out due to
+    // https://github.com/k3po/k3po/issues/313
+    @TestSpecification({
+        "http.server.post.chunking.with.trailer.and.extensions/request",
+        "http.server.post.chunking.with.trailer.and.extensions/response"
+    })
+    public void httpServerPostChunkingWithTrailerAndExtensions() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "response.transfer.encoding.chunked.with.trailer/request",
+        "response.transfer.encoding.chunked.with.trailer/response"
+    })
+    public void httpResponseWithEncodingChunked() throws Exception {
+        k3po.finish();
+    }
 }

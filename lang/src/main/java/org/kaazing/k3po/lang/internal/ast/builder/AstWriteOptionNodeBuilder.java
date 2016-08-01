@@ -21,6 +21,7 @@ import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteOptionNode;
 import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
 public class AstWriteOptionNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWriteOptionNode, AstWriteOptionNode> {
@@ -36,6 +37,11 @@ public class AstWriteOptionNodeBuilder extends AbstractAstStreamableNodeBuilder<
 
     public AstWriteOptionNodeBuilder setOptionValue(byte[] exactBytes) {
         node.setOptionValue(new AstLiteralBytesValue(exactBytes));
+        return this;
+    }
+
+    public AstWriteOptionNodeBuilder setOptionValue(String literalText) {
+        node.setOptionValue(new AstLiteralTextValue(literalText));
         return this;
     }
 

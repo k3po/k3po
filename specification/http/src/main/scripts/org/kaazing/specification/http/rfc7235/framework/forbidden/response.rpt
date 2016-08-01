@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-property invalidCredentials ${http:loginBase64Encoder("admin:admin")}
+property invalidCredentials ${http:loginBase64Encoder("unauthorized:user")}
 property authHeader ${http:append("Basic ", invalidCredentials)}
 accept http://localhost:8000/resource
 accepted

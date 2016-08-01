@@ -21,7 +21,7 @@ connected
 read method "HEAD"
 read closed
 
-write status "100" "OK"
+write status "100" "Continue"
 write header "Content-Length" "0"
 write close
 

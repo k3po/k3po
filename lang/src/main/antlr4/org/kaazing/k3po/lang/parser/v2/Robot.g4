@@ -69,6 +69,8 @@ optionNode
     | readOptionOffsetNode
     | writeOptionMaskNode
     | writeOptionOffsetNode
+    | writeOptionHttpChunkExtensionNode
+    | readOptionHttpChunkExtensionNode
     ;
 
 readOptionMaskNode
@@ -79,12 +81,20 @@ readOptionOffsetNode
     : k=ReadKeyword OptionKeyword name=OffsetKeyword value=writeValue
     ;
 
+readOptionHttpChunkExtensionNode
+    : k=ReadKeyword OptionKeyword name=ChunkExtensionKeyWord value=writeValue
+    ;
+
 writeOptionMaskNode
     : k=WriteKeyword OptionKeyword name=MaskKeyword value=writeValue
     ;
 
 writeOptionOffsetNode
     : k=WriteKeyword OptionKeyword name=OffsetKeyword value=writeValue
+    ;
+
+writeOptionHttpChunkExtensionNode
+    : k=WriteKeyword OptionKeyword name=ChunkExtensionKeyWord value=writeValue
     ;
 
 serverCommandNode
@@ -115,6 +125,7 @@ commandNode
     | closeNode
     | writeHttpContentLengthNode
     | writeHttpHeaderNode
+    | writeHttpChunkTrailerNode
     | writeHttpHostNode
     | writeHttpMethodNode
     | writeHttpParameterNode
@@ -134,6 +145,7 @@ eventNode
     | closedNode
     | connectedNode
     | readHttpHeaderNode
+    | readHttpChunkTrailerNode
     | readHttpMethodNode
     | readHttpParameterNode
     | readHttpVersionNode
@@ -237,8 +249,16 @@ readHttpHeaderNode
     : k=ReadKeyword HttpHeaderKeyword name=literalText (HttpMissingKeyword | matcher+)
     ;
 
+readHttpChunkTrailerNode
+    : k=ReadKeyword HttpChunkTrailerKeyword name=literalText (HttpMissingKeyword | matcher+)
+    ;
+
 writeHttpHeaderNode
     : k=WriteKeyword HttpHeaderKeyword name=literalText writeValue+
+    ;
+
+writeHttpChunkTrailerNode
+    : k=WriteKeyword HttpChunkTrailerKeyword name=literalText writeValue+
     ;
 
 writeHttpContentLengthNode
@@ -381,6 +401,8 @@ ReaderKeyword: 'reader';
 
 SizeKeyword: 'size';
 
+ChunkExtensionKeyWord: 'chunkExtension';
+
 ShortKeyword
     : 'short'
     ;
@@ -506,7 +528,11 @@ HttpContentLengthKeyword
 HttpHeaderKeyword
     : 'header'
     ;
-    
+
+HttpChunkTrailerKeyword
+    : 'trailer'
+    ;
+
 HttpHostKeyword
     : 'host'
     ;

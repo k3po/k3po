@@ -23,6 +23,4 @@ write "content"
 write close
 	
 read status "501" "Not Implemented"
-#read closed
-
 

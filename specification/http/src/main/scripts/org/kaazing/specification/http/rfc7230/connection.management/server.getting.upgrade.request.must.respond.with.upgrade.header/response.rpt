@@ -19,7 +19,7 @@ accepted
 connected
 read method "GET"
 read header "Upgrade" /(?<upgradeHeader>.*)/
-read header "Connection" "Upgrade" 
+read header "Connection" "upgrade" 
 
 write status "101" "Some Upgrade Protocol"
 write header "Upgrade" ${upgradeHeader}
