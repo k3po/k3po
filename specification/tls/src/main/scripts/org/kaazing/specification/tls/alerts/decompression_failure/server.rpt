@@ -14,7 +14,22 @@
 # limitations under the License.
 #
 
-#TODO
+accept tcp://localhost:8080
+accepted
+connected
 
+read [0x17]
+[0x03] [0x03]
+[0xff] [0xff]
+([0..65535]:data)
+
+#Alert
+write [0x15]
+[0x03] [0x03]
+[0x00] [0x02]
+
+[0x02] [0x1e]
+
+closed
 
 

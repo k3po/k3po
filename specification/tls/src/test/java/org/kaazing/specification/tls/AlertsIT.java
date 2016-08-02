@@ -138,16 +138,16 @@ public class AlertsIT {
         robot.finish();
     }
 
-    @Ignore("TODO")
     @Test
-    public void shouldGiveFatalAlertWithInvalidDataInDecompressionFunction() {
-        // For TLS Alert decompression_failure
+    @Specification({"decompression_failure/client", "decompression_failure/server"})
+    public void shouldGiveFatalAlertWithInvalidDataInDecompressionFunction() throws Exception {
+        robot.finish();
     }
 
-    @Ignore("TODO")
     @Test
-    public void shouldGiveFatalAlertWithTooLongRecord() {
-        // For TLS Alert record_overflow
+    @Specification({"record_overflow/client", "record_overflow/server"})
+    public void shouldGiveFatalAlertWithTooLongRecord() throws Exception {
+        robot.finish();
     }
 
     @Ignore("TODO")
