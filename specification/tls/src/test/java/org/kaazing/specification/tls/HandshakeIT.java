@@ -65,13 +65,13 @@ public class HandshakeIT {
     public void shouldPassWithNullServerCertificate() throws Exception {
         robot.finish();
     }
-    
+
     @Test
     @Specification({"simple.server.key.exchange/client", "simple.server.key.exchange/server"})
     public void shouldPassWithSimpleServerKey() throws Exception {
         robot.finish();
     }
-    
+
     @Test
     @Specification({"simple.server.certificate.request/client", "simple.server.certificate.request/server"})
     public void shouldPassWithSimpleServerCertificateRequest() throws Exception {
@@ -95,14 +95,17 @@ public class HandshakeIT {
     public void shouldPassWithSimpleCertificateVerification() throws Exception {
         robot.finish();
     }
-    
+
     @Ignore("TODO")
     @Test
     @Specification({"change.cipher.spec.complete/client", "change.cipher.spec.complete/server"})
     public void shouldPassWithChangeCipherSpec() throws Exception {
         robot.finish();
     }
-    
+
+    /**
+     * Note: This certificate is not recognized by Wireshark as a valid certificate. 
+     */
     @Test
     @Specification({"certificate.x.509/client", "certificate.x.509/server"})
     public void shouldPassWithFullX509Certificate() throws Exception {
@@ -110,4 +113,3 @@ public class HandshakeIT {
     }
 
 }
-

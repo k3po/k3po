@@ -1,0 +1,37 @@
+#
+# Copyright 2007-2015, Kaazing Corporation. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+connect tcp://localhost:8080
+connected
+
+##Content Type
+write [0x16]
+[0x03] [0x01] #Older Version Might Not Be Supported (tls 1.0)
+[0x00] [0x04]
+
+[0x00] [0x00] [0x00] [0x00]
+
+#Alert
+read [0x15]
+[0x03] [0x03]
+[0x00] [0x02]
+
+[0x02] [0x46]
+
+close
+closed
+
+
