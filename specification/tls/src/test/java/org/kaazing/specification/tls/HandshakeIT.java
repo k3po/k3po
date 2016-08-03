@@ -18,7 +18,6 @@ package org.kaazing.specification.tls;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -96,10 +95,15 @@ public class HandshakeIT {
         robot.finish();
     }
 
-    @Ignore("TODO")
     @Test
-    @Specification({"change.cipher.spec.complete/client", "change.cipher.spec.complete/server"})
-    public void shouldPassWithChangeCipherSpec() throws Exception {
+    @Specification({"change.cipher.spec.client/client", "change.cipher.spec.client/server"})
+    public void shouldPassWithChangeCipherSpecClientSide() throws Exception {
+        robot.finish();
+    }
+    
+    @Test
+    @Specification({"change.cipher.spec.server/client", "change.cipher.spec.server/server"})
+    public void shouldPassWithChangeCipherSpecServerSide() throws Exception {
         robot.finish();
     }
 

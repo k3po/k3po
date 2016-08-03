@@ -27,7 +27,7 @@ import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
 public class ApplicationDataIT {
-    
+
     private final K3poRule robot = new K3poRule().setScriptRoot("org/kaazing/specification/tls/application.data");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
@@ -40,7 +40,5 @@ public class ApplicationDataIT {
     public void shouldPassWithRandomApplicationData() throws Exception {
         robot.finish();
     }
-    
+
 }
-
-

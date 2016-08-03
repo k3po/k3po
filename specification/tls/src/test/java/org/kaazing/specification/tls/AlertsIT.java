@@ -152,34 +152,28 @@ public class AlertsIT {
 
     @Ignore("TODO")
     @Test
-    public void shouldGiveFatalAlertWithUnexpectedMessage() {
-        // For TLS Alert unexpected_message
-    }
-
-    @Ignore("TODO")
-    @Test
     public void shouldGiveFatalAlertWithBadMACAddress() {
         // For TLS Alert bad_record_mac
     }
-    
+
     @Test
     @Specification({"illegal_parameter.client.hello/client", "illegal_parameter.client.hello/server"})
     public void shouldGiveFatalAlertWhenGivenIllegalParametersWithClientHello() throws Exception {
         robot.finish();
     }
-    
+
     @Test
     @Specification({"illegal_parameter.hello.request/client", "illegal_parameter.hello.request/server"})
     public void shouldGiveFatalAlertWhenGivenIllegalParametersWithHelloRequest() throws Exception {
         robot.finish();
     }
-    
+
     @Test
     @Specification({"illegal_parameter.server.hello/client", "illegal_parameter.server.hello/server"})
     public void shouldGiveFatalAlertWhenGivenIllegalParametersWithServerHello() throws Exception {
         robot.finish();
     }
-    
+
     @Test
     @Specification({"unexpected_message/client", "unexpected_message/server"})
     public void shouldGiveFatalErrorWhenIncorrectOrder() throws Exception {
