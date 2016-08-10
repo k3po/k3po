@@ -51,7 +51,7 @@ read ([0..32]:nonce)
 
 ##Allocation request (w/ cred)
 #STUN Message type | Message Length (***CONFIRM***)
-write [0x00] [0x03] [0x00] [0x64]
+write [0x00] [0x03] [0x00] [0x68]
 #Magic Cookie
 write [0x21] [0x12] [0xa4] [0x42]
 #Transaction ID
@@ -79,7 +79,7 @@ write ${turn:messageDigestHMACEncoding("joe:example.com:welcome")}
 
 #200 response w/ mapped address
 #STUN Header
-read [0x01] [0x03] [0x00] [0x34]
+read [0x01] [0x03] [0x00] [0x38]
 read [0x21] [0x12] [0xa4] [0x42]
 read ${transactionID}
 #Attribute Lifetime
@@ -99,7 +99,7 @@ read ([0..${length}]:messageDigest)
 
 #creates permissions for peer
 #STUN Header
-write [0x00] [0x08] [0x00] [0x5c] #Type|Length
+write [0x00] [0x08] [0x00] [0x60] #Type|Length
 write [0x21] [0x12] [0xa4] [0x42] #Magic Cookie
 write ${transactionID}
 #Attribute XOR-Peer-Address
@@ -120,7 +120,7 @@ write [0x00] [0x08] [0x00] [0x14]
 write ${turn:messageDigestHMACEncoding("joe:example.com:welcome")}
 
 #success
-read [0x01] [0x08] [0x00] [0x14]
+read [0x01] [0x08] [0x00] [0x18]
 read [0x21] [0x12] [0xa4] [0x42]
 read ${transactionID}
 #attribute Message-Integrity
@@ -129,7 +129,7 @@ read ${messageDigest}
 
 #binds to peer
 #STUN Header
-write [0x00] [0x09] [0x00] [0x5C] #Type|Length
+write [0x00] [0x09] [0x00] [0x60] #Type|Length
 write [0x21] [0x12] [0xa4] [0x42] #Magic Cookie
 write ${transactionID}
 #Attribute XOR-Peer-Address
@@ -150,7 +150,7 @@ write [0x00] [0x08] [0x00] [0x14]
 write ${turn:messageDigestHMACEncoding("joe:example.com:welcome")}
 
 #400 Allocation error response
-read [0x01] [0x19] [0x00] [0x14]
+read [0x01] [0x19] [0x00] [0x18]
 read [0x21] [0x12] [0xa4] [0x42]
 read ([0..12]:transactionID)
 #Attributes
