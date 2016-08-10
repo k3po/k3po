@@ -1,0 +1,46 @@
+#
+# Copyright 2007-2015, Kaazing Corporation. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+accept tcp://localhost:8000
+accepted
+connected
+
+read "POST / HTTP/1.1\r\n"
+read "Host: localhost:8000\r\n"
+read "Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n"
+read "Content-Type: text/plain\r\n"
+read "Transfer-Encoding: chunked\r\n"
+read "Trailer: Trailing-Header\r\n"
+read "\r\n"
+read "7\r\n"
+# commented out as chunk extensions are not support in 4.0.9
+# read "7;chunkExtension=some=extension-value\r\n"
+read "Chunk A\r\n"
+read "7\r\n"
+read "Chunk B\r\n"
+read "7\r\n"
+read "Chunk C\r\n"
+read "0\r\n"
+read "Trailing-Header: trailer-value\r\n"
+read "\r\n"
+
+write "HTTP/1.1 200 OK\r\n"
+write "Content-Length: 7\r\n"
+write "\r\n"
+write "content"
+
+write "Chunk C"
+

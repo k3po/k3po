@@ -35,6 +35,9 @@ import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChildCha
 import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChildChannel.HttpWriteState.CONTENT_COMPLETE;
 import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChildChannel.HttpWriteState.UPGRADED;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -43,8 +46,10 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.DefaultHttpChunk;
+import org.jboss.netty.handler.codec.http.DefaultHttpChunkTrailer;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpChunk;
+import org.jboss.netty.handler.codec.http.HttpChunkTrailer;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Values;
@@ -224,8 +229,9 @@ public class HttpChildChannelSink extends AbstractChannelSink {
             transport.close();
             break;
         case CONTENT_CHUNKED:
-            HttpChunk httpChunk = DefaultHttpChunk.LAST_CHUNK;
-            ChannelFuture future = transport.write(httpChunk);
+            HttpChunkTrailer trailingChunk = new DefaultHttpChunkTrailer();
+            trailingChunk.trailingHeaders().add(httpChildChannel.getConfig().getWriteTrailers());
+            ChannelFuture future = transport.write(trailingChunk);
             httpChildChannel.writeState(CONTENT_COMPLETE);
             future.addListener(new ChannelFutureListener() {
                 @Override

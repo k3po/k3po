@@ -69,9 +69,9 @@ public class ArchitectureIT {
      */
     @Test
     @Specification({
-        "response.must.be.505.on.invalid.version/request",
-        "response.must.be.505.on.invalid.version/response" })
-    public void inboundMustSend505OnInvalidVersion() throws Exception {
+        "response.must.be.400.on.invalid.version/request",
+        "response.must.be.400.on.invalid.version/response" })
+    public void inboundMustSend400OnInvalidVersion() throws Exception {
         k3po.finish();
     }
 

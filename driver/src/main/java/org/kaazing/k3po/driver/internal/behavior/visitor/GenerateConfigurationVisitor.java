@@ -24,6 +24,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -76,6 +77,8 @@ import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpParamete
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpRequestFormEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpStatusDecoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpStatusEncoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpTrailerDecoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpTrailerEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpVersionDecoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpVersionEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.AbortHandler;
@@ -99,6 +102,7 @@ import org.kaazing.k3po.driver.internal.behavior.handler.event.DisconnectedHandl
 import org.kaazing.k3po.driver.internal.behavior.handler.event.InputShutdownHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.OpenedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ReadHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.event.ReadHttpTrailersHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.UnboundHandler;
 import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor.State;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
@@ -973,6 +977,32 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }
+        case "trailer": {
+            AstLiteralTextValue name = (AstLiteralTextValue) node.getValue("name");
+
+            List<MessageDecoder> valueDecoders = new ArrayList<>();
+            for (AstValueMatcher matcher : node.getMatchers()) {
+                valueDecoders.add(matcher.accept(new GenerateReadDecoderVisitor(), state.configuration));
+            }
+
+            HttpTrailerDecoder httpTrailerDecoder = new HttpTrailerDecoder(name.getValue(), valueDecoders);
+            ReadHttpTrailersHandler handler =
+                    new ReadHttpTrailersHandler(httpTrailerDecoder);
+
+            // Ideally we could use a ReadConfigHandler as follows, but the trailers come insync with
+            // with the channel close, which completes the composite future of all handlers and checks
+            // the ReadConfigHandler to see if it completed.
+            // HttpTrailerDecoder decoder = new HttpTrailerDecoder(name.getValue(), valueDecoders);
+            // decoder.setRegionInfo(node.getRegionInfo());
+            // ReadConfigHandler handler = new ReadConfigHandler(decoder);
+
+            httpTrailerDecoder.setRegionInfo(node.getRegionInfo());
+            handler.setRegionInfo(node.getRegionInfo());
+            Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+            String handlerName = String.format("readConfig#%d (http status)", pipelineAsMap.size() + 1);
+            pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
         default:
             throw new IllegalStateException("Unrecognized configuration type: " + node.getType());
         }
@@ -1076,6 +1106,21 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             state.pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }
+        case "trailer": {
+            AstValue name = node.getName("name");
+
+            MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+
+            List<MessageEncoder> valueEncoders = new ArrayList<>();
+            for (AstValue value : node.getValues()) {
+                valueEncoders.add(value.accept(new GenerateWriteEncoderVisitor(), state.configuration));
+            }
+
+            WriteConfigHandler handler = new WriteConfigHandler(new HttpTrailerEncoder(nameEncoder, valueEncoders));
+            String handlerName = String.format("writeConfig#%d (http trailer)", state.pipelineAsMap.size() + 1);
+            state.pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
         default:
             throw new IllegalStateException("Unrecognized configuration type: " + node.getType());
         }
@@ -1130,6 +1175,11 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 state.pipelineAsMap.put(handlerName, handler);
                 break;
 
+            case "chunkExtension":
+                throw new UnsupportedOperationException(
+                        "HttpMessageDecoder and DefaultHttpChunk do not support chunkExtensions in Netty 3.9,"
+                        + " see https://github.com/k3po/k3po/issues/313, support for chunk extensions is thus not yet added");
+
             default:
                 throw new IllegalArgumentException("Unrecognized read option : " + optionName);
         }
@@ -1156,6 +1206,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 state.pipelineAsMap.put(handlerName, handler);
                 break;
 
+            case "chunkExtension":
+                throw new UnsupportedOperationException(
+                        "HttpMessageDecoder and DefaultHttpChunk do not support chunkExtensions in Netty 3.9,"
+                        + " see https://github.com/k3po/k3po/issues/313, support for chunk extensions is thus not yet added");
             default:
                 throw new IllegalArgumentException("Unrecognized write option : " + optionName);
         }

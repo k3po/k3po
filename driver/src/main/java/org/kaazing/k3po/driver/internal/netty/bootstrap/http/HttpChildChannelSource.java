@@ -53,6 +53,8 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpChunk;
+import org.jboss.netty.handler.codec.http.HttpChunkTrailer;
+import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
@@ -237,14 +239,16 @@ public class HttpChildChannelSource extends HttpChannelHandler {
     }
 
     @Override
-    protected void httpMessageReceived(ChannelHandlerContext ctx, MessageEvent e, HttpChunk httpMessage) throws Exception {
-        ChannelBuffer content = httpMessage.getContent();
+    protected void httpMessageReceived(ChannelHandlerContext ctx, MessageEvent e, HttpChunk chunk) throws Exception {
+        ChannelBuffer content = chunk.getContent();
         if (content.readable()) {
             fireMessageReceived(httpChildChannel, content);
         }
 
-        boolean last = httpMessage.isLast();
+        boolean last = chunk.isLast();
         if (last) {
+            HttpHeaders trailingHeaders = ((HttpChunkTrailer) chunk).trailingHeaders();
+            httpChildChannel.getConfig().getReadTrailers().add(trailingHeaders);
             HttpChildChannel httpChildChannel = this.httpChildChannel;
             httpChildChannel.readState(HttpReadState.CONTENT_COMPLETE);
             this.httpChildChannel = null;

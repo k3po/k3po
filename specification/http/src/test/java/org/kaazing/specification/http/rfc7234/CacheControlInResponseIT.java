@@ -193,4 +193,36 @@ public class CacheControlInResponseIT {
     public void shouldReceiveOKWhenCachedResponseIsStaleForUnconditionalRequestWithSharedMaxAge() throws Exception {
         k3po.finish();
     }
+
+    @Test
+    @Specification({
+        "must-revalidate.504/request",
+        "must-revalidate.504/response" })
+    public void shouldRespondToMustRevalidateHeaderWith504() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "no-cache.with.fields/request",
+        "no-cache.with.fields/response" })
+    public void shouldSucceedWithNoCacheHeaderWithFields() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "private.with.fields/request",
+        "private.with.fields/response" })
+    public void shouldSucceedWithPrivateHeaderWithFields() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "proxy-revalidate.504/request",
+        "proxy-revalidate.504/response" })
+    public void shouldRespondToProxyRevalidateWith504() throws Exception {
+        k3po.finish();
+    }
 }

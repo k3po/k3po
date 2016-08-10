@@ -20,6 +20,6 @@ connected
 write method "HEAD"
 write close
 
-read status "100" "OK"
+read status "100" "Continue"
 read closed
 

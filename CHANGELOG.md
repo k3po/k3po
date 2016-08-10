@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-37...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-38...HEAD)
+
+**Merged pull requests:**
+
+- RFC-7231 and RFC-7233 Spec. Tests [\#343](https://github.com/k3po/k3po/pull/343) ([a-zuckut](https://github.com/a-zuckut))
+
+## [3.0.0-alpha-38](https://github.com/k3po/k3po/tree/3.0.0-alpha-38) (2016-07-29)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-37...3.0.0-alpha-38)
 
 **Merged pull requests:**
 
@@ -118,6 +125,7 @@
 
 - moved scripts from gateway transport http to k3po [\#318](https://github.com/k3po/k3po/pull/318) ([ilyaanisimov-kaazing](https://github.com/ilyaanisimov-kaazing))
 - Added tests for WS compliance \(maximum message size and maximum lifetime\) [\#316](https://github.com/k3po/k3po/pull/316) ([NicoletaOita](https://github.com/NicoletaOita))
+- Added support for http chunking trailers, \(and worked on adding extensions\),  [\#314](https://github.com/k3po/k3po/pull/314) ([dpwspoon](https://github.com/dpwspoon))
 
 ## [3.0.0-alpha-23](https://github.com/k3po/k3po/tree/3.0.0-alpha-23) (2016-03-08)
 [Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-22...3.0.0-alpha-23)
