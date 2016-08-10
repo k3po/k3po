@@ -15,6 +15,7 @@
  */
 package org.kaazing.specification.turn.internal;
 
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
@@ -23,6 +24,9 @@ import java.util.regex.Pattern;
 
 import org.kaazing.k3po.lang.el.Function;
 import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 public final class Functions {
 
@@ -76,6 +80,21 @@ public final class Functions {
         byte[] mdbytes = md.digest();
 
         return mdbytes;
+    }
+
+    @Function
+    public static byte[] messageDigestHMACEncoding(String in) {
+        Mac hmac;
+        try {
+            hmac = Mac.getInstance("HmacSHA1");
+            SecretKeySpec signingKey = new SecretKeySpec("SecretKey".getBytes(), "HmacSHA1");
+            hmac.init(signingKey);
+        } catch (NoSuchAlgorithmException e) {
+            return null;
+        } catch (InvalidKeyException e) {
+            return null;
+        }
+        return hmac.doFinal(in.getBytes());
     }
 
     @Function

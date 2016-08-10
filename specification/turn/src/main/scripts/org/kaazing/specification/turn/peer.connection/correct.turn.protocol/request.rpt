@@ -74,8 +74,8 @@ write ${realm} [0x00]
 write [0x00] [0x15] [0x00] [0x20]
 write ${nonce}
 #Attribute Message-Integrity
-write [0x00] [0x08] [0x00] [0x10]
-write ${turn:messageDigestMD5Encoding("joe:example.com:welcome")}
+write [0x00] [0x08] [0x00] [0x14]
+write ${turn:messageDigestHMACEncoding("joe:example.com:welcome")}
 
 #200 response w/ mapped address
 #STUN Header
@@ -116,8 +116,8 @@ write ${realm} [0x00]
 write [0x00] [0x15] [0x00] [0x20]
 write ${nonce}
 #Attribute Message-Integrity
-write [0x00] [0x08] [0x00] [0x10]
-write ${turn:messageDigestMD5Encoding("joe:example.com:welcome")}
+write [0x00] [0x08] [0x00] [0x14]
+write ${turn:messageDigestHMACEncoding("joe:example.com:welcome")}
 
 #success
 read [0x01] [0x08] [0x00] [0x14]
@@ -149,8 +149,8 @@ write ${realm} [0x00]
 write [0x00] [0x15] [0x00] [0x20]
 write ${nonce}
 #Attribute Message-Integrity
-write [0x00] [0x08] [0x00] [0x10]
-write ${turn:messageDigestMD5Encoding("joe:example.com:welcome")}
+write [0x00] [0x08] [0x00] [0x14]
+write ${turn:messageDigestHMACEncoding("joe:example.com:welcome")}
 
 #success
 read [0x01] [0x09] [0x00] [0x14]

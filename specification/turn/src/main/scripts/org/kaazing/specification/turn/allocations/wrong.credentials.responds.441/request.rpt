@@ -66,8 +66,8 @@ write ${realm} [0x00]
 write [0x00] [0x15] [0x00] [0x20]
 write ${nonce}
 #Attribute Message-Integrity
-write [0x00] [0x08] [0x00] [0x10]
-write ${turn:messageDigestMD5Encoding("wrong-username:example.com:wrong-password")}
+write [0x00] [0x08] [0x00] [0x14]
+write ${turn:messageDigestHMACEncoding("wrong-username:example.com:wrong-password")}
 
 #441 Allocate Error Response
 read [0x01] [0x13] [0x00] [0x1c]

@@ -69,8 +69,8 @@ write ${nonce}
 write [0x00] [0xf1] [0x00] [0x04]
 write [0x00] [0x00] [0x00] [0x21]
 #Message Integrity
-write [0x00] [0x08] [0x00] [0x10]
-write ${turn:messageDigestMD5Encoding("wrong-username:example.com:wrong-password")}
+write [0x00] [0x08] [0x00] [0x14]
+write ${turn:messageDigestHMACEncoding("wrong-username:example.com:wrong-password")}
 
 #420 Allocate Error Response
 read [0x01] [0x03] [0x00] [0x1c]
