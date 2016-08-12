@@ -21,14 +21,11 @@ connected
 ##Allocation request
 #STUN Message type | Message Length (***CONFIRM***)
 write [0x00] [0x03] #Type
-write [0x00] [0x16] #Length
+write [0x00] [0x00] #Length
 #Magic Cookie (fixed required value 0x2112A442)
 write [0x21] [0x12] [0xa4] [0x42]
 #Transaction ID (96-bit identifier|unique)
 write ${turn:generateTransactionId()}
-
-write await REQUEST_READ
-
 write close
 
 

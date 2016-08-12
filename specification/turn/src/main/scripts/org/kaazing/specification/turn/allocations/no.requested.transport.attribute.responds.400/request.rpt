@@ -26,9 +26,6 @@ write [0x00] [0x00] #Length
 write [0x21] [0x12] [0xa4] [0x42]
 #Transaction ID (96-bit identifier|unique)
 write ${turn:generateTransactionId()}
-
-write await REQUEST_READ
-
 write close
 
 #400 Allocate Error Response
