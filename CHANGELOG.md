@@ -2,7 +2,19 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-38...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-39...HEAD)
+
+**Fixed bugs:**
+
+- specification/http build failing sporadically in some tests with expected read closed got disconnected [\#251](https://github.com/k3po/k3po/issues/251)
+
+**Merged pull requests:**
+
+- K3po.turn.spec updates [\#354](https://github.com/k3po/k3po/pull/354) ([Anisotrop](https://github.com/Anisotrop))
+- fix httpx k3po scripts masking [\#352](https://github.com/k3po/k3po/pull/352) ([danibusu](https://github.com/danibusu))
+
+## [3.0.0-alpha-39](https://github.com/k3po/k3po/tree/3.0.0-alpha-39) (2016-08-10)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-38...3.0.0-alpha-39)
 
 **Merged pull requests:**
 

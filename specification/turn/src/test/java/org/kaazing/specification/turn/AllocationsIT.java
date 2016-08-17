@@ -42,9 +42,7 @@ public class AllocationsIT {
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
     @Test
-    @Specification({
-        "simple.allocate.method/request",
-        "simple.allocate.method/response" })
+    @Specification({"simple.allocate.method/request", "simple.allocate.method/response"})
     public void shouldSucceedWithGenericSTUNHeader() throws Exception {
         k3po.finish();
     }
@@ -53,9 +51,7 @@ public class AllocationsIT {
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
     @Test
-    @Specification({
-        "two.allocate.methods.with.no.credentials/request",
-        "two.allocate.methods.with.no.credentials/response" })
+    @Specification({"two.allocate.methods.with.no.credentials/request", "two.allocate.methods.with.no.credentials/response"})
     public void shouldRespondWithTwo401sWhenGivenAllocateMethodsWithNoCred() throws Exception {
         k3po.finish();
     }
@@ -64,9 +60,8 @@ public class AllocationsIT {
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
     @Test
-    @Specification({
-        "allocate.method.with.requested.transport.attribute/request",
-        "allocate.method.with.requested.transport.attribute/response" })
+    @Specification({"allocate.method.with.requested.transport.attribute/request",
+            "allocate.method.with.requested.transport.attribute/response"})
     public void shouldSucceedWithOnlyTransportAttribute() throws Exception {
         k3po.finish();
     }
@@ -75,9 +70,7 @@ public class AllocationsIT {
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
     @Test
-    @Specification({
-        "correct.allocation.method/request",
-        "correct.allocation.method/response" })
+    @Specification({"correct.allocation.method/request", "correct.allocation.method/response"})
     public void shouldSucceedWithCorrectAllocation() throws Exception {
         k3po.finish();
     }
@@ -86,9 +79,7 @@ public class AllocationsIT {
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
     @Test
-    @Specification({
-        "incorrect.length.given/request",
-        "incorrect.length.given/response" })
+    @Specification({"attribute.length.over.message.length/request", "attribute.length.over.message.length/response"})
     public void shouldGive400WithIncorrectLength() throws Exception {
         k3po.finish();
     }
@@ -97,10 +88,9 @@ public class AllocationsIT {
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
     @Test
-    @Specification({
-        "incorrect.length.given/request",
-        "incorrect.length.given/response" })
-    public void shouldGive401IfDirectlyGivesCredentials() throws Exception {
+    @Specification({"incorrect.attribute.length.with.error.message.length/request",
+            "incorrect.attribute.length.with.error.message.length/response"})
+    public void shouldGive400WithIncorrectLength2() throws Exception {
         k3po.finish();
     }
 
@@ -108,9 +98,8 @@ public class AllocationsIT {
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
     @Test
-    @Specification({
-        "multiple.connections.with.same.credentials.responds.437/request",
-        "multiple.connections.with.same.credentials.responds.437/response" })
+    @Specification({"multiple.connections.with.same.credentials.responds.437/request",
+            "multiple.connections.with.same.credentials.responds.437/response"})
     public void shouldRespond437ToMultipleConnectionsWithSameCredentials() throws Exception {
         k3po.finish();
     }
@@ -119,9 +108,7 @@ public class AllocationsIT {
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
     @Test
-    @Specification({
-        "wrong.credentials.responds.441/request",
-        "wrong.credentials.responds.441/response" })
+    @Specification({"wrong.credentials.responds.441/request", "wrong.credentials.responds.441/response"})
     public void shouldRespond441ToWrongCredentials() throws Exception {
         k3po.finish();
     }
@@ -130,10 +117,8 @@ public class AllocationsIT {
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
     @Test
-    @Specification({
-        "extra.bytes.responds.420/request",
-        "extra.bytes.responds.420/response" })
-    public void shouldRespond420ToExtraBytes() throws Exception {
+    @Specification({"unknown.attribute.responds.420/request", "unknown.attribute.responds.420/response"})
+    public void unknownAttributeShouldRespond420() throws Exception {
         k3po.finish();
     }
 
@@ -141,12 +126,10 @@ public class AllocationsIT {
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
     @Test
-    @Specification({
-        "no.requested.transport.attribute.responds.400/request",
-        "no.requested.transport.attribute.responds.400/response" })
+    @Specification({"no.requested.transport.attribute.responds.400/request",
+            "no.requested.transport.attribute.responds.400/response"})
     public void shouldRespond400ToAllocateWithNoRequestedTransportAttribute() throws Exception {
         k3po.finish();
     }
 
 }
-
