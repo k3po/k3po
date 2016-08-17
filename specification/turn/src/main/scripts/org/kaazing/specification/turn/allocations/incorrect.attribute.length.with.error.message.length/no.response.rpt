@@ -14,25 +14,15 @@
 # limitations under the License.
 #
 
+property realm "example.com"
+property nonce "adl7W7PeDU4hKE72jdaQvbAMcr6h39sm"
 property acceptURI "tcp://localhost:3478"
 
 accept ${acceptURI}
 accepted
 connected
 
-##Allocation request
-read [0x00] [0x03] #Message Type 
-read [0x00] [0x00] #Message Length 
-read [0x21] [0x12] [0xa4] [0x42] #Magic cookie
-read ([0..12]:transactionID)
+# Bad request should no be forwarded
 
 
-#400 Allocate Error Response
-write [0x01] [0x13] [0x00] [0x14]
-write [0x21] [0x12] [0xa4] [0x42]
-write ${transactionID}
-#Attributes
-write [0x00] [0x09] [0x00] [0x10]
-write [0x00] [0x00] [0x04] [0x00]
-write "Bad Request" [0x00]
 
