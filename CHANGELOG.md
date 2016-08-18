@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-39...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-40...HEAD)
+
+**Merged pull requests:**
+
+- Fix message sizes [\#355](https://github.com/k3po/k3po/pull/355) ([Anisotrop](https://github.com/Anisotrop))
+
+## [3.0.0-alpha-40](https://github.com/k3po/k3po/tree/3.0.0-alpha-40) (2016-08-17)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-39...3.0.0-alpha-40)
 
 **Fixed bugs:**
 
