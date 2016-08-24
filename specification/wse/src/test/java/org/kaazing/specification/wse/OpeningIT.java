@@ -68,6 +68,15 @@ public class OpeningIT {
 
     @Test
     @Specification({
+        "connection.established.no.websocket.extensions/handshake.request",
+        "connection.established.no.websocket.extensions/handshake.response" })
+    public void shouldEstablishConnectionWithNoXWebSocketExtensions()
+            throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "request.header.x.websocket.extensions/handshake.request",
         "request.header.x.websocket.extensions/handshake.response" })
     public void shouldEstablishConnectionWithRequestHeaderXWebSocketExtensions()
