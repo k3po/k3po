@@ -15,6 +15,9 @@
  */
 package org.kaazing.specification.turn.internal;
 
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -65,6 +68,34 @@ public final class Functions {
 
         return x;
     }
+
+    @Function
+    public static byte[] ipV6XOR(String ip, byte[] transactionId) {
+        InetAddress address;
+        try {
+            address = InetAddress.getByName(ip);
+        } catch (UnknownHostException e) {
+            e.printStackTrace(); // TODO replace with log if available
+            return null;
+        }
+
+        if (!(address instanceof Inet6Address)) {
+            System.out.println("Address must be IPv6."); // TODO replace with log if available
+            return null;
+        }
+
+        byte[] ipAddr = address.getAddress();
+        byte[] x = new byte[16];
+        x[0] = (byte) ((byte)0x21 ^ ipAddr[0]);
+        x[1] = (byte) ((byte)0x12 ^ ipAddr[1]);
+        x[2] = (byte) ((byte)0xA4 ^ ipAddr[2]);
+        x[3] = (byte) ((byte)0x42 ^ ipAddr[3]);
+        for (int i = 4; i < 16; i++) {
+            x[i] = (byte) (transactionId[i-4] ^ ipAddr[i]);
+        }
+        return x;
+    }
+
 
     @Function
     public static byte[] messageDigestMD5Encoding(String in) {
