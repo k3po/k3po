@@ -79,22 +79,22 @@ write ${turn:messageDigestHMACEncoding("joe:example.com:welcome")}
 
 #200 response w/ mapped address
 #STUN Header
-read [0x01] [0x03] [0x00] [0x38]
+read [0x01] [0x03] [0x00] [0x50]
 read [0x21] [0x12] [0xa4] [0x42]
 read ${transactionID}
 #Attribute Lifetime
 read [0x00] [0x0d] [0x00] [0x04]
 read [0x00] [0x00] [0x0c] [0x08]
 #Attribute XOR-Relayed-Address
-read [0x00] [0x16] [0x00] [0x08]
+read [0x00] [0x16] [0x00] [0x14]
 read [0x00] [0x01] ${turn:portXOR(8080)} #port 8080
 # Inside expression, properties are called by name directly
-read ${turn:ipV6XOR("[2001:cdba::3257:9652]", transactionID)}
+read ${turn:ipV6XOR("[1:234::1:9876]", transactionID)}
 #Attribute XOR-Mapped-Address
-read [0x00] [0x20] [0x00] [0x08]
+read [0x00] [0x20] [0x00] [0x14]
 read [0x00] [0x01] ${turn:portXOR(8080)} #port 8080
 # Inside expression, properties are called by name directly
-read ${turn:ipV6XOR("[2001:cdba::3257:9653]", transactionID)}
+read ${turn:ipV6XOR("[1:234::1:8765]", transactionID)}
 #Attribute Message-Integrity
 read [0x00] [0x08] [0x00] (byte:length)
 read ([0..${length}]:messageDigest)

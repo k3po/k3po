@@ -75,13 +75,11 @@ public final class Functions {
         try {
             address = InetAddress.getByName(ip);
         } catch (UnknownHostException e) {
-            e.printStackTrace(); // TODO replace with log if available
-            return null;
+            throw new RuntimeException("Unable to parse IPv6 address", e);
         }
 
         if (!(address instanceof Inet6Address)) {
-            System.out.println("Address must be IPv6."); // TODO replace with log if available
-            return null;
+            throw new RuntimeException("Address must be IPv6.");
         }
 
         byte[] ipAddr = address.getAddress();
