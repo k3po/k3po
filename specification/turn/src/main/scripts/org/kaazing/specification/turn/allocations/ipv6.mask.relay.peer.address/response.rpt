@@ -16,7 +16,7 @@
 
 property realm "example.com"
 property nonce "adl7W7PeDU4hKE72jdaQvbAMcr6h39sm"
-property acceptURI "tcp://localhost:3478"
+property acceptURI "tcp://[0:0:0:0:0:ffff:7f00:1]:3478"
 
 accept ${acceptURI}
 accepted
@@ -59,13 +59,11 @@ write [0x00] [0x00] [0x0c] [0x08] #3080 seconds
 #Attribute XOR-Relayed-Address
 write [0x00] [0x16] [0x00] [0x08]
 write [0x00] [0x01] ${turn:portXOR(8080)} #port 8080
-#write ${turn:ipV6XOR("[0:0:0:0:0:ffff:7f00:1]", transactionID)}
 write ${turn:ipXOR("127.0.0.1")}
 
 #Attribute XOR-Mapped-Address
 write [0x00] [0x20] [0x00] [0x08]
 write [0xff] [0x01] ${turn:portXOR(1)} #port 8080
-#write ${turn:ipV6XOR("[0:0:0:0:0:ffff:7f00:1]", transactionID)}
 write ${turn:ipXOR("127.0.0.1")}
 
 #Attribute Message-Integrity

@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-property connectURI "tcp://localhost:3478"
+property connectURI "tcp://[0:0:0:0:0:ffff:7f00:1]:3478"
 connect ${connectURI}
 connected
 
@@ -81,7 +81,7 @@ write ${transactionID}
 #Attribute XOR-Peer-Address
 write [0x00] [0x12] [0x00] [0x08]
 
-# Modified peer address########################################################
+# Modified peer address
 write [0x00] [0x01] ${turn:portXOR(7744)} # Masked port 8001
 write ${turn:ipXOR("127.0.0.1")}
 
@@ -116,7 +116,7 @@ write [0x00] [0x0c] [0x00] [0x02]
 write [0x40] [0x00] [0x00] [0x00]
 #Attribute XOR-Peer-Address
 write [0x00] [0x12] [0x00] [0x08]
-# Modified peer address########################################################
+# Modified peer address
 write [0x00] [0x01] ${turn:portXOR(7744)} # Masked port 8001
 write ${turn:ipXOR("127.0.0.1")}
 
