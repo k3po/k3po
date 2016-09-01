@@ -104,5 +104,14 @@ public class PeerConnectionIT {
         k3po.finish();
     }
 
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+        "turn.protocol.with.invalid.requested.transport.attribute/request",
+        "turn.protocol.with.invalid.requested.transport.attribute/response" })
+    public void shouldFailSendingData() throws Exception {
+        k3po.finish();
+    }
 }
-
