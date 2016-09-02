@@ -2,7 +2,17 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-40...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-41...HEAD)
+
+**Merged pull requests:**
+
+- Added test for TURN Data Message [\#361](https://github.com/k3po/k3po/pull/361) ([dpwspoon](https://github.com/dpwspoon))
+- Upgrade to use maven compat … [\#360](https://github.com/k3po/k3po/pull/360) ([jfallows](https://github.com/jfallows))
+- Added function for IPv6 support in turn.proxy. [\#357](https://github.com/k3po/k3po/pull/357) ([Anisotrop](https://github.com/Anisotrop))
+- Added WSE test that there are no extensions negotiated [\#356](https://github.com/k3po/k3po/pull/356) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-41](https://github.com/k3po/k3po/tree/3.0.0-alpha-41) (2016-08-18)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-40...3.0.0-alpha-41)
 
 **Merged pull requests:**
 

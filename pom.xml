@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>k3po.parent</artifactId>
-    <version>3.0.0-alpha-41</version>
+    <version>3.0.0-alpha-42</version>
 
     <name>k3po/parent</name>
     <url>https://github.com/kaazing/k3po</url>
@@ -165,15 +165,11 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
-                <artifactId>maven-project</artifactId>
-                <version>2.2.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-plugin-api</artifactId>
-                <version>3.3.3</version>
-            </dependency>
-            <dependency>
+                <artifactId>maven-compat</artifactId>
+                <version>3.3.9</version>
+                <scope>provided</scope>
+             </dependency>
+             <dependency>
                 <groupId>org.apache.maven.plugin-tools</groupId>
                 <artifactId>maven-plugin-annotations</artifactId>
                 <version>3.4</version>

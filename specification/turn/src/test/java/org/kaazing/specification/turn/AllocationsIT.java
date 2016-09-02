@@ -79,6 +79,16 @@ public class AllocationsIT {
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
     @Test
+    @Specification({"correct.allocation.on.ipv6.method/request", "correct.allocation.on.ipv6.method/response"})
+    public void shouldSucceedWithCorrectAllocationOnIpv6() throws Exception {
+        k3po.finish();
+    }
+
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
+     */
+    @Test
     @Specification({"attribute.length.over.message.length/request", "attribute.length.over.message.length/response"})
     public void shouldGive400WithIncorrectLength() throws Exception {
         k3po.finish();
