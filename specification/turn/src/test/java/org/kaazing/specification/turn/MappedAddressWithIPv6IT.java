@@ -18,6 +18,7 @@ package org.kaazing.specification.turn;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -41,6 +42,7 @@ public class MappedAddressWithIPv6IT {
     /**
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
+    @Ignore("Please see issue #719: https://github.com/kaazing/tickets/issues/719")
     @Test
     @Specification({"correct.allocation.with.ipv6.method/request", "correct.allocation.with.ipv6.method/response"})
     public void shouldSucceedWithCorrectAllocationOnIpv6() throws Exception {

@@ -92,7 +92,7 @@ write ${turn:ipV6XOR("[2001:cdba::3257:9653]", transactionID)}
 
 #Attribute XOR-Mapped-Address
 write [0x00] [0x20] [0x00] [0x14]
-write [0x00] [0x01] ${turn:portXOR(8080)} #port 8080
+write [0x00] [0x02] ${turn:portXOR(8080)} #port 8080
 write ${turn:ipV6XOR("[2001:cdba::3257:9653]", transactionID)}
 
 #Attribute Message-Integrity
