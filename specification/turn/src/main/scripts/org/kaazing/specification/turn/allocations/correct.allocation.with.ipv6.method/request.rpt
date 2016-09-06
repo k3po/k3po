@@ -90,13 +90,13 @@ read [0x00] [0x00] [0x0c] [0x08]
 read [0x00] [0x16] [0x00] [0x14]
 read [0x00] [0x02] ${turn:portXOR(8080)} #port 8080
 # Inside expression, properties are called by name directly
-read ${turn:ipV6XOR("[2001:cdba::3257:9653]", transactionID)}
+read ${turn:ipV6XOR("[0:0:0:0:0:ffff:c000:210]", transactionID)}
 
 #Attribute XOR-Mapped-Address
 read [0x00] [0x20] [0x00] [0x14]
 read [0x00] [0x02] ${turn:portXOR(8080)} #port 8080
 # Inside expression, properties are called by name directly
-read ${turn:ipV6XOR("[2001:cdba::3257:9653]", transactionID)}
+read ${turn:ipV6XOR("[0:0:0:0:0:ffff:c000:210]", transactionID)}
 
 #Attribute Message-Integrity
 read [0x00] [0x08] [0x00] (byte:length)

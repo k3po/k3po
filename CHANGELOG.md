@@ -1,5 +1,16 @@
 # Change Log
 
+## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
+
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-43...HEAD)
+
+**Merged pull requests:**
+
+- Turn tests for mapped address and masking key with ipv6. [\#359](https://github.com/k3po/k3po/pull/359) ([NicoletaOita](https://github.com/NicoletaOita))
+
+## [3.0.0-alpha-43](https://github.com/k3po/k3po/tree/3.0.0-alpha-43) (2016-09-02)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-42...3.0.0-alpha-43)
+
 ## [3.0.0-alpha-42](https://github.com/k3po/k3po/tree/3.0.0-alpha-42) (2016-09-02)
 [Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-41...3.0.0-alpha-42)
 
