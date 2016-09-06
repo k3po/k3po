@@ -88,12 +88,12 @@ write [0x00] [0x00] [0x0c] [0x08] #3080 seconds
 #Attribute XOR-Relayed-Address
 write [0x00] [0x16] [0x00] [0x14]
 write [0x00] [0x02] ${turn:portXOR(8080)} #port 8080
-write ${turn:ipV6XOR("[2001:cdba::3257:9653]", transactionID)}
+write ${turn:ipV6XOR("[0:0:0:0:0:ffff:c000:210]", transactionID)}
 
 #Attribute XOR-Mapped-Address
 write [0x00] [0x20] [0x00] [0x14]
-write [0x00] [0x02] ${turn:portXOR(8080)} #port 8080
-write ${turn:ipV6XOR("[2001:cdba::3257:9653]", transactionID)}
+write [0x00] [0x01] ${turn:portXOR(8080)} #port 8080
+write ${turn:ipV6XOR("[0:0:0:0:0:ffff:c000:210]", transactionID)}
 
 #Attribute Message-Integrity
 write [0x00] [0x08] [0x00] ${length}
