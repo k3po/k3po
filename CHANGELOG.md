@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-43...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-44...HEAD)
+
+**Merged pull requests:**
+
+- update ws extensions scripts to use syntax for multivalued headers [\#349](https://github.com/k3po/k3po/pull/349) ([danibusu](https://github.com/danibusu))
+
+## [3.0.0-alpha-44](https://github.com/k3po/k3po/tree/3.0.0-alpha-44) (2016-09-06)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-43...3.0.0-alpha-44)
 
 **Merged pull requests:**
 
