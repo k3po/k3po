@@ -148,5 +148,38 @@ public class PeerConnectionIT {
         k3po.finish();
     }
 
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+            "channel.data.message.without.create.permissions/request",
+            "channel.data.message.without.create.permissions/response" })
+    public void shouldFailSendingDataMessageWithoutPermissions() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+            "send.indication.message.without.create.permissions/request",
+            "send.indication.message.without.create.permissions/response" })
+    public void shouldFailSendingIndicationMessageWithoutPermissions() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+            "correct.turn.protocol.with.both.types.of.message/request",
+            "correct.turn.protocol.with.both.types.of.message/response" })
+    public void shouldSucceedSendingIndicationAndChannelDataMessages() throws Exception {
+        k3po.finish();
+    }
+
 }
 
