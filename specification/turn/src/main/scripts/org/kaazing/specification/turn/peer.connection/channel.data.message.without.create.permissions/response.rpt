@@ -96,9 +96,7 @@ write ${turn:ipXOR("192.0.2.15")}
 write [0x00] [0x08] [0x00] ${length}
 write ${messageDigest}
 
-# no create permissions
-
-#no bind to peer
+# no create permissions or bind to peer
 
 #success
 write [0x01] [0x09] [0x00] [0x18]
