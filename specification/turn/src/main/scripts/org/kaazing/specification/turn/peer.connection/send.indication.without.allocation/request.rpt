@@ -1,0 +1,98 @@
+#
+# Copyright 2007-2015, Kaazing Corporation. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+property connectURI "tcp://localhost:3478"
+connect ${connectURI}
+connected
+
+#creates permissions for peer
+#STUN Header
+write [0x00] [0x08] [0x00] [0x60] #Type|Length
+write [0x21] [0x12] [0xa4] [0x42] #Magic Cookie
+#write ${transactionID}
+write ${turn:generateTransactionId()}
+
+#Attribute XOR-Peer-Address
+write [0x00] [0x12] [0x00] [0x08]
+write [0x00] [0x01] ${turn:portXOR(8001)} #port 8001
+write ${turn:ipXOR("192.0.2.1")}
+#Attribute Username
+write [0x00] [0x06] [0x00] [0x03]
+write "joe" [0x00]
+#Attribute Realm
+write [0x00] [0x14] [0x00] [0x0b]
+write ${realm} [0x00]
+#Attribute Nonce
+write [0x00] [0x15] [0x00] [0x20]
+write ${nonce}
+#Attribute Message-Integrity
+write [0x00] [0x08] [0x00] [0x14]
+write ${turn:messageDigestHMACEncoding("joe:example.com:welcome")}
+
+#success
+read [0x01] [0x08] [0x00] [0x18]
+read [0x21] [0x12] [0xa4] [0x42]
+read ${transactionID}
+#attribute Message-Integrity
+read [0x00] [0x08] [0x00] ${length}
+read ${messageDigest}
+
+#binds to peer
+#STUN Header
+write [0x00] [0x09] [0x00] [0x68] #Type|Length
+write [0x21] [0x12] [0xa4] [0x42] #Magic Cookie
+write ${transactionID}
+#Attribute Channel-Number
+write [0x00] [0x0c] [0x00] [0x02]
+write [0x40] [0x00] [0x00] [0x00]
+#Attribute XOR-Peer-Address
+write [0x00] [0x12] [0x00] [0x08]
+write [0x00] [0x01] ${turn:portXOR(8001)} #port 8001
+write ${turn:ipXOR("192.0.2.1")}
+#Attribute Username
+write [0x00] [0x06] [0x00] [0x03]
+write "joe" [0x00]
+#Attribute Realm
+write [0x00] [0x14] [0x00] [0x0b]
+write ${realm} [0x00]
+#Attribute Nonce
+write [0x00] [0x15] [0x00] [0x20]
+write ${nonce}
+#Attribute Message-Integrity
+write [0x00] [0x08] [0x00] [0x14]
+write ${turn:messageDigestHMACEncoding("joe:example.com:welcome")}
+
+#success
+read [0x01] [0x09] [0x00] [0x18]
+read [0x21] [0x12] [0xa4] [0x42]
+read ${transactionID}
+#attribute Message-Integrity
+read [0x00] [0x08] [0x00] ${length}
+read ${messageDigest}
+
+
+#SendIndication message
+write [0x00] [0x16] [0x00] [0x18]
+write [0x21] [0x12] [0xa4] [0x42]
+write ${transactionID}
+#Attributes
+write [0x00] [0x12] [0x00] [0x08]
+write [0x00] [0x01] ${turn:portXOR(8001)} #port 8001
+write ${turn:ipXOR("192.0.2.1")}
+write [0x00] [0x1a] [0x00] [0x00]
+#Data
+write [0x00] [0x13] [0x00] [0x04]
+write "Data"

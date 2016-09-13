@@ -116,17 +116,6 @@ public class PeerConnectionIT {
         k3po.finish();
     }
 
-    /**
-     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
-     */
-    @Test
-    @Ignore ("Please see issue #731: https://github.com/kaazing/tickets/issues/731")
-    @Specification({
-            "incorrect.channel.data.message.reserved.channel.number/request",
-            "incorrect.channel.data.message.reserved.channel.number/response" })
-    public void shouldFailSendingDataMessageReservedChannelNumbber() throws Exception {
-        k3po.finish();
-    }
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
@@ -187,5 +176,49 @@ public class PeerConnectionIT {
         k3po.finish();
     }
 
-}
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Ignore ("Please see issue #731: https://github.com/kaazing/tickets/issues/731")
+    @Specification({
+            "incorrect.channel.data.message.reserved.channel.number/request",
+            "incorrect.channel.data.message.reserved.channel.number/response" })
+    public void shouldFailSendingDataMessageReservedChannelNumbber() throws Exception {
+        k3po.finish();
+    }
 
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+            "send.indication.with.invalid.xor.peer.address/request",
+            "send.indication.with.invalid.xor.peer.address/response" })
+    public void shouldFailSendingIndicationWithInvalidPeerAddress() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+            "send.indication.without.allocation/request",
+            "send.indication.without.allocation/response" })
+    public void shouldFailSendingIndicationWithoutAllocation() throws Exception {
+        k3po.finish(); //javax.el.PropertyNotFoundException: Cannot find property transactionID
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+            "send.indication.without.channel.bind/request",
+            "send.indication.without.channel.bind/response" })
+    public void shouldFailSendingIndicationWithoutChannelBind() throws Exception {
+        k3po.finish();
+    }
+
+}
