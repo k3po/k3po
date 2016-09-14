@@ -22,5 +22,4 @@ accept ${acceptURI}
 accepted
 connected
 
-#allocation request (w/ cred)
-disconnected
+# disconnected
