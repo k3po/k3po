@@ -172,7 +172,7 @@ write ${transactionID}
 #Attributes
 write [0x00] [0x12] [0x00] [0x08]
 write [0x00] [0x01] ${turn:portXOR(8001)} #port 8001
-write ${turn:ipXOR("192.0.2.0")} # here change the IP
+write ${turn:ipXOR("192.0.2.0")} # another IP than the peer's
 write [0x00] [0x1a] [0x00] [0x00]
 
 #Data
