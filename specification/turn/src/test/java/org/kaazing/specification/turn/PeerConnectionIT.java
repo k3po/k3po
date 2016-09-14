@@ -122,8 +122,8 @@ public class PeerConnectionIT {
      */
     @Test
     @Specification({
-            "incorrect.channel.data.message.short.lenght/request",
-            "incorrect.channel.data.message.short.lenght/response" })
+            "incorrect.channel.data.message.short.length/request",
+            "incorrect.channel.data.message.short.length/response" })
     public void shouldFailSendingDataMessageTooShortLength() throws Exception {
         k3po.finish();
     }
