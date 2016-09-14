@@ -121,7 +121,6 @@ public class PeerConnectionIT {
      * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
      */
     @Test
-    @Ignore ("Please see issue #731: https://github.com/kaazing/tickets/issues/731")
     @Specification({
             "incorrect.channel.data.message.short.lenght/request",
             "incorrect.channel.data.message.short.lenght/response" })
@@ -133,7 +132,6 @@ public class PeerConnectionIT {
      * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
      */
     @Test
-    @Ignore ("Please see issue #731: https://github.com/kaazing/tickets/issues/731")
     @Specification({
             "incorrect.channel.data.message.wrong.channel.number/request",
             "incorrect.channel.data.message.wrong.channel.number/response" })
@@ -145,7 +143,6 @@ public class PeerConnectionIT {
      * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
      */
     @Test
-    @Ignore ("Please see issue #733: https://github.com/kaazing/tickets/issues/733")
     @Specification({
             "channel.data.message.without.create.permissions/request",
             "channel.data.message.without.create.permissions/response" })
@@ -157,7 +154,6 @@ public class PeerConnectionIT {
      * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
      */
     @Test
-    @Ignore ("Please see issue #733: https://github.com/kaazing/tickets/issues/733")
     @Specification({
             "send.indication.message.without.create.permissions/request",
             "send.indication.message.without.create.permissions/response" })
@@ -180,7 +176,6 @@ public class PeerConnectionIT {
      * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
      */
     @Test
-    @Ignore ("Please see issue #731: https://github.com/kaazing/tickets/issues/731")
     @Specification({
             "incorrect.channel.data.message.reserved.channel.number/request",
             "incorrect.channel.data.message.reserved.channel.number/response" })
@@ -207,7 +202,7 @@ public class PeerConnectionIT {
             "send.indication.without.allocation/request",
             "send.indication.without.allocation/response" })
     public void shouldFailSendingIndicationWithoutAllocation() throws Exception {
-        k3po.finish(); //javax.el.PropertyNotFoundException: Cannot find property transactionID
+        k3po.finish();
     }
 
     /**

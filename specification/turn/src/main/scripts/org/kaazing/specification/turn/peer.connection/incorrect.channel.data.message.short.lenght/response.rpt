@@ -157,6 +157,9 @@ write ${transactionID}
 write [0x00] [0x08] [0x00] ${length}
 write ${messageDigest}
 
-#First ChannelData Message should be discarded, but the second one should be received
+# data
+read [0x40] [0x00] [0x00] [0x00]
+read "data"
+
 read [0x40] [0x00] [0x00] [0x04]
 read "data2"

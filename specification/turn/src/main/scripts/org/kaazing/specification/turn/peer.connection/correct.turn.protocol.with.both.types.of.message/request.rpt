@@ -160,7 +160,6 @@ read ${transactionID}
 read [0x00] [0x08] [0x00] ${length}
 read ${messageDigest}
 
-
 #SendIndication message
 write [0x00] [0x16] [0x00] [0x18]
 write [0x21] [0x12] [0xa4] [0x42]
@@ -174,7 +173,6 @@ write [0x00] [0x1a] [0x00] [0x00]
 write [0x00] [0x13] [0x00] [0x04]
 write "Data"
 
-
 #Send ChannelData Message https://tools.ietf.org/html/rfc5766#section-14.4
 write [0x40] [0x00] [0x00] [0x04]
 write "data"
@@ -182,3 +180,4 @@ write "data"
 #Read ChannelData Message https://tools.ietf.org/html/rfc5766#section-14.4
 read [0x40] [0x00] [0x00] [0x04]
 read "data"
+
