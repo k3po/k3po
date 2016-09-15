@@ -18,6 +18,7 @@ package org.kaazing.specification.turn;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -115,5 +116,103 @@ public class PeerConnectionIT {
         k3po.finish();
     }
 
-}
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+            "incorrect.channel.data.message.short.length/request",
+            "incorrect.channel.data.message.short.length/response" })
+    public void shouldFailSendingDataMessageTooShortLength() throws Exception {
+        k3po.finish();
+    }
 
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+            "incorrect.channel.data.message.reserved.channel.number/request",
+            "incorrect.channel.data.message.reserved.channel.number/response" })
+    public void shouldFailSendingDataMessageReservedChannelNumbber() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+            "incorrect.channel.data.message.wrong.channel.number/request",
+            "incorrect.channel.data.message.wrong.channel.number/response" })
+    public void shouldFailSendingDataMessageWrongChannelNumber() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+            "channel.data.message.without.create.permissions/request",
+            "channel.data.message.without.create.permissions/response" })
+    public void shouldFailSendingDataMessageWithoutPermissions() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+            "send.indication.message.without.create.permissions/request",
+            "send.indication.message.without.create.permissions/response" })
+    public void shouldFailSendingIndicationMessageWithoutPermissions() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+            "correct.turn.protocol.with.both.types.of.message/request",
+            "correct.turn.protocol.with.both.types.of.message/response" })
+    public void shouldSucceedSendingIndicationAndChannelDataMessages() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+            "send.indication.with.invalid.xor.peer.address/request",
+            "send.indication.with.invalid.xor.peer.address/response" })
+    public void shouldFailSendingIndicationWithInvalidPeerAddress() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+            "send.indication.without.allocation/request",
+            "send.indication.without.allocation/response" })
+    public void shouldFailSendingIndicationWithoutAllocation() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
+     */
+    @Test
+    @Specification({
+            "send.indication.without.channel.bind/request",
+            "send.indication.without.channel.bind/response" })
+    public void shouldFailSendingIndicationWithoutChannelBind() throws Exception {
+        k3po.finish();
+    }
+
+}
