@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-44...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-45...HEAD)
+
+**Merged pull requests:**
+
+- Fix for shouldGive400WithIncorrectLength test with UDP [\#363](https://github.com/k3po/k3po/pull/363) ([mgherghe](https://github.com/mgherghe))
+- Turn tests with channel data [\#362](https://github.com/k3po/k3po/pull/362) ([NicoletaOita](https://github.com/NicoletaOita))
+
+## [3.0.0-alpha-45](https://github.com/k3po/k3po/tree/3.0.0-alpha-45) (2016-09-08)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-44...3.0.0-alpha-45)
 
 **Merged pull requests:**
 
