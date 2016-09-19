@@ -18,7 +18,6 @@ package org.kaazing.specification.turn;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -30,7 +29,7 @@ import org.kaazing.k3po.junit.rules.K3poRule;
 /**
  * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: TURN</a> through TCP.
  */
-public class MappedAddressWithIPv6IT {
+public class MappedIPv4EmbeddedAddressIPv6IT {
 
     private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/turn/allocations");
 
@@ -42,11 +41,9 @@ public class MappedAddressWithIPv6IT {
     /**
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
-    @Ignore("Please see issue #719: https://github.com/kaazing/tickets/issues/719")
     @Test
-    @Specification({"correct.allocation.with.ipv6.method/request", "correct.allocation.with.ipv6.method/response"})
+    @Specification({"correct.allocation.ipv4embedded.ipv6.method/request", "correct.allocation.ipv4embedded.ipv6.method/response"})
     public void shouldSucceedWithCorrectAllocationOnIpv6() throws Exception {
         k3po.finish();
     }
-
 }

@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-45...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-46...HEAD)
+
+**Merged pull requests:**
+
+- Add support for IPv4 embedded address into IPv6 address. [\#365](https://github.com/k3po/k3po/pull/365) ([Anisotrop](https://github.com/Anisotrop))
+
+## [3.0.0-alpha-46](https://github.com/k3po/k3po/tree/3.0.0-alpha-46) (2016-09-15)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-45...3.0.0-alpha-46)
 
 **Merged pull requests:**
 
