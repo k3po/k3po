@@ -15,12 +15,14 @@
  */
 package org.kaazing.specification.turn.internal;
 
+import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -78,11 +80,23 @@ public final class Functions {
             throw new RuntimeException("Unable to parse IPv6 address", e);
         }
 
+        byte[] ipAddr = null;
         if (!(address instanceof Inet6Address)) {
-            throw new RuntimeException("Address must be IPv6.");
+            if (address instanceof Inet4Address && ip.charAt(0) == '[') {
+                // still an IPv6 address containing a mapped ipv4, will treat as IPv6
+                ipAddr = new byte[16];
+                Arrays.fill(ipAddr, (byte)0);
+                ipAddr[10] = (byte)0xff;
+                ipAddr[11] = (byte)0xff;
+                System.arraycopy(address.getAddress(), 0, ipAddr, 12, 4);
+            } else {
+                throw new RuntimeException("Address must be IPv6 or IPv4 mapped into IPv6.");
+            }
         }
 
-        byte[] ipAddr = address.getAddress();
+        if (ipAddr == null) {
+            ipAddr = address.getAddress();
+        }
         byte[] x = new byte[16];
         x[0] = (byte) ((byte)0x21 ^ ipAddr[0]);
         x[1] = (byte) ((byte)0x12 ^ ipAddr[1]);
