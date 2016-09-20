@@ -146,4 +146,13 @@ public class AllocationsIT {
         k3po.finish();
     }
 
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
+     */
+    @Test
+    @Specification({"check.message.digest/request", "check.message.digest/response" })
+    public void shouldSucceedWithCorrectMessageDigest() throws Exception {
+        k3po.finish();
+    }
+
 }
