@@ -74,12 +74,6 @@ public class AllocationsIT {
         k3po.finish();
     }
 
-    @Test
-    @Specification({"incorrect.allocation.method.wrong.magic.cookie/request", "incorrect.allocation.method.wrong.magic.cookie/response" })
-    public void shouldFailWithIncorrectMagicCookie() throws Exception {
-        k3po.finish();
-    }
-
     /**
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
