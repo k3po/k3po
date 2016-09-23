@@ -45,7 +45,7 @@ public class MagicCookieIT {
     @Specification({
             "incorrect.allocation.method.wrong.magic.cookie.udp/request",
             "incorrect.allocation.method.wrong.magic.cookie.udp/response" })
-    public void shouldFailWithIncorrectMagicCookie() throws Exception {
+    public void shouldFailWithIncorrectMagicCookieUdp() throws Exception {
         k3po.finish();
     }
 
@@ -53,7 +53,7 @@ public class MagicCookieIT {
     @Specification({
             "incorrect.allocation.method.wrong.magic.cookie.tcp/request",
             "incorrect.allocation.method.wrong.magic.cookie.tcp/response" })
-    public void shouldFailWithIncorrectMagicCookie() throws Exception {
+    public void shouldFailWithIncorrectMagicCookieTcp() throws Exception {
         k3po.finish();
     }
 
