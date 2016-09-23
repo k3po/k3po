@@ -29,7 +29,7 @@ import org.kaazing.k3po.junit.rules.K3poRule;
 /**
  * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: TURN</a> through TCP.
  */
-public class MagicCookieUdpIT {
+public class MagicCookieIT {
 
     private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/turn/allocations");
 
@@ -45,6 +45,14 @@ public class MagicCookieUdpIT {
     @Specification({
             "incorrect.allocation.method.wrong.magic.cookie.udp/request",
             "incorrect.allocation.method.wrong.magic.cookie.udp/response" })
+    public void shouldFailWithIncorrectMagicCookie() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+            "incorrect.allocation.method.wrong.magic.cookie.tcp/request",
+            "incorrect.allocation.method.wrong.magic.cookie.tcp/response" })
     public void shouldFailWithIncorrectMagicCookie() throws Exception {
         k3po.finish();
     }
