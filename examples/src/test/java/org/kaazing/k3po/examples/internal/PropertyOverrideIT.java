@@ -38,7 +38,7 @@ public class PropertyOverrideIT {
 
     private final K3poRule k3po = new K3poRule().scriptProperty("RESPONSE 'Let\\'s take a selfie'");
 
-    private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
+    private final TestRule timeout = new DisableOnDebug(new Timeout(20, SECONDS));
 
     @Rule
     public final TestRule chain = RuleChain.outerRule(k3po).around(timeout);
