@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-46...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-47...HEAD)
+
+**Merged pull requests:**
+
+- Test message digest [\#367](https://github.com/k3po/k3po/pull/367) ([NicoletaOita](https://github.com/NicoletaOita))
+- Moved scripts for MaskingIPv6IT from k3po to gateway [\#366](https://github.com/k3po/k3po/pull/366) ([mgherghe](https://github.com/mgherghe))
+
+## [3.0.0-alpha-47](https://github.com/k3po/k3po/tree/3.0.0-alpha-47) (2016-09-19)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-46...3.0.0-alpha-47)
 
 **Merged pull requests:**
 
