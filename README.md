@@ -1,8 +1,6 @@
 # K3PO
 
 [![Build Status][build-status-image]][build-status]
-[![Issue Stats][pull-requests-image]][pull-requests]
-[![Issue Stats][issues-closed-image]][issues-closed]
 
 [build-status-image]: https://travis-ci.org/k3po/k3po.svg?branch=develop
 [build-status]: https://travis-ci.org/k3po/k3po

@@ -60,8 +60,7 @@ public class AllocationsIT {
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
      */
     @Test
-    @Specification({"allocate.method.with.requested.transport.attribute/request",
-            "allocate.method.with.requested.transport.attribute/response"})
+    @Specification({"allocate.method.with.requested.transport.attribute/request", "allocate.method.with.requested.transport.attribute/response"})
     public void shouldSucceedWithOnlyTransportAttribute() throws Exception {
         k3po.finish();
     }
@@ -83,7 +82,6 @@ public class AllocationsIT {
     public void shouldSucceedWithCorrectAllocationOnIpv6() throws Exception {
         k3po.finish();
     }
-
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
@@ -139,6 +137,15 @@ public class AllocationsIT {
     @Specification({"no.requested.transport.attribute.responds.400/request",
             "no.requested.transport.attribute.responds.400/response"})
     public void shouldRespond400ToAllocateWithNoRequestedTransportAttribute() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
+     */
+    @Test
+    @Specification({"check.message.digest/request", "check.message.digest/response" })
+    public void shouldSucceedWithCorrectMessageDigest() throws Exception {
         k3po.finish();
     }
 
