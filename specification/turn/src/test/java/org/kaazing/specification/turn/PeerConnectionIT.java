@@ -18,7 +18,6 @@ package org.kaazing.specification.turn;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -132,17 +131,6 @@ public class PeerConnectionIT {
      */
     @Test
     @Specification({
-            "incorrect.channel.data.message.reserved.channel.number/request",
-            "incorrect.channel.data.message.reserved.channel.number/response" })
-    public void shouldFailSendingDataMessageReservedChannelNumbber() throws Exception {
-        k3po.finish();
-    }
-
-    /**
-     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
-     */
-    @Test
-    @Specification({
             "incorrect.channel.data.message.wrong.channel.number/request",
             "incorrect.channel.data.message.wrong.channel.number/response" })
     public void shouldFailSendingDataMessageWrongChannelNumber() throws Exception {
@@ -214,5 +202,4 @@ public class PeerConnectionIT {
     public void shouldFailSendingIndicationWithoutChannelBind() throws Exception {
         k3po.finish();
     }
-
 }
