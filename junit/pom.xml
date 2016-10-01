@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.kaazing</groupId>
         <artifactId>k3po.parent</artifactId>
-        <version>3.0.0-alpha-48</version>
+        <version>3.0.0-alpha-49</version>
     </parent>
 
     <artifactId>k3po.junit</artifactId>

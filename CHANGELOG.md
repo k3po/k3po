@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-47...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-48...HEAD)
+
+**Merged pull requests:**
+
+- Wse Upstream and downstream connects are racy [\#369](https://github.com/k3po/k3po/pull/369) ([jitsni](https://github.com/jitsni))
+
+## [3.0.0-alpha-48](https://github.com/k3po/k3po/tree/3.0.0-alpha-48) (2016-09-27)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-47...3.0.0-alpha-48)
 
 **Merged pull requests:**
 
