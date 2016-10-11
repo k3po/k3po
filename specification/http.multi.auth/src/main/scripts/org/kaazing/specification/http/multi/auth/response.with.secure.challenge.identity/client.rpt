@@ -16,11 +16,9 @@
 
 property location "http://localhost:8000/resource"
 property validCredentials ${http:loginBase64Encoder("joe:welcome")}
-property validCredentials2 ${http:loginBase64Encoder("pin:1234")}
 property challenge1 "Basic realm=\"firstFactor\""
 property authHeader1 ${http:append("Basic ", validCredentials)}
 property challenge2 "Basic realm=\"secondFactor\""
-property authHeader2 ${http:append("Basic ", validCredentials2)}
 
 connect ${location}
 connected
