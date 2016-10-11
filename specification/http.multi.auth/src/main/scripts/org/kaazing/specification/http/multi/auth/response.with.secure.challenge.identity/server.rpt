@@ -16,11 +16,9 @@
 
 property location "http://localhost:8000/resource"
 property validCredentials ${http:loginBase64Encoder("joe:welcome")}
-property validCredentials2 ${http:loginBase64Encoder("pin:1234")}
 property challenge1 "Basic realm=\"firstFactor\""
 property authHeader1 ${http:append("Basic ", validCredentials)}
 property challenge2 "Basic realm=\"secondFactor\""
-property authHeader2 ${http:append("Basic ", validCredentials2)}
 property secChallengeIdentity "067e6162-3b6f-4ae2-a171-2470b63dff00"
 
 accept ${location}
