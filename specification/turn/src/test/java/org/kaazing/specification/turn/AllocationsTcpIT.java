@@ -58,7 +58,32 @@ public class AllocationsTcpIT {
         "connect/request",
         "connect/response"
     })
-    public void shouldSucceedWithGenericSTUNHeader() throws Exception {
+    public void shouldSendAndReceiveConnect() throws Exception {
+        k3po.finish();
+    }
+
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc6062#section-4.1">RFC 6062 Section 4.4. Receiving a Connection</a>.
+     */
+    @Test
+    @Specification({
+            "connection_attempt/request",
+            "connection_attempt/response"
+    })
+    public void shouldReceiveConnectionAttempt() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc6062#section-4.1">RFC 6062 Section 4.4. Receiving a Connection</a>.
+     */
+    @Test
+    @Specification({
+            "connection_bind/request",
+            "connection_bind/response"
+    })
+    public void shouldSendAndReceiveConnectionBind() throws Exception {
         k3po.finish();
     }
 }
