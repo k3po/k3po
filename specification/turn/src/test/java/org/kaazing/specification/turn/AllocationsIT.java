@@ -15,28 +15,46 @@
  */
 package org.kaazing.specification.turn;
 
+import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
 /**
  * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: TURN</a> through TCP.
  */
+@RunWith(Parameterized.class)
 public class AllocationsIT {
 
-    private final K3poRule k3po = new K3poRule().setScriptRoot("org/kaazing/specification/turn/allocations");
+    @Parameterized.Parameters
+    public static Collection<String> data() {
+        return Arrays.asList("tcp", "udp");
+    }
 
-    private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
+    private final K3poRule k3po;
 
     @Rule
-    public final TestRule chain = outerRule(k3po).around(timeout);
+    public final TestRule chain;
+
+    public AllocationsIT(String scheme) {
+        k3po = new K3poRule()
+            .setScriptRoot("org/kaazing/specification/turn/allocations")
+            .scriptProperty(format("acceptURI '%s://localhost:3478'", scheme))
+            .scriptProperty(format("connectURI '%s://localhost:3478'", scheme));
+        this.chain = outerRule(k3po).around(new DisableOnDebug(new Timeout(5, SECONDS)));
+    }
 
     /**
      * See <a href="https://tools.ietf.org/html/rfc5766#section-6">RFC 5766 section 6: Allocations</a>.
