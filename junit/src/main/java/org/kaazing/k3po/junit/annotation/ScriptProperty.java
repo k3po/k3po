@@ -22,8 +22,8 @@ import java.lang.annotation.Target;
 
 /**
  * {@code OverrideProperty} annotation overrides a property in the script.
- * Use format "key \"value\"", so property location "ws://localhost would be
- * \@OverrideProperty( "location \"ws://localhost\"" )
+ * Use format "key \"value\"", so property location "ws://localhost:8000/" would be
+ * \@ScriptProperty( "location \"ws://localhost:8000/\"" )
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })
