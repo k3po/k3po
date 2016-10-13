@@ -15,6 +15,10 @@
 #
 
 property connectURI "tcp://localhost:3478"
+
+property reqXorRelayedAddressIp ${turn:ipXOR("192.0.2.15")}
+property reqXorRelayedAddressPort ${turn:portXOR(8080)}
+
 connect ${connectURI}
 connected
 
@@ -31,7 +35,7 @@ read [0xec 0x94 0xe0 0x00]
 
 #Attribute XOR-PEER-ADDRESS
 read [0x00 0x12 0x00 0x08]
-read [0x00 0x01 0xcc 0x32 0x5e 0x12 0xa4 0x43]
+read [0x00 0x01] ${reqXorRelayedAddressPort} ${reqXorRelayedAddressIp}
 
 #Attribute SOFTWARE
 read [0x80 0x22 0x00 0x1a]
