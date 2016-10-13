@@ -89,7 +89,7 @@ read [0..4] #Can be overriden
 
 ##446 Connection Already Exists error response
 #STUN Header
-write [0x01] [0x13] [0x00] [0x14] #Type|Length
+write [0x01] [0x13] [0x00] [0x08] #Type|Length
 write [0x21] [0x12] [0xa4] [0x42] #Magic Cookie
 write ${turn:generateTransactionId()}
 #Attribute ERROR-CODE
