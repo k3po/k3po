@@ -27,7 +27,8 @@ import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
 /**
- * Test to validate behavior as specified in <a href="https://tools.ietf.org/html/rfc6062">Traversal Using Relays around NAT (TURN) Extensions for TCP Allocations</a>.
+ * Test to validate behavior as specified in
+ * <a href="https://tools.ietf.org/html/rfc6062">Traversal Using Relays around NAT (TURN) Extensions for TCP Allocations</a>.
  */
 public class AllocationsTcpIT {
 
@@ -51,7 +52,7 @@ public class AllocationsTcpIT {
     }
 
     /**
-     * See <a href="https://tools.ietf.org/html/rfc6062#section-4.1">RFC 6062 Section 4.3. Initiating a Connection</a>.
+     * See <a href="https://tools.ietf.org/html/rfc6062#section-4.3">RFC 6062 Section 4.3. Initiating a Connection</a>.
      */
     @Test
     @Specification({
@@ -62,28 +63,51 @@ public class AllocationsTcpIT {
         k3po.finish();
     }
 
-
     /**
-     * See <a href="https://tools.ietf.org/html/rfc6062#section-4.1">RFC 6062 Section 4.4. Receiving a Connection</a>.
+     * See <a href="https://tools.ietf.org/html/rfc6062#section-4.4">RFC 6062 Section 4.4. Receiving a Connection</a>.
      */
     @Test
     @Specification({
-            "connection_attempt/request",
-            "connection_attempt/response"
+        "connection_attempt/request",
+        "connection_attempt/response"
     })
     public void shouldReceiveConnectionAttempt() throws Exception {
         k3po.finish();
     }
 
     /**
-     * See <a href="https://tools.ietf.org/html/rfc6062#section-4.1">RFC 6062 Section 4.4. Receiving a Connection</a>.
+     * See <a href="https://tools.ietf.org/html/rfc6062#section-4.4">RFC 6062 Section 4.4. Receiving a Connection</a>.
      */
     @Test
     @Specification({
-            "connection_bind/request",
-            "connection_bind/response"
+        "connection_bind/request",
+        "connection_bind/response"
     })
     public void shouldSendAndReceiveConnectionBind() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc6062#section-5.2">RFC 6062 Section 5.2. Receiving a Connect Request</a>.
+     */
+    @Test
+    @Specification({
+        "connect.with.connection.already.exists.error/request",
+        "connect.with.connection.already.exists.error/response"
+    })
+    public void shouldReceiveErorConnectionAlreadyExists() throws Exception {
+        k3po.finish();
+    }
+
+    /**
+     * See <a href="https://tools.ietf.org/html/rfc6062#section-5.2">RFC 6062 Section 5.2. Receiving a Connect Request/a>.
+     */
+    @Test
+    @Specification({
+        "connect.with.connection.timeout.error/request",
+        "connect.with.connection.timeout.error/response"
+    })
+    public void shouldReceiveErrorConnectionTimeoutOrFailure() throws Exception {
         k3po.finish();
     }
 }
