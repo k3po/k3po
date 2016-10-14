@@ -46,6 +46,15 @@ public class ChallengeIT {
 
     @Test
     @Specification({
+        "request.missing.secure.challenge.identity/client",
+        "request.missing.secure.challenge.identity/server"
+        })
+    public void serverShouldChallengeFirstFactoryWhenSecChallengeIdentityHeaderMissing() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "response.with.secure.challenge.identity/client",
         "response.with.secure.challenge.identity/server"
         })
