@@ -2,7 +2,16 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-50...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-51...HEAD)
+
+**Merged pull requests:**
+
+- Turn.proxy.tcp.allocations [\#374](https://github.com/k3po/k3po/pull/374) ([Anisotrop](https://github.com/Anisotrop))
+- Http.multi.auth [\#372](https://github.com/k3po/k3po/pull/372) ([dpwspoon](https://github.com/dpwspoon))
+- Fixed errors in javadoc [\#364](https://github.com/k3po/k3po/pull/364) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-51](https://github.com/k3po/k3po/tree/3.0.0-alpha-51) (2016-10-03)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-50...3.0.0-alpha-51)
 
 **Merged pull requests:**
 

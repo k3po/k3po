@@ -28,6 +28,7 @@ import java.lang.annotation.Target;
 public @interface Specification {
     /**
      * Gets the value of the Specification which is an String[] of a script names to execute.
+     * @return return an array of script names to run
      */
     String[] value() default { };
 }

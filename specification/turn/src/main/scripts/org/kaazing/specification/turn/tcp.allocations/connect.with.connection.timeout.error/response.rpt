@@ -1,0 +1,68 @@
+#
+# Copyright 2007-2015, Kaazing Corporation. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+property realm "example.com"
+property nonce "adl7W7PeDU4hKE72jdaQvbAMcr6h39sm"
+property acceptURI "tcp://localhost:3478"
+
+property respXorRelayedAddressIp ${turn:ipXOR("192.0.2.15")}
+property respXorRelayedAddressPort ${turn:portXOR(8080)}
+
+accept ${acceptURI}
+accepted
+connected
+
+#Connect Request
+#STUN Message type | Message Length
+read [0x00 0x0A 0x00 0x5C]
+read [0x21 0x12 0xA4 0x42]
+read [0..12]
+
+#Attribute XOR-Peer-Address
+read [0x00 0x12 0x00 0x08]
+read [0x00 0x01] ${respXorRelayedAddressPort} ${respXorRelayedAddressIp}
+
+#Attribute Username
+read [0x00 0x06 0x00 0x0E]
+read [0x31 0x34 0x37 0x33 0x34 0x34 0x30 0x36 0x33 0x36 0x3A 0x62 0x6F 0x62 0x00 0x00]
+
+#Attribute Nonce
+read [0x00 0x15 0x00 0x10]
+read [0x61 0x62 0x39 0x33 0x30 0x35 0x36 0x39 0x31 0x31 0x64 0x31 0x30 0x36 0x64 0x63]
+
+#Attribute Realm
+read [0x00 0x14 0x00 0x04]
+read [0x64 0x65 0x6D 0x6F]
+
+#Attribute Message-Integrity
+read [0x00 0x08 0x00 0x14]
+read [0..20] #Can be overriden
+
+# Attribute fingerprint
+read [0x80 0x28 0x00 0x04]
+read [0..4] #Can be overriden
+
+
+##447 Connection Timeout or Failure error response
+#STUN Header
+write [0x01] [0x13] [0x00] [0x08] #Type|Length
+write [0x21] [0x12] [0xa4] [0x42] #Magic Cookie
+write ${turn:generateTransactionId()}
+#Attribute ERROR-CODE
+write [0x00] [0x09] [0x00] [0x04]
+write [0x00] [0x00] [0x04] [0x2F]
+
+

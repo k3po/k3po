@@ -22,14 +22,15 @@ import java.lang.annotation.Target;
 
 /**
  * {@code OverrideProperty} annotation overrides a property in the script.
- * Use format "key \"value\"", so property location "ws://localhost would be
- * @OverrideProperty( "location \"ws://localhost\"" )
+ * Use format "key \"value\"", so property location "ws://localhost:8000/" would be
+ * \@ScriptProperty( "location \"ws://localhost:8000/\"" )
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })
 public @interface ScriptProperty {
     /**
      * Gets the "key \"value\"" that the property is overridden with.
+     * @return array of "key \"value\"" to override in the script
      */
     String[] value() default { };
 }
