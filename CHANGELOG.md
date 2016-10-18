@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-51...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-52...HEAD)
+
+**Merged pull requests:**
+
+- Defer upstreams until downstream is completed… [\#375](https://github.com/k3po/k3po/pull/375) ([jfallows](https://github.com/jfallows))
+
+## [3.0.0-alpha-52](https://github.com/k3po/k3po/tree/3.0.0-alpha-52) (2016-10-17)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-51...3.0.0-alpha-52)
 
 **Merged pull requests:**
 
