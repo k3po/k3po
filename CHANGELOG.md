@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-52...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-53...HEAD)
+
+**Merged pull requests:**
+
+- Implement k3po/k3po\#377 [\#378](https://github.com/k3po/k3po/pull/378) ([jfallows](https://github.com/jfallows))
+
+## [3.0.0-alpha-53](https://github.com/k3po/k3po/tree/3.0.0-alpha-53) (2016-10-18)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-52...3.0.0-alpha-53)
 
 **Merged pull requests:**
 
