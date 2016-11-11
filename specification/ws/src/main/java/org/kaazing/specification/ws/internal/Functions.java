@@ -15,6 +15,8 @@
  */
 package org.kaazing.specification.ws.internal;
 
+import static java.lang.Character.toLowerCase;
+import static java.lang.Character.toUpperCase;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.security.MessageDigest;
@@ -117,9 +119,9 @@ public final class Functions {
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
             if (RANDOM.nextBoolean()) {
-                c = Character.toUpperCase(c);
+                c = toUpperCase(c);
             } else {
-                c = Character.toLowerCase(c);
+                c = toLowerCase(c);
             }
             result.append(c);
         }
@@ -140,6 +142,22 @@ public final class Functions {
             }
         } while (result.toString().equalsIgnoreCase(header));
         return result.toString();
+    }
+
+    @Function
+    public static String randomCaseNot(String value) {
+        String result;
+        char[] resultChars = new char[value.length()];
+
+        do {
+            for (int i = 0; i < value.length(); i++) {
+                char c = value.charAt(i);
+                resultChars[i] = RANDOM.nextBoolean() ? toUpperCase(c) : toLowerCase(c);
+            }
+            result = new String(resultChars);
+        } while(!result.equals(value));
+
+        return result;
     }
 
     @Function

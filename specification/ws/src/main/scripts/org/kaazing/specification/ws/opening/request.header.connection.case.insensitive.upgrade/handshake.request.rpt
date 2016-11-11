@@ -15,23 +15,21 @@
 #
 
 property location 'http://localhost:8080/path?query'
-accept ${location}
-accepted
+connect ${location}
 connected
 
-read method "GET"
-read version "HTTP/1.1"
-read header "Host" "localhost:8080"
-read header "Upgrade" "websocket"
-read header "Connection" "Upgrade"
-read header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
-read header "Sec-WebSocket-Version" "13"
-
-write status "101" "Switching Protocols"
+write method "GET"
 write version "HTTP/1.1"
-write header "Upgrade" ${ws:randomizeLetterCase("websocket")}
-write header "Connection" ${ws:randomizeLetterCase("upgrade")}
-write header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
-write flush
+write header host
+write header "Upgrade" "websocket"
+write header "Connection" ${ws:randomCaseNot("Upgrade")}
+write header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
+write header "Sec-WebSocket-Version" "13"
+
+read status "101" /.+/
+read version "HTTP/1.1"
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
+read header "Sec-WebSocket-Accept" "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
 
 # connection established

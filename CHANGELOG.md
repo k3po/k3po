@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-53...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-54...HEAD)
+
+**Merged pull requests:**
+
+-  case-insensitive websocket header names [\#380](https://github.com/k3po/k3po/pull/380) ([jitsni](https://github.com/jitsni))
+
+## [3.0.0-alpha-54](https://github.com/k3po/k3po/tree/3.0.0-alpha-54) (2016-11-03)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-53...3.0.0-alpha-54)
 
 **Merged pull requests:**
 
