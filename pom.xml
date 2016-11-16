@@ -54,6 +54,7 @@
         <module>specification/ws.extensions/x-kaazing-idle-timeout</module>
         <module>specification/ws.extensions/x-kaazing-ping-pong</module>
         <module>specification/http.multi.auth</module>
+		<module>specification/http.saml.auth</module>
     </modules>
 
     <properties>
