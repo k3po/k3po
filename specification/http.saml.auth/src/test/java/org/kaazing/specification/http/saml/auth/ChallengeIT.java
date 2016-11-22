@@ -37,29 +37,10 @@ public class ChallengeIT {
 
     @Test
     @Specification({
-        "request.with.secure.challenge.identity/client",
-        "request.with.secure.challenge.identity/server"
-        })
-    public void serverMayGiveSecChallengeIdentityHeaderWith401() throws Exception {
-        k3po.finish();
-    }
-
-    @Test
-    @Specification({
-        "request.missing.secure.challenge.identity/client",
-        "request.missing.secure.challenge.identity/server"
-        })
-    public void serverShouldChallengeFirstFactoryWhenSecChallengeIdentityHeaderMissing() throws Exception {
-        k3po.finish();
-    }
-
-    @Test
-    @Specification({
-        "response.with.secure.challenge.identity/client",
-        "response.with.secure.challenge.identity/server"
+        "request.with.secure.challenge.payload.not.masked/client",
+        "request.with.secure.challenge.payload.not.masked/server"
         })
     public void clientShouldAttachSecChallengeIdentityToFollowingRequests() throws Exception {
         k3po.finish();
     }
-
 }
