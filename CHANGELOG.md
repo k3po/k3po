@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-54...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-55...HEAD)
+
+**Merged pull requests:**
+
+- HTTP Host header shouldn't have scheme [\#381](https://github.com/k3po/k3po/pull/381) ([jitsni](https://github.com/jitsni))
+
+## [3.0.0-alpha-55](https://github.com/k3po/k3po/tree/3.0.0-alpha-55) (2016-11-11)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-54...3.0.0-alpha-55)
 
 **Merged pull requests:**
 
