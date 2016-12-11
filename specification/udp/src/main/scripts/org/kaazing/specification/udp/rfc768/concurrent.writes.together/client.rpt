@@ -18,12 +18,12 @@
 connect await BOUND
         udp://localhost:8080
 connected
-write "Hello1"
-write "Bye1"
-write "Goodbye1"
-read "Hello1"
-read "Bye1"
-read "Goodbye1"
+write "1Hello"
+write "1Bye"
+write "1Goodbye"
+read "1Hello"
+read "1Bye"
+read "1Goodbye"
 close
 closed
 
@@ -31,12 +31,12 @@ closed
 connect await BOUND
         udp://localhost:8080
 connected
-write "Hello2"
-write "Bye2"
-write "Goodbye2"
-read "Hello2"
-read "Bye2"
-read "Goodbye2"
+write "2Hello"
+write "2Bye"
+write "2Goodbye"
+read "2Hello"
+read "2Bye"
+read "2Goodbye"
 close
 closed
 
@@ -44,11 +44,11 @@ closed
 connect await BOUND
         udp://localhost:8080
 connected
-write "Hello3"
-write "Bye3"
-write "Goodbye3"
-read "Hello3"
-read "Bye3"
-read "Goodbye3"
+write "3Hello"
+write "3Bye"
+write "3Goodbye"
+read "3Hello"
+read "3Bye"
+read "3Goodbye"
 close
 closed

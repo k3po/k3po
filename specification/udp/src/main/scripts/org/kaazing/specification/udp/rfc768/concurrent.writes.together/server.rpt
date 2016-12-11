@@ -20,9 +20,9 @@ accept udp://localhost:8080
 # Stream 1
 accepted
 connected
-read /(?<hello1>[a-zA-Z0-9]+)/
-read /(?<bye1>[a-zA-Z0-9]+)/
-read /(?<goodbye1>[a-zA-Z0-9]+)/
+read /(?<hello1>[123]Hello)/
+read /(?<bye1>[123]Bye)/
+read /(?<goodbye1>[123]Goodbye)/
 write ${hello1}
 write ${bye1}
 write ${goodbye1}
@@ -30,9 +30,9 @@ write ${goodbye1}
 # Stream 2
 accepted
 connected
-read /(?<hello2>[a-zA-Z0-9]+)/
-read /(?<bye2>[a-zA-Z0-9]+)/
-read /(?<goodbye2>[a-zA-Z0-9]+)/
+read /(?<hello2>[123]Hello)/
+read /(?<bye2>[123]Bye)/
+read /(?<goodbye2>[123]Goodbye)/
 write ${hello2}
 write ${bye2}
 write ${goodbye2}
@@ -40,9 +40,9 @@ write ${goodbye2}
 # Stream 3
 accepted
 connected
-read /(?<hello3>[a-zA-Z0-9]+)/
-read /(?<bye3>[a-zA-Z0-9]+)/
-read /(?<goodbye3>[a-zA-Z0-9]+)/
+read /(?<hello3>[123]Hello)/
+read /(?<bye3>[123]Bye)/
+read /(?<goodbye3>[123]Goodbye)/
 write ${hello3}
 write ${bye3}
 write ${goodbye3}
