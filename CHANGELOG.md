@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-55...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-56...HEAD)
+
+**Merged pull requests:**
+
+- Adding a test case where udp writes are done together [\#382](https://github.com/k3po/k3po/pull/382) ([jitsni](https://github.com/jitsni))
+
+## [3.0.0-alpha-56](https://github.com/k3po/k3po/tree/3.0.0-alpha-56) (2016-12-06)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-55...3.0.0-alpha-56)
 
 **Merged pull requests:**
 
