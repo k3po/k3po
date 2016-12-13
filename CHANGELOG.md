@@ -1,8 +1,7 @@
 # Change Log
 
-## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
-
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-56...HEAD)
+## [3.0.0-alpha-57](https://github.com/k3po/k3po/tree/3.0.0-alpha-57) (2016-12-13)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-56...3.0.0-alpha-57)
 
 **Merged pull requests:**
 
