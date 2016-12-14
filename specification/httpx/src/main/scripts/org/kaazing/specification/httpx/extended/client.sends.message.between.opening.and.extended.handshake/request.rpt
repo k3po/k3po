@@ -38,21 +38,12 @@ read header "Date" /.+/
 
 write [0x82 0x85] ${writeMask}
 write option mask ${writeMask}
-write "Hello"
+write "World"
 write option mask [0x00 0x00 0x00 0x00]
 
-# 400 Bad Request
-read [0x82 0x7E 0x00 0xAD]
-read "HTTP/1.1 400 Bad Request\r\n"
-read "Content-Type: text/html\r\n"
-read /Date:.+\r\n/
-read /Content-Length: \d+\r\n/
-read "\r\n"
-read "<html><head></head><body><h1>400 Bad Request</h1></body></html>"
+read [0x88 0x02 0x03 0xe8]
 
 write [0x88 0x82] ${writeMask}
 write option mask ${writeMask}
 write [0x03 0xe8]
 write option mask [0x00 0x00 0x00 0x00]
-
-read [0x88 0x02 0x03 0xe8]

@@ -40,21 +40,13 @@ write flush
 read [0x82 0x85]
 read [(:maskingKey){4}]
 read option mask ${writeMask}
-read "Hello"
+read "World"
 read option mask [0x00 0x00 0x00 0x00]
 
-write [0x82 0x7E 0x00 0xAD]
-write "HTTP/1.1 400 Bad Request\r\n"
-write "Content-Type: text/html\r\n"
-write "Date: " ${httpx:getDate()} "\r\n"
-write "Content-Length: 63\r\n"
-write "\r\n"
-write "<html><head></head><body><h1>400 Bad Request</h1></body></html>"
+write [0x88 0x02 0x03 0xe8]
 
 read [0x88 0x82]
 read [(:maskingKey){4}]
 read option mask ${maskingKey}
 read [0x03 0xe8]
 read option mask [0x00 0x00 0x00 0x00]
-
-write [0x88 0x02 0x03 0xe8]
