@@ -14,18 +14,16 @@ The protocol is made up of Commands and Events.  Commands are actions that can b
 Events are triggered by observed actions or state changes in the driver and are sent back to the test framework.  The protocol 
 is formatted by:
 
->Control Message   =   command-line LF
->                      *( header-field LF )
->                      LF
->                      [ message-body LF ]
+    Control Message   =   command-line LF
+                          *( header-field LF )
+                          LF
+                          [ message-body LF ]
 
-command-line      = command LF
 
-command              = token
-
-header-field = field-name ":" field-value
-
-LF, message-body, field-name, field-value, and token are defined in [HTTP RFC](https://tools.ietf.org/html/rfc7230).
+- command-line      = command LF
+- command              = token
+- header-field = field-name ":" field-value
+- LF, message-body, field-name, field-value, and token are defined in [HTTP RFC](https://tools.ietf.org/html/rfc7230).
 
 If the "content-length" header is specified, then a message body of the specified length must be added.
 
@@ -34,55 +32,44 @@ Headers that are not understood / processed by a command must be ignored.
 
 ### Flow
 
-The communication between the test framework and the driver is a conversation - the test framework sends a command, the driver responds with an
-event sent asynchronously when the action is finished. The only exception is the FINISHED event - the START command will have two events as a 
-response - STARTED when the execution of the scripts is started and FINISHED when the execution of the scripts is finished.
+The communication between the test framework and the driver is an asynchronous conversation - the test framework sends commands, the driver 
+may respond with one or more events or it may not respond at all (no event sent) when the action is finished.
 
-Throughout the flow description bellow, **an error** represents an ERROR event sent by the driver.
+Throughout the flow description bellow, **an error** represents an ERROR event sent by the K3po driver.
 
-- The test framework initiates the conversation with a **PREPARE** command. This command will make the k3po server load and prepare a set
+- The test framework initiates the conversation with a **PREPARE** command. This command will make the driver load and prepare a set
 of scripts for execution. The scripts are not yet executed, just loaded from disk and parsed. If there are ACCEPT instructions in the scripts,
-a bound on corresponding ports is performed. If the command is successful, the driver sends back a PREPARED event. In case of failure, an
-ERROR event is sent.
+a bind on corresponding ports is performed. If the command is successful, the driver sends back a PREPARED event. In case of failure, an
+ERROR event is sent with the cause of the failure.
 
 - If the PREPARED command is successful, a **START** command may be sent by the test framework. This command will start the execution of the
  clients in the scripts that were sent in the PREPARE command. If the command is successful, the driver sends back a STARTED event. This 
- command will also trigger the sending of a FINISHED event whenever the scripts finished execution on the k3po server.
- 
-- If there is no PREPARE command send before the START command or if the PREPARE command was not successful an error with a message "Script has not
- been prepared or is still preparing" must occur. 
- 
+ command will also trigger the sending of a FINISHED event whenever the scripts finished execution on the driver. In case of failure, an
+ERROR event is sent with the cause of the failure.
+
+- If there is no PREPARE command sent before the START command or if the PREPARE command was not successful an error with a message "Script has
+ not been prepared or is still preparing" must occur. 
+
 - If the START command was already sent, an error with a message "Script has already been started" must occur.
 
 - Any time after the PREPARE command and before the DISPOSE command, the test framework can send an **AWAIT** command for a barrier existing 
-in the scripts. The command receives a response with a NOTIFIED event only when the corresponding barrier is notified. In case the barrier 
-does not exist, an error must be returned.
+in the scripts. The command receives a response with a NOTIFIED event only when the corresponding barrier is notified. The NOTIFIED event may
+ never be returned in case the barrier is never triggered. In case the barrier does not exist, an error must be returned.
 
-- Any time after the PREPARE command *and before DISPOSE?*, the test framework can send a **NOTIFY** command for a barrier existing in the scripts.
- The command notifies the barrier and a response with a NOTIFIED event is received. In case the barrier does not exist, an error must be returned.
+- Any time after the PREPARE command *and before DISPOSE?*, the test framework can send a **NOTIFY** command for a barrier existing in the 
+scripts. The command notifies the barrier and a response with a NOTIFIED event is received. In case the barrier does not exist, an error must 
+be returned.
 
 - Any time after the PREPARE command *and before DISPOSE?*, the test framework can send an **ABORT** command. The driver must abort the current 
-execution. It may be sent any time after a PREPARE command.
+execution. If the execution of the scripts is already finished, no event is sent back. If the execution is aborted by this command, a FINISHED 
+event with the script that was executed so far must be returned.
 
-- Any time after the PREPARE command, the test framework can send a **DISPOSE** command. The driver must abort the execution and release the resources 
-in use. When done, a DISPOSED event must be sent back.
-
-
-TODO - after the test is finished, you can start a new test from the beginning, with a new PREPARE. This does not seem to work very well. Usually 
-the server gets stuck. Sometimes even a new connection will not help, still the test will not work. Should we support this or should we force the 
-closing of the connection and opening a new one ? (refuse any command after a DISPOSE)
+- Any time after the PREPARE command, the test framework can send a **DISPOSE** command. The driver must abort the execution and release the 
+resources in use. When done, a DISPOSED event must be sent back.
 
 
-TODO - at this moment, nothing is returned by the driver after an ABORT command. I think we should return something. A FINISHED is not acceptable,
- as it should return the executed script, which is not executed or is partial. Also, DISPOSED should not be returned, as the server is not 
- disposed yet. Maybe we should create another event - ABORTED ?
-
-
-TODO - ABORT and DISPOSE commands have a very similar functionality currently. Theoretically, the difference is that DISPOSE will release the resources 
-(it is actually calling abort and then release resources). But the driver seems to be in the same state after an ABORT or DISPOSE. Same commands can be 
-sent with the same responses (call again AWAIT/NOTIFY/ABORT/DISPOSE). We need to clearly specify the different functionality for ABORT and DISPOSE or 
-remove one of them. 
-
+TODO - Decision time :) - will we support multiple tests on the same connection or will we force closing the connection and reopening a new one ? 
+Anyway, we need to enforce a clear functionality after DISPOSE command.
 
 
 ### Commands
@@ -107,14 +94,12 @@ ERROR event.
 
 Example:
 
-```
-PREPARE
-version:2.0
-name:test.rpt
-content-length:32
-
-connect_url http://localhost:8081
-```
+    PREPARE
+    version:2.0
+    name:test.rpt
+    content-length:34
+    
+    connect_url http://localhost:8081
 
 ##### START command
 
@@ -131,7 +116,8 @@ N/A
 ##### ABORT command
 
 ###### Description
-This command will abort the current execution. It may be sent any time after a PREPARE command.
+This command will abort the current execution. It may be sent any time after a PREPARE command. When the execution of the scripts is aborted,
+a FINISHED event may be returned with the script executed so far.
 
 ###### Headers
 N/A
@@ -143,7 +129,7 @@ N/A
 ##### AWAIT command
 
 ###### Description
-This command will have as a response a NOTIFIED event after the barrier with the name sent in the header is triggered on the k3po server.
+This command indicates that the test framework is interested in being notified via a NOTIFIED event when or if a barrier has been triggered.
 
 ###### Headers
 - barrier - the name of the barrier that should be waited on
@@ -155,7 +141,7 @@ N/A
 ##### NOTIFIED command
 
 ###### Description
-This command will trigger on the k3po server the barrier with the name sent in the header and will have a response with a NOTIFIED event 
+This command will trigger on the driver the barrier with the name sent in the header and will have a response with a NOTIFIED event 
 with the same barrier name.
 
 ###### Headers
@@ -189,7 +175,7 @@ This event is sent by the driver after a PREPARE command executed successfully.
 - barrier - the name of a barrier in the prepared script. Can occur multiple times (multiple barriers).
 	
 ###### Message body
-The message body for prepared event is the content of the script that will be executed on the k3po server. 
+The message body for prepared event is the content of the script that will be executed on the driver. 
 
 
 
@@ -220,7 +206,7 @@ N/A
 ##### DISPOSED event
 
 ###### Description
-This event is sent by the driver when the k3po server was cleaned-up. It is sent as a response for a DISPOSE command.
+This event is sent by the driver when the driver was cleaned-up. It is sent as a response for a DISPOSE command.
 
 ###### Headers
 N/A
@@ -232,21 +218,21 @@ N/A
 ##### FINISHED event
 
 ###### Description
-This event is sent by the driver when the k3po server has finished execution of the scripts.
+This event is sent by the driver when the driver has finished execution of the scripts. Only one FINISHED event is sent for a script execution.
 
 ###### Headers
 - content-length - the length of the message body. This header is optional, should be present only when the message body is 
 not empty.
 	
 ###### Message body
-The message body for the event is the observed script after the execution on the k3po server. This script can be compared with the script in the
+The message body for the event is the observed script after the execution on the driver. This script can be compared with the script in the
 prepared event to check if the test was successful. 
 
 
 ##### ERROR event
 
 ###### Description
-This event is sent by the driver when the k3po server encountered an error while processing a command.
+This event is sent by the driver when the driver encountered an error while processing a command.
 
 ###### Headers
 - content-length - the length of the message body. This header is optional, should be present only when the message body is not empty.
