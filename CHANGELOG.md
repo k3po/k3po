@@ -1,5 +1,20 @@
 # Change Log
 
+## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
+
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-58...HEAD)
+
+**Closed issues:**
+
+- Need a way to specify fragments on k3po http script [\#385](https://github.com/k3po/k3po/issues/385)
+
+**Merged pull requests:**
+
+- Added spec tests for redirection on http [\#386](https://github.com/k3po/k3po/pull/386) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-58](https://github.com/k3po/k3po/tree/3.0.0-alpha-58) (2016-12-13)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-57...3.0.0-alpha-58)
+
 ## [3.0.0-alpha-57](https://github.com/k3po/k3po/tree/3.0.0-alpha-57) (2016-12-13)
 [Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-56...3.0.0-alpha-57)
 
