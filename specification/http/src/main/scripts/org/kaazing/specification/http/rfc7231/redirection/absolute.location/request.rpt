@@ -17,7 +17,6 @@
 connect http://localhost:8000/resource
 connected
 
-#write fragment "fragment"
 write method "GET"
 write close
 
@@ -29,7 +28,6 @@ connect await FOLLOW_REDIRECT
         http://localhost:8002/resource2
 connected
 
-#write fragment "fragment"
 write method "GET"
 write close
 
