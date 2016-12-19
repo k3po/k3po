@@ -56,20 +56,18 @@ ERROR event is sent with the cause of the failure.
 in the scripts. The command receives a response with a NOTIFIED event only when the corresponding barrier is notified. The NOTIFIED event may
  never be returned in case the barrier is never triggered. In case the barrier does not exist, an error must be returned.
 
-- Any time after the PREPARE command *and before DISPOSE?*, the test framework can send a **NOTIFY** command for a barrier existing in the 
+- Any time after the PREPARE command and before DISPOSE, the test framework can send a **NOTIFY** command for a barrier existing in the 
 scripts. The command notifies the barrier and a response with a NOTIFIED event is received. In case the barrier does not exist, an error must 
 be returned.
 
-- Any time after the PREPARE command *and before DISPOSE?*, the test framework can send an **ABORT** command. The driver must abort the current 
+- Any time after the PREPARE command and before DISPOSE, the test framework can send an **ABORT** command. The driver must abort the current 
 execution. If the execution of the scripts is already finished, no event is sent back. If the execution is aborted by this command, a FINISHED 
 event with the script that was executed so far must be returned.
 
 - Any time after the PREPARE command, the test framework can send a **DISPOSE** command. The driver must abort the execution and release the 
-resources in use. When done, a DISPOSED event must be sent back.
+resources in use. When done, a DISPOSED event must be sent back. At this point you can consider that the test has ended and the driver is back in the initial state.
 
-
-TODO - Decision time :) - will we support multiple tests on the same connection or will we force closing the connection and reopening a new one ? 
-Anyway, we need to enforce a clear functionality after DISPOSE command.
+- After a DISPOSE command, no other command is accepted except a new PREPARE. Any other command will have as a result an error with a message "Script has not been prepared or is still preparing". 
 
 
 ### Commands
