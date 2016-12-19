@@ -34,5 +34,4 @@ read closed
 
 write status "200" "OK"
 write header content-length
-write "Hello"
 write close
