@@ -70,4 +70,58 @@ public class ControlIT {
     public void shouldOverrideProperties() throws Exception {
         robot.finish();
     }
+
+    @Test
+    @TestSpecification({ "accept.abort.after.prepare", "connect.abort.after.prepare" })
+    public void shouldPrepareThenAbort() throws Exception {
+        robot.finish();
+    }
+
+    @Test
+    @TestSpecification({ "accept.abort.after.await", "connect.abort.after.await" })
+    public void shouldPrepareAwaitThenAbort() throws Exception {
+        robot.finish();
+    }
+
+    @Test
+    @TestSpecification({ "accept.abort.after.finished", "connect.abort.after.finished" })
+    public void shouldFinishThenAbort() throws Exception {
+        robot.finish();
+    }
+
+    @Test
+    @TestSpecification({ "accept.failed.prepare", "connect.failed.prepare" })
+    public void shouldPrepareAfterFailedPrepare() throws Exception {
+        robot.finish();
+    }
+
+    @Test
+    @TestSpecification({ "accept.failed.prepare.version", "connect.failed.prepare.version" })
+    public void shouldFailPrepareWithIncorrectVersion() throws Exception {
+        robot.finish();
+    }
+
+    @Test
+    @TestSpecification({ "accept.error.if.no.prepare", "connect.error.if.no.prepare" })
+    public void shouldFailIfNotPrepared() throws Exception {
+        robot.finish();
+    }
+
+    @Test
+    @TestSpecification({ "accept.error.if.prepare.failed", "connect.error.if.prepare.failed" })
+    public void shouldFailIfPrepareFailed() throws Exception {
+        robot.finish();
+    }
+
+    @Test
+    @TestSpecification({ "accept.already.prepared.or.started", "connect.already.prepared.or.started" })
+    public void shouldFailIfAlreadyPreparedOrStarted() throws Exception {
+        robot.finish();
+    }
+
+    @Test
+    @TestSpecification({ "accept.after.abort", "connect.after.abort" })
+    public void shouldFailAfterAbort() throws Exception {
+        robot.finish();
+    }
 }
