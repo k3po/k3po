@@ -124,4 +124,16 @@ public class ControlIT {
     public void shouldFailAfterAbort() throws Exception {
         robot.finish();
     }
+
+    @Test
+    @TestSpecification({ "accept.after.dispose", "connect.after.dispose" })
+    public void shouldFailAfterDispose() throws Exception {
+        robot.finish();
+    }
+
+    @Test
+    @TestSpecification({ "accept.incorrect.barrier.name", "connect.incorrect.barrier.name" })
+    public void shouldFailWithIncorrectBarrierName() throws Exception {
+        robot.finish();
+    }
 }
