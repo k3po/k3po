@@ -25,9 +25,9 @@ write "\n"
 
 read "ERROR\n"
 read "summary:Bad control protocol version\n"
-read "content-length:44\n"
+read "content-length:43\n"
 read "\n"
-read "Robot requires control protocol version 2.0\n"
+read "Robot requires control protocol version 2.0"
 
 write "DISPOSE\n"
 write "\n"
