@@ -24,12 +24,12 @@ write "name:org/kaazing/specification/control/assets/client\n"
 write "\n"
 
 read "ERROR\n"
-read "summary:Internal Error\n"
+read "summary:Internal error\n"
 read "content-length:39\n"
 read "\n"
 #until issue #387 is fixed, use generic regexp
-#read /Script not found: not(\\|\/)existing(\\|\/)file.rpt\n/
-read /Script not found: not.existing.file.rpt\n/
+#read /Script not found: not(\\|\/)existing(\\|\/)file.rpt/
+read /Script not found: not.existing.file.rpt/
 
 write "PREPARE\n"
 write "version:2.0\n"

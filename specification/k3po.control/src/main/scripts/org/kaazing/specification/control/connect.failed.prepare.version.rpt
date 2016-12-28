@@ -32,7 +32,10 @@ read "Robot requires control protocol version 2.0"
 write "DISPOSE\n"
 write "\n"
 
-read "DISPOSED\n"
+read "ERROR\n"
+read "summary:Internal error\n"
+read "content-length:51\n"
 read "\n"
+read "Script has not been prepared or is still preparing\n"
 
 close
