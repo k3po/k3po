@@ -65,14 +65,21 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     private static final Map<String, Object> EMPTY_ENVIRONMENT = Collections.<String, Object>emptyMap();
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(ControlServerHandler.class);
+    private static final String ERROR_MSG_NOT_PREPARED = "Script has not been prepared or is still preparing\n";
+    private static final String ERROR_MSG_ALREADY_PREPARED = "Script already prepared\n";
+    private static final String ERROR_MSG_ALREADY_STARTED = "Script has already been started\n";
 
     private Robot robot;
     private ChannelFutureListener whenAbortedOrFinished;
-    private BlockingQueue<CountDownLatch> notifiedLatches = new LinkedBlockingQueue<CountDownLatch>();
+    private BlockingQueue<CountDownLatch> notifiedLatches;
 
-    private final ChannelFuture channelClosedFuture = Channels.future(null);
+    private ChannelFuture channelClosedFuture;
 
     private ClassLoader scriptLoader;
+    
+    public ControlServerHandler() {
+        initialize();
+    }
 
     public void setScriptLoader(ClassLoader scriptLoader) {
         this.scriptLoader = scriptLoader;
@@ -92,6 +99,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 public void operationComplete(ChannelFuture future) throws Exception {
                     channelClosedFuture.setSuccess();
                     ctx.sendUpstream(e);
+                    initialize();
                 }
             });
         }
@@ -100,6 +108,10 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     @Override
     public void prepareReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
+        if (robot != null && robot.getPreparedFuture() != null) {
+            sendErrorMessage(ctx, ERROR_MSG_ALREADY_PREPARED);
+            return;
+        }
 
         final PrepareMessage prepare = (PrepareMessage) evt.getMessage();
 
@@ -255,7 +267,16 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     @Override
     public void startReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
-
+        if (robot == null || robot.getPreparedFuture() == null) {
+            sendErrorMessage(ctx, ERROR_MSG_NOT_PREPARED);
+            return;
+        }
+        
+        if (robot.getStartedFuture().isDone()) {
+            sendErrorMessage(ctx, ERROR_MSG_ALREADY_STARTED);
+            return;
+        }
+        
         try {
             ChannelFuture startFuture = robot.start();
             startFuture.addListener(new ChannelFutureListener() {
@@ -283,8 +304,19 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         if (logger.isInfoEnabled()) {
             logger.info("ABORT");
         }
+
+        if (robot == null || robot.getPreparedFuture() == null) {
+            sendErrorMessage(ctx, ERROR_MSG_NOT_PREPARED);
+            return;
+        }
+        
         assert whenAbortedOrFinished != null;
-        robot.abort().addListener(whenAbortedOrFinished);
+        try {
+            robot.abort().addListener(whenAbortedOrFinished);
+        } catch (Exception e) {
+            sendErrorMessage(ctx, e);
+            return;
+        }
     }
 
     @Override
@@ -294,8 +326,19 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         if (logger.isDebugEnabled()) {
             logger.debug("NOTIFY: " + barrier);
         }
-        writeNotifiedOnBarrier(barrier, ctx);
-        robot.notifyBarrier(barrier);
+
+        if (robot == null || robot.getPreparedFuture() == null) {
+            sendErrorMessage(ctx, ERROR_MSG_NOT_PREPARED);
+            return;
+        }
+        
+        try {
+            writeNotifiedOnBarrier(barrier, ctx);
+            robot.notifyBarrier(barrier);
+        } catch (Exception e) {
+            sendErrorMessage(ctx, e);
+            return;
+        }
     }
 
     @Override
@@ -305,8 +348,18 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         if (logger.isDebugEnabled()) {
             logger.debug("AWAIT: " + barrier);
         }
-        writeNotifiedOnBarrier(barrier, ctx);
 
+        if (robot == null || robot.getPreparedFuture() == null) {
+            sendErrorMessage(ctx, ERROR_MSG_NOT_PREPARED);
+            return;
+        }
+        
+        try {
+            writeNotifiedOnBarrier(barrier, ctx);
+        } catch (Exception e) {
+            sendErrorMessage(ctx, e);
+            return;
+        }
     }
 
     private void writeNotifiedOnBarrier(final String barrier, final ChannelHandlerContext ctx) throws Exception {
@@ -333,12 +386,23 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     @Override
     public void disposeReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
-        robot.dispose().addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
-                writeDisposed(ctx);
-            }
-        });
+        if (robot == null || robot.getPreparedFuture() == null) {
+            sendErrorMessage(ctx, ERROR_MSG_NOT_PREPARED);
+            return;
+        }
+        
+        try {
+            robot.dispose().addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    writeDisposed(ctx);
+                    initialize();
+                }
+            });
+        } catch (Exception e) {
+            sendErrorMessage(ctx, e);
+            return;
+        }
     }
 
     private void writeDisposed(ChannelHandlerContext ctx) {
@@ -353,9 +417,9 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
                 if (oneTimeOnly.compareAndSet(false, true)) {
-                    for (CountDownLatch latch : notifiedLatches) {
-                        latch.await();
-                    }
+//                    for (CountDownLatch latch : notifiedLatches) {
+//                        latch.await();
+//                    }
                     sendFinishedMessage(ctx);
                 }
             }
@@ -393,9 +457,25 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             error.setSummary("Parse Error");
             Channels.write(ctx, Channels.future(null), error);
         } else {
-            logger.error("Internal Error. Sending error to client", throwable);
-            error.setSummary("Internal Error");
+            logger.error("Internal error. Sending error to client", throwable);
+            error.setSummary("Internal error");
             Channels.write(ctx, Channels.future(null), error);
         }
+    }
+    
+    private void sendErrorMessage(ChannelHandlerContext ctx, String description) {
+        ErrorMessage error = new ErrorMessage();
+        error.setSummary("Internal error");
+        error.setDescription(description);
+        if (logger.isDebugEnabled())
+            logger.error("Sending error to client:" + description);
+        Channels.write(ctx, Channels.future(null), error);
+    }
+
+    private void initialize() {
+        robot = null;
+        whenAbortedOrFinished = null;
+        notifiedLatches = new LinkedBlockingQueue<CountDownLatch>();
+        channelClosedFuture = Channels.future(null);
     }
 }
