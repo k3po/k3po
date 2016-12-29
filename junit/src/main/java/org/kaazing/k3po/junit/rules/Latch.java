@@ -24,7 +24,7 @@ class Latch {
     private volatile State state;
     private volatile Exception exception;
 
-    private final CountDownLatch prepared;
+	private final CountDownLatch prepared;
     private final CountDownLatch startable;
     private final CountDownLatch finished;
     private final CountDownLatch disposed;
@@ -158,4 +158,7 @@ class Latch {
         disposed.countDown();
     }
 
+    public Exception getException() {
+		return exception;
+	}
 }

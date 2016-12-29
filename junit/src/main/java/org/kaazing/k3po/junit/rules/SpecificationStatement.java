@@ -55,10 +55,10 @@ final class SpecificationStatement extends Statement {
             // start the script execution
             new Thread(scriptFuture).start();
 
-            // wait for script to be prepared (all binds ready for incoming connections from statement)
-            latch.awaitPrepared();
-
             try {
+                // wait for script to be prepared (all binds ready for incoming connections from statement)
+                latch.awaitPrepared();
+
                 // note: JUnit timeout will trigger an exception
                 statement.evaluate();
             } catch (AssumptionViolatedException e) {
@@ -72,6 +72,10 @@ final class SpecificationStatement extends Statement {
                 // any exception aborts the script (including timeout)
                 if (latch.hasException()) {
                     // propagate exception if the latch has an exception
+                	if (cause instanceof InterruptedException) {
+                		// take the error from the latch, it is more meaningful
+                		throw latch.getException();
+                	}
                     throw cause;
                 } else {
                     // It is possible that the script is finished even if we get an exception
