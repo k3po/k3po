@@ -97,6 +97,14 @@ public class UdpIT {
 
     @Test
     @Specification({
+            "concurrent.writes.together/client",
+            "concurrent.writes.together/server" })
+    public void shouldProcessWritesTogether() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "idle.concurrent.connections/client",
         "idle.concurrent.connections/server" })
     public void shouldCloseIdleConcurrentConnections() throws Exception {
