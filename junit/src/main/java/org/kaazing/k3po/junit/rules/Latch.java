@@ -139,9 +139,10 @@ class Latch {
 
     void notifyException(Exception exception) {
         this.exception = exception;
-        prepared.countDown();
-        startable.countDown();
-        finished.countDown();
+        // Commented because of issue https://github.com/k3po/k3po/issues/391
+//        prepared.countDown();
+//        startable.countDown();
+//        finished.countDown();
         if (testThread != null) {
             testThread.interrupt();
         }
