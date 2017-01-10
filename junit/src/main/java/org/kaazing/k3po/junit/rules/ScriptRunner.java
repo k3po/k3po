@@ -320,15 +320,20 @@ final class ScriptRunner implements Callable<ScriptPair> {
     public void dispose() throws Exception {
         try {
             controller.dispose();
-            CommandEvent event = controller.readEvent();
+            
+            // avoid getting blocked forever if the server is stuck
+            CommandEvent event = controller.readEvent(DISPOSE_TIMEOUT, MILLISECONDS);
 
             // ensure it is the correct event
             switch (event.getKind()) {
             case DISPOSED:
-                latch.notifyDisposed();
                 break;
+            case ERROR:
+                // dispose can have a result a DISPOSED or an ERROR according to new specs
+                ErrorEvent error = (ErrorEvent) event;
+                throw new SpecificationException(format("%s:%s", error.getSummary(), error.getDescription()));
             default:
-                throw new IllegalArgumentException("Unrecognized event kind: " + event.getKind());
+                throw new IllegalArgumentException("Unexpected event kind: " + event.getKind());
             }
         } catch (Exception e) {
             // TODO log this when we get a logger added to Junit, or remove need for this which always clean
