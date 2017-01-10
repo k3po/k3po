@@ -209,7 +209,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
         });
         try {
-            controller.await(barrierName);
+            controller.sendAwaitBarrier(barrierName);
         } catch (Exception e) {
             latch.notifyException(e);
         }
@@ -319,6 +319,10 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
     public void dispose() throws Exception {
         try {
+            // if called when there was a problem connecting to the driver, just skip it
+            if (! controller.isConnected())
+                return;
+            
             controller.dispose();
             
             // avoid getting blocked forever if the server is stuck
