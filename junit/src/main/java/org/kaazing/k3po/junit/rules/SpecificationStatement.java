@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
@@ -58,7 +57,15 @@ final class SpecificationStatement extends Statement {
             try {
                 // wait for script to be prepared (all binds ready for incoming connections from statement)
                 latch.awaitPrepared();
+            } catch (InterruptedException e) {
+                if (latch.hasException()) {
+                    // propagate exception if the latch has an exception
+                    throw latch.getException();
+                } else
+                    throw e;
+            }
 
+            try {
                 // note: JUnit timeout will trigger an exception
                 statement.evaluate();
             } catch (AssumptionViolatedException e) {
@@ -100,9 +107,8 @@ final class SpecificationStatement extends Statement {
                             // Throw the original exception if we are equal
                             throw cause;
                         } catch (ComparisonFailure f) {
-                            // throw an exception that highlights the difference in behavior, but caused by the timeout
-                            // (or
-                            // original exception)
+                            // throw an exception that highlights the difference in behavior, but caused by the timeout 
+                            // (or original exception)
                             f.initCause(cause);
                             throw f;
                         }
@@ -116,10 +122,11 @@ final class SpecificationStatement extends Statement {
                 }
             }
 
+            // Stefan - not sure what the comment bellow is about. There is no join() method in the statement or rule class.
             // note: statement MUST call join() to ensure wrapped Rule(s) do not complete early
             // and to allow Specification script(s) to make progress
             String k3poSimpleName = K3poRule.class.getSimpleName();
-            assertTrue(format("Did you instantiate %s with a @Rule and call %s.join()?", k3poSimpleName, k3poSimpleName),
+            assertTrue(format("Did you instantiate %s with a @Rule and call %s.start() or %s.finish()?", k3poSimpleName, k3poSimpleName, k3poSimpleName),
                     latch.isStartable());
 
             ScriptPair scripts = scriptFuture.get();
@@ -137,7 +144,6 @@ final class SpecificationStatement extends Statement {
 
     public void awaitBarrier(String barrierName) throws InterruptedException {
         scriptRunner.awaitBarrier(barrierName);
-
     }
 
     public void notifyBarrier(String barrierName) throws InterruptedException {
