@@ -109,7 +109,7 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
 
         int readerIndex = buffer.readerIndex();
 
-        int endOfLineAt = buffer.indexOf(readerIndex, Math.min(readableBytes, maxLineLength) + 1, (byte) 0x0a);
+        int endOfLineAt = buffer.indexOf(readerIndex, readerIndex + Math.min(readableBytes, maxLineLength), (byte) 0x0a);
 
         // end-of-line not found
         if (endOfLineAt == -1) {
