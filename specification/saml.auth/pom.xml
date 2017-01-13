@@ -8,7 +8,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>specification.http.saml.auth</artifactId>
+    <artifactId>specification.saml.auth</artifactId>
 
     <name>HTTP SAML Auth Protocol Specification</name>
     <url>https://github.com/k3po/k3po/specifications/http.saml.auth</url>
@@ -40,10 +40,73 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <!--dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml</artifactId>
+            <version>2.6.1</version>
+        </dependency-->
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-core</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-saml-api</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-saml-impl</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-security-api</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-security-impl</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-messaging-api</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-messaging-impl</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-soap-api</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-soap-impl</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-xmlsec-api</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-xmlsec-impl</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
         <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
             <resource>
                 <directory>src/main/scripts</directory>
             </resource>
@@ -70,7 +133,7 @@
                 <dependencies>
                     <dependency>
                         <groupId>org.kaazing</groupId>
-                        <artifactId>specification.http</artifactId>
+                        <artifactId>specification.http.saml.auth</artifactId>
                         <version>${project.version}</version>
                     </dependency>
                 </dependencies>
