@@ -17,12 +17,22 @@ package org.kaazing.specification.saml.internal;
 
 import org.kaazing.k3po.lang.el.Function;
 import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
+import org.kaazing.specification.saml.internal.util.OpenSAMLUtils;
+import org.opensaml.saml.saml2.core.Response;
 
 public final class Functions {
 
+    @Function
+    public static String generateAuthn() throws Exception {
+
+        Response response = GenerateResponse.generateAuthnResponse();
+
+        String encoded_response = OpenSAMLUtils.compressAndEncodeString(OpenSAMLUtils.SAMLObjectToString(response), false);
+        return encoded_response;
+
+    }
 
     public static class Mapper extends FunctionMapperSpi.Reflective {
-
         public Mapper() {
             super(Functions.class);
         }
@@ -34,16 +44,6 @@ public final class Functions {
     }
 
 
-    @Function
-    public static String generateAuthn() {
-        /*
-          Response response = GenerateResponse.generateAuthnResponse();
-          
-          String encoded_response = OpenSAMLUtils.compressAndEncodeString(OpenSAMLUtils.SAMLObjectToString(response),
-          false); return encoded_response;
-         */
-        return "cocojambo";
-    }
 
     private Functions() {
         // utility
