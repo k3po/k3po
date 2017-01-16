@@ -14,11 +14,36 @@
 # limitations under the License.
 #
 
-connect tcp://localhost:8080
+accept udp://localhost:8080
+       notify BOUND
+
+# Stream 1
+accepted
 connected
-write "GET  http://localhost:8080/ HTTP/1.1" "\r\n"
-write "Host: localhost:8080" "\r\n"
-write "\r\n"
-read "HTTP/1.1 200 OK\r\n"
-# Response received
+read /(?<hello1>[123]Hello)/
+read /(?<bye1>[123]Bye)/
+read /(?<goodbye1>[123]Goodbye)/
+write ${hello1}
+write ${bye1}
+write ${goodbye1}
+
+# Stream 2
+accepted
+connected
+read /(?<hello2>[123]Hello)/
+read /(?<bye2>[123]Bye)/
+read /(?<goodbye2>[123]Goodbye)/
+write ${hello2}
+write ${bye2}
+write ${goodbye2}
+
+# Stream 3
+accepted
+connected
+read /(?<hello3>[123]Hello)/
+read /(?<bye3>[123]Bye)/
+read /(?<goodbye3>[123]Goodbye)/
+write ${hello3}
+write ${bye3}
+write ${goodbye3}
 

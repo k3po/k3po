@@ -14,11 +14,41 @@
 # limitations under the License.
 #
 
-connect tcp://localhost:8080
+# Stream 1
+connect await BOUND
+        udp://localhost:8080
 connected
-write "GET  http://localhost:8080/ HTTP/1.1" "\r\n"
-write "Host: localhost:8080" "\r\n"
-write "\r\n"
-read "HTTP/1.1 200 OK\r\n"
-# Response received
+write "1Hello"
+write "1Bye"
+write "1Goodbye"
+read "1Hello"
+read "1Bye"
+read "1Goodbye"
+close
+closed
 
+# Stream 2
+connect await BOUND
+        udp://localhost:8080
+connected
+write "2Hello"
+write "2Bye"
+write "2Goodbye"
+read "2Hello"
+read "2Bye"
+read "2Goodbye"
+close
+closed
+
+# Stream 3
+connect await BOUND
+        udp://localhost:8080
+connected
+write "3Hello"
+write "3Bye"
+write "3Goodbye"
+read "3Hello"
+read "3Bye"
+read "3Goodbye"
+close
+closed

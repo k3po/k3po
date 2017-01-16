@@ -14,11 +14,24 @@
 # limitations under the License.
 #
 
-connect tcp://localhost:8080
+accept http://localhost:8000/resource
+accepted
 connected
-write "GET  http://localhost:8080/ HTTP/1.1" "\r\n"
-write "Host: localhost:8080" "\r\n"
-write "\r\n"
-read "HTTP/1.1 200 OK\r\n"
-# Response received
 
+read method "GET"
+read closed
+
+write status "302" "FOUND"
+write header "Location" "/resource2"
+write close
+
+accept http://localhost:8000/resource2
+accepted
+connected
+
+read method "GET"
+read closed
+
+write status "200" "OK"
+write header content-length
+write close
