@@ -23,7 +23,17 @@ import org.opensaml.saml.saml2.core.Response;
 public final class Functions {
 
     @Function
-    public static String generateAuthn() throws Exception {
+    public static String generateResponse() throws Exception {
+
+        Response response = GenerateResponse.generateAuthnResponse();
+
+        String encoded_response = OpenSAMLUtils.compressAndEncodeString(OpenSAMLUtils.SAMLObjectToString(response), false);
+        return encoded_response;
+
+    }
+
+    @Function
+    public static String generateResponse(String realm, String authnType) throws Exception {
 
         Response response = GenerateResponse.generateAuthnResponse();
 

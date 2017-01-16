@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.specification.saml.internal.util;
+package org.kaazing.specification.saml.internal;
 
 import org.joda.time.DateTime;
+import org.kaazing.specification.saml.internal.util.AuthnRequestConfiguration;
+import org.kaazing.specification.saml.internal.util.OpenSAMLUtils;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
 import org.opensaml.core.xml.io.MarshallingException;

@@ -45,4 +45,11 @@ public class FunctionsTest {
         System.out.println(randomBytes);
     }
 
+    // @Test
+    // public void shouldLoadFunctions() throws Exception {
+    // String expressionText = "${saml:generateAuthn()}";
+    // ValueExpression expression = factory.createValueExpression(ctx, expressionText, String.class);
+    // String randomBytes = (String) expression.getValue(ctx);
+    // System.out.println(randomBytes);
+    // }
 }
