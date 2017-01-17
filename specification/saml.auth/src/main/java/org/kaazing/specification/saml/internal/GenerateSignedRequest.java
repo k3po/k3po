@@ -34,7 +34,7 @@ public class GenerateSignedRequest {
 
     public static void main(String[] args) throws MarshallingException, InitializationException {
         AuthnRequestConfiguration conf = new AuthnRequestConfiguration();
-        intializeSAML();
+        initializeSAML();
         AuthnRequest authnRequest = generateAuthnRequest(conf);
         System.out.println(OpenSAMLUtils.SAMLObjectToString(authnRequest));
     }
@@ -86,7 +86,7 @@ public class GenerateSignedRequest {
         return nameIDPolicy;
     }
 
-    private static void intializeSAML() throws InitializationException {
+    static void initializeSAML() throws InitializationException {
         JavaCryptoValidationInitializer javaCryptoValidationInitializer = new JavaCryptoValidationInitializer();
         try {
             javaCryptoValidationInitializer.init();

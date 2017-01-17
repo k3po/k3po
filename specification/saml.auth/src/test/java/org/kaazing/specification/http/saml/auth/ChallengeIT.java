@@ -43,4 +43,11 @@ public class ChallengeIT {
     public void clientShouldAttachSecChallengeIdentityToFollowingRequests() throws Exception {
         k3po.finish();
     }
+
+    @Test
+    @Specification({"request.with.secure.challenge.encrypted.response/client",
+            "request.with.secure.challenge.encrypted.response/server"})
+    public void serverShouldBeAbleToProcessEncryptedResponse() throws Exception {
+        k3po.finish();
+    }
 }

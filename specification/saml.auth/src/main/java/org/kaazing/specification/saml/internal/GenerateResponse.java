@@ -15,6 +15,15 @@
  */
 package org.kaazing.specification.saml.internal;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -43,6 +52,7 @@ import org.opensaml.saml.saml2.core.AuthnContext;
 import org.opensaml.saml.saml2.core.AuthnContextClassRef;
 import org.opensaml.saml.saml2.core.AuthnStatement;
 import org.opensaml.saml.saml2.core.Conditions;
+import org.opensaml.saml.saml2.core.EncryptedAssertion;
 import org.opensaml.saml.saml2.core.Issuer;
 import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.Response;
@@ -69,7 +79,13 @@ import org.opensaml.saml.saml2.core.impl.StatusMessageBuilder;
 import org.opensaml.saml.saml2.core.impl.SubjectBuilder;
 import org.opensaml.saml.saml2.core.impl.SubjectConfirmationBuilder;
 import org.opensaml.saml.saml2.core.impl.SubjectConfirmationDataBuilder;
+import org.opensaml.saml.saml2.encryption.Encrypter;
+import org.opensaml.security.credential.Credential;
+import org.opensaml.security.x509.BasicX509Credential;
+import org.opensaml.security.x509.X509Credential;
 import org.opensaml.xmlsec.config.JavaCryptoValidationInitializer;
+import org.opensaml.xmlsec.encryption.support.DataEncryptionParameters;
+import org.opensaml.xmlsec.encryption.support.KeyEncryptionParameters;
 import org.opensaml.xmlsec.signature.Signature;
 import org.opensaml.xmlsec.signature.support.SignatureConstants;
 import org.opensaml.xmlsec.signature.support.SignatureException;
@@ -81,15 +97,20 @@ public class GenerateResponse {
 
     public static void main(String[] args) throws Exception {
 
-        Response response = generateAuthnResponse();
+        Response response = generateResponse(false);
 
         String encoded_response = OpenSAMLUtils.compressAndEncodeString(OpenSAMLUtils.SAMLObjectToString(response), false);
         System.out.println(OpenSAMLUtils.SAMLObjectToString(response));
         System.out.println(encoded_response);
+
+        Response encryptedResponse = generateResponse(true);
+        encoded_response = OpenSAMLUtils.compressAndEncodeString(OpenSAMLUtils.SAMLObjectToString(encryptedResponse), false);
+        System.out.println(OpenSAMLUtils.SAMLObjectToString(encryptedResponse));
+        System.out.println("encrypted-response = " + encoded_response);
     }
 
-    public static Response generateAuthnResponse() throws Exception {
-        intializeSAML();
+    public static Response generateResponse(boolean encrypted) throws Exception {
+        initializeSAML();
         Response response = new ResponseBuilder().buildObject();
         response.setIssuer(createIssuer());
         response.setID(OpenSAMLUtils.generateSecureRandomId());
@@ -100,11 +121,50 @@ public class GenerateResponse {
         DateTime notOnOrAfter = new DateTime(issueInstant.getMillis() + getSAMLResponseValidityPeriod() * 60 * 1000);
         response.setIssueInstant(issueInstant);
         Assertion assertion = buildSAMLAssertion(notOnOrAfter, createSampleUserName());
-        response.getAssertions().add(assertion);
+        if (encrypted) {
+            EncryptedAssertion encryptedAssertion = encryptAssertion(assertion);
+            response.getEncryptedAssertions().add(encryptedAssertion);
+        } else {
+            response.getAssertions().add(assertion);
+        }
 
         signMessage(response);
 
         return response;
+    }
+
+    private static EncryptedAssertion encryptAssertion(Assertion assertion) throws Exception {
+
+        Credential keyEncryptionCredential = getKEKCredential();
+
+        DataEncryptionParameters encParams = new DataEncryptionParameters();
+
+        encParams.setAlgorithm(EncryptionConstants.ALGO_ID_BLOCKCIPHER_AES128);
+        KeyEncryptionParameters kekParams = new KeyEncryptionParameters();
+        kekParams.setEncryptionCredential(keyEncryptionCredential);
+        // kekParams.set
+        kekParams.setAlgorithm(EncryptionConstants.ALGO_ID_KEYTRANSPORT_RSA15);
+
+        Encrypter encrypter = new Encrypter(encParams, kekParams);
+        encrypter.setKeyPlacement(Encrypter.KeyPlacement.INLINE);
+
+        return encrypter.encrypt(assertion);
+    }
+
+    private static Credential getKEKCredential() throws Exception {
+        X509Credential decryptCredential = null;
+
+        FileInputStream is = new FileInputStream("src/main/resources/keystore.db");
+        KeyStore keyStore = KeyStore.getInstance("JCEKS");
+        keyStore.load(is, "ab987c".toCharArray());
+        Certificate certificate = keyStore.getCertificate("sp.cert");
+        Key privKey = keyStore.getKey("sp.cert", "ab987c".toCharArray());
+        CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+        InputStream in = new ByteArrayInputStream(certificate.getEncoded());
+        X509Certificate cert = (X509Certificate) certFactory.generateCertificate(in);
+        decryptCredential = new BasicX509Credential(cert, (PrivateKey) privKey);
+        return decryptCredential;
+
     }
 
     private static void signMessage(SignableSAMLObject response) throws Exception, MarshallingException, SignatureException {
@@ -126,7 +186,7 @@ public class GenerateResponse {
         return 3000;
     }
 
-    private static void intializeSAML() throws InitializationException {
+    static void initializeSAML() throws InitializationException {
         JavaCryptoValidationInitializer javaCryptoValidationInitializer = new JavaCryptoValidationInitializer();
         try {
             javaCryptoValidationInitializer.init();
