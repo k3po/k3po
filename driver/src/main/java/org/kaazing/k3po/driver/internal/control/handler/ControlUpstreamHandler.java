@@ -85,7 +85,6 @@ public class ControlUpstreamHandler extends SimpleChannelUpstreamHandler {
         String msg = "Control channel caught exception event: ";
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(msg, e.getCause());
-            e.getCause().printStackTrace();
         } else {
             LOGGER.info(msg + e.getCause());
         }

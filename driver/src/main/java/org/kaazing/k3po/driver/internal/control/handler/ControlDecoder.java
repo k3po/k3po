@@ -107,10 +107,10 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
             sb.append((char) b);
             b = buffer.readByte();
         }
-        
+
         if (sb.length() >= maxLength)
             throw new IllegalArgumentException(errorMessage);
-        
+
         return sb.toString();
     }
 

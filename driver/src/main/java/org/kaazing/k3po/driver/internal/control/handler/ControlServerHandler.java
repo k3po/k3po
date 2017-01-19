@@ -417,9 +417,6 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
                 if (oneTimeOnly.compareAndSet(false, true)) {
-//                    for (CountDownLatch latch : notifiedLatches) {
-//                        latch.await();
-//                    }
                     sendFinishedMessage(ctx);
                 }
             }
