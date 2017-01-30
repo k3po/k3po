@@ -27,7 +27,6 @@ class Latch {
     private final CountDownLatch prepared;
     private final CountDownLatch startable;
     private final CountDownLatch finished;
-    private final CountDownLatch disposed;
     private volatile Thread testThread;
 
     Latch() {
@@ -36,7 +35,6 @@ class Latch {
         prepared = new CountDownLatch(1);
         startable = new CountDownLatch(1);
         finished = new CountDownLatch(1);
-        disposed = new CountDownLatch(1);
     }
 
     void notifyPrepared() {
@@ -122,13 +120,6 @@ class Latch {
         finished.await();
     }
 
-    void awaitDisposed() throws Exception {
-        disposed.await();
-        if (exception != null) {
-            throw exception;
-        }
-    }
-
     boolean isFinished() {
         return finished.getCount() == 0L;
     }
@@ -139,9 +130,10 @@ class Latch {
 
     void notifyException(Exception exception) {
         this.exception = exception;
-        prepared.countDown();
-        startable.countDown();
-        finished.countDown();
+        // Commented because of issue https://github.com/k3po/k3po/issues/391
+//        prepared.countDown();
+//        startable.countDown();
+//        finished.countDown();
         if (testThread != null) {
             testThread.interrupt();
         }
@@ -154,8 +146,7 @@ class Latch {
         }
     }
 
-    public void notifyDisposed() {
-        disposed.countDown();
-    }
-
+    public Exception getException() {
+		return exception;
+	}
 }

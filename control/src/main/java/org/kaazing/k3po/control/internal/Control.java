@@ -86,8 +86,11 @@ public final class Control {
      * @throws Exception if fails to connect.
      */
     public void connect() throws Exception {
-        connection = location.openConnection();
-        connection.connect();
+        // connection must be null if the connection failed
+        URLConnection newConnection = location.openConnection();
+        newConnection.connect();
+        connection = newConnection;
+        
         InputStream bytesIn = connection.getInputStream();
         CharsetDecoder decoder = UTF_8.newDecoder();
         textIn = new BufferedReader(new InputStreamReader(bytesIn, decoder));
@@ -203,6 +206,10 @@ public final class Control {
         if (connection == null) {
             throw new IllegalStateException("Not connected");
         }
+    }
+    
+    public boolean isConnected() {
+        return connection != null;
     }
 
     private void writeCommand(PrepareCommand prepare) throws Exception {
@@ -466,7 +473,7 @@ public final class Control {
         this.writeCommand(notifyCommand);
     }
 
-    public void await(String barrierName) throws Exception {
+    public void sendAwaitBarrier(String barrierName) throws Exception {
         final AwaitCommand awaitCommand = new AwaitCommand();
         awaitCommand.setBarrier(barrierName);
         this.writeCommand(awaitCommand);
