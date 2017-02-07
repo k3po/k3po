@@ -1,11 +1,26 @@
 # Change Log
 
-## [3.0.0-alpha-59](https://github.com/k3po/k3po/tree/3.0.0-alpha-59) (2016-12-19)
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-58...3.0.0-alpha-59)
+## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
+
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-60...HEAD)
 
 **Closed issues:**
 
-- Need a way to specify fragments on k3po http script [\#385](https://github.com/k3po/k3po/issues/385)
+- Agrona transport is flushing partial write when unexpected data is read [\#397](https://github.com/k3po/k3po/issues/397)
+
+**Merged pull requests:**
+
+- Agrona transport is flushing partial write when unexpected data is read [\#399](https://github.com/k3po/k3po/pull/399) ([jfallows](https://github.com/jfallows))
+- removed system out println for error message [\#396](https://github.com/k3po/k3po/pull/396) ([dpwspoon](https://github.com/dpwspoon))
+- \[Merge after PR 383 and PR 389\] Control protocol testcases [\#390](https://github.com/k3po/k3po/pull/390) ([StCostea](https://github.com/StCostea))
+- K3po driver fixes according to new specs + some additional fixes [\#389](https://github.com/k3po/k3po/pull/389) ([StCostea](https://github.com/StCostea))
+- Control protocol specs [\#383](https://github.com/k3po/k3po/pull/383) ([StCostea](https://github.com/StCostea))
+
+## [3.0.0-alpha-60](https://github.com/k3po/k3po/tree/3.0.0-alpha-60) (2016-12-20)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-59...3.0.0-alpha-60)
+
+## [3.0.0-alpha-59](https://github.com/k3po/k3po/tree/3.0.0-alpha-59) (2016-12-19)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-58...3.0.0-alpha-59)
 
 **Merged pull requests:**
 

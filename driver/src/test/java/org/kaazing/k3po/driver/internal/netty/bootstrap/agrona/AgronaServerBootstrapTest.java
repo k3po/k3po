@@ -26,6 +26,7 @@ import static org.jboss.netty.channel.Channels.write;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory.newChannelAddressFactory;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.flush;
 import static org.kaazing.k3po.driver.internal.netty.channel.agrona.AgronaChannelAddress.OPTION_READER;
 import static org.kaazing.k3po.driver.internal.netty.channel.agrona.AgronaChannelAddress.OPTION_WRITER;
 import static org.mockito.Matchers.any;
@@ -42,6 +43,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.agrona.MutableDirectBuffer;
+import org.agrona.concurrent.MessageHandler;
+import org.agrona.concurrent.UnsafeBuffer;
+import org.agrona.concurrent.broadcast.BroadcastBufferDescriptor;
+import org.agrona.concurrent.broadcast.BroadcastReceiver;
+import org.agrona.concurrent.broadcast.BroadcastTransmitter;
+import org.agrona.concurrent.broadcast.CopyBroadcastReceiver;
+import org.agrona.concurrent.ringbuffer.ManyToOneRingBuffer;
+import org.agrona.concurrent.ringbuffer.RingBufferDescriptor;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelEvent;
@@ -65,6 +75,7 @@ import org.junit.runner.RunWith;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrapRule;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
+import org.kaazing.k3po.driver.internal.netty.channel.FlushEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.SimpleChannelHandler;
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.BroadcastTransmitterChannelWriter;
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.ChannelReader;
@@ -73,16 +84,6 @@ import org.kaazing.k3po.driver.internal.netty.channel.agrona.CopyBroadcastReceiv
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.RingBufferChannelReader;
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.RingBufferChannelWriter;
 import org.mockito.InOrder;
-
-import org.agrona.MutableDirectBuffer;
-import org.agrona.concurrent.MessageHandler;
-import org.agrona.concurrent.UnsafeBuffer;
-import org.agrona.concurrent.broadcast.BroadcastBufferDescriptor;
-import org.agrona.concurrent.broadcast.BroadcastReceiver;
-import org.agrona.concurrent.broadcast.BroadcastTransmitter;
-import org.agrona.concurrent.broadcast.CopyBroadcastReceiver;
-import org.agrona.concurrent.ringbuffer.ManyToOneRingBuffer;
-import org.agrona.concurrent.ringbuffer.RingBufferDescriptor;
 
 @RunWith(Theories.class)
 public class AgronaServerBootstrapTest {
@@ -122,6 +123,7 @@ public class AgronaServerBootstrapTest {
                 Channel channel = ctx.getChannel();
                 ChannelBuffer message = (ChannelBuffer) e.getMessage();
                 write(ctx, future(channel), message);
+                flush(ctx, future(channel));
                 close(ctx, future(channel));
             }
         };
@@ -240,8 +242,8 @@ public class AgronaServerBootstrapTest {
         parentClose.verify(parentSpy).channelUnbound(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
         parentClose.verify(parentSpy).channelClosed(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
 
-        verify(childSpy, times(8)).handleUpstream(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
-        verify(childSpy, times(2)).handleDownstream(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
+        verify(childSpy, times(9)).handleUpstream(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
+        verify(childSpy, times(3)).handleDownstream(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
 
         InOrder childConnect = inOrder(childSpy);
         childConnect.verify(childSpy).channelOpen(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
@@ -253,7 +255,9 @@ public class AgronaServerBootstrapTest {
 
         InOrder childWrite = inOrder(childSpy);
         childWrite.verify(childSpy).writeRequested(any(ChannelHandlerContext.class), any(MessageEvent.class));
+        childWrite.verify(childSpy).flushRequested(any(ChannelHandlerContext.class), any(FlushEvent.class));
         childWrite.verify(childSpy).writeComplete(any(ChannelHandlerContext.class), any(WriteCompletionEvent.class));
+        childWrite.verify(childSpy).flushed(any(ChannelHandlerContext.class), any(FlushEvent.class));
 
         InOrder childClose = inOrder(childSpy);
         childClose.verify(childSpy).closeRequested(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));

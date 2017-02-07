@@ -14,21 +14,28 @@
 # limitations under the License.
 #
 
-property newLayout ${agronaIT:layoutInit("target/agrona-itest", 1024, 1024)}
-
-accept agrona://stream/bidirectional
-       option reader ${agrona:manyToOneReader(newLayout.ring)}
-       option writer ${agrona:broadcastTransmitter(newLayout.broadcast)}
-
-accepted
+connect tcp://localhost:12345
 connected
 
-read [0x00 0x00 0x00 0x01]
-read ([0..32] :server32)
+write "PREPARE\n"
+write "version:1.5\n"
+write "name:org/kaazing/specification/control/assets/server\n"
+write "name:org/kaazing/specification/control/assets/client\n"
+write "\n"
 
-write [0x00 0x00 0x00 0x02]
-write ${server32}
-write flush
+read "ERROR\n"
+read "summary:Bad control protocol version\n"
+read "content-length:43\n"
+read "\n"
+read "Robot requires control protocol version 2.0"
+
+write "DISPOSE\n"
+write "\n"
+
+read "ERROR\n"
+read "summary:Internal error\n"
+read "content-length:51\n"
+read "\n"
+read "Script has not been prepared or is still preparing\n"
 
 close
-closed

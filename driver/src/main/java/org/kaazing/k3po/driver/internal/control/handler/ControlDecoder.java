@@ -71,7 +71,7 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
 
         switch (state) {
         case READ_INITIAL: {
-            String initialLine = readLine(buffer, maxInitialLineLength);
+            String initialLine = readLine(buffer, maxInitialLineLength, "Initial line too long");
             if (initialLine != null) {
                 message = createMessage(initialLine);
                 contentLength = 0;
@@ -100,33 +100,16 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
         }
     }
 
-    private static String readLine(ChannelBuffer buffer, int maxLineLength) {
-
-        int readableBytes = buffer.readableBytes();
-        if (readableBytes == 0) {
-            return null;
+    private String readLine(ChannelBuffer buffer, int maxLength, String errorMessage) {
+        StringBuilder sb = new StringBuilder();
+        byte b = buffer.readByte();
+        while (b != (byte) 0x0a && sb.length() < maxLength) {
+            sb.append((char) b);
+            b = buffer.readByte();
         }
 
-        int readerIndex = buffer.readerIndex();
-
-        int endOfLineAt = buffer.indexOf(readerIndex, Math.min(readableBytes, maxLineLength) + 1, (byte) 0x0a);
-
-        // end-of-line not found
-        if (endOfLineAt == -1) {
-            if (readableBytes >= maxLineLength) {
-                throw new IllegalArgumentException("Initial line too long");
-            }
-            return null;
-        }
-
-        // end-of-line found
-        StringBuilder sb = new StringBuilder(endOfLineAt);
-        for (int i = readerIndex; i < endOfLineAt; i++) {
-            sb.append((char) buffer.readByte());
-        }
-
-        byte endOfLine = buffer.readByte();
-        assert endOfLine == 0x0a;
+        if (sb.length() >= maxLength)
+            throw new IllegalArgumentException(errorMessage);
 
         return sb.toString();
     }
@@ -153,29 +136,9 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
     }
 
     private State readHeader(ChannelBuffer buffer) {
+        String line = readLine(buffer, maxHeaderLineLength, "Header line too long");
 
-        int readableBytes = buffer.readableBytes();
-        if (readableBytes == 0) {
-            return null;
-        }
-
-        int endOfLineSearchFrom = buffer.readerIndex();
-        // int endOfLineSearchTo = endOfLineSearchFrom + Math.min(readableBytes, maxHeaderLineLength);
-        int endOfLineSearchTo = Math.min(readableBytes, maxHeaderLineLength);
-        int endOfLineAt = buffer.indexOf(endOfLineSearchFrom, endOfLineSearchTo + 1, (byte) 0x0a);
-
-        // end-of-line not found
-        if (endOfLineAt == -1) {
-            if (readableBytes >= maxHeaderLineLength) {
-                throw new IllegalArgumentException("Header line too long");
-            }
-            return null;
-        }
-
-        if (endOfLineAt == endOfLineSearchFrom) {
-            byte endOfLine = buffer.readByte();
-            assert endOfLine == 0x0a;
-
+        if (line.length() == 0) {
             if (contentLength == 0) {
                 return State.READ_INITIAL;
             }
@@ -191,11 +154,7 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
             }
         }
 
-        // end-of-line found
-        int colonSearchFrom = buffer.readerIndex();
-        // int colonSearchTo = colonSearchFrom + Math.min(readableBytes, endOfLineAt);
-        int colonSearchTo = Math.min(readableBytes, endOfLineAt);
-        int colonAt = buffer.indexOf(colonSearchFrom, colonSearchTo + 1, (byte) 0x3a);
+        int colonAt = line.indexOf(":");
 
         // colon not found
         if (colonAt == -1) {
@@ -203,22 +162,9 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
         }
 
         // colon found
-        int headerNameLength = colonAt - colonSearchFrom;
-        StringBuilder headerNameBuilder = new StringBuilder(headerNameLength);
-        for (int i = 0; i < headerNameLength; i++) {
-            headerNameBuilder.append((char) buffer.readByte());
-        }
-        String headerName = headerNameBuilder.toString();
+        String headerName = line.substring(0, colonAt);
 
-        byte colon = buffer.readByte();
-        assert colon == 0x3a;
-
-        int headerValueLength = endOfLineAt - colonAt - 1;
-        StringBuilder headerValueBuilder = new StringBuilder(headerValueLength);
-        for (int i = 0; i < headerValueLength; i++) {
-            headerValueBuilder.append((char) buffer.readByte());
-        }
-        String headerValue = headerValueBuilder.toString();
+        String headerValue = line.substring(colonAt + 1);
 
         // add kind-specific headers
         switch (message.getKind()) {
@@ -274,8 +220,6 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
             break;
         }
 
-        byte endOfLine = buffer.readByte();
-        assert endOfLine == 0x0a;
         return State.READ_HEADER;
     }
 
@@ -283,11 +227,8 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
 
         assert contentLength > 0;
 
-        if (buffer.readableBytes() < contentLength) {
-            return State.READ_CONTENT;
-        }
-
         String content = buffer.readBytes(contentLength).toString(UTF_8);
+
         switch (message.getKind()) {
         case PREPARE:
             PrepareMessage prepareMessage = (PrepareMessage) message;

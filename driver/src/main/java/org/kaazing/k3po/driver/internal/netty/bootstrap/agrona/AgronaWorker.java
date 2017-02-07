@@ -259,7 +259,7 @@ public final class AgronaWorker implements Runnable {
         @Override
         public void run() {
             try {
-                flushWriteBufferIfNecessary(channel);
+                // note: no implicit flush-on-close to allow cleanup without side-effects
                 future.setSuccess();
                 if (channel.setClosed()) {
                     fireChannelDisconnected(channel);

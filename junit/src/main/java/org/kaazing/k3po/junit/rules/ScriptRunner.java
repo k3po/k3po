@@ -17,15 +17,11 @@ package org.kaazing.k3po.junit.rules;
 
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.kaazing.k3po.junit.rules.ScriptRunner.BarrierState.INITIAL;
-import static org.kaazing.k3po.junit.rules.ScriptRunner.BarrierState.NOTIFIED;
-import static org.kaazing.k3po.junit.rules.ScriptRunner.BarrierState.NOTIFYING;
 
 import java.lang.management.ManagementFactory;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +46,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
     private final Latch latch;
 
     private volatile boolean abortScheduled;
-    private volatile Map<String, BarrierStateMachine> barriers;
+    private volatile Map<String, CountDownLatch> barriers;
     private final List<String> overridenScriptProperties;
     private static final int DISPOSE_TIMEOUT = isDebugging() ? 0: 5000;
 
@@ -67,19 +63,13 @@ final class ScriptRunner implements Callable<ScriptPair> {
         this.controller = new Control(controlURL);
         this.names = names;
         this.latch = latch;
-        this.barriers = new HashMap<String, ScriptRunner.BarrierStateMachine>();
+        this.barriers = new HashMap<String, CountDownLatch>();
         this.overridenScriptProperties = overridenScriptProperties;
     }
 
     public void abort() {
         // logging with system.out as I don't believe there is a standard junit logger, in the future
         // we will send this on the wire to appear in the diff (https://github.com/k3po/k3po/issues/332)
-        System.out.println(
-                "K3po Script Runner is sending an abort!\n Aborts may cause K3po to falsely fail the test if K3po\n"
-                + "is still processing a backlog of messages.  This is often the case in junit tests that have low\n"
-                + "timeout exceptions (less than 5 secs) and are running on somewhat limited hardware (travis CI and build"
-                + " machines)\n"
-                + "see https://github.com/k3po/k3po/issues/332 for more details");
         this.abortScheduled = true;
         latch.notifyAbort();
     }
@@ -115,7 +105,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
                         PreparedEvent prepared = (PreparedEvent) event;
                         expectedScript = prepared.getScript();
                         for (String barrier : prepared.getBarriers()) {
-                            barriers.put(barrier, new BarrierStateMachine());
+                            barriers.put(barrier, new CountDownLatch(1));
                         }
 
                         // notify script is prepared
@@ -138,8 +128,8 @@ final class ScriptRunner implements Callable<ScriptPair> {
                     case NOTIFIED:
                         NotifiedEvent notifiedEvent = (NotifiedEvent) event;
                         String barrier = notifiedEvent.getBarrier();
-                        BarrierStateMachine stateMachine = barriers.get(barrier);
-                        stateMachine.notified();
+                        CountDownLatch latch = barriers.get(barrier);
+                        latch.countDown();
                         break;
                     case ERROR:
                         ErrorEvent error = (ErrorEvent) event;
@@ -188,31 +178,12 @@ final class ScriptRunner implements Callable<ScriptPair> {
             throw new IllegalArgumentException(String.format(
                     "Barrier with %s is not present in the script and thus can't be waited upon", barrierName));
         }
-        final CountDownLatch notifiedLatch = new CountDownLatch(1);
-        final BarrierStateMachine barrierStateMachine = barriers.get(barrierName);
-        barrierStateMachine.addListener(new BarrierStateListener() {
-
-            @Override
-            public void initial() {
-                // NOOP
-            }
-
-            @Override
-            public void notifying() {
-                // NOOP
-            }
-
-            @Override
-            public void notified() {
-                notifiedLatch.countDown();
-            }
-
-        });
         try {
-            controller.await(barrierName);
+            controller.sendAwaitBarrier(barrierName);
         } catch (Exception e) {
             latch.notifyException(e);
         }
+        final CountDownLatch notifiedLatch = barriers.get(barrierName);
         notifiedLatch.await();
     }
 
@@ -221,114 +192,39 @@ final class ScriptRunner implements Callable<ScriptPair> {
             throw new IllegalArgumentException(String.format(
                     "Barrier with %s is not present in the script and thus can't be notified", barrierName));
         }
-        final CountDownLatch notifiedLatch = new CountDownLatch(1);
-        final BarrierStateMachine barrierStateMachine = barriers.get(barrierName);
-        barrierStateMachine.addListener(new BarrierStateListener() {
-
-            @Override
-            public void initial() {
-                barrierStateMachine.notifying();
-                // Only write to wire once
-                try {
-                    controller.notifyBarrier(barrierName);
-                } catch (Exception e) {
-                    latch.notifyException(e);
-                }
+        final CountDownLatch notifiedLatch = barriers.get(barrierName);
+        if (notifiedLatch.getCount() > 0) {
+            try {
+                controller.notifyBarrier(barrierName);
+            } catch (Exception e) {
+                latch.notifyException(e);
             }
-
-            @Override
-            public void notifying() {
-                // NOOP
-            }
-
-            @Override
-            public void notified() {
-                notifiedLatch.countDown();
-            }
-        });
+        }
         notifiedLatch.await();
     }
 
-    private interface BarrierStateListener {
-        void initial();
-
-        void notified();
-
-        void notifying();
-    }
-
-    enum BarrierState {
-        INITIAL, NOTIFYING, NOTIFIED;
-    }
-
-    private class BarrierStateMachine implements BarrierStateListener {
-
-        private BarrierState state = INITIAL;
-        private List<BarrierStateListener> stateListeners = new ArrayList<>();
-
-        @Override
-        public void initial() {
-            synchronized (this) {
-                this.state = NOTIFYING;
-                for (BarrierStateListener listener : stateListeners) {
-                    listener.initial();
-                }
-            }
-        }
-
-        @Override
-        public void notifying() {
-            synchronized (this) {
-                this.state = NOTIFYING;
-                for (BarrierStateListener listener : stateListeners) {
-                    listener.notifying();
-                }
-            }
-        }
-
-        @Override
-        public void notified() {
-            synchronized (this) {
-                this.state = NOTIFIED;
-                for (BarrierStateListener listener : stateListeners) {
-                    listener.notified();
-                }
-            }
-        }
-
-        public void addListener(BarrierStateListener stateListener) {
-            synchronized (this) {
-                switch (this.state) {
-                // notify right away if waiting on state
-                case INITIAL:
-                    stateListener.initial();
-                    break;
-                case NOTIFYING:
-                    stateListener.notify();
-                    break;
-                case NOTIFIED:
-                    stateListener.notified();
-                    break;
-                default:
-                    break;
-                }
-                stateListeners.add(stateListener);
-            }
-        }
-    }
 
     public void dispose() throws Exception {
         try {
+            // if called when there was a problem connecting to the driver, just skip it
+            if (! controller.isConnected())
+                return;
+            
             controller.dispose();
-            CommandEvent event = controller.readEvent();
+            
+            // avoid getting blocked forever if the server is stuck
+            CommandEvent event = controller.readEvent(DISPOSE_TIMEOUT, MILLISECONDS);
 
             // ensure it is the correct event
             switch (event.getKind()) {
             case DISPOSED:
-                latch.notifyDisposed();
                 break;
+            case ERROR:
+                // dispose can have a result a DISPOSED or an ERROR according to new specs
+                ErrorEvent error = (ErrorEvent) event;
+                throw new SpecificationException(format("%s:%s", error.getSummary(), error.getDescription()));
             default:
-                throw new IllegalArgumentException("Unrecognized event kind: " + event.getKind());
+                throw new IllegalArgumentException("Unexpected event kind: " + event.getKind());
             }
         } catch (Exception e) {
             // TODO log this when we get a logger added to Junit, or remove need for this which always clean

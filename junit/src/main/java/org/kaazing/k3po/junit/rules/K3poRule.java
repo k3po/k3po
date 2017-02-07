@@ -83,6 +83,11 @@ public class K3poRule extends Verifier {
         latch = new Latch();
         classOverriddenProperties = new ArrayList<>();
         packagePathsByName = new HashMap<>();
+        
+        // There were situations where the interrupted status was set to true from the previous test.
+        // Check and clear the interrupted status from the thread
+        if (Thread.interrupted())
+            System.out.println("Warning - thread had interrupted status = true before test start");
     }
 
     /**
