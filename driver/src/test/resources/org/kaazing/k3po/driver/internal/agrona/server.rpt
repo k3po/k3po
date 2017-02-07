@@ -28,6 +28,7 @@ read ([0..32] :server32)
 
 write [0x00 0x00 0x00 0x02]
 write ${server32}
+write flush
 
 close
 closed
