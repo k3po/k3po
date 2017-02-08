@@ -80,4 +80,69 @@ public class K3poIT {
         k3po.finish();
     }
 
+    @Test
+    @TestSpecification({ "connect.abort.after.prepare" })
+    public void shouldPrepareThenAbort() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({ "connect.abort.after.await" })
+    public void shouldPrepareAwaitThenAbort() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({ "connect.abort.after.finished" })
+    public void shouldFinishThenAbort() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({ "connect.failed.prepare" })
+    public void shouldPrepareAfterFailedPrepare() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({ "connect.failed.prepare.version" })
+    public void shouldFailPrepareWithIncorrectVersion() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({ "connect.error.if.no.prepare" })
+    public void shouldFailIfNotPrepared() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({ "connect.error.if.prepare.failed" })
+    public void shouldFailIfPrepareFailed() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({ "connect.already.prepared.or.started" })
+    public void shouldFailIfAlreadyPreparedOrStarted() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({ "connect.after.abort" })
+    public void shouldFailAfterAbort() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({ "connect.after.dispose" })
+    public void shouldFailAfterDispose() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({ "connect.incorrect.barrier.name" })
+    public void shouldFailWithIncorrectBarrierName() throws Exception {
+        k3po.finish();
+    }
 }
