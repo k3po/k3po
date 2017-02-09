@@ -71,16 +71,12 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     private Robot robot;
     private ChannelFutureListener whenAbortedOrFinished;
-    private BlockingQueue<CountDownLatch> notifiedLatches;
+    private BlockingQueue<CountDownLatch> notifiedLatches = new LinkedBlockingQueue<CountDownLatch>();
 
-    private ChannelFuture channelClosedFuture;
+    private final ChannelFuture channelClosedFuture = Channels.future(null);
 
     private ClassLoader scriptLoader;
     
-    public ControlServerHandler() {
-        initialize();
-    }
-
     public void setScriptLoader(ClassLoader scriptLoader) {
         this.scriptLoader = scriptLoader;
     }
@@ -99,7 +95,6 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 public void operationComplete(ChannelFuture future) throws Exception {
                     channelClosedFuture.setSuccess();
                     ctx.sendUpstream(e);
-                    initialize();
                 }
             });
         }
@@ -396,7 +391,6 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 @Override
                 public void operationComplete(ChannelFuture future) throws Exception {
                     writeDisposed(ctx);
-                    initialize();
                 }
             });
         } catch (Exception e) {
@@ -467,12 +461,5 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         if (logger.isDebugEnabled())
             logger.error("Sending error to client:" + description);
         Channels.write(ctx, Channels.future(null), error);
-    }
-
-    private void initialize() {
-        robot = null;
-        whenAbortedOrFinished = null;
-        notifiedLatches = new LinkedBlockingQueue<CountDownLatch>();
-        channelClosedFuture = Channels.future(null);
     }
 }
