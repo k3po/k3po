@@ -135,12 +135,6 @@ public class K3poIT {
     }
 
     @Test
-    @TestSpecification({ "connect.after.dispose" })
-    public void shouldFailAfterDispose() throws Exception {
-        k3po.finish();
-    }
-
-    @Test
     @TestSpecification({ "connect.incorrect.barrier.name" })
     public void shouldFailWithIncorrectBarrierName() throws Exception {
         k3po.finish();

@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-60...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-61...HEAD)
+
+**Merged pull requests:**
+
+- Fix clean-up issue in ControlServerHandler [\#401](https://github.com/k3po/k3po/pull/401) ([StCostea](https://github.com/StCostea))
+
+## [3.0.0-alpha-61](https://github.com/k3po/k3po/tree/3.0.0-alpha-61) (2017-02-07)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-60...3.0.0-alpha-61)
 
 **Closed issues:**
 
