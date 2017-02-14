@@ -47,11 +47,17 @@ public final class OptionsResolver {
                 Object value = options.get(name);
                 if (value instanceof AstExpressionValue) {
                     AstExpressionValue expressionValue = (AstExpressionValue) value;
-                    value = expressionValue.getValue().getValue(environment);
+                    // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
+                    synchronized (environment) {
+                        value = expressionValue.getValue().getValue(environment);
+                    }
                 }
                 else if (value instanceof AstLocationExpression) {
                     AstLocationExpression location = (AstLocationExpression) value;
-                    value = location.getValue().getValue(environment);
+                    // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
+                    synchronized (environment) {
+                        value = location.getValue().getValue(environment);
+                    }
                 }
                 else if (value instanceof AstLocationLiteral) {
                     AstLocationLiteral location = (AstLocationLiteral) value;
