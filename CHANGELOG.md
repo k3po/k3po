@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-61...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-62...HEAD)
+
+**Merged pull requests:**
+
+- Workaround \#147 in OptionsResolver too [\#403](https://github.com/k3po/k3po/pull/403) ([jfallows](https://github.com/jfallows))
+
+## [3.0.0-alpha-62](https://github.com/k3po/k3po/tree/3.0.0-alpha-62) (2017-02-09)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-61...3.0.0-alpha-62)
 
 **Merged pull requests:**
 
