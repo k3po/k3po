@@ -128,8 +128,8 @@ final class ScriptRunner implements Callable<ScriptPair> {
                     case NOTIFIED:
                         NotifiedEvent notifiedEvent = (NotifiedEvent) event;
                         String barrier = notifiedEvent.getBarrier();
-                        CountDownLatch latch = barriers.get(barrier);
-                        latch.countDown();
+                        CountDownLatch notifiedLatch = barriers.get(barrier);
+                        notifiedLatch.countDown();
                         break;
                     case ERROR:
                         ErrorEvent error = (ErrorEvent) event;
@@ -211,21 +211,24 @@ final class ScriptRunner implements Callable<ScriptPair> {
                 return;
             
             controller.dispose();
-            
-            // avoid getting blocked forever if the server is stuck
-            CommandEvent event = controller.readEvent(DISPOSE_TIMEOUT, MILLISECONDS);
 
-            // ensure it is the correct event
-            switch (event.getKind()) {
-            case DISPOSED:
-                break;
-            case ERROR:
-                // dispose can have a result a DISPOSED or an ERROR according to new specs
-                ErrorEvent error = (ErrorEvent) event;
-                throw new SpecificationException(format("%s:%s", error.getSummary(), error.getDescription()));
-            default:
-                throw new IllegalArgumentException("Unexpected event kind: " + event.getKind());
+            latch.awaitFinished();
+            if (! latch.hasException()) {
+                CommandEvent event = controller.readEvent(DISPOSE_TIMEOUT, MILLISECONDS);
+    
+                // ensure it is the correct event
+                switch (event.getKind()) {
+                case DISPOSED:
+                    break;
+                case ERROR:
+                    // dispose can have a result a DISPOSED or an ERROR according to new specs
+                    ErrorEvent error = (ErrorEvent) event;
+                    throw new SpecificationException(format("%s:%s", error.getSummary(), error.getDescription()));
+                default:
+                    throw new IllegalArgumentException("Unexpected event kind: " + event.getKind());
+                }
             }
+            
         } catch (Exception e) {
             // TODO log this when we get a logger added to Junit, or remove need for this which always clean
             // shutdown of k3po channels
