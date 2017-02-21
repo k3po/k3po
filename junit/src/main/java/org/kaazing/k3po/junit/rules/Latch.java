@@ -93,7 +93,7 @@ class Latch {
         switch (state) {
         case INIT:
             notifyPrepared();
-            break;
+//            break;
         // We could abort before started.
         case PREPARED:
         case STARTABLE:
@@ -136,6 +136,8 @@ class Latch {
 //        finished.countDown();
         if (testThread != null) {
             testThread.interrupt();
+            if (testThread != Thread.currentThread())
+                testThread.interrupt();
         }
     }
 

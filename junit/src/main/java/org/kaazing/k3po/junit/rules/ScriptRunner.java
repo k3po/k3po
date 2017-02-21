@@ -94,6 +94,8 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
             boolean abortWritten = false;
             String expectedScript = null;
+            String observedScript = null;
+            boolean finishedReceived = false;
             while (true) {
                 try {
                     // validate event name matches command name
@@ -137,12 +139,19 @@ final class ScriptRunner implements Callable<ScriptPair> {
                     case FINISHED:
                         FinishedEvent finished = (FinishedEvent) event;
                         // note: observed script is possibly incomplete
-                        String observedScript = finished.getScript();
-                        return new ScriptPair(expectedScript, observedScript);
+                        observedScript = finished.getScript();
+                        
+                        // we keep the result and read any other event is still in the buffer. We will return after the first timeout
+//                        return new ScriptPair(expectedScript, observedScript);
+                        finishedReceived = true;
+                        break;
                     default:
                         throw new IllegalArgumentException("Unrecognized event kind: " + event.getKind());
                     }
                 } catch (SocketTimeoutException e) {
+                    if (finishedReceived)
+                        return new ScriptPair(expectedScript, observedScript);
+
                     if (abortScheduled && !abortWritten) {
                         sendAbortCommand();
                         abortWritten = true;
