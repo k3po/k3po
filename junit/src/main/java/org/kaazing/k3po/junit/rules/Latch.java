@@ -135,7 +135,6 @@ class Latch {
 //        startable.countDown();
 //        finished.countDown();
         if (testThread != null) {
-            testThread.interrupt();
             if (testThread != Thread.currentThread())
                 testThread.interrupt();
         }
