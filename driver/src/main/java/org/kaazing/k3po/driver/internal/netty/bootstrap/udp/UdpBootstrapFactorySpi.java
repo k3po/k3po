@@ -109,7 +109,7 @@ public final class UdpBootstrapFactorySpi extends BootstrapFactorySpi implements
         if (serverChannelFactory == null) {
             Executor workerExecutor = executorServiceFactory.newExecutorService("worker.server");
             NioDatagramWorkerPool workerPool = new NioDatagramWorkerPool(workerExecutor, 1);
-            serverChannelFactory = new UdpServerChannelFactory(new UdpServerChannelSink(workerPool, timer));
+            serverChannelFactory = new UdpServerChannelFactory(workerPool, timer);
 
             // unshared
             channelFactories.add(serverChannelFactory);
