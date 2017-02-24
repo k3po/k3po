@@ -92,7 +92,7 @@ N/A
 ##### ABORT command
 
 ###### Description
-This command will abort the current execution.
+The **ABORT** command will abort the currently running script execution.
 
 ###### Headers
 N/A
