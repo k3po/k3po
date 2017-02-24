@@ -260,7 +260,7 @@ responds with the **DISPOSED** event, the test is then completed and the underly
 
 Any unrecoverable error case triggers an **ERROR** event.  The underlying connection MUST not be reused.
 
-1. An ERROR event is sent if the test framework requests scripts to be prepared that can not be found
-2. An ERROR event is sent if the test framework sends an AWAIT for a barrier that does not exist
+1. An **ERROR** event is sent if the test framework requests scripts to be prepared that can not be found
+2. An **ERROR **event is sent if the test framework sends an **AWAIT** for a barrier that does not exist
 
 
