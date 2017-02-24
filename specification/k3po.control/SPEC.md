@@ -23,9 +23,9 @@ driver via this control protocol.
 
 ## Message Format
 
-A message is either a Command or and Event Commands are actions sent by the test framework.
-Events are triggered by observed actions or state changes in the driver and are sent back to the test framework.  The message 
-is formatted as follows:
+A message is either a Command or an Event.  Commands are sent by the test framework.
+Events are triggered by observed actions or state changes in the driver and are sent back to the test framework.  All messages
+are formatted as follows:
 
     Control Message   =   command-line LF
                           *( header-field LF )
