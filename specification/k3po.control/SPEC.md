@@ -19,7 +19,12 @@ interface that allows clients to control it by the protocol set out in this spec
 
 The test framework allows users to write tests in a specified manner.  The test framework defines an API for when
 and how K3PO scripts should run. When ran, the test framework acts as a client to the K3PO driver and controls the
-driver via this control protocol.  
+driver via this control protocol.
+
+
+#### Test
+
+A test encompasses the prepartion, execution, results, and clean up of simultaneous K3PO script(s) execution.
 
 ## Message Format
 
