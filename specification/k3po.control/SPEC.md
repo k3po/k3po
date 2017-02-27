@@ -60,7 +60,7 @@ This **PREPARE** command informs the driver to prepare one or more K3PO script f
 - version - the version of the protocol. Currently the only supported version is 2.0.
 - content-length - the length of the message body. This header is optional, should be present only when message body is not empty.
 - origin - the root folder for the scripts to be executed. This header is optional
-- name - the name of the scripts to be executed. It is a relative path to the origin. Can appear more than once (several scripts to be executed).
+- name - the name of the script to be executed. It is a relative path to the origin. Can appear more than once (several scripts to be executed).
 
 ###### Message body
 The message body for prepare command is a set of properties with format
