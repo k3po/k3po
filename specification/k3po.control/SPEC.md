@@ -92,7 +92,7 @@ N/A
 ##### ABORT command
 
 ###### Description
-The **ABORT** command will abort the currently running script execution.
+The **ABORT** command will abort the current running test.  The driver will stop any executing scripts, and SHOULD return a FINISHED event if it has not already been sent.
 
 ###### Headers
 N/A
