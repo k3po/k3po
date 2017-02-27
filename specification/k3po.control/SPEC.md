@@ -198,6 +198,8 @@ This event is sent by the driver when the driver has finished execution of the s
 ###### Headers
 - content-length - the length of the message body. This header is optional, should be present only when the message body is 
 not empty.
+- completed-barrier - (occurs 0 or more times), the value is the name of a barrier that completed.  All completed barriers MUST be sent in the FINISHED event.
+- incomplete-barrier -  (occurs 0 or more times), the value is the name of a barrier that did not complete.  All incomplete barriers must be sent in the FINISHED event.
 	
 ###### Message body
 The message body for the event is the observed script after the execution on the driver. This script can be compared with the script in the
