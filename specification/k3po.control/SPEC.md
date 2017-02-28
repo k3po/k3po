@@ -269,6 +269,7 @@ Any unrecoverable error case triggers an **ERROR** event.  The underlying connec
 #### Common Error Cases
 
 Below is a non-exhaustive list of error conditions
+
 1. An **ERROR** event is sent if the test framework requests scripts to be prepared that can not be found
 2. An **ERROR** event is sent if the test framework sends an **AWAIT** for a barrier that does not exist
 
