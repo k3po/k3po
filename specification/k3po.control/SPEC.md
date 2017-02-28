@@ -144,7 +144,7 @@ N/A
 ##### PREPARED event
 
 ###### Description
-The **PREPARED** event is sent once the K3PO script is prepared for execution.  Note: the preparation of the script is
+The **PREPARED** event is sent once on or more K3PO scripts is prepared for execution.  Note: the preparation of the scripts are
 triggered by the PREPARE command.
 
 ###### Headers
@@ -169,7 +169,7 @@ N/A
 ##### NOTIFIED event
 
 ###### Description
-This event is sent by the driver when a barrier is triggered in the script.
+This event notifys the client that a barrier has been triggered.  It may be sent after a barrier is triggered, or after a NOTIFY command if the barrier was previously completed.
 
 ###### Headers
 - barrier - the name of the barrier that was triggered.
@@ -253,8 +253,8 @@ command. The driver must abort the current script execution, which should trigge
 execution has already stopped the driver will ignore the **ABORT** command (note, in this case the driver should already have
 sent the **FINISHED** or be in the process of sending the finished). 
 
-The test framework signals the end of the test by sending a **DISPOSE** command to the client.  Note the test can not end 
-prior to completing the script execution (i.e. having sent a **FINISHED** event).  This triggers the clean up of any 
+The test framework signals the end of the test by sending a **DISPOSE** command to the driver.  Note the test can not end 
+prior to completing the script execution (i.e. DISPOSE MUST not be sent before a **FINISHED** event).  This triggers the clean up of any 
 outstanding resources on the driver (such as left open server streams).  When all resources have been cleaned up, the driver
 responds with the **DISPOSED** event, the test is then completed and the underlying connection may be reused for another test.
 
