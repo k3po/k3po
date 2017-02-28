@@ -247,16 +247,17 @@ hitting undefined behavior AND
   2) after sending a **STARTED** event (note, script execution may have completed if the script
 is just accepts prior to the **START** command or **STARTED** event)
 
+Prior to receiving a **FINISHED** command, the test framework may request script execution to stop by sending an  **ABORT** 
+command. The driver must abort the current script execution, which should trigger a **FINISHED** command.  If the script 
+execution has already stopped the driver will ignore the **ABORT** command (note, in this case the driver should already have
+sent the **FINISHED** or be in the process of sending the **FINISHED**). 
+
 Any time after the **PREPARE** command and before the **DISPOSE** command, the test framework can send an **AWAIT** command.
  
 If the driver receives an **AWAIT** command and the scripts are still executing (i.e. the **FINISHED** command has not been sent
  or is not in the process of being sent), the driver MUST send a **NOTIFIED** event if the barrier has already complete or 
  when/if the barrier does completes.  The driver MAY ignore await commands if it receives them after script execution.
 
-Prior to receiving a **FINISHED** command, the test framework may request script execution to stop by sending an  **ABORT** 
-command. The driver must abort the current script execution, which should trigger a **FINISHED** command.  If the script 
-execution has already stopped the driver will ignore the **ABORT** command (note, in this case the driver should already have
-sent the **FINISHED** or be in the process of sending the finished). 
 
 The test framework signals the end of the test by sending a **DISPOSE** command to the driver.  Note the test can not end 
 prior to completing the script execution (i.e. DISPOSE MUST not be sent before a **FINISHED** event).  This triggers the clean up of any 
