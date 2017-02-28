@@ -21,10 +21,15 @@ The test framework allows users to write tests in a specified manner.  The test 
 and how K3PO scripts should run. When ran, the test framework acts as a client to the K3PO driver and controls the
 driver via this control protocol.
 
-
 #### Test
 
 A test encompasses the prepartion, execution, results, and clean up of simultaneous K3PO script(s) execution.
+
+## Introduction
+
+The K3PO control protocol defines how the test frameworks can utilize K3PO scripts in tests.  The test framework communicates with the driver.  The driver is responsible for executing the K3PO scripts.  The K3PO scripting language has several features such as Barriers and Properties which may need to be coordinated with the running test on the test framework.   The K3PO protocol defines how this is done.
+
+The K3po Protocol is asynchronous.  The driver sends messages called *events* that may occur in reaction a state change on the driver, or to a behavior defined in the script.   The test framework sends *commands* to the driver.
 
 ## Message Format
 
