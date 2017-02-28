@@ -264,11 +264,12 @@ prior to completing the script execution (i.e. DISPOSE MUST not be sent before a
 outstanding resources on the driver (such as left open server streams).  When all resources have been cleaned up, the driver
 responds with the **DISPOSED** event, the test is then completed and the underlying connection may be reused for another test.
 
-#### Common Error Cases
-
 Any unrecoverable error case triggers an **ERROR** event.  The underlying connection MUST not be reused.
 
+#### Common Error Cases
+
+Below is a non-exhaustive list of error conditions
 1. An **ERROR** event is sent if the test framework requests scripts to be prepared that can not be found
-2. An **ERROR **event is sent if the test framework sends an **AWAIT** for a barrier that does not exist
+2. An **ERROR** event is sent if the test framework sends an **AWAIT** for a barrier that does not exist
 
 
