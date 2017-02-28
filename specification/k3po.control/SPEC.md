@@ -119,11 +119,11 @@ triggered.  Note, the **NOTIFIED** event may never be sent back if the barrier i
 N/A
 
 
-##### NOTIFIED command
+##### NOTIFY command
 
 ###### Description
-The **NOTIFIED** command is used by the test framework to unblock script execution that is awaiting a barrier of the same 
-name included in the **NOTIFIED** command.
+The **NOTIFY** command is used by the test framework to unblock script execution that is awaiting a barrier of the same 
+name included in the **NOTIFY** command.
 
 ###### Headers
 - barrier - the name of the barrier that should be triggered
