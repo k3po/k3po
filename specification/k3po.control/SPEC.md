@@ -272,5 +272,6 @@ Below is a non-exhaustive list of example error conditions
 
 1. An **ERROR** event is sent if the test framework requests scripts to be prepared that can not be found
 2. An **ERROR** event is sent if the test framework sends an **AWAIT** for a barrier that does not exist
+2. An **ERROR** event is sent if the test framework indicates that it is trying to run multiple tests at the same time (multiple **START** or **PREPARE** commands are sent)
 
 
