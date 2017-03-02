@@ -366,6 +366,12 @@ public final class Control {
                 case "name":
                     // compatibility
                     break;
+                case "notified-barrier":
+                    finished.getCompletedBarriers().add(headerValue);
+                    break;
+                case "await-barrier":
+                    finished.getIncompleteBarriers().add(headerValue);
+                    break;
                 default:
                     // NOP allow unrecognized headers for future compatibility
                 }
