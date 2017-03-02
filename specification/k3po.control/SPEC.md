@@ -174,7 +174,7 @@ N/A
 ##### NOTIFIED event
 
 ###### Description
-This event notifys the client that a barrier has been triggered.  It may be sent after a barrier is triggered, or after a AWAIT command if the barrier was previously completed.
+This event notifys the client that a barrier has been triggered.  It may be sent after a barrier is triggered, or after a AWAIT command if the barrier was previously completed.  It MUST be sent in response to a NOTIFY command, after that barrier is completed.
 
 ###### Headers
 - barrier - the name of the barrier that was triggered.
