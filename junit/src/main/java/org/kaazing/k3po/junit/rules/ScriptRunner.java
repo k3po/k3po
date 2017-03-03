@@ -124,21 +124,17 @@ final class ScriptRunner implements Callable<ScriptPair> {
                         }
                         break;
                     case STARTED:
-                        logline("-> STARTED event");
                         break;
                     case NOTIFIED:
-                        logline("-> NOTIFIED event");
                         NotifiedEvent notifiedEvent = (NotifiedEvent) event;
                         String barrier = notifiedEvent.getBarrier();
                         CountDownLatch notifiedLatch = barriers.get(barrier);
                         notifiedLatch.countDown();
                         break;
                     case ERROR:
-                        logline("-> ERROR event");
                         ErrorEvent error = (ErrorEvent) event;
                         throw new SpecificationException(format("%s:%s", error.getSummary(), error.getDescription()));
                     case FINISHED:
-                        logline("-> FINISHED event");
                         FinishedEvent finished = (FinishedEvent) event;
                         // notify all barriers
                         notifyBarriers(finished);
