@@ -15,11 +15,21 @@
  */
 package org.kaazing.k3po.driver.internal.control;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class FinishedMessage extends ControlMessage {
 
     private String script = "";
+    private final List<String> completedBarriers;
+    private final List<String> incompleteBarriers;
+    
+    public FinishedMessage() {
+        super();
+        this.completedBarriers = new ArrayList<>();
+        this.incompleteBarriers = new ArrayList<>();
+    }
 
     public String getScript() {
         return script;
@@ -48,4 +58,11 @@ public class FinishedMessage extends ControlMessage {
         return super.equalTo(that) && Objects.equals(this.script, that.script);
     }
 
+    public List<String> getCompletedBarriers() {
+        return completedBarriers;
+    }
+
+    public List<String> getIncompleteBarriers() {
+        return incompleteBarriers;
+    }
 }
