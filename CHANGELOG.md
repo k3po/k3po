@@ -2,7 +2,24 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-62...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-63...HEAD)
+
+**Fixed bugs:**
+
+- Incorrect implementation for ControlDecoder without using the ReplayingDecoder framework [\#393](https://github.com/k3po/k3po/issues/393)
+- K3po driver is stuck if an abort is sent after an await on a barrier never triggered [\#388](https://github.com/k3po/k3po/issues/388)
+
+**Closed issues:**
+
+- Regresssion:  k3po-maven-plugin stop is taking ages, over 1 minute [\#400](https://github.com/k3po/k3po/issues/400)
+
+**Merged pull requests:**
+
+- Additional fixes related to interrupted status and 'Unexpected event Notified' [\#406](https://github.com/k3po/k3po/pull/406) ([StCostea](https://github.com/StCostea))
+- Finish execution before sending the DISPOSE command [\#404](https://github.com/k3po/k3po/pull/404) ([StCostea](https://github.com/StCostea))
+
+## [3.0.0-alpha-63](https://github.com/k3po/k3po/tree/3.0.0-alpha-63) (2017-02-14)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-62...3.0.0-alpha-63)
 
 **Merged pull requests:**
 
