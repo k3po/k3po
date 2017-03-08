@@ -14,29 +14,37 @@
 # limitations under the License.
 #
 
-accept http://localhost:8080/request1
+accept tcp://localhost:8080
 accepted
 connected
-read method "GET"
-read closed
-write status "200" "OK"
-write header content-length
+read "GET /request1 HTTP/1.1" "\r\n"
+read "Host: localhost:8080" "\r\n"
+read "\r\n"
+
+write "HTTP/1.1 200 OK\r\n"
+write "Content-Length: 8\r\n"
+write "\r\n"
 write "request1"
-write close
 
-accept http://localhost:8080/request2
+read "GET /request2 HTTP/1.1" "\r\n"
+read "Host: localhost:8080" "\r\n"
+read "\r\n"
+close
+closed
+
+# New connection
 accepted
 connected
-read method "GET"
-read closed
-abort
 
-accepted
-connected
-read method "GET"
-read closed
-write status "200" "OK"
-write header content-length
+read "GET /request2 HTTP/1.1" "\r\n"
+read "Host: localhost:8080" "\r\n"
+read "Connection: close" "\r\n"
+read "\r\n"
+
+write "HTTP/1.1 200 OK\r\n"
+write "Content-Length: 8\r\n"
+write "\r\n"
 write "request2"
-write close
+
+close
 closed
