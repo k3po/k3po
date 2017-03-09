@@ -129,12 +129,6 @@ public class K3poIT {
     }
 
     @Test
-    @TestSpecification({ "connect.after.abort" })
-    public void shouldFailAfterAbort() throws Exception {
-        k3po.finish();
-    }
-
-    @Test
     @TestSpecification({ "connect.incorrect.barrier.name" })
     public void shouldFailWithIncorrectBarrierName() throws Exception {
         k3po.finish();

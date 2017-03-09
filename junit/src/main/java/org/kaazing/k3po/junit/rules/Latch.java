@@ -93,6 +93,7 @@ class Latch {
         switch (state) {
         case INIT:
             notifyPrepared();
+            // we need the finished latch to be released, as ScriptRunner.dispose() is waiting for it before sending the DISPOSE command
 //            break;
         // We could abort before started.
         case PREPARED:

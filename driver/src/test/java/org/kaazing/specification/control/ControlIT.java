@@ -120,12 +120,6 @@ public class ControlIT {
     }
 
     @Test
-    @TestSpecification({ "accept.after.abort", "connect.after.abort" })
-    public void shouldFailAfterAbort() throws Exception {
-        robot.finish();
-    }
-
-    @Test
     @TestSpecification({ "accept.incorrect.barrier.name", "connect.incorrect.barrier.name" })
     public void shouldFailWithIncorrectBarrierName() throws Exception {
         robot.finish();

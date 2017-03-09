@@ -69,6 +69,8 @@ read "barrier:AWAITING_BARRIER\n"
 read "\n"
 
 read "FINISHED\n"
+read "notified-barrier:AWAITING_BARRIER\n"
+read "notified-barrier:NOTIFYING_BARRIER\n"
 read "content-length:255\n"
 read "\n"
 read "# server\n"

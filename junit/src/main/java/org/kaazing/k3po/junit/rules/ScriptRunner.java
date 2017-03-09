@@ -94,8 +94,6 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
             boolean abortWritten = false;
             String expectedScript = null;
-            String observedScript = null;
-            boolean finishedReceived = false;
             while (true) {
                 try {
                     // validate event name matches command name
@@ -138,20 +136,15 @@ final class ScriptRunner implements Callable<ScriptPair> {
                         throw new SpecificationException(format("%s:%s", error.getSummary(), error.getDescription()));
                     case FINISHED:
                         FinishedEvent finished = (FinishedEvent) event;
+                        // notify all barriers
+                        notifyBarriers(finished);
                         // note: observed script is possibly incomplete
-                        observedScript = finished.getScript();
-                        
-                        // we keep the result and read any other event is still in the buffer. We will return after the first timeout
-//                        return new ScriptPair(expectedScript, observedScript);
-                        finishedReceived = true;
-                        break;
+                        String observedScript = finished.getScript();
+                        return new ScriptPair(expectedScript, observedScript);
                     default:
                         throw new IllegalArgumentException("Unrecognized event kind: " + event.getKind());
                     }
                 } catch (SocketTimeoutException e) {
-                    if (finishedReceived)
-                        return new ScriptPair(expectedScript, observedScript);
-
                     if (abortScheduled && !abortWritten) {
                         sendAbortCommand();
                         abortWritten = true;
@@ -174,6 +167,14 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
         } finally {
             latch.notifyFinished();
+        }
+    }
+
+    private void notifyBarriers(FinishedEvent event) {
+        for( String barrierName : event.getCompletedBarriers())
+        {
+            CountDownLatch barrier = barriers.get(barrierName);
+            barrier.countDown();
         }
     }
 
@@ -237,7 +238,8 @@ final class ScriptRunner implements Callable<ScriptPair> {
                     throw new IllegalArgumentException("Unexpected event kind: " + event.getKind());
                 }
             }
-            
+        } catch (InterruptedException e) {
+            // just ignore, most probably there was an exception on the k3po driver, so we might not receive a DISPOSED anyway
         } catch (Exception e) {
             // TODO log this when we get a logger added to Junit, or remove need for this which always clean
             // shutdown of k3po channels
