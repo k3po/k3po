@@ -372,7 +372,6 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     @Override
     public void disposeReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
-//        if (robot == null || robot.getPreparedFuture() == null) {
         if (robot == null) {
             sendErrorMessage(ctx, ERROR_MSG_NOT_PREPARED);
             return;
