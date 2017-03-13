@@ -50,7 +50,7 @@ are formatted as follows:
 
 If the "content-length" header is specified, then a message body of the specified length must be added.
 
-Headers that are not understood / processed by a command must be ignored.
+Headers that are not understood / processed must result in an ERROR event if received by the server, or a closed connection if received on the client
 
 ## Message Types
 
@@ -132,18 +132,6 @@ name included in the **NOTIFY** command.
 N/A
 
 
-##### DISPOSE command
-
-###### Description
-This command will notify the driver that it should end the session and clean-up the resources.
-
-###### Headers
-N/A
-
-###### Message body
-N/A
-
-
 ### EVENTS
 
 ##### PREPARED event
@@ -183,18 +171,6 @@ This event notifys the client that a barrier has been triggered.  It may be sent
 N/A 
 
 
-##### DISPOSED event
-
-###### Description
-This event is sent by the driver when the driver was cleaned-up. It is sent as a response for a DISPOSE command.
-
-###### Headers
-N/A
-	
-###### Message body
-N/A 
-
-
 ##### FINISHED event
 
 ###### Description
@@ -203,8 +179,8 @@ This event is sent by the driver when the driver has finished execution of the s
 ###### Headers
 - content-length - the length of the message body. This header is optional, should be present only when the message body is 
 not empty.
-- notified-barrier - (occurs 0 or more times), the value is the name of a barrier that completed.  All completed barriers MUST be sent in the FINISHED event.
-- await-barrier -  (occurs 0 or more times), the value is the name of a barrier that did not complete.  All incomplete barriers must be sent in the FINISHED event.
+- notified - (occurs 0 or more times), the value is the name of a barrier that completed.  All completed barriers MUST be sent in the FINISHED event.
+- awaiting -  (occurs 0 or more times), the value is the name of a barrier that did not complete.  All incomplete barriers must be sent in the FINISHED event.
 	
 ###### Message body
 The message body for the event is the observed script after the execution on the driver. This script can be compared with the script in the
@@ -252,17 +228,16 @@ command. The driver must abort the current script execution, which should trigge
 execution has already stopped the driver will ignore the **ABORT** command (note, in this case the driver should already have
 sent the **FINISHED** or be in the process of sending the **FINISHED**). 
 
-Any time after the **PREPARE** command and before the **DISPOSE** command, the test framework can send an **AWAIT** command.
+Any time after the **PREPARE** command the test framework can send an **AWAIT** command.
  
 If the driver receives an **AWAIT** command and the scripts are still executing (i.e. the **FINISHED** command has not been sent
  or is not in the process of being sent), the driver MUST send a **NOTIFIED** event if the barrier has already complete or 
  when/if the barrier does completes.  The driver MAY ignore await commands if it receives them after script execution.
 
 
-The test framework signals the end of the test by sending a **DISPOSE** command to the driver.  Note the test can not end 
-prior to completing the script execution (i.e. DISPOSE MUST not be sent before a **FINISHED** event).  This triggers the clean up of any 
-outstanding resources on the driver (such as left open server streams).  When all resources have been cleaned up, the driver
-responds with the **DISPOSED** event, the test is then completed and the underlying connection may be reused for another test.
+The test framework signals the end of the test by closing the underlying connection.  This triggers the clean up of any 
+outstanding resources on the driver (such as left open server streams).  The driver should not prepare any new tests that may
+reuse resources from the last test, until the last test is completely cleaned up
 
 Any unrecoverable error case triggers an **ERROR** event.  The underlying connection MUST not be reused.
 
