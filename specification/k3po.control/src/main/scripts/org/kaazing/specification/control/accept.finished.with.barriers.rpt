@@ -70,6 +70,8 @@ write "barrier:AWAITING_BARRIER\n"
 write "\n"
 
 write "FINISHED\n"
+write "notified-barrier:AWAITING_BARRIER\n"
+write "notified-barrier:NOTIFYING_BARRIER\n"
 write "content-length:255\n"
 write "\n"
 write "# server\n"
@@ -97,4 +99,3 @@ write "DISPOSED\n"
 write "\n"
 
 close
-

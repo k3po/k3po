@@ -128,14 +128,16 @@ final class ScriptRunner implements Callable<ScriptPair> {
                     case NOTIFIED:
                         NotifiedEvent notifiedEvent = (NotifiedEvent) event;
                         String barrier = notifiedEvent.getBarrier();
-                        CountDownLatch latch = barriers.get(barrier);
-                        latch.countDown();
+                        CountDownLatch notifiedLatch = barriers.get(barrier);
+                        notifiedLatch.countDown();
                         break;
                     case ERROR:
                         ErrorEvent error = (ErrorEvent) event;
                         throw new SpecificationException(format("%s:%s", error.getSummary(), error.getDescription()));
                     case FINISHED:
                         FinishedEvent finished = (FinishedEvent) event;
+                        // notify all barriers
+                        notifyBarriers(finished);
                         // note: observed script is possibly incomplete
                         String observedScript = finished.getScript();
                         return new ScriptPair(expectedScript, observedScript);
@@ -165,6 +167,14 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
         } finally {
             latch.notifyFinished();
+        }
+    }
+
+    private void notifyBarriers(FinishedEvent event) {
+        for( String barrierName : event.getCompletedBarriers())
+        {
+            CountDownLatch barrier = barriers.get(barrierName);
+            barrier.countDown();
         }
     }
 
@@ -211,21 +221,25 @@ final class ScriptRunner implements Callable<ScriptPair> {
                 return;
             
             controller.dispose();
-            
-            // avoid getting blocked forever if the server is stuck
-            CommandEvent event = controller.readEvent(DISPOSE_TIMEOUT, MILLISECONDS);
 
-            // ensure it is the correct event
-            switch (event.getKind()) {
-            case DISPOSED:
-                break;
-            case ERROR:
-                // dispose can have a result a DISPOSED or an ERROR according to new specs
-                ErrorEvent error = (ErrorEvent) event;
-                throw new SpecificationException(format("%s:%s", error.getSummary(), error.getDescription()));
-            default:
-                throw new IllegalArgumentException("Unexpected event kind: " + event.getKind());
+            latch.awaitFinished();
+            if (! latch.hasException()) {
+                CommandEvent event = controller.readEvent(DISPOSE_TIMEOUT, MILLISECONDS);
+    
+                // ensure it is the correct event
+                switch (event.getKind()) {
+                case DISPOSED:
+                    break;
+                case ERROR:
+                    // dispose can have a result a DISPOSED or an ERROR according to new specs
+                    ErrorEvent error = (ErrorEvent) event;
+                    throw new SpecificationException(format("%s:%s", error.getSummary(), error.getDescription()));
+                default:
+                    throw new IllegalArgumentException("Unexpected event kind: " + event.getKind());
+                }
             }
+        } catch (InterruptedException e) {
+            // just ignore, most probably there was an exception on the k3po driver, so we might not receive a DISPOSED anyway
         } catch (Exception e) {
             // TODO log this when we get a logger added to Junit, or remove need for this which always clean
             // shutdown of k3po channels

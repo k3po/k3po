@@ -111,6 +111,18 @@ public class ControlEncoder extends OneToOneEncoder {
 
         ChannelBuffer buf = dynamicBuffer(channel.getConfig().getBufferFactory());
         encodeInitial(kind, buf);
+        for (String barrier : finishedMessage.getCompletedBarriers()) {
+            // ~ denote injected barriers, which need not be shared with test framework
+            if (!barrier.startsWith("~")) {
+                encodeHeader("notified-barrier", barrier, buf);
+            }
+        }
+        for (String barrier : finishedMessage.getIncompleteBarriers()) {
+            // ~ denote injected barriers, which need not be shared with test framework
+            if (!barrier.startsWith("~")) {
+                encodeHeader("await-barrier", barrier, buf);
+            }
+        }
         return encodeContent(script, buf);
     }
 

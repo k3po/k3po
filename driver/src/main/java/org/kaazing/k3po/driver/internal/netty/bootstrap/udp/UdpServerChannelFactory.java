@@ -19,13 +19,17 @@ package org.kaazing.k3po.driver.internal.netty.bootstrap.udp;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelSink;
 import org.jboss.netty.channel.ServerChannelFactory;
+import org.jboss.netty.channel.socket.nio.NioDatagramWorkerPool;
+import org.jboss.netty.util.Timer;
 
 class UdpServerChannelFactory implements ServerChannelFactory {
 
     private final ChannelSink channelSink;
+    private final NioDatagramWorkerPool workerPool;
 
-    UdpServerChannelFactory(UdpServerChannelSink channelSink) {
-        this.channelSink = channelSink;
+    UdpServerChannelFactory(NioDatagramWorkerPool workerPool, Timer timer) {
+        this.workerPool = workerPool;
+        this.channelSink = new UdpServerChannelSink(workerPool, timer);
     }
 
     @Override
@@ -35,10 +39,12 @@ class UdpServerChannelFactory implements ServerChannelFactory {
 
     @Override
     public void shutdown() {
+        workerPool.shutdown();
     }
 
     @Override
     public void releaseExternalResources() {
+        workerPool.releaseExternalResources();
     }
 
 }

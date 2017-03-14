@@ -54,6 +54,8 @@ write "ABORT\n"
 write "\n"
 
 read "FINISHED\n"
+read "await-barrier:AWAITING_BARRIER\n"
+read "await-barrier:NOTIFYING_BARRIER\n"
 read "content-length:70\n"
 read "\n"
 read "# server\n"
@@ -61,22 +63,6 @@ read "property uri \"tcp://localhost:8000\"\n"
 read "accept ${uri}\n"
 read "\n"
 read "# client\n"
-read "\n"
-
-write "NOTIFY\n"
-write "barrier:AWAITING_BARRIER\n"
-write "\n"
-
-read "NOTIFIED\n"
-read "barrier:AWAITING_BARRIER\n"
-read "\n"
-
-write "AWAIT\n"
-write "barrier:AWAITING_BARRIER\n"
-write "\n"
-
-read "NOTIFIED\n"
-read "barrier:AWAITING_BARRIER\n"
 read "\n"
 
 write "DISPOSE\n"

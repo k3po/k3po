@@ -138,6 +138,7 @@ final class SpecificationStatement extends Statement {
             } finally {
                 // clean up the task if it is still running
                 scriptFuture.cancel(true);
+                Thread.interrupted(); // clear interrupted status
             }
         }
     }

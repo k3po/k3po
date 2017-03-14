@@ -15,6 +15,8 @@
  */
 package org.kaazing.k3po.control.internal.event;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -24,6 +26,14 @@ import java.util.Objects;
 public final class FinishedEvent extends CommandEvent {
 
     private String script;
+    private final List<String> completedBarriers;
+    private final List<String> incompleteBarriers;
+
+    public FinishedEvent() {
+        super();
+        this.completedBarriers = new ArrayList<>();
+        this.incompleteBarriers = new ArrayList<>();
+    }
 
     @Override
     public Kind getKind() {
@@ -44,6 +54,14 @@ public final class FinishedEvent extends CommandEvent {
      */
     public String getScript() {
         return script;
+    }
+
+    public List<String> getCompletedBarriers() {
+        return completedBarriers;
+    }
+
+    public List<String> getIncompleteBarriers() {
+        return incompleteBarriers;
     }
 
     @Override

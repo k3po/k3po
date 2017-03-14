@@ -44,6 +44,16 @@ write "write \"echo\"\n"
 write "read \"echo\"\n"
 write "closed\n"
 
+read "AWAIT\n"
+read "barrier:NOT_EXISTING\n"
+read "\n"
+
+write "ERROR\n"
+write "summary:Internal error\n"
+write "content-length:72\n"
+write "\n"
+write "Can not notify a barrier that does not exist in the script: NOT_EXISTING"
+
 read "START\n"
 read "\n"
 
@@ -69,26 +79,6 @@ write "connected\n"
 write "write \"echo\"\n"
 write "read \"echo\"\n"
 write "closed\n"
-
-read "AWAIT\n"
-read "barrier:NOT_EXISTING\n"
-read "\n"
-
-write "ERROR\n"
-write "summary:Internal error\n"
-write "content-length:72\n"
-write "\n"
-write "Can not notify a barrier that does not exist in the script: NOT_EXISTING"
-
-read "NOTIFY\n"
-read "barrier:NO_BARRIER\n"
-read "\n"
-
-write "ERROR\n"
-write "summary:Internal error\n"
-write "content-length:70\n"
-write "\n"
-write "Can not notify a barrier that does not exist in the script: NO_BARRIER"
 
 read "DISPOSE\n"
 read "\n"
