@@ -79,7 +79,6 @@ public final class BootstrapFactory implements ExternalResourceReleasable {
     }
 
     public ServerBootstrap newServerBootstrap(String transportName) throws Exception {
-
         BootstrapFactorySpi bootstrapFactory = findBootstrapFactory(transportName);
         return bootstrapFactory.newServerBootstrap();
     }
@@ -91,7 +90,8 @@ public final class BootstrapFactory implements ExternalResourceReleasable {
     }
 
     private static ServiceLoader<BootstrapFactorySpi> loadBootstrapFactorySpi() {
-        return ServiceLoader.load(BootstrapFactorySpi.class);
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        return (loader != null) ? ServiceLoader.load(BootstrapFactorySpi.class, loader) : ServiceLoader.load(BootstrapFactorySpi.class);
     }
 
     private BootstrapFactorySpi findBootstrapFactory(String transportName) throws BootstrapException {
