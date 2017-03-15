@@ -15,9 +15,10 @@
  */
 package org.kaazing.k3po.driver.internal.netty.bootstrap.tcp;
 
+import static org.kaazing.k3po.driver.internal.channel.Channels.toInetSocketAddress;
+
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.net.URI;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
@@ -39,8 +40,6 @@ import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactorySpi;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
-
-import static org.kaazing.k3po.driver.internal.channel.Channels.toInetSocketAddress;
 
 public final class TcpBootstrapFactorySpi extends BootstrapFactorySpi implements ExternalResourceReleasable {
 

@@ -17,10 +17,9 @@ package org.kaazing.k3po.driver.internal.behavior;
 
 import static java.util.Objects.requireNonNull;
 
-import org.kaazing.k3po.driver.internal.Robot;
-import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
+import org.kaazing.k3po.lang.internal.RegionInfo;
 
 @SuppressWarnings("serial")
 public class ScriptProgressException extends Exception {
