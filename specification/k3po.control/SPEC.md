@@ -50,7 +50,7 @@ are formatted as follows:
 
 If the "content-length" header is specified, then a message body of the specified length must be added.
 
-Headers that are not understood / processed must result in an ERROR event if received by the server, or a closed connection if received on the client
+Headers and messages that are not understood/processed by a receiver may be ignored. The writers must only send headers and messages that it understands. 
 
 ## Message Types
 
