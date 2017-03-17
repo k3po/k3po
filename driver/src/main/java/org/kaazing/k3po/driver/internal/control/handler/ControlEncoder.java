@@ -114,13 +114,13 @@ public class ControlEncoder extends OneToOneEncoder {
         for (String barrier : finishedMessage.getCompletedBarriers()) {
             // ~ denote injected barriers, which need not be shared with test framework
             if (!barrier.startsWith("~")) {
-                encodeHeader("notified-barrier", barrier, buf);
+                encodeHeader("notified", barrier, buf);
             }
         }
         for (String barrier : finishedMessage.getIncompleteBarriers()) {
             // ~ denote injected barriers, which need not be shared with test framework
             if (!barrier.startsWith("~")) {
-                encodeHeader("await-barrier", barrier, buf);
+                encodeHeader("awaiting", barrier, buf);
             }
         }
         return encodeContent(script, buf);
