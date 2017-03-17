@@ -366,10 +366,10 @@ public final class Control {
                 case "name":
                     // compatibility
                     break;
-                case "notified-barrier":
+                case "notified":
                     finished.getCompletedBarriers().add(headerValue);
                     break;
-                case "await-barrier":
+                case "awaiting":
                     finished.getIncompleteBarriers().add(headerValue);
                     break;
                 default:
