@@ -14,7 +14,7 @@ scriptNode
     ;
 
 propertyNode
-    : k=PropertyKeyword name=propertyName value=propertyValue
+    : PropertyKeyword name=propertyName value=propertyValue
     ;
 
 propertyName
@@ -32,7 +32,7 @@ streamNode
     ;
 
 acceptNode
-    : k=AcceptKeyword
+    : AcceptKeyword
       (AwaitKeyword await=Name)?
       acceptURI=location (AsKeyword as=Name)?
       (NotifyKeyword notify=Name)?
@@ -45,11 +45,11 @@ acceptOption
     ;
 
 acceptableNode
-    : k=AcceptedKeyword ( text=Name )? streamableNode+
+    : AcceptedKeyword ( text=Name )? streamableNode+
     ;
 
 connectNode
-    : k=ConnectKeyword
+    : ConnectKeyword
       (AwaitKeyword await=Name ConnectKeyword?)?
       connectURI=location
       connectOption*
@@ -77,27 +77,27 @@ optionNode
     ;
 
 readOptionMaskNode
-    : k=ReadKeyword OptionKeyword name=MaskKeyword value=writeValue
+    : ReadKeyword OptionKeyword name=MaskKeyword value=writeValue
     ;
 
 readOptionOffsetNode
-    : k=ReadKeyword OptionKeyword name=OffsetKeyword value=writeValue
+    : ReadKeyword OptionKeyword name=OffsetKeyword value=writeValue
     ;
 
 readOptionHttpChunkExtensionNode
-    : k=ReadKeyword OptionKeyword name=ChunkExtensionKeyWord value=writeValue
+    : ReadKeyword OptionKeyword name=ChunkExtensionKeyWord value=writeValue
     ;
 
 writeOptionMaskNode
-    : k=WriteKeyword OptionKeyword name=MaskKeyword value=writeValue
+    : WriteKeyword OptionKeyword name=MaskKeyword value=writeValue
     ;
 
 writeOptionOffsetNode
-    : k=WriteKeyword OptionKeyword name=OffsetKeyword value=writeValue
+    : WriteKeyword OptionKeyword name=OffsetKeyword value=writeValue
     ;
 
 writeOptionHttpChunkExtensionNode
-    : k=WriteKeyword OptionKeyword name=ChunkExtensionKeyWord value=writeValue
+    : WriteKeyword OptionKeyword name=ChunkExtensionKeyWord value=writeValue
     ;
 
 serverCommandNode
@@ -164,148 +164,148 @@ barrierNode
     ;
 
 closeNode
-    : k=CloseKeyword
+    : CloseKeyword
     ;
 
 writeFlushNode: 
-    k=WriteKeyword FlushKeyword;
+    WriteKeyword FlushKeyword;
 
 writeCloseNode: 
-    k=WriteKeyword CloseKeyword;
+    WriteKeyword CloseKeyword;
 
 disconnectNode
-    : k=DisconnectKeyword
+    : DisconnectKeyword
     ;
 
 unbindNode
-    : k=UnbindKeyword
+    : UnbindKeyword
     ;
 
 writeNode
-    : k=WriteKeyword writeValue+
+    : WriteKeyword writeValue+
     ;
 
 childOpenedNode
-    : k=ChildKeyword OpenedKeyword
+    : ChildKeyword OpenedKeyword
     ;
 
 childClosedNode
-    : k=ChildKeyword ClosedKeyword
+    : ChildKeyword ClosedKeyword
     ;
 
 boundNode
-    : k=BoundKeyword
+    : BoundKeyword
     ;
 
 closedNode
-    : k=ClosedKeyword
+    : ClosedKeyword
     ;
 
 connectedNode
-    : k=ConnectedKeyword
+    : ConnectedKeyword
     ;
 
 disconnectedNode
-    : k=DisconnectedKeyword
+    : DisconnectedKeyword
     ;
 
 openedNode
-    : k=OpenedKeyword
+    : OpenedKeyword
     ;
 
 abortNode
-    : k=AbortKeyword
+    : AbortKeyword
     ;
 
 abortedNode
-    : k=AbortedKeyword
+    : AbortedKeyword
     ;
 
 readClosedNode: 
-    k=ReadKeyword ClosedKeyword;
+    ReadKeyword ClosedKeyword;
 
 readNode
-    : k=ReadKeyword matcher+
+    : ReadKeyword matcher+
     ;
 
 unboundNode
-    : k=UnboundKeyword
+    : UnboundKeyword
     ;
 
 readAwaitNode
-    : k=ReadKeyword AwaitKeyword barrier=Name
+    : ReadKeyword AwaitKeyword barrier=Name
     ;
 
 readNotifyNode
-    : k=ReadKeyword NotifyKeyword barrier=Name
+    : ReadKeyword NotifyKeyword barrier=Name
     ;
     
 writeAwaitNode
-    : k=WriteKeyword AwaitKeyword barrier=Name
+    : WriteKeyword AwaitKeyword barrier=Name
     ;
 
 writeNotifyNode
-    : k=WriteKeyword NotifyKeyword barrier=Name
+    : WriteKeyword NotifyKeyword barrier=Name
     ;
 
 readHttpHeaderNode
-    : k=ReadKeyword HttpHeaderKeyword name=literalText (HttpMissingKeyword | matcher+)
+    : ReadKeyword HttpHeaderKeyword name=literalText (HttpMissingKeyword | matcher+)
     ;
 
 readHttpChunkTrailerNode
-    : k=ReadKeyword HttpChunkTrailerKeyword name=literalText (HttpMissingKeyword | matcher+)
+    : ReadKeyword HttpChunkTrailerKeyword name=literalText (HttpMissingKeyword | matcher+)
     ;
 
 writeHttpHeaderNode
-    : k=WriteKeyword HttpHeaderKeyword name=literalText writeValue+
+    : WriteKeyword HttpHeaderKeyword name=literalText writeValue+
     ;
 
 writeHttpChunkTrailerNode
-    : k=WriteKeyword HttpChunkTrailerKeyword name=literalText writeValue+
+    : WriteKeyword HttpChunkTrailerKeyword name=literalText writeValue+
     ;
 
 writeHttpContentLengthNode
-    : k=WriteKeyword HttpHeaderKeyword HttpContentLengthKeyword
+    : WriteKeyword HttpHeaderKeyword HttpContentLengthKeyword
     ;
 
 writeHttpHostNode
-    : k=WriteKeyword HttpHeaderKeyword HttpHostKeyword
+    : WriteKeyword HttpHeaderKeyword HttpHostKeyword
     ;
 
 readHttpMethodNode
-    : k=ReadKeyword HttpMethodKeyword method=matcher
+    : ReadKeyword HttpMethodKeyword method=matcher
     ;
 
 writeHttpMethodNode
-    : k=WriteKeyword HttpMethodKeyword method=writeValue
+    : WriteKeyword HttpMethodKeyword method=writeValue
     ;
 
 readHttpParameterNode
-    : k=ReadKeyword HttpParameterKeyword name=literalText matcher+
+    : ReadKeyword HttpParameterKeyword name=literalText matcher+
     ;
 
 writeHttpParameterNode
-    : k=WriteKeyword HttpParameterKeyword name=literalText writeValue+
+    : WriteKeyword HttpParameterKeyword name=literalText writeValue+
     ;
 
 readHttpVersionNode
-    : k=ReadKeyword HttpVersionKeyword version=matcher
+    : ReadKeyword HttpVersionKeyword version=matcher
     ;
 
 writeHttpVersionNode
-    : k=WriteKeyword HttpVersionKeyword version=writeValue
+    : WriteKeyword HttpVersionKeyword version=writeValue
     ;
 
 readHttpStatusNode
-    : k=ReadKeyword HttpStatusKeyword code=matcher reason=matcher
+    : ReadKeyword HttpStatusKeyword code=matcher reason=matcher
     ;
 
 writeHttpRequestNode
-    : k=WriteKeyword HttpRequestKeyword form=writeValue
+    : WriteKeyword HttpRequestKeyword form=writeValue
     ;
 
 writeHttpStatusNode
-    : k=WriteKeyword HttpStatusKeyword code=writeValue reason=writeValue
+    : WriteKeyword HttpStatusKeyword code=writeValue reason=writeValue
     ;
 
 matcher
