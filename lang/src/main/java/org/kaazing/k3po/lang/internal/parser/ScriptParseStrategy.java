@@ -25,6 +25,7 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
@@ -740,6 +741,26 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
     public abstract T parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
             throws RecognitionException;
 
+
+    private static Class<?> optionType(String optionName) {
+
+        // TODO: discover expected type
+        Class<?> expectedType = Object.class;
+        if ("transport".equals(optionName)) {
+            expectedType = URI.class;
+        }
+        else if ("size".equals(optionName) || "timeout".equals(optionName))
+        {
+            expectedType = long.class;
+        }
+        else if ("mode".equals(optionName))
+        {
+            expectedType = String.class;
+        }
+
+        return expectedType;
+    }
+
     private static class AstVisitor<T> extends RobotBaseVisitor<T> {
         private static final List<RegionInfo> EMPTY_CHILDREN = emptyList();
 
@@ -901,19 +922,16 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
         @Override
         public AstAcceptNode visitAcceptOption(AcceptOptionContext ctx) {
-            Token timeout = ctx.timeout;
-            if (timeout != null) {
-                node.getOptions().put("timeout", Long.parseLong(timeout.getText()));
-            }
-
             Token name = ctx.name;
             if (name != null)
             {
-                // TODO: discover expected type
-                Class<?> expectedType = Object.class;
+                String optionName = name.getText();
+                Class<?> expectedType = optionType(optionName);
                 AstValueVisitor<?> valueVisitor = new AstValueVisitor<>(factory, environment, expectedType);
                 AstValue<?> optionValue = valueVisitor.visit(ctx.value);
-                node.getOptions().put(name.getText(), optionValue);
+
+                Map<String, Object> options = node.getOptions();
+                options.put(optionName, optionValue);
             }
 
             return super.visitAcceptOption(ctx);
@@ -986,30 +1004,17 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstConnectNode visitConnectOption(
             ConnectOptionContext ctx)
         {
-            Token mode = ctx.fmode;
-            if (mode != null) {
-                node.getOptions().put("mode", mode.getText());
-            }
-            Token size = ctx.size;
-            if (size != null) {
-                node.getOptions().put("size", Long.parseLong(size.getText()));
-            }
-            Token timeout = ctx.timeout;
-            if (timeout != null) {
-                node.getOptions().put("timeout", Long.parseLong(timeout.getText()));
-            }
-
             Token name = ctx.name;
             if (name != null)
             {
-                // TODO: discover expected type
-                Class<?> expectedType = Object.class;
-                if ("transport".equals(name.getText())) {
-                    expectedType = URI.class;
-                }
+                String optionName = name.getText();
+
+                Class<?> expectedType = optionType(optionName);
                 AstValueVisitor<?> valueVisitor = new AstValueVisitor<>(factory, environment, expectedType);
                 AstValue<?> optionValue = valueVisitor.visit(ctx.value);
-                node.getOptions().put(name.getText(), optionValue);
+
+                Map<String, Object> options = node.getOptions();
+                options.put(optionName, optionValue);
             }
 
             return super.visitConnectOption(ctx);
@@ -2206,7 +2211,13 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstValue<T> visitLiteralInteger(LiteralIntegerContext ctx) {
 
             AstLiteralIntegerValueVisitor visitor = new AstLiteralIntegerValueVisitor(factory, environment);
-            AstLiteralIntegerValue value = visitor.visit(ctx);
+            AstLiteralIntegerValue literal = visitor.visit(ctx);
+
+            AstValue<?> value = literal;
+            if (expectedType == long.class || expectedType == Long.class) {
+                value = new AstLiteralLongValue(literal.getValue().longValue());
+            }
+
             if (value != null) {
                 childInfos().add(value.getRegionInfo());
             }

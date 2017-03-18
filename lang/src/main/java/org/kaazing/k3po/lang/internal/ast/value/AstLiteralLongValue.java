@@ -56,9 +56,10 @@ public final class AstLiteralLongValue extends AstValue<Long> {
     @Override
     protected void describe(StringBuilder buf) {
         buf.append(Long.toString(value));
+        buf.append('L');
     }
 
-    public static String toString(int value) {
-        return Integer.toString(value);
+    public static String toString(long value) {
+        return Long.toString(value);
     }
 }

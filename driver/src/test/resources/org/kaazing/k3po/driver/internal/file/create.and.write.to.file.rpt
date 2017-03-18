@@ -19,7 +19,7 @@
 #
 connect file:target/non.existing.file.dat
         option size 1000
-        option mode rw
+        option mode "rw"
 connected
 
 write "Hello World"
@@ -40,7 +40,7 @@ write notify WRITE_DONE
 #
 connect await WRITE_DONE
 connect file:target/non.existing.file.dat
-        option mode r
+        option mode "r"
 connected
 
 read "Hello World"

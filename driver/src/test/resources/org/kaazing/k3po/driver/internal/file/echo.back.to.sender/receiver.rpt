@@ -16,7 +16,7 @@
 
 connect await FILE_EXISTS
 connect file:target/k3po/echo.back.to.sender.dat
-        option mode rw
+        option mode "rw"
 connected
 
 read await ECHO_REQUESTED

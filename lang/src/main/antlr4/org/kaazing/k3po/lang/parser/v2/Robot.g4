@@ -41,8 +41,7 @@ acceptNode
     ;
 
 acceptOption
-    : OptionKeyword TimeoutKeyword timeout=DecimalLiteral
-    | OptionKeyword name=Name value=writeValue
+    : OptionKeyword name=Name value=writeValue
     ;
 
 acceptableNode
@@ -58,10 +57,7 @@ connectNode
     ;
 
 connectOption
-    : OptionKeyword SizeKeyword size=DecimalLiteral
-    | OptionKeyword ModeKeyword fmode=ModeValue
-    | OptionKeyword TimeoutKeyword timeout=DecimalLiteral
-    | OptionKeyword name=Name value=writeValue
+    : OptionKeyword name=Name value=writeValue
     ;
 
 serverStreamableNode
@@ -412,22 +408,14 @@ SignedDecimalLiteral
 
 MaskKeyword: 'mask';
 
-ModeKeyword: 'mode';
-
 OffsetKeyword : 'offset';
 
 OptionKeyword: 'option';
-
-SizeKeyword: 'size';
 
 ChunkExtensionKeyWord: 'chunkExtension';
 
 ShortKeyword
     : 'short'
-    ;
-
-TimeoutKeyword
-    : 'timeout'
     ;
 
 IntKeyword
@@ -576,11 +564,6 @@ HttpStatusKeyword
 
 HttpVersionKeyword
     : 'version'
-    ;
-
-ModeValue
-    : 'r'
-    | 'rw'
     ;
 
 // URI cannot begin with any of our data type delimiters, and MUST contain a colon.

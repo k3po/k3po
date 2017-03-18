@@ -18,7 +18,7 @@
 # Read the file contents
 #
 connect file:src/test/resources/org/kaazing/k3po/driver/internal/file/read.from.existing.file.dat
-        option mode r
+        option mode "r"
 connected
 
 read "Hello World"

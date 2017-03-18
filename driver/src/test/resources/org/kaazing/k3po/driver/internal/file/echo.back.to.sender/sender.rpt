@@ -16,7 +16,7 @@
 
 connect file:target/k3po/echo.back.to.sender.dat
         option size 256
-        option mode rw
+        option mode "rw"
 connected
 
 write notify FILE_EXISTS
