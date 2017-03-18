@@ -13,50 +13,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.lang.internal.ast;
+package org.kaazing.k3po.lang.internal;
 
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
-import org.kaazing.k3po.lang.internal.ast.value.AstValue;
+import java.net.URI;
 
-public abstract class AstOptionNode extends AstStreamableNode {
+public final class AstOption<T> {
 
-    private String optionName;
-    private AstValue<?> optionValue;
+    public static final AstOption<URI> TRANSPORT = new AstOption<>("transport", URI.class);
 
-    public String getOptionName() {
-        return optionName;
+    private final Class<T> type;
+    private final String name;
+
+    public AstOption(
+        String name,
+        Class<T> type)
+    {
+        this.type = type;
+        this.name = name;
     }
 
-    public void setOptionName(String optionName) {
-        this.optionName = optionName;
+    public String getName() {
+        return name;
     }
 
-    public AstValue<?> getOptionValue() {
-        return optionValue;
-    }
-
-    public void setOptionValue(AstValue<?> optionValue) {
-        this.optionValue = optionValue;
+    public Class<T> getType() {
+        return type;
     }
 
     protected int hashTo() {
         int hashCode = getClass().hashCode();
 
-        if (optionName != null) {
+        if (name != null) {
             hashCode <<= 4;
-            hashCode ^= optionName.hashCode();
+            hashCode ^= name.hashCode();
         }
 
-        if (optionValue != null) {
+        if (type != null) {
             hashCode <<= 4;
-            hashCode ^= optionValue.hashCode();
+            hashCode ^= type.hashCode();
         }
 
         return hashCode;
     }
 
-    protected boolean equalTo(AstOptionNode that) {
-        return equivalent(this.optionName, that.optionName) && equivalent(this.optionValue, that.optionValue);
+    protected boolean equalTo(AstOption<?> that) {
+        return equivalent(this.name, that.name) &&
+                equivalent(this.type, that.type);
     }
 }

@@ -18,6 +18,9 @@ package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
 import static org.junit.Assert.assertEquals;
 import static org.kaazing.k3po.driver.internal.behavior.handler.codec.Maskers.newMasker;
+import static org.kaazing.k3po.lang.internal.el.ExpressionFactoryUtils.synchronizedSupplier;
+
+import java.util.function.Supplier;
 
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
@@ -65,8 +68,9 @@ public class MaskerTest {
         ExpressionContext environment = new ExpressionContext();
         ExpressionFactory factory = ExpressionFactory.newInstance();
         ValueExpression expression = factory.createValueExpression(new byte[]{0x01, 0x02, 0x03, 0x04}, byte[].class);
+        Supplier<byte[]> supplier = synchronizedSupplier(expression, environment, byte[].class);
 
-        Masker decoder = newMasker(expression, environment);
+        Masker decoder = newMasker(supplier);
         ChannelBuffer originalBuf = wrappedBuffer(new byte[]{0x11, 0x12, 0x13, 0x14, 0x21, 0x22, 0x23, 0x24});
         ChannelBuffer maskedBuf = decoder.applyMask(originalBuf);
 
@@ -78,8 +82,9 @@ public class MaskerTest {
         ExpressionContext environment = new ExpressionContext();
         ExpressionFactory factory = ExpressionFactory.newInstance();
         ValueExpression expression = factory.createValueExpression(new byte[]{0x01, 0x02, 0x03, 0x04}, byte[].class);
+        Supplier<byte[]> supplier = synchronizedSupplier(expression, environment, byte[].class);
 
-        Masker decoder = newMasker(expression, environment);
+        Masker decoder = newMasker(supplier);
         ChannelBuffer originalBuf1 = wrappedBuffer(new byte[]{0x11, 0x12, 0x13, 0x14});
         ChannelBuffer maskedBuf1 = decoder.applyMask(originalBuf1);
         ChannelBuffer originalBuf2 = wrappedBuffer(new byte[]{0x21, 0x22, 0x23, 0x24});
@@ -94,8 +99,9 @@ public class MaskerTest {
         ExpressionContext environment = new ExpressionContext();
         ExpressionFactory factory = ExpressionFactory.newInstance();
         ValueExpression expression = factory.createValueExpression(new byte[]{0x01, 0x02, 0x03, 0x04}, byte[].class);
+        Supplier<byte[]> supplier = synchronizedSupplier(expression, environment, byte[].class);
 
-        Masker decoder = newMasker(expression, environment);
+        Masker decoder = newMasker(supplier);
         ChannelBuffer originalBuf1 = wrappedBuffer(new byte[]{0x11, 0x12, 0x13, 0x14, 0x11});
         ChannelBuffer maskedBuf1 = decoder.applyMask(originalBuf1);
         ChannelBuffer originalBuf2 = wrappedBuffer(new byte[]{0x22, 0x23, 0x24, 0x21});

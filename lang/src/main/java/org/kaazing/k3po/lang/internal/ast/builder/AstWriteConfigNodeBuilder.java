@@ -55,7 +55,7 @@ public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<
     }
 
     public AstWriteConfigNodeBuilder setName(String name, ValueExpression value, ExpressionContext environment) {
-        node.setName(name, new AstExpressionValue(value, environment));
+        node.setName(name, new AstExpressionValue<>(value, environment));
         return this;
     }
 
@@ -70,7 +70,7 @@ public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<
     }
 
     public AstWriteConfigNodeBuilder setValue(String name, ValueExpression value, ExpressionContext environment) {
-        node.setValue(name, new AstExpressionValue(value, environment));
+        node.setValue(name, new AstExpressionValue<>(value, environment));
         return this;
     }
 
@@ -85,7 +85,7 @@ public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<
     }
 
     public AstWriteConfigNodeBuilder addValue(ValueExpression value, ExpressionContext environment) {
-        node.addValue(new AstExpressionValue(value, environment));
+        node.addValue(new AstExpressionValue<>(value, environment));
         return this;
     }
 
@@ -112,7 +112,7 @@ public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<
         }
 
         public StreamNested<R> setName(String name, ValueExpression value, ExpressionContext environment) {
-            node.setName(name, new AstExpressionValue(value, environment));
+            node.setName(name, new AstExpressionValue<>(value, environment));
             return this;
         }
 
@@ -127,7 +127,7 @@ public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<
         }
 
         public StreamNested<R> setValue(String name, ValueExpression value, ExpressionContext environment) {
-            node.setValue(name, new AstExpressionValue(value, environment));
+            node.setValue(name, new AstExpressionValue<>(value, environment));
             return this;
         }
 
@@ -142,7 +142,7 @@ public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<
         }
 
         public StreamNested<R> addValue(ValueExpression value, ExpressionContext environment) {
-            node.addValue(new AstExpressionValue(value, environment));
+            node.addValue(new AstExpressionValue<>(value, environment));
             return this;
         }
 

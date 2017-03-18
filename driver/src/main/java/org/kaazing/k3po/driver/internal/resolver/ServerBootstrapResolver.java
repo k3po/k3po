@@ -17,6 +17,7 @@ package org.kaazing.k3po.driver.internal.resolver;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.logging.InternalLogger;
@@ -37,14 +38,14 @@ public class ServerBootstrapResolver {
     private final BootstrapFactory bootstrapFactory;
     private final ChannelAddressFactory addressFactory;
     private final ChannelPipelineFactory pipelineFactory;
-    private final LocationResolver locationResolver;
+    private final Supplier<URI> locationResolver;
     private final OptionsResolver optionsResolver;
     private final Barrier notifyBarrier;
 
     private ServerBootstrap bootstrap;
 
     public ServerBootstrapResolver(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory,
-            ChannelPipelineFactory pipelineFactory, LocationResolver locationResolver,
+            ChannelPipelineFactory pipelineFactory, Supplier<URI> locationResolver,
             OptionsResolver optionsResolver, Barrier notifyBarrier) {
         this.bootstrapFactory = bootstrapFactory;
         this.addressFactory = addressFactory;
@@ -61,7 +62,7 @@ public class ServerBootstrapResolver {
     // TODO: asynchronous, triggered by awaitBarrier
     public ServerBootstrap resolve() throws Exception {
         if (bootstrap == null) {
-            URI acceptURI = locationResolver.resolve();
+            URI acceptURI = locationResolver.get();
             Map<String, Object> acceptOptions = optionsResolver.resolve();
             ChannelAddress localAddress = addressFactory.newChannelAddress(acceptURI, acceptOptions);
             LOGGER.debug("Initializing server Bootstrap binding to address " + localAddress);

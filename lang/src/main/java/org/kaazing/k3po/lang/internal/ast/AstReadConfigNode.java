@@ -28,7 +28,7 @@ import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 public class AstReadConfigNode extends AstEventNode {
 
     private String type;
-    private Map<String, AstValue> valuesByName;
+    private Map<String, AstValue<?>> valuesByName;
     private Map<String, AstValueMatcher> matchersByName;
 
     public AstReadConfigNode() {
@@ -44,11 +44,11 @@ public class AstReadConfigNode extends AstEventNode {
         return type;
     }
 
-    public void setValue(String name, AstValue value) {
+    public void setValue(String name, AstValue<?> value) {
         valuesByName.put(name, value);
     }
 
-    public AstValue getValue(String name) {
+    public AstValue<?> getValue(String name) {
         return valuesByName.get(name);
     }
 
@@ -114,7 +114,7 @@ public class AstReadConfigNode extends AstEventNode {
     protected void describe(StringBuilder buf) {
         super.describe(buf);
         buf.append("read ").append(type);
-        for (AstValue value : valuesByName.values()) {
+        for (AstValue<?> value : valuesByName.values()) {
             buf.append(' ').append(value);
         }
         for (AstValueMatcher matcher : matchersByName.values()) {

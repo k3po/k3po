@@ -32,13 +32,17 @@ streamNode
     ;
 
 acceptNode
-    : k=AcceptKeyword (AwaitKeyword await=Name)? acceptURI=location (AsKeyword as=Name)?
-      (NotifyKeyword notify=Name)? 
-      (OptionKeyword TransportKeyword transport=location)?
-      (OptionKeyword ReaderKeyword reader=expressionValue)?
-      (OptionKeyword WriterKeyword writer=expressionValue)?
-      (OptionKeyword TimeoutKeyword timeout=DecimalLiteral)?
+    : k=AcceptKeyword
+      (AwaitKeyword await=Name)?
+      acceptURI=location (AsKeyword as=Name)?
+      (NotifyKeyword notify=Name)?
+      acceptOption*
       serverStreamableNode*
+    ;
+
+acceptOption
+    : OptionKeyword TimeoutKeyword timeout=DecimalLiteral
+    | OptionKeyword name=Name value=writeValue
     ;
 
 acceptableNode
@@ -46,15 +50,18 @@ acceptableNode
     ;
 
 connectNode
-    : k=ConnectKeyword (AwaitKeyword await=Name ConnectKeyword?)? connectURI=location
-                       (OptionKeyword TransportKeyword transport=location)?
-                       (OptionKeyword SizeKeyword size=DecimalLiteral)?
-                       (OptionKeyword ModeKeyword fmode=ModeValue)?
-                       (OptionKeyword ReaderKeyword reader=expressionValue)?
-                       (OptionKeyword WriterKeyword writer=expressionValue)?
-                       (OptionKeyword TimeoutKeyword timeout=DecimalLiteral)?
+    : k=ConnectKeyword
+      (AwaitKeyword await=Name ConnectKeyword?)?
+      connectURI=location
+      connectOption*
+      streamableNode+
+    ;
 
-        streamableNode+
+connectOption
+    : OptionKeyword SizeKeyword size=DecimalLiteral
+    | OptionKeyword ModeKeyword fmode=ModeValue
+    | OptionKeyword TimeoutKeyword timeout=DecimalLiteral
+    | OptionKeyword name=Name value=writeValue
     ;
 
 serverStreamableNode
@@ -322,8 +329,8 @@ exactBytesMatcher
     : bytes=BytesLiteral
     | byteLiteral=ByteLiteral
     | shortLiteral=TwoByteLiteral
-    | longLiteral=(SignedDecimalLiteral | DecimalLiteral) 'L'
     | intLiteral=(SignedDecimalLiteral | DecimalLiteral)
+    | longLiteral=(SignedDecimalLiteral | DecimalLiteral) 'L'
     ;
 
 regexMatcher
@@ -338,13 +345,6 @@ fixedLengthBytesMatcher
     : '[0..' lastIndex=DecimalLiteral ']'
     | '([0..' lastIndex=DecimalLiteral ']' capture=CaptureLiteral ')'
     | '[(' capture=CaptureLiteral '){' lastIndex=DecimalLiteral '}]'
-    /*
-     * TODO: If I use lexer rules here for example:
-     *
-     *   '(' ByteKeyword capture=CaptureLiteral ')'
-     *
-     *   Then it will not parse "(byte:var)" It will only parse if there is a space in between, "(byte :var)". How come?
-     */
     |  '(byte' byteCapture=CaptureLiteral ')'
     |  '(short' shortCapture=CaptureLiteral ')'
     |  '(int' intCapture=CaptureLiteral ')'
@@ -357,29 +357,50 @@ variableLengthBytesMatcher
     ;
 
 writeValue
-    : literalText
+    : literalURI
+    | literalText
     | literalBytes
+    | literalByte
+    | literalShort
+    | literalInteger
+    | literalLong
     | expressionValue
     ;
 
+literalURI
+    : literal=URILiteral
+    ;
+
 literalText
-    : text=TextLiteral
+    : literal=TextLiteral
     ;
 
 literalBytes
-    : bytes=BytesLiteral
+    : literal=BytesLiteral
+    ;
+
+literalByte
+    : literal=ByteLiteral
+    ;
+
+literalShort
+    : literal=TwoByteLiteral
+    ;
+
+literalInteger
+    : literal=(SignedDecimalLiteral | DecimalLiteral)
+    ;
+
+literalLong
+    : literal=(SignedDecimalLiteral | DecimalLiteral) 'L'
     ;
 
 expressionValue
     : expression=ExpressionLiteral
     ;
 
-uriValue
-    : uri=URILiteral
-    ;
-
 location
-    : uriValue
+    : literalURI
     | expressionValue
     ;
 
@@ -397,8 +418,6 @@ OffsetKeyword : 'offset';
 
 OptionKeyword: 'option';
 
-ReaderKeyword: 'reader';
-
 SizeKeyword: 'size';
 
 ChunkExtensionKeyWord: 'chunkExtension';
@@ -407,15 +426,9 @@ ShortKeyword
     : 'short'
     ;
 
-TransportKeyword
-    : 'transport'
-    ;
-
 TimeoutKeyword
     : 'timeout'
     ;
-
-WriterKeyword: 'writer';
 
 IntKeyword
     : 'int'

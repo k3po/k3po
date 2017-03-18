@@ -20,7 +20,7 @@ import java.net.URI;
 import org.junit.Test;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.builder.AstScriptNodeBuilder;
-import org.kaazing.k3po.lang.internal.ast.value.AstLocationLiteral;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 
 public class ValidateStreamsVisitorTest {
 
@@ -29,7 +29,7 @@ public class ValidateStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
+                .setLocation(new AstLiteralURIValue(URI.create("http://localhost:8000/somepath")))
                 .addAcceptedStream()
                     .addReadConfigEvent()
                          .setType("method")
@@ -61,7 +61,7 @@ public class ValidateStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
+                .setLocation(new AstLiteralURIValue(URI.create("http://localhost:8000/somepath")))
                 .addAcceptedStream()
                     .addReadConfigEvent()
                          .setType("method")
@@ -91,7 +91,7 @@ public class ValidateStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
+                .setLocation(new AstLiteralURIValue(URI.create("http://localhost:8000/somepath")))
                 .addAcceptedStream()
                     .addReadConfigEvent()
                          .setType("method")
@@ -128,7 +128,7 @@ public class ValidateStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
+                .setLocation(new AstLiteralURIValue(URI.create("http://localhost:8000/somepath")))
                 .addAcceptedStream()
                     .addReadConfigEvent()
                          .setType("method")
@@ -159,7 +159,7 @@ public class ValidateStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addConnectStream()
-                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
+                .setLocation(new AstLiteralURIValue(URI.create("http://localhost:8000/somepath")))
                 .addOpenedEvent()
                 .done()
                 .addWriteCloseCommand()
@@ -183,7 +183,7 @@ public class ValidateStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
+                .setLocation(new AstLiteralURIValue(URI.create("http://localhost:8000/somepath")))
                 .addAcceptedStream()
                     .addReadConfigEvent()
                          .setType("method")
@@ -217,13 +217,13 @@ public class ValidateStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
         .addConnectStream().
-            setLocation(new AstLocationLiteral(URI.create("tcp://localhost:8000")))
+            setLocation(new AstLiteralURIValue(URI.create("tcp://localhost:8000")))
                 .addReadEvent()
                     .addExactText("exact text")
                 .done()
             .done()
             .addAcceptStream()
-                .setLocation(new AstLocationLiteral(URI.create("tcp://localhost:8000")))
+                .setLocation(new AstLiteralURIValue(URI.create("tcp://localhost:8000")))
                 .addAcceptedStream()
                     .addReadEvent()
                         .addExactText("exact text")

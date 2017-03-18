@@ -17,14 +17,13 @@ package org.kaazing.k3po.lang.internal.ast;
 
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
+import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.el.ELContext;
-
-import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
+import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 
 public class AstAcceptNode extends AstStreamNode {
 
@@ -33,8 +32,7 @@ public class AstAcceptNode extends AstStreamNode {
     private Map<String, Object> options;
     private List<AstAcceptableNode> acceptables;
 
-    private AstLocation location;
-    private ELContext environment;
+    private AstValue<URI> location;
 
     public AstAcceptNode() {
     }
@@ -42,17 +40,16 @@ public class AstAcceptNode extends AstStreamNode {
     public AstAcceptNode(AstAcceptNode acceptNode) {
         this.regionInfo = acceptNode.regionInfo;
         this.location = acceptNode.location;
-        this.environment = acceptNode.environment;
         this.acceptName = acceptNode.acceptName;
         this.notifyName = acceptNode.notifyName;
         this.options = acceptNode.options;
     }
 
-    public AstLocation getLocation() {
+    public AstValue<URI> getLocation() {
         return location;
     }
 
-    public void setLocation(AstLocation location) {
+    public void setLocation(AstValue<URI> location) {
         this.location = location;
     }
 
@@ -80,14 +77,6 @@ public class AstAcceptNode extends AstStreamNode {
         return options;
     }
 
-    public ELContext getEnvironment() {
-        return environment;
-    }
-
-    public void setEnvironment(ELContext expressionContext) {
-        this.environment = expressionContext;
-    }
-
     public List<AstAcceptableNode> getAcceptables() {
         if (acceptables == null) {
             acceptables = new LinkedList<>();
@@ -103,11 +92,6 @@ public class AstAcceptNode extends AstStreamNode {
         if (location != null) {
             hashCode <<= 4;
             hashCode ^= location.hashCode();
-        }
-
-        if (environment != null) {
-            hashCode <<= 4;
-            hashCode ^= environment.hashCode();
         }
 
         if (options != null) {

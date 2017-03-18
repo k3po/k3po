@@ -23,6 +23,8 @@ import static org.jboss.netty.util.CharsetUtil.UTF_8;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,8 +32,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Supplier;
 
-import javax.el.ELResolver;
 import javax.el.ValueExpression;
 
 import org.jboss.netty.channel.ChannelHandler;
@@ -63,6 +65,8 @@ import org.kaazing.k3po.driver.internal.behavior.handler.codec.ReadShortLengthBy
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ReadVariableLengthBytesDecoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteBytesEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteExpressionEncoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteIntegerEncoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteLongEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteTextEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpContentLengthEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpHeaderDecoder;
@@ -107,7 +111,6 @@ import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVi
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
 import org.kaazing.k3po.driver.internal.resolver.ClientBootstrapResolver;
-import org.kaazing.k3po.driver.internal.resolver.LocationResolver;
 import org.kaazing.k3po.driver.internal.resolver.OptionsResolver;
 import org.kaazing.k3po.driver.internal.resolver.ServerBootstrapResolver;
 import org.kaazing.k3po.lang.internal.RegionInfo;
@@ -158,7 +161,10 @@ import org.kaazing.k3po.lang.internal.ast.matcher.AstValueMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstVariableLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralIntegerValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralLongValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
@@ -180,11 +186,16 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         private Masker readUnmasker;
         private Masker writeMasker;
 
+        private ByteOrder endian;
+
         /* The pipelineAsMap is built by each node that is visited. */
         private Map<String, ChannelHandler> pipelineAsMap;
 
         public State(ConcurrentMap<String, Barrier> barriersByName) {
             this.barriersByName = barriersByName;
+
+            // default to network byte order
+            this.endian = ByteOrder.BIG_ENDIAN;
         }
 
         private Barrier lookupBarrier(String barrierName) {
@@ -244,15 +255,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstPropertyNode propertyNode, State state) throws Exception {
 
         String propertyName = propertyNode.getPropertyName();
-        AstValue propertyValue = propertyNode.getPropertyValue();
-
-        ExpressionContext environment = propertyNode.getExpressionContext();
-        Object value = propertyValue.accept(new GeneratePropertyValueVisitor(), environment);
-        ELResolver resolver = environment.getELResolver();
-        // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
-        synchronized (environment) {
-            resolver.setValue(environment, null, propertyName, value);
-        }
+        Object value = propertyNode.resolve();
 
         if (value instanceof AutoCloseable) {
             state.configuration.getResources().add((AutoCloseable) value);
@@ -264,28 +267,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         }
 
         return state.configuration;
-    }
-
-    private static class GeneratePropertyValueVisitor implements AstValue.Visitor<Object, ExpressionContext> {
-
-        @Override
-        public Object visit(AstExpressionValue value, ExpressionContext environment) throws Exception {
-            // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
-            synchronized (environment) {
-                return value.getValue().getValue(environment);
-            }
-        }
-
-        @Override
-        public Object visit(AstLiteralTextValue value, ExpressionContext environment) throws Exception {
-            return value.getValue();
-        }
-
-        @Override
-        public Object visit(AstLiteralBytesValue value, ExpressionContext environment) throws Exception {
-            return value.getValue();
-        }
-
     }
 
     @Override
@@ -352,7 +333,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         Map<String, Object> acceptOptions = new HashMap<>();
         acceptOptions.put("regionInfo", acceptInfo);
         acceptOptions.putAll(acceptNode.getOptions());
-        OptionsResolver optionsResolver = new OptionsResolver(acceptOptions, acceptNode.getEnvironment());
+        OptionsResolver optionsResolver = new OptionsResolver(acceptOptions);
 
         String notifyName = acceptNode.getNotifyName();
         Barrier notifyBarrier = null;
@@ -364,7 +345,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // To defer the evaluation of accept uri and initialization of  ServerBootstrap, LocationResolver and
         // ServerResolver are created with information necessary to create ClientBootstrap when the
         // accept uri is available.
-        LocationResolver locationResolver = new LocationResolver(acceptNode.getLocation(), acceptNode.getEnvironment());
+        Supplier<URI> locationResolver = acceptNode.getLocation()::getValue;
         ServerBootstrapResolver serverResolver = new ServerBootstrapResolver(bootstrapFactory, addressFactory,
                 pipelineFactory, locationResolver, optionsResolver, notifyBarrier);
 
@@ -426,8 +407,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // To defer the evaluation of connect uri and initialization of ClientBootstrap, LocationResolver and
         // ClientResolver are created with information necessary to create ClientBootstrap when the connect uri
         // is available.
-        LocationResolver locationResolver = new LocationResolver(connectNode.getLocation(), connectNode.getEnvironment());
-        OptionsResolver optionsResolver = new OptionsResolver(connectNode.getOptions(), connectNode.getEnvironment());
+        Supplier<URI> locationResolver = connectNode.getLocation()::getValue;
+        OptionsResolver optionsResolver = new OptionsResolver(connectNode.getOptions());
 
         ClientBootstrapResolver clientResolver = new ClientBootstrapResolver(bootstrapFactory, addressFactory,
                 pipelineFactory, locationResolver, optionsResolver, awaitBarrier, connectNode.getRegionInfo());
@@ -519,8 +500,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstWriteValueNode node, State state) throws Exception {
         List<MessageEncoder> messageEncoders = new ArrayList<>();
 
-        for (AstValue val : node.getValues()) {
-            messageEncoders.add(val.accept(new GenerateWriteEncoderVisitor(), state.configuration));
+        for (AstValue<?> val : node.getValues()) {
+            messageEncoders.add(val.accept(new GenerateWriteEncoderVisitor(), state.endian));
         }
         WriteHandler handler = new WriteHandler(messageEncoders, state.writeMasker);
         handler.setRegionInfo(node.getRegionInfo());
@@ -529,22 +510,37 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         return state.configuration;
     }
 
-    private static final class GenerateWriteEncoderVisitor implements AstValue.Visitor<MessageEncoder, Configuration> {
+    private static final class GenerateWriteEncoderVisitor implements AstValue.Visitor<MessageEncoder, ByteOrder> {
 
         @Override
-        public MessageEncoder visit(AstExpressionValue value, Configuration config) throws Exception {
-            ExpressionContext environment = value.getEnvironment();
-            return new WriteExpressionEncoder(value.getValue(), environment);
+        public MessageEncoder visit(AstExpressionValue<?> value, ByteOrder endian) throws Exception {
+            Supplier<byte[]> supplier = () -> value.getValue(byte[].class);
+            return new WriteExpressionEncoder(supplier, value.getExpression());
         }
 
         @Override
-        public MessageEncoder visit(AstLiteralTextValue value, Configuration config) throws Exception {
+        public MessageEncoder visit(AstLiteralTextValue value, ByteOrder endian) throws Exception {
             return new WriteTextEncoder(value.getValue(), UTF_8);
         }
 
         @Override
-        public MessageEncoder visit(AstLiteralBytesValue value, Configuration config) throws Exception {
+        public MessageEncoder visit(AstLiteralBytesValue value, ByteOrder endian) throws Exception {
             return new WriteBytesEncoder(value.getValue());
+        }
+
+        @Override
+        public MessageEncoder visit(AstLiteralIntegerValue value, ByteOrder endian) throws Exception {
+            return new WriteIntegerEncoder(value.getValue(), endian);
+        }
+
+        @Override
+        public MessageEncoder visit(AstLiteralLongValue value, ByteOrder endian) throws Exception {
+            return new WriteLongEncoder(value.getValue(), endian);
+        }
+
+        @Override
+        public MessageEncoder visit(AstLiteralURIValue value, ByteOrder endian) throws Exception {
+            return new WriteTextEncoder(value.getValue().toString(), UTF_8);
         }
     }
 
@@ -1011,8 +1007,8 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstWriteConfigNode node, State state) throws Exception {
         switch (node.getType()) {
         case "request": {
-            AstValue form = (AstLiteralTextValue) node.getValue("form");
-            MessageEncoder formEncoder = form.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+            AstValue<?> form = (AstLiteralTextValue) node.getValue("form");
+            MessageEncoder formEncoder = form.accept(new GenerateWriteEncoderVisitor(), state.endian);
 
             WriteConfigHandler handler = new WriteConfigHandler(new HttpRequestFormEncoder(formEncoder));
 
@@ -1022,12 +1018,12 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             return state.configuration;
         }
         case "header": {
-            AstValue name = node.getName("name");
-            MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+            AstValue<?> name = node.getName("name");
+            MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.endian);
 
             List<MessageEncoder> valueEncoders = new ArrayList<>();
-            for (AstValue value : node.getValues()) {
-                valueEncoders.add(value.accept(new GenerateWriteEncoderVisitor(), state.configuration));
+            for (AstValue<?> value : node.getValues()) {
+                valueEncoders.add(value.accept(new GenerateWriteEncoderVisitor(), state.endian));
             }
 
             WriteConfigHandler handler = new WriteConfigHandler(new HttpHeaderEncoder(nameEncoder, valueEncoders));
@@ -1052,10 +1048,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             return null;
         }
         case "method": {
-            AstValue methodName = node.getValue();
+            AstValue<?> methodName = node.getValue();
             requireNonNull(methodName);
 
-            MessageEncoder methodEncoder = methodName.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+            MessageEncoder methodEncoder = methodName.accept(new GenerateWriteEncoderVisitor(), state.endian);
 
             WriteConfigHandler handler = new WriteConfigHandler(new HttpMethodEncoder(methodEncoder));
             handler.setRegionInfo(node.getRegionInfo());
@@ -1064,12 +1060,12 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             return state.configuration;
         }
         case "parameter": {
-            AstValue name = node.getName("name");
-            MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+            AstValue<?> name = node.getName("name");
+            MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.endian);
 
             List<MessageEncoder> valueEncoders = new ArrayList<>();
-            for (AstValue value : node.getValues()) {
-                valueEncoders.add(value.accept(new GenerateWriteEncoderVisitor(), state.configuration));
+            for (AstValue<?> value : node.getValues()) {
+                valueEncoders.add(value.accept(new GenerateWriteEncoderVisitor(), state.endian));
             }
 
             WriteConfigHandler handler = new WriteConfigHandler(new HttpParameterEncoder(nameEncoder, valueEncoders));
@@ -1080,9 +1076,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             return state.configuration;
         }
         case "version": {
-            AstValue version = node.getValue();
+            AstValue<?> version = node.getValue();
 
-            MessageEncoder versionEncoder = version.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+            MessageEncoder versionEncoder = version.accept(new GenerateWriteEncoderVisitor(), state.endian);
 
             WriteConfigHandler handler = new WriteConfigHandler(new HttpVersionEncoder(versionEncoder));
 
@@ -1092,11 +1088,11 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             return state.configuration;
         }
         case "status": {
-            AstValue code = node.getValue("code");
-            AstValue reason = node.getValue("reason");
+            AstValue<?> code = node.getValue("code");
+            AstValue<?> reason = node.getValue("reason");
 
-            MessageEncoder codeEncoder = code.accept(new GenerateWriteEncoderVisitor(), state.configuration);
-            MessageEncoder reasonEncoder = reason.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+            MessageEncoder codeEncoder = code.accept(new GenerateWriteEncoderVisitor(), state.endian);
+            MessageEncoder reasonEncoder = reason.accept(new GenerateWriteEncoderVisitor(), state.endian);
 
             WriteConfigHandler handler = new WriteConfigHandler(new HttpStatusEncoder(codeEncoder, reasonEncoder));
 
@@ -1106,13 +1102,13 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             return state.configuration;
         }
         case "trailer": {
-            AstValue name = node.getName("name");
+            AstValue<?> name = node.getName("name");
 
-            MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.configuration);
+            MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.endian);
 
             List<MessageEncoder> valueEncoders = new ArrayList<>();
-            for (AstValue value : node.getValues()) {
-                valueEncoders.add(value.accept(new GenerateWriteEncoderVisitor(), state.configuration));
+            for (AstValue<?> value : node.getValues()) {
+                valueEncoders.add(value.accept(new GenerateWriteEncoderVisitor(), state.endian));
             }
 
             WriteConfigHandler handler = new WriteConfigHandler(new HttpTrailerEncoder(nameEncoder, valueEncoders));
@@ -1161,7 +1157,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         String optionName = node.getOptionName();
         switch (optionName) {
             case "mask" :
-                AstValue maskValue = node.getOptionValue();
+                AstValue<?> maskValue = node.getOptionValue();
                 state.readUnmasker = maskValue.accept(new GenerateMaskOptionValueVisitor(), state);
                 break;
 
@@ -1192,7 +1188,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         String optionName = node.getOptionName();
         switch (optionName) {
             case "mask" :
-                AstValue maskValue = node.getOptionValue();
+                AstValue<?> maskValue = node.getOptionValue();
                 state.writeMasker = maskValue.accept(new GenerateMaskOptionValueVisitor(), state);
                 break;
 
@@ -1219,12 +1215,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     private static final class GenerateMaskOptionValueVisitor implements AstValue.Visitor<Masker, State> {
 
         @Override
-        public Masker visit(AstExpressionValue value, State state) throws Exception {
+        public Masker visit(AstExpressionValue<?> value, State state) throws Exception {
 
-            ValueExpression expression = value.getValue();
-            ExpressionContext environment = value.getEnvironment();
-
-            return Maskers.newMasker(expression, environment);
+            Supplier<byte[]> supplier = () -> value.getValue(byte[].class);
+            return Maskers.newMasker(supplier);
         }
 
         @Override
@@ -1251,6 +1245,53 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             for (byte literalByte : literalBytes) {
                 if (literalByte != 0x00) {
                     return Maskers.newMasker(literalBytes);
+                }
+            }
+
+            // no need to unmask for all-zeros masking key
+            return Masker.IDENTITY_MASKER;
+        }
+
+        @Override
+        public Masker visit(AstLiteralIntegerValue literal, State state) throws Exception {
+            int value = literal.getValue();
+            if (value != 0) {
+                byte[] array = ByteBuffer.allocate(Integer.BYTES)
+                                         .order(state.endian)
+                                         .putInt(value)
+                                         .array();
+                return Maskers.newMasker(array);
+            }
+
+            // no need to unmask for all-zeros masking key
+            return Masker.IDENTITY_MASKER;
+        }
+
+        @Override
+        public Masker visit(AstLiteralLongValue literal, State state) throws Exception {
+            long value = literal.getValue();
+            if (value != 0L) {
+                byte[] array = ByteBuffer.allocate(Long.BYTES)
+                                         .order(state.endian)
+                                         .putLong(value)
+                                         .array();
+                return Maskers.newMasker(array);
+            }
+
+            // no need to unmask for all-zeros masking key
+            return Masker.IDENTITY_MASKER;
+        }
+
+        @Override
+        public Masker visit(AstLiteralURIValue value, State state) throws Exception {
+
+            URI literalURI = value.getValue();
+            String literalText = literalURI.toString();
+            byte[] literalTextAsBytes = literalText.getBytes(UTF_8);
+
+            for (byte literalTextAsByte : literalTextAsBytes) {
+                if (literalTextAsByte != 0x00) {
+                    return Maskers.newMasker(literalTextAsBytes);
                 }
             }
 

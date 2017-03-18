@@ -50,6 +50,7 @@
             <plugin>
                 <groupId>org.kaazing</groupId>
                 <artifactId>k3po-maven-plugin</artifactId>
+                <version>${project.version}</version>
                 <configuration>
                     <skipTests>${skipITs}</skipTests>
                 </configuration>

@@ -15,13 +15,18 @@
  */
 package org.kaazing.k3po.lang.internal.ast.builder;
 
+import java.net.URI;
+
 import javax.el.ValueExpression;
 
 import org.kaazing.k3po.lang.internal.ast.AstPropertyNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralIntegerValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralLongValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
 public class AstPropertyNodeBuilder extends AbstractAstNodeBuilder<AstPropertyNode, AstPropertyNode> {
@@ -35,18 +40,33 @@ public class AstPropertyNodeBuilder extends AbstractAstNodeBuilder<AstPropertyNo
         return this;
     }
 
-    public AstPropertyNodeBuilder setPropertyValue(String exactText) {
-        node.setPropertyValue(new AstLiteralTextValue(exactText));
+    public AstPropertyNodeBuilder setPropertyValue(String propertyValue) {
+        node.setPropertyValue(new AstLiteralTextValue(propertyValue));
         return this;
     }
 
-    public AstPropertyNodeBuilder setPropertyValue(byte[] exactBytes) {
-        node.setPropertyValue(new AstLiteralBytesValue(exactBytes));
+    public AstPropertyNodeBuilder setPropertyValue(byte[] propertyValue) {
+        node.setPropertyValue(new AstLiteralBytesValue(propertyValue));
+        return this;
+    }
+
+    public AstPropertyNodeBuilder setPropertyValue(int propertyValue) {
+        node.setPropertyValue(new AstLiteralIntegerValue(propertyValue));
+        return this;
+    }
+
+    public AstPropertyNodeBuilder setPropertyValue(long propertyValue) {
+        node.setPropertyValue(new AstLiteralLongValue(propertyValue));
+        return this;
+    }
+
+    public AstPropertyNodeBuilder setPropertyValue(URI propertyValue) {
+        node.setPropertyValue(new AstLiteralURIValue(propertyValue));
         return this;
     }
 
     public AstPropertyNodeBuilder setPropertyValue(ValueExpression expression, ExpressionContext environment) {
-        node.setPropertyValue(new AstExpressionValue(expression, environment));
+        node.setPropertyValue(new AstExpressionValue<>(expression, environment));
         return this;
     }
 
@@ -71,18 +91,28 @@ public class AstPropertyNodeBuilder extends AbstractAstNodeBuilder<AstPropertyNo
             return this;
         }
 
-        public ScriptNested<R> setPropertyValue(String exactText) {
-            node.setPropertyValue(new AstLiteralTextValue(exactText));
+        public ScriptNested<R> setPropertyValue(String propertyValue) {
+            node.setPropertyValue(new AstLiteralTextValue(propertyValue));
             return this;
         }
 
-        public ScriptNested<R> setOptionValue(byte[] exactBytes) {
-            node.setPropertyValue(new AstLiteralBytesValue(exactBytes));
+        public ScriptNested<R> setPropertyValue(byte[] propertyValue) {
+            node.setPropertyValue(new AstLiteralBytesValue(propertyValue));
             return this;
         }
 
-        public ScriptNested<R> setOptionValue(ValueExpression expression,  ExpressionContext environment) {
-            node.setPropertyValue(new AstExpressionValue(expression, environment));
+        public ScriptNested<R> setPropertyValue(int propertyValue) {
+            node.setPropertyValue(new AstLiteralIntegerValue(propertyValue));
+            return this;
+        }
+
+        public ScriptNested<R> setPropertyValue(long propertyValue) {
+            node.setPropertyValue(new AstLiteralLongValue(propertyValue));
+            return this;
+        }
+
+        public ScriptNested<R> setPropertyValue(URI propertyValue) {
+            node.setPropertyValue(new AstLiteralURIValue(propertyValue));
             return this;
         }
 

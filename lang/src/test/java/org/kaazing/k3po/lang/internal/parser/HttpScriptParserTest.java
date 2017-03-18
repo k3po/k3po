@@ -15,6 +15,7 @@
  */
 package org.kaazing.k3po.lang.internal.parser;
 
+import static org.junit.Assert.assertEquals;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_CHUNK_TRAILER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_CLOSED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_HTTP_HEADER;
@@ -54,8 +55,8 @@ import org.kaazing.k3po.lang.internal.ast.builder.AstWriteCloseNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteConfigNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteFlushNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteOptionNodeBuilder;
-import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
-import org.kaazing.k3po.lang.internal.ast.value.AstLocationLiteral;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
 public class HttpScriptParserTest {
@@ -505,7 +506,7 @@ public class HttpScriptParserTest {
          // @formatter:off
          AstScriptNode expected = new AstScriptNodeBuilder()
              .addAcceptStream()
-                 .setLocation(new AstLocationLiteral(URI.create("http://somehost:8000/path")))
+                 .setLocation(new AstLiteralURIValue(URI.create("http://somehost:8000/path")))
              .done()
              .addAcceptedStream()
                  .addReadConfigEvent()
@@ -569,7 +570,7 @@ public class HttpScriptParserTest {
 
          ScriptParserImpl parser = new ScriptParserImpl();
          AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
-         AstLocation location = new AstLocationLiteral(URI.create("http://somehost:8000/path"));
+         AstValue<URI> location = new AstLiteralURIValue(URI.create("http://somehost:8000/path"));
 
          // @formatter:off
          AstScriptNode expected = new AstScriptNodeBuilder()
@@ -638,7 +639,7 @@ public class HttpScriptParserTest {
          // @formatter:off
          AstScriptNode expected = new AstScriptNodeBuilder()
              .addAcceptStream()
-                 .setLocation(new AstLocationLiteral(URI.create("http://somehost:8000/path")))
+                 .setLocation(new AstLiteralURIValue(URI.create("http://somehost:8000/path")))
              .done()
              .addAcceptedStream()
                  .addReadConfigEvent()

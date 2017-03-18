@@ -18,18 +18,24 @@ package org.kaazing.k3po.lang.internal.ast;
 import static java.lang.String.format;
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
+import javax.el.ELResolver;
+
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
 public class AstPropertyNode extends AstNode {
 
     private String propertyName;
-    private AstValue propertyValue;
-    private ExpressionContext expressionContext;
+    private AstValue<?> propertyValue;
+    private ExpressionContext environment;
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
         return visitor.visit(this, parameter);
+    }
+
+    public void setEnvironment(ExpressionContext environment) {
+        this.environment = environment;
     }
 
     public String getPropertyName() {
@@ -40,12 +46,22 @@ public class AstPropertyNode extends AstNode {
         this.propertyName = propertyName;
     }
 
-    public AstValue getPropertyValue() {
+    public AstValue<?> getPropertyValue() {
         return propertyValue;
     }
 
-    public void setPropertyValue(AstValue propertyValue) {
+    public void setPropertyValue(AstValue<?> propertyValue) {
         this.propertyValue = propertyValue;
+    }
+
+    public Object resolve() {
+        Object value = propertyValue.getValue();
+        ELResolver resolver = environment.getELResolver();
+        // ELResolver.setValue is not thread-safe
+        synchronized (environment) {
+            resolver.setValue(environment, null, propertyName, value);
+        }
+        return value;
     }
 
     protected int hashTo() {
@@ -80,11 +96,6 @@ public class AstPropertyNode extends AstNode {
     }
 
     public ExpressionContext getExpressionContext() {
-        return expressionContext;
+        return environment;
     }
-
-    public void setExpressionContext(ExpressionContext expressionContext) {
-        this.expressionContext = expressionContext;
-    }
-
 }

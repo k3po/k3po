@@ -15,16 +15,17 @@
  */
 package org.kaazing.k3po.lang.internal.ast.value;
 
-import static java.lang.String.format;
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
+
+import java.net.URI;
 
 import org.kaazing.k3po.lang.internal.ast.AstRegion;
 
-public class AstLiteralTextValue extends AstValue<String> {
+public final class AstLiteralURIValue extends AstValue<URI> {
 
-    private final String value;
+    private final URI value;
 
-    public AstLiteralTextValue(String value) {
+    public AstLiteralURIValue(URI value) {
         if (value == null) {
             throw new NullPointerException("value");
         }
@@ -32,12 +33,13 @@ public class AstLiteralTextValue extends AstValue<String> {
     }
 
     @Override
-    public String getValue() {
+    public URI getValue() {
         return value;
     }
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+
         return visitor.visit(this, parameter);
     }
 
@@ -48,15 +50,19 @@ public class AstLiteralTextValue extends AstValue<String> {
 
     @Override
     protected boolean equalTo(AstRegion that) {
-        return (that instanceof AstLiteralTextValue) && equalTo((AstLiteralTextValue) that);
+        return (that instanceof AstLiteralURIValue) && equalTo((AstLiteralURIValue) that);
     }
 
-    protected boolean equalTo(AstLiteralTextValue that) {
+    protected boolean equalTo(AstLiteralURIValue that) {
         return equivalent(this.value, that.value);
     }
 
     @Override
     protected void describe(StringBuilder buf) {
-        buf.append(format("\"%s\"", value));
+        buf.append(value.toString());
+    }
+
+    public static String toString(int value) {
+        return Integer.toString(value);
     }
 }

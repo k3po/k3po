@@ -15,47 +15,50 @@
  */
 package org.kaazing.k3po.lang.internal.ast.value;
 
-import java.net.URI;
+import static java.util.Objects.requireNonNull;
+import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
 import org.kaazing.k3po.lang.internal.ast.AstRegion;
-import org.kaazing.k3po.lang.internal.ast.util.AstUtil;
 
-public class AstLocationLiteral extends AstLocation {
+public final class AstLiteralIntegerValue extends AstValue<Integer> {
 
-    private final URI value;
+    private final int value;
 
-    public AstLocationLiteral(URI value) {
-        if (value == null) {
-            throw new IllegalArgumentException("value cannot be null");
-        }
-        this.value = value;
+    public AstLiteralIntegerValue(Integer value) {
+        this.value = requireNonNull(value, "value");
     }
 
-    public URI getValue() {
+    @Override
+    public Integer getValue() {
         return value;
     }
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+
         return visitor.visit(this, parameter);
     }
 
     @Override
     protected int hashTo() {
-        return value.hashCode();
+        return Integer.hashCode(value);
     }
 
     @Override
     protected boolean equalTo(AstRegion that) {
-        return (that instanceof AstLocationLiteral) && equalTo((AstLocationLiteral) that);
+        return (that instanceof AstLiteralIntegerValue) && equalTo((AstLiteralIntegerValue) that);
     }
 
-    protected boolean equalTo(AstLocationLiteral that) {
-        return AstUtil.equivalent(this.value, that.value);
+    protected boolean equalTo(AstLiteralIntegerValue that) {
+        return equivalent(this.value, that.value);
     }
 
     @Override
     protected void describe(StringBuilder buf) {
-        buf.append(value);
+        buf.append(Integer.toString(value));
+    }
+
+    public static String toString(int value) {
+        return Integer.toString(value);
     }
 }

@@ -17,20 +17,18 @@ package org.kaazing.k3po.lang.internal.ast;
 
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
+import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.el.ELContext;
-
-import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
+import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 
 public class AstConnectNode extends AstStreamNode {
 
     private Map<String, Object> options;
     private String awaitName;
 
-    private AstLocation location;
-    private ELContext environment;
+    private AstValue<URI> location;
 
     public AstConnectNode() {
     }
@@ -38,7 +36,6 @@ public class AstConnectNode extends AstStreamNode {
     public AstConnectNode(AstConnectNode connectNode) {
         this.regionInfo = connectNode.regionInfo;
         this.location = connectNode.location;
-        this.environment = connectNode.environment;
         this.awaitName = connectNode.awaitName;
         this.options = connectNode.options;
     }
@@ -51,20 +48,12 @@ public class AstConnectNode extends AstStreamNode {
         this.awaitName = awaitName;
     }
 
-    public AstLocation getLocation() {
+    public AstValue<URI> getLocation() {
         return location;
     }
 
-    public void setLocation(AstLocation location) {
+    public void setLocation(AstValue<URI> location) {
         this.location = location;
-    }
-
-    public ELContext getEnvironment() {
-        return environment;
-    }
-
-    public void setEnvironment(ELContext expressionContext) {
-        this.environment = expressionContext;
     }
 
     public Map<String, Object> getOptions() {
@@ -82,11 +71,6 @@ public class AstConnectNode extends AstStreamNode {
         if (location != null) {
             hashCode <<= 4;
             hashCode ^= location.hashCode();
-        }
-
-        if (environment != null) {
-            hashCode <<= 4;
-            hashCode ^= environment.hashCode();
         }
 
         if (options != null) {

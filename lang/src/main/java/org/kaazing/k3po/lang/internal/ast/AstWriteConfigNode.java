@@ -27,8 +27,8 @@ import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 public class AstWriteConfigNode extends AstCommandNode {
 
     private String type;
-    private Map<String, AstValue> namesByName;
-    private Map<String, AstValue> valuesByName;
+    private Map<String, AstValue<?>> namesByName;
+    private Map<String, AstValue<?>> valuesByName;
 
     public AstWriteConfigNode() {
         this.namesByName = new LinkedHashMap<>();
@@ -43,32 +43,32 @@ public class AstWriteConfigNode extends AstCommandNode {
         return type;
     }
 
-    public void setName(String name, AstValue value) {
+    public void setName(String name, AstValue<?> value) {
         namesByName.put(name, value);
     }
 
-    public AstValue getName(String name) {
+    public AstValue<?> getName(String name) {
         return namesByName.get(name);
     }
 
-    public void setValue(String name, AstValue value) {
+    public void setValue(String name, AstValue<?> value) {
         valuesByName.put(name, value);
     }
 
-    public AstValue getValue(String name) {
+    public AstValue<?> getValue(String name) {
         return valuesByName.get(name);
     }
 
-    public void addValue(AstValue value) {
+    public void addValue(AstValue<?> value) {
         String name = format("value#%d", valuesByName.size());
         valuesByName.put(name, value);
     }
 
-    public Collection<AstValue> getValues() {
+    public Collection<AstValue<?>> getValues() {
         return valuesByName.values();
     }
 
-    public AstValue getValue() {
+    public AstValue<?> getValue() {
         switch (valuesByName.size()) {
         case 0:
             return null;
@@ -114,10 +114,10 @@ public class AstWriteConfigNode extends AstCommandNode {
     protected void describe(StringBuilder buf) {
         super.describe(buf);
         buf.append("write ").append(type);
-        for (AstValue name : namesByName.values()) {
+        for (AstValue<?> name : namesByName.values()) {
             buf.append(' ').append(name);
         }
-        for (AstValue value : valuesByName.values()) {
+        for (AstValue<?> value : valuesByName.values()) {
             buf.append(' ').append(value);
         }
         buf.append('\n');
