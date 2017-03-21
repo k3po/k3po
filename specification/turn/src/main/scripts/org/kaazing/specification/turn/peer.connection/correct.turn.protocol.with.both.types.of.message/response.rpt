@@ -170,9 +170,7 @@ read [0x00] [0x13] [0x00] [0x04]
 read "Data"
 
 #Read ChannelData Message https://tools.ietf.org/html/rfc5766#section-14.4
-read [0x40] [0x00] [0x00] [0x04]
-read "data"
+read [0x40] [0x00] [0x00] [0x04] "data"
 
 #Send ChannelData Message https://tools.ietf.org/html/rfc5766#section-14.4
-write [0x40] [0x00] [0x00] [0x04]
-write "data"
+write [0x40] [0x00] [0x00] [0x04] "data"
