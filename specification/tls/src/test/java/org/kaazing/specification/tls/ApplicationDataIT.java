@@ -26,9 +26,9 @@ import org.junit.rules.Timeout;
 import org.kaazing.k3po.junit.annotation.Specification;
 import org.kaazing.k3po.junit.rules.K3poRule;
 
-public class SpecificationIT {
+public class ApplicationDataIT {
 
-    private final K3poRule robot = new K3poRule();
+    private final K3poRule robot = new K3poRule().setScriptRoot("org/kaazing/specification/tls/application.data");
 
     private final TestRule timeout = new DisableOnDebug(new Timeout(5, SECONDS));
 
@@ -36,8 +36,9 @@ public class SpecificationIT {
     public final TestRule chain = outerRule(robot).around(timeout);
 
     @Test
-    @Specification({"accept", "connect"})
-    public void shouldPass() throws Exception {
+    @Specification({"sample.application.data/client", "sample.application.data/server"})
+    public void shouldPassWithRandomApplicationData() throws Exception {
         robot.finish();
     }
+
 }

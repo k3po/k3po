@@ -16,11 +16,17 @@
     <packaging>jar</packaging>
 
     <scm>
-        <url>https://github.com/kaazing/specification.tls.git</url>
+        <url>https://github.com/kaazing/specification.tls</url>
         <connection>scm:git:https://github.com/kaazing/specification.tls.git</connection>
     </scm>
 
     <dependencies>
+        <dependency>
+            <!-- Needed for EL only, not AST -->
+            <groupId>org.kaazing</groupId>
+            <artifactId>k3po.lang</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.kaazing</groupId>
             <artifactId>k3po.junit</artifactId>
@@ -31,6 +37,9 @@
 
     <build>
         <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
             <resource>
                 <directory>src/main/scripts</directory>
             </resource>
