@@ -201,6 +201,11 @@ public class Robot {
     public ChannelFuture dispose() {
         if (preparedFuture == null) {
             // no need to clean up if never started
+            
+            // except the bootstrap factory
+            bootstrapFactory.shutdown();
+            bootstrapFactory.releaseExternalResources();
+
             disposedFuture.setSuccess();
         } else if (!disposedFuture.isDone()) {
             ChannelFuture future = abort();

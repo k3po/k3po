@@ -2,7 +2,29 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-63...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-64...HEAD)
+
+**Fixed bugs:**
+
+- Thread leaks in K3po driver [\#405](https://github.com/k3po/k3po/issues/405)
+- Unexpected event Notified [\#402](https://github.com/k3po/k3po/issues/402)
+- Test in http specification - ConnectionManagementIT - fails in specific conditions [\#395](https://github.com/k3po/k3po/issues/395)
+- Interrupted status true at the beginning of test [\#391](https://github.com/k3po/k3po/issues/391)
+
+**Closed issues:**
+
+- Rename `Finished` header names in control protocol [\#413](https://github.com/k3po/k3po/issues/413)
+
+**Merged pull requests:**
+
+- Send/Receive each data channel message on one line [\#418](https://github.com/k3po/k3po/pull/418) ([Anisotrop](https://github.com/Anisotrop))
+- Rename `Finished` header names in control protocol [\#416](https://github.com/k3po/k3po/pull/416) ([StCostea](https://github.com/StCostea))
+- Fix.turn.spec.channel.bind [\#415](https://github.com/k3po/k3po/pull/415) ([Anisotrop](https://github.com/Anisotrop))
+- Sporadic failure in ConnectionManagementIT [\#410](https://github.com/k3po/k3po/pull/410) ([StCostea](https://github.com/StCostea))
+- Thread leaks in K3po [\#407](https://github.com/k3po/k3po/pull/407) ([StCostea](https://github.com/StCostea))
+
+## [3.0.0-alpha-64](https://github.com/k3po/k3po/tree/3.0.0-alpha-64) (2017-03-08)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-63...3.0.0-alpha-64)
 
 **Fixed bugs:**
 

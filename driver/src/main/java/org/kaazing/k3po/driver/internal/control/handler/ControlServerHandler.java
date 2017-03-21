@@ -120,7 +120,6 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             logger.debug("preparing script(s) " + scriptNames);
         }
 
-        robot = new Robot();
         whenAbortedOrFinished = whenAbortedOrFinished(ctx);
 
         String originScript = "";
@@ -147,6 +146,8 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             }
 
             aggregatedScript = injectOverridenProperties(aggregatedScript, properyOverrides);
+
+            robot = new Robot();
 
             if (scriptLoader != null) {
                 Thread currentThread = currentThread();
@@ -371,7 +372,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     @Override
     public void disposeReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
-        if (robot == null || robot.getPreparedFuture() == null) {
+        if (robot == null) {
             sendErrorMessage(ctx, ERROR_MSG_NOT_PREPARED);
             return;
         }
