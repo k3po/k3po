@@ -47,11 +47,7 @@ public abstract class CommandEvent {
         /**
          * Event for if a barrier has been triggered via a notify command
          */
-        NOTIFIED,
-        /**
-         * Event for when the K3po Driver has been disposed of
-         */
-        DISPOSED
+        NOTIFIED
     }
 
     /**

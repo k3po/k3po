@@ -46,7 +46,6 @@ import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.Robot;
 import org.kaazing.k3po.driver.internal.behavior.Barrier;
 import org.kaazing.k3po.driver.internal.control.AwaitMessage;
-import org.kaazing.k3po.driver.internal.control.DisposedMessage;
 import org.kaazing.k3po.driver.internal.control.ErrorMessage;
 import org.kaazing.k3po.driver.internal.control.FinishedMessage;
 import org.kaazing.k3po.driver.internal.control.NotifiedMessage;
@@ -370,31 +369,6 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         });
     }
 
-    @Override
-    public void disposeReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
-        if (robot == null) {
-            sendErrorMessage(ctx, ERROR_MSG_NOT_PREPARED);
-            return;
-        }
-        
-        try {
-            robot.dispose().addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture future) throws Exception {
-                    writeDisposed(ctx);
-                }
-            });
-        } catch (Exception e) {
-            sendErrorMessage(ctx, e);
-            return;
-        }
-    }
-
-    private void writeDisposed(ChannelHandlerContext ctx) {
-        DisposedMessage disposedMessage = new DisposedMessage();
-        writeEvent(ctx, disposedMessage);
-    }
-
     private ChannelFutureListener whenAbortedOrFinished(final ChannelHandlerContext ctx) {
         final AtomicBoolean oneTimeOnly = new AtomicBoolean();
         return new ChannelFutureListener() {
@@ -459,14 +433,14 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         writeEvent(ctx, errorMessage);
     }
 
-    // will send only the DISPOSED message after the FINISHED one
+    // will send no message after the FINISHED
     private void writeEvent(final ChannelHandlerContext ctx, final Object message) {
-        if (message instanceof FinishedMessage) {
+        if (isFinishedSent)
+            return;
+        
+        if (message instanceof FinishedMessage)
             isFinishedSent = true;
-            Channels.write(ctx, Channels.future(null), message);
-        }
-        else if (! isFinishedSent || message instanceof DisposedMessage) {
-            Channels.write(ctx, Channels.future(null), message);
-        }
+
+        Channels.write(ctx, Channels.future(null), message);
     }
 }

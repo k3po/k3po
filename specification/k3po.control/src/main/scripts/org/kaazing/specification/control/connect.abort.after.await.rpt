@@ -65,10 +65,4 @@ read "\n"
 read "# client\n"
 read "\n"
 
-write "DISPOSE\n"
-write "\n"
-
-read "DISPOSED\n"
-read "\n"
-
 close

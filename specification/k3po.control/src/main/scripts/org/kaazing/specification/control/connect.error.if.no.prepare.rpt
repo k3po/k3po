@@ -55,13 +55,4 @@ read "content-length:51\n"
 read "\n"
 read "Script has not been prepared or is still preparing\n"
 
-write "DISPOSE\n"
-write "\n"
-
-read "ERROR\n"
-read "summary:Internal error\n"
-read "content-length:51\n"
-read "\n"
-read "Script has not been prepared or is still preparing\n"
-
 close
