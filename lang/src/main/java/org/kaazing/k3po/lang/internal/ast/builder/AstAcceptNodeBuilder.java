@@ -38,6 +38,16 @@ public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<Ast
         return this;
     }
 
+    public <T> AstAcceptNodeBuilder setOption(AstOption<T> option, AstValue<T> optionValue) {
+        node.getOptions().put(option.getName(), optionValue);
+        return this;
+    }
+
+    public AstAcceptNodeBuilder setOption(String optionName, AstValue<?> optionValue) {
+        node.getOptions().put(optionName, optionValue);
+        return this;
+    }
+
     @Override
     public AstOpenedNodeBuilder.StreamNested<AstAcceptNodeBuilder> addOpenedEvent() {
         return new AstOpenedNodeBuilder.StreamNested<>(this);
@@ -109,13 +119,18 @@ public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<Ast
             return this;
         }
 
+        public ScriptNested<R> setAcceptName(String acceptName) {
+            node.setAcceptName(acceptName);
+            return this;
+        }
+
         public <T> ScriptNested<R> setOption(AstOption<T> option, AstValue<T> optionValue) {
             node.getOptions().put(option.getName(), optionValue);
             return this;
         }
 
-        public ScriptNested<R> setAcceptName(String acceptName) {
-            node.setAcceptName(acceptName);
+        public <T> ScriptNested<R> setOption(String optionName, AstValue<?> optionValue) {
+            node.getOptions().put(optionName, optionValue);
             return this;
         }
 

@@ -96,6 +96,7 @@ import org.kaazing.k3po.lang.internal.ast.matcher.AstValueMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstVariableLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralIntegerValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
@@ -1253,7 +1254,7 @@ public class ScriptParserImplTest {
          AstScriptNode expected = new AstScriptNodeBuilder()
                  .addConnectStream()
                      .setLocation(location)
-                     .setBarrier("BARRIER")
+                     .setAwaitName("BARRIER")
                      .addConnectedEvent()
                      .done()
                      .addCloseCommand()
@@ -1290,7 +1291,11 @@ public class ScriptParserImplTest {
 
         String script =
                 "connect http://localhost:7788\n" +
-                "        option transport tcp://localhost:8888\n" +
+                "       option transport tcp://localhost:8000\n" +
+                "       option string \"text\"" +
+                "       option bytes [0x01 0x02 0x03 0x04]" +
+                "       option number 1234" +
+                "       option expression ${variable}" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";
@@ -1298,12 +1303,24 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
         AstValue<URI> location = new AstLiteralURIValue(URI.create("http://localhost:7788"));
-        AstValue<URI> transport = new AstLiteralURIValue(URI.create("tcp://localhost:8888"));
+        AstValue<URI> transport = new AstLiteralURIValue(URI.create("tcp://localhost:8000"));
+        AstValue<String> string = new AstLiteralTextValue("text");
+        AstValue<byte[]> bytes = new AstLiteralBytesValue(new byte[] { 0x01, 0x02, 0x03, 0x04 });
+        AstValue<Integer> number = new AstLiteralIntegerValue(1234);
+
+        ExpressionFactory factory = parser.getExpressionFactory();
+        ExpressionContext environment = parser.getExpressionContext();
+        ValueExpression valueExpression = factory.createValueExpression(environment, "${variable}", Object.class);
+        AstExpressionValue<Object> expression = new AstExpressionValue<>(valueExpression, environment);
 
         AstScriptNode expected = new AstScriptNodeBuilder()
                 .addConnectStream()
                     .setLocation(location)
-                    .setTransport(transport)
+                    .setOption(AstOption.TRANSPORT, transport)
+                    .setOption("string", string)
+                    .setOption("bytes", bytes)
+                    .setOption("number", number)
+                    .setOption("expression", expression)
                     .addConnectedEvent().done()
                     .addCloseCommand().done()
                     .addClosedEvent().done()
@@ -1334,9 +1351,12 @@ public class ScriptParserImplTest {
     public void shouldParseAcceptScriptWithOptions() throws Exception {
 
         String script =
-                "# tcp.client.accept-then-close\n" +
                 "accept http://localhost:7788\n" +
-                "       option transport tcp://localhost:8000\n" +
+                        "       option transport tcp://localhost:8000\n" +
+                        "       option string \"text\"" +
+                        "       option bytes [0x01 0x02 0x03 0x04]" +
+                        "       option number 1234" +
+                        "       option expression ${variable}" +
                 "accepted\n" +
                 "connected\n" +
                 "close\n" +
@@ -1344,13 +1364,26 @@ public class ScriptParserImplTest {
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
+
         AstValue<URI> location = new AstLiteralURIValue(URI.create("http://localhost:7788"));
         AstValue<URI> transport = new AstLiteralURIValue(URI.create("tcp://localhost:8000"));
+        AstValue<String> string = new AstLiteralTextValue("text");
+        AstValue<byte[]> bytes = new AstLiteralBytesValue(new byte[] { 0x01, 0x02, 0x03, 0x04 });
+        AstValue<Integer> number = new AstLiteralIntegerValue(1234);
+
+        ExpressionFactory factory = parser.getExpressionFactory();
+        ExpressionContext environment = parser.getExpressionContext();
+        ValueExpression valueExpression = factory.createValueExpression(environment, "${variable}", Object.class);
+        AstExpressionValue<Object> expression = new AstExpressionValue<>(valueExpression, environment);
 
         AstScriptNode expected = new AstScriptNodeBuilder()
                 .addAcceptStream()
                     .setLocation(location)
                     .setOption(AstOption.TRANSPORT, transport)
+                    .setOption("string", string)
+                    .setOption("bytes", bytes)
+                    .setOption("number", number)
+                    .setOption("expression", expression)
                 .done()
                 .addAcceptedStream()
                     .addConnectedEvent().done()

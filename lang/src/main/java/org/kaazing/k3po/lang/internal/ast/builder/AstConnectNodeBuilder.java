@@ -17,6 +17,7 @@ package org.kaazing.k3po.lang.internal.ast.builder;
 
 import java.net.URI;
 
+import org.kaazing.k3po.lang.internal.AstOption;
 import org.kaazing.k3po.lang.internal.ast.AstConnectNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
@@ -32,8 +33,18 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         return this;
     }
 
-    public AstConnectNodeBuilder setBarrier(String barrier) {
+    public AstConnectNodeBuilder setAwaitName(String barrier) {
         node.setAwaitName(barrier);
+        return this;
+    }
+
+    public <T> AstConnectNodeBuilder setOption(AstOption<T> option, AstValue<T> optionValue) {
+        node.getOptions().put(option.getName(), optionValue);
+        return this;
+    }
+
+    public AstConnectNodeBuilder setOption(String optionName, AstValue<?> optionValue) {
+        node.getOptions().put(optionName, optionValue);
         return this;
     }
 
@@ -178,13 +189,18 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
             return this;
         }
 
-        public ScriptNested<R> setTransport(AstValue<URI> transport) {
-            node.getOptions().put("transport", transport);
+        public ScriptNested<R> setAwaitName(String barrier) {
+            node.setAwaitName(barrier);
             return this;
         }
 
-        public ScriptNested<R> setBarrier(String barrier) {
-            node.setAwaitName(barrier);
+        public <T> ScriptNested<R> setOption(AstOption<T> option, AstValue<T> optionValue) {
+            node.getOptions().put(option.getName(), optionValue);
+            return this;
+        }
+
+        public <T> ScriptNested<R> setOption(String optionName, AstValue<?> optionValue) {
+            node.getOptions().put(optionName, optionValue);
             return this;
         }
 
