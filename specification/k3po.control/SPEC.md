@@ -50,7 +50,7 @@ are formatted as follows:
 
 If the "content-length" header is specified, then a message body of the specified length must be added.
 
-Headers and messages that are not understood/processed by a receiver should be ignored. The writers must only send headers and messages that it understands. 
+Receivers SHOULD ignore undefined message headers and message types. Senders MUST NOT send undefined message headers or message types. 
 
 ## Message Types
 
