@@ -30,14 +30,14 @@ import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.LITERAL_
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.PROPERTY_NODE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_AWAIT;
-import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_MASK_OPTION;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_NOTIFY;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_OPTION;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.SCRIPT;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.VARIABLE_LENGTH_BYTES_MATCHER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_AWAIT;
-import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_MASK_OPTION;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_NOTIFY;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_OPTION;
 import static org.kaazing.k3po.lang.internal.regex.NamedGroupPattern.compile;
 import static org.kaazing.k3po.lang.internal.test.junit.Assert.assertEquals;
 
@@ -1601,7 +1601,7 @@ public class ScriptParserImplTest {
         String scriptFragment = "read option mask [0x01 0x02 0x03 0x04]";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_MASK_OPTION);
+        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_OPTION);
 
         AstReadOptionNode expected =
                 new AstReadOptionNodeBuilder().setOptionName("mask").setOptionValue(new byte[]{0x01, 0x02, 0x03, 0x04}).done();
@@ -1618,7 +1618,7 @@ public class ScriptParserImplTest {
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
 
-        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_MASK_OPTION);
+        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_OPTION);
 
         AstReadOptionNode expected =
                 new AstReadOptionNodeBuilder()
@@ -1635,7 +1635,7 @@ public class ScriptParserImplTest {
         String scriptFragment = "write option mask [0x01 0x02 0x03 0x04]";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_MASK_OPTION);
+        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_OPTION);
 
         AstWriteOptionNode expected =
                 new AstWriteOptionNodeBuilder().setOptionName("mask").setOptionValue(new byte[]{0x01, 0x02, 0x03, 0x04}).done();
@@ -1652,7 +1652,7 @@ public class ScriptParserImplTest {
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
 
-        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_MASK_OPTION);
+        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_OPTION);
 
         AstWriteOptionNode expected =
                 new AstWriteOptionNodeBuilder()

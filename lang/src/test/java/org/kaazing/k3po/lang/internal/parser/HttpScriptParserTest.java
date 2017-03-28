@@ -23,7 +23,9 @@ import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_HTT
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_HTTP_PARAMETER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_HTTP_STATUS;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_HTTP_VERSION;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_OPTION;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.SCRIPT;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_CHUNK_TRAILER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_CLOSE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_FLUSH;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_HTTP_CONTENT_LENGTH;
@@ -34,6 +36,7 @@ import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_HT
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_HTTP_REQUEST;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_HTTP_STATUS;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_HTTP_VERSION;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_OPTION;
 import static org.kaazing.k3po.lang.internal.test.junit.Assert.assertEquals;
 
 import java.net.URI;
@@ -411,7 +414,7 @@ public class HttpScriptParserTest {
         String scriptFragment = "write option chunkExtension \"chunkextension\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, ScriptParseStrategy.WRITE_CHUNK_EXTENSION_OPTION);
+        AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_OPTION);
 
         // @formatter:off
         AstWriteOptionNode expected = new AstWriteOptionNodeBuilder()
@@ -430,7 +433,7 @@ public class HttpScriptParserTest {
         String scriptFragment = "read option chunkExtension \"chunkextension\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, ScriptParseStrategy.READ_CHUNK_EXTENSION_OPTION);
+        AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_OPTION);
 
         // @formatter:off
         AstReadOptionNode expected = new AstReadOptionNodeBuilder()
@@ -448,7 +451,7 @@ public class HttpScriptParserTest {
         String scriptFragment = "write trailer \"checksum\" \"value\"";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, ScriptParseStrategy.WRITE_CHUNK_TRAILER);
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_CHUNK_TRAILER);
 
         // @formatter:off
         AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()

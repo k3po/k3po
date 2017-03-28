@@ -138,9 +138,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpStatusNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpVersionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadNotifyNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadOptionHttpChunkExtensionNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadOptionMaskNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadOptionOffsetNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadOptionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.RegexMatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ScriptNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ServerStreamableNodeContext;
@@ -163,9 +161,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpStatusNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpVersionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteNotifyNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteOptionHttpChunkExtensionNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteOptionMaskNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteOptionOffsetNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteOptionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteValueContext;
 
 public abstract class ScriptParseStrategy<T extends AstRegion> {
@@ -680,41 +676,21 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
                 }
             };
 
-    public static final ScriptParseStrategy<AstReadOptionNode> READ_MASK_OPTION = new ScriptParseStrategy<AstReadOptionNode>() {
+    public static final ScriptParseStrategy<AstReadOptionNode> READ_OPTION = new ScriptParseStrategy<AstReadOptionNode>() {
         @Override
         public AstReadOptionNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
                 throws RecognitionException {
-            return (AstReadOptionNode) new AstOptionNodeVisitor(factory, environment).visit(parser.readOptionMaskNode());
+            return (AstReadOptionNode) new AstOptionNodeVisitor(factory, environment).visit(parser.readOptionNode());
         }
     };
 
-    public static final ScriptParseStrategy<AstWriteOptionNode> WRITE_MASK_OPTION =
+    public static final ScriptParseStrategy<AstWriteOptionNode> WRITE_OPTION =
             new ScriptParseStrategy<AstWriteOptionNode>() {
                 @Override
                 public AstWriteOptionNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
                         throws RecognitionException {
                     return (AstWriteOptionNode) new AstOptionNodeVisitor(factory, environment)
-                            .visit(parser.writeOptionMaskNode());
-                }
-            };
-
-    public static final ScriptParseStrategy<AstReadOptionNode> READ_CHUNK_EXTENSION_OPTION =
-            new ScriptParseStrategy<AstReadOptionNode>() {
-                @Override
-                public AstReadOptionNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return (AstReadOptionNode) new AstOptionNodeVisitor(factory, environment)
-                            .visit(parser.readOptionHttpChunkExtensionNode());
-                }
-            };
-
-    public static final ScriptParseStrategy<AstWriteOptionNode> WRITE_CHUNK_EXTENSION_OPTION =
-            new ScriptParseStrategy<AstWriteOptionNode>() {
-                @Override
-                public AstWriteOptionNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return (AstWriteOptionNode) new AstOptionNodeVisitor(factory, environment)
-                            .visit(parser.writeOptionHttpChunkExtensionNode());
+                            .visit(parser.writeOptionNode());
                 }
             };
 
@@ -1088,9 +1064,10 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
-        public AstOptionNode visitReadOptionMaskNode(ReadOptionMaskNodeContext ctx) {
+        public AstOptionNode visitReadOptionNode(ReadOptionNodeContext ctx) {
 
-            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, byte[].class);
+            Class<byte[]> expectedType = byte[].class;
+            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, expectedType);
             AstValue<?> value = visitor.visit(ctx);
             childInfos().add(value.getRegionInfo());
 
@@ -1103,73 +1080,14 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
-        public AstOptionNode visitReadOptionOffsetNode(ReadOptionOffsetNodeContext ctx) {
+        public AstOptionNode visitWriteOptionNode(WriteOptionNodeContext ctx) {
 
-            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, byte[].class);
-            AstValue<?> value = visitor.visit(ctx);
-            childInfos().add(value.getRegionInfo());
-
-            node = new AstReadOptionNode();
-            node.setOptionName(ctx.name.getText());
-            node.setOptionValue(value);
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-
-            return node;
-        }
-
-        @Override
-        public AstOptionNode visitWriteOptionMaskNode(WriteOptionMaskNodeContext ctx) {
-
-            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, byte[].class);
+            Class<byte[]> expectedType = byte[].class;
+            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, expectedType);
             AstValue<?> value = visitor.visit(ctx);
             childInfos().add(value.getRegionInfo());
 
             node = new AstWriteOptionNode();
-            node.setOptionName(ctx.name.getText());
-            node.setOptionValue(value);
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-
-            return node;
-        }
-
-        @Override
-        public AstOptionNode visitWriteOptionOffsetNode(WriteOptionOffsetNodeContext ctx) {
-
-            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, byte[].class);
-            AstValue<?> value = visitor.visit(ctx);
-            childInfos().add(value.getRegionInfo());
-
-            node = new AstWriteOptionNode();
-            node.setOptionName(ctx.name.getText());
-            node.setOptionValue(value);
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-
-            return node;
-        }
-
-        @Override
-        public AstOptionNode visitWriteOptionHttpChunkExtensionNode(WriteOptionHttpChunkExtensionNodeContext ctx) {
-
-            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, byte[].class);
-            AstValue<?> value = visitor.visit(ctx);
-            childInfos().add(value.getRegionInfo());
-
-            node = new AstWriteOptionNode();
-            node.setOptionName(ctx.name.getText());
-            node.setOptionValue(value);
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-
-            return node;
-        }
-
-        @Override
-        public AstOptionNode visitReadOptionHttpChunkExtensionNode(ReadOptionHttpChunkExtensionNodeContext ctx) {
-
-            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, byte[].class);
-            AstValue<?> value = visitor.visit(ctx);
-            childInfos().add(value.getRegionInfo());
-
-            node = new AstReadOptionNode();
             node.setOptionName(ctx.name.getText());
             node.setOptionValue(value);
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));

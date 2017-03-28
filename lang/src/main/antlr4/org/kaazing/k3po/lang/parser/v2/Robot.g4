@@ -67,37 +67,17 @@ serverStreamableNode
     | optionNode
     ;
     
-optionNode 
-    : readOptionMaskNode
-    | readOptionOffsetNode
-    | writeOptionMaskNode
-    | writeOptionOffsetNode
-    | writeOptionHttpChunkExtensionNode
-    | readOptionHttpChunkExtensionNode
+optionNode
+    : readOptionNode
+    | writeOptionNode
     ;
 
-readOptionMaskNode
-    : ReadKeyword OptionKeyword name=MaskKeyword value=writeValue
+readOptionNode
+    : ReadKeyword OptionKeyword name=Name value=writeValue
     ;
 
-readOptionOffsetNode
-    : ReadKeyword OptionKeyword name=OffsetKeyword value=writeValue
-    ;
-
-readOptionHttpChunkExtensionNode
-    : ReadKeyword OptionKeyword name=ChunkExtensionKeyWord value=writeValue
-    ;
-
-writeOptionMaskNode
-    : WriteKeyword OptionKeyword name=MaskKeyword value=writeValue
-    ;
-
-writeOptionOffsetNode
-    : WriteKeyword OptionKeyword name=OffsetKeyword value=writeValue
-    ;
-
-writeOptionHttpChunkExtensionNode
-    : WriteKeyword OptionKeyword name=ChunkExtensionKeyWord value=writeValue
+writeOptionNode
+    : WriteKeyword OptionKeyword name=Name value=writeValue
     ;
 
 serverCommandNode
@@ -406,13 +386,7 @@ SignedDecimalLiteral
 //    |  DecimalLiteral
     ;
 
-MaskKeyword: 'mask';
-
-OffsetKeyword : 'offset';
-
 OptionKeyword: 'option';
-
-ChunkExtensionKeyWord: 'chunkExtension';
 
 ShortKeyword
     : 'short'
