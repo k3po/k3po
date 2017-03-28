@@ -1272,8 +1272,12 @@ public class ScriptParserImplTest {
     public void shouldParseConnectScriptWithComments() throws Exception {
 
         String script =
-                "# tcp.client.connect-then-close\n" + "connect tcp://localhost:7788 # Comment 1\n" + "\t\t # Comment 2\n"
-                        + "connected\n" + "close\n" + "closed\n";
+                "# tcp.client.connect-then-close\n" +
+                "connect tcp://localhost:7788 # Comment 1\n" +
+                "\t\t # Comment 2\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
@@ -1352,11 +1356,11 @@ public class ScriptParserImplTest {
 
         String script =
                 "accept http://localhost:7788\n" +
-                        "       option transport tcp://localhost:8000\n" +
-                        "       option string \"text\"" +
-                        "       option bytes [0x01 0x02 0x03 0x04]" +
-                        "       option number 1234" +
-                        "       option expression ${variable}" +
+                "       option transport tcp://localhost:8000\n" +
+                "       option string \"text\"" +
+                "       option bytes [0x01 0x02 0x03 0x04]" +
+                "       option number 1234" +
+                "       option expression ${variable}" +
                 "accepted\n" +
                 "connected\n" +
                 "close\n" +
