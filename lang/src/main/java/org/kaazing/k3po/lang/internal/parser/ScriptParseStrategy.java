@@ -717,26 +717,6 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
     public abstract T parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
             throws RecognitionException;
 
-
-    private static Class<?> optionType(String optionName) {
-
-        // TODO: discover expected type
-        Class<?> expectedType = Object.class;
-        if ("transport".equals(optionName)) {
-            expectedType = URI.class;
-        }
-        else if ("size".equals(optionName) || "timeout".equals(optionName))
-        {
-            expectedType = long.class;
-        }
-        else if ("mode".equals(optionName))
-        {
-            expectedType = String.class;
-        }
-
-        return expectedType;
-    }
-
     private static class AstVisitor<T> extends RobotBaseVisitor<T> {
         private static final List<RegionInfo> EMPTY_CHILDREN = emptyList();
 
@@ -898,17 +878,15 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
         @Override
         public AstAcceptNode visitAcceptOption(AcceptOptionContext ctx) {
-            Token name = ctx.name;
-            if (name != null)
-            {
-                String optionName = name.getText();
-                Class<?> expectedType = optionType(optionName);
-                AstValueVisitor<?> valueVisitor = new AstValueVisitor<>(factory, environment, expectedType);
-                AstValue<?> optionValue = valueVisitor.visit(ctx.value);
 
-                Map<String, Object> options = node.getOptions();
-                options.put(optionName, optionValue);
-            }
+            Token name = ctx.name;
+            String optionName = name.getText();
+            Class<?> expectedType = acceptOrConnectOptionType(optionName);
+            AstValueVisitor<?> valueVisitor = new AstValueVisitor<>(factory, environment, expectedType);
+            AstValue<?> optionValue = valueVisitor.visit(ctx.value);
+
+            Map<String, Object> options = node.getOptions();
+            options.put(optionName, optionValue);
 
             return super.visitAcceptOption(ctx);
         }
@@ -981,17 +959,14 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             ConnectOptionContext ctx)
         {
             Token name = ctx.name;
-            if (name != null)
-            {
-                String optionName = name.getText();
+            String optionName = name.getText();
 
-                Class<?> expectedType = optionType(optionName);
-                AstValueVisitor<?> valueVisitor = new AstValueVisitor<>(factory, environment, expectedType);
-                AstValue<?> optionValue = valueVisitor.visit(ctx.value);
+            Class<?> expectedType = acceptOrConnectOptionType(optionName);
+            AstValueVisitor<?> valueVisitor = new AstValueVisitor<>(factory, environment, expectedType);
+            AstValue<?> optionValue = valueVisitor.visit(ctx.value);
 
-                Map<String, Object> options = node.getOptions();
-                options.put(optionName, optionValue);
-            }
+            Map<String, Object> options = node.getOptions();
+            options.put(optionName, optionValue);
 
             return super.visitConnectOption(ctx);
         }
@@ -1066,14 +1041,16 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstOptionNode visitReadOptionNode(ReadOptionNodeContext ctx) {
 
-            Class<byte[]> expectedType = byte[].class;
+            Token name = ctx.name;
+            String optionName = name.getText();
+            Class<?> expectedType = readOrWriteOptionType(optionName);
             AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, expectedType);
-            AstValue<?> value = visitor.visit(ctx);
-            childInfos().add(value.getRegionInfo());
+            AstValue<?> optionValue = visitor.visit(ctx);
+            childInfos().add(optionValue.getRegionInfo());
 
             node = new AstReadOptionNode();
-            node.setOptionName(ctx.name.getText());
-            node.setOptionValue(value);
+            node.setOptionName(optionName);
+            node.setOptionValue(optionValue);
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
 
             return node;
@@ -1082,14 +1059,16 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstOptionNode visitWriteOptionNode(WriteOptionNodeContext ctx) {
 
-            Class<byte[]> expectedType = byte[].class;
+            Token name = ctx.name;
+            String optionName = name.getText();
+            Class<?> expectedType = readOrWriteOptionType(optionName);
             AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, expectedType);
-            AstValue<?> value = visitor.visit(ctx);
-            childInfos().add(value.getRegionInfo());
+            AstValue<?> optionValue = visitor.visit(ctx);
+            childInfos().add(optionValue.getRegionInfo());
 
             node = new AstWriteOptionNode();
-            node.setOptionName(ctx.name.getText());
-            node.setOptionValue(value);
+            node.setOptionName(optionName);
+            node.setOptionValue(optionValue);
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
 
             return node;
@@ -2704,4 +2683,30 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         return (token != null) ? token.getStopIndex() : 0;
     }
 
+    private static Class<?> acceptOrConnectOptionType(String optionName) {
+
+        // TODO: discover expected type
+        Class<?> expectedType = Object.class;
+        if ("transport".equals(optionName)) {
+            expectedType = URI.class;
+        }
+        else if ("size".equals(optionName) || "timeout".equals(optionName))
+        {
+            expectedType = long.class;
+        }
+        else if ("mode".equals(optionName))
+        {
+            expectedType = String.class;
+        }
+
+        return expectedType;
+    }
+
+    private static Class<?> readOrWriteOptionType(String optionName) {
+
+        // TODO: discover expected type
+        Class<?> expectedType = byte[].class;
+
+        return expectedType;
+    }
 }
