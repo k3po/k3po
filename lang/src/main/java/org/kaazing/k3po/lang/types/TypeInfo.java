@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.lang.internal;
+package org.kaazing.k3po.lang.types;
 
-import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
+import static java.util.Objects.requireNonNull;
 
-public final class AstOption<T> {
+public final class TypeInfo<T> implements Comparable<TypeInfo<T>> {
 
     private final Class<T> type;
     private final String name;
 
-    public AstOption(
+    public TypeInfo(
         String name,
         Class<T> type)
     {
-        this.type = type;
-        this.name = name;
+        this.type = requireNonNull(type);
+        this.name = requireNonNull(name);
     }
 
     public String getName() {
@@ -38,24 +38,29 @@ public final class AstOption<T> {
         return type;
     }
 
-    protected int hashTo() {
-        int hashCode = getClass().hashCode();
-
-        if (name != null) {
-            hashCode <<= 4;
-            hashCode ^= name.hashCode();
-        }
-
-        if (type != null) {
-            hashCode <<= 4;
-            hashCode ^= type.hashCode();
-        }
-
-        return hashCode;
+    @Override
+    public int compareTo( TypeInfo<T> that) {
+        // collide on name
+        return this.name.compareTo(that.name);
     }
 
-    protected boolean equalTo(AstOption<?> that) {
-        return equivalent(this.name, that.name) &&
-                equivalent(this.type, that.type);
+    @Override
+    public int hashCode() {
+        // collide on name
+        return name.hashCode();
+    }
+
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+
+        if (!(o instanceof TypeInfo)) {
+            return false;
+        }
+
+        TypeInfo<?> that = (TypeInfo<?>)o;
+        // collide on name
+        return this.name.equals(that.name);
     }
 }

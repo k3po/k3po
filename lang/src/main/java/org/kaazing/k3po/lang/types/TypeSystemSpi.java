@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.lang.internal.parser.types;
+package org.kaazing.k3po.lang.types;
 
-import java.util.List;
+import java.util.Set;
 
-public interface ScriptParserTypeSystemSpi {
+public interface TypeSystemSpi {
 
     String getName();
 
-    Class<?> acceptOptionType(String optionName);
+    Set<TypeInfo<?>> acceptOptions();
 
-    Class<?> connectOptionType(String optionName);
+    Set<TypeInfo<?>> connectOptions();
 
-    Class<?> readOptionType(String optionName);
+    Set<TypeInfo<?>> readOptions();
 
-    Class<?> writeOptionType(String optionName);
+    Set<TypeInfo<?>> writeOptions();
 
-    List<String> readConfigTypeNames(String configName);
+    Set<StructuredTypeInfo> readConfigs();
 
-    List<String> writeConfigTypeNames(String configName);
+    Set<StructuredTypeInfo> writeConfigs();
 }

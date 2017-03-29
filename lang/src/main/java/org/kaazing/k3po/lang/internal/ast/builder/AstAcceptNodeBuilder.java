@@ -17,10 +17,10 @@ package org.kaazing.k3po.lang.internal.ast.builder;
 
 import java.net.URI;
 
-import org.kaazing.k3po.lang.internal.AstOption;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
+import org.kaazing.k3po.lang.types.TypeInfo;
 
 public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<AstAcceptNode> {
 
@@ -38,7 +38,7 @@ public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<Ast
         return this;
     }
 
-    public <T> AstAcceptNodeBuilder setOption(AstOption<T> option, AstValue<T> optionValue) {
+    public <T> AstAcceptNodeBuilder setOption(TypeInfo<T> option, AstValue<T> optionValue) {
         node.getOptions().put(option.getName(), optionValue);
         return this;
     }
@@ -124,7 +124,7 @@ public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<Ast
             return this;
         }
 
-        public <T> ScriptNested<R> setOption(AstOption<T> option, AstValue<T> optionValue) {
+        public <T> ScriptNested<R> setOption(TypeInfo<T> option, AstValue<T> optionValue) {
             node.getOptions().put(option.getName(), optionValue);
             return this;
         }

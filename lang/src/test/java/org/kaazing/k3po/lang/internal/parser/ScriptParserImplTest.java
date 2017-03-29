@@ -52,7 +52,6 @@ import javax.el.ValueExpression;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.kaazing.k3po.lang.internal.AstOption;
 import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
 import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
@@ -107,10 +106,11 @@ import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
+import org.kaazing.k3po.lang.types.TypeInfo;
 
 public class ScriptParserImplTest {
 
-    private static final AstOption<URI> TEST_TRANSPORT = new AstOption<>("test:transport", URI.class);
+    private static final TypeInfo<URI> TEST_TRANSPORT = new TypeInfo<>("test:transport", URI.class);
 
     @Test
     public void shouldParseLiteralText() throws Exception {

@@ -93,7 +93,7 @@ import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
-import org.kaazing.k3po.lang.internal.parser.types.ScriptParserTypeSystem;
+import org.kaazing.k3po.lang.internal.parser.types.TypeSystem;
 import org.kaazing.k3po.lang.internal.regex.NamedGroupPattern;
 import org.kaazing.k3po.lang.parser.v2.RobotBaseVisitor;
 import org.kaazing.k3po.lang.parser.v2.RobotParser;
@@ -151,6 +151,8 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteNotifyNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteOptionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteValueContext;
+import org.kaazing.k3po.lang.types.StructuredTypeInfo;
+import org.kaazing.k3po.lang.types.TypeInfo;
 
 public abstract class ScriptParseStrategy<T extends AstRegion> {
 
@@ -740,7 +742,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstAcceptNode visitAcceptOption(AcceptOptionContext ctx) {
 
             String optionName = ctx.optionName().getText();
-            Class<?> expectedType = TYPE_SYSTEM.acceptOptionType(optionName);
+            Class<?> expectedType = TYPE_SYSTEM.acceptOption(optionName);
             AstValueVisitor<?> valueVisitor = new AstValueVisitor<>(factory, environment, expectedType);
             AstValue<?> optionValue = valueVisitor.visit(ctx.writeValue());
 
@@ -819,7 +821,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         {
             String optionName = ctx.optionName().getText();
 
-            Class<?> expectedType = TYPE_SYSTEM.connectOptionType(optionName);
+            Class<?> expectedType = TYPE_SYSTEM.connectOption(optionName);
             AstValueVisitor<?> valueVisitor = new AstValueVisitor<>(factory, environment, expectedType);
             AstValue<?> optionValue = valueVisitor.visit(ctx.writeValue());
 
@@ -900,7 +902,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstReadOptionNode visitReadOptionNode(ReadOptionNodeContext ctx) {
 
             String optionName = ctx.optionName().getText();
-            Class<?> expectedType = TYPE_SYSTEM.readOptionType(optionName);
+            Class<?> expectedType = TYPE_SYSTEM.readOption(optionName);
             AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, expectedType);
             AstValue<?> optionValue = visitor.visit(ctx);
             childInfos().add(optionValue.getRegionInfo());
@@ -924,7 +926,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstWriteOptionNode visitWriteOptionNode(WriteOptionNodeContext ctx) {
 
             String optionName = ctx.optionName().getText();
-            Class<?> expectedType = TYPE_SYSTEM.writeOptionType(optionName);
+            Class<?> expectedType = TYPE_SYSTEM.writeOption(optionName);
             AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, expectedType);
             AstValue<?> optionValue = visitor.visit(ctx);
             childInfos().add(optionValue.getRegionInfo());
@@ -1976,7 +1978,8 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
     private static class AstReadConfigNodeVisitor extends AstNodeVisitor<AstReadConfigNode> {
 
-        private Iterator<String> names;
+        private Iterator<TypeInfo<?>> namedFields;
+        private Iterator<Class<?>> anonymousFields;
 
         public AstReadConfigNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
             super(factory, environment);
@@ -1985,16 +1988,17 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstReadConfigNode visitReadConfigNode(ReadConfigNodeContext ctx) {
 
-            String configType = ctx.QualifiedName().getText();
+            String configQName = ctx.QualifiedName().getText();
             boolean missing = ctx.MissingKeyword() != null;
 
             node = new AstReadConfigNode();
 
             // TODO: model missing properly
-            node.setType(missing ? configType + " missing" : configType);
+            node.setType(missing ? configQName + " missing" : configQName);
 
-            Iterable<String> configTypeNames = TYPE_SYSTEM.readConfigTypeNames(configType);
-            names = configTypeNames.iterator();
+            StructuredTypeInfo configType = TYPE_SYSTEM.readConfig(configQName);
+            namedFields = configType.getNamedFields().iterator();
+            anonymousFields = configType.getAnonymousFields().iterator();
 
             super.visitReadConfigNode(ctx);
 
@@ -2011,16 +2015,16 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
             if (matcher != null) {
 
-                if (!names.hasNext()) {
-                    throw new IllegalStateException(String.format("Unexpected %s syntax", node.getType()));
+                if (namedFields.hasNext()) {
+                    TypeInfo<?> field = namedFields.next();
+                    node.setMatcher(field.getName(), matcher);
                 }
-
-                String name = names.next();
-                if (name != null) {
-                    node.setMatcher(name, matcher);
+                else if (anonymousFields.hasNext()) {
+                    anonymousFields.next();
+                    node.addMatcher(matcher);
                 }
                 else {
-                    node.addMatcher(matcher);
+                    throw new IllegalStateException(String.format("Unexpected %s syntax", node.getType()));
                 }
 
                 childInfos().add(matcher.getRegionInfo());
@@ -2028,12 +2032,12 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
             return node;
         }
-
     }
 
     private static class AstWriteConfigNodeVisitor extends AstNodeVisitor<AstWriteConfigNode> {
 
-        private Iterator<String> names;
+        private Iterator<TypeInfo<?>> namedFields;
+        private Iterator<Class<?>> anonymousFields;
 
         public AstWriteConfigNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
             super(factory, environment);
@@ -2042,13 +2046,14 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstWriteConfigNode visitWriteConfigNode(WriteConfigNodeContext ctx) {
 
-            String configType = ctx.QualifiedName().getText();
+            String configQName = ctx.QualifiedName().getText();
  
             node = new AstWriteConfigNode();
-            node.setType(configType);
+            node.setType(configQName);
 
-            Iterable<String> typeNames = TYPE_SYSTEM.writeConfigTypeNames(configType);
-            names = typeNames.iterator();
+            StructuredTypeInfo configType = TYPE_SYSTEM.writeConfig(configQName);
+            namedFields = configType.getNamedFields().iterator();
+            anonymousFields = configType.getAnonymousFields().iterator();
 
             super.visitWriteConfigNode(ctx);
 
@@ -2068,17 +2073,18 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
             if (value != null) {
 
-                if (!names.hasNext()) {
+                if (namedFields.hasNext()) {
+                    TypeInfo<?> field = namedFields.next();
+                    node.setValue(field.getName(), value);
+                }
+                else if (anonymousFields.hasNext()) {
+                    anonymousFields.next();
+                    node.addValue(value);
+                }
+                else {
                     throw new IllegalStateException(String.format("Unexpected %s syntax", node.getType()));
                 }
 
-                String name = names.next();
-                if (name != null) {
-                    node.setValue(name, value);
-                }
-                else {
-                    node.addValue(value);
-                }
                 childInfos().add(value.getRegionInfo());
             }
 
@@ -2206,5 +2212,5 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         return (token != null) ? token.getStopIndex() : 0;
     }
 
-    private static final ScriptParserTypeSystem TYPE_SYSTEM = ScriptParserTypeSystem.newInstance();
+    private static final TypeSystem TYPE_SYSTEM = TypeSystem.newInstance();
 }
