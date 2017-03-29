@@ -44,21 +44,6 @@ public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<
         return this;
     }
 
-    public AstWriteConfigNodeBuilder setName(String name, String value) {
-        node.setName(name, new AstLiteralTextValue(value));
-        return this;
-    }
-
-    public AstWriteConfigNodeBuilder setName(String name, byte[] value) {
-        node.setName(name, new AstLiteralBytesValue(value));
-        return this;
-    }
-
-    public AstWriteConfigNodeBuilder setName(String name, ValueExpression value, ExpressionContext environment) {
-        node.setName(name, new AstExpressionValue<>(value, environment));
-        return this;
-    }
-
     public AstWriteConfigNodeBuilder setValue(String name, String value) {
         node.setValue(name, new AstLiteralTextValue(value));
         return this;
@@ -98,21 +83,6 @@ public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<
 
         public StreamNested<R> setType(String type) {
             node.setType(type);
-            return this;
-        }
-
-        public StreamNested<R> setName(String name, String value) {
-            node.setName(name, new AstLiteralTextValue(value));
-            return this;
-        }
-
-        public StreamNested<R> setName(String name, byte[] value) {
-            node.setName(name, new AstLiteralBytesValue(value));
-            return this;
-        }
-
-        public StreamNested<R> setName(String name, ValueExpression value, ExpressionContext environment) {
-            node.setName(name, new AstExpressionValue<>(value, environment));
             return this;
         }
 

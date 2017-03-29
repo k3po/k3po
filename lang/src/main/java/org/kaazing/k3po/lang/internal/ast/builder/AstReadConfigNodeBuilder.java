@@ -25,7 +25,6 @@ import org.kaazing.k3po.lang.internal.ast.matcher.AstExpressionMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstFixedLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstRegexMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstVariableLengthBytesMatcher;
-import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 import org.kaazing.k3po.lang.internal.regex.NamedGroupPattern;
 
@@ -49,11 +48,6 @@ public class AstReadConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<A
         return this;
     }
 
-    public AstReadConfigNodeBuilder setValueExactText(String name, String value) {
-        node.setValue(name, new AstLiteralTextValue(value));
-        return this;
-    }
-
     public AstReadConfigNodeBuilder setMatcherFixedLengthBytes(String name, int valueLength) {
         node.setMatcher(name, new AstFixedLengthBytesMatcher(valueLength));
         return this;
@@ -64,8 +58,8 @@ public class AstReadConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<A
         return this;
     }
 
-    public AstReadConfigNodeBuilder setMatcherExactBytes(String name, byte[] valueBytes, ExpressionContext environment) {
-        node.setMatcher(name, new AstExactBytesMatcher(valueBytes, environment));
+    public AstReadConfigNodeBuilder setMatcherExactBytes(String name, byte[] valueBytes) {
+        node.setMatcher(name, new AstExactBytesMatcher(valueBytes));
         return this;
     }
 
@@ -109,7 +103,7 @@ public class AstReadConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<A
     }
 
     public AstReadConfigNodeBuilder addMatcherExactBytes(byte[] valueBytes, ExpressionContext environment) {
-        node.addMatcher(new AstExactBytesMatcher(valueBytes, environment));
+        node.addMatcher(new AstExactBytesMatcher(valueBytes));
         return this;
     }
 
@@ -152,11 +146,6 @@ public class AstReadConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<A
             return this;
         }
 
-        public StreamNested<R> setValueExactText(String name, String value) {
-            node.setValue(name, new AstLiteralTextValue(value));
-            return this;
-        }
-
         public StreamNested<R> setMatcherFixedLengthBytes(String name, int valueLength) {
             node.setMatcher(name, new AstFixedLengthBytesMatcher(valueLength));
             return this;
@@ -168,7 +157,7 @@ public class AstReadConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<A
         }
 
         public StreamNested<R> setMatcherExactBytes(String name, byte[] valueBytes, ExpressionContext environment) {
-            node.setMatcher(name, new AstExactBytesMatcher(valueBytes, environment));
+            node.setMatcher(name, new AstExactBytesMatcher(valueBytes));
             return this;
         }
 
@@ -212,7 +201,7 @@ public class AstReadConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<A
         }
 
         public StreamNested<R> addMatcherExactBytes(byte[] valueBytes, ExpressionContext environment) {
-            node.addMatcher(new AstExactBytesMatcher(valueBytes, environment));
+            node.addMatcher(new AstExactBytesMatcher(valueBytes));
             return this;
         }
 

@@ -878,7 +878,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         switch (node.getType()) {
         case "method": {
-            AstValueMatcher methodName = node.getMatcher("name");
+            AstValueMatcher methodName = node.getMatcher();
             requireNonNull(methodName);
 
             MessageDecoder methodValueDecoder = methodName.accept(new GenerateReadDecoderVisitor(), state.configuration);
@@ -893,7 +893,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             return state.configuration;
         }
         case "header": {
-            AstLiteralTextValue name = (AstLiteralTextValue) node.getValue("name");
+            AstExactTextMatcher name = (AstExactTextMatcher) node.getMatcher("name");
             requireNonNull(name);
 
             List<MessageDecoder> valueDecoders = new ArrayList<>();
@@ -912,7 +912,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             return state.configuration;
         }
         case "header missing": {
-            AstLiteralTextValue name = (AstLiteralTextValue) node.getValue("name");
+            AstExactTextMatcher name = (AstExactTextMatcher) node.getMatcher("name");
             requireNonNull(name);
 
             HttpHeaderMissingDecoder decoder = new HttpHeaderMissingDecoder(name.getValue());
@@ -926,7 +926,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             return state.configuration;
         }
         case "parameter": {
-            AstLiteralTextValue name = (AstLiteralTextValue) node.getValue("name");
+            AstExactTextMatcher name = (AstExactTextMatcher) node.getMatcher("name");
             requireNonNull(name);
 
             List<MessageDecoder> valueDecoders = new ArrayList<>();
@@ -945,7 +945,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             return state.configuration;
         }
         case "version": {
-            AstValueMatcher version = node.getMatcher("version");
+            AstValueMatcher version = node.getMatcher();
 
             MessageDecoder versionDecoder = version.accept(new GenerateReadDecoderVisitor(), state.configuration);
 
@@ -973,7 +973,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             return state.configuration;
         }
         case "trailer": {
-            AstLiteralTextValue name = (AstLiteralTextValue) node.getValue("name");
+            AstExactTextMatcher name = (AstExactTextMatcher) node.getMatcher("name");
 
             List<MessageDecoder> valueDecoders = new ArrayList<>();
             for (AstValueMatcher matcher : node.getMatchers()) {
@@ -1007,7 +1007,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstWriteConfigNode node, State state) throws Exception {
         switch (node.getType()) {
         case "request": {
-            AstValue<?> form = (AstLiteralTextValue) node.getValue("form");
+            AstValue<?> form = (AstLiteralTextValue) node.getValue();
             MessageEncoder formEncoder = form.accept(new GenerateWriteEncoderVisitor(), state.endian);
 
             WriteConfigHandler handler = new WriteConfigHandler(new HttpRequestFormEncoder(formEncoder));
@@ -1018,7 +1018,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             return state.configuration;
         }
         case "header": {
-            AstValue<?> name = node.getName("name");
+            AstValue<?> name = node.getValue("name");
             MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.endian);
 
             List<MessageEncoder> valueEncoders = new ArrayList<>();
@@ -1060,7 +1060,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             return state.configuration;
         }
         case "parameter": {
-            AstValue<?> name = node.getName("name");
+            AstValue<?> name = node.getValue("name");
             MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.endian);
 
             List<MessageEncoder> valueEncoders = new ArrayList<>();
@@ -1102,7 +1102,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             return state.configuration;
         }
         case "trailer": {
-            AstValue<?> name = node.getName("name");
+            AstValue<?> name = node.getValue("name");
 
             MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.endian);
 

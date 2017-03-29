@@ -35,7 +35,7 @@ public class AstReadNodeBuilder extends AbstractAstStreamableNodeBuilder<AstRead
     }
 
     public AstReadNodeBuilder addExactBytes(byte[] exactBytes, ExpressionContext environment) {
-        node.addMatcher(new AstExactBytesMatcher(exactBytes, environment));
+        node.addMatcher(new AstExactBytesMatcher(exactBytes));
         return this;
     }
 
@@ -91,7 +91,7 @@ public class AstReadNodeBuilder extends AbstractAstStreamableNodeBuilder<AstRead
         }
 
         public StreamNested<R> addExactBytes(byte[] exactBytes, ExpressionContext environment) {
-            node.addMatcher(new AstExactBytesMatcher(exactBytes, environment));
+            node.addMatcher(new AstExactBytesMatcher(exactBytes));
             return this;
         }
 

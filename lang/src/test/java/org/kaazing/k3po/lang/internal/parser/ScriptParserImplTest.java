@@ -30,12 +30,14 @@ import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.LITERAL_
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.PROPERTY_NODE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_AWAIT;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_CONFIG;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_NOTIFY;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_OPTION;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.SCRIPT;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.VARIABLE_LENGTH_BYTES_MATCHER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_AWAIT;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_CONFIG;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_NOTIFY;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_OPTION;
 import static org.kaazing.k3po.lang.internal.regex.NamedGroupPattern.compile;
@@ -59,11 +61,13 @@ import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstPropertyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadAwaitNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteAwaitNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteValueNode;
@@ -75,11 +79,13 @@ import org.kaazing.k3po.lang.internal.ast.builder.AstClosedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstConnectedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstPropertyNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadAwaitNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstReadConfigNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadNotifyNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadOptionNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstScriptNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteAwaitNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstWriteConfigNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteNotifyNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteOptionNodeBuilder;
@@ -103,6 +109,8 @@ import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
 public class ScriptParserImplTest {
+
+    private static final AstOption<URI> TEST_TRANSPORT = new AstOption<>("test:transport", URI.class);
 
     @Test
     public void shouldParseLiteralText() throws Exception {
@@ -194,7 +202,7 @@ public class ScriptParserImplTest {
 
         byte[] arr = {0x00, 0x05};
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr, parser.getExpressionContext());
+        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
 
         assertEquals(expected, actual);
     }
@@ -209,7 +217,7 @@ public class ScriptParserImplTest {
 
         byte[] arr = ByteBuffer.allocate(2).putShort((short) -5).array();
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr, parser.getExpressionContext());
+        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
 
         assertEquals(expected, actual);
     }
@@ -224,7 +232,7 @@ public class ScriptParserImplTest {
 
         byte[] arr = {(byte) -5};
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr, parser.getExpressionContext());
+        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
 
         assertEquals(expected, actual);
     }
@@ -239,7 +247,7 @@ public class ScriptParserImplTest {
 
         byte[] arr = {0x05};
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr, parser.getExpressionContext());
+        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
 
         assertEquals(expected, actual);
     }
@@ -254,7 +262,7 @@ public class ScriptParserImplTest {
 
         byte[] arr = {0x00, 0x00, 0x00, 0x05};
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr, parser.getExpressionContext());
+        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
 
         assertEquals(expected, actual);
     }
@@ -269,7 +277,7 @@ public class ScriptParserImplTest {
 
         byte[] arr = ByteBuffer.allocate(4).putInt(-5).array();
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr, parser.getExpressionContext());
+        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
 
         assertEquals(expected, actual);
     }
@@ -284,7 +292,7 @@ public class ScriptParserImplTest {
 
         byte[] arr = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05};
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr, parser.getExpressionContext());
+        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
 
         assertEquals(expected, actual);
     }
@@ -299,7 +307,7 @@ public class ScriptParserImplTest {
 
         byte[] arr = ByteBuffer.allocate(8).putLong(-5).array();
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr, parser.getExpressionContext());
+        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
         assertEquals(expected, actual);
     }
 
@@ -572,9 +580,8 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactBytesMatcher(new byte[]{0x01, (byte) 0xff, (byte) 0xfa},
-                parser.getExpressionContext()), new AstExactBytesMatcher(new byte[]{0x00, (byte) 0xf0, (byte) 0x03, (byte) 0x05,
-                (byte) 0x08, (byte) 0x04}, parser.getExpressionContext())));
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactBytesMatcher(new byte[]{0x01, (byte) 0xff, (byte) 0xfa}), new AstExactBytesMatcher(new byte[]{0x00, (byte) 0xf0, (byte) 0x03, (byte) 0x05,
+                (byte) 0x08, (byte) 0x04})));
 
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -589,9 +596,8 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadValueNode();
-        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactBytesMatcher(new byte[]{0x01, (byte) 0xff, (byte) 0xfa},
-                parser.getExpressionContext()), new AstExactBytesMatcher(new byte[]{0x00, (byte) 0xf0, (byte) 0x03, (byte) 0x05,
-                (byte) 0x08, (byte) 0x04}, parser.getExpressionContext())));
+        expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactBytesMatcher(new byte[]{0x01, (byte) 0xff, (byte) 0xfa}), new AstExactBytesMatcher(new byte[]{0x00, (byte) 0xf0, (byte) 0x03, (byte) 0x05,
+                (byte) 0x08, (byte) 0x04})));
 
         assertEquals(expected, actual);
         assertEquals(2, actual.getRegionInfo().children.size());
@@ -1240,7 +1246,7 @@ public class ScriptParserImplTest {
         String script =
                 "# tcp.client.connect-then-close\n" +
                 "connect await BARRIER\r\n" +
-                "connect http://localhost:8080/path?p1=v1&p2=v2\n" +
+                "        http://localhost:8080/path?p1=v1&p2=v2\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";
@@ -1294,19 +1300,19 @@ public class ScriptParserImplTest {
     public void shouldParseConnectScriptWithOptions() throws Exception {
 
         String script =
-                "connect http://localhost:7788\n" +
-                "       option transport tcp://localhost:8000\n" +
-                "       option string \"text\"" +
-                "       option bytes [0x01 0x02 0x03 0x04]" +
-                "       option number 1234" +
-                "       option expression ${variable}" +
+                "connect test://authority\n" +
+                "       option test:transport tcp://localhost:8000\n" +
+                "       option test:string \"text\"" +
+                "       option test:bytes [0x01 0x02 0x03 0x04]" +
+                "       option test:number 1234" +
+                "       option test:expression ${variable}" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
-        AstValue<URI> location = new AstLiteralURIValue(URI.create("http://localhost:7788"));
+        AstValue<URI> location = new AstLiteralURIValue(URI.create("test://authority"));
         AstValue<URI> transport = new AstLiteralURIValue(URI.create("tcp://localhost:8000"));
         AstValue<String> string = new AstLiteralTextValue("text");
         AstValue<byte[]> bytes = new AstLiteralBytesValue(new byte[] { 0x01, 0x02, 0x03, 0x04 });
@@ -1320,11 +1326,11 @@ public class ScriptParserImplTest {
         AstScriptNode expected = new AstScriptNodeBuilder()
                 .addConnectStream()
                     .setLocation(location)
-                    .setOption(AstOption.TRANSPORT, transport)
-                    .setOption("string", string)
-                    .setOption("bytes", bytes)
-                    .setOption("number", number)
-                    .setOption("expression", expression)
+                    .setOption(TEST_TRANSPORT, transport)
+                    .setOption("test:string", string)
+                    .setOption("test:bytes", bytes)
+                    .setOption("test:number", number)
+                    .setOption("test:expression", expression)
                     .addConnectedEvent().done()
                     .addCloseCommand().done()
                     .addClosedEvent().done()
@@ -1355,12 +1361,12 @@ public class ScriptParserImplTest {
     public void shouldParseAcceptScriptWithOptions() throws Exception {
 
         String script =
-                "accept http://localhost:7788\n" +
-                "       option transport tcp://localhost:8000\n" +
-                "       option string \"text\"" +
-                "       option bytes [0x01 0x02 0x03 0x04]" +
-                "       option number 1234" +
-                "       option expression ${variable}" +
+                "accept test://authority\n" +
+                "       option test:transport tcp://localhost:8000\n" +
+                "       option test:string \"text\"" +
+                "       option test:bytes [0x01 0x02 0x03 0x04]" +
+                "       option test:number 1234" +
+                "       option test:expression ${variable}" +
                 "accepted\n" +
                 "connected\n" +
                 "close\n" +
@@ -1369,7 +1375,7 @@ public class ScriptParserImplTest {
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
 
-        AstValue<URI> location = new AstLiteralURIValue(URI.create("http://localhost:7788"));
+        AstValue<URI> location = new AstLiteralURIValue(URI.create("test://authority"));
         AstValue<URI> transport = new AstLiteralURIValue(URI.create("tcp://localhost:8000"));
         AstValue<String> string = new AstLiteralTextValue("text");
         AstValue<byte[]> bytes = new AstLiteralBytesValue(new byte[] { 0x01, 0x02, 0x03, 0x04 });
@@ -1383,11 +1389,11 @@ public class ScriptParserImplTest {
         AstScriptNode expected = new AstScriptNodeBuilder()
                 .addAcceptStream()
                     .setLocation(location)
-                    .setOption(AstOption.TRANSPORT, transport)
-                    .setOption("string", string)
-                    .setOption("bytes", bytes)
-                    .setOption("number", number)
-                    .setOption("expression", expression)
+                    .setOption(TEST_TRANSPORT, transport)
+                    .setOption("test:string", string)
+                    .setOption("test:bytes", bytes)
+                    .setOption("test:number", number)
+                    .setOption("test:expression", expression)
                 .done()
                 .addAcceptedStream()
                     .addConnectedEvent().done()
@@ -1659,6 +1665,40 @@ public class ScriptParserImplTest {
                         .setOptionName("mask")
                         .setOptionValue(factory.createValueExpression(context, "${maskingKey}", byte[].class),
                                 parser.getExpressionContext()).done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseReadConfig() throws Exception {
+
+        String scriptFragment = "read test:config \"value1\" \"value2\"";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadConfigNode actual = parser.parseWithStrategy(scriptFragment, READ_CONFIG);
+
+        AstReadConfigNode expected = new AstReadConfigNodeBuilder()
+                .setType("test:config")
+                .addMatcherExactText("value1")
+                .addMatcherExactText("value2")
+                .done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseWriteConfig() throws Exception {
+
+        String scriptFragment = "write test:config \"configName\" [0x01 0x02 0x03 0x04]";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_CONFIG);
+
+        AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
+                .setType("test:config")
+                .addValue("configName")
+                .addValue(new byte[]{0x01, 0x02, 0x03, 0x04})
+                .done();
 
         assertEquals(expected, actual);
     }

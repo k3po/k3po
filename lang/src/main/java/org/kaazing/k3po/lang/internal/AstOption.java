@@ -17,11 +17,7 @@ package org.kaazing.k3po.lang.internal;
 
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
-import java.net.URI;
-
 public final class AstOption<T> {
-
-    public static final AstOption<URI> TRANSPORT = new AstOption<>("transport", URI.class);
 
     private final Class<T> type;
     private final String name;

@@ -15,25 +15,24 @@
  */
 package org.kaazing.k3po.lang.internal.ast;
 
-import static java.lang.String.format;
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.kaazing.k3po.lang.internal.ast.matcher.AstValueMatcher;
-import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 
 public class AstReadConfigNode extends AstEventNode {
 
     private String type;
-    private Map<String, AstValue<?>> valuesByName;
     private Map<String, AstValueMatcher> matchersByName;
+    private Collection<AstValueMatcher> matchers;
 
     public AstReadConfigNode() {
-        this.valuesByName = new LinkedHashMap<>();
         this.matchersByName = new LinkedHashMap<>();
+        this.matchers = new LinkedHashSet<>();
     }
 
     public void setType(String type) {
@@ -44,16 +43,22 @@ public class AstReadConfigNode extends AstEventNode {
         return type;
     }
 
-    public void setValue(String name, AstValue<?> value) {
-        valuesByName.put(name, value);
-    }
+    public AstValueMatcher getMatcher() {
 
-    public AstValue<?> getValue(String name) {
-        return valuesByName.get(name);
+        if (matchersByName.isEmpty()) {
+            switch (matchers.size()) {
+            case 0:
+                return null;
+            case 1:
+                return matchers.iterator().next();
+            }
+        }
+
+        throw new IllegalStateException("Multiple values available, yet assuming only one value");
     }
 
     public Collection<AstValueMatcher> getMatchers() {
-        return matchersByName.values();
+        return matchers;
     }
 
     public AstValueMatcher getMatcher(String name) {
@@ -65,13 +70,11 @@ public class AstReadConfigNode extends AstEventNode {
     }
 
     public void addMatcher(AstValueMatcher matcher) {
-        matchersByName.put(format("matcher#%d", matchersByName.size()), matcher);
+        matchers.add(matcher);
     }
 
     public void addMatchers(Collection<AstValueMatcher> matchers) {
-        for (AstValueMatcher matcher : matchers) {
-            matchersByName.put(format("matcher#%d", matchersByName.size()), matcher);
-        }
+        this.matchers.addAll(matchers);
     }
 
     @Override
@@ -87,9 +90,9 @@ public class AstReadConfigNode extends AstEventNode {
             hashCode <<= 4;
             hashCode ^= type.hashCode();
         }
-        if (valuesByName != null) {
+        if (matchers != null) {
             hashCode <<= 4;
-            hashCode ^= valuesByName.hashCode();
+            hashCode ^= matchers.hashCode();
         }
         if (matchersByName != null) {
             hashCode <<= 4;
@@ -106,7 +109,7 @@ public class AstReadConfigNode extends AstEventNode {
 
     protected boolean equalTo(AstReadConfigNode that) {
         return equivalent(this.type, that.type) &&
-                equivalent(this.valuesByName, that.valuesByName) &&
+                equivalent(this.matchers, that.matchers) &&
                 equivalent(this.matchersByName, that.matchersByName);
     }
 
@@ -114,11 +117,13 @@ public class AstReadConfigNode extends AstEventNode {
     protected void describe(StringBuilder buf) {
         super.describe(buf);
         buf.append("read ").append(type);
-        for (AstValue<?> value : valuesByName.values()) {
-            buf.append(' ').append(value);
+        for (Map.Entry<String, AstValueMatcher> entry : matchersByName.entrySet()) {
+            String name = entry.getKey();
+            AstValueMatcher matcher = entry.getValue();
+            buf.append(' ').append(name).append('=').append(matcher);
         }
-        for (AstValueMatcher matcher : matchersByName.values()) {
-            buf.append(' ').append(matcher);
+        for (AstValueMatcher value : matchers) {
+            buf.append(' ').append(value);
         }
         buf.append('\n');
     }

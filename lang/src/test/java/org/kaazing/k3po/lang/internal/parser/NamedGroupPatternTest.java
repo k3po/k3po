@@ -363,7 +363,7 @@ public class NamedGroupPatternTest {
         AstReadValueNode expected = new AstReadValueNode();
         ExpressionContext environment = new ExpressionContext();
         expected.setMatchers(Arrays.<AstValueMatcher>asList(new AstExactTextMatcher("Hello"), new AstExactBytesMatcher(
-                new byte[]{0x01, (byte) 0x02, (byte) 0x03}, environment), new AstRegexMatcher(
+                new byte[]{0x01, (byte) 0x02, (byte) 0x03}), new AstRegexMatcher(
                 NamedGroupPattern.compile(".*\\n"), environment),
                 new AstRegexMatcher(NamedGroupPattern.compile("(?<cap1>.*)\\n"), environment), new AstExpressionMatcher(value,
                         environment), new AstFixedLengthBytesMatcher(64),

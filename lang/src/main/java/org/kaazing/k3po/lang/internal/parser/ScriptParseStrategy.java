@@ -23,6 +23,7 @@ import static org.kaazing.k3po.lang.internal.parser.ParserHelper.parseHexBytes;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,6 @@ import javax.el.ValueExpression;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
 import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
@@ -93,6 +93,7 @@ import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
+import org.kaazing.k3po.lang.internal.parser.types.ScriptParserTypeSystem;
 import org.kaazing.k3po.lang.internal.regex.NamedGroupPattern;
 import org.kaazing.k3po.lang.parser.v2.RobotBaseVisitor;
 import org.kaazing.k3po.lang.parser.v2.RobotParser;
@@ -130,12 +131,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.OptionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.PropertyNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadAwaitNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadClosedNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpChunkTrailerNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpHeaderNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpMethodNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpParameterNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpStatusNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadHttpVersionNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadConfigNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadNotifyNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadOptionNodeContext;
@@ -149,16 +145,8 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.UnboundNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.VariableLengthBytesMatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteAwaitNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteCloseNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteConfigNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteFlushNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpChunkTrailerNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpContentLengthNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpHeaderNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpHostNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpMethodNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpParameterNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpRequestNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpStatusNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteHttpVersionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteNotifyNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteOptionNodeContext;
@@ -385,135 +373,6 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
     };
 
-    public static final ScriptParseStrategy<AstReadConfigNode> READ_HTTP_HEADER = new ScriptParseStrategy<AstReadConfigNode>() {
-        @Override
-        public AstReadConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                throws RecognitionException {
-            return new AstReadHttpConfigNodeVisitor(factory, environment).visit(parser.readHttpHeaderNode());
-        }
-    };
-
-    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_HEADER =
-            new ScriptParseStrategy<AstWriteConfigNode>() {
-                @Override
-                public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstWriteConfigNodeVisitor(factory, environment).visit(parser.writeHttpHeaderNode());
-                }
-            };
-
-    public static final ScriptParseStrategy<AstReadConfigNode> READ_CHUNK_EXTENSION =
-            new ScriptParseStrategy<AstReadConfigNode>() {
-                @Override
-                public AstReadConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstReadHttpConfigNodeVisitor(factory, environment).visit(parser.readHttpHeaderNode());
-                }
-            };
-
-    public static final ScriptParseStrategy<AstReadConfigNode> WRITE_CHUNK_EXTENSION =
-            new ScriptParseStrategy<AstReadConfigNode>() {
-                @Override
-                public AstReadConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstReadHttpConfigNodeVisitor(factory, environment).visit(parser.readHttpHeaderNode());
-                }
-            };
-
-    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_CONTENT_LENGTH =
-            new ScriptParseStrategy<AstWriteConfigNode>() {
-                @Override
-                public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstWriteConfigNodeVisitor(factory, environment).visit(parser.writeHttpContentLengthNode());
-                }
-            };
-
-    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_HOST = new ScriptParseStrategy<AstWriteConfigNode>() {
-        @Override
-        public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                throws RecognitionException {
-            return new AstWriteConfigNodeVisitor(factory, environment).visit(parser.writeHttpHostNode());
-        }
-    };
-
-    public static final ScriptParseStrategy<AstReadConfigNode> READ_HTTP_METHOD = new ScriptParseStrategy<AstReadConfigNode>() {
-        @Override
-        public AstReadConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                throws RecognitionException {
-            return new AstReadHttpConfigNodeVisitor(factory, environment).visit(parser.readHttpMethodNode());
-        }
-    };
-
-    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_METHOD =
-            new ScriptParseStrategy<AstWriteConfigNode>() {
-                @Override
-                public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstWriteConfigNodeVisitor(factory, environment).visit(parser.writeHttpMethodNode());
-                }
-            };
-
-    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_REQUEST =
-            new ScriptParseStrategy<AstWriteConfigNode>() {
-                @Override
-                public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstWriteConfigNodeVisitor(factory, environment).visit(parser.writeHttpRequestNode());
-                }
-            };
-
-    public static final ScriptParseStrategy<AstReadConfigNode> READ_HTTP_PARAMETER =
-            new ScriptParseStrategy<AstReadConfigNode>() {
-                @Override
-                public AstReadConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstReadHttpConfigNodeVisitor(factory, environment).visit(parser.readHttpParameterNode());
-                }
-            };
-
-    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_PARAMETER =
-            new ScriptParseStrategy<AstWriteConfigNode>() {
-                @Override
-                public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstWriteConfigNodeVisitor(factory, environment).visit(parser.writeHttpParameterNode());
-                }
-            };
-
-    public static final ScriptParseStrategy<AstReadConfigNode> READ_HTTP_VERSION = new ScriptParseStrategy<AstReadConfigNode>() {
-        @Override
-        public AstReadConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                throws RecognitionException {
-            return new AstReadHttpConfigNodeVisitor(factory, environment).visit(parser.readHttpVersionNode());
-        }
-    };
-
-    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_VERSION =
-            new ScriptParseStrategy<AstWriteConfigNode>() {
-                @Override
-                public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstWriteConfigNodeVisitor(factory, environment).visit(parser.writeHttpVersionNode());
-                }
-            };
-
-    public static final ScriptParseStrategy<AstReadConfigNode> READ_HTTP_STATUS = new ScriptParseStrategy<AstReadConfigNode>() {
-        @Override
-        public AstReadConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                throws RecognitionException {
-            return new AstReadHttpConfigNodeVisitor(factory, environment).visit(parser.readHttpStatusNode());
-        }
-    };
-
-    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_HTTP_STATUS =
-            new ScriptParseStrategy<AstWriteConfigNode>() {
-                @Override
-                public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstWriteConfigNodeVisitor(factory, environment).visit(parser.writeHttpStatusNode());
-                }
-            };
 
     public static final ScriptParseStrategy<AstWriteFlushNode> WRITE_FLUSH = new ScriptParseStrategy<AstWriteFlushNode>() {
         @Override
@@ -588,22 +447,22 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
     };
 
     public static final ScriptParseStrategy<AstExactTextMatcher> EXACT_TEXT_MATCHER =
-            new ScriptParseStrategy<AstExactTextMatcher>() {
-                @Override
-                public AstExactTextMatcher parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstExactTextMatcherVisitor(factory, environment).visit(parser.exactTextMatcher());
-                }
-            };
+        new ScriptParseStrategy<AstExactTextMatcher>() {
+            @Override
+            public AstExactTextMatcher parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+                    throws RecognitionException {
+                return new AstExactTextMatcherVisitor(factory, environment).visit(parser.exactTextMatcher());
+            }
+        };
 
     public static final ScriptParseStrategy<AstExactBytesMatcher> EXACT_BYTES_MATCHER =
-            new ScriptParseStrategy<AstExactBytesMatcher>() {
-                @Override
-                public AstExactBytesMatcher parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstExactBytesMatcherVisitor(factory, environment).visit(parser.exactBytesMatcher());
-                }
-            };
+        new ScriptParseStrategy<AstExactBytesMatcher>() {
+            @Override
+            public AstExactBytesMatcher parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+                    throws RecognitionException {
+                return new AstExactBytesMatcherVisitor(factory, environment).visit(parser.exactBytesMatcher());
+            }
+        };
 
     public static final ScriptParseStrategy<AstRegexMatcher> REGEX_MATCHER = new ScriptParseStrategy<AstRegexMatcher>() {
         @Override
@@ -614,104 +473,105 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
     };
 
     public static final ScriptParseStrategy<AstExpressionMatcher> EXPRESSION_MATCHER =
-            new ScriptParseStrategy<AstExpressionMatcher>() {
-                @Override
-                public AstExpressionMatcher parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstExpressionMatcherVisitor(factory, environment).visit(parser.expressionMatcher());
-                }
-            };
+        new ScriptParseStrategy<AstExpressionMatcher>() {
+            @Override
+            public AstExpressionMatcher parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+                    throws RecognitionException {
+                return new AstExpressionMatcherVisitor(factory, environment).visit(parser.expressionMatcher());
+            }
+        };
 
     public static final ScriptParseStrategy<AstFixedLengthBytesMatcher> FIXED_LENGTH_BYTES_MATCHER =
-            new ScriptParseStrategy<AstFixedLengthBytesMatcher>() {
-                @Override
-                public AstFixedLengthBytesMatcher parse(RobotParser parser, ExpressionFactory factory,
-                    ExpressionContext environment) throws RecognitionException {
-                    return new AstFixedLengthBytesMatcherVisitor(factory, environment).visit(parser.fixedLengthBytesMatcher());
-                }
-            };
+        new ScriptParseStrategy<AstFixedLengthBytesMatcher>() {
+            @Override
+            public AstFixedLengthBytesMatcher parse(RobotParser parser, ExpressionFactory factory,
+                ExpressionContext environment) throws RecognitionException {
+                return new AstFixedLengthBytesMatcherVisitor(factory, environment).visit(parser.fixedLengthBytesMatcher());
+            }
+        };
 
     public static final ScriptParseStrategy<AstVariableLengthBytesMatcher> VARIABLE_LENGTH_BYTES_MATCHER =
-            new ScriptParseStrategy<AstVariableLengthBytesMatcher>() {
-                @Override
-                public AstVariableLengthBytesMatcher parse(RobotParser parser, ExpressionFactory factory,
-                    ExpressionContext environment) throws RecognitionException {
-                    return new AstVariableLengthBytesMatcherVisitor(factory, environment)
-                            .visit(parser.variableLengthBytesMatcher());
-                }
-            };
+        new ScriptParseStrategy<AstVariableLengthBytesMatcher>() {
+            @Override
+            public AstVariableLengthBytesMatcher parse(RobotParser parser, ExpressionFactory factory,
+                ExpressionContext environment) throws RecognitionException {
+                return new AstVariableLengthBytesMatcherVisitor(factory, environment)
+                        .visit(parser.variableLengthBytesMatcher());
+            }
+        };
 
-    public static final ScriptParseStrategy<AstValue<?>> VALUE = new ScriptParseStrategy<AstValue<?>>() {
-        @Override
-        public AstValue<?> parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                throws RecognitionException {
-            return new AstValueVisitor<>(factory, environment, byte[].class).visit(parser.writeValue());
-        }
-    };
+    public static final ScriptParseStrategy<AstValue<?>> VALUE =
+        new ScriptParseStrategy<AstValue<?>>() {
+            @Override
+            public AstValue<?> parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+                    throws RecognitionException {
+                return new AstValueVisitor<>(factory, environment, byte[].class).visit(parser.writeValue());
+            }
+        };
 
     public static final ScriptParseStrategy<AstLiteralTextValue> LITERAL_TEXT_VALUE =
-            new ScriptParseStrategy<AstLiteralTextValue>() {
-                @Override
-                public AstLiteralTextValue parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstLiteralTextValueVisitor(factory, environment).visit(parser.literalText());
-                }
-            };
+        new ScriptParseStrategy<AstLiteralTextValue>() {
+            @Override
+            public AstLiteralTextValue parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+                    throws RecognitionException {
+                return new AstLiteralTextValueVisitor(factory, environment).visit(parser.literalText());
+            }
+        };
 
     public static final ScriptParseStrategy<AstLiteralBytesValue> LITERAL_BYTES_VALUE =
-            new ScriptParseStrategy<AstLiteralBytesValue>() {
-                @Override
-                public AstLiteralBytesValue parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstLiteralBytesValueVisitor(factory, environment).visit(parser.literalBytes());
-                }
-            };
+        new ScriptParseStrategy<AstLiteralBytesValue>() {
+            @Override
+            public AstLiteralBytesValue parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+                    throws RecognitionException {
+                return new AstLiteralBytesValueVisitor(factory, environment).visit(parser.literalBytes());
+            }
+        };
 
     public static final ScriptParseStrategy<AstExpressionValue<?>> EXPRESSION_VALUE =
-            new ScriptParseStrategy<AstExpressionValue<?>>() {
-                @Override
-                public AstExpressionValue<?> parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstExpressionValueVisitor<>(factory, environment, byte[].class).visit(parser.expressionValue());
-                }
-            };
+        new ScriptParseStrategy<AstExpressionValue<?>>() {
+            @Override
+            public AstExpressionValue<?> parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+                    throws RecognitionException {
+                return new AstExpressionValueVisitor<>(factory, environment, byte[].class).visit(parser.expressionValue());
+            }
+        };
 
     public static final ScriptParseStrategy<AstReadOptionNode> READ_OPTION = new ScriptParseStrategy<AstReadOptionNode>() {
         @Override
         public AstReadOptionNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
                 throws RecognitionException {
-            return (AstReadOptionNode) new AstOptionNodeVisitor(factory, environment).visit(parser.readOptionNode());
+            return new AstReadOptionNodeVisitor(factory, environment).visit(parser.readOptionNode());
         }
     };
 
     public static final ScriptParseStrategy<AstWriteOptionNode> WRITE_OPTION =
-            new ScriptParseStrategy<AstWriteOptionNode>() {
-                @Override
-                public AstWriteOptionNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return (AstWriteOptionNode) new AstOptionNodeVisitor(factory, environment)
-                            .visit(parser.writeOptionNode());
-                }
-            };
+        new ScriptParseStrategy<AstWriteOptionNode>() {
+            @Override
+            public AstWriteOptionNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+                    throws RecognitionException {
+                return new AstWriteOptionNodeVisitor(factory, environment)
+                        .visit(parser.writeOptionNode());
+            }
+        };
 
-    public static final ScriptParseStrategy<AstReadConfigNode> READ_CHUNK_TRAILER =
-            new ScriptParseStrategy<AstReadConfigNode>() {
-                @Override
-                public AstReadConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return new AstReadHttpConfigNodeVisitor(factory, environment).visit(parser.readHttpChunkTrailerNode());
-                }
-            };
+    public static final ScriptParseStrategy<AstReadConfigNode> READ_CONFIG =
+        new ScriptParseStrategy<AstReadConfigNode>() {
+            @Override
+            public AstReadConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+                    throws RecognitionException {
+                return new AstReadConfigNodeVisitor(factory, environment).visit(parser.readConfigNode());
+            }
+        };
 
-    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_CHUNK_TRAILER =
-            new ScriptParseStrategy<AstWriteConfigNode>() {
-                @Override
-                public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                        throws RecognitionException {
-                    return (AstWriteConfigNode) new AstWriteConfigNodeVisitor(factory, environment)
-                            .visit(parser.writeHttpChunkTrailerNode());
-                }
-            };
+    public static final ScriptParseStrategy<AstWriteConfigNode> WRITE_CONFIG =
+        new ScriptParseStrategy<AstWriteConfigNode>() {
+            @Override
+            public AstWriteConfigNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+                    throws RecognitionException {
+                return new AstWriteConfigNodeVisitor(factory, environment)
+                        .visit(parser.writeConfigNode());
+            }
+        };
 
 
     public abstract T parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
@@ -879,11 +739,10 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstAcceptNode visitAcceptOption(AcceptOptionContext ctx) {
 
-            Token name = ctx.name;
-            String optionName = name.getText();
-            Class<?> expectedType = acceptOrConnectOptionType(optionName);
+            String optionName = ctx.optionName().getText();
+            Class<?> expectedType = TYPE_SYSTEM.acceptOptionType(optionName);
             AstValueVisitor<?> valueVisitor = new AstValueVisitor<>(factory, environment, expectedType);
-            AstValue<?> optionValue = valueVisitor.visit(ctx.value);
+            AstValue<?> optionValue = valueVisitor.visit(ctx.writeValue());
 
             Map<String, Object> options = node.getOptions();
             options.put(optionName, optionValue);
@@ -958,12 +817,11 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstConnectNode visitConnectOption(
             ConnectOptionContext ctx)
         {
-            Token name = ctx.name;
-            String optionName = name.getText();
+            String optionName = ctx.optionName().getText();
 
-            Class<?> expectedType = acceptOrConnectOptionType(optionName);
+            Class<?> expectedType = TYPE_SYSTEM.connectOptionType(optionName);
             AstValueVisitor<?> valueVisitor = new AstValueVisitor<>(factory, environment, expectedType);
-            AstValue<?> optionValue = valueVisitor.visit(ctx.value);
+            AstValue<?> optionValue = valueVisitor.visit(ctx.writeValue());
 
             Map<String, Object> options = node.getOptions();
             options.put(optionName, optionValue);
@@ -1022,7 +880,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
         @Override
         public AstOptionNode visitOptionNode(OptionNodeContext ctx) {
-            AstOptionNodeVisitor visitor = new AstOptionNodeVisitor(factory, environment);
+            AstReadOptionNodeVisitor visitor = new AstReadOptionNodeVisitor(factory, environment);
             AstOptionNode optionNode = visitor.visitOptionNode(ctx);
             if (optionNode != null) {
                 childInfos().add(optionNode.getRegionInfo());
@@ -1032,18 +890,17 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
     }
 
-    private static class AstOptionNodeVisitor extends AstNodeVisitor<AstOptionNode> {
+    private static class AstReadOptionNodeVisitor extends AstNodeVisitor<AstReadOptionNode> {
 
-        public AstOptionNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
+        public AstReadOptionNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
             super(factory, environment);
         }
 
         @Override
-        public AstOptionNode visitReadOptionNode(ReadOptionNodeContext ctx) {
+        public AstReadOptionNode visitReadOptionNode(ReadOptionNodeContext ctx) {
 
-            Token name = ctx.name;
-            String optionName = name.getText();
-            Class<?> expectedType = readOrWriteOptionType(optionName);
+            String optionName = ctx.optionName().getText();
+            Class<?> expectedType = TYPE_SYSTEM.readOptionType(optionName);
             AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, expectedType);
             AstValue<?> optionValue = visitor.visit(ctx);
             childInfos().add(optionValue.getRegionInfo());
@@ -1055,13 +912,19 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
             return node;
         }
+    }
+
+    private static class AstWriteOptionNodeVisitor extends AstNodeVisitor<AstWriteOptionNode> {
+
+        public AstWriteOptionNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
+            super(factory, environment);
+        }
 
         @Override
-        public AstOptionNode visitWriteOptionNode(WriteOptionNodeContext ctx) {
+        public AstWriteOptionNode visitWriteOptionNode(WriteOptionNodeContext ctx) {
 
-            Token name = ctx.name;
-            String optionName = name.getText();
-            Class<?> expectedType = readOrWriteOptionType(optionName);
+            String optionName = ctx.optionName().getText();
+            Class<?> expectedType = TYPE_SYSTEM.writeOptionType(optionName);
             AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, expectedType);
             AstValue<?> optionValue = visitor.visit(ctx);
             childInfos().add(optionValue.getRegionInfo());
@@ -1196,6 +1059,18 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
+        public AstReadConfigNode visitReadConfigNode(ReadConfigNodeContext ctx) {
+
+            AstReadConfigNodeVisitor visitor = new AstReadConfigNodeVisitor(factory, environment);
+            AstReadConfigNode readConfigNode = visitor.visitReadConfigNode(ctx);
+            if (readConfigNode != null) {
+                childInfos().add(readConfigNode.getRegionInfo());
+            }
+
+            return readConfigNode;
+        }
+
+        @Override
         public AstReadValueNode visitReadNode(ReadNodeContext ctx) {
 
             AstReadValueNodeVisitor visitor = new AstReadValueNodeVisitor(factory, environment);
@@ -1230,81 +1105,6 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
             return unboundNode;
         }
-
-        // HTTP events
-
-        @Override
-        public AstReadConfigNode visitReadHttpHeaderNode(ReadHttpHeaderNodeContext ctx) {
-
-            AstReadHttpConfigNodeVisitor visitor = new AstReadHttpConfigNodeVisitor(factory, environment);
-            AstReadConfigNode readHttpHeaderNode = visitor.visitReadHttpHeaderNode(ctx);
-            if (readHttpHeaderNode != null) {
-                childInfos().add(readHttpHeaderNode.getRegionInfo());
-            }
-
-            return readHttpHeaderNode;
-        }
-
-        @Override
-        public AstReadConfigNode visitReadHttpMethodNode(ReadHttpMethodNodeContext ctx) {
-
-            AstReadHttpConfigNodeVisitor visitor = new AstReadHttpConfigNodeVisitor(factory, environment);
-            AstReadConfigNode readHttpMethodNode = visitor.visitReadHttpMethodNode(ctx);
-            if (readHttpMethodNode != null) {
-                childInfos().add(readHttpMethodNode.getRegionInfo());
-            }
-
-            return readHttpMethodNode;
-        }
-
-        @Override
-        public AstReadConfigNode visitReadHttpParameterNode(ReadHttpParameterNodeContext ctx) {
-
-            AstReadHttpConfigNodeVisitor visitor = new AstReadHttpConfigNodeVisitor(factory, environment);
-            AstReadConfigNode readHttpParameterNode = visitor.visitReadHttpParameterNode(ctx);
-            if (readHttpParameterNode != null) {
-                childInfos().add(readHttpParameterNode.getRegionInfo());
-            }
-
-            return readHttpParameterNode;
-        }
-
-        @Override
-        public AstReadConfigNode visitReadHttpVersionNode(ReadHttpVersionNodeContext ctx) {
-
-            AstReadHttpConfigNodeVisitor visitor = new AstReadHttpConfigNodeVisitor(factory, environment);
-            AstReadConfigNode readHttpVersionNode = visitor.visitReadHttpVersionNode(ctx);
-            if (readHttpVersionNode != null) {
-                childInfos().add(readHttpVersionNode.getRegionInfo());
-            }
-
-            return readHttpVersionNode;
-        }
-
-        @Override
-        public AstReadConfigNode visitReadHttpStatusNode(ReadHttpStatusNodeContext ctx) {
-
-            AstReadHttpConfigNodeVisitor visitor = new AstReadHttpConfigNodeVisitor(factory, environment);
-            AstReadConfigNode readHttpStatusNode = visitor.visitReadHttpStatusNode(ctx);
-            if (readHttpStatusNode != null) {
-                childInfos().add(readHttpStatusNode.getRegionInfo());
-            }
-
-            return readHttpStatusNode;
-        }
-
-        @Override
-        public AstReadConfigNode visitReadHttpChunkTrailerNode(ReadHttpChunkTrailerNodeContext ctx) {
-
-            AstReadHttpConfigNodeVisitor visitor = new AstReadHttpConfigNodeVisitor(factory, environment);
-            AstReadConfigNode readHttpTrailerNode = visitor.visitReadHttpChunkTrailerNode(ctx);
-            if (readHttpTrailerNode != null) {
-                childInfos().add(readHttpTrailerNode.getRegionInfo());
-            }
-
-            return readHttpTrailerNode;
-        }
-
     }
 
     private static class AstCommandNodeVisitor extends AstNodeVisitor<AstCommandNode> {
@@ -1323,6 +1123,18 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             }
 
             return unbindNode;
+        }
+
+        @Override
+        public AstWriteConfigNode visitWriteConfigNode(WriteConfigNodeContext ctx) {
+
+            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(factory, environment);
+            AstWriteConfigNode writeConfigNode = visitor.visitWriteConfigNode(ctx);
+            if (writeConfigNode != null) {
+                childInfos().add(writeConfigNode.getRegionInfo());
+            }
+
+            return writeConfigNode;
         }
 
         @Override
@@ -1382,117 +1194,6 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
             return abortNode;
         }
-
-        // HTTP commands
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpRequestNode(WriteHttpRequestNodeContext ctx) {
-
-            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(factory, environment);
-            AstWriteConfigNode writeHttpRequestNode = visitor.visitWriteHttpRequestNode(ctx);
-            if (writeHttpRequestNode != null) {
-                childInfos().add(writeHttpRequestNode.getRegionInfo());
-            }
-
-            return writeHttpRequestNode;
-        }
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpHeaderNode(WriteHttpHeaderNodeContext ctx) {
-
-            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(factory, environment);
-            AstWriteConfigNode writeHttpHeaderNode = visitor.visitWriteHttpHeaderNode(ctx);
-            if (writeHttpHeaderNode != null) {
-                childInfos().add(writeHttpHeaderNode.getRegionInfo());
-            }
-
-            return writeHttpHeaderNode;
-        }
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpContentLengthNode(WriteHttpContentLengthNodeContext ctx) {
-
-            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(factory, environment);
-            AstWriteConfigNode writeHttpContentLengthNode = visitor.visitWriteHttpContentLengthNode(ctx);
-            if (writeHttpContentLengthNode != null) {
-                childInfos().add(writeHttpContentLengthNode.getRegionInfo());
-            }
-
-            return writeHttpContentLengthNode;
-        }
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpHostNode(WriteHttpHostNodeContext ctx) {
-
-            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(factory, environment);
-            AstWriteConfigNode writeHttpHostNode = visitor.visitWriteHttpHostNode(ctx);
-            if (writeHttpHostNode != null) {
-                childInfos().add(writeHttpHostNode.getRegionInfo());
-            }
-
-            return writeHttpHostNode;
-        }
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpMethodNode(WriteHttpMethodNodeContext ctx) {
-
-            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(factory, environment);
-            AstWriteConfigNode writeHttpMethodNode = visitor.visitWriteHttpMethodNode(ctx);
-            if (writeHttpMethodNode != null) {
-                childInfos().add(writeHttpMethodNode.getRegionInfo());
-            }
-
-            return writeHttpMethodNode;
-        }
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpParameterNode(WriteHttpParameterNodeContext ctx) {
-
-            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(factory, environment);
-            AstWriteConfigNode writeHttpParameterNode = visitor.visitWriteHttpParameterNode(ctx);
-            if (writeHttpParameterNode != null) {
-                childInfos().add(writeHttpParameterNode.getRegionInfo());
-            }
-
-            return writeHttpParameterNode;
-        }
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpVersionNode(WriteHttpVersionNodeContext ctx) {
-
-            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(factory, environment);
-            AstWriteConfigNode writeHttpVersionNode = visitor.visitWriteHttpVersionNode(ctx);
-            if (writeHttpVersionNode != null) {
-                childInfos().add(writeHttpVersionNode.getRegionInfo());
-            }
-
-            return writeHttpVersionNode;
-        }
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpStatusNode(WriteHttpStatusNodeContext ctx) {
-
-            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(factory, environment);
-            AstWriteConfigNode writeHttpStatusNode = visitor.visitWriteHttpStatusNode(ctx);
-            if (writeHttpStatusNode != null) {
-                childInfos().add(writeHttpStatusNode.getRegionInfo());
-            }
-
-            return writeHttpStatusNode;
-        }
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpChunkTrailerNode(WriteHttpChunkTrailerNodeContext ctx) {
-
-            AstWriteConfigNodeVisitor visitor = new AstWriteConfigNodeVisitor(factory, environment);
-            AstWriteConfigNode writeHttpStatusNode = visitor.visitWriteHttpChunkTrailerNode(ctx);
-            if (writeHttpStatusNode != null) {
-                childInfos().add(writeHttpStatusNode.getRegionInfo());
-            }
-
-            return writeHttpStatusNode;
-        }
-
     }
 
     private static class AstCloseNodeVisitor extends AstNodeVisitor<AstCloseNode> {
@@ -1751,7 +1452,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstReadAwaitNode visitReadAwaitNode(ReadAwaitNodeContext ctx) {
             node = new AstReadAwaitNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setBarrierName(ctx.barrier.getText());
+            node.setBarrierName(ctx.Name().getText());
             return node;
         }
 
@@ -1767,7 +1468,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstReadNotifyNode visitReadNotifyNode(ReadNotifyNodeContext ctx) {
             node = new AstReadNotifyNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setBarrierName(ctx.barrier.getText());
+            node.setBarrierName(ctx.Name().getText());
             return node;
         }
 
@@ -1783,7 +1484,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstWriteAwaitNode visitWriteAwaitNode(WriteAwaitNodeContext ctx) {
             node = new AstWriteAwaitNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setBarrierName(ctx.barrier.getText());
+            node.setBarrierName(ctx.Name().getText());
             return node;
         }
 
@@ -1799,7 +1500,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstWriteNotifyNode visitWriteNotifyNode(WriteNotifyNodeContext ctx) {
             node = new AstWriteNotifyNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setBarrierName(ctx.barrier.getText());
+            node.setBarrierName(ctx.Name().getText());
             return node;
         }
 
@@ -1913,31 +1614,31 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstExactBytesMatcher visitExactBytesMatcher(ExactBytesMatcherContext ctx) {
             if (ctx.bytes != null) {
                 byte[] array = parseHexBytes(ctx.bytes.getText());
-                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array, environment);
+                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             } else if (ctx.byteLiteral != null) {
                 byte[] array = parseHexBytes(ctx.byteLiteral.getText());
-                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array, environment);
+                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             } else if (ctx.shortLiteral != null) {
                 byte[] array = parseHexBytes(ctx.shortLiteral.getText());
-                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array, environment);
+                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             } else if (ctx.longLiteral != null) {
                 ByteBuffer buf = ByteBuffer.allocate(Long.SIZE / 8);
                 buf.putLong(Long.parseLong(ctx.longLiteral.getText()));
                 byte[] array = buf.array();
-                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array, environment);
+                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             } else if (ctx.intLiteral != null) {
                 ByteBuffer buf = ByteBuffer.allocate(Integer.SIZE / 8);
                 buf.putInt(Integer.parseInt(ctx.intLiteral.getText()));
                 byte[] array = buf.array();
-                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array, environment);
+                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             }
@@ -2273,93 +1974,31 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
     }
 
-    // HTTP visitors
+    private static class AstReadConfigNodeVisitor extends AstNodeVisitor<AstReadConfigNode> {
 
-    private static class AstReadHttpConfigNodeVisitor extends AstNodeVisitor<AstReadConfigNode> {
+        private Iterator<String> names;
 
-        public AstReadHttpConfigNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
+        public AstReadConfigNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
             super(factory, environment);
         }
 
         @Override
-        public AstReadConfigNode visitReadHttpMethodNode(ReadHttpMethodNodeContext ctx) {
+        public AstReadConfigNode visitReadConfigNode(ReadConfigNodeContext ctx) {
 
-            AstValueMatcherVisitor visitor = new AstValueMatcherVisitor(factory, environment);
-            AstValueMatcher value = visitor.visit(ctx.method);
-            childInfos().add(value.getRegionInfo());
-
-            node = new AstReadConfigNode();
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setType("method");
-            node.setMatcher("name", value);
-
-            return node;
-        }
-
-        @Override
-        public AstReadConfigNode visitReadHttpHeaderNode(ReadHttpHeaderNodeContext ctx) {
-
-            AstLiteralTextValueVisitor visitor = new AstLiteralTextValueVisitor(factory, environment);
-            AstLiteralTextValue value = visitor.visit(ctx.name);
-            childInfos().add(value.getRegionInfo());
+            String configType = ctx.QualifiedName().getText();
+            boolean missing = ctx.MissingKeyword() != null;
 
             node = new AstReadConfigNode();
-            node.setType(ctx.HttpMissingKeyword() != null ? "header missing" : "header");
-            node.setValue("name", value);
-            super.visitReadHttpHeaderNode(ctx);
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
 
-            return node;
-        }
+            // TODO: model missing properly
+            node.setType(missing ? configType + " missing" : configType);
 
-        @Override
-        public AstReadConfigNode visitReadHttpParameterNode(ReadHttpParameterNodeContext ctx) {
+            Iterable<String> configTypeNames = TYPE_SYSTEM.readConfigTypeNames(configType);
+            names = configTypeNames.iterator();
 
-            AstLiteralTextValueVisitor visitor = new AstLiteralTextValueVisitor(factory, environment);
-            AstLiteralTextValue value = visitor.visit(ctx.name);
-            childInfos().add(value.getRegionInfo());
-
-            node = new AstReadConfigNode();
-            node.setType("parameter");
-            node.setValue("name", value);
-
-            super.visitReadHttpParameterNode(ctx);
+            super.visitReadConfigNode(ctx);
 
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-
-            return node;
-        }
-
-        @Override
-        public AstReadConfigNode visitReadHttpStatusNode(ReadHttpStatusNodeContext ctx) {
-
-            AstValueMatcherVisitor codeVisitor = new AstValueMatcherVisitor(factory, environment);
-            AstValueMatcherVisitor reasonVisitor = new AstValueMatcherVisitor(factory, environment);
-            AstValueMatcher codeMatcher = codeVisitor.visit(ctx.code);
-            AstValueMatcher reasonMatcher = reasonVisitor.visit(ctx.reason);
-
-            childInfos().add(codeMatcher.getRegionInfo());
-            childInfos().add(reasonMatcher.getRegionInfo());
-            node = new AstReadConfigNode();
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setType("status");
-            node.setMatcher("code", codeMatcher);
-            node.setMatcher("reason", reasonMatcher);
-
-            return node;
-        }
-
-        @Override
-        public AstReadConfigNode visitReadHttpVersionNode(ReadHttpVersionNodeContext ctx) {
-
-            AstValueMatcherVisitor visitor = new AstValueMatcherVisitor(factory, environment);
-            AstValueMatcher value = visitor.visit(ctx.version);
-            childInfos().add(value.getRegionInfo());
-
-            node = new AstReadConfigNode();
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setType("version");
-            node.setMatcher("version", value);
 
             return node;
         }
@@ -2371,26 +2010,21 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             AstValueMatcher matcher = visitor.visit(ctx);
 
             if (matcher != null) {
-                node.addMatcher(matcher);
+
+                if (!names.hasNext()) {
+                    throw new IllegalStateException(String.format("Unexpected %s syntax", node.getType()));
+                }
+
+                String name = names.next();
+                if (name != null) {
+                    node.setMatcher(name, matcher);
+                }
+                else {
+                    node.addMatcher(matcher);
+                }
+
                 childInfos().add(matcher.getRegionInfo());
             }
-
-            return node;
-        }
-
-        @Override
-        public AstReadConfigNode visitReadHttpChunkTrailerNode(@NotNull RobotParser.ReadHttpChunkTrailerNodeContext ctx) {
-            AstLiteralTextValueVisitor visitor = new AstLiteralTextValueVisitor(factory, environment);
-            AstLiteralTextValue value = visitor.visit(ctx.name);
-            childInfos().add(value.getRegionInfo());
-
-            node = new AstReadConfigNode();
-            node.setType("trailer");
-            node.setValue("name", value);
-
-            super.visitReadHttpChunkTrailerNode(ctx);
-
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
 
             return node;
         }
@@ -2399,120 +2033,26 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
     private static class AstWriteConfigNodeVisitor extends AstNodeVisitor<AstWriteConfigNode> {
 
+        private Iterator<String> names;
+
         public AstWriteConfigNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
             super(factory, environment);
         }
 
         @Override
-        public AstWriteConfigNode visitWriteHttpRequestNode(WriteHttpRequestNodeContext ctx) {
+        public AstWriteConfigNode visitWriteConfigNode(WriteConfigNodeContext ctx) {
 
-            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, byte[].class);
-            AstValue<?> value = visitor.visit(ctx.form);
-            childInfos().add(value.getRegionInfo());
-
+            String configType = ctx.QualifiedName().getText();
+ 
             node = new AstWriteConfigNode();
+            node.setType(configType);
+
+            Iterable<String> typeNames = TYPE_SYSTEM.writeConfigTypeNames(configType);
+            names = typeNames.iterator();
+
+            super.visitWriteConfigNode(ctx);
+
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setType("request");
-            node.setValue("form", value);
-
-            return node;
-        }
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpHeaderNode(WriteHttpHeaderNodeContext ctx) {
-
-            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, byte[].class);
-            AstValue<?> value = visitor.visit(ctx.name);
-            childInfos().add(value.getRegionInfo());
-
-            node = new AstWriteConfigNode();
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setType("header");
-            node.setName("name", value);
-
-            super.visitWriteHttpHeaderNode(ctx);
-
-            return node;
-        }
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpContentLengthNode(WriteHttpContentLengthNodeContext ctx) {
-
-            node = new AstWriteConfigNode();
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setType("content-length");
-
-            return node;
-        }
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpHostNode(WriteHttpHostNodeContext ctx) {
-
-            node = new AstWriteConfigNode();
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setType("host");
-
-            return node;
-        }
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpMethodNode(WriteHttpMethodNodeContext ctx) {
-
-            node = new AstWriteConfigNode();
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setType("method");
-
-            super.visitWriteHttpMethodNode(ctx);
-
-            return node;
-        }
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpParameterNode(WriteHttpParameterNodeContext ctx) {
-
-            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, byte[].class);
-            AstValue<?> value = visitor.visit(ctx.name);
-            childInfos().add(value.getRegionInfo());
-
-            node = new AstWriteConfigNode();
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setType("parameter");
-            node.setName("name", value);
-
-            super.visitWriteHttpParameterNode(ctx);
-
-            return node;
-        }
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpVersionNode(WriteHttpVersionNodeContext ctx) {
-
-            node = new AstWriteConfigNode();
-            node.setType("version");
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-
-            super.visitWriteHttpVersionNode(ctx);
-
-            return node;
-        }
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpStatusNode(WriteHttpStatusNodeContext ctx) {
-
-            AstValueVisitor<?> codeVisitor = new AstValueVisitor<>(factory, environment, byte[].class);
-            AstValueVisitor<?> reasonVisitor = new AstValueVisitor<>(factory, environment, byte[].class);
-
-            AstValue<?> codeValue = codeVisitor.visit(ctx.code);
-            childInfos().add(codeValue.getRegionInfo());
-
-            AstValue<?> reasonValue = reasonVisitor.visit(ctx.reason);
-            childInfos().add(reasonValue.getRegionInfo());
-
-            node = new AstWriteConfigNode();
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setType("status");
-            node.setValue("code", codeValue);
-            node.setValue("reason", reasonValue);
 
             return node;
         }
@@ -2520,46 +2060,29 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstWriteConfigNode visitWriteValue(WriteValueContext ctx) {
 
-            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, byte[].class);
+            // TODO: discover expected type
+            Class<byte[]> expectedType = byte[].class;
+
+            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, expectedType);
             AstValue<?> value = visitor.visit(ctx);
 
             if (value != null) {
-                node.addValue(value);
+
+                if (!names.hasNext()) {
+                    throw new IllegalStateException(String.format("Unexpected %s syntax", node.getType()));
+                }
+
+                String name = names.next();
+                if (name != null) {
+                    node.setValue(name, value);
+                }
+                else {
+                    node.addValue(value);
+                }
                 childInfos().add(value.getRegionInfo());
             }
 
             return node;
-        }
-
-        @Override
-        public AstWriteConfigNode visitWriteHttpChunkTrailerNode(RobotParser.WriteHttpChunkTrailerNodeContext ctx) {
-
-            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, byte[].class);
-            AstValue<?> value = visitor.visit(ctx.name);
-            childInfos().add(value.getRegionInfo());
-
-            node = new AstWriteConfigNode();
-            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-            node.setType("trailer");
-            node.setName("name", value);
-
-            super.visitWriteHttpChunkTrailerNode(ctx);
-
-            return node;
-//            AstValueVisitor visitor = new AstValueVisitor(factory, environment);
-//            AstValue name = visitor.visit(ctx.name);
-////            AstValue value = visitor.visit(ctx.)
-////            childInfos().add(name.getRegionInfo());
-//
-////            node = new AstWriteConfigNode();
-//            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
-//            node.setType("chunkTrailer");
-//            node.setName("name", name);
-////            node.addValue(value);
-//
-//            AstWriteConfigNode hmm = super.visitWriteHttpChunkTrailerNode(ctx);
-//
-//            return node;
         }
     }
 
@@ -2683,30 +2206,5 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         return (token != null) ? token.getStopIndex() : 0;
     }
 
-    private static Class<?> acceptOrConnectOptionType(String optionName) {
-
-        // TODO: discover expected type
-        Class<?> expectedType = Object.class;
-        if ("transport".equals(optionName)) {
-            expectedType = URI.class;
-        }
-        else if ("size".equals(optionName) || "timeout".equals(optionName))
-        {
-            expectedType = long.class;
-        }
-        else if ("mode".equals(optionName))
-        {
-            expectedType = String.class;
-        }
-
-        return expectedType;
-    }
-
-    private static Class<?> readOrWriteOptionType(String optionName) {
-
-        // TODO: discover expected type
-        Class<?> expectedType = byte[].class;
-
-        return expectedType;
-    }
+    private static final ScriptParserTypeSystem TYPE_SYSTEM = ScriptParserTypeSystem.newInstance();
 }

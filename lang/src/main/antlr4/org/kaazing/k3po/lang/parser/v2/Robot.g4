@@ -25,6 +25,11 @@ propertyValue
     : writeValue
     ;
 
+optionName
+    : QualifiedName
+    | Name
+    ;
+
 streamNode
     : acceptNode
     | acceptableNode
@@ -41,7 +46,7 @@ acceptNode
     ;
 
 acceptOption
-    : OptionKeyword name=Name value=writeValue
+    : OptionKeyword optionName writeValue
     ;
 
 acceptableNode
@@ -50,14 +55,14 @@ acceptableNode
 
 connectNode
     : ConnectKeyword
-      (AwaitKeyword await=Name ConnectKeyword?)?
+      (AwaitKeyword await=Name)?
       connectURI=location
       connectOption*
       streamableNode+
     ;
 
 connectOption
-    : OptionKeyword name=Name value=writeValue
+    : OptionKeyword optionName writeValue
     ;
 
 serverStreamableNode
@@ -73,11 +78,11 @@ optionNode
     ;
 
 readOptionNode
-    : ReadKeyword OptionKeyword name=Name value=writeValue
+    : ReadKeyword OptionKeyword optionName writeValue
     ;
 
 writeOptionNode
-    : WriteKeyword OptionKeyword name=Name value=writeValue
+    : WriteKeyword OptionKeyword optionName writeValue
     ;
 
 serverCommandNode
@@ -102,37 +107,24 @@ streamableNode
     ;
 
 commandNode
-    : writeNode
+    : writeConfigNode
+    | writeNode
     | writeFlushNode
     | writeCloseNode
     | closeNode
-    | writeHttpContentLengthNode
-    | writeHttpHeaderNode
-    | writeHttpChunkTrailerNode
-    | writeHttpHostNode
-    | writeHttpMethodNode
-    | writeHttpParameterNode
-    | writeHttpRequestNode
-    | writeHttpStatusNode
-    | writeHttpVersionNode
     | abortNode
     ;
 
 eventNode
     : openedNode
     | boundNode
+    | readConfigNode
     | readNode
     | readClosedNode
     | disconnectedNode
     | unboundNode
     | closedNode
     | connectedNode
-    | readHttpHeaderNode
-    | readHttpChunkTrailerNode
-    | readHttpMethodNode
-    | readHttpParameterNode
-    | readHttpVersionNode
-    | readHttpStatusNode
     | abortedNode
     ;
 
@@ -147,11 +139,13 @@ closeNode
     : CloseKeyword
     ;
 
-writeFlushNode: 
-    WriteKeyword FlushKeyword;
+writeFlushNode
+    : WriteKeyword FlushKeyword
+    ;
 
-writeCloseNode: 
-    WriteKeyword CloseKeyword;
+writeCloseNode
+    : WriteKeyword CloseKeyword
+    ;
 
 disconnectNode
     : DisconnectKeyword
@@ -159,6 +153,10 @@ disconnectNode
 
 unbindNode
     : UnbindKeyword
+    ;
+
+writeConfigNode
+    : WriteKeyword QualifiedName writeValue*
     ;
 
 writeNode
@@ -201,8 +199,13 @@ abortedNode
     : AbortedKeyword
     ;
 
-readClosedNode: 
-    ReadKeyword ClosedKeyword;
+readClosedNode
+    : ReadKeyword ClosedKeyword
+    ;
+
+readConfigNode
+    : ReadKeyword QualifiedName matcher* MissingKeyword?
+    ;
 
 readNode
     : ReadKeyword matcher+
@@ -213,79 +216,19 @@ unboundNode
     ;
 
 readAwaitNode
-    : ReadKeyword AwaitKeyword barrier=Name
+    : ReadKeyword AwaitKeyword Name
     ;
 
 readNotifyNode
-    : ReadKeyword NotifyKeyword barrier=Name
+    : ReadKeyword NotifyKeyword Name
     ;
     
 writeAwaitNode
-    : WriteKeyword AwaitKeyword barrier=Name
+    : WriteKeyword AwaitKeyword Name
     ;
 
 writeNotifyNode
-    : WriteKeyword NotifyKeyword barrier=Name
-    ;
-
-readHttpHeaderNode
-    : ReadKeyword HttpHeaderKeyword name=literalText (HttpMissingKeyword | matcher+)
-    ;
-
-readHttpChunkTrailerNode
-    : ReadKeyword HttpChunkTrailerKeyword name=literalText (HttpMissingKeyword | matcher+)
-    ;
-
-writeHttpHeaderNode
-    : WriteKeyword HttpHeaderKeyword name=literalText writeValue+
-    ;
-
-writeHttpChunkTrailerNode
-    : WriteKeyword HttpChunkTrailerKeyword name=literalText writeValue+
-    ;
-
-writeHttpContentLengthNode
-    : WriteKeyword HttpHeaderKeyword HttpContentLengthKeyword
-    ;
-
-writeHttpHostNode
-    : WriteKeyword HttpHeaderKeyword HttpHostKeyword
-    ;
-
-readHttpMethodNode
-    : ReadKeyword HttpMethodKeyword method=matcher
-    ;
-
-writeHttpMethodNode
-    : WriteKeyword HttpMethodKeyword method=writeValue
-    ;
-
-readHttpParameterNode
-    : ReadKeyword HttpParameterKeyword name=literalText matcher+
-    ;
-
-writeHttpParameterNode
-    : WriteKeyword HttpParameterKeyword name=literalText writeValue+
-    ;
-
-readHttpVersionNode
-    : ReadKeyword HttpVersionKeyword version=matcher
-    ;
-
-writeHttpVersionNode
-    : WriteKeyword HttpVersionKeyword version=writeValue
-    ;
-
-readHttpStatusNode
-    : ReadKeyword HttpStatusKeyword code=matcher reason=matcher
-    ;
-
-writeHttpRequestNode
-    : WriteKeyword HttpRequestKeyword form=writeValue
-    ;
-
-writeHttpStatusNode
-    : WriteKeyword HttpStatusKeyword code=writeValue reason=writeValue
+    : WriteKeyword NotifyKeyword Name
     ;
 
 matcher
@@ -386,22 +329,12 @@ SignedDecimalLiteral
 //    |  DecimalLiteral
     ;
 
-OptionKeyword: 'option';
-
-ShortKeyword
-    : 'short'
+AbortKeyword
+    : 'abort'
     ;
 
-IntKeyword
-    : 'int'
-    ;
-
-ByteKeyword
-    : 'byte'
-    ;
-
-LongKeyword
-    : 'long'
+AbortedKeyword
+    : 'aborted'
     ;
 
 AcceptKeyword
@@ -428,6 +361,10 @@ BoundKeyword
     : 'bound'
     ;
 
+ByteKeyword
+    : 'byte'
+    ;
+
 ChildKeyword
     : 'child'
     ;
@@ -438,6 +375,10 @@ CloseKeyword
 
 ClosedKeyword
     : 'closed'
+    ;
+
+ConfigKeyword
+    : 'config'
     ;
 
 ConnectKeyword
@@ -456,16 +397,20 @@ DisconnectedKeyword
     : 'disconnected'
     ;
 
-AbortKeyword
-    : 'abort'
-    ;
-
-AbortedKeyword
-    : 'aborted'
+IntKeyword
+    : 'int'
     ;
 
 FlushKeyword
     : 'flush'
+    ;
+
+LongKeyword
+    : 'long'
+    ;
+
+MissingKeyword
+    : 'missing'
     ;
 
 NotifyKeyword
@@ -476,12 +421,20 @@ OpenedKeyword
     : 'opened'
     ;
 
+OptionKeyword
+    : 'option'
+    ;
+
 PropertyKeyword
     : 'property'
     ;
 
 ReadKeyword
     : 'read'
+    ;
+
+ShortKeyword
+    : 'short'
     ;
 
 UnbindKeyword
@@ -496,53 +449,9 @@ WriteKeyword
     : 'write'
     ;
 
-HttpContentLengthKeyword
-    : 'content-length'
-    ;
-
-HttpHeaderKeyword
-    : 'header'
-    ;
-
-HttpChunkTrailerKeyword
-    : 'trailer'
-    ;
-
-HttpHostKeyword
-    : 'host'
-    ;
-
-HttpMethodKeyword
-    : 'method'
-    ;
-
-HttpMissingKeyword
-    : 'missing'
-    ;
-
-HttpParameterKeyword
-    : 'parameter'
-    ;
-
-HttpRequestKeyword
-    : 'request'
-    ;
-
-HttpResponseKeyword
-    : 'response'
-    ;
-
-HttpStatusKeyword
-    : 'status'
-    ;
-
-HttpVersionKeyword
-    : 'version'
-    ;
-
 // URI cannot begin with any of our data type delimiters, and MUST contain a colon.
 URILiteral
-    : Letter (Letter | '+')+ ':'
+    : Letter (Letter | '+')+ ':' '/'
       (Letter | ':' | ';' | '/' | '=' | '.' | DecimalLiteral | '?' | '&' | '%' | '-' | ',' | '*')+
 //      ~('"' | '/' | ']' | '}')
     ;
@@ -635,9 +544,13 @@ Name
     : Identifier
     ;
 
+QualifiedName
+    : Identifier ':' Identifier
+    ;
+
 fragment
 Identifier
-    : Letter (Digit | Letter)*
+    : Letter (Digit | Minus | Letter)*
     ;
 
 fragment
