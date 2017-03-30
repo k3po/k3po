@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect tcp://localhost:8080
+connect "tcp://localhost:8080"
 connected
 
 write "hello world"
@@ -24,7 +24,7 @@ close
 closed
 
 
-accept tcp://localhost:8080
+accept "tcp://localhost:8080"
 accepted
 connected
 
