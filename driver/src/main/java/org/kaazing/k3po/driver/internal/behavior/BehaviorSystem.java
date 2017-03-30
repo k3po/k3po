@@ -15,9 +15,10 @@
  */
 package org.kaazing.k3po.driver.internal.behavior;
 
+import static java.util.Collections.unmodifiableMap;
 import static java.util.ServiceLoader.load;
 
-import java.util.LinkedHashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -25,47 +26,81 @@ import org.jboss.netty.channel.ChannelHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageDecoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageEncoder;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteOptionNode;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstValueMatcher;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.types.StructuredTypeInfo;
+import org.kaazing.k3po.lang.types.TypeInfo;
 
 public final class BehaviorSystem {
 
-    private final Map<StructuredTypeInfo, ReadBehaviorFactory> readBehaviors;
-    private final Map<StructuredTypeInfo, WriteBehaviorFactory> writeBehaviors;
+    private final Map<TypeInfo<?>, ReadOptionFactory> readOptions;
+    private final Map<TypeInfo<?>, WriteOptionFactory> writeOptions;
+    private final Map<StructuredTypeInfo, ReadConfigFactory> readConfigs;
+    private final Map<StructuredTypeInfo, WriteConfigFactory> writeConfigs;
 
     private BehaviorSystem(Iterable<BehaviorSystemSpi> behaviorSystems) {
 
-        Map<StructuredTypeInfo, ReadBehaviorFactory> readBehaviors = new LinkedHashMap<>();
-        Map<StructuredTypeInfo, WriteBehaviorFactory> writeBehaviors = new LinkedHashMap<>();
+        Map<TypeInfo<?>, ReadOptionFactory> readOptions = new IdentityHashMap<>();
+        Map<TypeInfo<?>, WriteOptionFactory> writeOptions = new IdentityHashMap<>();
+        Map<StructuredTypeInfo, ReadConfigFactory> readConfigs = new IdentityHashMap<>();
+        Map<StructuredTypeInfo, WriteConfigFactory> writeConfigs = new IdentityHashMap<>();
 
         for (BehaviorSystemSpi behaviorSystem : behaviorSystems) {
-            for (StructuredTypeInfo configType : behaviorSystem.getConfigTypes()) {
-                readBehaviors.put(configType, behaviorSystem.readFactory(configType));
-                writeBehaviors.put(configType, behaviorSystem.writeFactory(configType));
+            for (TypeInfo<?> optionType : behaviorSystem.getReadOptionTypes()) {
+                readOptions.put(optionType, behaviorSystem.readOptionFactory(optionType));
+            }
+            for (TypeInfo<?> optionType : behaviorSystem.getWriteOptionTypes()) {
+                writeOptions.put(optionType, behaviorSystem.writeOptionFactory(optionType));
+            }
+
+            for (StructuredTypeInfo configType : behaviorSystem.getReadConfigTypes()) {
+                readConfigs.put(configType, behaviorSystem.readConfigFactory(configType));
+            }
+            for (StructuredTypeInfo configType : behaviorSystem.getWriteConfigTypes()) {
+                writeConfigs.put(configType, behaviorSystem.writeConfigFactory(configType));
             }
         }
 
-        this.readBehaviors = readBehaviors;
-        this.writeBehaviors = writeBehaviors;
+        this.readOptions = unmodifiableMap(readOptions);
+        this.writeOptions = unmodifiableMap(writeOptions);
+        this.readConfigs = unmodifiableMap(readConfigs);
+        this.writeConfigs = unmodifiableMap(writeConfigs);
     }
 
-    public ChannelHandler newReadHandler(
+    public ChannelHandler newReadOptionHandler(
+        AstReadOptionNode node) {
+
+        TypeInfo<?> optionType = node.getOptionType();
+        ReadOptionFactory factory = readOptions.getOrDefault(optionType, n -> null);
+        return factory.newHandler(node);
+    }
+
+    public ChannelHandler newWriteOptionHandler(
+        AstWriteOptionNode node) {
+
+        TypeInfo<?> optionType = node.getOptionType();
+        WriteOptionFactory factory = writeOptions.getOrDefault(optionType, n -> null);
+        return factory.newHandler(node);
+    }
+
+    public ChannelHandler newReadConfigHandler(
         AstReadConfigNode node,
         Function<AstValueMatcher, MessageDecoder> decoderFactory) {
 
         StructuredTypeInfo type = node.getType();
-        ReadBehaviorFactory factory = readBehaviors.getOrDefault(type, (n, f) -> null);
+        ReadConfigFactory factory = readConfigs.getOrDefault(type, (n, f) -> null);
         return factory.newHandler(node, decoderFactory);
     }
 
-    public ChannelHandler newWriteHandler(
+    public ChannelHandler newWriteConfigHandler(
         AstWriteConfigNode node,
         Function<AstValue<?>, MessageEncoder> encoderFactory) {
 
         StructuredTypeInfo type = node.getType();
-        WriteBehaviorFactory factory = writeBehaviors.getOrDefault(type, (n, f) -> null);
+        WriteConfigFactory factory = writeConfigs.getOrDefault(type, (n, f) -> null);
         return factory.newHandler(node, encoderFactory);
     }
 

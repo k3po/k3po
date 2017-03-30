@@ -28,11 +28,17 @@ import org.kaazing.k3po.lang.internal.ast.value.AstLiteralLongValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
+import org.kaazing.k3po.lang.types.TypeInfo;
 
 public class AstReadOptionNodeBuilder extends AbstractAstStreamableNodeBuilder<AstReadOptionNode, AstReadOptionNode> {
 
     public AstReadOptionNodeBuilder() {
         this(new AstReadOptionNode());
+    }
+
+    public AstReadOptionNodeBuilder setOptionType(TypeInfo<?> optionType) {
+        node.setOptionType(optionType);
+        return this;
     }
 
     public AstReadOptionNodeBuilder setOptionName(String optionName) {
@@ -84,6 +90,11 @@ public class AstReadOptionNodeBuilder extends AbstractAstStreamableNodeBuilder<A
 
         public StreamNested(R builder) {
             super(new AstReadOptionNode(), builder);
+        }
+
+        public StreamNested<R> setOptionType(TypeInfo<?> optionType) {
+            node.setOptionType(optionType);
+            return this;
         }
 
         public StreamNested<R> setOptionName(String optionName) {

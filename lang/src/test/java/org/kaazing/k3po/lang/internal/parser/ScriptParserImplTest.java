@@ -112,7 +112,6 @@ import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
-import org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem;
 
 public class ScriptParserImplTest {
 

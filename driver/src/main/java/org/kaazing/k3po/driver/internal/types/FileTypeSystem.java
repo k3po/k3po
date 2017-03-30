@@ -17,6 +17,7 @@ package org.kaazing.k3po.driver.internal.types;
 
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
+import static java.util.Collections.unmodifiableSet;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -27,6 +28,10 @@ import org.kaazing.k3po.lang.types.TypeSystemSpi;
 
 public final class FileTypeSystem implements TypeSystemSpi
 {
+    public static final TypeInfo<String> OPTION_MODE = new TypeInfo<>("mode", String.class);
+    public static final TypeInfo<Long> OPTION_SIZE = new TypeInfo<>("size", long.class);
+    public static final TypeInfo<Long> OPTION_OFFSET = new TypeInfo<>("offset", long.class);
+
     private final Set<TypeInfo<?>> acceptOptions;
     private final Set<TypeInfo<?>> connectOptions;
     private final Set<TypeInfo<?>> readOptions;
@@ -36,22 +41,18 @@ public final class FileTypeSystem implements TypeSystemSpi
 
     public FileTypeSystem()
     {
-        TypeInfo<String> modeType = new TypeInfo<>("mode", String.class);
-        TypeInfo<Long> sizeType = new TypeInfo<>("size", long.class);
-        TypeInfo<Long> offsetType = new TypeInfo<>("offset", long.class);
-
         Set<TypeInfo<?>> acceptOptions = new LinkedHashSet<>();
-        acceptOptions.add(modeType);
-        acceptOptions.add(sizeType);
-        this.acceptOptions = acceptOptions;
+        acceptOptions.add(OPTION_MODE);
+        acceptOptions.add(OPTION_SIZE);
+        this.acceptOptions = unmodifiableSet(acceptOptions);
 
         Set<TypeInfo<?>> connectOptions = new LinkedHashSet<>();
-        connectOptions.add(modeType);
-        connectOptions.add(sizeType);
-        this.connectOptions = connectOptions;
+        connectOptions.add(OPTION_MODE);
+        connectOptions.add(OPTION_SIZE);
+        this.connectOptions = unmodifiableSet(connectOptions);
 
-        this.readOptions = singleton(offsetType);
-        this.writeOptions = singleton(offsetType);
+        this.readOptions = singleton(OPTION_OFFSET);
+        this.writeOptions = singleton(OPTION_OFFSET);
         this.readConfigs = emptySet();
         this.writeConfigs = emptySet();
     }

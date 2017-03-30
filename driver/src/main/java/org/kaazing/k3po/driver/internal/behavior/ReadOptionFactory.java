@@ -15,27 +15,10 @@
  */
 package org.kaazing.k3po.driver.internal.behavior;
 
-import java.util.Set;
+import org.jboss.netty.channel.ChannelHandler;
+import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 
-import org.kaazing.k3po.lang.types.StructuredTypeInfo;
-import org.kaazing.k3po.lang.types.TypeInfo;
+public interface ReadOptionFactory {
 
-public interface BehaviorSystemSpi {
-
-    Set<TypeInfo<?>> getReadOptionTypes();
-
-    Set<TypeInfo<?>> getWriteOptionTypes();
-
-    ReadOptionFactory readOptionFactory(TypeInfo<?> optionType);
-
-    WriteOptionFactory writeOptionFactory(TypeInfo<?> optionType);
-
-    Set<StructuredTypeInfo> getReadConfigTypes();
-
-    Set<StructuredTypeInfo> getWriteConfigTypes();
-
-    ReadConfigFactory readConfigFactory(StructuredTypeInfo configType);
-
-    WriteConfigFactory writeConfigFactory(StructuredTypeInfo configType);
-
+    ChannelHandler newHandler(AstReadOptionNode node);
 }

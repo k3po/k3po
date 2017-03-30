@@ -15,7 +15,8 @@
  */
 package org.kaazing.k3po.driver.internal.behavior;
 
-import static java.util.Collections.unmodifiableSet;
+import static java.util.Collections.singletonMap;
+import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.requireNonNull;
 import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_CONTENT_LENGTH;
 import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_HEADER;
@@ -26,15 +27,16 @@ import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_REQUE
 import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_STATUS;
 import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_TRAILER;
 import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_VERSION;
+import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.OPTION_CHUNK_EXT;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.jboss.netty.channel.ChannelHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageDecoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpContentLengthEncoder;
@@ -57,73 +59,117 @@ import org.kaazing.k3po.driver.internal.behavior.handler.command.ReadConfigHandl
 import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteConfigHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.http.ReadHttpTrailersHandler;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteOptionNode;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstExactTextMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstValueMatcher;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.types.StructuredTypeInfo;
+import org.kaazing.k3po.lang.types.TypeInfo;
 
 public class HttpBehaviorSystem implements BehaviorSystemSpi {
 
-    private final Set<StructuredTypeInfo> configTypes;
-    private final Map<StructuredTypeInfo, ReadBehaviorFactory> readFactories;
-    private final Map<StructuredTypeInfo, WriteBehaviorFactory> writeFactories;
+    private final Map<TypeInfo<?>, ReadOptionFactory> readOptionFactories;
+    private final Map<TypeInfo<?>, WriteOptionFactory> writeOptionFactories;
+
+    private final Map<StructuredTypeInfo, ReadConfigFactory> readConfigFactories;
+    private final Map<StructuredTypeInfo, WriteConfigFactory> writeConfigFactories;
 
     public HttpBehaviorSystem()
     {
-        Set<StructuredTypeInfo> configTypes = new LinkedHashSet<>();
-        configTypes.add(CONFIG_CONTENT_LENGTH);
-        configTypes.add(CONFIG_HEADER);
-        configTypes.add(CONFIG_HOST);
-        configTypes.add(CONFIG_METHOD);
-        configTypes.add(CONFIG_PARAMETER);
-        configTypes.add(CONFIG_REQUEST);
-        configTypes.add(CONFIG_STATUS);
-        configTypes.add(CONFIG_TRAILER);
-        configTypes.add(CONFIG_VERSION);
-        this.configTypes = unmodifiableSet(configTypes);
+        this.readOptionFactories = singletonMap(OPTION_CHUNK_EXT, HttpBehaviorSystem::newReadHttpChunkExtHandler);
+        this.writeOptionFactories = singletonMap(OPTION_CHUNK_EXT, HttpBehaviorSystem::newWriteHttpChunkExtHandler);
 
-        Map<StructuredTypeInfo, ReadBehaviorFactory> readFactories = new LinkedHashMap<>();
-        readFactories.put(CONFIG_METHOD, HttpBehaviorSystem::newReadHttpMethodHandler);
-        readFactories.put(CONFIG_HEADER, HttpBehaviorSystem::newReadHttpHeaderHandler);
-        readFactories.put(CONFIG_PARAMETER, HttpBehaviorSystem::newReadHttpParameterHandler);
-        readFactories.put(CONFIG_VERSION, HttpBehaviorSystem::newReadHttpVersionHandler);
-        readFactories.put(CONFIG_STATUS, HttpBehaviorSystem::newReadHttpStatusHandler);
-        readFactories.put(CONFIG_TRAILER, HttpBehaviorSystem::newReadHttpTrailerHandler);
-        this.readFactories = readFactories;
+        Map<StructuredTypeInfo, ReadConfigFactory> readConfigFactories = new LinkedHashMap<>();
+        readConfigFactories.put(CONFIG_METHOD, HttpBehaviorSystem::newReadHttpMethodHandler);
+        readConfigFactories.put(CONFIG_HEADER, HttpBehaviorSystem::newReadHttpHeaderHandler);
+        readConfigFactories.put(CONFIG_PARAMETER, HttpBehaviorSystem::newReadHttpParameterHandler);
+        readConfigFactories.put(CONFIG_VERSION, HttpBehaviorSystem::newReadHttpVersionHandler);
+        readConfigFactories.put(CONFIG_STATUS, HttpBehaviorSystem::newReadHttpStatusHandler);
+        readConfigFactories.put(CONFIG_TRAILER, HttpBehaviorSystem::newReadHttpTrailerHandler);
+        this.readConfigFactories = unmodifiableMap(readConfigFactories);
 
-        Map<StructuredTypeInfo, WriteBehaviorFactory> writeFactories = new LinkedHashMap<>();
-        writeFactories.put(CONFIG_REQUEST, HttpBehaviorSystem::newWriteHttpRequestHandler);
-        writeFactories.put(CONFIG_HOST, HttpBehaviorSystem::newWriteHttpHostHandler);
-        writeFactories.put(CONFIG_CONTENT_LENGTH, HttpBehaviorSystem::newWriteHttpContentLengthHandler);
-        writeFactories.put(CONFIG_METHOD, HttpBehaviorSystem::newWriteHttpMethodHandler);
-        writeFactories.put(CONFIG_HEADER, HttpBehaviorSystem::newWriteHttpHeaderHandler);
-        writeFactories.put(CONFIG_PARAMETER, HttpBehaviorSystem::newWriteHttpParameterHandler);
-        writeFactories.put(CONFIG_VERSION, HttpBehaviorSystem::newWriteHttpVersionHandler);
-        writeFactories.put(CONFIG_STATUS, HttpBehaviorSystem::newWriteHttpStatusHandler);
-        writeFactories.put(CONFIG_TRAILER, HttpBehaviorSystem::newWriteHttpTrailerHandler);
-        this.writeFactories = writeFactories;
+        Map<StructuredTypeInfo, WriteConfigFactory> writeConfigFactories = new LinkedHashMap<>();
+        writeConfigFactories.put(CONFIG_REQUEST, HttpBehaviorSystem::newWriteHttpRequestHandler);
+        writeConfigFactories.put(CONFIG_HOST, HttpBehaviorSystem::newWriteHttpHostHandler);
+        writeConfigFactories.put(CONFIG_CONTENT_LENGTH, HttpBehaviorSystem::newWriteHttpContentLengthHandler);
+        writeConfigFactories.put(CONFIG_METHOD, HttpBehaviorSystem::newWriteHttpMethodHandler);
+        writeConfigFactories.put(CONFIG_HEADER, HttpBehaviorSystem::newWriteHttpHeaderHandler);
+        writeConfigFactories.put(CONFIG_PARAMETER, HttpBehaviorSystem::newWriteHttpParameterHandler);
+        writeConfigFactories.put(CONFIG_VERSION, HttpBehaviorSystem::newWriteHttpVersionHandler);
+        writeConfigFactories.put(CONFIG_STATUS, HttpBehaviorSystem::newWriteHttpStatusHandler);
+        writeConfigFactories.put(CONFIG_TRAILER, HttpBehaviorSystem::newWriteHttpTrailerHandler);
+        this.writeConfigFactories = unmodifiableMap(writeConfigFactories);
     }
 
     @Override
-    public Set<StructuredTypeInfo> getConfigTypes()
+    public Set<StructuredTypeInfo> getReadConfigTypes()
     {
-        return configTypes;
+        return readConfigFactories.keySet();
     }
 
     @Override
-    public ReadBehaviorFactory readFactory(
+    public Set<StructuredTypeInfo> getWriteConfigTypes()
+    {
+        return writeConfigFactories.keySet();
+    }
+
+    @Override
+    public ReadConfigFactory readConfigFactory(
         StructuredTypeInfo configType)
     {
-        return readFactories.get(configType);
+        return readConfigFactories.get(configType);
     }
 
     @Override
-    public WriteBehaviorFactory writeFactory(
+    public WriteConfigFactory writeConfigFactory(
         StructuredTypeInfo configType)
     {
-        return writeFactories.get(configType);
+        return writeConfigFactories.get(configType);
+    }
+
+    @Override
+    public Set<TypeInfo<?>> getReadOptionTypes()
+    {
+        return readOptionFactories.keySet();
+    }
+
+    @Override
+    public Set<TypeInfo<?>> getWriteOptionTypes()
+    {
+        return writeOptionFactories.keySet();
+    }
+
+    @Override
+    public ReadOptionFactory readOptionFactory(
+        TypeInfo<?> optionType)
+    {
+        return readOptionFactories.get(optionType);
+    }
+
+    @Override
+    public WriteOptionFactory writeOptionFactory(
+        TypeInfo<?> optionType)
+    {
+        return writeOptionFactories.get(optionType);
+    }
+
+    private static ChannelHandler newReadHttpChunkExtHandler(
+        AstReadOptionNode node)
+    {
+        throw new UnsupportedOperationException(
+                "HttpMessageDecoder and DefaultHttpChunk do not support chunkExtensions in Netty 3.9,"
+                + " see https://github.com/k3po/k3po/issues/313, support for chunk extensions is thus not yet added");
+    }
+
+    private static ChannelHandler newWriteHttpChunkExtHandler(
+        AstWriteOptionNode node)
+    {
+        throw new UnsupportedOperationException(
+                "HttpMessageDecoder and DefaultHttpChunk do not support chunkExtensions in Netty 3.9,"
+                + " see https://github.com/k3po/k3po/issues/313, support for chunk extensions is thus not yet added");
     }
 
     private static ReadHttpTrailersHandler newReadHttpTrailerHandler(

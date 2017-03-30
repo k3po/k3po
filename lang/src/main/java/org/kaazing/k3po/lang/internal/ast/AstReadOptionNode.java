@@ -17,20 +17,48 @@ package org.kaazing.k3po.lang.internal.ast;
 
 import static java.lang.String.format;
 
+import java.util.Objects;
+
+import org.kaazing.k3po.lang.types.TypeInfo;
+
 public class AstReadOptionNode extends AstOptionNode {
+
+    private TypeInfo<?> optionType;
+
+    public void setOptionType(TypeInfo<?> optionType) {
+        this.optionType = optionType;
+    }
+
+    public TypeInfo<?> getOptionType() {
+        return optionType;
+    }
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
         return visitor.visit(this, parameter);
     }
+
     @Override
     protected int hashTo() {
-        return getClass().hashCode();
+        int hash = super.hashCode();
+
+        if (optionType != null) {
+            hash <<= 4;
+            hash &= optionType.hashCode();
+        }
+
+        return hash;
     }
 
     @Override
-    protected boolean equalTo(AstRegion that) {
-        return that instanceof AstReadOptionNode;
+    protected final boolean equalTo(AstOptionNode that) {
+        return that instanceof AstReadOptionNode &&
+                equalTo((AstReadOptionNode) that);
+    }
+
+    protected boolean equalTo(AstReadOptionNode that) {
+        return super.equalTo(that) &&
+                Objects.equals(this.optionType, that.optionType);
     }
 
     @Override

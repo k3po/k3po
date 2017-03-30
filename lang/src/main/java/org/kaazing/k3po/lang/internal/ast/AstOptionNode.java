@@ -56,6 +56,12 @@ public abstract class AstOptionNode extends AstStreamableNode {
         return hashCode;
     }
 
+    @Override
+    protected final boolean equalTo(AstRegion that) {
+        return that instanceof AstOptionNode &&
+                equalTo((AstOptionNode) that);
+    }
+
     protected boolean equalTo(AstOptionNode that) {
         return equivalent(this.optionName, that.optionName) && equivalent(this.optionValue, that.optionValue);
     }

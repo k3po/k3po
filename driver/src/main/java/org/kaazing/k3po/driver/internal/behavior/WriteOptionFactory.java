@@ -15,14 +15,10 @@
  */
 package org.kaazing.k3po.driver.internal.behavior;
 
-import java.util.function.Function;
-
 import org.jboss.netty.channel.ChannelHandler;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageEncoder;
-import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
-import org.kaazing.k3po.lang.internal.ast.value.AstValue;
+import org.kaazing.k3po.lang.internal.ast.AstWriteOptionNode;
 
-public interface WriteBehaviorFactory {
+public interface WriteOptionFactory {
 
-    ChannelHandler newHandler(AstWriteConfigNode node, Function<AstValue<?>, MessageEncoder> encoderFactory);
+    ChannelHandler newHandler(AstWriteOptionNode node);
 }

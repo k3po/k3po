@@ -77,8 +77,6 @@ import org.kaazing.k3po.driver.internal.behavior.handler.command.FlushHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.ShutdownOutputHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.UnbindHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteHandler;
-import org.kaazing.k3po.driver.internal.behavior.handler.command.file.ReadOptionFileOffsetHandler;
-import org.kaazing.k3po.driver.internal.behavior.handler.command.file.WriteOptionFileOffsetHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.AbortedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.BoundHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ChildClosedHandler;
@@ -150,6 +148,8 @@ import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
+import org.kaazing.k3po.lang.internal.parser.types.DefaultTypeSystem;
+import org.kaazing.k3po.lang.types.TypeInfo;
 
 /**
  * Builds the pipeline of handlers that are used to "execute" the Robot script.
@@ -873,7 +873,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstReadConfigNode node, State state) {
 
         Function<AstValueMatcher, MessageDecoder> decoderFactory = m -> m.accept(new GenerateReadDecoderVisitor(), state.configuration);
-        ChannelHandler handler = behaviorSystem.newReadHandler(node, decoderFactory);
+        ChannelHandler handler = behaviorSystem.newReadConfigHandler(node, decoderFactory);
 
         if (handler != null) {
             Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
@@ -889,7 +889,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstWriteConfigNode node, State state) {
 
         Function<AstValue<?>, MessageEncoder> encoderFactory = v -> v.accept(new GenerateWriteEncoderVisitor(), state.endian);
-        ChannelHandler handler = behaviorSystem.newWriteHandler(node, encoderFactory);
+        ChannelHandler handler = behaviorSystem.newWriteConfigHandler(node, encoderFactory);
 
         if (handler != null) {
             Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
@@ -935,29 +935,20 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstReadOptionNode node, State state) {
 
-        String optionName = node.getOptionName();
-        switch (optionName) {
-            case "mask" :
-                AstValue<?> maskValue = node.getOptionValue();
-                state.readUnmasker = maskValue.accept(new GenerateMaskOptionValueVisitor(), state);
-                break;
-
-            case "file:offset" :
-                AstLiteralTextValue offsetValue = (AstLiteralTextValue) node.getOptionValue();
-                int offset = Integer.parseInt(offsetValue.getValue());
-                ReadOptionFileOffsetHandler handler = new ReadOptionFileOffsetHandler(offset);
-                handler.setRegionInfo(node.getRegionInfo());
-                String handlerName = String.format("readOption#%d (offset=%d)", state.pipelineAsMap.size() + 1, offset);
+        TypeInfo<?> optionType = node.getOptionType();
+        if (optionType == DefaultTypeSystem.OPTION_MASK) {
+            AstValue<?> maskValue = node.getOptionValue();
+            state.readUnmasker = maskValue.accept(new GenerateMaskOptionValueVisitor(), state);
+        }
+        else {
+            ChannelHandler handler = behaviorSystem.newReadOptionHandler(node);
+            if (handler != null) {
+                String handlerName = String.format("%s [#%d]", node, state.pipelineAsMap.size() + 1);
                 state.pipelineAsMap.put(handlerName, handler);
-                break;
-
-            case "http:chunkExtension":
-                throw new UnsupportedOperationException(
-                        "HttpMessageDecoder and DefaultHttpChunk do not support chunkExtensions in Netty 3.9,"
-                        + " see https://github.com/k3po/k3po/issues/313, support for chunk extensions is thus not yet added");
-
-            default:
-                throw new IllegalArgumentException("Unrecognized read option : " + optionName);
+            }
+            else {
+                throw new IllegalArgumentException("Unrecognized read option : " + node.getOptionName());
+            }
         }
 
         return state.configuration;
@@ -966,28 +957,20 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstWriteOptionNode node, State state) {
 
-        String optionName = node.getOptionName();
-        switch (optionName) {
-            case "mask" :
-                AstValue<?> maskValue = node.getOptionValue();
-                state.writeMasker = maskValue.accept(new GenerateMaskOptionValueVisitor(), state);
-                break;
-
-            case "file:offset" :
-                AstLiteralTextValue offsetValue = (AstLiteralTextValue) node.getOptionValue();
-                int offset = Integer.parseInt(offsetValue.getValue());
-                WriteOptionFileOffsetHandler handler = new WriteOptionFileOffsetHandler(offset);
-                handler.setRegionInfo(node.getRegionInfo());
-                String handlerName = String.format("writeOption#%d (offset=%d)", state.pipelineAsMap.size() + 1, offset);
+        TypeInfo<?> optionType = node.getOptionType();
+        if (optionType == DefaultTypeSystem.OPTION_MASK) {
+            AstValue<?> maskValue = node.getOptionValue();
+            state.writeMasker = maskValue.accept(new GenerateMaskOptionValueVisitor(), state);
+        }
+        else {
+            ChannelHandler handler = behaviorSystem.newWriteOptionHandler(node);
+            if (handler != null) {
+                String handlerName = String.format("%s [#%d]", node, state.pipelineAsMap.size() + 1);
                 state.pipelineAsMap.put(handlerName, handler);
-                break;
-
-            case "http:chunkExtension":
-                throw new UnsupportedOperationException(
-                        "HttpMessageDecoder and DefaultHttpChunk do not support chunkExtensions in Netty 3.9,"
-                        + " see https://github.com/k3po/k3po/issues/313, support for chunk extensions is thus not yet added");
-            default:
-                throw new IllegalArgumentException("Unrecognized write option : " + optionName);
+            }
+            else {
+                throw new IllegalArgumentException("Unrecognized write option : " + node.getOptionName());
+            }
         }
 
         return state.configuration;

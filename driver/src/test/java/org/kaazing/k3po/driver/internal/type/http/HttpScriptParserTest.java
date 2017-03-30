@@ -16,7 +16,16 @@
 package org.kaazing.k3po.driver.internal.type.http;
 
 import static org.junit.Assert.assertEquals;
-import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.*;
+import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_CONTENT_LENGTH;
+import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_HEADER;
+import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_HOST;
+import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_METHOD;
+import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_PARAMETER;
+import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_REQUEST;
+import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_STATUS;
+import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_TRAILER;
+import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_VERSION;
+import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.OPTION_CHUNK_EXT;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_CLOSED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_CONFIG;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_OPTION;
@@ -403,9 +412,10 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstWriteOptionNode expected = new AstWriteOptionNodeBuilder()
-                    .setOptionName("http:chunkExtension")
-                    .setOptionValue("chunkextension")
-                .done();
+                .setOptionType(OPTION_CHUNK_EXT)
+                .setOptionName("http:chunkExtension")
+                .setOptionValue("chunkextension")
+            .done();
         // @formatter:on
 
         assertEquals(expected, actual);
@@ -422,6 +432,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstReadOptionNode expected = new AstReadOptionNodeBuilder()
+                .setOptionType(OPTION_CHUNK_EXT)
                 .setOptionName("http:chunkExtension")
                 .setOptionValue("chunkextension")
                 .done();

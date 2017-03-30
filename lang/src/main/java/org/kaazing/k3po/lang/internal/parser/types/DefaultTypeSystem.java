@@ -24,8 +24,10 @@ import org.kaazing.k3po.lang.types.StructuredTypeInfo;
 import org.kaazing.k3po.lang.types.TypeInfo;
 import org.kaazing.k3po.lang.types.TypeSystemSpi;
 
-final class DefaultTypeSystem implements TypeSystemSpi
+public final class DefaultTypeSystem implements TypeSystemSpi
 {
+    public static final TypeInfo<byte[]> OPTION_MASK = new TypeInfo<>("mask", byte[].class);
+
     private final Set<TypeInfo<?>> acceptOptions;
     private final Set<TypeInfo<?>> connectOptions;
     private final Set<TypeInfo<?>> readOptions;
@@ -37,8 +39,8 @@ final class DefaultTypeSystem implements TypeSystemSpi
     {
         this.acceptOptions = emptySet();
         this.connectOptions = emptySet();
-        this.readOptions = singleton(new TypeInfo<>("mask", byte[].class));
-        this.writeOptions = singleton(new TypeInfo<>("mask", byte[].class));
+        this.readOptions = singleton(OPTION_MASK);
+        this.writeOptions = singleton(OPTION_MASK);
         this.readConfigs = emptySet();
         this.writeConfigs = emptySet();
     }

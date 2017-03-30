@@ -18,11 +18,11 @@ package org.kaazing.k3po.driver.internal.behavior;
 import java.util.function.Function;
 
 import org.jboss.netty.channel.ChannelHandler;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageDecoder;
-import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
-import org.kaazing.k3po.lang.internal.ast.matcher.AstValueMatcher;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageEncoder;
+import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
+import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 
-public interface ReadBehaviorFactory {
+public interface WriteConfigFactory {
 
-    ChannelHandler newHandler(AstReadConfigNode node, Function<AstValueMatcher, MessageDecoder> decoderFactory);
+    ChannelHandler newHandler(AstWriteConfigNode node, Function<AstValue<?>, MessageEncoder> encoderFactory);
 }

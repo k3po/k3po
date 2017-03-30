@@ -911,6 +911,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             childInfos().add(optionValue.getRegionInfo());
 
             node = new AstReadOptionNode();
+            node.setOptionType(optionType);
             node.setOptionName(optionQName);
             node.setOptionValue(optionValue);
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
@@ -936,6 +937,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             childInfos().add(optionValue.getRegionInfo());
 
             node = new AstWriteOptionNode();
+            node.setOptionType(optionType);
             node.setOptionName(optionQName);
             node.setOptionValue(optionValue);
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
