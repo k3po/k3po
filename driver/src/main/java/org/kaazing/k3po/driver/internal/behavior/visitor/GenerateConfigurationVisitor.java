@@ -942,12 +942,13 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         }
         else {
             ChannelHandler handler = behaviorSystem.newReadOptionHandler(node);
+            String optionName = node.getOptionName();
             if (handler != null) {
-                String handlerName = String.format("%s [#%d]", node, state.pipelineAsMap.size() + 1);
+                String handlerName = String.format("readOption#%d (%s)", state.pipelineAsMap.size() + 1, optionName);
                 state.pipelineAsMap.put(handlerName, handler);
             }
             else {
-                throw new IllegalArgumentException("Unrecognized read option : " + node.getOptionName());
+                throw new IllegalArgumentException("Unrecognized read option : " + optionName);
             }
         }
 
@@ -964,12 +965,13 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         }
         else {
             ChannelHandler handler = behaviorSystem.newWriteOptionHandler(node);
+            String optionName = node.getOptionName();
             if (handler != null) {
-                String handlerName = String.format("%s [#%d]", node, state.pipelineAsMap.size() + 1);
+                String handlerName = String.format("writeOption#%d (%s)", state.pipelineAsMap.size() + 1, optionName);
                 state.pipelineAsMap.put(handlerName, handler);
             }
             else {
-                throw new IllegalArgumentException("Unrecognized write option : " + node.getOptionName());
+                throw new IllegalArgumentException("Unrecognized write option : " + optionName);
             }
         }
 

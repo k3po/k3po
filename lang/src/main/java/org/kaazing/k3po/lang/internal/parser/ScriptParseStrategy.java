@@ -53,7 +53,6 @@ import org.kaazing.k3po.lang.internal.ast.AstDisconnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstEventNode;
 import org.kaazing.k3po.lang.internal.ast.AstNode;
 import org.kaazing.k3po.lang.internal.ast.AstOpenedNode;
-import org.kaazing.k3po.lang.internal.ast.AstOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstPropertyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadClosedNode;
@@ -126,7 +125,6 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralLongContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralTextContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.MatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.OpenedNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.OptionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.PropertyNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadAwaitNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadClosedNodeContext;
@@ -883,15 +881,24 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
-        public AstOptionNode visitOptionNode(OptionNodeContext ctx) {
+        public AstReadOptionNode visitReadOptionNode(ReadOptionNodeContext ctx) {
             AstReadOptionNodeVisitor visitor = new AstReadOptionNodeVisitor(factory, environment);
-            AstOptionNode optionNode = visitor.visitOptionNode(ctx);
+            AstReadOptionNode optionNode = visitor.visitReadOptionNode(ctx);
             if (optionNode != null) {
                 childInfos().add(optionNode.getRegionInfo());
             }
             return optionNode;
         }
 
+        @Override
+        public AstWriteOptionNode visitWriteOptionNode(WriteOptionNodeContext ctx) {
+            AstWriteOptionNodeVisitor visitor = new AstWriteOptionNodeVisitor(factory, environment);
+            AstWriteOptionNode optionNode = visitor.visitWriteOptionNode(ctx);
+            if (optionNode != null) {
+                childInfos().add(optionNode.getRegionInfo());
+            }
+            return optionNode;
+        }
     }
 
     private static class AstReadOptionNodeVisitor extends AstNodeVisitor<AstReadOptionNode> {

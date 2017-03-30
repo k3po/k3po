@@ -40,6 +40,7 @@ import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_AW
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_CONFIG;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_NOTIFY;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_OPTION;
+import static org.kaazing.k3po.lang.internal.parser.types.DefaultTypeSystem.OPTION_MASK;
 import static org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem.CONFIG_CONFIG;
 import static org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem.OPTION_BYTES;
 import static org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem.OPTION_EXPRESSION;
@@ -1653,7 +1654,11 @@ public class ScriptParserImplTest {
         AstReadOptionNode actual = parser.parseWithStrategy(scriptFragment, READ_OPTION);
 
         AstReadOptionNode expected =
-                new AstReadOptionNodeBuilder().setOptionName("mask").setOptionValue(new byte[]{0x01, 0x02, 0x03, 0x04}).done();
+                new AstReadOptionNodeBuilder()
+                    .setOptionType(OPTION_MASK)
+                    .setOptionName("mask")
+                    .setOptionValue(new byte[]{0x01, 0x02, 0x03, 0x04})
+                .done();
 
         assertEquals(expected, actual);
     }
@@ -1671,6 +1676,7 @@ public class ScriptParserImplTest {
 
         AstReadOptionNode expected =
                 new AstReadOptionNodeBuilder()
+                        .setOptionType(OPTION_MASK)
                         .setOptionName("mask")
                         .setOptionValue(factory.createValueExpression(context, "${maskingKey}", byte[].class),
                                 parser.getExpressionContext()).done();
@@ -1687,7 +1693,11 @@ public class ScriptParserImplTest {
         AstWriteOptionNode actual = parser.parseWithStrategy(scriptFragment, WRITE_OPTION);
 
         AstWriteOptionNode expected =
-                new AstWriteOptionNodeBuilder().setOptionName("mask").setOptionValue(new byte[]{0x01, 0x02, 0x03, 0x04}).done();
+                new AstWriteOptionNodeBuilder()
+                    .setOptionType(OPTION_MASK)
+                    .setOptionName("mask")
+                    .setOptionValue(new byte[]{0x01, 0x02, 0x03, 0x04})
+                .done();
 
         assertEquals(expected, actual);
     }
@@ -1705,6 +1715,7 @@ public class ScriptParserImplTest {
 
         AstWriteOptionNode expected =
                 new AstWriteOptionNodeBuilder()
+                        .setOptionType(OPTION_MASK)
                         .setOptionName("mask")
                         .setOptionValue(factory.createValueExpression(context, "${maskingKey}", byte[].class),
                                 parser.getExpressionContext()).done();
