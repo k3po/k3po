@@ -22,12 +22,12 @@ public final class StructuredTypeInfo {
 
     private final String name;
     private final List<TypeInfo<?>> namedFields;
-    private final List<Class<?>> anonymousFields;
+    private final int anonymousFields;
 
     public StructuredTypeInfo(
         String name,
         List<TypeInfo<?>> namedFields,
-        List<Class<?>> anonymousFields)
+        int anonymousFields)
     {
         this.name = name;
         this.namedFields = namedFields;
@@ -42,7 +42,7 @@ public final class StructuredTypeInfo {
         return namedFields;
     }
 
-    public List<Class<?>> getAnonymousFields() {
+    public int getAnonymousFields() {
         return anonymousFields;
     }
 
@@ -60,10 +60,8 @@ public final class StructuredTypeInfo {
             hashCode ^= namedFields.hashCode();
         }
 
-        if (anonymousFields != null) {
-            hashCode <<= 4;
-            hashCode ^= anonymousFields.hashCode();
-        }
+        hashCode <<= 4;
+        hashCode ^= anonymousFields;
 
         return hashCode;
     }
@@ -79,8 +77,8 @@ public final class StructuredTypeInfo {
         }
 
         StructuredTypeInfo that = (StructuredTypeInfo)o;
-        return Objects.equals(this.name, that.name) &&
-                Objects.equals(this.namedFields, that.namedFields) &&
-                Objects.equals(this.anonymousFields, that.anonymousFields);
+        return this.anonymousFields == that.anonymousFields &&
+                Objects.equals(this.name, that.name) &&
+                Objects.equals(this.namedFields, that.namedFields);
     }
 }

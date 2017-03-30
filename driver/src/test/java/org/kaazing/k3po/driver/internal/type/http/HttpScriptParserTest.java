@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.lang.internal.parser;
+package org.kaazing.k3po.driver.internal.type.http;
 
 import static org.junit.Assert.assertEquals;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_CLOSED;
@@ -24,7 +24,6 @@ import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_CL
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_CONFIG;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_FLUSH;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_OPTION;
-import static org.kaazing.k3po.lang.internal.test.junit.Assert.assertEquals;
 
 import java.net.URI;
 
@@ -48,6 +47,7 @@ import org.kaazing.k3po.lang.internal.ast.builder.AstWriteOptionNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
+import org.kaazing.k3po.lang.internal.parser.ScriptParserImpl;
 
 public class HttpScriptParserTest {
 

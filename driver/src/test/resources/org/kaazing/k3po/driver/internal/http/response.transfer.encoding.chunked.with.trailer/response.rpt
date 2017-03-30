@@ -18,17 +18,17 @@ accept http://localhost:8080/
 accepted
 connected
 
-read method "GET"
-read header "Content-Type" "text/plain"
+read http:method "GET"
+read http:header "Content-Type" "text/plain"
 read closed
 
-write status "200" "OK"
-write header "Content-Type" "text/plain"
-write header "Transfer-Encoding" "chunked"
-write header "Trailer" "Trailing-Header"
+write http:status "200" "OK"
+write http:header "Content-Type" "text/plain"
+write http:header "Transfer-Encoding" "chunked"
+write http:header "Trailer" "Trailing-Header"
 write "Chunk A"
 write "Chunk B"
 write "Chunk C"
-write trailer "Trailing-Header" "trailer-value"
+write http:trailer "Trailing-Header" "trailer-value"
 write close
 

@@ -15,7 +15,7 @@
 #
 
 connect udp://localhost:8080
-        option timeout 1000
+        option udp:timeout 1000
 connected
 write "Hello1"
 read "Hello1"
@@ -34,7 +34,7 @@ close
 closed
 
 connect udp://localhost:8080
-        option timeout 1500
+        option udp:timeout 1500
 connected
 write "Hello3"
 read "Hello3"

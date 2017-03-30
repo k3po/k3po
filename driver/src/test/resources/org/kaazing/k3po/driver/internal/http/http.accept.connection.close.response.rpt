@@ -18,17 +18,17 @@ accept http://localhost:8000/
 accepted
 connected
 
-read method "POST"
-read header "Date" "Fri, 31 Dec 1999 23:59:59 GMT"
-read header "Content-Type" "text/plain"
-read header "Content-Length" "11"
+read http:method "POST"
+read http:header "Date" "Fri, 31 Dec 1999 23:59:59 GMT"
+read http:header "Content-Type" "text/plain"
+read http:header "Content-Length" "11"
 read "Hello World"
 read closed
 
-write status "200" "OK"
-write header "Date" "Fri, 31 Dec 1999 23:59:59 GMT"
-write header "Content-Type" "text/plain"
-write header "Connection" "close"
+write http:status "200" "OK"
+write http:header "Date" "Fri, 31 Dec 1999 23:59:59 GMT"
+write http:header "Content-Type" "text/plain"
+write http:header "Connection" "close"
 write "Content A"
 write "Content B"
 write "Content C"

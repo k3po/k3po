@@ -18,5 +18,5 @@ accept http://localhost:8080/path
 accepted
 connected
 
-read method "GET"
+read http:method "GET"
 aborted

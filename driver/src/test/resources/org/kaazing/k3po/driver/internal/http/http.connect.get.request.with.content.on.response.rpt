@@ -16,10 +16,10 @@
 
 connect http://localhost:8000/
 connected
-write method "get"
-write header "some" "header" 
+write http:method "get"
+write http:header "some" "header" 
 write close
-read header "some" "header"
+read http:header "some" "header"
 read "content"
 read closed
 

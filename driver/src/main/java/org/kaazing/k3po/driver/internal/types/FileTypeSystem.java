@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.lang.internal.parser.types;
+package org.kaazing.k3po.driver.internal.types;
 
 import static java.util.Collections.emptySet;
 
@@ -24,7 +24,7 @@ import org.kaazing.k3po.lang.types.StructuredTypeInfo;
 import org.kaazing.k3po.lang.types.TypeInfo;
 import org.kaazing.k3po.lang.types.TypeSystemSpi;
 
-final class FileTypeSystem implements TypeSystemSpi
+public final class FileTypeSystem implements TypeSystemSpi
 {
     private final Set<TypeInfo<?>> acceptOptions;
     private final Set<TypeInfo<?>> connectOptions;
@@ -33,17 +33,19 @@ final class FileTypeSystem implements TypeSystemSpi
     private final Set<StructuredTypeInfo> readConfigs;
     private final Set<StructuredTypeInfo> writeConfigs;
 
-    FileTypeSystem()
+    public FileTypeSystem()
     {
+        TypeInfo<String> modeType = new TypeInfo<>("mode", String.class);
+        TypeInfo<Long> sizeType = new TypeInfo<>("size", long.class);
+
         Set<TypeInfo<?>> acceptOptions = new LinkedHashSet<>();
-        acceptOptions.add(new TypeInfo<>("mode", String.class));
-        acceptOptions.add(new TypeInfo<>("size", long.class));
+        acceptOptions.add(modeType);
+        acceptOptions.add(sizeType);
         this.acceptOptions = acceptOptions;
 
         Set<TypeInfo<?>> connectOptions = new LinkedHashSet<>();
-        acceptOptions.add(new TypeInfo<>("mode", String.class));
-        acceptOptions.add(new TypeInfo<>("size", long.class));
-        acceptOptions.add(new TypeInfo<>("timeout", long.class));
+        acceptOptions.add(modeType);
+        acceptOptions.add(sizeType);
         this.connectOptions = connectOptions;
 
         this.readOptions = emptySet();

@@ -17,22 +17,22 @@
 connect http://localhost:8000/
 connected
 
-write method "POST"
-write header host
-write header "Date" "Fri, 31 Dec 1999 23:59:59 GMT"
-write header "Content-Type" "text/plain"
-write header "Transfer-Encoding" "chunked"
-write header "Trailer" "Trailing-Header"
+write http:method "POST"
+write http:host
+write http:header "Date" "Fri, 31 Dec 1999 23:59:59 GMT"
+write http:header "Content-Type" "text/plain"
+write http:header "Transfer-Encoding" "chunked"
+write http:header "Trailer" "Trailing-Header"
 write "Chunk A"
 write "Chunk B"
 # Not supported in netty 3.9
 # write option chunkExtension "some-extension-value"
 write "Chunk C"
-write trailer "Trailing-Header" "trailer-value"
+write http:trailer "Trailing-Header" "trailer-value"
 write close
 
-read status "200" "OK"
-read header "Content-Length" "7"
+read http:status "200" "OK"
+read http:header "Content-Length" "7"
 read "content"
 read closed
 

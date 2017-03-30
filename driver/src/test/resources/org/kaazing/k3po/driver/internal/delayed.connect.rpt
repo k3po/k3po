@@ -15,7 +15,7 @@
 #
 
 connect await FIRST_CHANNEL_CONNECTED
-connect tcp://localhost:8080
+        tcp://localhost:8080
 connected
 write "delayed channel"
 close

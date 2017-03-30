@@ -877,7 +877,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     public Configuration visit(AstReadConfigNode node, State state) throws Exception {
 
         switch (node.getType()) {
-        case "method": {
+        case "http:method": {
             AstValueMatcher methodName = node.getMatcher();
             requireNonNull(methodName);
 
@@ -892,7 +892,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }
-        case "header": {
+        case "http:header": {
             AstExactTextMatcher name = (AstExactTextMatcher) node.getMatcher("name");
             requireNonNull(name);
 
@@ -911,7 +911,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }
-        case "header missing": {
+        case "http:header missing": {
             AstExactTextMatcher name = (AstExactTextMatcher) node.getMatcher("name");
             requireNonNull(name);
 
@@ -925,7 +925,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }
-        case "parameter": {
+        case "http:parameter": {
             AstExactTextMatcher name = (AstExactTextMatcher) node.getMatcher("name");
             requireNonNull(name);
 
@@ -944,7 +944,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }
-        case "version": {
+        case "http:version": {
             AstValueMatcher version = node.getMatcher();
 
             MessageDecoder versionDecoder = version.accept(new GenerateReadDecoderVisitor(), state.configuration);
@@ -957,7 +957,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }
-        case "status": {
+        case "http:status": {
             AstValueMatcher code = node.getMatcher("code");
             AstValueMatcher reason = node.getMatcher("reason");
 
@@ -972,7 +972,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }
-        case "trailer": {
+        case "http:trailer": {
             AstExactTextMatcher name = (AstExactTextMatcher) node.getMatcher("name");
 
             List<MessageDecoder> valueDecoders = new ArrayList<>();
@@ -1006,7 +1006,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstWriteConfigNode node, State state) throws Exception {
         switch (node.getType()) {
-        case "request": {
+        case "http:request": {
             AstValue<?> form = (AstLiteralTextValue) node.getValue();
             MessageEncoder formEncoder = form.accept(new GenerateWriteEncoderVisitor(), state.endian);
 
@@ -1017,7 +1017,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             state.pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }
-        case "header": {
+        case "http:header": {
             AstValue<?> name = node.getValue("name");
             MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.endian);
 
@@ -1033,21 +1033,21 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             state.pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }
-        case "content-length": {
+        case "http:content-length": {
             WriteConfigHandler handler = new WriteConfigHandler(new HttpContentLengthEncoder());
             handler.setRegionInfo(node.getRegionInfo());
             String handlerName = String.format("writeConfig#%d (http content length)", state.pipelineAsMap.size() + 1);
             state.pipelineAsMap.put(handlerName, handler);
             return null;
         }
-        case "host": {
+        case "http:host": {
             WriteConfigHandler handler = new WriteConfigHandler(new HttpHostEncoder());
             handler.setRegionInfo(node.getRegionInfo());
             String handlerName = String.format("writeConfig#%d (http host)", state.pipelineAsMap.size() + 1);
             state.pipelineAsMap.put(handlerName, handler);
             return null;
         }
-        case "method": {
+        case "http:method": {
             AstValue<?> methodName = node.getValue();
             requireNonNull(methodName);
 
@@ -1059,7 +1059,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             state.pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }
-        case "parameter": {
+        case "http:parameter": {
             AstValue<?> name = node.getValue("name");
             MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.endian);
 
@@ -1075,7 +1075,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             state.pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }
-        case "version": {
+        case "http:version": {
             AstValue<?> version = node.getValue();
 
             MessageEncoder versionEncoder = version.accept(new GenerateWriteEncoderVisitor(), state.endian);
@@ -1087,7 +1087,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             state.pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }
-        case "status": {
+        case "http:status": {
             AstValue<?> code = node.getValue("code");
             AstValue<?> reason = node.getValue("reason");
 
@@ -1101,7 +1101,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             state.pipelineAsMap.put(handlerName, handler);
             return state.configuration;
         }
-        case "trailer": {
+        case "http:trailer": {
             AstValue<?> name = node.getValue("name");
 
             MessageEncoder nameEncoder = name.accept(new GenerateWriteEncoderVisitor(), state.endian);

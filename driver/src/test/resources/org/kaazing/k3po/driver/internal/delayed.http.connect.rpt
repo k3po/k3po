@@ -15,17 +15,17 @@
 #
 
 connect await FIRST_CHANNEL_CONNECTED
-connect http://localhost:8080/
+        http://localhost:8080/
 connected
-write method "GET"
-write header "delayed" "channel"
+write http:method "GET"
+write http:header "delayed" "channel"
 write close
 closed
 
 connect http://localhost:8080/
 connected
-write method "GET"
-write header "first" "channel"
+write http:method "GET"
+write http:header "first" "channel"
 write close
 closed
 

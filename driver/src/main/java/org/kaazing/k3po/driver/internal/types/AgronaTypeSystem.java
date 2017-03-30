@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.lang.internal.parser.types;
+package org.kaazing.k3po.driver.internal.types;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singleton;
+import static java.util.Collections.emptySet;
 
-import java.net.URI;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.kaazing.k3po.driver.internal.netty.channel.agrona.ChannelReader;
+import org.kaazing.k3po.driver.internal.netty.channel.agrona.ChannelWriter;
 import org.kaazing.k3po.lang.types.StructuredTypeInfo;
 import org.kaazing.k3po.lang.types.TypeInfo;
 import org.kaazing.k3po.lang.types.TypeSystemSpi;
 
-public final class TestTypeSystem implements TypeSystemSpi
+public final class AgronaTypeSystem implements TypeSystemSpi
 {
     private final Set<TypeInfo<?>> acceptOptions;
     private final Set<TypeInfo<?>> connectOptions;
@@ -35,43 +35,31 @@ public final class TestTypeSystem implements TypeSystemSpi
     private final Set<StructuredTypeInfo> readConfigs;
     private final Set<StructuredTypeInfo> writeConfigs;
 
-    public TestTypeSystem()
+    public AgronaTypeSystem()
     {
-        TypeInfo<?> transportType = new TypeInfo<>("transport", URI.class);
-        TypeInfo<?> stringType = new TypeInfo<>("string", String.class);
-        TypeInfo<?> bytesType = new TypeInfo<>("bytes", byte[].class);
-        TypeInfo<?> numberType = new TypeInfo<>("number", int.class);
-        TypeInfo<?> expressionType = new TypeInfo<>("expression", Object.class);
+        TypeInfo<?> readerType = new TypeInfo<>("reader", ChannelReader.class);
+        TypeInfo<?> writerType = new TypeInfo<>("writer", ChannelWriter.class);
 
         Set<TypeInfo<?>> acceptOptions = new LinkedHashSet<>();
-        acceptOptions.add(transportType);
-        acceptOptions.add(stringType);
-        acceptOptions.add(bytesType);
-        acceptOptions.add(numberType);
-        acceptOptions.add(expressionType);
+        acceptOptions.add(readerType);
+        acceptOptions.add(writerType);
         this.acceptOptions = acceptOptions;
 
         Set<TypeInfo<?>> connectOptions = new LinkedHashSet<>();
-        connectOptions.add(transportType);
-        connectOptions.add(stringType);
-        connectOptions.add(bytesType);
-        connectOptions.add(numberType);
-        connectOptions.add(expressionType);
+        connectOptions.add(readerType);
+        connectOptions.add(writerType);
         this.connectOptions = connectOptions;
 
-        TypeInfo<byte[]> optionType = new TypeInfo<>("option", byte[].class);
-        StructuredTypeInfo configType = new StructuredTypeInfo("config", emptyList(), Integer.MAX_VALUE);
-
-        this.readOptions = singleton(optionType);
-        this.writeOptions = singleton(optionType);
-        this.readConfigs = singleton(configType);
-        this.writeConfigs = singleton(configType);
+        this.readOptions = emptySet();
+        this.writeOptions = emptySet();
+        this.readConfigs = emptySet();
+        this.writeConfigs = emptySet();
     }
 
     @Override
     public String getName()
     {
-        return "test";
+        return "agrona";
     }
 
     @Override

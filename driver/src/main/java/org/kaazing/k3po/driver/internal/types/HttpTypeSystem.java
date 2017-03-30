@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.lang.internal.parser.types;
+package org.kaazing.k3po.driver.internal.types;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -28,7 +28,7 @@ import org.kaazing.k3po.lang.types.StructuredTypeInfo;
 import org.kaazing.k3po.lang.types.TypeInfo;
 import org.kaazing.k3po.lang.types.TypeSystemSpi;
 
-final class HttpTypeSystem implements TypeSystemSpi
+public final class HttpTypeSystem implements TypeSystemSpi
 {
     private final Set<TypeInfo<?>> acceptOptions;
     private final Set<TypeInfo<?>> connectOptions;
@@ -37,19 +37,19 @@ final class HttpTypeSystem implements TypeSystemSpi
     private final Set<StructuredTypeInfo> readConfigs;
     private final Set<StructuredTypeInfo> writeConfigs;
 
-    HttpTypeSystem()
+    public HttpTypeSystem()
     {
         this.acceptOptions = singleton(new TypeInfo<>("transport", URI.class));
         this.connectOptions = singleton(new TypeInfo<>("transport", URI.class));
         this.readOptions = singleton(new TypeInfo<>("chunkExtension", String.class));
         this.writeOptions = singleton(new TypeInfo<>("chunkExtension", String.class));
 
-        StructuredTypeInfo methodType = new StructuredTypeInfo("method", emptyList(), singletonList(String.class));
-        StructuredTypeInfo headerType = new StructuredTypeInfo("header", singletonList(new TypeInfo<>("name", String.class)), singletonList(String.class));
-        StructuredTypeInfo parameterType = new StructuredTypeInfo("parameter", singletonList(new TypeInfo<>("name", String.class)), singletonList(String.class));
-        StructuredTypeInfo statusType = new StructuredTypeInfo("status", asList(new TypeInfo<>("code", String.class), new TypeInfo<>("reason", String.class)), emptyList());
-        StructuredTypeInfo versionType = new StructuredTypeInfo("version", emptyList(), singletonList(String.class));
-        StructuredTypeInfo trailerType = new StructuredTypeInfo("trailer", singletonList(new TypeInfo<>("name", String.class)), singletonList(String.class));
+        StructuredTypeInfo methodType = new StructuredTypeInfo("method", emptyList(), 1);
+        StructuredTypeInfo headerType = new StructuredTypeInfo("header", singletonList(new TypeInfo<>("name", String.class)), Integer.MAX_VALUE);
+        StructuredTypeInfo parameterType = new StructuredTypeInfo("parameter", singletonList(new TypeInfo<>("name", String.class)), Integer.MAX_VALUE);
+        StructuredTypeInfo statusType = new StructuredTypeInfo("status", asList(new TypeInfo<>("code", String.class), new TypeInfo<>("reason", String.class)), 0);
+        StructuredTypeInfo versionType = new StructuredTypeInfo("version", emptyList(), 1);
+        StructuredTypeInfo trailerType = new StructuredTypeInfo("trailer", singletonList(new TypeInfo<>("name", String.class)), Integer.MAX_VALUE);
 
         Set<StructuredTypeInfo> readConfigs = new LinkedHashSet<>();
         readConfigs.add(methodType);
@@ -60,9 +60,9 @@ final class HttpTypeSystem implements TypeSystemSpi
         readConfigs.add(trailerType);
         this.readConfigs = readConfigs;
 
-        StructuredTypeInfo requestType = new StructuredTypeInfo("request", emptyList(), singletonList(String.class));
-        StructuredTypeInfo hostType = new StructuredTypeInfo("host", emptyList(), emptyList());
-        StructuredTypeInfo contentLengthType = new StructuredTypeInfo("content-length", emptyList(), emptyList());
+        StructuredTypeInfo requestType = new StructuredTypeInfo("request", emptyList(), 1);
+        StructuredTypeInfo hostType = new StructuredTypeInfo("host", emptyList(), 0);
+        StructuredTypeInfo contentLengthType = new StructuredTypeInfo("content-length", emptyList(), 0);
 
         Set<StructuredTypeInfo> writeConfigs = new LinkedHashSet<>();
         writeConfigs.add(requestType);

@@ -18,8 +18,8 @@
 # Write the file contents
 #
 connect file:target/non.existing.file.dat
-        option size 1000
-        option mode "rw"
+        option file:size 1000
+        option file:mode "rw"
 connected
 
 write "Hello World"

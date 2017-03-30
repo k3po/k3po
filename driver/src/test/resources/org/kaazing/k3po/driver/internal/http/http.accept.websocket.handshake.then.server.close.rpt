@@ -17,20 +17,20 @@
 accept http://localhost:8001/echo
 accepted
 connected
-read method "GET"
-read header "Upgrade" "websocket" 
-read header "Connection" "Upgrade" 
-read header "Host" "localhost:8001" 
-read header "Origin" "http://localhost:8001" 
-read header "Sec-WebSocket-Key" "uoH83mU2xzVTb+Gw6YWVJg==" 
-read header "Sec-WebSocket-Version" "13" 
+read http:method "GET"
+read http:header "Upgrade" "websocket" 
+read http:header "Connection" "Upgrade" 
+read http:header "Host" "localhost:8001" 
+read http:header "Origin" "http://localhost:8001" 
+read http:header "Sec-WebSocket-Key" "uoH83mU2xzVTb+Gw6YWVJg==" 
+read http:header "Sec-WebSocket-Version" "13" 
 
-write status "101" "WebSocket Protocol Handshake"
-write header "Connection" "Upgrade"
-write header "Date" "Tue, 15 Apr 2014 01:13:18 GMT"
-write header "Sec-WebSocket-Accept" "TXCKJSpylVJ7v9ZGLGbt58vypzE="
-write header "Server" "Kaazing Gateway"
-write header "Upgrade" "websocket"
+write http:status "101" "WebSocket Protocol Handshake"
+write http:header "Connection" "Upgrade"
+write http:header "Date" "Tue, 15 Apr 2014 01:13:18 GMT"
+write http:header "Sec-WebSocket-Accept" "TXCKJSpylVJ7v9ZGLGbt58vypzE="
+write http:header "Server" "Kaazing Gateway"
+write http:header "Upgrade" "websocket"
 
 # Response WS Connection Close
 write [0x88 0x02 0x03 0xE8]

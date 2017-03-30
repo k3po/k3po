@@ -15,7 +15,7 @@
 #
 
 accept udp://localhost:8080
-       option timeout 1000
+       option udp:timeout 1000
 accepted
 connected
 read "Hello11"

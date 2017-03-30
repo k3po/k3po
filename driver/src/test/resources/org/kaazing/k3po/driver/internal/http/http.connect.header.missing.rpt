@@ -16,6 +16,6 @@
 
 connect http://localhost:8000/
 connected
-write method "GET"
-write header "unexpected" "not missing"
+write http:method "GET"
+write http:header "unexpected" "not missing"
 write close
