@@ -16,7 +16,6 @@
 package org.kaazing.k3po.driver.internal.behavior.visitor;
 
 import static java.lang.String.format;
-import static java.util.Objects.requireNonNull;
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 
@@ -32,7 +31,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -46,6 +44,7 @@ import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.RobotException;
 import org.kaazing.k3po.driver.internal.behavior.Barrier;
+import org.kaazing.k3po.driver.internal.behavior.BehaviorSystem;
 import org.kaazing.k3po.driver.internal.behavior.Configuration;
 import org.kaazing.k3po.driver.internal.behavior.handler.CompletionHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.FailureHandler;
@@ -71,33 +70,15 @@ import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteExpressionEn
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteIntegerEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteLongEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteTextEncoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpContentLengthEncoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpHeaderDecoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpHeaderEncoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpHeaderMissingDecoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpHostEncoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpMethodDecoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpMethodEncoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpParameterDecoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpParameterEncoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpRequestFormEncoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpStatusDecoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpStatusEncoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpTrailerDecoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpTrailerEncoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpVersionDecoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpVersionEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.AbortHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.CloseHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.DisconnectHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.FlushHandler;
-import org.kaazing.k3po.driver.internal.behavior.handler.command.ReadConfigHandler;
-import org.kaazing.k3po.driver.internal.behavior.handler.command.ReadOptionOffsetHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.ShutdownOutputHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.UnbindHandler;
-import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteConfigHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteHandler;
-import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteOptionOffsetHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.command.file.ReadOptionFileOffsetHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.command.file.WriteOptionFileOffsetHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.AbortedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.BoundHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ChildClosedHandler;
@@ -108,7 +89,6 @@ import org.kaazing.k3po.driver.internal.behavior.handler.event.DisconnectedHandl
 import org.kaazing.k3po.driver.internal.behavior.handler.event.InputShutdownHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.OpenedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ReadHandler;
-import org.kaazing.k3po.driver.internal.behavior.handler.event.ReadHttpTrailersHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.UnboundHandler;
 import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor.State;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
@@ -116,7 +96,6 @@ import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
 import org.kaazing.k3po.driver.internal.resolver.ClientBootstrapResolver;
 import org.kaazing.k3po.driver.internal.resolver.OptionsResolver;
 import org.kaazing.k3po.driver.internal.resolver.ServerBootstrapResolver;
-import org.kaazing.k3po.driver.internal.types.HttpTypeSystem;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
 import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
@@ -171,7 +150,6 @@ import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
-import org.kaazing.k3po.lang.types.StructuredTypeInfo;
 
 /**
  * Builds the pipeline of handlers that are used to "execute" the Robot script.
@@ -889,284 +867,15 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         return pipeline;
     }
 
-    private final Map<StructuredTypeInfo, BiFunction<AstReadConfigNode, Function<AstValueMatcher, MessageDecoder>, ChannelHandler>> newReadHandlerMethods = new LinkedHashMap<>();
-    private final Map<StructuredTypeInfo, BiFunction<AstWriteConfigNode, Function<AstValue<?>, MessageEncoder>, ChannelHandler>> newWriteHandlerMethods = new LinkedHashMap<>();
-
-    // HTTP
-    {
-        newReadHandlerMethods.put(HttpTypeSystem.CONFIG_METHOD, GenerateConfigurationVisitor::newReadHttpMethodHandler);
-        newReadHandlerMethods.put(HttpTypeSystem.CONFIG_HEADER, GenerateConfigurationVisitor::newReadHttpHeaderHandler);
-        newReadHandlerMethods.put(HttpTypeSystem.CONFIG_PARAMETER, GenerateConfigurationVisitor::newReadHttpParameterHandler);
-        newReadHandlerMethods.put(HttpTypeSystem.CONFIG_VERSION, GenerateConfigurationVisitor::newReadHttpVersionHandler);
-        newReadHandlerMethods.put(HttpTypeSystem.CONFIG_STATUS, GenerateConfigurationVisitor::newReadHttpStatusHandler);
-        newReadHandlerMethods.put(HttpTypeSystem.CONFIG_TRAILER, GenerateConfigurationVisitor::newReadHttpTrailerHandler);
-
-        newWriteHandlerMethods.put(HttpTypeSystem.CONFIG_REQUEST, GenerateConfigurationVisitor::newWriteHttpRequestHandler);
-        newWriteHandlerMethods.put(HttpTypeSystem.CONFIG_HOST, GenerateConfigurationVisitor::newWriteHttpHostHandler);
-        newWriteHandlerMethods.put(HttpTypeSystem.CONFIG_CONTENT_LENGTH, GenerateConfigurationVisitor::newWriteHttpContentLengthHandler);
-        newWriteHandlerMethods.put(HttpTypeSystem.CONFIG_METHOD, GenerateConfigurationVisitor::newWriteHttpMethodHandler);
-        newWriteHandlerMethods.put(HttpTypeSystem.CONFIG_HEADER, GenerateConfigurationVisitor::newWriteHttpHeaderHandler);
-        newWriteHandlerMethods.put(HttpTypeSystem.CONFIG_PARAMETER, GenerateConfigurationVisitor::newWriteHttpParameterHandler);
-        newWriteHandlerMethods.put(HttpTypeSystem.CONFIG_VERSION, GenerateConfigurationVisitor::newWriteHttpVersionHandler);
-        newWriteHandlerMethods.put(HttpTypeSystem.CONFIG_STATUS, GenerateConfigurationVisitor::newWriteHttpStatusHandler);
-        newWriteHandlerMethods.put(HttpTypeSystem.CONFIG_TRAILER, GenerateConfigurationVisitor::newWriteHttpTrailerHandler);
-    }
-
-    private static ReadHttpTrailersHandler newReadHttpTrailerHandler(
-        AstReadConfigNode node,
-        Function<AstValueMatcher, MessageDecoder> decoderFactory)
-    {
-        AstExactTextMatcher name = (AstExactTextMatcher) node.getMatcher("name");
-
-        List<MessageDecoder> valueDecoders = new ArrayList<>();
-        for (AstValueMatcher matcher : node.getMatchers()) {
-            valueDecoders.add(decoderFactory.apply(matcher));
-        }
-
-        HttpTrailerDecoder decoder = new HttpTrailerDecoder(name.getValue(), valueDecoders);
-        decoder.setRegionInfo(node.getRegionInfo());
-
-        // Ideally we could use a ReadConfigHandler as follows, but the trailers come in-sync with
-        // with the channel close, which completes the composite future of all handlers and checks
-        // the ReadConfigHandler to see if it completed.
-        // HttpTrailerDecoder decoder = new HttpTrailerDecoder(name.getValue(), valueDecoders);
-        // decoder.setRegionInfo(node.getRegionInfo());
-        // ReadConfigHandler handler = new ReadConfigHandler(decoder);
-
-        ReadHttpTrailersHandler handler = new ReadHttpTrailersHandler(decoder);
-        handler.setRegionInfo(node.getRegionInfo());
-        return handler;
-    }
-
-    private static ReadConfigHandler newReadHttpStatusHandler(
-        AstReadConfigNode node,
-        Function<AstValueMatcher, MessageDecoder> decoderFactory)
-    {
-        AstValueMatcher code = node.getMatcher("code");
-        AstValueMatcher reason = node.getMatcher("reason");
-
-        MessageDecoder codeDecoder = decoderFactory.apply(code);
-        MessageDecoder reasonDecoder = decoderFactory.apply(reason);
-
-        HttpStatusDecoder decoder = new HttpStatusDecoder(codeDecoder, reasonDecoder);
-        ReadConfigHandler handler = new ReadConfigHandler(decoder);
-        handler.setRegionInfo(node.getRegionInfo());
-        return handler;
-    }
-
-    private static ReadConfigHandler newReadHttpVersionHandler(
-        AstReadConfigNode node,
-        Function<AstValueMatcher, MessageDecoder> decoderFactory)
-    {
-        AstValueMatcher version = node.getMatcher();
-
-        MessageDecoder versionDecoder = decoderFactory.apply(version);
-
-        HttpVersionDecoder decoder = new HttpVersionDecoder(versionDecoder);
-        ReadConfigHandler handler = new ReadConfigHandler(decoder);
-        handler.setRegionInfo(node.getRegionInfo());
-        return handler;
-    }
-
-    private static ReadConfigHandler newReadHttpParameterHandler(
-        AstReadConfigNode node,
-        Function<AstValueMatcher, MessageDecoder> decoderFactory)
-    {
-        AstExactTextMatcher name = (AstExactTextMatcher) node.getMatcher("name");
-        requireNonNull(name);
-
-        List<MessageDecoder> valueDecoders = new ArrayList<>();
-        for (AstValueMatcher matcher : node.getMatchers()) {
-            valueDecoders.add(decoderFactory.apply(matcher));
-        }
-
-        HttpParameterDecoder decoder = new HttpParameterDecoder(name.getValue(), valueDecoders);
-        decoder.setRegionInfo(node.getRegionInfo());
-        ReadConfigHandler handler = new ReadConfigHandler(decoder);
-        handler.setRegionInfo(node.getRegionInfo());
-        return handler;
-    }
-
-    private static ReadConfigHandler newReadHttpHeaderHandler(
-        AstReadConfigNode node,
-        Function<AstValueMatcher, MessageDecoder> decoderFactory)
-    {
-        AstExactTextMatcher name = (AstExactTextMatcher) node.getMatcher("name");
-        requireNonNull(name);
-
-        if (node.isMissing()) {
-            HttpHeaderMissingDecoder decoder = new HttpHeaderMissingDecoder(name.getValue());
-            decoder.setRegionInfo(node.getRegionInfo());
-            ReadConfigHandler handler = new ReadConfigHandler(decoder);
-            handler.setRegionInfo(node.getRegionInfo());
-            return handler;
-        }
-        else {
-            List<MessageDecoder> valueDecoders = new ArrayList<>();
-            for (AstValueMatcher matcher : node.getMatchers()) {
-                valueDecoders.add(decoderFactory.apply(matcher));
-            }
-    
-            HttpHeaderDecoder decoder = new HttpHeaderDecoder(name.getValue(), valueDecoders);
-            decoder.setRegionInfo(node.getRegionInfo());
-            ReadConfigHandler handler = new ReadConfigHandler(decoder);
-            handler.setRegionInfo(node.getRegionInfo());
-            return handler;
-        }
-    }
-
-    private static ReadConfigHandler newReadHttpMethodHandler(
-        AstReadConfigNode node,
-        Function<AstValueMatcher, MessageDecoder> decoderFactory)
-    {
-        AstValueMatcher methodName = node.getMatcher();
-        requireNonNull(methodName);
-
-        MessageDecoder methodValueDecoder = decoderFactory.apply(methodName);
-
-        HttpMethodDecoder decoder = new HttpMethodDecoder(methodValueDecoder);
-        ReadConfigHandler handler = new ReadConfigHandler(decoder);
-        handler.setRegionInfo(node.getRegionInfo());
-        return handler;
-    }
-
-    private static WriteConfigHandler newWriteHttpTrailerHandler(
-        AstWriteConfigNode node,
-        Function<AstValue<?>, MessageEncoder> encoderFactory)
-    {
-        AstValue<?> name = node.getValue("name");
-
-        MessageEncoder nameEncoder = encoderFactory.apply(name);
-
-        List<MessageEncoder> valueEncoders = new ArrayList<>();
-        for (AstValue<?> value : node.getValues()) {
-            valueEncoders.add(encoderFactory.apply(value));
-        }
-
-        WriteConfigHandler handler = new WriteConfigHandler(new HttpTrailerEncoder(nameEncoder, valueEncoders));
-        handler.setRegionInfo(node.getRegionInfo());
-        return handler;
-    }
-
-    private static WriteConfigHandler newWriteHttpStatusHandler(
-        AstWriteConfigNode node,
-        Function<AstValue<?>, MessageEncoder> encoderFactory)
-    {
-        AstValue<?> code = node.getValue("code");
-        AstValue<?> reason = node.getValue("reason");
-
-        MessageEncoder codeEncoder = encoderFactory.apply(code);
-        MessageEncoder reasonEncoder = encoderFactory.apply(reason);
-
-        WriteConfigHandler handler = new WriteConfigHandler(new HttpStatusEncoder(codeEncoder, reasonEncoder));
-
-        handler.setRegionInfo(node.getRegionInfo());
-        return handler;
-    }
-
-    private static WriteConfigHandler newWriteHttpVersionHandler(
-        AstWriteConfigNode node,
-        Function<AstValue<?>, MessageEncoder> encoderFactory)
-    {
-        AstValue<?> version = node.getValue();
-
-        MessageEncoder versionEncoder = encoderFactory.apply(version);
-
-        WriteConfigHandler handler = new WriteConfigHandler(new HttpVersionEncoder(versionEncoder));
-
-        handler.setRegionInfo(node.getRegionInfo());
-        return handler;
-    }
-
-    private static WriteConfigHandler newWriteHttpParameterHandler(
-        AstWriteConfigNode node,
-        Function<AstValue<?>, MessageEncoder> encoderFactory)
-    {
-        AstValue<?> name = node.getValue("name");
-        MessageEncoder nameEncoder = encoderFactory.apply(name);
-
-        List<MessageEncoder> valueEncoders = new ArrayList<>();
-        for (AstValue<?> value : node.getValues()) {
-            valueEncoders.add(encoderFactory.apply(value));
-        }
-
-        WriteConfigHandler handler = new WriteConfigHandler(new HttpParameterEncoder(nameEncoder, valueEncoders));
-
-        handler.setRegionInfo(node.getRegionInfo());
-        return handler;
-    }
-
-    private static WriteConfigHandler newWriteHttpMethodHandler(
-        AstWriteConfigNode node,
-        Function<AstValue<?>, MessageEncoder> encoderFactory)
-    {
-        AstValue<?> methodName = node.getValue();
-        requireNonNull(methodName);
-
-        MessageEncoder methodEncoder = encoderFactory.apply(methodName);
-
-        WriteConfigHandler handler = new WriteConfigHandler(new HttpMethodEncoder(methodEncoder));
-        handler.setRegionInfo(node.getRegionInfo());
-        return handler;
-    }
-
-    private static WriteConfigHandler newWriteHttpHostHandler(
-        AstWriteConfigNode node,
-        Function<AstValue<?>, MessageEncoder> encoderFactory)
-    {
-        WriteConfigHandler handler = new WriteConfigHandler(new HttpHostEncoder());
-        handler.setRegionInfo(node.getRegionInfo());
-        return handler;
-    }
-
-    private static WriteConfigHandler newWriteHttpContentLengthHandler(
-        AstWriteConfigNode node,
-        Function<AstValue<?>, MessageEncoder> encoderFactory)
-    {
-        WriteConfigHandler handler = new WriteConfigHandler(new HttpContentLengthEncoder());
-        handler.setRegionInfo(node.getRegionInfo());
-        return handler;
-    }
-
-    private static WriteConfigHandler newWriteHttpHeaderHandler(
-        AstWriteConfigNode node,
-        Function<AstValue<?>, MessageEncoder> encoderFactory)
-    {
-        AstValue<?> name = node.getValue("name");
-        MessageEncoder nameEncoder = encoderFactory.apply(name);
-
-        List<MessageEncoder> valueEncoders = new ArrayList<>();
-        for (AstValue<?> value : node.getValues()) {
-            valueEncoders.add(encoderFactory.apply(value));
-        }
-
-        WriteConfigHandler handler = new WriteConfigHandler(new HttpHeaderEncoder(nameEncoder, valueEncoders));
-
-        handler.setRegionInfo(node.getRegionInfo());
-        return handler;
-    }
-
-    private static WriteConfigHandler newWriteHttpRequestHandler(
-        AstWriteConfigNode node,
-        Function<AstValue<?>, MessageEncoder> encoderFactory)
-    {
-        AstValue<?> form = (AstLiteralTextValue) node.getValue();
-        MessageEncoder formEncoder = encoderFactory.apply(form);
-
-        WriteConfigHandler handler = new WriteConfigHandler(new HttpRequestFormEncoder(formEncoder));
-
-        handler.setRegionInfo(node.getRegionInfo());
-        return handler;
-    }
+    private final BehaviorSystem behaviorSystem = BehaviorSystem.newInstance();
 
     @Override
     public Configuration visit(AstReadConfigNode node, State state) {
 
-        BiFunction<AstReadConfigNode, Function<AstValueMatcher, MessageDecoder>, ChannelHandler> newHandlerMethod = newReadHandlerMethods.get(node.getType());
-        if (newHandlerMethod != null) {
-            Function<AstValueMatcher, MessageDecoder> decoderFactory = m -> m.accept(new GenerateReadDecoderVisitor(), state.configuration);
-            ChannelHandler handler = newHandlerMethod.apply(node, decoderFactory);
+        Function<AstValueMatcher, MessageDecoder> decoderFactory = m -> m.accept(new GenerateReadDecoderVisitor(), state.configuration);
+        ChannelHandler handler = behaviorSystem.newReadHandler(node, decoderFactory);
 
+        if (handler != null) {
             Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
             String handlerName = String.format("readConfig#%d (%s)", pipelineAsMap.size() + 1, node.getType().getName());
             pipelineAsMap.put(handlerName, handler);
@@ -1179,11 +888,10 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstWriteConfigNode node, State state) {
 
-        BiFunction<AstWriteConfigNode, Function<AstValue<?>, MessageEncoder>, ChannelHandler> newWriteHandlerMethod = newWriteHandlerMethods.get(node.getType());
-        if (newWriteHandlerMethod != null) {
-            Function<AstValue<?>, MessageEncoder> encoderFactory = v -> v.accept(new GenerateWriteEncoderVisitor(), state.endian);
-            ChannelHandler handler = newWriteHandlerMethod.apply(node, encoderFactory);
+        Function<AstValue<?>, MessageEncoder> encoderFactory = v -> v.accept(new GenerateWriteEncoderVisitor(), state.endian);
+        ChannelHandler handler = behaviorSystem.newWriteHandler(node, encoderFactory);
 
+        if (handler != null) {
             Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
             String handlerName = String.format("writeConfig#%d (%s)", pipelineAsMap.size() + 1, node.getType().getName());
             pipelineAsMap.put(handlerName, handler);
@@ -1237,7 +945,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             case "file:offset" :
                 AstLiteralTextValue offsetValue = (AstLiteralTextValue) node.getOptionValue();
                 int offset = Integer.parseInt(offsetValue.getValue());
-                ReadOptionOffsetHandler handler = new ReadOptionOffsetHandler(offset);
+                ReadOptionFileOffsetHandler handler = new ReadOptionFileOffsetHandler(offset);
                 handler.setRegionInfo(node.getRegionInfo());
                 String handlerName = String.format("readOption#%d (offset=%d)", state.pipelineAsMap.size() + 1, offset);
                 state.pipelineAsMap.put(handlerName, handler);
@@ -1268,7 +976,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             case "file:offset" :
                 AstLiteralTextValue offsetValue = (AstLiteralTextValue) node.getOptionValue();
                 int offset = Integer.parseInt(offsetValue.getValue());
-                WriteOptionOffsetHandler handler = new WriteOptionOffsetHandler(offset);
+                WriteOptionFileOffsetHandler handler = new WriteOptionFileOffsetHandler(offset);
                 handler.setRegionInfo(node.getRegionInfo());
                 String handlerName = String.format("writeOption#%d (offset=%d)", state.pipelineAsMap.size() + 1, offset);
                 state.pipelineAsMap.put(handlerName, handler);
