@@ -15,7 +15,7 @@
  */
 package org.kaazing.k3po.driver.internal;
 
-public class RobotException extends Exception {
+public class RobotException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 

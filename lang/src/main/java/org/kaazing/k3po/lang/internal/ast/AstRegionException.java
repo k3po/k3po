@@ -17,7 +17,7 @@ package org.kaazing.k3po.lang.internal.ast;
 
 import org.kaazing.k3po.lang.internal.RegionInfo;
 
-public class AstRegionException extends Exception {
+public class AstRegionException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 

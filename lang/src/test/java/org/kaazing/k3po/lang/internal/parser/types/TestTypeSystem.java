@@ -33,6 +33,7 @@ public final class TestTypeSystem implements TypeSystemSpi
     public static final TypeInfo<byte[]> OPTION_BYTES = new TypeInfo<>("bytes", byte[].class);
     public static final TypeInfo<Integer> OPTION_NUMBER = new TypeInfo<>("number", int.class);
     public static final TypeInfo<Object> OPTION_EXPRESSION = new TypeInfo<>("expression", Object.class);
+    public static final StructuredTypeInfo CONFIG_CONFIG = new StructuredTypeInfo("config", emptyList(), Integer.MAX_VALUE);
 
     private final Set<TypeInfo<?>> acceptOptions;
     private final Set<TypeInfo<?>> connectOptions;
@@ -60,12 +61,10 @@ public final class TestTypeSystem implements TypeSystemSpi
         this.connectOptions = connectOptions;
 
         TypeInfo<byte[]> optionType = new TypeInfo<>("option", byte[].class);
-        StructuredTypeInfo configType = new StructuredTypeInfo("config", emptyList(), Integer.MAX_VALUE);
-
         this.readOptions = singleton(optionType);
         this.writeOptions = singleton(optionType);
-        this.readConfigs = singleton(configType);
-        this.writeConfigs = singleton(configType);
+        this.readConfigs = singleton(CONFIG_CONFIG);
+        this.writeConfigs = singleton(CONFIG_CONFIG);
     }
 
     @Override

@@ -30,7 +30,7 @@ public class AstPropertyNode extends AstNode {
     private ExpressionContext environment;
 
     @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
         return visitor.visit(this, parameter);
     }
 

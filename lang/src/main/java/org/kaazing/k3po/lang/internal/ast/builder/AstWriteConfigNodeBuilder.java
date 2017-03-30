@@ -23,6 +23,7 @@ import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
+import org.kaazing.k3po.lang.types.StructuredTypeInfo;
 
 public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWriteConfigNode, AstWriteConfigNode> {
 
@@ -39,7 +40,7 @@ public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<
         return result;
     }
 
-    public AstWriteConfigNodeBuilder setType(String type) {
+    public AstWriteConfigNodeBuilder setType(StructuredTypeInfo type) {
         node.setType(type);
         return this;
     }
@@ -81,7 +82,7 @@ public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<
             super(new AstWriteConfigNode(), builder);
         }
 
-        public StreamNested<R> setType(String type) {
+        public StreamNested<R> setType(StructuredTypeInfo type) {
             node.setType(type);
             return this;
         }

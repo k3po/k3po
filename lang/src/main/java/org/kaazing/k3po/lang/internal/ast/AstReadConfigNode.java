@@ -15,32 +15,41 @@
  */
 package org.kaazing.k3po.lang.internal.ast;
 
-import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
-
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 
 import org.kaazing.k3po.lang.internal.ast.matcher.AstValueMatcher;
+import org.kaazing.k3po.lang.types.StructuredTypeInfo;
 
 public class AstReadConfigNode extends AstEventNode {
 
-    private String type;
+    private StructuredTypeInfo type;
     private Map<String, AstValueMatcher> matchersByName;
     private Collection<AstValueMatcher> matchers;
+    private boolean missing;
 
     public AstReadConfigNode() {
         this.matchersByName = new LinkedHashMap<>();
         this.matchers = new LinkedHashSet<>();
     }
 
-    public void setType(String type) {
+    public void setType(StructuredTypeInfo type) {
         this.type = type;
     }
 
-    public String getType() {
+    public StructuredTypeInfo getType() {
         return type;
+    }
+
+    public void setMissing(boolean missing) {
+        this.missing = missing;
+    }
+
+    public boolean isMissing() {
+        return missing;
     }
 
     public AstValueMatcher getMatcher() {
@@ -78,7 +87,7 @@ public class AstReadConfigNode extends AstEventNode {
     }
 
     @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
         return visitor.visit(this, parameter);
     }
 
@@ -99,6 +108,9 @@ public class AstReadConfigNode extends AstEventNode {
             hashCode ^= matchersByName.hashCode();
         }
 
+        hashCode <<= 4;
+        hashCode ^= Boolean.hashCode(missing);
+
         return hashCode;
     }
 
@@ -108,9 +120,10 @@ public class AstReadConfigNode extends AstEventNode {
     }
 
     protected boolean equalTo(AstReadConfigNode that) {
-        return equivalent(this.type, that.type) &&
-                equivalent(this.matchers, that.matchers) &&
-                equivalent(this.matchersByName, that.matchersByName);
+        return this.missing == that.missing &&
+                Objects.equals(this.type, that.type) &&
+                Objects.equals(this.matchers, that.matchers) &&
+                Objects.equals(this.matchersByName, that.matchersByName);
     }
 
     @Override

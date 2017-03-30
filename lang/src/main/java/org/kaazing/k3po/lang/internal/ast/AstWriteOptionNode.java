@@ -20,7 +20,7 @@ import static java.lang.String.format;
 public class AstWriteOptionNode extends AstOptionNode {
 
     @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
         return visitor.visit(this, parameter);
     }
     @Override

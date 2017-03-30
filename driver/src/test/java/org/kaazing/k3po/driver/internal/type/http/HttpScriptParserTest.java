@@ -16,6 +16,7 @@
 package org.kaazing.k3po.driver.internal.type.http;
 
 import static org.junit.Assert.assertEquals;
+import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.*;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_CLOSED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_CONFIG;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_OPTION;
@@ -61,7 +62,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
-            .setType("http:request")
+            .setType(CONFIG_REQUEST)
             .addValue("origin-form")
         .done();
         // @formatter:on
@@ -80,7 +81,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
-            .setType("http:request")
+            .setType(CONFIG_REQUEST)
             .addValue("absolute-form")
         .done();
         // @formatter:on
@@ -99,7 +100,8 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstReadConfigNode expected = new AstReadConfigNodeBuilder()
-            .setType("http:header missing")
+            .setType(CONFIG_HEADER)
+            .setMissing(true)
             .setMatcherExactText("name", "Connection")
         .done();
         // @formatter:on
@@ -118,7 +120,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstReadConfigNode expected = new AstReadConfigNodeBuilder()
-            .setType("http:header")
+            .setType(CONFIG_HEADER)
             .setMatcherExactText("name", "Host")
             .addMatcherExactText("localhost:8000")
         .done();
@@ -138,7 +140,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
-            .setType("http:header")
+            .setType(CONFIG_HEADER)
             .setValue("name", "Host")
             .addValue("localhost:8000")
         .done();
@@ -158,7 +160,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
-            .setType("http:content-length")
+            .setType(CONFIG_CONTENT_LENGTH)
         .done();
         // @formatter:on
 
@@ -176,7 +178,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
-            .setType("http:host")
+            .setType(CONFIG_HOST)
         .done();
         // @formatter:on
 
@@ -194,7 +196,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstReadConfigNode expected = new AstReadConfigNodeBuilder()
-            .setType("http:method")
+            .setType(CONFIG_METHOD)
             .addMatcherExactText("get")
         .done();
         // @formatter:on
@@ -213,7 +215,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
-            .setType("http:method")
+            .setType(CONFIG_METHOD)
             .addValue("get")
         .done();
         // @formatter:on
@@ -232,7 +234,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstReadConfigNode expected = new AstReadConfigNodeBuilder()
-            .setType("http:parameter")
+            .setType(CONFIG_PARAMETER)
             .setMatcherExactText("name", ".kl")
             .addMatcherExactText("y")
         .done();
@@ -252,7 +254,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
-            .setType("http:parameter")
+            .setType(CONFIG_PARAMETER)
             .setValue("name", ".kl")
             .addValue("y")
         .done();
@@ -272,7 +274,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstReadConfigNode expected = new AstReadConfigNodeBuilder()
-            .setType("http:version")
+            .setType(CONFIG_VERSION)
             .addMatcherExactText("Http/1.1")
         .done();
         // @formatter:on
@@ -291,7 +293,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
-            .setType("http:version")
+            .setType(CONFIG_VERSION)
             .addValue("Http/1.1")
         .done();
         // @formatter:on
@@ -310,7 +312,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstReadConfigNode expected = new AstReadConfigNodeBuilder()
-            .setType("http:status")
+            .setType(CONFIG_STATUS)
             .setMatcherExactText("code", "403")
             .setMatcherExactText("reason", "Unauthorized")
         .done();
@@ -330,7 +332,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
-            .setType("http:status")
+            .setType(CONFIG_STATUS)
             .setValue("code", "403")
             .setValue("reason", "Unauthorized")
         .done();
@@ -439,7 +441,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
-                .setType("http:trailer")
+                .setType(CONFIG_TRAILER)
                 .setValue("name", "checksum")
                 .addValue("value")
                 .done();
@@ -459,7 +461,7 @@ public class HttpScriptParserTest {
 
         // @formatter:off
         AstReadConfigNode expected = new AstReadConfigNodeBuilder()
-            .setType("http:trailer")
+            .setType(CONFIG_TRAILER)
             .setMatcherExactText("name", "checksum")
             .addMatcherExactText("value")
         .done();
@@ -497,16 +499,16 @@ public class HttpScriptParserTest {
              .done()
              .addAcceptedStream()
                  .addReadConfigEvent()
-                     .setType("http:method")
+                     .setType(CONFIG_METHOD)
                      .addMatcherExactText("get")
                  .done()
                  .addReadConfigEvent()
-                     .setType("http:parameter")
+                     .setType(CONFIG_PARAMETER)
                      .setMatcherExactText("name", ".kl")
                      .addMatcherExactText("y")
                  .done()
                  .addReadConfigEvent()
-                     .setType("http:header")
+                     .setType(CONFIG_HEADER)
                      .setMatcherExactText("name", "Upgrade")
                      .addMatcherExactText("websocket")
                  .done()
@@ -516,12 +518,12 @@ public class HttpScriptParserTest {
                  .addReadCloseCommand()
                  .done()
                  .addWriteConfigCommand()
-                     .setType("http:status")
+                     .setType(CONFIG_STATUS)
                      .setValue("code", "101")
                      .setValue("reason", "Switching Protocols")
                  .done()
                  .addWriteConfigCommand()
-                     .setType("http:header")
+                     .setType(CONFIG_HEADER)
                      .setValue("name", "upgrade")
                      .addValue("websocket")
                  .done()
@@ -566,28 +568,28 @@ public class HttpScriptParserTest {
                  .addConnectedEvent()
                  .done()
                  .addWriteConfigCommand()
-                     .setType("http:method")
+                     .setType(CONFIG_METHOD)
                      .addValue("get")
                  .done()
                  .addWriteConfigCommand()
-                     .setType("http:parameter")
+                     .setType(CONFIG_PARAMETER)
                      .setValue("name", ".kl")
                      .addValue("y")
                  .done()
                  .addWriteConfigCommand()
-                     .setType("http:header")
+                     .setType(CONFIG_HEADER)
                      .setValue("name", "Upgrade")
                      .addValue("websocket")
                  .done()
                  .addWriteCloseCommand()
                  .done()
                  .addReadConfigEvent()
-                     .setType("http:status")
+                     .setType(CONFIG_STATUS)
                      .setMatcherExactText("code", "101")
                      .setMatcherExactText("reason", "Switching Protocols")
                  .done()
                  .addReadConfigEvent()
-                     .setType("http:header")
+                     .setType(CONFIG_HEADER)
                      .setMatcherExactText("name", "upgrade")
                      .addMatcherExactText("websocket")
                  .done()
@@ -630,18 +632,18 @@ public class HttpScriptParserTest {
              .done()
              .addAcceptedStream()
                  .addReadConfigEvent()
-                     .setType("http:method")
+                     .setType(CONFIG_METHOD)
                      .addMatcherExactText("get")
                  .done()
                  .addReadCloseCommand()
                  .done()
                  .addWriteConfigCommand()
-                     .setType("http:status")
+                     .setType(CONFIG_STATUS)
                      .setValue("code", "200")
                      .setValue("reason", "OK")
                  .done()
                  .addWriteConfigCommand()
-                     .setType("http:content-length")
+                     .setType(CONFIG_CONTENT_LENGTH)
                  .done()
                  .addWriteCommand()
                      .addExactText("some content")

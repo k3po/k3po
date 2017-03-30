@@ -23,10 +23,11 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
+import org.kaazing.k3po.lang.types.StructuredTypeInfo;
 
 public class AstWriteConfigNode extends AstCommandNode {
 
-    private String type;
+    private StructuredTypeInfo type;
     private Collection<AstValue<?>> values;
     private Map<String, AstValue<?>> valuesByName;
 
@@ -35,11 +36,11 @@ public class AstWriteConfigNode extends AstCommandNode {
         this.valuesByName = new LinkedHashMap<>();
     }
 
-    public void setType(String type) {
+    public void setType(StructuredTypeInfo type) {
         this.type = type;
     }
 
-    public String getType() {
+    public StructuredTypeInfo getType() {
         return type;
     }
 
@@ -74,7 +75,7 @@ public class AstWriteConfigNode extends AstCommandNode {
     }
 
     @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
         return visitor.visit(this, parameter);
     }
 

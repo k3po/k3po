@@ -1995,13 +1995,13 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             boolean missing = ctx.MissingKeyword() != null;
 
             node = new AstReadConfigNode();
-
-            // TODO: model missing properly
-            node.setType(missing ? configQName + " missing" : configQName);
+            node.setMissing(missing);
 
             StructuredTypeInfo configType = TYPE_SYSTEM.readConfig(configQName);
             namedFields = configType.getNamedFields().iterator();
             anonymousFields = configType.getAnonymousFields();
+
+            node.setType(configType);
 
             super.visitReadConfigNode(ctx);
 
@@ -2052,11 +2052,12 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             String configQName = ctx.QualifiedName().getText();
  
             node = new AstWriteConfigNode();
-            node.setType(configQName);
 
             StructuredTypeInfo configType = TYPE_SYSTEM.writeConfig(configQName);
             namedFields = configType.getNamedFields().iterator();
             anonymousFields = configType.getAnonymousFields();
+
+            node.setType(configType);
 
             super.visitWriteConfigNode(ctx);
 

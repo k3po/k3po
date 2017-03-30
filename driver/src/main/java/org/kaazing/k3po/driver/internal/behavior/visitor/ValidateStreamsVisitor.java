@@ -71,7 +71,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstScriptNode script, State state) throws Exception {
+    public AstScriptNode visit(AstScriptNode script, State state) {
         for (AstStreamNode stream : script.getStreams()) {
             stream.accept(this, state);
         }
@@ -80,12 +80,12 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstPropertyNode propertyNode, State state) throws Exception {
+    public AstScriptNode visit(AstPropertyNode propertyNode, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstAcceptNode acceptNode, State state) throws Exception {
+    public AstScriptNode visit(AstAcceptNode acceptNode, State state) {
 
         for (AstStreamableNode streamable : acceptNode.getStreamables()) {
             streamable.accept(this, state);
@@ -102,7 +102,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstConnectNode connectNode, State state) throws Exception {
+    public AstScriptNode visit(AstConnectNode connectNode, State state) {
 
         state.writeState = StreamState.OPEN;
         state.readState = StreamState.OPEN;
@@ -115,7 +115,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstReadConfigNode node, State state) throws Exception {
+    public AstScriptNode visit(AstReadConfigNode node, State state) {
 
         switch (state.readState) {
         case OPEN:
@@ -128,7 +128,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstWriteConfigNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteConfigNode node, State state) {
 
         switch (state.writeState) {
         case OPEN:
@@ -141,7 +141,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstReadClosedNode node, State state) throws Exception {
+    public AstScriptNode visit(AstReadClosedNode node, State state) {
 
         switch (state.readState) {
         case OPEN:
@@ -154,7 +154,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstWriteCloseNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteCloseNode node, State state) {
 
         switch (state.writeState) {
         case OPEN:
@@ -167,7 +167,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstAbortNode node, State state) throws Exception {
+    public AstScriptNode visit(AstAbortNode node, State state) {
         switch (state.writeState) {
         case OPEN:
         case CLOSED:
@@ -180,7 +180,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstAbortedNode node, State state) throws Exception {
+    public AstScriptNode visit(AstAbortedNode node, State state) {
 
         switch (state.writeState) {
         case OPEN:
@@ -193,7 +193,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstReadValueNode node, State state) throws Exception {
+    public AstScriptNode visit(AstReadValueNode node, State state) {
 
         switch (state.readState) {
         case OPEN:
@@ -205,7 +205,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstWriteValueNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteValueNode node, State state) {
 
         switch (state.writeState) {
         case OPEN:
@@ -217,7 +217,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstWriteFlushNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteFlushNode node, State state) {
 
         switch (state.writeState) {
         case OPEN:
@@ -229,7 +229,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstAcceptableNode acceptableNode, State state) throws Exception {
+    public AstScriptNode visit(AstAcceptableNode acceptableNode, State state) {
 
         for (AstStreamableNode streamable : acceptableNode.getStreamables()) {
             streamable.accept(this, state);
@@ -239,57 +239,57 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstDisconnectNode node, State state) throws Exception {
+    public AstScriptNode visit(AstDisconnectNode node, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstUnbindNode node, State state) throws Exception {
+    public AstScriptNode visit(AstUnbindNode node, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstCloseNode node, State state) throws Exception {
+    public AstScriptNode visit(AstCloseNode node, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstChildOpenedNode node, State state) throws Exception {
+    public AstScriptNode visit(AstChildOpenedNode node, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstChildClosedNode node, State state) throws Exception {
+    public AstScriptNode visit(AstChildClosedNode node, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstOpenedNode node, State state) throws Exception {
+    public AstScriptNode visit(AstOpenedNode node, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstBoundNode node, State state) throws Exception {
+    public AstScriptNode visit(AstBoundNode node, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstConnectedNode node, State state) throws Exception {
+    public AstScriptNode visit(AstConnectedNode node, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstDisconnectedNode node, State state) throws Exception {
+    public AstScriptNode visit(AstDisconnectedNode node, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstUnboundNode node, State state) throws Exception {
+    public AstScriptNode visit(AstUnboundNode node, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstClosedNode node, State state) throws Exception {
+    public AstScriptNode visit(AstClosedNode node, State state) {
         switch (state.readState) {
         case OPEN:
             state.readState = StreamState.CLOSED;
@@ -314,32 +314,32 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstReadAwaitNode node, State state) throws Exception {
+    public AstScriptNode visit(AstReadAwaitNode node, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstWriteAwaitNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteAwaitNode node, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstReadNotifyNode node, State state) throws Exception {
+    public AstScriptNode visit(AstReadNotifyNode node, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstWriteNotifyNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteNotifyNode node, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstReadOptionNode node, State state) throws Exception {
+    public AstScriptNode visit(AstReadOptionNode node, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstWriteOptionNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteOptionNode node, State state) {
         return null;
     }
 

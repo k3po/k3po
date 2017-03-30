@@ -40,6 +40,7 @@ import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_AW
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_CONFIG;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_NOTIFY;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_OPTION;
+import static org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem.CONFIG_CONFIG;
 import static org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem.OPTION_BYTES;
 import static org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem.OPTION_EXPRESSION;
 import static org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem.OPTION_NUMBER;
@@ -111,6 +112,7 @@ import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
+import org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem;
 
 public class ScriptParserImplTest {
 
@@ -1720,7 +1722,7 @@ public class ScriptParserImplTest {
         AstReadConfigNode actual = parser.parseWithStrategy(scriptFragment, READ_CONFIG);
 
         AstReadConfigNode expected = new AstReadConfigNodeBuilder()
-                .setType("test:config")
+                .setType(CONFIG_CONFIG)
                 .addMatcherExactText("value1")
                 .addMatcherExactText("value2")
                 .done();
@@ -1737,7 +1739,7 @@ public class ScriptParserImplTest {
         AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_CONFIG);
 
         AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
-                .setType("test:config")
+                .setType(CONFIG_CONFIG)
                 .addValue("configName")
                 .addValue(new byte[]{0x01, 0x02, 0x03, 0x04})
                 .done();

@@ -27,6 +27,7 @@ import org.kaazing.k3po.lang.internal.ast.matcher.AstRegexMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstVariableLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 import org.kaazing.k3po.lang.internal.regex.NamedGroupPattern;
+import org.kaazing.k3po.lang.types.StructuredTypeInfo;
 
 public class AstReadConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<AstReadConfigNode, AstReadConfigNode> {
 
@@ -43,8 +44,13 @@ public class AstReadConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<A
         return result;
     }
 
-    public AstReadConfigNodeBuilder setType(String type) {
+    public AstReadConfigNodeBuilder setType(StructuredTypeInfo type) {
         node.setType(type);
+        return this;
+    }
+
+    public AstReadConfigNodeBuilder setMissing(boolean missing) {
+        node.setMissing(missing);
         return this;
     }
 
@@ -141,8 +147,13 @@ public class AstReadConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<A
             super(new AstReadConfigNode(), builder);
         }
 
-        public StreamNested<R> setType(String type) {
+        public StreamNested<R> setType(StructuredTypeInfo type) {
             node.setType(type);
+            return this;
+        }
+
+        public StreamNested<R> setMissing(boolean missing) {
+            node.setMissing(missing);
             return this;
         }
 
