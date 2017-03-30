@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect http://localhost:8000/
+connect "http://localhost:8000/"
 connected
 write http:method "GET"
 write http:parameter "field" "value" "value2" "value3"

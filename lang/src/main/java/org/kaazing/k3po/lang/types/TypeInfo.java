@@ -50,6 +50,7 @@ public final class TypeInfo<T> implements Comparable<TypeInfo<T>> {
         return name.hashCode();
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == this) {
             return true;
@@ -62,5 +63,10 @@ public final class TypeInfo<T> implements Comparable<TypeInfo<T>> {
         TypeInfo<?> that = (TypeInfo<?>)o;
         // collide on name
         return this.name.equals(that.name);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s[%s %s]", getClass().getSimpleName(), name, type.getSimpleName());
     }
 }

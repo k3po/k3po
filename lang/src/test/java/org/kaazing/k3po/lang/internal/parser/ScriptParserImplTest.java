@@ -40,6 +40,11 @@ import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_AW
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_CONFIG;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_NOTIFY;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_OPTION;
+import static org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem.OPTION_BYTES;
+import static org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem.OPTION_EXPRESSION;
+import static org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem.OPTION_NUMBER;
+import static org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem.OPTION_STRING;
+import static org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem.OPTION_TRANSPORT;
 import static org.kaazing.k3po.lang.internal.regex.NamedGroupPattern.compile;
 import static org.kaazing.k3po.lang.internal.test.junit.Assert.assertEquals;
 
@@ -106,11 +111,8 @@ import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
-import org.kaazing.k3po.lang.types.TypeInfo;
 
 public class ScriptParserImplTest {
-
-    private static final TypeInfo<URI> TEST_TRANSPORT = new TypeInfo<>("test:transport", URI.class);
 
     @Test
     public void shouldParseLiteralText() throws Exception {
@@ -804,7 +806,7 @@ public class ScriptParserImplTest {
     @Test
     public void shouldParseAccept() throws Exception {
 
-        String scriptFragment = "accept http://localhost:8001/echo";
+        String scriptFragment = "accept 'http://localhost:8001/echo'";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstAcceptNode actual = parser.parseWithStrategy(scriptFragment, ACCEPT);
@@ -818,7 +820,7 @@ public class ScriptParserImplTest {
     @Test
     public void shouldParseAcceptWithQueryString() throws Exception {
 
-        String scriptFragment = "accept http://localhost:8001/echo?param=value";
+        String scriptFragment = "accept 'http://localhost:8001/echo?param=value'";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstAcceptNode actual = parser.parseWithStrategy(scriptFragment, ACCEPT);
@@ -832,7 +834,7 @@ public class ScriptParserImplTest {
     @Test
     public void shouldParseAcceptWithQueryStringAndPathSegmentParameter() throws Exception {
 
-        String scriptFragment = "accept http://localhost:8001/echo/;e/ct?param=value";
+        String scriptFragment = "accept 'http://localhost:8001/echo/;e/ct?param=value'";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstAcceptNode actual = parser.parseWithStrategy(scriptFragment, ACCEPT);
@@ -1226,8 +1228,11 @@ public class ScriptParserImplTest {
     public void shouldParseConnectScript() throws Exception {
 
         String script =
-                "# tcp.client.connect-then-close\n" + "connect http://localhost:8080/path?p1=v1&p2=v2\n" + "connected\n"
-                        + "close\n" + "closed\n";
+                "# tcp.client.connect-then-close\n" +
+                "connect 'http://localhost:8080/path?p1=v1&p2=v2'\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
@@ -1246,7 +1251,7 @@ public class ScriptParserImplTest {
         String script =
                 "# tcp.client.connect-then-close\n" +
                 "connect await BARRIER\r\n" +
-                "        http://localhost:8080/path?p1=v1&p2=v2\n" +
+                "        'http://localhost:8080/path?p1=v1&p2=v2'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";
@@ -1279,7 +1284,7 @@ public class ScriptParserImplTest {
 
         String script =
                 "# tcp.client.connect-then-close\n" +
-                "connect tcp://localhost:7788 # Comment 1\n" +
+                "connect 'tcp://localhost:7788' # Comment 1\n" +
                 "\t\t # Comment 2\n" +
                 "connected\n" +
                 "close\n" +
@@ -1300,8 +1305,8 @@ public class ScriptParserImplTest {
     public void shouldParseConnectScriptWithOptions() throws Exception {
 
         String script =
-                "connect test://authority\n" +
-                "       option test:transport tcp://localhost:8000\n" +
+                "connect 'test://authority'\n" +
+                "       option test:transport 'tcp://localhost:8000'\n" +
                 "       option test:string \"text\"" +
                 "       option test:bytes [0x01 0x02 0x03 0x04]" +
                 "       option test:number 1234" +
@@ -1326,11 +1331,11 @@ public class ScriptParserImplTest {
         AstScriptNode expected = new AstScriptNodeBuilder()
                 .addConnectStream()
                     .setLocation(location)
-                    .setOption(TEST_TRANSPORT, transport)
-                    .setOption("test:string", string)
-                    .setOption("test:bytes", bytes)
-                    .setOption("test:number", number)
-                    .setOption("test:expression", expression)
+                    .setOption(OPTION_TRANSPORT, transport)
+                    .setOption(OPTION_STRING, string)
+                    .setOption(OPTION_BYTES, bytes)
+                    .setOption(OPTION_NUMBER, number)
+                    .setOption(OPTION_EXPRESSION, expression)
                     .addConnectedEvent().done()
                     .addCloseCommand().done()
                     .addClosedEvent().done()
@@ -1344,8 +1349,12 @@ public class ScriptParserImplTest {
     public void shouldParseAcceptScript() throws Exception {
 
         String script =
-                "# tcp.client.accept-then-close\n" + "accept tcp://localhost:7788\n" + "accepted\n" + "connected\n" + "close\n"
-                        + "closed\n";
+                "# tcp.client.accept-then-close\n" +
+                "accept 'tcp://localhost:7788'\n" +
+                "accepted\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
@@ -1361,8 +1370,8 @@ public class ScriptParserImplTest {
     public void shouldParseAcceptScriptWithOptions() throws Exception {
 
         String script =
-                "accept test://authority\n" +
-                "       option test:transport tcp://localhost:8000\n" +
+                "accept 'test://authority'\n" +
+                "       option test:transport 'tcp://localhost:8000'\n" +
                 "       option test:string \"text\"" +
                 "       option test:bytes [0x01 0x02 0x03 0x04]" +
                 "       option test:number 1234" +
@@ -1389,11 +1398,11 @@ public class ScriptParserImplTest {
         AstScriptNode expected = new AstScriptNodeBuilder()
                 .addAcceptStream()
                     .setLocation(location)
-                    .setOption(TEST_TRANSPORT, transport)
-                    .setOption("test:string", string)
-                    .setOption("test:bytes", bytes)
-                    .setOption("test:number", number)
-                    .setOption("test:expression", expression)
+                    .setOption(OPTION_TRANSPORT, transport)
+                    .setOption(OPTION_STRING, string)
+                    .setOption(OPTION_BYTES, bytes)
+                    .setOption(OPTION_NUMBER, number)
+                    .setOption(OPTION_EXPRESSION, expression)
                 .done()
                 .addAcceptedStream()
                     .addConnectedEvent().done()
@@ -1409,10 +1418,20 @@ public class ScriptParserImplTest {
     public void shouldParseMultiConnectScript() throws Exception {
 
         String script =
-                "# tcp.client.echo-multi-conn.upstream\n" + "connect tcp://localhost:8785\n" + "connected\n"
-                        + "write \"Hello, world!\"\n" + "write notify BARRIER\n" + "close\n" + "closed\n"
-                        + "# tcp.client.echo-multi-conn.downstream\n" + "connect tcp://localhost:8783\n" + "connected\n"
-                        + "read await BARRIER\n" + "read \"Hello, world!\"\n" + "close\n" + "closed\n";
+                "# tcp.client.echo-multi-conn.upstream\n" +
+                "connect 'tcp://localhost:8785'\n" +
+                "connected\n" +
+                "write \"Hello, world!\"\n" +
+                "write notify BARRIER\n" +
+                "close\n" +
+                "closed\n" +
+                "# tcp.client.echo-multi-conn.downstream\n" +
+                "connect 'tcp://localhost:8783'\n" +
+                "connected\n" +
+                "read await BARRIER\n" +
+                "read \"Hello, world!\"\n" +
+                "close\n" +
+                "closed\n";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
@@ -1434,10 +1453,22 @@ public class ScriptParserImplTest {
     public void shouldParseMultiAcceptScript() throws Exception {
 
         String script =
-                "# tcp.server.echo-multi-conn.upstream\n" + "accept tcp://localhost:8783\n" + "accepted\n" + "connected\n"
-                        + "read await BARRIER\n" + "read \"Hello, world!\"\n" + "close\n" + "closed\n"
-                        + "# tcp.server.echo-multi-conn.downstream\n" + "accept tcp://localhost:8785\n" + "accepted\n"
-                        + "connected\n" + "write \"Hello, world!\"\n" + "write notify BARRIER\n" + "close\n" + "closed\n";
+                "# tcp.server.echo-multi-conn.upstream\n" +
+                "accept 'tcp://localhost:8783'\n" +
+                "accepted\n" +
+                "connected\n" +
+                "read await BARRIER\n" +
+                "read \"Hello, world!\"\n" +
+                "close\n" +
+                "closed\n" +
+                "# tcp.server.echo-multi-conn.downstream\n" +
+                "accept 'tcp://localhost:8785'\n" +
+                "accepted\n" +
+                "connected\n" +
+                "write \"Hello, world!\"\n" +
+                "write notify BARRIER\n" +
+                "close\n" +
+                "closed\n";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);
@@ -1458,9 +1489,16 @@ public class ScriptParserImplTest {
     public void shouldParseAcceptAndConnectScript() throws Exception {
 
         String script =
-                "# tcp.server.accept-then-close\n" + "accept tcp://localhost:7788\n" + "accepted\n" + "connected\n" + "closed\n"
-                        + "# tcp.client.connect-then-close\n" + "connect tcp://localhost:7788\n" + "connected\n" + "close\n"
-                        + "closed\n";
+                "# tcp.server.accept-then-close\n" +
+                "accept 'tcp://localhost:7788'\n" +
+                "accepted\n" +
+                "connected\n" +
+                "closed\n" +
+                "# tcp.client.connect-then-close\n" +
+                "connect 'tcp://localhost:7788'\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstValue<URI> location7788 = new AstLiteralURIValue(URI.create("tcp://localhost:7788"));
@@ -1477,8 +1515,12 @@ public class ScriptParserImplTest {
     public void shouldParseNonClosingConnectScript() throws Exception {
 
         String script =
-                "# tcp.client.non-closing\n" + "connect tcp://localhost:7788\n" + "connected\n" + "read \"foo\"\n"
-                        + "write [0x01 0x02 0xff]\n" + "closed\n";
+                "# tcp.client.non-closing\n" +
+                "connect 'tcp://localhost:7788'\n" +
+                "connected\n" +
+                "read \"foo\"\n" +
+                "write [0x01 0x02 0xff]\n" +
+                "closed\n";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstScriptNode actual = parser.parseWithStrategy(script, SCRIPT);

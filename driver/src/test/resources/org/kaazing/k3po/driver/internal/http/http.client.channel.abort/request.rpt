@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect http://localhost:8080/path
+connect "http://localhost:8080/path"
 connected
 
 write http:method "GET"

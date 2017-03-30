@@ -276,18 +276,13 @@ variableLengthBytesMatcher
     ;
 
 writeValue
-    : literalURI
-    | literalText
+    : literalText
     | literalBytes
     | literalByte
     | literalShort
     | literalInteger
     | literalLong
     | expressionValue
-    ;
-
-literalURI
-    : literal=URILiteral
     ;
 
 literalText
@@ -319,7 +314,7 @@ expressionValue
     ;
 
 location
-    : literalURI
+    : literalText
     | expressionValue
     ;
 

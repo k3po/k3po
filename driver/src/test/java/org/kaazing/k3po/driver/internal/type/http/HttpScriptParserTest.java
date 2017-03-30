@@ -473,7 +473,7 @@ public class HttpScriptParserTest {
      public void shouldParseHttpReadRequestWriteResponseScript() throws Exception {
          // @formatter:off
          String script =
-             "accept http://somehost:8000/path\n" +
+             "accept 'http://somehost:8000/path'\n" +
              "accepted\n" +
              "read http:method \"get\"\n" +
              "read http:parameter \".kl\" \"y\"\n" +
@@ -541,7 +541,7 @@ public class HttpScriptParserTest {
      public void shouldParseHttpWriteRequestReadResponseScript() throws Exception {
          // @formatter:off
          String script =
-             "connect http://somehost:8000/path\n" +
+             "connect 'http://somehost:8000/path'\n" +
              "connected\n" +
              "write http:method \"get\"\n" +
              "write http:parameter \".kl\" \"y\"\n" +
@@ -610,7 +610,7 @@ public class HttpScriptParserTest {
      public void shouldParseHttpWithContent() throws Exception {
          // @formatter:off
          String script =
-             "accept http://somehost:8000/path\n" +
+             "accept 'http://somehost:8000/path'\n" +
              "accepted\n" +
              "read http:method \"get\"\n" +
              "read closed\n" +

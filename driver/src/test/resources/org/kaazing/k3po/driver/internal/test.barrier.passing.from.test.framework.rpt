@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-accept tcp://localhost:7000
+accept "tcp://localhost:7000"
 accepted
 connected
 
@@ -25,7 +25,7 @@ close
 closed
 
 
-connect tcp://localhost:7000
+connect "tcp://localhost:7000"
 connected
 
 write await AWAITING_BARRIER

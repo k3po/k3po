@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-accept http://localhost:8000/
+accept "http://localhost:8000/"
 accepted
 connected
 read http:method "GET"

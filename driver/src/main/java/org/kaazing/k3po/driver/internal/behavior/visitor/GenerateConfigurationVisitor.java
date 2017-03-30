@@ -1161,7 +1161,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 state.readUnmasker = maskValue.accept(new GenerateMaskOptionValueVisitor(), state);
                 break;
 
-            case "offset" :
+            case "file:offset" :
                 AstLiteralTextValue offsetValue = (AstLiteralTextValue) node.getOptionValue();
                 int offset = Integer.parseInt(offsetValue.getValue());
                 ReadOptionOffsetHandler handler = new ReadOptionOffsetHandler(offset);
@@ -1170,7 +1170,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 state.pipelineAsMap.put(handlerName, handler);
                 break;
 
-            case "chunkExtension":
+            case "http:chunkExtension":
                 throw new UnsupportedOperationException(
                         "HttpMessageDecoder and DefaultHttpChunk do not support chunkExtensions in Netty 3.9,"
                         + " see https://github.com/k3po/k3po/issues/313, support for chunk extensions is thus not yet added");
@@ -1192,7 +1192,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 state.writeMasker = maskValue.accept(new GenerateMaskOptionValueVisitor(), state);
                 break;
 
-            case "offset" :
+            case "file:offset" :
                 AstLiteralTextValue offsetValue = (AstLiteralTextValue) node.getOptionValue();
                 int offset = Integer.parseInt(offsetValue.getValue());
                 WriteOptionOffsetHandler handler = new WriteOptionOffsetHandler(offset);
@@ -1201,7 +1201,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 state.pipelineAsMap.put(handlerName, handler);
                 break;
 
-            case "chunkExtension":
+            case "http:chunkExtension":
                 throw new UnsupportedOperationException(
                         "HttpMessageDecoder and DefaultHttpChunk do not support chunkExtensions in Netty 3.9,"
                         + " see https://github.com/k3po/k3po/issues/313, support for chunk extensions is thus not yet added");

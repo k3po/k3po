@@ -16,7 +16,7 @@
 
 property newLayout ${agronaIT:layoutInit("target/agrona-itest", 1024, 1024)}
 
-accept agrona://stream/bidirectional
+accept "agrona://stream/bidirectional"
        option agrona:reader ${agrona:manyToOneReader(newLayout.ring)}
        option agrona:writer ${agrona:broadcastTransmitter(newLayout.broadcast)}
 

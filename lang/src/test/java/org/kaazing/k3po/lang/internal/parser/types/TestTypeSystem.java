@@ -28,6 +28,12 @@ import org.kaazing.k3po.lang.types.TypeSystemSpi;
 
 public final class TestTypeSystem implements TypeSystemSpi
 {
+    public static final TypeInfo<URI> OPTION_TRANSPORT = new TypeInfo<>("transport", URI.class);
+    public static final TypeInfo<String> OPTION_STRING = new TypeInfo<>("string", String.class);
+    public static final TypeInfo<byte[]> OPTION_BYTES = new TypeInfo<>("bytes", byte[].class);
+    public static final TypeInfo<Integer> OPTION_NUMBER = new TypeInfo<>("number", int.class);
+    public static final TypeInfo<Object> OPTION_EXPRESSION = new TypeInfo<>("expression", Object.class);
+
     private final Set<TypeInfo<?>> acceptOptions;
     private final Set<TypeInfo<?>> connectOptions;
     private final Set<TypeInfo<?>> readOptions;
@@ -37,26 +43,20 @@ public final class TestTypeSystem implements TypeSystemSpi
 
     public TestTypeSystem()
     {
-        TypeInfo<?> transportType = new TypeInfo<>("transport", URI.class);
-        TypeInfo<?> stringType = new TypeInfo<>("string", String.class);
-        TypeInfo<?> bytesType = new TypeInfo<>("bytes", byte[].class);
-        TypeInfo<?> numberType = new TypeInfo<>("number", int.class);
-        TypeInfo<?> expressionType = new TypeInfo<>("expression", Object.class);
-
         Set<TypeInfo<?>> acceptOptions = new LinkedHashSet<>();
-        acceptOptions.add(transportType);
-        acceptOptions.add(stringType);
-        acceptOptions.add(bytesType);
-        acceptOptions.add(numberType);
-        acceptOptions.add(expressionType);
+        acceptOptions.add(OPTION_TRANSPORT);
+        acceptOptions.add(OPTION_STRING);
+        acceptOptions.add(OPTION_BYTES);
+        acceptOptions.add(OPTION_NUMBER);
+        acceptOptions.add(OPTION_EXPRESSION);
         this.acceptOptions = acceptOptions;
 
         Set<TypeInfo<?>> connectOptions = new LinkedHashSet<>();
-        connectOptions.add(transportType);
-        connectOptions.add(stringType);
-        connectOptions.add(bytesType);
-        connectOptions.add(numberType);
-        connectOptions.add(expressionType);
+        connectOptions.add(OPTION_TRANSPORT);
+        connectOptions.add(OPTION_STRING);
+        connectOptions.add(OPTION_BYTES);
+        connectOptions.add(OPTION_NUMBER);
+        connectOptions.add(OPTION_EXPRESSION);
         this.connectOptions = connectOptions;
 
         TypeInfo<byte[]> optionType = new TypeInfo<>("option", byte[].class);

@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect http://localhost:8000/path?query
+connect "http://localhost:8000/path?query"
 connected
 write http:method "GET"
 write http:parameter "param" "value"

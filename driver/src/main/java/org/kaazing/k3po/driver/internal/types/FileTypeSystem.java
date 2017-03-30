@@ -16,6 +16,7 @@
 package org.kaazing.k3po.driver.internal.types;
 
 import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -37,6 +38,7 @@ public final class FileTypeSystem implements TypeSystemSpi
     {
         TypeInfo<String> modeType = new TypeInfo<>("mode", String.class);
         TypeInfo<Long> sizeType = new TypeInfo<>("size", long.class);
+        TypeInfo<Long> offsetType = new TypeInfo<>("offset", long.class);
 
         Set<TypeInfo<?>> acceptOptions = new LinkedHashSet<>();
         acceptOptions.add(modeType);
@@ -44,12 +46,12 @@ public final class FileTypeSystem implements TypeSystemSpi
         this.acceptOptions = acceptOptions;
 
         Set<TypeInfo<?>> connectOptions = new LinkedHashSet<>();
-        acceptOptions.add(modeType);
-        acceptOptions.add(sizeType);
+        connectOptions.add(modeType);
+        connectOptions.add(sizeType);
         this.connectOptions = connectOptions;
 
-        this.readOptions = emptySet();
-        this.writeOptions = emptySet();
+        this.readOptions = singleton(offsetType);
+        this.writeOptions = singleton(offsetType);
         this.readConfigs = emptySet();
         this.writeConfigs = emptySet();
     }

@@ -16,7 +16,7 @@
 
 property client65535 ${itest:randomBytes(65535)}
 
-connect http://localhost:8080/path
+connect "http://localhost:8080/path"
 connected
 
 write http:method "POST"

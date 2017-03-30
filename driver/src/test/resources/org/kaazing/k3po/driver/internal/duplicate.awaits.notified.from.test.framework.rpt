@@ -15,26 +15,26 @@
 #
 
 connect await NOTIFY_FROM_FRAMEWORK
-        tcp://localhost:8080
+        "tcp://localhost:8080"
 connected
 write "delayed channel"
 close
 closed
 
 connect await NOTIFY_FROM_FRAMEWORK
-        tcp://localhost:8081
+        "tcp://localhost:8081"
 connected
 write "delayed channel2"
 close
 closed
 
-accept tcp://localhost:8080
+accept "tcp://localhost:8080"
 accepted
 connected
 read "delayed channel"
 closed
 
-accept tcp://localhost:8081
+accept "tcp://localhost:8081"
 accepted
 connected
 read "delayed channel2"

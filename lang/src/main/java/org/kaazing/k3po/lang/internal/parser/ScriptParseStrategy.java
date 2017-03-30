@@ -124,7 +124,6 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralBytesContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralIntegerContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralLongContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralTextContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralURIContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.MatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.OpenedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.OptionNodeContext;
@@ -906,14 +905,13 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
             String optionQName = ctx.optionName().getText();
             TypeInfo<?> optionType = TYPE_SYSTEM.readOption(optionQName);
-            String optionName = optionType.getName();
             Class<?> expectedType = optionType.getType();
             AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, expectedType);
             AstValue<?> optionValue = visitor.visit(ctx);
             childInfos().add(optionValue.getRegionInfo());
 
             node = new AstReadOptionNode();
-            node.setOptionName(optionName);
+            node.setOptionName(optionQName);
             node.setOptionValue(optionValue);
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
 
@@ -932,14 +930,13 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
             String optionQName = ctx.optionName().getText();
             TypeInfo<?> optionType = TYPE_SYSTEM.writeOption(optionQName);
-            String optionName = optionType.getName();
             Class<?> expectedType = optionType.getType();
             AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, expectedType);
             AstValue<?> optionValue = visitor.visit(ctx);
             childInfos().add(optionValue.getRegionInfo());
 
             node = new AstWriteOptionNode();
-            node.setOptionName(optionName);
+            node.setOptionName(optionQName);
             node.setOptionValue(optionValue);
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
 
@@ -1769,7 +1766,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
-        public AstValue<URI> visitLiteralURI(LiteralURIContext ctx) {
+        public AstValue<URI> visitLiteralText(LiteralTextContext ctx) {
             AstLiteralURIValueVisitor visitor = new AstLiteralURIValueVisitor(factory, environment);
             AstLiteralURIValue value = visitor.visit(ctx);
 
@@ -1847,20 +1844,18 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstValue<T> visitLiteralText(LiteralTextContext ctx) {
 
-            AstLiteralTextValueVisitor visitor = new AstLiteralTextValueVisitor(factory, environment);
-            AstLiteralTextValue value = visitor.visit(ctx);
-            if (value != null) {
-                childInfos().add(value.getRegionInfo());
+            if (expectedType == URI.class) {
+                AstLiteralURIValueVisitor visitor = new AstLiteralURIValueVisitor(factory, environment);
+                AstLiteralURIValue value = visitor.visit(ctx);
+                if (value != null) {
+                    childInfos().add(value.getRegionInfo());
+                }
+
+                return (AstValue<T>) value;
             }
 
-            return (AstValue<T>) value;
-        }
-
-        @Override
-        public AstValue<T> visitLiteralURI(LiteralURIContext ctx) {
-
-            AstLiteralURIValueVisitor visitor = new AstLiteralURIValueVisitor(factory, environment);
-            AstLiteralURIValue value = visitor.visit(ctx);
+            AstLiteralTextValueVisitor visitor = new AstLiteralTextValueVisitor(factory, environment);
+            AstLiteralTextValue value = visitor.visit(ctx);
             if (value != null) {
                 childInfos().add(value.getRegionInfo());
             }
@@ -1897,7 +1892,6 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             value.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return value;
         }
-
     }
 
     private static class AstLiteralURIValueVisitor extends AstVisitor<AstLiteralURIValue> {
@@ -1907,9 +1901,11 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
-        public AstLiteralURIValue visitLiteralURI(LiteralURIContext ctx) {
+        public AstLiteralURIValue visitLiteralText(LiteralTextContext ctx) {
             String literal = ctx.literal.getText();
-            AstLiteralURIValue value = new AstLiteralURIValue(URI.create(literal));
+            String textWithoutQuotes = literal.substring(1, literal.length() - 1);
+            String escapedText = escapeString(textWithoutQuotes);
+            AstLiteralURIValue value = new AstLiteralURIValue(URI.create(escapedText));
             value.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return value;
         }

@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-accept udp://localhost:8080
+accept "udp://localhost:8080"
        option udp:timeout 1000
 accepted
 connected
@@ -34,7 +34,7 @@ write "Hello World22"
 close
 closed
 
-accept udp://localhost:8081
+accept "udp://localhost:8081"
 accepted
 connected
 read "Hello31"

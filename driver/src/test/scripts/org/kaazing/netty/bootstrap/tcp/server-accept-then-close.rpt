@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-accept tcp://127.0.0.1:62020
+accept "tcp://127.0.0.1:62020"
 connected
 close
 closed

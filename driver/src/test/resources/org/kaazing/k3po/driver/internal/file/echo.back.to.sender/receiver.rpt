@@ -15,13 +15,13 @@
 #
 
 connect await FILE_EXISTS
-connect file:target/k3po/echo.back.to.sender.dat
+        "file:target/k3po/echo.back.to.sender.dat"
         option file:mode "rw"
 connected
 
 read await ECHO_REQUESTED
 read "Hello, world"
 
-write option offset "128"
+write option file:offset "128"
 write "Hello, world"
 write notify ECHOED

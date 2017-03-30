@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect udp://localhost:8080
+connect "udp://localhost:8080"
         option udp:timeout 1000
 connected
 write "Hello1"
@@ -24,7 +24,7 @@ read "Hello11"
 # closed because of idle timeout
 closed
 
-connect udp://localhost:8080
+connect "udp://localhost:8080"
 connected
 write "Hello2"
 read "Hello2"
@@ -33,7 +33,7 @@ read "Hello22"
 close
 closed
 
-connect udp://localhost:8080
+connect "udp://localhost:8080"
         option udp:timeout 1500
 connected
 write "Hello3"
