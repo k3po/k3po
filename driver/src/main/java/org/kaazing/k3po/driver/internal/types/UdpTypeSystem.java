@@ -26,6 +26,8 @@ import org.kaazing.k3po.lang.types.TypeSystemSpi;
 
 public final class UdpTypeSystem implements TypeSystemSpi
 {
+    public static final TypeInfo<Long> OPTION_TIMEOUT = new TypeInfo<>("timeout", long.class);
+
     private final Set<TypeInfo<?>> acceptOptions;
     private final Set<TypeInfo<?>> connectOptions;
     private final Set<TypeInfo<?>> readOptions;
@@ -35,8 +37,8 @@ public final class UdpTypeSystem implements TypeSystemSpi
 
     public UdpTypeSystem()
     {
-        this.acceptOptions = singleton(new TypeInfo<>("timeout", long.class));
-        this.connectOptions = singleton(new TypeInfo<>("timeout", long.class));
+        this.acceptOptions = singleton(OPTION_TIMEOUT);
+        this.connectOptions = singleton(OPTION_TIMEOUT);
         this.readOptions = emptySet();
         this.writeOptions = emptySet();
         this.readConfigs = emptySet();
