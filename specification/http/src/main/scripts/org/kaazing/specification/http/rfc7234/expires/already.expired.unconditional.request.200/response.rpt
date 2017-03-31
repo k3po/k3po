@@ -18,28 +18,28 @@ property date "Wed, 18 Nov 2015 01:10:45 GMT"
 property datePlusOneSecond "Wed, 18 Nov 2015 01:10:46 GMT"
 property expires "Wed, 18 Nov 2015 01:10.56 GMT"
 
-accept http://localhost:8000/index.html
+accept "http://localhost:8000/index.html"
 accepted
 connected
 
-read method "GET"
-read version "HTTP/1.1"
-read header "Host" "localhost:8000"
+read http:method "GET"
+read http:version "HTTP/1.1"
+read http:header "Host" "localhost:8000"
 
-write status "200" "OK"
-write header "Date" ${date}
-write header "Expires" "0"
-write header content-length
+write http:status "200" "OK"
+write http:header "Date" ${date}
+write http:header "Expires" "0"
+write http:content-length
 write flush
 
 accepted
 connected
 
-read method "GET"
-read version "HTTP/1.1"
-read header "Host" "localhost:8000"
+read http:method "GET"
+read http:version "HTTP/1.1"
+read http:header "Host" "localhost:8000"
 
-write status "200" "OK"
-write header "Date" ${datePlusOneSecond}
-write header "Expires" ${expires}
+write http:status "200" "OK"
+write http:header "Date" ${datePlusOneSecond}
+write http:header "Expires" ${expires}
 write flush

@@ -14,15 +14,15 @@
 # limitations under the License.
 #
 
-accept http://localhost:8080/path
+accept "http://localhost:8080/path"
 accepted
 connected
 
-read method "GET"
-read header "Connection" "close"
+read http:method "GET"
+read http:header "Connection" "close"
 read closed
 
-write status "200" "OK"
-write header content-length
+write http:status "200" "OK"
+write http:content-length
 write close
 closed

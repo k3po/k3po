@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect tcp://localhost:8081
+connect "tcp://localhost:8081"
 connected
 
 write await CLIENT_REQUEST
@@ -29,7 +29,7 @@ read "\r\n"
 read "Hello world"
 read notify SERVER_RESPONSE
 
-accept tcp://localhost:8080
+accept "tcp://localhost:8080"
 accepted
 connected
 read "GET / HTTP/1.1" "\r\n"

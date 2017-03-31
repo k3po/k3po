@@ -18,24 +18,24 @@ property invalidCredentials ${http:loginBase64Encoder("baduser:badpass")}
 property invalidAuthHeader ${http:append("Basic ", invalidCredentials)}
 property credentials ${http:loginBase64Encoder("joe:welcome")}
 property authHeader ${http:append("Basic ", credentials)}
-connect http://localhost:8000/resource
+connect "http://localhost:8000/resource"
 connected
 
-write method "GET"
-write header "Authorization" ${invalidAuthHeader}
+write http:method "GET"
+write http:header "Authorization" ${invalidAuthHeader}
 write flush
 
-read status "407" "Proxy Authentication Required"
-read header "Proxy-Authentication" /Basic realm=.+/
+read http:status "407" "Proxy Authentication Required"
+read http:header "Proxy-Authentication" /Basic realm=.+/
 read notify FIRST_DONE
 
 connect await FIRST_DONE
-connect http://localhost:8000/resource
+        "http://localhost:8000/resource"
 connected
 
-write method "GET"
-write header "Proxy-Authorization" ${authHeader}
+write http:method "GET"
+write http:header "Proxy-Authorization" ${authHeader}
 write flush
 
-read status "200" "OK"
+read http:status "200" "OK"
 

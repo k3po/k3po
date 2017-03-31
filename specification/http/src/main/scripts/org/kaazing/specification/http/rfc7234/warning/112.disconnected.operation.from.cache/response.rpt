@@ -14,16 +14,16 @@
 # limitations under the License.
 #
 
-accept http://localhost:8000/resource
+accept "http://localhost:8000/resource"
 accepted
 connected
 
-read method "POST"
-read header "Content-Length" "7"
+read http:method "POST"
+read http:header "Content-Length" "7"
 read "content"
 read closed
 	
-write status "502" "Bad gateway"
-write header "Warning" "112 - Disconnected Operation"
+write http:status "502" "Bad gateway"
+write http:header "Warning" "112 - Disconnected Operation"
 write close
 

@@ -15,7 +15,7 @@
 #
 
 connect await BOUND
-        tcp://localhost:8080
+        "tcp://localhost:8080"
 connected
 write "client data 1"
 read "server data 1"

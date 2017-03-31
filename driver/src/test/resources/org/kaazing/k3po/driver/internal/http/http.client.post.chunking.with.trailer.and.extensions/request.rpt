@@ -26,7 +26,7 @@ write http:header "Trailer" "Trailing-Header"
 write "Chunk A"
 write "Chunk B"
 # Not supported in netty 3.9
-# write option chunkExtension "some-extension-value"
+#write option chunkExtension "some-extension-value"
 write "Chunk C"
 write http:trailer "Trailing-Header" "trailer-value"
 write close

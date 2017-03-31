@@ -25,7 +25,7 @@ read http:header "Trailer" "Trailing-Header"
 read "Chunk A"
 read "Chunk B"
 # Not supported in netty 3.9
-# write option chunkExtension "some-extension-value"
+#write option chunkExtension "some-extension-value"
 read "Chunk C"
 read http:trailer "Trailing-Header" "trailer-value"
 read closed

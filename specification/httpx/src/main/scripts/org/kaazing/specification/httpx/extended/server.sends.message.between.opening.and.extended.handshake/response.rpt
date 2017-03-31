@@ -14,27 +14,27 @@
 # limitations under the License.
 #
 
-accept http://localhost:8080/path
+accept "http://localhost:8080/path"
 accepted
 connected
 
-read method "GET"
-read version "HTTP/1.1"
-read header "Host" "localhost:8080"
-read header "Upgrade" "websocket"
-read header "Connection" "Upgrade"
-read header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
-read header "Sec-WebSocket-Version" "13"
-read header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
+read http:method "GET"
+read http:version "HTTP/1.1"
+read http:header "Host" "localhost:8080"
+read http:header "Upgrade" "websocket"
+read http:header "Connection" "Upgrade"
+read http:header "Sec-WebSocket-Key" "dGhlIHNhbXBsZSBub25jZQ=="
+read http:header "Sec-WebSocket-Version" "13"
+read http:header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
 
-write status "101" "Switching Protocols"
-write version "HTTP/1.1"
-write header "Upgrade" "websocket"
-write header "Connection" "Upgrade" 
-write header "Sec-WebSocket-Accept" "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
-write header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
-write header "Server" "Kaazing Gateway"
-write header "Date" ${httpx:getDate()}
+write http:status "101" "Switching Protocols"
+write http:version "HTTP/1.1"
+write http:header "Upgrade" "websocket"
+write http:header "Connection" "Upgrade" 
+write http:header "Sec-WebSocket-Accept" "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
+write http:header "Sec-WebSocket-Protocol" "x-kaazing-handshake"
+write http:header "Server" "Kaazing Gateway"
+write http:header "Date" ${httpx:getDate()}
 write flush
 
 write [0x82 0x05]

@@ -14,10 +14,10 @@
 # limitations under the License.
 #
 
-accept http://localhost:8080/backend
+accept "http://localhost:8080/backend"
 accepted
 connected
-read header "Connection" "aNeverImplementedClientConnectionHeader"
-write header "Connection" "aNeverImplementedServerConnectionHeader"
+read http:header "Connection" "aNeverImplementedClientConnectionHeader"
+write http:header "Connection" "aNeverImplementedServerConnectionHeader"
 write flush
 
