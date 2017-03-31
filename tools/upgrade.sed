@@ -58,7 +58,7 @@ s/write trailer/write http:trailer/
 #
 s/option mode r/option file:mode "r"/
 s/option mode rw/option file:mode "rw"/
-s/option size (\d+)/option file:size \\1L/
+s/option size \([0-9][0-9]*\)/option file:size \1L/
 
 #
 # file read options
