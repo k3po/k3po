@@ -39,7 +39,7 @@ read closed
 
 # Downstream
 connect await CREATED
- connect ${downstream}
+        ${downstream}
 connected
 
 write http:method "GET"
