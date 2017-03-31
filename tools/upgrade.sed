@@ -78,5 +78,5 @@ s/option timeout/option udp:timeout/
 # connect await BARRIER
 #         location
 #
-1h;2,$H;$!d;g; s/connect await \([A-Z_]*\)\nconnect /connect await \1\
+1h;2,$H;$!d;g; s/connect await \([a-zA-Z0-9_]*\)\nconnect /connect await \1\
         /g
