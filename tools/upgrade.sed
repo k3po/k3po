@@ -8,7 +8,7 @@ s/write[[:space:]][[:space:]]*/write /g
 #
 # URI literals
 #
-s/\([[:space:]]*\)\([a-z]*:[^[:space:]]*\)/\1\"\2\"/
+s/\(^[^\"\'#]*[[:space:]][[:space:]]*\)\([a-z]*:[^[:space:]]*\/[^[:space:]]*\)/\1\"\2\"/
 
 #
 # HTTP accept and connect options
