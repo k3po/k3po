@@ -14,39 +14,39 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8000/connections"
+accept http://localhost:8000/connections
 
 accepted
 connected
 
-read http:method "POST"
-read http:header "Accept" "application/octet-stream"
-read http:header "X-Protocol" "bbosh/1.0"
-read http:header "X-Accept-Strategy" "streaming;request=chunked"
+read method "POST"
+read header "Accept" "application/octet-stream"
+read header "X-Protocol" "bbosh/1.0"
+read header "X-Accept-Strategy" "streaming;request=chunked"
 read closed
 
-write http:status "201" "Created"
-write http:header "Cache-Control" "no-cache"
-write http:header "Location" "/connections/ac32fb3844fe11e4a183164230d1df67"
-write http:header "X-Strategy" "streaming;request=chunked"
-write http:content-length
+write status "201" "Created"
+write header "Cache-Control" "no-cache"
+write header "Location" "/connections/ac32fb3844fe11e4a183164230d1df67"
+write header "X-Strategy" "streaming;request=chunked"
+write header content-length
 write close
 
-accept "http://localhost:8000/connections/ac32fb3844fe11e4a183164230d1df67"
+accept http://localhost:8000/connections/ac32fb3844fe11e4a183164230d1df67
 
 accepted
 connected
 
-read http:method "PUT"
-read http:header "Accept" "application/octet-stream"
-read http:header "Content-Type" "application/octet-stream"
-read http:header "Transfer-Encoding" "chunked"
-read http:header "X-Sequence-No" "1"
+read method "PUT"
+read header "Accept" "application/octet-stream"
+read header "Content-Type" "application/octet-stream"
+read header "Transfer-Encoding" "chunked"
+read header "X-Sequence-No" "1"
 
-write http:status "200" "OK"
-write http:header "Cache-Control" "no-cache"
-write http:header "Content-Type" "application/octet-stream"
-write http:header "Transfer-Encoding" "chunked"
+write status "200" "OK"
+write header "Cache-Control" "no-cache"
+write header "Content-Type" "application/octet-stream"
+write header "Transfer-Encoding" "chunked"
 
 read "Hello,"
 write "Hello,"

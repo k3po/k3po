@@ -14,15 +14,15 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8000/;post/path"
+accept http://localhost:8000/;post/path
 accepted
 connected
 
-read http:method "POST"
-read http:version "HTTP/1.1"
-read http:header "HOST" "localhost:8000"
-read http:header "X-Origin" "http://source.example.com:80"
-read http:header "X-Origin-http%3A%2F%2Fsource.example.com%3A80" "http://unknownsource.example.com:80"
+read method "POST"
+read version "HTTP/1.1"
+read header "HOST" "localhost:8000"
+read header "X-Origin" "http://source.example.com:80"
+read header "X-Origin-http%3A%2F%2Fsource.example.com%3A80" "http://unknownsource.example.com:80"
 
-write http:status "403" "Forbidden"
+write status "403" "Forbidden"
 write close

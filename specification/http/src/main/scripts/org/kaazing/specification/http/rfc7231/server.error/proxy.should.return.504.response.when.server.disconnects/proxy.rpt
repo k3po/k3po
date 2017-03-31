@@ -17,19 +17,19 @@
 #
 # client <--> proxy
 #
-accept "http://localhost:8080/index.html"
+accept http://localhost:8080/index.html
 accepted
 connected
 
-read http:method "GET"
-read http:version "HTTP/1.1"
-read http:header "Host" "localhost:8080"
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8080"
 read notify GOT_REQUEST
 read closed
 
 write await GOT_RESPONSE
-write http:status "504" "Gateway Timeout"
-write http:version "HTTP/1.1"
+write status "504" "Gateway Timeout"
+write version "HTTP/1.1"
 write close
 
 
@@ -37,13 +37,13 @@ write close
 # proxy <--> server (listening at localhost:8081)
 #
 connect await GOT_REQUEST
-        "http://localhost:8080/index.html"
-        option http:transport "tcp://localhost:8081"
+connect http://localhost:8080/index.html
+        option transport tcp://localhost:8081
 connected
 
-write http:method "GET"
-write http:version "HTTP/1.1"
-write http:host
+write method "GET"
+write version "HTTP/1.1"
+write header host
 write close
 
 write notify GOT_RESPONSE

@@ -14,22 +14,22 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8000/path"
+accept http://localhost:8000/path
 accepted
 connected
 
-read http:method "GET"
-read http:version "HTTP/1.1"
-read http:header "Content-Type" "application/x-message-http"
-read http:header "X-Next-Protocol" "httpxe/1.1"
+read method "GET"
+read version "HTTP/1.1"
+read header "Content-Type" "application/x-message-http"
+read header "X-Next-Protocol" "httpxe/1.1"
 read "GET /path HTTP/1.1\r\n"
      "Content-Length: 0\r\n"
      "\r\n"
 read closed
 
-write http:status "200" "OK"
-write http:header "Content-Type" "text/plain"
-write http:content-length
+write status "200" "OK"
+write header "Content-Type" "text/plain"
+write header content-length
 write "HTTP/1.1 302 Found\r\n"
       "Content-Type: text/html\r\n"
 write flush

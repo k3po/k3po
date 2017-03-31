@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-accept "tcp://localhost:1080"
+accept tcp://localhost:1080
 accepted
 connected
 

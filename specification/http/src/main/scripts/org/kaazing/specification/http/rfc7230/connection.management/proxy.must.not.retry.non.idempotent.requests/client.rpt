@@ -14,12 +14,12 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8080/intermediary"
+connect http://localhost:8080/intermediary
 connected
-write http:method "POST"
-write http:host
-write http:content-length
+write method "POST"
+write header host
+write header content-length
 write "This is some data"
 write close
-read http:status "502" "Bad Gateway"
+read status "502" "Bad Gateway"
 

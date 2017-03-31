@@ -14,16 +14,16 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8000/index.html"
+connect http://localhost:8000/index.html
 connected
 
-write http:method "HEAD"
-write http:version "HTTP/1.1"
-write http:host
-write http:content-length
+write method "HEAD"
+write version "HTTP/1.1"
+write header host
+write header content-length
 write flush
 
-read http:status "200" /.*/
-read http:header "Date" /.*/
-read http:header "Last-Modified" /(?<lastModified>.+)/
-read http:header "ETag" /(?<entityTag>.+)/
+read status "200" /.*/
+read header "Date" /.*/
+read header "Last-Modified" /(?<lastModified>.+)/
+read header "ETag" /(?<entityTag>.+)/

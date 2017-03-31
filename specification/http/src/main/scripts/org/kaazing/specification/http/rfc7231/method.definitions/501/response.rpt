@@ -14,15 +14,15 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8000/resource"
+accept http://localhost:8000/resource
 accepted
 connected
 
-read http:method "TRACE"
-read http:header "Content-Length" "7"
+read method "TRACE"
+read header "Content-Length" "7"
 read "content"
 read closed
 	
-write http:status "501" "Not Implemented"
-write http:content-length
+write status "501" "Not Implemented"
+write header content-length
 write close

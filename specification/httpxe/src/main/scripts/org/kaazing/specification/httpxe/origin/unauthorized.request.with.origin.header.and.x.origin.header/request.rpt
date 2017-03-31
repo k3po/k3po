@@ -14,15 +14,15 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8000/path"
+connect http://localhost:8000/path
 connected
 
-write http:method "POST"
-write http:version "HTTP/1.1"
-write http:host
-write http:header "Origin" "http://unknownsource.example.com:80"
-write http:header "X-Origin" "http://unknownsource.example.com:80"
-write http:content-length
+write method "POST"
+write version "HTTP/1.1"
+write header host
+write header "Origin" "http://unknownsource.example.com:80"
+write header "X-Origin" "http://unknownsource.example.com:80"
+write header content-length
 write flush
 
-read http:status "403" /.*/
+read status "403" /.*/

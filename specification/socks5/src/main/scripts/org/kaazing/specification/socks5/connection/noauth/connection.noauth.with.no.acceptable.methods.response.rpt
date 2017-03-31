@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-accept "tcp://localhost:1080"
+accept tcp://localhost:1080
 accepted
 connected
 
@@ -33,7 +33,7 @@ read [0x00]
 # version: SOCKS v5
 write [0x05]
 
-#write error: no acceptable methods
+# write error: no acceptable methods
 write [0xFF]
 
 # connection closed

@@ -14,15 +14,15 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8000/path"
+accept http://localhost:8000/path
 accepted
 connected
 
-read http:parameter ".ko" "http://source.example.com:80"
-read http:method "GET"
-read http:version "HTTP/1.1"
-read http:header "HOST" "localhost:8000"
-read http:header "Referer" "http://localhost:8000/any/path?query=any"
+read parameter ".ko" "http://source.example.com:80"
+read method "GET"
+read version "HTTP/1.1"
+read header "HOST" "localhost:8000"
+read header "Referer" "http://localhost:8000/any/path?query=any"
 
-write http:status "200" "OK"
+write status "200" "OK"
 write close

@@ -16,30 +16,30 @@
 
 property lastModifiedClientDate "Sat, 1 Jan 2000 01:23:45 GMT"
 
-connect "http://localhost:8000/index.html"
+connect http://localhost:8000/index.html
 connected
 
-write http:method "GET"
-write http:version "HTTP/1.1"
-write http:host
-write http:content-length
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header content-length
 write flush
 
-read http:status "200" /.*/
-read http:header "Last-Modified" /(?<lastModified>.+)/
-read http:header "ETag" /(?<entityTag>.+)/
+read status "200" /.*/
+read header "Last-Modified" /(?<lastModified>.+)/
+read header "ETag" /(?<entityTag>.+)/
 read notify LAST_MODIFIED
 
 connect await LAST_MODIFIED
-        "http://localhost:8000/index.html"
+connect http://localhost:8000/index.html
 connected
 
-write http:method "PUT"
-write http:version "HTTP/1.1"
-write http:host
-write http:header "If-Unmodified-Since" ${lastModifiedClientDate}
-write http:header "If-Match" ${entityTag}
-write http:content-length
+write method "PUT"
+write version "HTTP/1.1"
+write header host
+write header "If-Unmodified-Since" ${lastModifiedClientDate}
+write header "If-Match" ${entityTag}
+write header content-length
 write flush
 
-read http:status "200" /.*/
+read status "200" /.*/

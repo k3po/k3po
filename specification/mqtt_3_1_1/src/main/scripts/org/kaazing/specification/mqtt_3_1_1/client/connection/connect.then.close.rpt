@@ -18,7 +18,7 @@
 # CONNACK control packet from the server followed by sending the DISCONNECT 
 # control packet to the server and expects server to close the network connection
 
-connect "tcp://127.0.0.1:1883"
+connect tcp://127.0.0.1:1883
 connected
 
 # CONNECT

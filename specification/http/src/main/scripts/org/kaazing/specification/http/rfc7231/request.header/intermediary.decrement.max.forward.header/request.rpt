@@ -14,15 +14,15 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8000/resource"
+connect http://localhost:8000/resource
 connected
 
-write http:method "TRACE"
-write http:content-length
-write http:header "Max-Forwards" "6"
+write method "TRACE"
+write header content-length
+write header "Max-Forwards" "6"
 write "content"
 write close
 	
-read http:status "200" "OK"
+read status "200" "OK"
 
 

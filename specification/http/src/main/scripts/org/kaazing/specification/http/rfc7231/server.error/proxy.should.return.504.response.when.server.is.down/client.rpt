@@ -14,11 +14,11 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8080/index.html"
+connect http://localhost:8080/index.html
 connected
-write http:method "GET"
-write http:version "HTTP/1.1"
-write http:host
+write method "GET"
+write version "HTTP/1.1"
+write header host
 write close
 
-read http:status "504" "Gateway Timeout"
+read status "504" "Gateway Timeout"

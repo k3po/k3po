@@ -14,12 +14,12 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8000/;head/path"
+accept http://localhost:8000/;head/path
 accepted
 connected
 
-read http:method "POST"
-read http:version "HTTP/1.1"
+read method "POST"
+read version "HTTP/1.1"
 
-write http:status "200" "OK"
+write status "200" "OK"
 write close

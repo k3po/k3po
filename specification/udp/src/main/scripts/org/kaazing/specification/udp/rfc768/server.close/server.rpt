@@ -14,9 +14,9 @@
 # limitations under the License.
 #
 
-accept "udp://localhost:8080"
+accept udp://localhost:8080
        notify BOUND
-       option udp:timeout 1000
+       option timeout 1000
 
 accepted
 connected

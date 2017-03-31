@@ -14,10 +14,10 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8080/intermediary"
+connect http://localhost:8080/intermediary
 connected
-write http:method "GET"
-write http:header "Connection" "aNeverImplementedClientConnectionHeader"
+write method "GET"
+write header "Connection" "aNeverImplementedClientConnectionHeader"
 write flush
-read http:header "Connection" "aNeverImplementedServerConnectionHeader"
+read header "Connection" "aNeverImplementedServerConnectionHeader"
 

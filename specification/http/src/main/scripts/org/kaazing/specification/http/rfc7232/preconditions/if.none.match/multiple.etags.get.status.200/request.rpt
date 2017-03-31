@@ -14,15 +14,15 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8000/index.html"
+connect http://localhost:8000/index.html
 connected
 
-write http:method "GET"
-write http:version "HTTP/1.1"
-write http:host
-write http:header "If-None-Match" "\"tag1\"", "\"tag2\"", "\"tag3\""
-write http:content-length
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "If-None-Match" "\"tag1\"", "\"tag2\"", "\"tag3\""
+write header content-length
 write close
 
-read http:status "200" /.*/
-read http:header "ETag" /.+/
+read status "200" /.*/
+read header "ETag" /.+/

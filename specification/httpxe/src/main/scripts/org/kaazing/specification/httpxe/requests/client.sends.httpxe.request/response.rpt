@@ -14,19 +14,19 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8000/path"
+accept http://localhost:8000/path
 accepted
 connected
 
-read http:method "POST"
-read http:version "HTTP/1.1"
-read http:header "Content-Type" "application/x-message-http"
-read http:header "X-Next-Protocol" "httpxe/1.1"
+read method "POST"
+read version "HTTP/1.1"
+read header "Content-Type" "application/x-message-http"
+read header "X-Next-Protocol" "httpxe/1.1"
 read "POST /path HTTP/1.1\r\n"
      "Content-Type: text/plain\r\n"
      "Content-Length: 12\r\n"
      "\r\n"
      "Hello World!"
 
-write http:status "200" "OK"
+write status "200" "OK"
 write close

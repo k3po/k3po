@@ -16,28 +16,28 @@
 
 property invalidDate "Wed, 30 Feb 2000 01:23:45 GMT"
 
-connect "http://localhost:8000/index.html"
+connect http://localhost:8000/index.html
 connected
 
-write http:method "GET"
-write http:version "HTTP/1.1"
-write http:host
-write http:content-length
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header content-length
 write flush
 
-read http:status "200" /.*/
-read http:header "Last-Modified" /(?<lastModified>.+)/
+read status "200" /.*/
+read header "Last-Modified" /(?<lastModified>.+)/
 read notify LAST_MODIFIED
 
 connect await LAST_MODIFIED
-        "http://localhost:8000/index.html"
+connect http://localhost:8000/index.html
 connected
 
-write http:method "DELETE"
-write http:version "HTTP/1.1"
-write http:host
-write http:header "If-Unmodified-Since" ${invalidDate}
-write http:content-length
+write method "DELETE"
+write version "HTTP/1.1"
+write header host
+write header "If-Unmodified-Since" ${invalidDate}
+write header content-length
 write flush
 
-read http:status "200" /.*/
+read status "200" /.*/

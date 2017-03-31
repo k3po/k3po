@@ -14,18 +14,18 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8000/path"
+accept http://localhost:8000/path
 accepted
 connected
 
-read http:method "GET"
-read http:version "HTTP/1.1"
-read http:header "Content-Type" "application/x-message-http"
-read http:header "X-Next-Protocol" "httpxe/1.1"
+read method "GET"
+read version "HTTP/1.1"
+read header "Content-Type" "application/x-message-http"
+read header "X-Next-Protocol" "httpxe/1.1"
 read "GET /path HTTP/1.1\r\n"
      "Content-Length: 0\r\n"
      "\r\n"
 read closed
 
-write http:status "501" "Not Implemented"
+write status "501" "Not Implemented"
 write flush

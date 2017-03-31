@@ -27,31 +27,31 @@ accept ${location}
 accepted
 connected
 
-read http:method "GET"
+read method "GET"
 
-write http:status "401" "Unauthorized"
-write http:header "WWW-Authenticate" ${challenge1}
+write status "401" "Unauthorized"
+write header "WWW-Authenticate" ${challenge1}
 write close
 
 accepted
 connected
 
-read http:method "GET"
-read http:header "Authorization" ${authHeader1}
+read method "GET"
+read header "Authorization" ${authHeader1}
 
-write http:status "401" "Unauthorized"
-write http:header "WWW-Authenticate" ${challenge2}
-write http:header "Sec-Challenge-Identity" ${secChallengeIdentity}
+write status "401" "Unauthorized"
+write header "WWW-Authenticate" ${challenge2}
+write header "Sec-Challenge-Identity" ${secChallengeIdentity}
 write close
 
 accepted
 connected
 
-read http:method "GET"
-read http:header "Authorization" ${authHeader2}
-read http:header "Sec-Challenge-Identity" missing
+read method "GET"
+read header "Authorization" ${authHeader2}
+read header "Sec-Challenge-Identity" missing
 
-write http:status "401" "Unauthorized"
-write http:header "WWW-Authenticate" ${challenge1}
-write http:header "Sec-Challenge-Identity" ${secChallengeIdentity}
+write status "401" "Unauthorized"
+write header "WWW-Authenticate" ${challenge1}
+write header "Sec-Challenge-Identity" ${secChallengeIdentity}
 write close

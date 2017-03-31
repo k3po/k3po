@@ -14,14 +14,14 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8080/"
+connect http://localhost:8080/
 connected
 
-write http:method "GET"
-write http:host
+write method "GET"
+write header host
 write close
 
-read http:status "200" /.*/
-read http:header "Content-length" /(?<length>.*)/
+read status "200" /.*/
+read header "Content-length" /(?<length>.*)/
 read [0..${length}]
 

@@ -15,8 +15,8 @@
 #
 
 connect await BOUND
-        "udp://localhost:8080"
-        option udp:timeout 1000
+        udp://localhost:8080
+        option timeout 1000
 connected
 
 write "client data"

@@ -15,11 +15,11 @@
 #
 
 # CLIENT
-connect "http://localhost:8080/resource"
+connect http://localhost:8080/resource
 connected
-write http:method "GET"
-write http:host
-write http:header "via" "1.1 proxy1"
+write method "GET"
+write header host
+write header "via" "1.1 proxy1"
 write close
-read http:header "via" "1.1 proxy3, 1.1 localhost:8080"
+read header "via" "1.1 proxy3, 1.1 localhost:8080"
 

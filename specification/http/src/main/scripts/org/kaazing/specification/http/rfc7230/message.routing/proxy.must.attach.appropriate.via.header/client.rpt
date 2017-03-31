@@ -15,10 +15,10 @@
 #
 
 # CLIENT
-connect "http://localhost:8080/resource"
+connect http://localhost:8080/resource
 connected
-write http:method "GET"
-write http:host
+write method "GET"
+write header host
 write close
-read http:header "via" "1.1 localhost:8080"
+read header "via" "1.1 localhost:8080"
 

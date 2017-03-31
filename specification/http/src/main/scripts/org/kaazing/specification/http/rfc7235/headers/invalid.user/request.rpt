@@ -16,13 +16,13 @@
 
 property invalidCredentials ${http:loginBase64Encoder("baduser:badpass")}
 property authHeader ${http:append("Basic ", invalidCredentials)}
-connect "http://localhost:8000/resource"
+connect http://localhost:8000/resource
 connected
 
-write http:method "GET"
-write http:header "Authorization" ${authHeader}
+write method "GET"
+write header "Authorization" ${authHeader}
 write close
 
-read http:status "401" "Unauthorized"
-read http:header "WWW-Authenticate" /Basic realm=.+/
+read status "401" "Unauthorized"
+read header "WWW-Authenticate" /Basic realm=.+/
 

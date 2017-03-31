@@ -14,16 +14,16 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8000/resource"
+connect http://localhost:8000/resource
 connected
 
-write http:method "POST"
-write http:content-length
-write http:header "Age" "1"
+write method "POST"
+write header content-length
+write header "Age" "1"
 write "content"
 write close
 	
-read http:status "200" "OK"
-read http:header "Cache-Control" "Fresh"
+read status "200" "OK"
+read header "Cache-Control" "Fresh"
 
 

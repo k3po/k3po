@@ -17,7 +17,7 @@
 # Script that sends the CONNECT control packet to broker with invalid Will QoS - 3 
 # and expects the broker to close the network connection.
 
-connect "tcp://127.0.0.1:1883"
+connect tcp://127.0.0.1:1883
 connected
 
 # CONNECT

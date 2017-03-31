@@ -14,14 +14,14 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8000/resource"
+accept http://localhost:8000/resource
 accepted
 connected
 
-read http:method "PUT"
-read http:header "Content-Length" "7"
+read method "PUT"
+read header "Content-Length" "7"
 read "content"
 read closed
 	
-write http:status "200" "OK"
+write status "200" "OK"
 write close

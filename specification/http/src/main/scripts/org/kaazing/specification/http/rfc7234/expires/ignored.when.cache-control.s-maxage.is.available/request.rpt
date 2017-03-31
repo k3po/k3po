@@ -14,28 +14,28 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8000/index.html"
+connect http://localhost:8000/index.html
 connected
 
-write http:method "GET"
-write http:version "HTTP/1.1"
-write http:host
-write http:content-length
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header content-length
 write flush
 
-read http:status "200" /.*/
-read http:header "Cache-Control" "s-maxage=10"
-read http:header "Expires" /.+/
+read status "200" /.*/
+read header "Cache-Control" "s-maxage=10"
+read header "Expires" /.+/
 read notify CACHE_CONTROL
 
 connect await CACHE_CONTROL
-        "http://localhost:8000/index.html"
+connect http://localhost:8000/index.html
 connected
 
-write http:method "GET"
-write http:version "HTTP/1.1"
-write http:host
-write http:content-length
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header content-length
 write flush
 
-read http:status "200" /.*/
+read status "200" /.*/

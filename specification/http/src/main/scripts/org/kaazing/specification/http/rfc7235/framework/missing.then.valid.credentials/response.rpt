@@ -16,24 +16,24 @@
 
 property validCredentials ${http:loginBase64Encoder("joe:welcome")}
 property authHeader ${http:append("Basic ", validCredentials)}
-accept "http://localhost:8000/resource"
+accept http://localhost:8000/resource
 accepted
 connected
 
-read http:method "GET"
-read http:header "Authorization" "Basic"
+read method "GET"
+read header "Authorization" "Basic"
 read closed 
 
-write http:status "401" "Unauthorized"
-write http:header "WWW-Authenticate" "Basic realm=\"Kaazing Gateway Demo\""
+write status "401" "Unauthorized"
+write header "WWW-Authenticate" "Basic realm=\"Kaazing Gateway Demo\""
 write flush
 
 accepted
 connected
 
-read http:method "GET"
-read http:header "Authorization" ${authHeader}
+read method "GET"
+read header "Authorization" ${authHeader}
 
-write http:status "200" "OK"
+write status "200" "OK"
 write flush
 

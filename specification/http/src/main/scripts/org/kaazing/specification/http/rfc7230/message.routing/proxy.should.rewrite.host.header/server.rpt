@@ -15,13 +15,13 @@
 #
 
 #SERVER
-accept "http://localhost:8081/backend/resource.html"
+accept http://localhost:8081/backend/resource.html
 accepted
 connected
-read http:method "GET"
-read http:header "Host" "localhost:8081"
+read method "GET"
+read header "Host" "localhost:8081"
 read closed
-write http:status "200" "OK"
-write http:content-length
+write status "200" "OK"
+write header content-length
 write close
 

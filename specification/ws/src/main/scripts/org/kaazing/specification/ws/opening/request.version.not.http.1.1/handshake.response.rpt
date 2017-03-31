@@ -20,9 +20,9 @@ accept ${location}
 accepted
 connected
 
-read http:version /(?!HTTP\/1.1)/
+read version /(?!HTTP\/1.1)/
 read closed
 
-write http:status "400" "Bad Request"
-write http:content-length
+write status "400" "Bad Request"
+write header content-length
 write close

@@ -14,15 +14,15 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8080/index.html"
+accept http://localhost:8080/index.html
 accepted
 connected
 
-read http:method "GET"
-read http:version "HTTP/1.1"
-read http:header "Host" "localhost:8080"
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8080"
 read closed
 
-write http:status "504" "Gateway Timeout"
-write http:content-length
+write status "504" "Gateway Timeout"
+write header content-length
 write close

@@ -14,12 +14,12 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8080/"
+accept http://localhost:8080/
 accepted
 connected
-read http:header "Transfer-Encoding" "Unknown"
+read header "Transfer-Encoding" "Unknown"
 read closed
-write http:status "501" "Not Implemented"
-write http:content-length
+write status "501" "Not Implemented"
+write header content-length
 write close
 

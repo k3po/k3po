@@ -14,53 +14,53 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8000/connections"
+connect http://localhost:8000/connections
 connected
 
-write http:method "POST"
-write http:header "Accept" "application/octet-stream"
-write http:content-length
-write http:header "X-Protocol" "bbosh/1.0"
-write http:header "X-Accept-Strategy" "polling;interval=5s"
+write method "POST"
+write header "Accept" "application/octet-stream"
+write header content-length
+write header "X-Protocol" "bbosh/1.0"
+write header "X-Accept-Strategy" "polling;interval=5s"
 write close
 
-read http:status "201" "Created"
-read http:header "Cache-Control" "no-cache"
-read http:header "Content-Type" "application/octet-stream"
-read http:header "Location" "/connections/ac32fb3844fe11e4a183164230d1df67"
-read http:header "X-Strategy" "polling;interval=5s"
+read status "201" "Created"
+read header "Cache-Control" "no-cache"
+read header "Content-Type" "application/octet-stream"
+read header "Location" "/connections/ac32fb3844fe11e4a183164230d1df67"
+read header "X-Strategy" "polling;interval=5s"
 read closed
 read notify CONNECT_ONE
 
-connect "http://localhost:8000/connections/ac32fb3844fe11e4a183164230d1df67"
+connect http://localhost:8000/connections/ac32fb3844fe11e4a183164230d1df67
 connected
 
 write await CONNECT_ONE
-write http:method "PUT"
-write http:header "Accept" "application/octet-stream"
-write http:header "Content-Type" "application/octet-stream"
-write http:content-length
-write http:header "X-Sequence-No" "1"
+write method "PUT"
+write header "Accept" "application/octet-stream"
+write header "Content-Type" "application/octet-stream"
+write header content-length
+write header "X-Sequence-No" "1"
 write "Hello, world"
 write close
 
-read http:status "200" "OK"
-read http:header "Cache-Control" "no-cache"
-read http:header "Content-Type" "application/octet-stream"
+read status "200" "OK"
+read header "Cache-Control" "no-cache"
+read header "Content-Type" "application/octet-stream"
 read "Hello, world"
 read closed
 read notify CONNECT_TWO
 
-connect "http://localhost:8000/connections/ac32fb3844fe11e4a183164230d1df67"
+connect http://localhost:8000/connections/ac32fb3844fe11e4a183164230d1df67
 connected
 
 write await CONNECT_TWO
-write http:method "DELETE"
-write http:header "Accept" "application/octet-stream"
-write http:header "X-Sequence-No" "2"
-write http:content-length
+write method "DELETE"
+write header "Accept" "application/octet-stream"
+write header "X-Sequence-No" "2"
+write header content-length
 write close
 
-read http:status "404" "Closed"
-read http:header "Cache-Control" "no-cache"
+read status "404" "Closed"
+read header "Cache-Control" "no-cache"
 read closed

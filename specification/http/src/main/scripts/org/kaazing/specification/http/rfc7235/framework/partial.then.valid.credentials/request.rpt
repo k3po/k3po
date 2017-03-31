@@ -18,24 +18,24 @@ property partialCredentials ${http:loginBase64Encoder("joe")}
 property partialAuthHeader ${http:append("Basic ", partialCredentials)}
 property validCredentials ${http:loginBase64Encoder("joe:welcome")}
 property validAuthHeader ${http:append("Basic ", validCredentials)}
-connect "http://localhost:8000/resource"
+connect http://localhost:8000/resource
 connected
 
-write http:method "GET"
-write http:header "Authorization" ${partialAuthHeader}
+write method "GET"
+write header "Authorization" ${partialAuthHeader}
 write close
 
-read http:status "401" "Unauthorized"
-read http:header "WWW-Authenticate" /Basic realm=.+/
+read status "401" "Unauthorized"
+read header "WWW-Authenticate" /Basic realm=.+/
 read notify FIRST_REQUEST_COMPLETE
 
 connect await FIRST_REQUEST_COMPLETE
-        "http://localhost:8000/resource"
+connect http://localhost:8000/resource
 connected
 
-write http:method "GET"
-write http:header "Authorization" ${validAuthHeader}
+write method "GET"
+write header "Authorization" ${validAuthHeader}
 write close
 
-read http:status "200" "OK"
+read status "200" "OK"
 

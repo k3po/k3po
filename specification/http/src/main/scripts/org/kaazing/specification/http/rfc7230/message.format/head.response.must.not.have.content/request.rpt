@@ -14,12 +14,12 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8080/"
+connect http://localhost:8080/
 connected
 
-write http:method "HEAD"
+write method "HEAD"
 write close
 
-read http:status "100" "Continue"
+read status "100" "Continue"
 read closed
 

@@ -14,14 +14,14 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8000/resource"
+connect http://localhost:8000/resource
 connected
 
-write http:method "PUT"
-write http:content-length
+write method "PUT"
+write header content-length
 write "content"
 write close
 	
-read http:status "200" "OK"
+read status "200" "OK"
 
 

@@ -16,13 +16,13 @@
 
 property validCredentials ${http:loginBase64Encoder("joe:welcome")}
 property authHeader ${http:append("Basic ", validCredentials)}
-accept "http://localhost:8000/resource"
+accept http://localhost:8000/resource
 accepted
 connected
 
-read http:method "GET"
-read http:header "Authorization" ${authHeader}
+read method "GET"
+read header "Authorization" ${authHeader}
 
-write http:status "200" "OK"
+write status "200" "OK"
 write flush
 

@@ -14,15 +14,15 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8000/resource"
+connect http://localhost:8000/resource
 connected
 
-write http:method "POST"
-write http:content-length
-write http:header "If-Range" "entity-tag"
+write method "POST"
+write header content-length
+write header "If-Range" "entity-tag"
 write "content"
 write close
 	
-read http:status "200" "OK"
+read status "200" "OK"
 
 

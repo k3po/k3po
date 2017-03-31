@@ -14,10 +14,10 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8080/"
+connect http://localhost:8080/
 connected
-write http:method "GET"
-write http:header "Transfer-Encoding" "Unknown"
+write method "GET"
+write header "Transfer-Encoding" "Unknown"
 write close
-read http:status "501" /.*/
+read status "501" /.*/
 

@@ -14,14 +14,14 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8000/resource"
+accept http://localhost:8000/resource
 accepted
 connected
 
-read http:method "GET"
-read http:version "HTTP/1.1"
+read method "GET"
+read version "HTTP/1.1"
 	
-write http:status "400" "Bad Request"
-write http:header "Warning" "299 - Miscellaneous Persistent Warning"
+write status "400" "Bad Request"
+write header "Warning" "299 - Miscellaneous Persistent Warning"
 write close
 

@@ -16,24 +16,24 @@
 
 # PROXY
 # Accept request from client
-accept "http://localhost:8080/backend/resource.html"
+accept http://localhost:8080/backend/resource.html
 accepted
 connected
-read http:method "GET"
+read method "GET"
 read notify CLIENT_REQUEST
 write await BACKEND_RESPONSE
-write http:status "200" "OK"
-write http:content-length
+write status "200" "OK"
+write header content-length
 write close
 
 # Connect to backend
-connect "http://localhost:8081/backend/resource.html"
+connect http://localhost:8081/backend/resource.html
 connected
 write await CLIENT_REQUEST
-write http:method "GET"
-write http:header "Host" "localhost:8081"
+write method "GET"
+write header "Host" "localhost:8081"
 write close
-read http:status "200" "OK"
+read status "200" "OK"
 read notify BACKEND_RESPONSE
 read closed
 

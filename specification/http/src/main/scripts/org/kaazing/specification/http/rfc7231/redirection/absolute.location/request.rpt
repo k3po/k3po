@@ -14,23 +14,23 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8000/resource"
+connect http://localhost:8000/resource
 connected
 
-write http:method "GET"
-write http:host
+write method "GET"
+write header host
 write close
 
-read http:status /3\d\d/ /.*/
-read http:header "Location" "http://localhost:8002/resource2"
+read status /3\d\d/ /.*/
+read header "Location" "http://localhost:8002/resource2"
 read notify FOLLOW_REDIRECT
 
 connect await FOLLOW_REDIRECT
-        "http://localhost:8002/resource2"
+        http://localhost:8002/resource2
 connected
 
-write http:method "GET"
-write http:host
+write method "GET"
+write header host
 write close
 
-read http:status "200" "OK"
+read status "200" "OK"

@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-accept "tcp://localhost:8080"
+accept tcp://localhost:8080
 accepted
 connected
 
@@ -29,7 +29,7 @@ write await SERVER_FAILURE
 write "HTTP/1.1 502 Bad Gateway" "\r\n"
 write "\r\n"
 
-connect "tcp://localhost:8081"
+connect tcp://localhost:8081
 connected
 write await CLIENT_REQUEST
 write "POST /backend\r\n"

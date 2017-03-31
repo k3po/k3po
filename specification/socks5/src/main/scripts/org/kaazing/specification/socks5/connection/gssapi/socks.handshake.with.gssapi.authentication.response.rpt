@@ -16,7 +16,7 @@
 
 property serverGSSContext ${socks5:createServerGSSContext()}
 
-accept "tcp://localhost:1080"
+accept tcp://localhost:1080
 accepted
 connected
 

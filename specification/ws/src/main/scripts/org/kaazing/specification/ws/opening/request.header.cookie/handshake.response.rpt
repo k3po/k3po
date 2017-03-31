@@ -14,39 +14,39 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8080/preflight"
+accept http://localhost:8080/preflight
 accepted
 connected
 
-read http:method "GET"
-read http:version "HTTP/1.1"
-read http:header "Host" "localhost:8080"
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8080"
 read closed
 
-write http:status "200" "OK"
-write http:version "HTTP/1.1"
-write http:header "Set-Cookie" "SID=31d4d96e407aad42; Domain=.local"
-write http:content-length
+write status "200" "OK"
+write version "HTTP/1.1"
+write header "Set-Cookie" "SID=31d4d96e407aad42; Domain=.local"
+write header content-length
 write close
 
-accept "http://localhost:8080/path?query"
+accept http://localhost:8080/path?query
 accepted
 connected
 
-read http:method "GET"
-read http:version "HTTP/1.1"
-read http:header "Host" "localhost:8080"
-read http:header "Upgrade" /(?i:websocket)/
-read http:header "Connection" /(?i:Upgrade)/
-read http:header "Cookie" "SID=31d4d96e407aad42"
-read http:header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
-read http:header "Sec-WebSocket-Version" "13"
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8080"
+read header "Upgrade" /(?i:websocket)/
+read header "Connection" /(?i:Upgrade)/
+read header "Cookie" "SID=31d4d96e407aad42"
+read header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
+read header "Sec-WebSocket-Version" "13"
 
-write http:status "101" "Switching Protocols"
-write http:version "HTTP/1.1"
-write http:header "Upgrade" "websocket"
-write http:header "Connection" "Upgrade"
-write http:header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
+write status "101" "Switching Protocols"
+write version "HTTP/1.1"
+write header "Upgrade" "websocket"
+write header "Connection" "Upgrade"
+write header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
 write flush
 
 # connection established

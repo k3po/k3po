@@ -27,7 +27,7 @@ read "Trailer: Trailing-Header\r\n"
 read "\r\n"
 read "7\r\n"
 # commented out as chunk extensions are not support in 4.0.9
-#read "7;chunkExtension=some=extension-value\r\n"
+# read "7;chunkExtension=some=extension-value\r\n"
 read "Chunk A\r\n"
 read "7\r\n"
 read "Chunk B\r\n"

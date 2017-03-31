@@ -14,16 +14,16 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8000/resource"
+accept http://localhost:8000/resource
 accepted
 connected
 
-read http:method "POST"
-read http:header "Content-Length" "7"
+read method "POST"
+read header "Content-Length" "7"
 read "content"
 read closed
 	
-write http:status "305" "Use Proxy"
-write http:header "Warning" "214 - Transformation Applied"
+write status "305" "Use Proxy"
+write header "Warning" "214 - Transformation Applied"
 write close
 

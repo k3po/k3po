@@ -20,7 +20,7 @@ property date "Mon, 1 Jan 2015 01:23:45 GMT"
 # property idWithInvalidUTF8 ${sse:randomBytesInvalidUTF8(3)}
 property idWithInvalidUTF8 [0x80 0x31 0x32]
 
-accept "tcp://localhost:8000"
+accept tcp://localhost:8000
 accepted
 connected
 

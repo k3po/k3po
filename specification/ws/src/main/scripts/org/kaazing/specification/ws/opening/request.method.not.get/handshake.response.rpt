@@ -20,9 +20,9 @@ accept ${location}
 accepted
 connected
 
-read http:method /(?!GET)/
+read method /(?!GET)/
 read closed
 
-write http:status "400" "Bad Request"
-write http:content-length
+write status "400" "Bad Request"
+write header content-length
 write close

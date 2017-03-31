@@ -14,18 +14,18 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8000/path"
+accept http://localhost:8000/path
 accepted
 connected
 
-read http:parameter ".kac" "ex"
-read http:method "GET"
-read http:version "HTTP/1.1"
-read http:header "Referer" "http://source.example.com:80"
-read http:header "Origin" "http://localhost:8000"
+read parameter ".kac" "ex"
+read method "GET"
+read version "HTTP/1.1"
+read header "Referer" "http://source.example.com:80"
+read header "Origin" "http://localhost:8000"
 
-write http:status "200" "OK"
-write http:header "Access-Control-Allow-Credentials" "true"
-write http:header "Access-Control-Allow-Origin" "http://localhost:8000"
+write status "200" "OK"
+write header "Access-Control-Allow-Credentials" "true"
+write header "Access-Control-Allow-Origin" "http://localhost:8000"
 write flush
 

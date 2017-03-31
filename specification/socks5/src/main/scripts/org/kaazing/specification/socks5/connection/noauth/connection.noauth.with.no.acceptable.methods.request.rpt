@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect "tcp://localhost:1080"
+connect tcp://localhost:1080
 connected
 
 ## Write the request bytes for connecting with no-authentication
@@ -32,7 +32,7 @@ write [0x00]
 # version: SOCKS v5
 read [0x05]
 
-#read error: no acceptable methods
+# read error: no acceptable methods
 read [0xFF]
 
 # connection established

@@ -20,9 +20,9 @@ accept ${location}
 accepted
 connected
 
-read http:header "Sec-WebSocket-Key" /(?!^[a-zA-Z0-9+\/=]{24}$).*/
+read header "Sec-WebSocket-Key" /(?!^[a-zA-Z0-9+\/=]{24}$).*/
 read closed
 
-write http:status "400" "Bad Request"
-write http:content-length
+write status "400" "Bad Request"
+write header content-length
 write close

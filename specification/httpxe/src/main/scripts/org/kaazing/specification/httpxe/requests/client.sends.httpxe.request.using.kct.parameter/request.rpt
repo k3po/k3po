@@ -14,14 +14,14 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8000/path"
+connect http://localhost:8000/path
 connected
 
-write http:parameter ".kct" "application/x-message-http"
-write http:method "POST"
-write http:version "HTTP/1.1"
-write http:header "X-Next-Protocol" "httpxe/1.1"
-write http:content-length
+write parameter ".kct" "application/x-message-http"
+write method "POST"
+write version "HTTP/1.1"
+write header "X-Next-Protocol" "httpxe/1.1"
+write header content-length
 write "POST /path HTTP/1.1\r\n"
       "Content-Type: text/plain\r\n"
       "Content-Length: 12\r\n"
@@ -29,4 +29,4 @@ write "POST /path HTTP/1.1\r\n"
       "Hello World!"
 write close
 
-read http:status "200" /.*/
+read status "200" /.*/

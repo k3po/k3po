@@ -14,10 +14,10 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8080/"
+connect http://localhost:8080/
 connected
-write http:method "BADMETHOD"
-write http:header "Content-Length" "0"
+write method "BADMETHOD"
+write header "Content-Length" "0"
 write flush
-read http:status "501" "Not Implemented"
+read status "501" "Not Implemented"
 

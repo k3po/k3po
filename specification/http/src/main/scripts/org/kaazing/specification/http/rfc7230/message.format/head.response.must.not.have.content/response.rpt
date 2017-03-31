@@ -14,14 +14,14 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8080/"
+accept http://localhost:8080/
 accepted
 connected
 
-read http:method "HEAD"
+read method "HEAD"
 read closed
 
-write http:status "100" "Continue"
-write http:header "Content-Length" "0"
+write status "100" "Continue"
+write header "Content-Length" "0"
 write close
 

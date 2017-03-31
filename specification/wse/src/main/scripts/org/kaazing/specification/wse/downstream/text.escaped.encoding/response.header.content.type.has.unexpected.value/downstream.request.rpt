@@ -16,20 +16,20 @@
 
 property sequence ${wse:randomInt(100)}
 
-connect "http://localhost:8080/path/;e/ctem?query"
+connect http://localhost:8080/path/;e/ctem?query
 connected
 
-write http:method "POST"
-write http:version "HTTP/1.1"
-write http:host
-write http:content-length
-write http:header "X-WebSocket-Version" "wseb-1.0"
-write http:header "X-Sequence-No" ${wse:asString(sequence)}
+write method "POST"
+write version "HTTP/1.1"
+write header host
+write header content-length
+write header "X-WebSocket-Version" "wseb-1.0"
+write header "X-Sequence-No" ${wse:asString(sequence)}
 write close
 
-read http:status "201" /.+/
-read http:version "HTTP/1.1"
-read http:header "Content-Type" /text\/plain;charset=(?i)utf-8/
+read status "201" /.+/
+read version "HTTP/1.1"
+read header "Content-Type" /text\/plain;charset=(?i)utf-8/
 
 read /(?<upstream>http:\/\/localhost:8080\/path\/.+)\n/
 read /(?<downstream>http:\/\/localhost:8080\/path\/.+)\n/
@@ -38,37 +38,37 @@ read closed
 
 # Downstream
 connect await CREATED
-        ${downstream}
+connect ${downstream}
 connected
 
-write http:method "GET"
-write http:version "HTTP/1.1"
-write http:host
-write http:header "X-Sequence-No" ${wse:asString(sequence + 1)}
-write http:content-length
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "X-Sequence-No" ${wse:asString(sequence + 1)}
+write header content-length
 write close
 
-read http:status "200" /.+/
-read http:header "Content-Type" /(?!text\/plain;charset=windows-1252)/
-read http:header "Connection" "close"
+read status "200" /.+/
+read header "Content-Type" /(?!text\/plain;charset=windows-1252)/
+read header "Connection" "close"
 read notify DOWNSTREAM_CONTENT_TYPE_UNEXPECTED
 
 # Upstream
 connect await CREATED
-        ${upstream}
+connect ${upstream}
 connected
 
-write http:method "POST"
-write http:version "HTTP/1.1"
-write http:host
-write http:header "Content-Type" "application/octet-stream"
-write http:header "X-Sequence-No" ${wse:asString(sequence + 1)}
-write http:content-length
+write method "POST"
+write version "HTTP/1.1"
+write header host
+write header "Content-Type" "application/octet-stream"
+write header "X-Sequence-No" ${wse:asString(sequence + 1)}
+write header content-length
 
 write [0x01 0x30 0x32 0xFF]
 write [0x01 0x30 0x31 0xFF]
 write close
 
-read http:status "200" /.+/
-read http:version "HTTP/1.1"
+read status "200" /.+/
+read version "HTTP/1.1"
 read closed

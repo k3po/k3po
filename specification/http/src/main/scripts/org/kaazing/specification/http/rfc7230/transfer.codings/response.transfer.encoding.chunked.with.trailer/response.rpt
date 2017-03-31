@@ -14,21 +14,21 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8080/"
+accept http://localhost:8080/
 accepted
 connected
 
-read http:method "GET"
-read http:header "Content-Type" "text/plain"
+read method "GET"
+read header "Content-Type" "text/plain"
 read closed
 
-write http:status "200" "OK"
-write http:header "Content-Type" "text/plain"
-write http:header "Transfer-Encoding" "chunked"
-write http:header "Trailer" "Connection"
+write status "200" "OK"
+write header "Content-Type" "text/plain"
+write header "Transfer-Encoding" "chunked"
+write header "Trailer" "Connection"
 write "Chunk A"
 write "Chunk B"
 write "Chunk C"
-write http:trailer "Connection" "close"
+write trailer "Connection" "close"
 write close
 

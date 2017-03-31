@@ -14,19 +14,19 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8080/"
+accept http://localhost:8080/
 accepted
 connected
 
-read http:method "POST"
-read http:header "Content-Type" "text/plain"
-read http:header "Transfer-Encoding" "chunked"
+read method "POST"
+read header "Content-Type" "text/plain"
+read header "Transfer-Encoding" "chunked"
 read "Chunk A"
 read "Chunk B"
 read "Chunk C"
 read closed
 
-write http:status "200" "OK"
-write http:content-length
+write status "200" "OK"
+write header content-length
 write close
 

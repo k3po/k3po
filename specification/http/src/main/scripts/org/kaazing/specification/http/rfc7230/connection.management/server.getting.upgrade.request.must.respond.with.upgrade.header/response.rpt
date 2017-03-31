@@ -14,14 +14,14 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8080/"
+accept http://localhost:8080/
 accepted
 connected
-read http:method "GET"
-read http:header "Upgrade" /(?<upgradeHeader>.*)/
-read http:header "Connection" "upgrade" 
+read method "GET"
+read header "Upgrade" /(?<upgradeHeader>.*)/
+read header "Connection" "upgrade" 
 
-write http:status "101" "Some Upgrade Protocol"
-write http:header "Upgrade" ${upgradeHeader}
+write status "101" "Some Upgrade Protocol"
+write header "Upgrade" ${upgradeHeader}
 write flush
 

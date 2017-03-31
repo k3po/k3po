@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect "tcp://localhost:5672"
+connect tcp://localhost:5672
 connected
 
                                                  # Protocol-Header 1-0-0

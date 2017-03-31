@@ -16,29 +16,29 @@
 
 property entityTag "\"r2d2xxxx\""
 
-accept "http://localhost:8000/index.html"
+accept http://localhost:8000/index.html
 accepted
 connected
 
-read http:method "GET"
-read http:version "HTTP/1.1"
-read http:header "Host" "localhost:8000"
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
 
-write http:status "200" "OK"
-write http:header "ETag" ${entityTag}
-write http:header "Cache-Control" "no-cache"
-write http:content-length
+write status "200" "OK"
+write header "ETag" ${entityTag}
+write header "Cache-Control" "no-cache"
+write header content-length
 write flush
 
 accepted
 connected
 
-read http:method "GET"
-read http:version "HTTP/1.1"
-read http:header "Host" "localhost:8000"
-read http:header "If-None-Match" ${entityTag}
+read method "GET"
+read version "HTTP/1.1"
+read header "Host" "localhost:8000"
+read header "If-None-Match" ${entityTag}
 
-write http:status "304" "Not Modified"
-write http:header "ETag" ${entityTag}
-write http:header "Cache-Control" "no-cache #X-Kaazing-Handshake" #added fields
+write status "304" "Not Modified"
+write header "ETag" ${entityTag}
+write header "Cache-Control" "no-cache #X-Kaazing-Handshake" #added fields
 write close

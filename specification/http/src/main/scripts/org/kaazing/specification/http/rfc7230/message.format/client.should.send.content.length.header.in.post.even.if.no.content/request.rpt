@@ -14,13 +14,13 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8080/"
+connect http://localhost:8080/
 connected
 
-write http:method "POST"
-write http:host
-write http:content-length
+write method "POST"
+write header host
+write header content-length
 write close
 
-read http:status "200" /.*/
+read status "200" /.*/
 

@@ -14,33 +14,33 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8080/request1"
+accept http://localhost:8080/request1
 accepted
 connected
-read http:method "GET"
+read method "GET"
 read closed
-write http:status "200" "OK"
-write http:content-length
+write status "200" "OK"
+write header content-length
 write "request1"
 write close
 
-accept "http://localhost:8080/request2"
+accept http://localhost:8080/request2
 accepted
 connected
-read http:method "GET"
+read method "GET"
 read closed
-write http:status "200" "OK"
-write http:content-length
+write status "200" "OK"
+write header content-length
 write "request2"
 write close
 
-accept "http://localhost:8080/request3"
+accept http://localhost:8080/request3
 accepted
 connected
-read http:method "GET"
+read method "GET"
 read closed
-write http:status "200" "OK"
-write http:content-length
+write status "200" "OK"
+write header content-length
 write "request3"
 write close
 

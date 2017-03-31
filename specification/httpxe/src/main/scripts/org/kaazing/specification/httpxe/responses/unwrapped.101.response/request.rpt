@@ -14,18 +14,18 @@
 # limitations under the License.
 #
 
-connect "http://localhost:8000/path"
+connect http://localhost:8000/path
 connected
 
-write http:method "GET"
-write http:version "HTTP/1.1"
-write http:host
-write http:header "Content-Type" "application/x-message-http"
-write http:header "X-Next-Protocol" "httpxe/1.1"
-write http:content-length
+write method "GET"
+write version "HTTP/1.1"
+write header host
+write header "Content-Type" "application/x-message-http"
+write header "X-Next-Protocol" "httpxe/1.1"
+write header content-length
 write "GET /path HTTP/1.1\r\n"
       "Content-Length: 0\r\n"
       "\r\n"
 write close
 
-read http:status "101" /.*/
+read status "101" /.*/

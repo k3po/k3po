@@ -18,23 +18,23 @@ property invalidCredentials ${http:loginBase64Encoder("baduser:badpass")}
 property invalidAuthHeader ${http:append("Basic ", invalidCredentials)}
 property validCredentials ${http:loginBase64Encoder("joe:welcome")}
 property validAuthHeader ${http:append("Basic ", invalidCredentials)}
-accept "http://localhost:8000/resource"
+accept http://localhost:8000/resource
 accepted
 connected
 
-read http:method "GET"
-read http:header "Authorization" ${invalidAuthHeader}
+read method "GET"
+read header "Authorization" ${invalidAuthHeader}
 
-write http:status "401" "Unauthorized"
-write http:header "WWW-Authenticate" "Basic realm=\"Kaazing Gateway Demo\""
+write status "401" "Unauthorized"
+write header "WWW-Authenticate" "Basic realm=\"Kaazing Gateway Demo\""
 write flush
 
 accepted
 connected
 
-read http:method "GET"
-read http:header "Authorization" ${validAuthHeader}
+read method "GET"
+read header "Authorization" ${validAuthHeader}
 
-write http:status "200" "OK"
+write status "200" "OK"
 write flush
 

@@ -16,23 +16,23 @@
 
 property validCredentials ${http:loginBase64Encoder("joe:welcome")}
 property proxyAuthHeader ${http:append("Basic ", validCredentials)}
-connect "http://localhost:8000/resource"
+connect http://localhost:8000/resource
 connected
 
-write http:method "GET"
+write method "GET"
 write close
 
-read http:status "407" "Proxy Authentication Required"
-read http:header "Proxy-Authenticate" /Basic realm=.+/
+read status "407" "Proxy Authentication Required"
+read header "Proxy-Authenticate" /Basic realm=.+/
 read notify FIRST_DONE
 
 connect await FIRST_DONE
-        "http://localhost:8000/resource"
+connect http://localhost:8000/resource
 connected
 
-write http:method "GET"
-write http:header "Proxy-Authorization" ${proxyAuthHeader}
+write method "GET"
+write header "Proxy-Authorization" ${proxyAuthHeader}
 write close
 
-read http:status "200" "OK"
+read status "200" "OK"
 

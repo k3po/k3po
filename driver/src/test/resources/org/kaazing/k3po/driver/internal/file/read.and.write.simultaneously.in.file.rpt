@@ -15,7 +15,7 @@
 #
 
 #
-#read andwrite track file position independently
+# read and write track file position independently
 #
 connect "file:target/non.existing.file1.dat"
         option file:size 1000

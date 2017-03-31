@@ -17,7 +17,7 @@
 property clientGSSContext ${socks5:createClientGSSContext("test1/kdc.km.test")}
 property clientToken ${socks5:getClientToken(clientGSSContext)}
 
-connect "tcp://localhost:1080"
+connect tcp://localhost:1080
 connected
 
 ## Write the request bytes for connecting with no-authentication

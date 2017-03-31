@@ -24,20 +24,20 @@ property utf8AllBytes ${wse:encodeBytesAsUtf8(allPossibleBytes)}
 property escapedUtf8AllBytes ${wse:escapeBytesForUtf8(wse:encodeBytesAsUtf8(allPossibleBytes))}
 property escaped1252AllBytes ${wse:escapeBytesForWindows1252(allPossibleBytes)}
 
-accept "http://localhost:8080/path/;e/ctem?query"
+accept http://localhost:8080/path/;e/ctem?query
 accepted
 connected
 
-read http:method "POST"
-read http:version "HTTP/1.1"
-read http:header "X-WebSocket-Version" "wseb-1.0"
-read http:header "X-Sequence-No" /(?<sequence>[0-9]{1,3})/
+read method "POST"
+read version "HTTP/1.1"
+read header "X-WebSocket-Version" "wseb-1.0"
+read header "X-Sequence-No" /(?<sequence>[0-9]{1,3})/
 read closed
 
-write http:status "201" "Created" 
-write http:version "HTTP/1.1"
-write http:header "Content-Type" "text/plain;charset=utf-8"
-write http:content-length
+write status "201" "Created" 
+write version "HTTP/1.1"
+write header "Content-Type" "text/plain;charset=utf-8"
+write header content-length
 
 write ${upstream} "\n"
 write ${downstream} "\n"
@@ -50,15 +50,15 @@ accepted
 connected
 
 read await CREATE_COMPLETED
-read http:method "GET"
-read http:version "HTTP/1.1"
-read http:header "X-Sequence-No" ${wse:asString(sequence + 1)}
+read method "GET"
+read version "HTTP/1.1"
+read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 read closed
 
-write http:status "200" "OK"
-write http:version "HTTP/1.1"
-write http:header "Content-Type" "text/plain;charset=windows-1252"
-write http:header "Connection" "close"
+write status "200" "OK"
+write version "HTTP/1.1"
+write header "Content-Type" "text/plain;charset=windows-1252"
+write header "Connection" "close"
 write flush
 
 write await DATA_RECEIVED
@@ -72,10 +72,10 @@ accepted
 connected
 
 read await CREATE_COMPLETED
-read http:method "POST"
-read http:version "HTTP/1.1"
-read http:header "Content-Type" /text\/plain;charset=(?i)utf-8/
-read http:header "X-Sequence-No" ${wse:asString(sequence + 1)}
+read method "POST"
+read version "HTTP/1.1"
+read header "Content-Type" /text\/plain;charset=(?i)utf-8/
+read header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
 read [0xC2 0x80 0xC2 0x82 0x00]
 # Encoded data length is 3 * 128 because half the bytes have leading bit set so need 2 bytes in UTF-8

@@ -25,28 +25,28 @@ property authHeader2 ${http:append("Basic ", validCredentials2)}
 connect ${location}
 connected
 
-write http:method "GET"
+write method "GET"
 write close
-read http:status "401" "Unauthorized"
-read http:header "WWW-Authenticate" ${challenge1}
+read status "401" "Unauthorized"
+read header "WWW-Authenticate" ${challenge1}
 read notify FIRST_REQUEST_COMPLETE
 
 connect await FIRST_REQUEST_COMPLETE
-        ${location}
+connect ${location}
 connected
-write http:method "GET"
-write http:header "Authorization" ${authHeader1}
+write method "GET"
+write header "Authorization" ${authHeader1}
 write close
-read http:status "401" "Unauthorized"
-read http:header "Sec-Challenge-Identity" /(?<secChallengeIdentity>.*)/
-read http:header "WWW-Authenticate" ${challenge2}
+read status "401" "Unauthorized"
+read header "Sec-Challenge-Identity" /(?<secChallengeIdentity>.*)/
+read header "WWW-Authenticate" ${challenge2}
 read notify SECOND_REQUEST_COMPLETE
 
 connect await SECOND_REQUEST_COMPLETE
-        ${location}
+connect ${location}
 connected
-write http:method "GET"
-write http:header "Authorization" ${authHeader2}
-write http:header "Sec-Challenge-Identity" ${secChallengeIdentity}
+write method "GET"
+write header "Authorization" ${authHeader2}
+write header "Sec-Challenge-Identity" ${secChallengeIdentity}
 write close
-read http:status "200" "OK"
+read status "200" "OK"

@@ -14,10 +14,10 @@
 # limitations under the License.
 #
 
-accept "http://localhost:8080/Some%20Path"
+accept http://localhost:8080/Some%20Path
 accepted
 connected
-read http:version /HTTP\/(\d+)\.(\d+)/
-write http:status "200" "OK"
+read version /HTTP\/(\d+)\.(\d+)/
+write status "200" "OK"
 write flush
 
