@@ -81,4 +81,9 @@ public final class StructuredTypeInfo {
                 Objects.equals(this.name, that.name) &&
                 Objects.equals(this.namedFields, that.namedFields);
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s[%s %s %d]", getClass().getSimpleName(), name, namedFields, anonymousFields);
+    }
 }
