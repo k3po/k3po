@@ -14,9 +14,9 @@
 # limitations under the License.
 #
 
-connect http://localhost:8080/
+connect "http://localhost:8080/"
 connected
-write method "GET"
+write http:method "GET"
 write close
-read status "200" "OK"
+read http:status "200" "OK"
 

@@ -17,24 +17,24 @@
 property key ${ws:handshakeKey()}
 property writeMask ${ws:randomBytes(4)}
 
-connect http://localhost:8001/echo
+connect "http://localhost:8001/echo"
 connected
 
-write method "GET"
-write version "HTTP/1.1"
-write header host
-write header "Upgrade" "websocket"
-write header "Connection" "Upgrade"
-write header "Sec-WebSocket-Key" ${key}
-write header "Sec-WebSocket-Version" "13"
-write header "Sec-WebSocket-Extensions" "x-kaazing-idle-timeout"
+write http:method "GET"
+write http:version "HTTP/1.1"
+write http:host
+write http:header "Upgrade" "websocket"
+write http:header "Connection" "Upgrade"
+write http:header "Sec-WebSocket-Key" ${key}
+write http:header "Sec-WebSocket-Version" "13"
+write http:header "Sec-WebSocket-Extensions" "x-kaazing-idle-timeout"
 
-read status "101" /.+/
-read version "HTTP/1.1"
-read header "Upgrade" /(?i:websocket)/
-read header "Connection" /(?i:Upgrade)/
-read header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
-read header "Sec-WebSocket-Extensions" "x-kaazing-idle-timeout; timeout=2000"
+read http:status "101" /.+/
+read http:version "HTTP/1.1"
+read http:header "Upgrade" /(?i:websocket)/
+read http:header "Connection" /(?i:Upgrade)/
+read http:header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
+read http:header "Sec-WebSocket-Extensions" "x-kaazing-idle-timeout; timeout=2000"
 
 # Read random data
 ################################################################

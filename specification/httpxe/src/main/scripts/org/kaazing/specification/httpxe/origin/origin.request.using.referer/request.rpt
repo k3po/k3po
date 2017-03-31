@@ -14,15 +14,15 @@
 # limitations under the License.
 #
 
-connect http://localhost:8000/path
+connect "http://localhost:8000/path"
 connected
 
-write method "POST"
-write version "HTTP/1.1"
-write header host
-write header "Referer" "http://localhost:8000/different/path"
-write header "X-Origin" "http://source.example.com:80"
-write header content-length
+write http:method "POST"
+write http:version "HTTP/1.1"
+write http:host
+write http:header "Referer" "http://localhost:8000/different/path"
+write http:header "X-Origin" "http://source.example.com:80"
+write http:content-length
 write flush
 
-read status "200" /.*/
+read http:status "200" /.*/

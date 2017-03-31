@@ -14,9 +14,9 @@
 # limitations under the License.
 #
 
-connect http://localhost:8080/
+connect "http://localhost:8080/"
 connected
-write method "GET"
-read status "426" "Upgrade Required"
-read header "Upgrade" /.*/
+write http:method "GET"
+read http:status "426" "Upgrade Required"
+read http:header "Upgrade" /.*/
 

@@ -19,19 +19,19 @@ accept ${location}
 accepted
 connected
 
-read method "GET"
-read version "HTTP/1.1"
-read header "Host" "localhost:8080"
-read header "Upgrade" /(?i:websocket)/
-read header "Connection" /(?i:Upgrade)/
-read header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
-read header "Sec-WebSocket-Version" "13"
+read http:method "GET"
+read http:version "HTTP/1.1"
+read http:header "Host" "localhost:8080"
+read http:header "Upgrade" /(?i:websocket)/
+read http:header "Connection" /(?i:Upgrade)/
+read http:header "Sec-WebSocket-Key" /(?<key>[a-zA-Z0-9+\/=]{24})/
+read http:header "Sec-WebSocket-Version" "13"
 
-write status "101" "Switching Protocols"
-write version "HTTP/1.1"
-write header "Upgrade" "websocket"
-write header "Connection" "Upgrade"
-write header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
+write http:status "101" "Switching Protocols"
+write http:version "HTTP/1.1"
+write http:header "Upgrade" "websocket"
+write http:header "Connection" "Upgrade"
+write http:header "Sec-WebSocket-Accept" ${ws:handshakeHash(key)}
 
 read [0xc8 0x99] [0..4] [0..25]
 

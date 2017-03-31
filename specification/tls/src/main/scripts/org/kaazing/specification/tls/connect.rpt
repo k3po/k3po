@@ -15,7 +15,7 @@
 #
 
 #TODO
-connect tcp://localhost:8080
+connect "tcp://localhost:8080"
 connected
 close
 closed

@@ -14,21 +14,21 @@
 # limitations under the License.
 #
 
-accept http://localhost:8080/intermediary
+accept "http://localhost:8080/intermediary"
 accepted
 connected
-read header "Connection" "aNeverImplementedClientConnectionHeader"
+read http:header "Connection" "aNeverImplementedClientConnectionHeader"
 write notify CLIENT_CONNECTION
 write await BACKEND_CONNECTION
-write header "Connection" "aNeverImplementedServerConnectionHeader"
+write http:header "Connection" "aNeverImplementedServerConnectionHeader"
 write flush
 
-connect http://localhost:8080/backend
+connect "http://localhost:8080/backend"
 connected
-write method "GET"
-write header "Connection" "aNeverImplementedClientConnectionHeader"
+write http:method "GET"
+write http:header "Connection" "aNeverImplementedClientConnectionHeader"
 write await CLIENT_CONNECTION
-read header "Connection" "aNeverImplementedServerConnectionHeader"
+read http:header "Connection" "aNeverImplementedServerConnectionHeader"
 write notify BACKEND_CONNECTION
 write flush
 

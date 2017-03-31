@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect tcp://localhost:8080
+connect "tcp://localhost:8080"
 connected
 write "GET / HTTP/1.1" "\r\n"
 write "\r\n"

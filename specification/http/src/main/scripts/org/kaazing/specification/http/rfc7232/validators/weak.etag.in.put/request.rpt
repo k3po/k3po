@@ -14,15 +14,15 @@
 # limitations under the License.
 #
 
-connect http://localhost:8000/index.html
+connect "http://localhost:8000/index.html"
 connected
 
-write method "PUT"
-write version "HTTP/1.1"
-write header host
-write header content-length
+write http:method "PUT"
+write http:version "HTTP/1.1"
+write http:host
+write http:content-length
 write flush
 
-read status "200" /.*/
-read header "Date" /.*/
-read header "ETag" /W.+/
+read http:status "200" /.*/
+read http:header "Date" /.*/
+read http:header "ETag" /W.+/

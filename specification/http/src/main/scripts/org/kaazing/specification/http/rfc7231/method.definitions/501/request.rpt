@@ -14,13 +14,13 @@
 # limitations under the License.
 #
 
-connect http://localhost:8000/resource
+connect "http://localhost:8000/resource"
 connected
 
-write method "TRACE"
-write header content-length
+write http:method "TRACE"
+write http:content-length
 write "content"
 write close
 	
-read status "501" "Not Implemented"
+read http:status "501" "Not Implemented"
 

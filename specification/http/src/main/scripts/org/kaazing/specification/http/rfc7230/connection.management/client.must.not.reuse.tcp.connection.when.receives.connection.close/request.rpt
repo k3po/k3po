@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect tcp://localhost:8080
+connect "tcp://localhost:8080"
 connected
 
 write "GET /path HTTP/1.1\r\n"
@@ -29,7 +29,7 @@ read "Content-Length: 0\r\n"
 read "\r\n"
 closed
 
-connect tcp://localhost:8080
+connect "tcp://localhost:8080"
 connected
 
 write "GET /path2 HTTP/1.1\r\n"

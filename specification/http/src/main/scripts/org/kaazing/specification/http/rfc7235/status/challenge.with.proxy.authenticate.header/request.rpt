@@ -22,37 +22,37 @@ property authHeader ${http:append("Basic ", credentials)}
 # Note: we have to use barriers to guarantee the ordering
 # of the HTTP request/response pairs
 
-connect http://localhost:8000/resource
+connect "http://localhost:8000/resource"
 connected
 
-write method "GET"
-write header "Authorization" ${invalidAuthHeader}
+write http:method "GET"
+write http:header "Authorization" ${invalidAuthHeader}
 write flush
 
-read status "401" "Unauthorized"
-read header "WWW-Authenticate" /Basic realm=.+/
+read http:status "401" "Unauthorized"
+read http:header "WWW-Authenticate" /Basic realm=.+/
 
 read notify FIRST_DONE
 
 connect await FIRST_DONE
-connect http://localhost:8000/resource
+        "http://localhost:8000/resource"
 connected
 
-write method "GET"
-write version "HTTP/1.1"
+write http:method "GET"
+write http:version "HTTP/1.1"
 write flush
 
-read status "407" "Proxy Authentication Required"
-read header "Proxy-Authentication" /Basic realm=.+/
+read http:status "407" "Proxy Authentication Required"
+read http:header "Proxy-Authentication" /Basic realm=.+/
 read notify SECOND_DONE
 
 connect await SECOND_DONE
-connect http://localhost:8000/resource
+        "http://localhost:8000/resource"
 connected
 
-write method "GET"
-write header "Proxy-Authorization" ${authHeader}
+write http:method "GET"
+write http:header "Proxy-Authorization" ${authHeader}
 write flush
 
-read status "200" "OK"
+read http:status "200" "OK"
 

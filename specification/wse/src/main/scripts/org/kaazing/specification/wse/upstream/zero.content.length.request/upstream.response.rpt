@@ -19,20 +19,20 @@ property downstreamId ${wse:uniqueId()}
 property upstreamUrl ${wse:append("http://localhost:8080/path/", upstreamId)}
 property downstreamUrl ${wse:append("http://localhost:8080/path/", downstreamId)}
 
-accept http://localhost:8080/path/;e/cbm?query
+accept "http://localhost:8080/path/;e/cbm?query"
 accepted
 connected
 
-read method "POST"
-read version "HTTP/1.1"
-read header "X-WebSocket-Version" "wseb-1.0"
-read header "X-Sequence-No" /(?<sequence>[0-9]{1,3})/
+read http:method "POST"
+read http:version "HTTP/1.1"
+read http:header "X-WebSocket-Version" "wseb-1.0"
+read http:header "X-Sequence-No" /(?<sequence>[0-9]{1,3})/
 read closed
 
-write status "201" "Created" 
-write version "HTTP/1.1"
-write header "Content-Type" "text/plain;charset=utf-8"
-write header content-length
+write http:status "201" "Created" 
+write http:version "HTTP/1.1"
+write http:header "Content-Type" "text/plain;charset=utf-8"
+write http:content-length
 
 write ${upstreamUrl} "\n"
 write ${downstreamUrl} "\n"
@@ -43,15 +43,15 @@ accept ${downstreamUrl}
 accepted
 connected
 
-read method "GET"
-read version "HTTP/1.1"
-read header "X-Sequence-No" ${wse:asString(sequence + 1)}
+read http:method "GET"
+read http:version "HTTP/1.1"
+read http:header "X-Sequence-No" ${wse:asString(sequence + 1)}
 read closed
 
-write status "200" "OK"
-write version "HTTP/1.1"
-write header "Content-Type" "application/octet-stream"
-write header "Connection" "close"
+write http:status "200" "OK"
+write http:version "HTTP/1.1"
+write http:header "Content-Type" "application/octet-stream"
+write http:header "Connection" "close"
 write flush
 
 write await INVALID_UPSTREAM_REQUEST_RECEIVED
@@ -64,15 +64,15 @@ accept ${upstreamUrl}
 accepted
 connected
 
-read method "POST"
-read version "HTTP/1.1"
-read header "Content-Type" "application/octet-stream"
-read header "X-Sequence-No" ${wse:asString(sequence + 1)}
-read header "Content-Length" "0"
+read http:method "POST"
+read http:version "HTTP/1.1"
+read http:header "Content-Type" "application/octet-stream"
+read http:header "X-Sequence-No" ${wse:asString(sequence + 1)}
+read http:header "Content-Length" "0"
 read closed
 
 read notify INVALID_UPSTREAM_REQUEST_RECEIVED
 
-write status "400" "Bad Request" 
-write header content-length
+write http:status "400" "Bad Request" 
+write http:content-length
 write close

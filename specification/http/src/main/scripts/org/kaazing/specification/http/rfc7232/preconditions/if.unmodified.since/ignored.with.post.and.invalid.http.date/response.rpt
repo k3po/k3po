@@ -16,26 +16,26 @@
 
 property lastModified "Thu, 1 Jan 2015 01:23:45 GMT"
 
-accept http://localhost:8000/index.html
+accept "http://localhost:8000/index.html"
 accepted
 connected
 
-read method "GET"
-read version "HTTP/1.1"
-read header "Host" "localhost:8000"
+read http:method "GET"
+read http:version "HTTP/1.1"
+read http:header "Host" "localhost:8000"
 
-write status "200" "OK"
-write header "Last-Modified" ${lastModified}
-write header content-length
+write http:status "200" "OK"
+write http:header "Last-Modified" ${lastModified}
+write http:content-length
 write flush
 
 accepted
 connected
 
-read method "DELETE"
-read version "HTTP/1.1"
-read header "Host" "localhost:8000"
-read header "If-Unmodified-Since" /.+/
+read http:method "DELETE"
+read http:version "HTTP/1.1"
+read http:header "Host" "localhost:8000"
+read http:header "If-Unmodified-Since" /.+/
 
-write status "200" "OK"
+write http:status "200" "OK"
 write flush
