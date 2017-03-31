@@ -1,7 +1,13 @@
 #
+# HOWTO Upgrade
+#
+# find . -name "*.rpt" | xargs -L 1 sed -i "~" -e $'s/\r//'
+# find . -name "*.rpt" | xargs -L 1 sed -i "~" -f tools/upgrade.sed
+#
+
+#
 # Tidy
 #
-s/.$//
 s/option[[:space:]][[:space:]]*/option /
 s/read[[:space:]][[:space:]]*/read /
 s/write[[:space:]][[:space:]]*/write /
@@ -73,4 +79,4 @@ s/option timeout/option udp:timeout/
 #         location
 #
 1h;2,$H;$!d;g; s/connect await \([A-Z_]*\)\nconnect /connect await \1\
-        /
+        /g
