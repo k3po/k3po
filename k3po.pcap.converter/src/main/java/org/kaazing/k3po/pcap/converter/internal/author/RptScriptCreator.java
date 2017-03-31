@@ -18,7 +18,6 @@ package org.kaazing.k3po.pcap.converter.internal.author;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-import java.util.logging.Logger;
 
 import org.kaazing.k3po.pcap.converter.internal.author.composer.ComposerFactory;
 import org.kaazing.k3po.pcap.converter.internal.author.composer.GenericComposerFactory;
@@ -30,7 +29,6 @@ import org.kaazing.k3po.pcap.converter.internal.author.emitter.EmitterFactory;
 import org.kaazing.k3po.pcap.converter.internal.author.emitter.EmitterFactoryImpl;
 import org.kaazing.k3po.pcap.converter.internal.author.emitter.OutputType;
 import org.kaazing.k3po.pcap.converter.internal.packet.Packet;
-import org.kaazing.k3po.pcap.converter.internal.parser.Parser;
 
 /**
  * RptScriptsCreator
@@ -40,7 +38,6 @@ import org.kaazing.k3po.pcap.converter.internal.parser.Parser;
  */
 public class RptScriptCreator {
 
-    private final static Logger LOG = Logger.getLogger(Parser.class.getName());
     private final Map<ConversationId, Stack<Coordinator>> coordinators;
     private final EmitterFactory emitterFactory;
     private final CoordinatorFactory coordinatorFactory;
@@ -71,10 +68,7 @@ public class RptScriptCreator {
     }
 
     public void addPacketToScripts(Packet packet) {
-        LOG.info("Emitting packet " + packet.getPacketNumber());
-
         if ( packet.isTcp() ) {
-            LOG.info("Emitting tcp packet");
             ConversationId conversationId = new ConversationId(packet, SupportedProtocol.TCP);
             
             if ( !coordinators.containsKey(conversationId) ) { // if no key for host pair create it
