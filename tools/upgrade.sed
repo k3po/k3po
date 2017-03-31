@@ -1,9 +1,10 @@
 #
 # Tidy
 #
-s/option[[:space:]][[:space:]]*/option /g
-s/read[[:space:]][[:space:]]*/read /g
-s/write[[:space:]][[:space:]]*/write /g
+s/.$//
+s/option[[:space:]][[:space:]]*/option /
+s/read[[:space:]][[:space:]]*/read /
+s/write[[:space:]][[:space:]]*/write /
 
 #
 # URI literals
