@@ -8,11 +8,16 @@
 #
 # Tidy
 #
-s/\(^[^\"\'#]*\)[[:space:]]*connect[[:space:]][[:space:]]*/\1connect /
-s/\(^[^\"\'#]*\)[[:space:]]*accept[[:space:]][[:space:]]*/\1accept /
-s/\(^[^\"\'#]*\)[[:space:]]*read[[:space:]][[:space:]]*/\1read /
-s/\(^[^\"\'#]*\)[[:space:]]*write[[:space:]][[:space:]]*/\1write /
-s/\(^[^\"\'#]*\)option[[:space:]][[:space:]]*/\1option /
+s/^[[:space:]][[:space:]]*connect/connect/
+s/^[[:space:]][[:space:]]*accept/accept/
+s/^[[:space:]][[:space:]]*read/read/
+s/^[[:space:]][[:space:]]*write/write/
+
+s/\([^\"\'#]*\)connect[[:space:]][[:space:]]*/\1connect /
+s/\([^\"\'#]*\)accept[[:space:]][[:space:]]*/\1accept /
+s/\([^\"\'#]*\)read[[:space:]][[:space:]]*/\1read /
+s/\([^\"\'#]*\)write[[:space:]][[:space:]]*/\1write /
+s/\([^\"\'#]*\)option[[:space:]][[:space:]]*/\1option /
 
 #
 # URI literals
