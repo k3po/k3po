@@ -540,7 +540,7 @@ Name
     ;
 
 QualifiedName
-    : Identifier ':' Identifier
+    : Identifier ':' Identifier ('.' Identifier)*
     ;
 
 fragment
