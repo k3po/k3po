@@ -15,7 +15,7 @@
 #
 
 # ideally this would be http based so the reads would be consistent
-connect tcp://localhost:8080
+connect "tcp://localhost:8080"
 connected
 write "GET /request1 HTTP/1.1" "\r\n"
 write "Host: localhost:8080" "\r\n"

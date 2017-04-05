@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.driver.internal.behavior.handler.event;
+package org.kaazing.k3po.driver.internal.behavior.handler.event.http;
 
 import static java.util.EnumSet.of;
 
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.HttpTrailerDecoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownInputEvent;
 
 public class ReadHttpTrailersHandler extends AbstractEventHandler {

@@ -14,13 +14,13 @@
 # limitations under the License.
 #
 
-connect http://localhost:8000/path?query
+connect "http://localhost:8000/path?query"
 connected
-write method "GET"
-write parameter "param" "value"
+write http:method "GET"
+write http:parameter "param" "value"
 write close
-read status "200" "OK"
-read header "some" "header"
-read header "Content-Length" "7"
+read http:status "200" "OK"
+read http:header "some" "header"
+read http:header "Content-Length" "7"
 read "content"
 read closed

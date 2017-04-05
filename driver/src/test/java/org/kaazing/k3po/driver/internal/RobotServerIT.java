@@ -142,9 +142,9 @@ public class RobotServerIT {
         String path = "org/kaazing/robot/driver/accept-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
-                                     "content-length:60\n" +
+                                     "content-length:62\n" +
                                      "\n" +
-                                     "accept tcp://localhost:8080\n" +
+                                     "accept \"tcp://localhost:8080\"\n" +
                                      "accepted\n" +
                                      "connected\n" +
                                      "close\n" +
@@ -190,9 +190,9 @@ public class RobotServerIT {
         String path = "org/kaazing/robot/driver/accept-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
-                                     "content-length:60\n" +
+                                     "content-length:62\n" +
                                      "\n" +
-                                     "accept tcp://localhost:8080\n" +
+                                     "accept \"tcp://localhost:8080\"\n" +
                                      "accepted\n" +
                                      "connected\n" +
                                      "close\n" +
@@ -200,9 +200,9 @@ public class RobotServerIT {
         String strExpectedStarted = "STARTED\n" +
                                     "\n";
         String strExpectedFinished = "FINISHED\n" +
-                                     "content-length:60\n" +
+                                     "content-length:62\n" +
                                      "\n" +
-                                     "accept tcp://localhost:8080\n" +
+                                     "accept \"tcp://localhost:8080\"\n" +
                                      "accepted\n" +
                                      "connected\n" +
                                      "close\n" +
@@ -262,9 +262,9 @@ public class RobotServerIT {
         String path = "org/kaazing/robot/driver/accept-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
-                                     "content-length:60\n" +
+                                     "content-length:62\n" +
                                      "\n" +
-                                     "accept tcp://localhost:8080\n" +
+                                     "accept \"tcp://localhost:8080\"\n" +
                                      "accepted\n" +
                                      "connected\n" +
                                      "close\n" +
@@ -272,9 +272,9 @@ public class RobotServerIT {
         String strExpectedStarted = "STARTED\n" +
                                     "\n";
         String strExpectedFinished = "FINISHED\n" +
-                                     "content-length:60\n" +
+                                     "content-length:62\n" +
                                      "\n" +
-                                     "accept tcp://localhost:8080\n" +
+                                     "accept \"tcp://localhost:8080\"\n" +
                                      "accepted\n" +
                                      "connected\n" +
                                      "close\n" +
@@ -335,18 +335,18 @@ public class RobotServerIT {
         String path = "org/kaazing/robot/driver/connect-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
-                                     "content-length:52\n" +
+                                     "content-length:54\n" +
                                      "\n" +
-                                     "connect tcp://localhost:8080\n" +
+                                     "connect \"tcp://localhost:8080\"\n" +
                                      "connected\n" +
                                      "close\n" +
                                      "closed\n";
         String strExpectedStarted = "STARTED\n" +
                                     "\n";
         String strExpectedFinished = "FINISHED\n" +
-                                     "content-length:52\n" +
+                                     "content-length:54\n" +
                                      "\n" +
-                                     "connect tcp://localhost:8080\n" +
+                                     "connect \"tcp://localhost:8080\"\n" +
                                      "connected\n" +
                                      "close\n" +
                                      "closed\n";
@@ -406,18 +406,18 @@ public class RobotServerIT {
         String path = "org/kaazing/robot/driver/connect-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
-                                     "content-length:52\n" +
+                                     "content-length:54\n" +
                                      "\n" +
-                                     "connect tcp://localhost:8080\n" +
+                                     "connect \"tcp://localhost:8080\"\n" +
                                      "connected\n" +
                                      "close\n" +
                                      "closed\n";
         String strExpectedStarted = "STARTED\n" +
                                     "\n";
         String strExpectedFinished = "FINISHED\n" +
-                                     "content-length:52\n" +
+                                     "content-length:54\n" +
                                      "\n" +
-                                     "connect tcp://localhost:8080\n" +
+                                     "connect \"tcp://localhost:8080\"\n" +
                                      "connected\n" +
                                      "close\n" +
                                      "closed\n";
@@ -477,9 +477,9 @@ public class RobotServerIT {
         String path = "org/kaazing/robot/driver/shouldAbortOK";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
-                                     "content-length:64\n" +
+                                     "content-length:66\n" +
                                      "\n" +
-                                     "connect tcp://localhost:8080\n" +
+                                     "connect \"tcp://localhost:8080\"\n" +
                                      "connected\n" +
                                      "read [0..4]\n" +
                                      "close\n" +
@@ -487,9 +487,9 @@ public class RobotServerIT {
         String strExpectedStarted = "STARTED\n" +
                                     "\n";
         String strExpectedFinished = "FINISHED\n" +
-                                     "content-length:40\n" +
+                                     "content-length:42\n" +
                                      "\n" +
-                                     "connect tcp://localhost:8080\n" +
+                                     "connect \"tcp://localhost:8080\"\n" +
                                      "connected\n" +
                                      "\n";
 
@@ -557,9 +557,9 @@ public class RobotServerIT {
         String path = "org/kaazing/robot/driver/shouldAbortOK";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
-                                     "content-length:64\n" +
+                                     "content-length:66\n" +
                                      "\n" +
-                                     "connect tcp://localhost:8080\n" +
+                                     "connect \"tcp://localhost:8080\"\n" +
                                      "connected\n" +
                                      "read [0..4]\n" +
                                      "close\n" +
@@ -610,9 +610,9 @@ public class RobotServerIT {
         String path = "org/kaazing/robot/driver/accept-then-close";
         // @formatter:off
         String strExpectedPrepared = "PREPARED\n" +
-                                     "content-length:60\n" +
+                                     "content-length:62\n" +
                                      "\n" +
-                                     "accept tcp://localhost:8080\n" +
+                                     "accept \"tcp://localhost:8080\"\n" +
                                      "accepted\n" +
                                     "connected\n" +
                                      "close\n" +

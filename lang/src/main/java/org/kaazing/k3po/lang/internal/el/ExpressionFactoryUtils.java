@@ -16,8 +16,10 @@
 package org.kaazing.k3po.lang.internal.el;
 
 import java.util.Properties;
+import java.util.function.Supplier;
 
 import javax.el.ExpressionFactory;
+import javax.el.ValueExpression;
 
 /**
  * Provides an expression factory utilizing the type converter the robot needs
@@ -47,5 +49,17 @@ public final class ExpressionFactoryUtils {
 
     private ExpressionFactoryUtils() {
         // utility class
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T synchronizedValue(ValueExpression expression, ExpressionContext environment, Class<T> expectedType) {
+        // ValueExpression.getValue(...) is not thread-safe
+        synchronized (environment) {
+            return (T) expression.getValue(environment);
+        }
+    }
+
+    public static <T> Supplier<T> synchronizedSupplier(ValueExpression expression, ExpressionContext environment, Class<T> expectedType) {
+        return () -> synchronizedValue(expression, environment, expectedType);
     }
 }

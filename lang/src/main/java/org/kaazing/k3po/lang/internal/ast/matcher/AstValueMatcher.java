@@ -19,29 +19,28 @@ import org.kaazing.k3po.lang.internal.ast.AstRegion;
 
 public abstract class AstValueMatcher extends AstRegion {
 
-    public abstract <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception;
+    public abstract <R, P> R accept(Visitor<R, P> visitor, P parameter);
 
     public interface Visitor<R, P> {
 
-        R visit(AstExpressionMatcher matcher, P parameter) throws Exception;
+        R visit(AstExpressionMatcher matcher, P parameter);
 
-        R visit(AstFixedLengthBytesMatcher matcher, P parameter) throws Exception;
+        R visit(AstFixedLengthBytesMatcher matcher, P parameter);
 
-        R visit(AstRegexMatcher matcher, P parameter) throws Exception;
+        R visit(AstRegexMatcher matcher, P parameter);
 
-        R visit(AstExactTextMatcher matcher, P parameter) throws Exception;
+        R visit(AstExactTextMatcher matcher, P parameter);
 
-        R visit(AstExactBytesMatcher matcher, P parameter) throws Exception;
+        R visit(AstExactBytesMatcher matcher, P parameter);
 
-        R visit(AstVariableLengthBytesMatcher matcher, P parameter) throws Exception;
+        R visit(AstVariableLengthBytesMatcher matcher, P parameter);
 
-        R visit(AstByteLengthBytesMatcher matcher, P parameter) throws Exception;
+        R visit(AstByteLengthBytesMatcher matcher, P parameter);
 
-        R visit(AstShortLengthBytesMatcher matcher, P parameter) throws Exception;
+        R visit(AstShortLengthBytesMatcher matcher, P parameter);
 
-        R visit(AstIntLengthBytesMatcher matcher, P parameter) throws Exception;
+        R visit(AstIntLengthBytesMatcher matcher, P parameter);
 
-        R visit(AstLongLengthBytesMatcher matcher, P parameter) throws Exception;
-
+        R visit(AstLongLengthBytesMatcher matcher, P parameter);
     }
 }

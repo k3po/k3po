@@ -41,7 +41,7 @@ public class AstWriteNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWri
     }
 
     public AstWriteNodeBuilder addExpression(ValueExpression value, ExpressionContext environment) {
-        node.addValue(new AstExpressionValue(value, environment));
+        node.addValue(new AstExpressionValue<>(value, environment));
         return this;
     }
 
@@ -72,7 +72,7 @@ public class AstWriteNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWri
         }
 
         public StreamNested<R> addExpression(ValueExpression value, ExpressionContext environment) {
-            node.addValue(new AstExpressionValue(value, environment));
+            node.addValue(new AstExpressionValue<>(value, environment));
             return this;
         }
 

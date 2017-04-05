@@ -22,7 +22,7 @@ import java.net.URI;
 import org.junit.Test;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.builder.AstScriptNodeBuilder;
-import org.kaazing.k3po.lang.internal.ast.value.AstLocationLiteral;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 
 public class AssociateStreamsVisitorTest {
 
@@ -32,7 +32,7 @@ public class AssociateStreamsVisitorTest {
 
         AstScriptNode expectedScriptNode = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(new AstLocationLiteral(URI.create("tcp://localhost:8000")))
+                .setLocation(new AstLiteralURIValue(URI.create("tcp://localhost:8000")))
                 .addAcceptedStream()
                     .addConnectedEvent()
                         .done()
@@ -48,7 +48,7 @@ public class AssociateStreamsVisitorTest {
 
         AstScriptNode inputScriptNode = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(new AstLocationLiteral(URI.create("tcp://localhost:8000")))
+                .setLocation(new AstLiteralURIValue(URI.create("tcp://localhost:8000")))
                 .done()
             .addAcceptedStream()
                 .addConnectedEvent()

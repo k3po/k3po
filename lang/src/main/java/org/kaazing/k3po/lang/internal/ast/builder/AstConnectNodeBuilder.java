@@ -15,9 +15,12 @@
  */
 package org.kaazing.k3po.lang.internal.ast.builder;
 
+import java.net.URI;
+
 import org.kaazing.k3po.lang.internal.ast.AstConnectNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
-import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
+import org.kaazing.k3po.lang.internal.ast.value.AstValue;
+import org.kaazing.k3po.lang.types.TypeInfo;
 
 public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<AstConnectNode> {
 
@@ -25,13 +28,23 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         this(new AstConnectNode());
     }
 
-    public AstConnectNodeBuilder setLocation(AstLocation location) {
+    public AstConnectNodeBuilder setLocation(AstValue<URI> location) {
         node.setLocation(location);
         return this;
     }
 
-    public AstConnectNodeBuilder setBarrier(String barrier) {
+    public AstConnectNodeBuilder setAwaitName(String barrier) {
         node.setAwaitName(barrier);
+        return this;
+    }
+
+    public <T> AstConnectNodeBuilder setOption(TypeInfo<T> option, AstValue<T> optionValue) {
+        node.getOptions().put(option.getName(), optionValue);
+        return this;
+    }
+
+    public AstConnectNodeBuilder setOption(String optionName, AstValue<?> optionValue) {
+        node.getOptions().put(optionName, optionValue);
         return this;
     }
 
@@ -171,18 +184,23 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
             super(new AstConnectNode(), builder);
         }
 
-        public ScriptNested<R> setLocation(AstLocation location) {
+        public ScriptNested<R> setLocation(AstValue<URI> location) {
             node.setLocation(location);
             return this;
         }
 
-        public ScriptNested<R> setTransport(AstLocation transport) {
-            node.getOptions().put("transport", transport);
+        public ScriptNested<R> setAwaitName(String barrier) {
+            node.setAwaitName(barrier);
             return this;
         }
 
-        public ScriptNested<R> setBarrier(String barrier) {
-            node.setAwaitName(barrier);
+        public <T> ScriptNested<R> setOption(TypeInfo<T> option, AstValue<T> optionValue) {
+            node.getOptions().put(option.getName(), optionValue);
+            return this;
+        }
+
+        public <T> ScriptNested<R> setOption(String optionName, AstValue<?> optionValue) {
+            node.getOptions().put(optionName, optionValue);
             return this;
         }
 

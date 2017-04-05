@@ -18,7 +18,7 @@ package org.kaazing.k3po.lang.internal.ast;
 public class AstWriteFlushNode extends AstCommandNode {
 
     @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
         return visitor.visit(this, parameter);
     }
     @Override

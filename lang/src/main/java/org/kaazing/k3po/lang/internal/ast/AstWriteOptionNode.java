@@ -17,20 +17,49 @@ package org.kaazing.k3po.lang.internal.ast;
 
 import static java.lang.String.format;
 
+import java.util.Objects;
+
+import org.kaazing.k3po.lang.types.TypeInfo;
+
 public class AstWriteOptionNode extends AstOptionNode {
 
-    @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
-        return visitor.visit(this, parameter);
+    private TypeInfo<?> optionType;
+
+    public void setOptionType(TypeInfo<?> optionType) {
+        this.optionType = optionType;
     }
-    @Override
-    protected int hashTo() {
-        return getClass().hashCode();
+
+    public TypeInfo<?> getOptionType() {
+        return optionType;
     }
 
     @Override
-    protected boolean equalTo(AstRegion that) {
-        return that instanceof AstWriteOptionNode;
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
+        return visitor.visit(this, parameter);
+    }
+
+
+    @Override
+    protected int hashTo() {
+        int hash = super.hashCode();
+
+        if (optionType != null) {
+            hash <<= 4;
+            hash &= optionType.hashCode();
+        }
+
+        return hash;
+    }
+
+    @Override
+    protected final boolean equalTo(AstOptionNode that) {
+        return that instanceof AstWriteOptionNode &&
+                equalTo((AstWriteOptionNode) that);
+    }
+
+    protected boolean equalTo(AstWriteOptionNode that) {
+        return super.equalTo(that) &&
+                Objects.equals(this.optionType, that.optionType);
     }
 
     @Override

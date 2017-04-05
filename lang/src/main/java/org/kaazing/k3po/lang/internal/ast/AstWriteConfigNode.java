@@ -15,72 +15,67 @@
  */
 package org.kaazing.k3po.lang.internal.ast;
 
-import static java.lang.String.format;
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
+import org.kaazing.k3po.lang.types.StructuredTypeInfo;
 
 public class AstWriteConfigNode extends AstCommandNode {
 
-    private String type;
-    private Map<String, AstValue> namesByName;
-    private Map<String, AstValue> valuesByName;
+    private StructuredTypeInfo type;
+    private Collection<AstValue<?>> values;
+    private Map<String, AstValue<?>> valuesByName;
 
     public AstWriteConfigNode() {
-        this.namesByName = new LinkedHashMap<>();
+        this.values = new LinkedHashSet<>();
         this.valuesByName = new LinkedHashMap<>();
     }
 
-    public void setType(String type) {
+    public void setType(StructuredTypeInfo type) {
         this.type = type;
     }
 
-    public String getType() {
+    public StructuredTypeInfo getType() {
         return type;
     }
 
-    public void setName(String name, AstValue value) {
-        namesByName.put(name, value);
-    }
-
-    public AstValue getName(String name) {
-        return namesByName.get(name);
-    }
-
-    public void setValue(String name, AstValue value) {
+    public void setValue(String name, AstValue<?> value) {
         valuesByName.put(name, value);
     }
 
-    public AstValue getValue(String name) {
+    public AstValue<?> getValue(String name) {
         return valuesByName.get(name);
     }
 
-    public void addValue(AstValue value) {
-        String name = format("value#%d", valuesByName.size());
-        valuesByName.put(name, value);
+    public void addValue(AstValue<?> value) {
+        values.add(value);
     }
 
-    public Collection<AstValue> getValues() {
-        return valuesByName.values();
+    public Collection<AstValue<?>> getValues() {
+        return values;
     }
 
-    public AstValue getValue() {
-        switch (valuesByName.size()) {
-        case 0:
-            return null;
-        case 1:
-            return valuesByName.values().iterator().next();
-        default:
-            throw new IllegalStateException("Multiple values available, yet assuming only one value");
+    public AstValue<?> getValue() {
+
+        if (valuesByName.isEmpty()) {
+            switch (values.size()) {
+            case 0:
+                return null;
+            case 1:
+                return values.iterator().next();
+            }
         }
+
+        throw new IllegalStateException("Multiple values available, yet assuming only one value");
     }
 
     @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
         return visitor.visit(this, parameter);
     }
 
@@ -107,6 +102,7 @@ public class AstWriteConfigNode extends AstCommandNode {
 
     protected boolean equalTo(AstWriteConfigNode that) {
         return equivalent(this.type, that.type) &&
+                equivalent(this.values, that.values) &&
                 equivalent(this.valuesByName, that.valuesByName);
     }
 
@@ -114,10 +110,12 @@ public class AstWriteConfigNode extends AstCommandNode {
     protected void describe(StringBuilder buf) {
         super.describe(buf);
         buf.append("write ").append(type);
-        for (AstValue name : namesByName.values()) {
-            buf.append(' ').append(name);
+        for (Map.Entry<String, AstValue<?>> entry : valuesByName.entrySet()) {
+            String name = entry.getKey();
+            AstValue<?> value = entry.getValue();
+            buf.append(' ').append(name).append('=').append(value);
         }
-        for (AstValue value : valuesByName.values()) {
+        for (AstValue<?> value : values) {
             buf.append(' ').append(value);
         }
         buf.append('\n');

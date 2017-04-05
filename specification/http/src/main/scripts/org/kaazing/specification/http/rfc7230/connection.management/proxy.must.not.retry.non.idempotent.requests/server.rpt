@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-accept tcp://localhost:8081
+accept "tcp://localhost:8081"
 accepted
 connected
 read "POST /backend\r\n"

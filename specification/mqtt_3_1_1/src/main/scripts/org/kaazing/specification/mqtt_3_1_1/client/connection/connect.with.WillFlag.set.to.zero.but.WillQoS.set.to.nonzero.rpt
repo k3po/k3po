@@ -18,7 +18,7 @@
 # Will QoS flag set to non-zero(1). As per the spec, If the Will Flag is set to 0, then 
 # the Will QoS MUST be set to 0. Serve should close the network connection in this case.
 
-connect tcp://127.0.0.1:1883
+connect "tcp://127.0.0.1:1883"
 connected
 
 # CONNECT

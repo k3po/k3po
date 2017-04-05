@@ -20,13 +20,12 @@ import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 import java.util.Arrays;
 
 import org.kaazing.k3po.lang.internal.ast.AstRegion;
-import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
 public final class AstExactBytesMatcher extends AstValueMatcher {
 
     private final byte[] value;
 
-    public AstExactBytesMatcher(byte[] value, ExpressionContext environment) {
+    public AstExactBytesMatcher(byte[] value) {
         if (value == null) {
             throw new NullPointerException("value");
         }
@@ -38,7 +37,7 @@ public final class AstExactBytesMatcher extends AstValueMatcher {
     }
 
     @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
 
         return visitor.visit(this, parameter);
     }

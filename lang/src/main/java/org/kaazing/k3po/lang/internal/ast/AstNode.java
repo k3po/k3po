@@ -18,44 +18,44 @@ package org.kaazing.k3po.lang.internal.ast;
 
 public abstract class AstNode extends AstRegion {
 
-    public abstract <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception;
+    public abstract <R, P> R accept(Visitor<R, P> visitor, P parameter);
 
     public interface Visitor<R, P> {
-        R visit(AstScriptNode node, P parameter) throws Exception;
-        R visit(AstPropertyNode node, P parameter) throws Exception;
-        R visit(AstAcceptNode node, P parameter) throws Exception;
-        R visit(AstAcceptableNode node, P parameter) throws Exception;
-        R visit(AstConnectNode node, P parameter) throws Exception;
+        R visit(AstScriptNode node, P parameter);
+        R visit(AstPropertyNode node, P parameter);
+        R visit(AstAcceptNode node, P parameter);
+        R visit(AstAcceptableNode node, P parameter);
+        R visit(AstConnectNode node, P parameter);
 
-        R visit(AstWriteFlushNode node, P parameter) throws Exception;
-        R visit(AstWriteValueNode node, P parameter) throws Exception;
-        R visit(AstWriteCloseNode node, P parameter) throws Exception;
-        R visit(AstDisconnectNode node, P parameter) throws Exception;
-        R visit(AstUnbindNode node, P parameter) throws Exception;
-        R visit(AstCloseNode node, P parameter) throws Exception;
-        R visit(AstAbortNode astAbortNode, P parameter) throws Exception;
-        R visit(AstAbortedNode astAbortNode, P parameter) throws Exception;
+        R visit(AstWriteFlushNode node, P parameter);
+        R visit(AstWriteValueNode node, P parameter);
+        R visit(AstWriteCloseNode node, P parameter);
+        R visit(AstDisconnectNode node, P parameter);
+        R visit(AstUnbindNode node, P parameter);
+        R visit(AstCloseNode node, P parameter);
+        R visit(AstAbortNode astAbortNode, P parameter);
+        R visit(AstAbortedNode astAbortNode, P parameter);
 
-        R visit(AstChildOpenedNode node, P parameter) throws Exception;
-        R visit(AstChildClosedNode node, P parameter) throws Exception;
-        R visit(AstOpenedNode node, P parameter) throws Exception;
-        R visit(AstBoundNode node, P parameter) throws Exception;
-        R visit(AstConnectedNode node, P parameter) throws Exception;
-        R visit(AstReadValueNode node, P parameter) throws Exception;
-        R visit(AstDisconnectedNode node, P parameter) throws Exception;
-        R visit(AstUnboundNode node, P parameter) throws Exception;
-        R visit(AstReadClosedNode node, P parameter) throws Exception;
-        R visit(AstClosedNode node, P parameter) throws Exception;
+        R visit(AstChildOpenedNode node, P parameter);
+        R visit(AstChildClosedNode node, P parameter);
+        R visit(AstOpenedNode node, P parameter);
+        R visit(AstBoundNode node, P parameter);
+        R visit(AstConnectedNode node, P parameter);
+        R visit(AstReadValueNode node, P parameter);
+        R visit(AstDisconnectedNode node, P parameter);
+        R visit(AstUnboundNode node, P parameter);
+        R visit(AstReadClosedNode node, P parameter);
+        R visit(AstClosedNode node, P parameter);
 
-        R visit(AstReadAwaitNode node, P parameter) throws Exception;
-        R visit(AstWriteAwaitNode node, P parameter) throws Exception;
-        R visit(AstReadNotifyNode node, P parameter) throws Exception;
-        R visit(AstWriteNotifyNode node, P parameter) throws Exception;
+        R visit(AstReadAwaitNode node, P parameter);
+        R visit(AstWriteAwaitNode node, P parameter);
+        R visit(AstReadNotifyNode node, P parameter);
+        R visit(AstWriteNotifyNode node, P parameter);
 
-        R visit(AstReadConfigNode node, P parameter) throws Exception;
-        R visit(AstWriteConfigNode node, P parameter) throws Exception;
+        R visit(AstReadConfigNode node, P parameter);
+        R visit(AstWriteConfigNode node, P parameter);
 
-        R visit(AstReadOptionNode node, P parameter) throws Exception;
-        R visit(AstWriteOptionNode node, P parameter) throws Exception;
+        R visit(AstReadOptionNode node, P parameter);
+        R visit(AstWriteOptionNode node, P parameter);
     }
 }

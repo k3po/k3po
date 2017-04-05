@@ -14,12 +14,12 @@
 # limitations under the License.
 #
 
-accept http://localhost:8000/
+accept "http://localhost:8000/"
 accepted
 connected
-read method "GET"
-read header "some" "header" 
+read http:method "GET"
+read http:header "some" "header" 
 read closed
-write header "some" "header"
+write http:header "some" "header"
 write close
 

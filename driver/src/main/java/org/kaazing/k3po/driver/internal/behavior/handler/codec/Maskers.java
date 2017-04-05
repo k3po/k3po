@@ -17,10 +17,9 @@ package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 
 import static org.kaazing.k3po.driver.internal.behavior.handler.codec.Masker.IDENTITY_MASKER;
 
-import javax.el.ValueExpression;
+import java.util.function.Supplier;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
 public final class Maskers {
 
@@ -34,8 +33,8 @@ public final class Maskers {
         return IDENTITY_MASKER;
     }
 
-    public static Masker newMasker(ValueExpression expression, ExpressionContext environment) {
-        return new ExpressionMasker(expression, environment);
+    public static Masker newMasker(Supplier<byte[]> supplier) {
+        return new ExpressionMasker(supplier);
     }
 
     private Maskers() {
@@ -63,31 +62,21 @@ public final class Maskers {
 
     private static class ExpressionMasker extends AbstractMasker {
 
-        private final ValueExpression expression;
-        private final ExpressionContext environment;
+        private final Supplier<byte[]> supplier;
 
-        public ExpressionMasker(ValueExpression expression, ExpressionContext environment) {
-            this.expression = expression;
-            this.environment = environment;
+        public ExpressionMasker(Supplier<byte[]> supplier) {
+            this.supplier = supplier;
         }
 
         @Override
         public ChannelBuffer applyMask(ChannelBuffer buffer) throws Exception {
-            final byte[] maskingKey;
-            // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
-            synchronized (environment) {
-                maskingKey = (byte[]) expression.getValue(environment);
-            }
+            final byte[] maskingKey = supplier.get();
             return applyMask(buffer, maskingKey);
         }
 
         @Override
         public ChannelBuffer undoMask(ChannelBuffer buffer) throws Exception {
-            final byte[] maskingKey;
-            // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
-            synchronized (environment) {
-                maskingKey = (byte[]) expression.getValue(environment);
-            }
+            final byte[] maskingKey = supplier.get();
             return undoMask(buffer, maskingKey);
         }
     }

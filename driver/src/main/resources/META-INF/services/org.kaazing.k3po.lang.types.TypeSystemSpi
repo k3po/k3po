@@ -1,0 +1,4 @@
+org.kaazing.k3po.driver.internal.types.FileTypeSystem
+org.kaazing.k3po.driver.internal.types.HttpTypeSystem
+org.kaazing.k3po.driver.internal.types.UdpTypeSystem
+org.kaazing.k3po.driver.internal.types.AgronaTypeSystem

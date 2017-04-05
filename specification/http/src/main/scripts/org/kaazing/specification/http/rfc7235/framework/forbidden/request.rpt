@@ -16,12 +16,12 @@
 
 property invalidCredentials ${http:loginBase64Encoder("unauthorized:user")}
 property authHeader ${http:append("Basic ", invalidCredentials)}
-connect http://localhost:8000/resource
+connect "http://localhost:8000/resource"
 connected
 
-write method "GET"
-write header "Authorization" ${authHeader}
+write http:method "GET"
+write http:header "Authorization" ${authHeader}
 write close
 
-read status "403" "Forbidden"
+read http:status "403" "Forbidden"
 

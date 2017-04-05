@@ -14,9 +14,9 @@
 # limitations under the License.
 #
 
-accept udp://localhost:8080
+accept "udp://localhost:8080"
        notify BOUND
-       option timeout 1000
+       option udp:timeout 1000
 
 # stream 1
 accepted
@@ -39,7 +39,7 @@ write "Goodbye"
 closed
 
 # stream 3
-accept udp://localhost:8081
+accept "udp://localhost:8081"
        notify BOUND1
 accepted
 connected

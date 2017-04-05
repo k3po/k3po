@@ -17,16 +17,24 @@ package org.kaazing.k3po.lang.internal.ast.value;
 
 import org.kaazing.k3po.lang.internal.ast.AstRegion;
 
-public abstract class AstValue extends AstRegion {
+public abstract class AstValue<T> extends AstRegion {
 
-    public abstract <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception;
+    public abstract <R, P> R accept(Visitor<R, P> visitor, P parameter);
 
     public interface Visitor<R, P> {
 
-        R visit(AstExpressionValue value, P parameter) throws Exception;
+        R visit(AstExpressionValue<?> value, P parameter);
 
-        R visit(AstLiteralTextValue value, P parameter) throws Exception;
+        R visit(AstLiteralTextValue value, P parameter);
 
-        R visit(AstLiteralBytesValue value, P parameter) throws Exception;
+        R visit(AstLiteralBytesValue value, P parameter);
+
+        R visit(AstLiteralIntegerValue value, P parameter);
+
+        R visit(AstLiteralLongValue value, P parameter);
+
+        R visit(AstLiteralURIValue value, P parameter);
     }
+
+    public abstract T getValue();
 }

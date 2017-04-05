@@ -17,19 +17,19 @@
 #
 # Write the file contents
 #
-connect file:target/non.existing.file.dat
-        option size 1000
-        option mode rw
+connect "file:target/non.existing.file.dat"
+        option file:size 1000
+        option file:mode "rw"
 connected
 
 write "Hello World"
-write option offset "100"
+write option file:offset "100"
 write "Hello World1"
-write option offset "200"
+write option file:offset "200"
 write "Hello World2"
-write option offset "300"
+write option file:offset "300"
 write "Hello World3"
-write option offset "400"
+write option file:offset "400"
 write "Hello World4"
 
 write notify WRITE_DONE
@@ -39,16 +39,16 @@ write notify WRITE_DONE
 # Read the file contents
 #
 connect await WRITE_DONE
-connect file:target/non.existing.file.dat
-        option mode r
+        "file:target/non.existing.file.dat"
+        option file:mode "r"
 connected
 
 read "Hello World"
-read option offset "100"
+read option file:offset "100"
 read "Hello World1"
-read option offset "200"
+read option file:offset "200"
 read "Hello World2"
-read option offset "300"
+read option file:offset "300"
 read "Hello World3"
-read option offset "400"
+read option file:offset "400"
 read "Hello World4"

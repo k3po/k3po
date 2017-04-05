@@ -13,20 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.lang.internal.ast.value;
+package org.kaazing.k3po.driver.internal.behavior;
 
-import org.kaazing.k3po.lang.internal.ast.AstRegion;
+import org.jboss.netty.channel.ChannelHandler;
+import org.kaazing.k3po.lang.internal.ast.AstWriteOptionNode;
 
-public abstract class AstLocation extends AstRegion {
+public interface WriteOptionFactory {
 
-    public abstract <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception;
-
-    public interface Visitor<R, P> {
-
-        R visit(AstLocationLiteral value, P parameter) throws Exception;
-
-        R visit(AstLocationExpression value, P parameter) throws Exception;
-
-    }
-
+    ChannelHandler newHandler(AstWriteOptionNode node);
 }

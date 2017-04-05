@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect tcp://localhost:61111
+connect "tcp://localhost:61111"
 connected
 
 write "Hello, World!"

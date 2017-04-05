@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect tcp://127.0.0.1:8001
+connect "tcp://localhost:8001"
 connected
 
 #Connection request
@@ -40,7 +40,7 @@ read "\r\n"
 write [0x88 0x02 0x03 0xE8] 
 
 # Response WS Connection Close
-read  [0x88 0x02 0x03 0xE8]
+read [0x88 0x02 0x03 0xE8]
 
 close
 closed

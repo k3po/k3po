@@ -120,7 +120,7 @@ public class RobotIT {
 
         // @formatter:off
         String script =
-            "accept tcp://localhost:8080\n" +
+            "accept 'tcp://localhost:8080'\n" +
             "accepted\n" +
             "connected\n" +
             "close\n" +
@@ -144,7 +144,7 @@ public class RobotIT {
     public void shouldConnectThenCloseOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "close\n" +
             "closed\n";
@@ -170,7 +170,7 @@ public class RobotIT {
 
         // @formatter:off
         String script =
-            "connect tcp://localhost:6000\n" +
+            "connect 'tcp://localhost:6000'\n" +
             "connected\n" +
             "write \"Hello\\n\"\n" +
             "read [0..4]\n" +
@@ -178,7 +178,7 @@ public class RobotIT {
             "closed\n";
 
         String expected = "(?s)" +
-            "connect tcp://localhost:6000\n" +
+            "connect 'tcp://localhost:6000'\n" +
             "connected\n" +
             ".*";
         // @formatter:on
@@ -211,7 +211,7 @@ public class RobotIT {
 
         // @formatter:off
         String script =
-            "accept tcp://localhost:6002\n" +
+            "accept 'tcp://localhost:6002'\n" +
             "accepted\n" +
             "connected\n" +
             "write \"Hello\\n\"\n" +
@@ -220,7 +220,7 @@ public class RobotIT {
             "closed\n";
 
         String expected =
-                "accept tcp://localhost:6002\n" +
+                "accept 'tcp://localhost:6002'\n" +
                 "accepted\n" +
                 "connected\n" +
                 "write \"Hello\\n\"\n" +
@@ -247,14 +247,14 @@ public class RobotIT {
 
         // @formatter:off
         String script =
-            "accept tcp://localhost:8080\n" +
+            "accept 'tcp://localhost:8080'\n" +
             "accepted\n" +
             "connected\n" +
             "close\n" +
             "closed\n";
 
         String expected =
-                "accept tcp://localhost:8080\n" +
+                "accept 'tcp://localhost:8080'\n" +
                 "\n";
         // @formatter:on
 
@@ -272,14 +272,14 @@ public class RobotIT {
 
         // @formatter:off
         String script =
-            "accept tcp://localhost:8080\n" +
+            "accept 'tcp://localhost:8080'\n" +
             "accepted\n" +
             "connected\n" +
             "close\n" +
             "closed\n";
 
         String expected =
-                "accept tcp://localhost:8080\n" +
+                "accept 'tcp://localhost:8080'\n" +
                 "\n";
         // @formatter:on
 
@@ -296,7 +296,7 @@ public class RobotIT {
     public void shouldConnectReadThenCloseOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read \"Hello\"\n" +
             "close\n" +
@@ -327,7 +327,7 @@ public class RobotIT {
     public void shouldWriteMultiTextLiteralsOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "write \"Hello\" \" World\\n\"\n" +
             "close\n" +
@@ -358,7 +358,7 @@ public class RobotIT {
     public void shouldWriteMultiByteAndTextOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "write [0x01 0x02 0x03] [0x04 0x05 0x06]\n" +
             "close\n" +
@@ -393,14 +393,14 @@ public class RobotIT {
     public void shouldFailReadWrongOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read \"Howdy\"\n" +
             "close\n" +
             "closed\n";
 
         String expected =
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "read \"Hello\"\n";
         // @formatter:on
@@ -427,7 +427,7 @@ public class RobotIT {
     public void shouldFailConnectNoOneHome() throws Exception {
         // @formatter:off
          String script =
-             "connect tcp://localhost:9000\n" +
+             "connect 'tcp://localhost:9000'\n" +
              "connected\n" +
              "close\n" +
              "closed\n";
@@ -445,14 +445,14 @@ public class RobotIT {
     public void shouldEcho() throws Exception {
         // @formatter:off
         String script =
-            "accept tcp://localhost:8080\n" +
+            "accept 'tcp://localhost:8080'\n" +
             "accepted\n" +
             "connected\n" +
             "read \"Hello\"\n" +
             "closed\n" +
             "\n" +
             "#Connect channel\n" +
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "write \"Hello\"\n" +
             "close\n" +
@@ -472,14 +472,14 @@ public class RobotIT {
         // @formatter:off
         String script =
             "property greeting \"Hello\"\n" +
-            "accept tcp://localhost:8080\n" +
+            "accept 'tcp://localhost:8080'\n" +
             "accepted\n" +
             "connected\n" +
             "read ${greeting}\n" +
             "closed\n" +
             "\n" +
             "#Connect channel\n" +
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "write \"Hello\"\n" +
             "close\n" +
@@ -498,27 +498,27 @@ public class RobotIT {
     public void shouldEchoWrongOK() throws Exception {
         // @formatter:off
         String script =
-            "accept tcp://localhost:8080\n" +
+            "accept 'tcp://localhost:8080'\n" +
             "accepted\n" +
             "connected\n" +
             "read \"ello\"\n" +
             "closed\n" +
             "\n" +
             "#Connect channel\n" +
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "write \"Hello\"\n" +
             "close\n" +
             "closed\n";
 
         String expected = "(?s)" +
-                "accept tcp://localhost:8080\n" +
+                "accept 'tcp://localhost:8080'\n" +
                 "accepted\n" +
                 "connected\n" +
                 ".+" +
                 "\n" +
                 "#Connect channel\n" +
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "write \"Hello\"\n"  +
                 "close\n" +
@@ -541,7 +541,7 @@ public class RobotIT {
     public void shouldReadNotifyOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read notify BARRIER\n" +
             "close\n" +
@@ -567,7 +567,7 @@ public class RobotIT {
     public void shouldWriteNotifyOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "write notify BARRIER\n" +
             "close\n" +
@@ -593,7 +593,7 @@ public class RobotIT {
     public void shouldWriteNotifyAwaitOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "write notify BARRIER\n" +
             "write await BARRIER\n" +
@@ -620,7 +620,7 @@ public class RobotIT {
     public void shouldReadNotifyAwaitOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read notify BARRIER\n" +
             "read await BARRIER\n" +
@@ -647,7 +647,7 @@ public class RobotIT {
     public void shouldReadNotifyWriteAwaitOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read notify BARRIER\n" +
             "write await BARRIER\n" +
@@ -674,7 +674,7 @@ public class RobotIT {
     public void shouldImplicitBarrierOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read \"HELLO\"\n" +
             "write \"FOO\\n\"\n" +
@@ -712,7 +712,7 @@ public class RobotIT {
     public void shouldReadNewLineOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read \"\\n\"\n" +
             "close\n" +
@@ -743,7 +743,7 @@ public class RobotIT {
     public void shouldWriteNewLineOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "write \"\\n\"\n" +
             "write notify BARRIER\n" +
@@ -783,7 +783,7 @@ public class RobotIT {
     public void shouldReadFixedBytesOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read  [0..6]\n" +
             "close\n" +
@@ -815,7 +815,7 @@ public class RobotIT {
     public void shouldReadByteOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read [0..1]\n" +
             "close\n" +
@@ -847,7 +847,7 @@ public class RobotIT {
     public void shouldReadByteLiteralOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read 0xFF\n" +
             "close\n" +
@@ -879,7 +879,7 @@ public class RobotIT {
     public void shouldReadCaptureByteOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read ([0..1]:capture)\n" +
             "read ${capture}\n" +
@@ -913,7 +913,7 @@ public class RobotIT {
     public void shouldReadCapturedWithExpressionByteOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read (byte:capture)\n" +
             "read ${capture-1}\n" +
@@ -948,7 +948,7 @@ public class RobotIT {
     public void shouldReadShortOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read [0..2]\n" +
             "close\n" +
@@ -980,7 +980,7 @@ public class RobotIT {
     public void shouldReadShortLiteralOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read 0x0001\n" +
             "close\n" +
@@ -1012,7 +1012,7 @@ public class RobotIT {
     public void shouldReadCaptureShortOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read (short:capture)\n" +
             "read ${capture}\n" +
@@ -1046,7 +1046,7 @@ public class RobotIT {
     public void shouldReadCapturedWithExpressionShortOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read (short:capture)\n" +
             "read ${capture-1}\n" +
@@ -1081,7 +1081,7 @@ public class RobotIT {
     public void shouldReadIntOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read [0..4]\n" +
             "close\n" +
@@ -1113,7 +1113,7 @@ public class RobotIT {
     public void shouldReadIntLiteralOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read 1\n" +
             "close\n" +
@@ -1145,7 +1145,7 @@ public class RobotIT {
     public void shouldReadLongOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read [0..8]\n" +
             "close\n" +
@@ -1177,7 +1177,7 @@ public class RobotIT {
     public void shouldReadLongLiteralOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read 1L\n" +
             "close\n" +
@@ -1209,7 +1209,7 @@ public class RobotIT {
     public void shouldReadRegexGroupNoCapturesOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read  /Hello (.*)\\n/\n" +
             "close\n" +
@@ -1239,7 +1239,7 @@ public class RobotIT {
     public void shouldReadRegexGroupCapturesOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read  /Hello (?<var>.*)\\n/\n" +
             "read \"Hello \"\n" +
@@ -1273,7 +1273,7 @@ public class RobotIT {
     public void shouldReadRegexGroupTwoCapturesOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read  /(?<var>H\\w+)(?<cap> W\\w+)\\n/\n" +
             "read ${var}\n" +
@@ -1311,7 +1311,7 @@ public class RobotIT {
         assertTrue(matcher.matches());
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
                     //(:all(:subgroup))
             "read  /(?<all>Hello (?<subgroup>\\d\\d\\d) Bye from \\2)\\n/\n" +
@@ -1352,7 +1352,7 @@ public class RobotIT {
     public void shouldReadRegexInnerGroupsOK() throws Exception {
         // @formatter:off
          String script =
-              "connect tcp://localhost:8080\n" +
+              "connect 'tcp://localhost:8080'\n" +
               "connected\n" +
               "read  /(?<all>\\w+\\s(?<world>\\w+))\\n/\n" +
               "read ${all}\n" +
@@ -1387,7 +1387,7 @@ public class RobotIT {
     public void shouldReadRegexOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
              "connected\n" +
              "read  /.*Bar\\n/\n" +
              "close\n" +
@@ -1417,7 +1417,7 @@ public class RobotIT {
     public void shouldReadRegexDoubleNewLineTerminatorOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
              "connected\n" +
              "read  /(?s).*Bar\\r\\n\\r\\n/\n" +
              "close\n" +
@@ -1448,7 +1448,7 @@ public class RobotIT {
     public void shouldCaptureByteArrayAndReadValueOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
              "connected\n" +
              "read  ([0..5]:capture)\n" +
              "read ${capture}\n" +
@@ -1480,7 +1480,7 @@ public class RobotIT {
     public void shouldCaptureAndWriteValueOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read  ([0..6]:capture)\n" +
             "write ${capture}\n" +
@@ -1517,7 +1517,7 @@ public class RobotIT {
     public void shouldNotUseByteArrayAsIntegerOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
              //Read in the number of bytes coming next
             "read  ([0..4]:numcoming)\n" +
@@ -1550,7 +1550,7 @@ public class RobotIT {
     public void shouldReadVariableBytesOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
                 //Read in the number of bytes coming next
             "read (int:numcoming)\n" +
@@ -1584,7 +1584,7 @@ public class RobotIT {
     public void shouldFailBadReadOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read  \"Hello World\"\n" +
             "read  \"Bye Bye\"\n" +
@@ -1613,7 +1613,7 @@ public class RobotIT {
     public void shouldWriteNotifyReadAwaitOK() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "write notify BARRIER\n" +
             "read await BARRIER\n" +
@@ -1638,7 +1638,7 @@ public class RobotIT {
     public void shouldReadEscapedQuote() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read \"whatever\\\"\" \n" +
             "close\n" +
@@ -1672,7 +1672,7 @@ public class RobotIT {
     public void noBindOk() throws Exception {
         // @formatter:off
         String script =
-            "accept tcp://www.google.com:8080\n" +
+            "accept 'tcp://www.google.com:8080'\n" +
             "accepted\n" +
             "connected\n" +
             "close\n" +
@@ -1693,7 +1693,7 @@ public class RobotIT {
     public void shouldEchoWrong2OK() throws Exception {
         // @formatter:off
         String script =
-            "accept tcp://localhost:8080\n" +
+            "accept 'tcp://localhost:8080'\n" +
             "accepted\n" +
             "connected\n" +
             "read \"hello\"\n" +
@@ -1702,20 +1702,20 @@ public class RobotIT {
             "closed\n" +
             "\n" +
             "#Connect channel\n" +
-            "connect tcp://localhost:62346\n" +
+            "connect 'tcp://localhost:62346'\n" +
             "connected\n" +
             "write await BARRIER\n" +
             "close\n" +
             "closed\n";
 
         String expected =
-                "accept tcp://localhost:8080\n" +
+                "accept 'tcp://localhost:8080'\n" +
                 "accepted\n" +
                 "connected\n" +
                 "read \"Hello\"\n" +
                 "\n" +
                 "#Connect channel\n" +
-                "connect tcp://localhost:62346\n" +
+                "connect 'tcp://localhost:62346'\n" +
                 "connected\n" +
                 "\n";
         // @formatter:on
@@ -1749,7 +1749,7 @@ public class RobotIT {
     public void shouldReadOptionMask() throws Exception {
         // @formatter:off
         String script =
-            "connect tcp://localhost:8080\n" +
+            "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read  [(:maskingKey){4}]\n" +
             "read  option mask ${maskingKey}\n" +

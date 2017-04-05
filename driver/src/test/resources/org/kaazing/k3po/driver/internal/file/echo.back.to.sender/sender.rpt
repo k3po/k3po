@@ -14,17 +14,17 @@
 # limitations under the License.
 #
 
-connect file:target/k3po/echo.back.to.sender.dat
-        option size 256
-        option mode rw
+connect "file:target/k3po/echo.back.to.sender.dat"
+        option file:size 256
+        option file:mode "rw"
 connected
 
 write notify FILE_EXISTS
 
-write option offset "0"
+write option file:offset "0"
 write "Hello, world"
 write notify ECHO_REQUESTED
 
 read await ECHOED
-read option offset "128"
+read option file:offset "128"
 read "Hello, world"

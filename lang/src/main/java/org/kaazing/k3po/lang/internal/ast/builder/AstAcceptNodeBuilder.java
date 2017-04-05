@@ -15,9 +15,12 @@
  */
 package org.kaazing.k3po.lang.internal.ast.builder;
 
+import java.net.URI;
+
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
-import org.kaazing.k3po.lang.internal.ast.value.AstLocation;
+import org.kaazing.k3po.lang.internal.ast.value.AstValue;
+import org.kaazing.k3po.lang.types.TypeInfo;
 
 public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<AstAcceptNode> {
 
@@ -25,13 +28,23 @@ public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<Ast
         this(new AstAcceptNode());
     }
 
-    public AstAcceptNodeBuilder setLocation(AstLocation location) {
+    public AstAcceptNodeBuilder setLocation(AstValue<URI> location) {
         node.setLocation(location);
         return this;
     }
 
     public AstAcceptNodeBuilder setAcceptName(String acceptName) {
         node.setAcceptName(acceptName);
+        return this;
+    }
+
+    public <T> AstAcceptNodeBuilder setOption(TypeInfo<T> option, AstValue<T> optionValue) {
+        node.getOptions().put(option.getName(), optionValue);
+        return this;
+    }
+
+    public AstAcceptNodeBuilder setOption(String optionName, AstValue<?> optionValue) {
+        node.getOptions().put(optionName, optionValue);
         return this;
     }
 
@@ -101,18 +114,23 @@ public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<Ast
             super(new AstAcceptNode(), builder);
         }
 
-        public ScriptNested<R> setLocation(AstLocation location) {
+        public ScriptNested<R> setLocation(AstValue<URI> location) {
             node.setLocation(location);
-            return this;
-        }
-
-        public ScriptNested<R> setTransport(AstLocation transport) {
-            node.getOptions().put("transport", transport);
             return this;
         }
 
         public ScriptNested<R> setAcceptName(String acceptName) {
             node.setAcceptName(acceptName);
+            return this;
+        }
+
+        public <T> ScriptNested<R> setOption(TypeInfo<T> option, AstValue<T> optionValue) {
+            node.getOptions().put(option.getName(), optionValue);
+            return this;
+        }
+
+        public <T> ScriptNested<R> setOption(String optionName, AstValue<?> optionValue) {
+            node.getOptions().put(optionName, optionValue);
             return this;
         }
 

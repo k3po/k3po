@@ -24,17 +24,17 @@ import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 
 public class AstWriteValueNode extends AstCommandNode {
 
-    private List<AstValue> values;
+    private List<AstValue<?>> values;
 
-    public List<AstValue> getValues() {
+    public List<AstValue<?>> getValues() {
         return values;
     }
 
-    public void setValues(List<AstValue> values) {
+    public void setValues(List<AstValue<?>> values) {
         this.values = values;
     }
 
-    public void addValue(AstValue value) {
+    public void addValue(AstValue<?> value) {
         if (values == null) {
             values = new ArrayList<>();
         }
@@ -42,7 +42,7 @@ public class AstWriteValueNode extends AstCommandNode {
     }
 
     @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
         return visitor.visit(this, parameter);
     }
 
@@ -71,7 +71,7 @@ public class AstWriteValueNode extends AstCommandNode {
     protected void describe(StringBuilder buf) {
         super.describe(buf);
         buf.append("write");
-        for (AstValue val : values) {
+        for (AstValue<?> val : values) {
             buf.append(" " + val);
         }
         buf.append("\n");
