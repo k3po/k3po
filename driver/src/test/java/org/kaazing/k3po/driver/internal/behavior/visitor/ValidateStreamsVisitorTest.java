@@ -15,12 +15,17 @@
  */
 package org.kaazing.k3po.driver.internal.behavior.visitor;
 
+import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_CONTENT_LENGTH;
+import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_HEADER;
+import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_METHOD;
+import static org.kaazing.k3po.driver.internal.types.HttpTypeSystem.CONFIG_STATUS;
+
 import java.net.URI;
 
 import org.junit.Test;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.builder.AstScriptNodeBuilder;
-import org.kaazing.k3po.lang.internal.ast.value.AstLocationLiteral;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 
 public class ValidateStreamsVisitorTest {
 
@@ -29,17 +34,17 @@ public class ValidateStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
+                .setLocation(new AstLiteralURIValue(URI.create("http://localhost:8000/somepath")))
                 .addAcceptedStream()
                     .addReadConfigEvent()
-                         .setType("method")
-                         .setValueExactText("method", "GET")
+                         .setType(CONFIG_METHOD)
+                         .addMatcherExactText("GET")
                     .done()
                     .addReadCloseCommand()
                     .done()
                     .addWriteConfigCommand()
-                        .setType("header")
-                        .setName("name", "Transfer-Encoding")
+                        .setType(CONFIG_HEADER)
+                        .setValue("name", "Transfer-Encoding")
                         .addValue("Chunked")
                     .done()
                     .addWriteCommand()
@@ -61,16 +66,16 @@ public class ValidateStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
+                .setLocation(new AstLiteralURIValue(URI.create("http://localhost:8000/somepath")))
                 .addAcceptedStream()
                     .addReadConfigEvent()
-                         .setType("method")
-                         .setValueExactText("method", "get")
+                         .setType(CONFIG_METHOD)
+                         .addMatcherExactText("get")
                     .done()
                     .addReadCloseCommand()
                     .done()
                     .addWriteConfigCommand()
-                        .setType("content-length")
+                        .setType(CONFIG_CONTENT_LENGTH)
                     .done()
                     .addWriteCommand()
                         .addExactText("Some Content")
@@ -91,19 +96,19 @@ public class ValidateStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
+                .setLocation(new AstLiteralURIValue(URI.create("http://localhost:8000/somepath")))
                 .addAcceptedStream()
                     .addReadConfigEvent()
-                         .setType("method")
-                         .setValueExactText("method", "GET")
+                         .setType(CONFIG_METHOD)
+                         .addMatcherExactText("GET")
                     .done()
                     .addReadConfigEvent()
-                         .setType("header")
-                         .setValueExactText("name", "Upgrade")
+                         .setType(CONFIG_HEADER)
+                         .setMatcherExactText("name", "Upgrade")
                          .addMatcherExactText("websocket")
                     .done()
                     .addWriteConfigCommand()
-                        .setType("status")
+                        .setType(CONFIG_STATUS)
                         .setValue("code", "101")
                         .setValue("reason", "Switching Protocols")
                     .done()
@@ -128,11 +133,11 @@ public class ValidateStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
+                .setLocation(new AstLiteralURIValue(URI.create("http://localhost:8000/somepath")))
                 .addAcceptedStream()
                     .addReadConfigEvent()
-                         .setType("method")
-                         .setValueExactText("method", "get")
+                         .setType(CONFIG_METHOD)
+                         .addMatcherExactText("get")
                     .done()
                     .addReadCloseCommand()
                     .done()
@@ -159,13 +164,13 @@ public class ValidateStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addConnectStream()
-                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
+                .setLocation(new AstLiteralURIValue(URI.create("http://localhost:8000/somepath")))
                 .addOpenedEvent()
                 .done()
                 .addWriteCloseCommand()
                 .done()
                 .addWriteConfigCommand()
-                     .setType("method")
+                     .setType(CONFIG_METHOD)
                      .addValue("upgrade")
                 .done()
                 .addReadCloseCommand()
@@ -183,21 +188,21 @@ public class ValidateStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()
-                .setLocation(new AstLocationLiteral(URI.create("http://localhost:8000/somepath")))
+                .setLocation(new AstLiteralURIValue(URI.create("http://localhost:8000/somepath")))
                 .addAcceptedStream()
                     .addReadConfigEvent()
-                         .setType("method")
-                         .setValueExactText("method", "GET")
+                         .setType(CONFIG_METHOD)
+                         .addMatcherExactText("GET")
                     .done()
                     .addReadConfigEvent()
-                         .setType("header")
-                         .setValueExactText("name", "Upgrade")
+                         .setType(CONFIG_HEADER)
+                         .setMatcherExactText("name", "Upgrade")
                          .addMatcherExactText("websocket")
                     .done()
                     .addReadCloseCommand()
                     .done()
                     .addReadConfigEvent()
-                         .setType("status")
+                         .setType(CONFIG_STATUS)
                          .setMatcherExactText("code", "101")
                          .setMatcherExactText("reason", "Switching Protocols")
                     .done()
@@ -217,13 +222,13 @@ public class ValidateStreamsVisitorTest {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
         .addConnectStream().
-            setLocation(new AstLocationLiteral(URI.create("tcp://localhost:8000")))
+            setLocation(new AstLiteralURIValue(URI.create("tcp://localhost:8000")))
                 .addReadEvent()
                     .addExactText("exact text")
                 .done()
             .done()
             .addAcceptStream()
-                .setLocation(new AstLocationLiteral(URI.create("tcp://localhost:8000")))
+                .setLocation(new AstLiteralURIValue(URI.create("tcp://localhost:8000")))
                 .addAcceptedStream()
                     .addReadEvent()
                         .addExactText("exact text")

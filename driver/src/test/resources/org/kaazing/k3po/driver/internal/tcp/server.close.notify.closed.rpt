@@ -15,7 +15,7 @@
 #
 
 # ============= request ==================
-connect tcp://127.0.0.1:8001
+connect "tcp://127.0.0.1:8001"
 connected
 
 read "Request"
@@ -27,7 +27,7 @@ read await SERVER_CLOSE_ISSUED
 closed
 
 # ============= response ==================
-accept tcp://127.0.0.1:8001
+accept "tcp://127.0.0.1:8001"
 accepted
 connected
 

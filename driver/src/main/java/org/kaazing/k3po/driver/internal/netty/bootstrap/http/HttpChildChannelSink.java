@@ -35,9 +35,6 @@ import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChildCha
 import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChildChannel.HttpWriteState.CONTENT_COMPLETE;
 import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChildChannel.HttpWriteState.UPGRADED;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;

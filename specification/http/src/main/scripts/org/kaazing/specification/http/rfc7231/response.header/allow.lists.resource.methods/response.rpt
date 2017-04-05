@@ -14,15 +14,15 @@
 # limitations under the License.
 #
 
-accept http://localhost:8000/resource
+accept "http://localhost:8000/resource"
 accepted
 connected
 
-read method "PATCH"
-read header "Content-Length" "7"
+read http:method "PATCH"
+read http:header "Content-Length" "7"
 read "content"
 read closed
 	
-write status "405" "Method Not Allowed"
-write header "Allow" "GET" "HEAD" "PUT"
+write http:status "405" "Method Not Allowed"
+write http:header "Allow" "GET" "HEAD" "PUT"
 write close

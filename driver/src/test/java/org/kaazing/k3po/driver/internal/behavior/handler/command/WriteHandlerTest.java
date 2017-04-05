@@ -26,10 +26,12 @@ import static org.jboss.netty.channel.Channels.pipeline;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
 import static org.junit.Assert.assertFalse;
 import static org.kaazing.k3po.driver.internal.behavior.handler.codec.Maskers.newMasker;
+import static org.kaazing.k3po.lang.internal.el.ExpressionFactoryUtils.synchronizedSupplier;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
@@ -122,7 +124,8 @@ public class WriteHandlerTest {
         ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
         environment = new ExpressionContext();
         expression = expressionFactory.createValueExpression(environment, "${variable}", byte[].class);
-        encoders.add(new WriteExpressionEncoder(expression, environment));
+        Supplier<byte[]> supplier = synchronizedSupplier(expression, environment, byte[].class);
+        encoders.add(new WriteExpressionEncoder(supplier, expression));
 
         masker = newMasker(maskingKey);
         handler = new WriteHandler(encoders, newMasker(maskingKey));

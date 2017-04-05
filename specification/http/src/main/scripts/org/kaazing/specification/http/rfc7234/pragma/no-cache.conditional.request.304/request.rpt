@@ -14,33 +14,33 @@
 # limitations under the License.
 #
 
-connect http://localhost:8000/index.html
+connect "http://localhost:8000/index.html"
 connected
 
-write method "GET"
-write version "HTTP/1.1"
-write header host
-write header content-length
+write http:method "GET"
+write http:version "HTTP/1.1"
+write http:host
+write http:content-length
 write flush
 
-read status "200" /.*/
-read header "Last-Modified" /(?<lastModified>.+)/
-read header "Expires" /.+/
+read http:status "200" /.*/
+read http:header "Last-Modified" /(?<lastModified>.+)/
+read http:header "Expires" /.+/
 read notify LAST_MODIFIED
 
 connect await LAST_MODIFIED
-connect http://localhost:8000/index.html
+        "http://localhost:8000/index.html"
 connected
 
-write method "GET"
-write version "HTTP/1.1"
-write header host
-write header "If-Modified-Since" ${lastModified}
-write header "Pragma" "no-cache"
-write header content-length
+write http:method "GET"
+write http:version "HTTP/1.1"
+write http:host
+write http:header "If-Modified-Since" ${lastModified}
+write http:header "Pragma" "no-cache"
+write http:content-length
 write flush
 
-read status "304" /.*/
-read header "Last-Modified" /.+/
-read header "Expires" /.+/
+read http:status "304" /.*/
+read http:header "Last-Modified" /.+/
+read http:header "Expires" /.+/
 read closed

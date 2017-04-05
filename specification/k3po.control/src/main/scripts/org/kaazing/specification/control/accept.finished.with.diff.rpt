@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-accept tcp://localhost:12345
+accept "tcp://localhost:12345"
 accepted
 connected
 
@@ -25,10 +25,10 @@ read "name:path/to/script/client\n"
 read "\n"
 
 write "PREPARED\n"
-write "content-length:176\n"
+write "content-length:180\n"
 write "\n"
 write "# server\n"
-write "accept tcp://localhost:8000\n"
+write "accept \"tcp://localhost:8000\"\n"
 write "accepted\n"
 write "connected\n"
 write "read \"echo\"\n"
@@ -36,7 +36,7 @@ write "write \"echo\"\n"
 write "close\n"
 write "closed\n"
 write "# client\n"
-write "connect tcp://localhost:8000\n"
+write "connect \"tcp://localhost:8000\"\n"
 write "connected\n"
 write "write \"echo\"\n"
 write "read \"echo\"\n"
@@ -49,10 +49,10 @@ write "STARTED\n"
 write "\n"
 
 write "FINISHED\n"
-write "content-length:176\n"
+write "content-length:180\n"
 write "\n"
 write "# server\n"
-write "accept tcp://localhost:8000\n"
+write "accept \"tcp://localhost:8000\"\n"
 write "accepted\n"
 write "connected\n"
 write "read \"echo\"\n"
@@ -60,7 +60,7 @@ write "write \"echo\"\n"
 write "close\n"
 write "closed\n"
 write "# client\n"
-write "connect tcp://localhost:8000\n"
+write "connect \"tcp://localhost:8000\"\n"
 write "connected\n"
 write "write \"echo\"\n"
 write "read \"huh?\"\n"

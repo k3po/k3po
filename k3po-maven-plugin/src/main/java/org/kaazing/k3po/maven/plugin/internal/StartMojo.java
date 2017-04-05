@@ -17,6 +17,7 @@ package org.kaazing.k3po.maven.plugin.internal;
 
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
+import static java.lang.Thread.currentThread;
 import static org.apache.maven.plugins.annotations.LifecyclePhase.PRE_INTEGRATION_TEST;
 import static org.apache.maven.plugins.annotations.ResolutionScope.TEST;
 import static org.jboss.netty.logging.InternalLoggerFactory.setDefaultFactory;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -71,6 +73,8 @@ public class StartMojo extends AbstractMojo {
     @Override
     protected void executeImpl() throws MojoExecutionException {
 
+        final ClassLoader contextClassLoader = currentThread().getContextClassLoader();
+
         try {
             Log log = getLog();
             if (log.isDebugEnabled()) {
@@ -78,9 +82,25 @@ public class StartMojo extends AbstractMojo {
             }
             System.setProperty("user.dir", workingDirectory.getAbsolutePath());
 
-            ClassLoader scriptLoader = createScriptLoader();
+            ClassLoader testClassLoader = createTestClassLoader();
 
-            RobotServer server = new RobotServer(getControl(), verbose, scriptLoader);
+            RobotServer server = new RobotServer(getControl(), verbose, testClassLoader);
+
+            Map<?, ?> pluginsAsMap = project.getBuild().getPluginsAsMap();
+            Plugin plugin = (Plugin) pluginsAsMap.get("org.kaazing:k3po-maven-plugin");
+            if (plugin != null)
+            {
+                for (Dependency dependency : plugin.getDependencies())
+                {
+                    if (project.getGroupId().equals(dependency.getGroupId()) &&
+                            project.getArtifactId().equals(dependency.getArtifactId()) &&
+                            project.getVersion().equals(dependency.getVersion()))
+                    {
+                        // load extensions from project
+                        currentThread().setContextClassLoader(testClassLoader);
+                    }
+                }
+            }
 
             // TODO: detect Maven version to determine logger factory
             //         3.0 -> MavenLoggerFactory
@@ -97,8 +117,6 @@ public class StartMojo extends AbstractMojo {
             server.start();
             float duration = (currentTimeMillis() - checkpoint) / 1000.0f;
             if (log.isDebugEnabled()) {
-                Map<?, ?> pluginsAsMap = project.getBuild().getPluginsAsMap();
-                Plugin plugin = (Plugin) pluginsAsMap.get("org.kaazing:k3po-maven-plugin");
                 String version = (plugin != null) ? plugin.getVersion() : "unknown";
                 if (!daemon) {
                     log.debug(format("K3PO [%s] started in %.3fsec (CTRL+C to stop)", version, duration));
@@ -124,9 +142,13 @@ public class StartMojo extends AbstractMojo {
         catch (Exception e) {
             throw new MojoExecutionException("K3PO failed to start", e);
         }
+        finally
+        {
+            currentThread().setContextClassLoader(contextClassLoader);
+        }
     }
 
-    private ClassLoader createScriptLoader()
+    private ClassLoader createTestClassLoader()
             throws DependencyResolutionRequiredException, MalformedURLException {
         List<URL> scriptPath = new LinkedList<>();
         if (scriptDir != null) {

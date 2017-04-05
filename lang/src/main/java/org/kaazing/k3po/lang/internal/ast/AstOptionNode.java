@@ -22,7 +22,7 @@ import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 public abstract class AstOptionNode extends AstStreamableNode {
 
     private String optionName;
-    private AstValue optionValue;
+    private AstValue<?> optionValue;
 
     public String getOptionName() {
         return optionName;
@@ -32,11 +32,11 @@ public abstract class AstOptionNode extends AstStreamableNode {
         this.optionName = optionName;
     }
 
-    public AstValue getOptionValue() {
+    public AstValue<?> getOptionValue() {
         return optionValue;
     }
 
-    public void setOptionValue(AstValue optionValue) {
+    public void setOptionValue(AstValue<?> optionValue) {
         this.optionValue = optionValue;
     }
 
@@ -54,6 +54,12 @@ public abstract class AstOptionNode extends AstStreamableNode {
         }
 
         return hashCode;
+    }
+
+    @Override
+    protected final boolean equalTo(AstRegion that) {
+        return that instanceof AstOptionNode &&
+                equalTo((AstOptionNode) that);
     }
 
     protected boolean equalTo(AstOptionNode that) {

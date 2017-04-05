@@ -14,15 +14,15 @@
 # limitations under the License.
 #
 
-connect http://localhost:8000/resource
+connect "http://localhost:8000/resource"
 connected
 
-write method "POST"
-write header content-length
-write header "Range" "bytes" "100000000-100000001" #First byte is too large
+write http:method "POST"
+write http:content-length
+write http:header "Range" "bytes" "100000000-100000001" #First byte is too large
 write "content"
 write close
 	
-read status "416" "Requested Range Not Satisfiable"
+read http:status "416" "Requested Range Not Satisfiable"
 
 

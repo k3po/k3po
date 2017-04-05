@@ -15,5 +15,5 @@
 #
 
 connect await BOUND
-        tcp://localhost:8080
+        "tcp://localhost:8080"
 connected

@@ -21,7 +21,7 @@ import java.util.Arrays;
 
 import org.kaazing.k3po.lang.internal.ast.AstRegion;
 
-public final class AstLiteralBytesValue extends AstValue {
+public final class AstLiteralBytesValue extends AstValue<byte[]> {
 
     private final byte[] value;
 
@@ -32,12 +32,13 @@ public final class AstLiteralBytesValue extends AstValue {
         this.value = value;
     }
 
+    @Override
     public byte[] getValue() {
         return value;
     }
 
     @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
 
         return visitor.visit(this, parameter);
     }

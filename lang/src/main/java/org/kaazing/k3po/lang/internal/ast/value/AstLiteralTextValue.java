@@ -20,7 +20,7 @@ import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
 import org.kaazing.k3po.lang.internal.ast.AstRegion;
 
-public class AstLiteralTextValue extends AstValue {
+public class AstLiteralTextValue extends AstValue<String> {
 
     private final String value;
 
@@ -31,12 +31,13 @@ public class AstLiteralTextValue extends AstValue {
         this.value = value;
     }
 
+    @Override
     public String getValue() {
         return value;
     }
 
     @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
         return visitor.visit(this, parameter);
     }
 

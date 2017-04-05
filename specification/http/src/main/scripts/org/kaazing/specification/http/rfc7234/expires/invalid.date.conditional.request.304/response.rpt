@@ -19,30 +19,30 @@ property date "Wed, 18 Nov 2015 01:10:45 GMT"
 property invalidExpires "Sun, 30 Feb 2015 01:10.56 GMT"
 property expires "Wed, 18 Nov 2015 01:10:55 GMT"
 
-accept http://localhost:8000/index.html
+accept "http://localhost:8000/index.html"
 accepted
 connected
 
-read method "GET"
-read version "HTTP/1.1"
-read header "Host" "localhost:8000"
+read http:method "GET"
+read http:version "HTTP/1.1"
+read http:header "Host" "localhost:8000"
 
-write status "200" "OK"
-write header "Date" ${date}
-write header "Expires" ${invalidExpires}
-write header "Last-Modified" ${lastModified}
-write header content-length
+write http:status "200" "OK"
+write http:header "Date" ${date}
+write http:header "Expires" ${invalidExpires}
+write http:header "Last-Modified" ${lastModified}
+write http:content-length
 write flush
 
 accepted
 connected
 
-read method "GET"
-read version "HTTP/1.1"
-read header "Host" "localhost:8000"
-read header "If-Modified-Since" ${lastModified}
+read http:method "GET"
+read http:version "HTTP/1.1"
+read http:header "Host" "localhost:8000"
+read http:header "If-Modified-Since" ${lastModified}
 
-write status "304" "Not Modified"
-write header "Last-Modified" ${lastModified}
-write header "Expires" ${expires}
+write http:status "304" "Not Modified"
+write http:header "Last-Modified" ${lastModified}
+write http:header "Expires" ${expires}
 write close

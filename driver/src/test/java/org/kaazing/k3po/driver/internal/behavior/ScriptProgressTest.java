@@ -34,7 +34,7 @@ public class ScriptProgressTest {
     public void observedScriptEqualsScriptOnSuccess() throws Exception {
         // @formatter:off
         String script =
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";
@@ -56,7 +56,7 @@ public class ScriptProgressTest {
     public void connectFailWriteWithWhiteSpaceOk() throws Exception {
         // @formatter:off
         String script =
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "read \"M\"\n" +
                 "close\n" +
@@ -76,7 +76,7 @@ public class ScriptProgressTest {
         String observedScript = progress.getObservedScript();
         // @formatter:off
         String expectedScript =
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "closed\n";
         // @formatter:on
@@ -90,7 +90,7 @@ public class ScriptProgressTest {
         // Test more than start,end,observed at column 0
         // @formatter:off
         String script =
-                "\tconnect tcp://localhost:8080\n" +
+                "\tconnect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "close\n" +
                 "\t\tclosed\n";
@@ -114,7 +114,7 @@ public class ScriptProgressTest {
         // Test no ending new line
         // @formatter:off
         String script =
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed";
@@ -138,7 +138,7 @@ public class ScriptProgressTest {
         // Test no ending new line
         // @formatter:off
         String script =
-                "connect tcp://localhost:8080    \n" +
+                "connect 'tcp://localhost:8080'    \n" +
                 "connected\t\n" +
                 "close\n" +
                 "closed\t    \n";
@@ -160,7 +160,7 @@ public class ScriptProgressTest {
     public void testFailOk() throws Exception {
         // @formatter:off
         String script =
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";
@@ -178,7 +178,7 @@ public class ScriptProgressTest {
 
         String observedScript = progress.getObservedScript();
 
-        String expectedScript = "connect tcp://localhost:8080\n" + "connected\n" + "close\n" + "OPEN\n";
+        String expectedScript = "connect 'tcp://localhost:8080'\n" + "connected\n" + "close\n" + "OPEN\n";
 
         assertEquals(expectedScript, observedScript);
 
@@ -188,7 +188,7 @@ public class ScriptProgressTest {
     public void testFailWithTabOk() throws Exception {
         // @formatter:off
         String script =
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "\tclose\t\n" +
                 "closed\n";
@@ -206,7 +206,7 @@ public class ScriptProgressTest {
 
         String observedScript = progress.getObservedScript();
 
-        String expectedScript = "connect tcp://localhost:8080\n" + "connected\n" + "\tclose\t\n" + "OPEN\n";
+        String expectedScript = "connect 'tcp://localhost:8080'\n" + "connected\n" + "\tclose\t\n" + "OPEN\n";
 
         assertEquals(expectedScript, observedScript);
 
@@ -217,7 +217,7 @@ public class ScriptProgressTest {
         // @formatter:off
         String script =
                 "#Start #\n" +
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected #foo\n" +
                 "#comment\n" +
                 "close\n" +
@@ -243,7 +243,7 @@ public class ScriptProgressTest {
         // @formatter:off
         String script =
                 "#Start #\n" +
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected #foo\n" +
                 "#comment\n" +
                 "close\n" +
@@ -265,7 +265,7 @@ public class ScriptProgressTest {
         String observedScript = progress.getObservedScript();
 
         String expectedScript =
-                "#Start #\n" + "connect tcp://localhost:8080\n" + "connected #foo\n" + "#comment\n" + "close\n" + "#comment\n"
+                "#Start #\n" + "connect 'tcp://localhost:8080'\n" + "connected #foo\n" + "#comment\n" + "close\n" + "#comment\n"
                         + "OPEN\n" + "#End\n";
 
         assertEquals(expectedScript, observedScript);
@@ -276,11 +276,11 @@ public class ScriptProgressTest {
     public void moreThanOneStream() throws Exception {
         // @formatter:off
         String script =
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n" +
-                "connect tcp://localhost:8081\n" +
+                "connect 'tcp://localhost:8081'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";
@@ -303,14 +303,14 @@ public class ScriptProgressTest {
         // @formatter:off
         String script =
                 "#Comment 1\n" +
-                "\tconnect tcp://localhost:8080 #comment 2\n" +
+                "\tconnect 'tcp://localhost:8080' #comment 2\n" +
                 "connected\n" +
                 "\t#comment 3\n" +
                 "\tclose\n" +
                 "#comment 8\n" +
                 "\tclosed\n" +
                 "\t#comment 4\n" +
-                "\tconnect tcp://localhost:8081\n" +
+                "\tconnect 'tcp://localhost:8081'\n" +
                 "\tconnected\n" +
                 "#comment 7\n" +
                 "\tclose\n" +
@@ -336,14 +336,14 @@ public class ScriptProgressTest {
         // @formatter:off
         String script =
                 "#Comment 1\n" +
-                "\tconnect tcp://localhost:8080 #comment 2\n" +
+                "\tconnect 'tcp://localhost:8080' #comment 2\n" +
                 "connected\n" +
                 "\t#comment 3\n" +
                 "\tclose\n" +
                 "#comment 8\n" +
                 "\tclosed\n" +
                 "\t#comment 4\n" +
-                "\tconnect tcp://localhost:8081\n" +
+                "\tconnect 'tcp://localhost:8081'\n" +
                 "\tconnected\n" +
                 "#comment 7\n" +
                 "\tclose\n" +
@@ -365,9 +365,19 @@ public class ScriptProgressTest {
         String observedScript = progress.getObservedScript();
 
         String expectedScript =
-                "#Comment 1\n" + "\tconnect tcp://localhost:8080 #comment 2\n" + "connected\n" + "\t#comment 3\n" + "\tCLOSED\n"
-                        + "\t#comment 4\n" + "\tconnect tcp://localhost:8081\n" + "\tconnected\n" + "#comment 7\n" + "\tclose\n"
-                        + "#comment 6\n" + "\tclosed\n" + "\t#comment 5\n";
+                "#Comment 1\n" +
+                "\tconnect 'tcp://localhost:8080' #comment 2\n" +
+                "connected\n" +
+                "\t#comment 3\n" +
+                "\tCLOSED\n" +
+                "\t#comment 4\n" +
+                "\tconnect 'tcp://localhost:8081'\n" +
+                "\tconnected\n" +
+                "#comment 7\n" +
+                "\tclose\n" +
+                "#comment 6\n" +
+                "\tclosed\n" +
+                "\t#comment 5\n";
 
         assertEquals(expectedScript, observedScript);
 
@@ -378,14 +388,14 @@ public class ScriptProgressTest {
         // @formatter:off
         String script =
                 "#Comment 1\n" +
-                "\tconnect tcp://localhost:8080 #comment 2\n" +
+                "\tconnect 'tcp://localhost:8080' #comment 2\n" +
                 "connected\n" +
                 "\t#comment 3\n" +
                 "\tclose\n" +
                 "#comment 8\n" +
                 "\tclosed\n" +
                 "\t#comment 4\n" +
-                "\tconnect tcp://localhost:8081\n" +
+                "\tconnect 'tcp://localhost:8081'\n" +
                 "\tconnected\n" +
                 "#comment 7\n" +
                 "\tclose\n" +
@@ -410,9 +420,17 @@ public class ScriptProgressTest {
         String observedScript = progress.getObservedScript();
 
         String expectedScript =
-                "#Comment 1\n" + "\tconnect tcp://localhost:8080 #comment 2\n" + "connected\n" + "\t#comment 3\n" + "\tCLOSED\n"
-                        + "\t#comment 4\n" + "\tconnect tcp://localhost:8081\n" + "\tconnected\n" + "#comment 7\n" + "\tCLOSED\n"
-                        + "\t#comment 5\n";
+                "#Comment 1\n" +
+                "\tconnect 'tcp://localhost:8080' #comment 2\n" +
+                "connected\n" +
+                "\t#comment 3\n" +
+                "\tCLOSED\n" +
+                "\t#comment 4\n" +
+                "\tconnect 'tcp://localhost:8081'\n" +
+                "\tconnected\n" +
+                "#comment 7\n" +
+                "\tCLOSED\n" +
+                "\t#comment 5\n";
 
         assertEquals(expectedScript, observedScript);
 
@@ -423,14 +441,14 @@ public class ScriptProgressTest {
         // @formatter:off
         String script =
                 "#Comment 1\n" +
-                "\tconnect tcp://localhost:8080 #comment 2\n" +
+                "\tconnect 'tcp://localhost:8080' #comment 2\n" +
                 "connected\n" +
                 "\t#comment 3\n" +
                 "\tclose\n" +
                 "#comment 8\n" +
                 "\tclosed\n" +
                 "\t#comment 4\n" +
-                "\tconnect tcp://localhost:8081\n" +
+                "\tconnect 'tcp://localhost:8081'\n" +
                 "\tconnected\n" +
                 "#comment 7\n" +
                 "\tclose\n" +
@@ -450,9 +468,19 @@ public class ScriptProgressTest {
         String observedScript = progress.getObservedScript();
 
         String expectedScript =
-                "#Comment 1\n" + "\tconnect tcp://localhost:8080 #comment 2\n" + "connected\n" + "\t#comment 3\n" + "\tclose\n"
-                        + "#comment 8\n" + "\tclosed\n" + "\t#comment 4\n" + "\tconnect tcp://localhost:8081\n" + "\tconnected\n"
-                        + "#comment 7\n" + "\tCLOSED\n" + "\t#comment 5\n";
+                "#Comment 1\n" +
+                "\tconnect 'tcp://localhost:8080' #comment 2\n" +
+                "connected\n" +
+                "\t#comment 3\n" +
+                "\tclose\n" +
+                "#comment 8\n" +
+                "\tclosed\n" +
+                "\t#comment 4\n" +
+                "\tconnect 'tcp://localhost:8081'\n" +
+                "\tconnected\n" +
+                "#comment 7\n" +
+                "\tCLOSED\n" +
+                "\t#comment 5\n";
 
         assertEquals(expectedScript, observedScript);
 
@@ -462,7 +490,7 @@ public class ScriptProgressTest {
     public void acceptSuccess() throws Exception {
         // @formatter:off
         String script =
-                "accept tcp://localhost:8080\n" +
+                "accept 'tcp://localhost:8080'\n" +
                 "accepted\n" +
                 "connected\n" +
                 "close\n" +
@@ -486,7 +514,7 @@ public class ScriptProgressTest {
         // @formatter:off
         String script =
                 "# Accept script\n" +
-                "\taccept tcp://localhost:8080 #commentagain\n" +
+                "\taccept 'tcp://localhost:8080' #commentagain\n" +
                 "\t#comment #1\n" +
                 "accepted\n" +
                 "#comment #2\n" +
@@ -515,7 +543,7 @@ public class ScriptProgressTest {
         // @formatter:off
         String script =
                 "# Accept script\n" +
-                "\taccept tcp://localhost:8080 #commentagain\n" +
+                "\taccept 'tcp://localhost:8080' #commentagain\n" +
                 "\t#comment #1\n" +
                 "accepted\n" +
                 "#comment #2\n" +
@@ -540,7 +568,7 @@ public class ScriptProgressTest {
         String observedScript = progress.getObservedScript();
 
         String expectedScript =
-                "# Accept script\n" + "\taccept tcp://localhost:8080 #commentagain\n" + "\t#comment #1\n" + "accepted\n"
+                "# Accept script\n" + "\taccept 'tcp://localhost:8080' #commentagain\n" + "\t#comment #1\n" + "accepted\n"
                         + "#comment #2\n" + "connected\n" + "#comment #3\n" + "CLOSED\n" + "#comment #5\n";
 
         assertEquals(expectedScript, observedScript);
@@ -551,7 +579,7 @@ public class ScriptProgressTest {
         // @formatter:off
         String script =
                 "# Accept script\n" +
-                "\taccept tcp://localhost:8080 #commentagain\n" +
+                "\taccept 'tcp://localhost:8080' #commentagain\n" +
                 "\t#comment #1\n" +
                 "accepted\n" +
                 "#comment #2\n" +
@@ -588,7 +616,7 @@ public class ScriptProgressTest {
         // @formatter:off
         String script =
                 "# Accept script\n" +
-                "\taccept tcp://localhost:8080 #commentagain\n" +
+                "\taccept 'tcp://localhost:8080' #commentagain\n" +
                 "\t#comment #1\n" +
                 "accepted\n" +
                 "#comment #2\n" +
@@ -621,7 +649,7 @@ public class ScriptProgressTest {
         String observedScript = progress.getObservedScript();
 
         String expectedScript =
-                "# Accept script\n" + "\taccept tcp://localhost:8080 #commentagain\n" + "\t#comment #1\n" + "accepted\n"
+                "# Accept script\n" + "\taccept 'tcp://localhost:8080' #commentagain\n" + "\t#comment #1\n" + "accepted\n"
                         + "#comment #2\n" + "connected\n" + "#comment #3\n" + "CLOSED\n" + "#comment #5\n" + "accepted\n"
                         + "#comment #2\n" + "connected\n" + "#comment #3\n" + "close\n" + "#comment #4\n" + "closed\n"
                         + "#comment #5\n";
@@ -635,7 +663,7 @@ public class ScriptProgressTest {
         // @formatter:off
         String script =
                 "# Accept script\n" +
-                "\taccept tcp://localhost:8080 #commentagain\n" +
+                "\taccept 'tcp://localhost:8080' #commentagain\n" +
                 "\t#comment #1\n" +
                 "accepted\n" +
                 "#comment #2\n" +
@@ -668,7 +696,7 @@ public class ScriptProgressTest {
         String observedScript = progress.getObservedScript();
 
         String expectedScript =
-                "# Accept script\n" + "\taccept tcp://localhost:8080 #commentagain\n" + "\t#comment #1\n" + "accepted\n"
+                "# Accept script\n" + "\taccept 'tcp://localhost:8080' #commentagain\n" + "\t#comment #1\n" + "accepted\n"
                         + "#comment #2\n" + "connected\n" + "#comment #3\n" + "close\n" + "#comment #4\n" + "closed\n"
                         + "#comment #5\n" + "accepted\n" + "#comment #2\n" + "connected\n" + "#comment #3\n" + "CLOSED\n"
                         + "#comment #5\n";
@@ -682,7 +710,7 @@ public class ScriptProgressTest {
         // @formatter:off
         String script =
                 "# Accept script\n" +
-                "\taccept tcp://localhost:8080 #commentagain\n" +
+                "\taccept 'tcp://localhost:8080' #commentagain\n" +
                 "\t#comment #1\n" +
                 "accepted\n" +
                 "#comment #2\n" +
@@ -718,7 +746,7 @@ public class ScriptProgressTest {
         String observedScript = progress.getObservedScript();
 
         String expectedScript =
-                "# Accept script\n" + "\taccept tcp://localhost:8080 #commentagain\n" + "\t#comment #1\n" + "accepted\n"
+                "# Accept script\n" + "\taccept 'tcp://localhost:8080' #commentagain\n" + "\t#comment #1\n" + "accepted\n"
                         + "#comment #2\n" + "connected\n" + "#comment #3\n" + "CLOSED\n" + "#comment #5\n" + "accepted\n"
                         + "#comment #2\n" + "connected\n" + "#comment #3\n" + "CLOSED\n" + "#comment #5\n";
 
@@ -731,7 +759,7 @@ public class ScriptProgressTest {
         // @formatter:off
         String script =
                 "# Accept script\n" +
-                "\taccept tcp://localhost:8080 #commentagain\n" +
+                "\taccept 'tcp://localhost:8080' #commentagain\n" +
                 "\t#comment #1\n" +
                 "accepted\n" +
                 "#comment #2\n" +
@@ -749,7 +777,7 @@ public class ScriptProgressTest {
                 "#comment #4\n" +
                 "closed\n" +
                 "#comment #5\n" +
-                "connect foobar:///foo\n" +
+                "connect 'foobar:///foo'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";
@@ -771,15 +799,15 @@ public class ScriptProgressTest {
     public void middleStreamFailsOk() throws Exception {
         // @formatter:off
         String script =
-                "connect tcp://localhost:8081\n" +
+                "connect 'tcp://localhost:8081'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n" +
-                "connect tcp://localhost:8082\n" +
+                "connect 'tcp://localhost:8082'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n" +
-                "connect tcp://localhost:8083\n" +
+                "connect 'tcp://localhost:8083'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";
@@ -797,8 +825,15 @@ public class ScriptProgressTest {
         String observedScript = progress.getObservedScript();
 
         String expectedScript =
-                "connect tcp://localhost:8081\n" + "connected\n" + "close\n" + "closed\n" + "connect refused\n"
-                        + "connect tcp://localhost:8083\n" + "connected\n" + "close\n" + "closed\n";
+                "connect 'tcp://localhost:8081'\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n" +
+                "connect refused\n" +
+                "connect 'tcp://localhost:8083'\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
 
         assertEquals(expectedScript, observedScript);
     }
@@ -807,15 +842,15 @@ public class ScriptProgressTest {
     public void firstStreamFailsOk() throws Exception {
         // @formatter:off
         String script =
-                "connect tcp://localhost:8081\n" +
+                "connect 'tcp://localhost:8081'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n" +
-                "connect tcp://localhost:8082\n" +
+                "connect 'tcp://localhost:8082'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n" +
-                "connect tcp://localhost:8083\n" +
+                "connect 'tcp://localhost:8083'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";
@@ -833,8 +868,15 @@ public class ScriptProgressTest {
         String observedScript = progress.getObservedScript();
 
         String expectedScript =
-                "connect refused\n" + "connect tcp://localhost:8082\n" + "connected\n" + "close\n" + "closed\n"
-                        + "connect tcp://localhost:8083\n" + "connected\n" + "close\n" + "closed\n";
+                "connect refused\n" +
+                "connect 'tcp://localhost:8082'\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n" +
+                "connect 'tcp://localhost:8083'\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
 
         assertEquals(expectedScript, observedScript);
     }
@@ -843,15 +885,15 @@ public class ScriptProgressTest {
     public void lastStreamFailsOk() throws Exception {
         // @formatter:off
         String script =
-                "connect tcp://localhost:8081\n" +
+                "connect 'tcp://localhost:8081'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n" +
-                "connect tcp://localhost:8082\n" +
+                "connect 'tcp://localhost:8082'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n" +
-                "connect tcp://localhost:8083\n" +
+                "connect 'tcp://localhost:8083'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";
@@ -868,8 +910,15 @@ public class ScriptProgressTest {
         String observedScript = progress.getObservedScript();
 
         String expectedScript =
-                "connect tcp://localhost:8081\n" + "connected\n" + "close\n" + "closed\n" + "connect tcp://localhost:8082\n"
-                        + "connected\n" + "close\n" + "closed\n" + "connect refused\n";
+                "connect 'tcp://localhost:8081'\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n" +
+                "connect 'tcp://localhost:8082'\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n" +
+                "connect refused\n";
 
         assertEquals(expectedScript, observedScript);
     }
@@ -879,18 +928,18 @@ public class ScriptProgressTest {
         // @formatter:off
         String script =
                 "#Start Stream 1\n" +
-                "connect tcp://localhost:8081\n" +
+                "connect 'tcp://localhost:8081'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n" +
                 "#Stream 2\n" +
-                "connect tcp://localhost:8082\n" +
+                "connect 'tcp://localhost:8082'\n" +
                 "connected\n" +
                 "#Mid stream 2\n" +
                 "close\n" +
                 "closed\n" +
                 "#Stream 3\n" +
-                "connect tcp://localhost:8083\n" +
+                "connect 'tcp://localhost:8083'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n" +
@@ -909,9 +958,19 @@ public class ScriptProgressTest {
 
         // The engine can't tell that #Stream 3 should be there.
         String expectedScript =
-                "#Start Stream 1\n" + "connect tcp://localhost:8081\n" + "connected\n" + "close\n" + "closed\n" + "#Stream 2\n"
-                        + "connect refused\n" + "#Stream 3\n" + "connect tcp://localhost:8083\n" + "connected\n" + "close\n"
-                        + "closed\n" + "#DONE\n";
+                "#Start Stream 1\n" +
+                "connect 'tcp://localhost:8081'\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n" +
+                "#Stream 2\n" +
+                "connect refused\n" +
+                "#Stream 3\n" +
+                "connect 'tcp://localhost:8083'\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n" +
+                "#DONE\n";
 
         assertEquals(expectedScript, observedScript);
     }
@@ -920,15 +979,15 @@ public class ScriptProgressTest {
     public void skipStreamThenAcceptOk() throws Exception {
         // @formatter:off
         String script =
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n" +
-                "connect tcp://localhost:8081\n" +
+                "connect 'tcp://localhost:8081'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n" +
-                "accept tcp://localhost:8082\n" +
+                "accept 'tcp://localhost:8082'\n" +
                 "accepted\n" +
                 "connected\n" +
                 "close\n" +
@@ -947,12 +1006,12 @@ public class ScriptProgressTest {
 
         // @formatter:off
         String expectedScript =
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n" +
                 "connect refused\n" +
-                "accept tcp://localhost:8082\n" +
+                "accept 'tcp://localhost:8082'\n" +
                 "accepted\n" +
                 "connected\n" +
                 "close\n" +
@@ -968,20 +1027,20 @@ public class ScriptProgressTest {
         // @formatter:off
         String script =
                 "#Stream #1\n" +
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "#Middle Comment\n" +
                 "close\n" +
                 "closed\n" +
                 "#Stream #2\n" +
-                "connect tcp://localhost:8081\n" +
+                "connect 'tcp://localhost:8081'\n" +
                 "connected\n" +
                 "\n" +
                 "#Middle Comment\n" +
                 "close\n" +
                 "closed\n" +
                 "#Stream #3\n" +
-                "accept tcp://localhost:8082\n" +
+                "accept 'tcp://localhost:8082'\n" +
                 "#Stream #4\n" +
                 "\n" +
                 "accepted\n" +
@@ -1002,9 +1061,23 @@ public class ScriptProgressTest {
         String observedScript = progress.getObservedScript();
 
         String expectedScript =
-                "#Stream #1\n" + "connect tcp://localhost:8080\n" + "connected\n" + "#Middle Comment\n" + "close\n" + "closed\n"
-                        + "#Stream #2\n" + "connect refused\n" + "#Stream #3\n" + "accept tcp://localhost:8082\n"
-                        + "#Stream #4\n" + "\n" + "accepted\n" + "connected\n" + "#Middle Comment\n" + "close\n" + "closed\n";
+                "#Stream #1\n" +
+                "connect 'tcp://localhost:8080'\n" +
+                "connected\n" +
+                "#Middle Comment\n" +
+                "close\n" +
+                "closed\n" +
+                "#Stream #2\n" +
+                "connect refused\n" +
+                "#Stream #3\n" +
+                "accept 'tcp://localhost:8082'\n" +
+                "#Stream #4\n" +
+                "\n" +
+                "accepted\n" +
+                "connected\n" +
+                "#Middle Comment\n" +
+                "close\n" +
+                "closed\n";
 
         assertEquals(expectedScript, observedScript);
     }
@@ -1013,7 +1086,7 @@ public class ScriptProgressTest {
     public void acceptNoStreamsOk() throws Exception {
         // @formatter:off
         String script =
-                "accept tcp://localhost:8080\n" +
+                "accept 'tcp://localhost:8080'\n" +
                 "accepted\n" +
                 "connected\n" +
                 "close\n" +
@@ -1033,7 +1106,7 @@ public class ScriptProgressTest {
 
         // @formatter:off
         String expectedScript =
-                "accept tcp://localhost:8080\n" +
+                "accept 'tcp://localhost:8080'\n" +
                 "\n";
         // @formatter:on
 
@@ -1044,12 +1117,12 @@ public class ScriptProgressTest {
     public void twoAcceptNoStreamsOk() throws Exception {
         // @formatter:off
         String script =
-                "accept tcp://localhost:8080\n" +
+                "accept 'tcp://localhost:8080'\n" +
                 "accepted\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n" +
-                "accept tcp://localhost:8080\n" +
+                "accept 'tcp://localhost:8080'\n" +
                 "accepted\n" +
                 "connected\n" +
                 "close\n" +
@@ -1069,7 +1142,7 @@ public class ScriptProgressTest {
 
         String observedScript = progress.getObservedScript();
 
-        String expectedScript = "accept tcp://localhost:8080\n" + "\n" + "accept tcp://localhost:8080\n" + "\n";
+        String expectedScript = "accept 'tcp://localhost:8080'\n" + "\n" + "accept 'tcp://localhost:8080'\n" + "\n";
 
         assertEquals(expectedScript, observedScript);
     }
@@ -1078,12 +1151,12 @@ public class ScriptProgressTest {
     public void connectAndAcceptNoStreamsOk() throws Exception {
         // @formatter:off
         String script =
-                "accept tcp://localhost:8080\n" +
+                "accept 'tcp://localhost:8080'\n" +
                 "accepted\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n" +
-                "connect tcp://localhost:8081\n" +
+                "connect 'tcp://localhost:8081'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";
@@ -1101,8 +1174,12 @@ public class ScriptProgressTest {
         String observedScript = progress.getObservedScript();
 
         String expectedScript =
-                "accept tcp://localhost:8080\n" + "\n" + "connect tcp://localhost:8081\n" + "connected\n" + "close\n"
-                        + "closed\n";
+                "accept 'tcp://localhost:8080'\n" +
+                "\n" +
+                "connect 'tcp://localhost:8081'\n" +
+                "connected\n" +
+                "close\n" +
+                "closed\n";
 
         assertEquals(expectedScript, observedScript);
     }
@@ -1111,7 +1188,7 @@ public class ScriptProgressTest {
     public void connectNoOneHomeOk() throws Exception {
         // @formatter:off
         String script =
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";
@@ -1131,7 +1208,7 @@ public class ScriptProgressTest {
 
         // @formatter:off
         String expectedScript =
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "OPEN\n";
         // @formatter:on
 
@@ -1162,7 +1239,7 @@ public class ScriptProgressTest {
     public void scriptWithAllFailedOk() throws Exception {
         // @formatter:off
         String script =
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";
@@ -1189,13 +1266,13 @@ public class ScriptProgressTest {
     public void canEchoWrongOK() throws Exception {
         // @formatter:off
         String script =
-                "accept tcp://localhost:8080\n" +
+                "accept 'tcp://localhost:8080'\n" +
                 "accepted\n" +
                 "connected\n" +
                 "read \"ello\"\n" +
                 "closed\n" +
                 "#Connect channel\n" +
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "write \"Hello\"\n" +
                 "close\n" +
@@ -1216,12 +1293,12 @@ public class ScriptProgressTest {
 
         // @formatter:off
         String expectedScript =
-                "accept tcp://localhost:8080\n" +
+                "accept 'tcp://localhost:8080'\n" +
                 "accepted\n" +
                 "connected\n" +
                 "OPEN\n" +
                 "#Connect channel\n" +
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "write \"Hello\"\n" +
                 "close\n" +
@@ -1235,12 +1312,12 @@ public class ScriptProgressTest {
     public void canSkipFirstAcceptStreamAndSecondStream() throws Exception {
         // @formatter:off
         String script =
-                "accept tcp://localhost:8080\n" +
+                "accept 'tcp://localhost:8080'\n" +
                 "accepted\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n" +
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "closed\n";
         // @formatter:on
@@ -1262,10 +1339,10 @@ public class ScriptProgressTest {
 
         // @formatter:off
         String expectedScript =
-                "accept tcp://localhost:8080\n" +
+                "accept 'tcp://localhost:8080'\n" +
                 "accepted\n" +
                 "\n" +
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "\n";
         // @formatter:on
 
@@ -1276,10 +1353,10 @@ public class ScriptProgressTest {
     public void canSkipFirstConnectStreamAndSecondStream() throws Exception {
         // @formatter:off
         String script =
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "closed\n" +
-                "accept tcp://localhost:8080\n" +
+                "accept 'tcp://localhost:8080'\n" +
                 "accepted\n" +
                 "connected\n" +
                 "close\n" +
@@ -1303,9 +1380,9 @@ public class ScriptProgressTest {
 
         // @formatter:off
         String expectedScript =
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "\n" +
-                "accept tcp://localhost:8080\n" +
+                "accept 'tcp://localhost:8080'\n" +
                 "accepted\n" +
                 "\n";
         // @formatter:on
@@ -1317,7 +1394,7 @@ public class ScriptProgressTest {
     public void testCacheResultOk() throws Exception {
         // @formatter:off
         String script =
-                "connect tcp://localhost:8080\n" +
+                "connect 'tcp://localhost:8080'\n" +
                 "connected\n" +
                 "close\n" +
                 "closed\n";
@@ -1334,7 +1411,7 @@ public class ScriptProgressTest {
 
         String observedScript = progress.getObservedScript();
 
-        String expectedScript = "connect tcp://localhost:8080\n" + "connected\n" + "close\n" + "OPEN\n";
+        String expectedScript = "connect 'tcp://localhost:8080'\n" + "connected\n" + "close\n" + "OPEN\n";
 
         assertEquals(expectedScript, observedScript);
         // failed scripts aren't idempotent on internal implementation

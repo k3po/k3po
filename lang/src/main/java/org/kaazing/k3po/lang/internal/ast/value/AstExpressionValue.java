@@ -17,27 +17,38 @@ package org.kaazing.k3po.lang.internal.ast.value;
 
 import static java.lang.String.format;
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
+import static org.kaazing.k3po.lang.internal.el.ExpressionFactoryUtils.synchronizedValue;
 
 import javax.el.ValueExpression;
 
 import org.kaazing.k3po.lang.internal.ast.AstRegion;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
-public final class AstExpressionValue extends AstValue {
+public final class AstExpressionValue<T> extends AstValue<T> {
 
-    private final ValueExpression value;
+    private final ValueExpression expression;
     private final ExpressionContext environment;
 
-    public AstExpressionValue(ValueExpression value, ExpressionContext environment) {
-        if (value == null) {
-            throw new NullPointerException("value");
+    public AstExpressionValue(ValueExpression expression, ExpressionContext environment) {
+        if (expression == null) {
+            throw new NullPointerException("expression");
         }
-        this.value = value;
+        this.expression = expression;
         this.environment = environment;
     }
 
-    public ValueExpression getValue() {
-        return value;
+    @Override
+    @SuppressWarnings("unchecked")
+    public T getValue() {
+        return (T) synchronizedValue(expression, environment, expression.getExpectedType());
+    }
+
+    public <R> R getValue(Class<R> expectedType) {
+        return synchronizedValue(expression, environment, expectedType);
+    }
+
+    public ValueExpression getExpression() {
+        return expression;
     }
 
     public ExpressionContext getEnvironment() {
@@ -45,27 +56,27 @@ public final class AstExpressionValue extends AstValue {
     }
 
     @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
         return visitor.visit(this, parameter);
     }
 
     @Override
     protected int hashTo() {
-        return value.hashCode();
+        return expression.hashCode();
     }
 
     @Override
     protected boolean equalTo(AstRegion that) {
-        return (that instanceof AstExpressionValue) && equalTo((AstExpressionValue) that);
+        return (that instanceof AstExpressionValue) && equalTo((AstExpressionValue<?>) that);
     }
 
-    protected boolean equalTo(AstExpressionValue that) {
-        return equivalent(this.value, that.value);
+    protected boolean equalTo(AstExpressionValue<?> that) {
+        return equivalent(this.expression, that.expression);
     }
 
     @Override
     protected void describe(StringBuilder buf) {
-        buf.append(format("(%s)%s", value.getExpectedType().getSimpleName(), value.getExpressionString()));
+        buf.append(format("(%s)%s", expression.getExpectedType().getSimpleName(), expression.getExpressionString()));
     }
 
 }

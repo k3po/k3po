@@ -14,14 +14,14 @@
 # limitations under the License.
 #
 
-accept http://localhost:8080/
+accept "http://localhost:8080/"
 accepted
 connected
-read method "GET"
-read header "header" [0..8001]
+read http:method "GET"
+read http:header "header" [0..8001]
 read closed
-write status "400" "Bad Request"
-write header content-length
+write http:status "400" "Bad Request"
+write http:content-length
 write "Header length was larger than allowed"
 write close
 

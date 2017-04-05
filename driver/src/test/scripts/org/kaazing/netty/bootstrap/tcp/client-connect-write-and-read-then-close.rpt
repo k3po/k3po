@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-connect tcp://127.0.0.1:62020
+connect "tcp://127.0.0.1:62020"
 connected
 write "Hello, world"
 read "Hello, world"

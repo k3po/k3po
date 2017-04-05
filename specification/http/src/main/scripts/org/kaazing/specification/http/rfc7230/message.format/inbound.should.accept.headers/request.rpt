@@ -14,9 +14,9 @@
 # limitations under the License.
 #
 
-connect http://localhost:8080/
+connect "http://localhost:8080/"
 connected
 
-write method "GET"
-write header "some" "header"
+write http:method "GET"
+write http:header "some" "header"
 write close

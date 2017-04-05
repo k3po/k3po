@@ -14,9 +14,9 @@
 # limitations under the License.
 #
 
-accept http://localhost:8080/
+accept "http://localhost:8080/"
 accepted
 connected
-read method "GET"
-read header "some" "header"
+read http:method "GET"
+read http:header "some" "header"
 read closed

@@ -36,7 +36,7 @@ public class FileChannelAddress extends ChannelAddress {
         this.mode = mode == null ? "rw" : mode;
 
         Long size = (Long) options.get("size");
-        this.size = size == null ? 0 : size;
+        this.size = size == null ? 0L : size;
     }
 
     public String mode() {

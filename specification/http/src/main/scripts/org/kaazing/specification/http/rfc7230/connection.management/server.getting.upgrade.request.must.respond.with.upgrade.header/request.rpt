@@ -14,12 +14,12 @@
 # limitations under the License.
 #
 
-connect http://localhost:8080/
+connect "http://localhost:8080/"
 connected
-write method "GET"
-write header "Upgrade" "WebSocket"
-write header "Connection" "upgrade"
-write header "Host" "localhost:8080"
-read status "101" /.*/
-read header "Upgrade" "WebSocket"
+write http:method "GET"
+write http:header "Upgrade" "WebSocket"
+write http:header "Connection" "upgrade"
+write http:header "Host" "localhost:8080"
+read http:status "101" /.*/
+read http:header "Upgrade" "WebSocket"
 

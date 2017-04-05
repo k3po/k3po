@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-accept tcp://localhost:8000
+accept "tcp://localhost:8000"
 accepted
 connected
 read "GET http://localhost:8000/?field=value&field=value2&field=value3 HTTP/1.1\r\n"

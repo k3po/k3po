@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-64...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-65...HEAD)
+
+**Implemented enhancements:**
+
+- Extensible grammar and runtime [\#420](https://github.com/k3po/k3po/pull/420) ([jfallows](https://github.com/jfallows))
+
+## [3.0.0-alpha-65](https://github.com/k3po/k3po/tree/3.0.0-alpha-65) (2017-03-21)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-64...3.0.0-alpha-65)
 
 **Fixed bugs:**
 

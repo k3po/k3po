@@ -14,13 +14,13 @@
 # limitations under the License.
 #
 
-accept http://localhost:8000/path
+accept "http://localhost:8000/path"
 accepted
 connected
 
-read parameter ".km" "G"
-read method "POST"
-read version "HTTP/1.1"
+read http:parameter ".km" "G"
+read http:method "POST"
+read http:version "HTTP/1.1"
 
-write status "200" "OK"
+write http:status "200" "OK"
 write close

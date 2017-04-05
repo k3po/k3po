@@ -13,33 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.driver.internal.behavior.handler.command;
+package org.kaazing.k3po.driver.internal.behavior.handler.command.file;
 
-import static java.lang.String.format;
-
-import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
+import org.kaazing.k3po.driver.internal.behavior.handler.command.AbstractCommandHandler;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.file.FileChannel;
 
-public class ReadOptionOffsetHandler extends AbstractCommandHandler {
+public class WriteOptionFileOffsetHandler extends AbstractCommandHandler {
 
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ReadOptionOffsetHandler.class);
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(WriteOptionFileOffsetHandler.class);
     private final int offset;
 
-    public ReadOptionOffsetHandler(int offset) {
+    public WriteOptionFileOffsetHandler(int offset) {
         this.offset = offset;
-    }
-
-    @Override
-    protected void handleUpstream1(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-        // Do not propagate remaining data to next handler(s) as the offset change make them invalid
-        // This handler would fire message received event below when offset is changed
-        if (!(e instanceof MessageEvent)) {
-            super.handleUpstream1(ctx, e);
-        }
     }
 
     @Override
@@ -47,21 +35,19 @@ public class ReadOptionOffsetHandler extends AbstractCommandHandler {
         FileChannel channel = (FileChannel) ctx.getChannel();
 
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(String.format("Adjusting the file %s channel for read option offset %d", channel, offset));
+            LOGGER.debug(String.format("Setting write option offset %d for channel %s", offset, channel));
         }
         try {
-            channel.setReadOffset(offset);
+            channel.setWriteOffset(offset);
             getHandlerFuture().setSuccess();
         } catch (Throwable t) {
             getHandlerFuture().setFailure(t);
         }
-
-        channel.fireMessageReceived(ctx);
     }
 
     @Override
     protected StringBuilder describe(StringBuilder sb) {
-        return sb.append(format("read option offset %d", offset));
+        return sb.append("write option offset " + offset);
     }
 
 }

@@ -23,6 +23,7 @@ import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
+import org.kaazing.k3po.lang.types.StructuredTypeInfo;
 
 public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWriteConfigNode, AstWriteConfigNode> {
 
@@ -39,23 +40,8 @@ public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<
         return result;
     }
 
-    public AstWriteConfigNodeBuilder setType(String type) {
+    public AstWriteConfigNodeBuilder setType(StructuredTypeInfo type) {
         node.setType(type);
-        return this;
-    }
-
-    public AstWriteConfigNodeBuilder setName(String name, String value) {
-        node.setName(name, new AstLiteralTextValue(value));
-        return this;
-    }
-
-    public AstWriteConfigNodeBuilder setName(String name, byte[] value) {
-        node.setName(name, new AstLiteralBytesValue(value));
-        return this;
-    }
-
-    public AstWriteConfigNodeBuilder setName(String name, ValueExpression value, ExpressionContext environment) {
-        node.setName(name, new AstExpressionValue(value, environment));
         return this;
     }
 
@@ -70,7 +56,7 @@ public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<
     }
 
     public AstWriteConfigNodeBuilder setValue(String name, ValueExpression value, ExpressionContext environment) {
-        node.setValue(name, new AstExpressionValue(value, environment));
+        node.setValue(name, new AstExpressionValue<>(value, environment));
         return this;
     }
 
@@ -85,7 +71,7 @@ public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<
     }
 
     public AstWriteConfigNodeBuilder addValue(ValueExpression value, ExpressionContext environment) {
-        node.addValue(new AstExpressionValue(value, environment));
+        node.addValue(new AstExpressionValue<>(value, environment));
         return this;
     }
 
@@ -96,23 +82,8 @@ public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<
             super(new AstWriteConfigNode(), builder);
         }
 
-        public StreamNested<R> setType(String type) {
+        public StreamNested<R> setType(StructuredTypeInfo type) {
             node.setType(type);
-            return this;
-        }
-
-        public StreamNested<R> setName(String name, String value) {
-            node.setName(name, new AstLiteralTextValue(value));
-            return this;
-        }
-
-        public StreamNested<R> setName(String name, byte[] value) {
-            node.setName(name, new AstLiteralBytesValue(value));
-            return this;
-        }
-
-        public StreamNested<R> setName(String name, ValueExpression value, ExpressionContext environment) {
-            node.setName(name, new AstExpressionValue(value, environment));
             return this;
         }
 
@@ -127,7 +98,7 @@ public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<
         }
 
         public StreamNested<R> setValue(String name, ValueExpression value, ExpressionContext environment) {
-            node.setValue(name, new AstExpressionValue(value, environment));
+            node.setValue(name, new AstExpressionValue<>(value, environment));
             return this;
         }
 
@@ -142,7 +113,7 @@ public class AstWriteConfigNodeBuilder extends AbstractAstStreamableNodeBuilder<
         }
 
         public StreamNested<R> addValue(ValueExpression value, ExpressionContext environment) {
-            node.addValue(new AstExpressionValue(value, environment));
+            node.addValue(new AstExpressionValue<>(value, environment));
             return this;
         }
 

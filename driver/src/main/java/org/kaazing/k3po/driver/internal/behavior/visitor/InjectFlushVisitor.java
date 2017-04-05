@@ -67,7 +67,7 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     }
 
     @Override
-    public AstScriptNode visit(AstScriptNode script, State state) throws Exception {
+    public AstScriptNode visit(AstScriptNode script, State state) {
 
         AstScriptNode newScript = new AstScriptNode();
         newScript.setRegionInfo(script.getRegionInfo());
@@ -83,12 +83,12 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     }
 
     @Override
-    public AstScriptNode visit(AstPropertyNode propertyNode, State state) throws Exception {
+    public AstScriptNode visit(AstPropertyNode propertyNode, State state) {
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstAcceptNode acceptNode, State state) throws Exception {
+    public AstScriptNode visit(AstAcceptNode acceptNode, State state) {
 
         state.readState = ReadWriteState.NONE;
         state.writeState = ReadWriteState.NONE;
@@ -110,7 +110,7 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     }
 
     @Override
-    public AstScriptNode visit(AstAcceptableNode acceptableNode, State state) throws Exception {
+    public AstScriptNode visit(AstAcceptableNode acceptableNode, State state) {
 
         state.readState = ReadWriteState.NONE;
         state.writeState = ReadWriteState.NONE;
@@ -130,7 +130,7 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     }
 
     @Override
-    public AstScriptNode visit(AstConnectNode connectNode, State state) throws Exception {
+    public AstScriptNode visit(AstConnectNode connectNode, State state) {
 
         state.readState = ReadWriteState.NONE;
         state.writeState = ReadWriteState.NONE;
@@ -148,35 +148,35 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     }
 
     @Override
-    public AstScriptNode visit(AstReadAwaitNode node, State state) throws Exception {
+    public AstScriptNode visit(AstReadAwaitNode node, State state) {
 
         state.streamables.add(node);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstWriteAwaitNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteAwaitNode node, State state) {
 
         state.streamables.add(node);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstReadNotifyNode node, State state) throws Exception {
+    public AstScriptNode visit(AstReadNotifyNode node, State state) {
 
         state.streamables.add(node);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstWriteNotifyNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteNotifyNode node, State state) {
 
         state.streamables.add(node);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstWriteValueNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteValueNode node, State state) {
 
         state.streamables.add(node);
         state.writeState = ReadWriteState.CONFIG_OR_VALUE;
@@ -184,75 +184,75 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     }
 
     @Override
-    public AstScriptNode visit(AstDisconnectNode node, State state) throws Exception {
+    public AstScriptNode visit(AstDisconnectNode node, State state) {
 
         state.streamables.add(node);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstUnbindNode node, State state) throws Exception {
+    public AstScriptNode visit(AstUnbindNode node, State state) {
 
         state.streamables.add(node);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstCloseNode node, State state) throws Exception {
+    public AstScriptNode visit(AstCloseNode node, State state) {
 
         state.streamables.add(node);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstAbortNode node, State state) throws Exception {
+    public AstScriptNode visit(AstAbortNode node, State state) {
 
         state.streamables.add(node);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstAbortedNode node, State state) throws Exception {
+    public AstScriptNode visit(AstAbortedNode node, State state) {
         state.streamables.add(node);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstChildOpenedNode childOpenedNode, State state) throws Exception {
+    public AstScriptNode visit(AstChildOpenedNode childOpenedNode, State state) {
         state.streamables.add(childOpenedNode);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstChildClosedNode childClosedNode, State state) throws Exception {
+    public AstScriptNode visit(AstChildClosedNode childClosedNode, State state) {
 
         state.streamables.add(childClosedNode);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstOpenedNode openedNode, State state) throws Exception {
+    public AstScriptNode visit(AstOpenedNode openedNode, State state) {
 
         state.streamables.add(openedNode);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstBoundNode boundNode, State state) throws Exception {
+    public AstScriptNode visit(AstBoundNode boundNode, State state) {
 
         state.streamables.add(boundNode);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstConnectedNode connectedNode, State state) throws Exception {
+    public AstScriptNode visit(AstConnectedNode connectedNode, State state) {
 
         state.streamables.add(connectedNode);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstReadValueNode node, State state) throws Exception {
+    public AstScriptNode visit(AstReadValueNode node, State state) {
         switch (state.writeState) {
         case CONFIG_ONLY:
             AstWriteFlushNode flush = new AstWriteFlushNode();
@@ -269,21 +269,21 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     }
 
     @Override
-    public AstScriptNode visit(AstDisconnectedNode disconnectedNode, State state) throws Exception {
+    public AstScriptNode visit(AstDisconnectedNode disconnectedNode, State state) {
 
         state.streamables.add(disconnectedNode);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstUnboundNode unboundNode, State state) throws Exception {
+    public AstScriptNode visit(AstUnboundNode unboundNode, State state) {
 
         state.streamables.add(unboundNode);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstClosedNode closedNode, State state) throws Exception {
+    public AstScriptNode visit(AstClosedNode closedNode, State state) {
 
         state.streamables.add(closedNode);
         state.readState = ReadWriteState.NONE;
@@ -292,7 +292,7 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     }
 
     @Override
-    public AstScriptNode visit(AstReadConfigNode node, State state) throws Exception {
+    public AstScriptNode visit(AstReadConfigNode node, State state) {
         switch (state.writeState) {
         case CONFIG_ONLY:
             AstWriteFlushNode flush = new AstWriteFlushNode();
@@ -316,7 +316,7 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     }
 
     @Override
-    public AstScriptNode visit(AstWriteConfigNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteConfigNode node, State state) {
         state.streamables.add(node);
         switch (state.writeState) {
         case CONFIG_ONLY:
@@ -330,34 +330,34 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     }
 
     @Override
-    public AstScriptNode visit(AstReadClosedNode node, State state) throws Exception {
+    public AstScriptNode visit(AstReadClosedNode node, State state) {
         state.streamables.add(node);
         state.readState = ReadWriteState.NONE;
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstWriteCloseNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteCloseNode node, State state) {
         state.streamables.add(node);
         state.writeState = ReadWriteState.NONE;
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstWriteFlushNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteFlushNode node, State state) {
         state.streamables.add(node);
         state.writeState = ReadWriteState.CONFIG_OR_VALUE;
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstReadOptionNode node, State state) throws Exception {
+    public AstScriptNode visit(AstReadOptionNode node, State state) {
         state.streamables.add(node);
         return null;
     }
 
     @Override
-    public AstScriptNode visit(AstWriteOptionNode node, State state) throws Exception {
+    public AstScriptNode visit(AstWriteOptionNode node, State state) {
         state.streamables.add(node);
         return null;
     }

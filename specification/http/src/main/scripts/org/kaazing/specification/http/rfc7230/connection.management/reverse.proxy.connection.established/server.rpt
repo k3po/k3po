@@ -14,18 +14,18 @@
 # limitations under the License.
 #
 
-accept http://localhost:8080/index.html
-       option transport tcp://localhost:8081
+accept "http://localhost:8080/index.html"
+       option http:transport "tcp://localhost:8081"
 accepted
 connected
 
-read method "GET"
-read header "Host" "localhost:8080"
+read http:method "GET"
+read http:header "Host" "localhost:8080"
 read closed
 
-write status "200" "OK"
-write version "HTTP/1.1"
-write header content-length
-write header "Content-Type" "text/html"
+write http:status "200" "OK"
+write http:version "HTTP/1.1"
+write http:content-length
+write http:header "Content-Type" "text/html"
 write "<html><body>Hello World!</body></html>"
 write close

@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-accept tcp://localhost:12345
+accept "tcp://localhost:12345"
 accepted
 connected
 

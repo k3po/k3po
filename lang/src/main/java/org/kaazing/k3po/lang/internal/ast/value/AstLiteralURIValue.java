@@ -17,34 +17,29 @@ package org.kaazing.k3po.lang.internal.ast.value;
 
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
-import javax.el.ValueExpression;
+import java.net.URI;
 
 import org.kaazing.k3po.lang.internal.ast.AstRegion;
-import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
-public class AstLocationExpression extends AstLocation {
+public final class AstLiteralURIValue extends AstValue<URI> {
 
-    private final ValueExpression value;
-    private final ExpressionContext environment;
+    private final URI value;
 
-    public AstLocationExpression(ValueExpression value, ExpressionContext environment) {
+    public AstLiteralURIValue(URI value) {
         if (value == null) {
             throw new NullPointerException("value");
         }
         this.value = value;
-        this.environment = environment;
-    }
-
-    public ValueExpression getValue() {
-        return value;
-    }
-
-    public ExpressionContext getEnvironment() {
-        return environment;
     }
 
     @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+    public URI getValue() {
+        return value;
+    }
+
+    @Override
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
+
         return visitor.visit(this, parameter);
     }
 
@@ -55,15 +50,19 @@ public class AstLocationExpression extends AstLocation {
 
     @Override
     protected boolean equalTo(AstRegion that) {
-        return (that instanceof AstLocationExpression) && equalTo((AstLocationExpression) that);
+        return (that instanceof AstLiteralURIValue) && equalTo((AstLiteralURIValue) that);
     }
 
-    protected boolean equalTo(AstLocationExpression that) {
+    protected boolean equalTo(AstLiteralURIValue that) {
         return equivalent(this.value, that.value);
     }
 
     @Override
     protected void describe(StringBuilder buf) {
-        buf.append(value.getExpressionString());
+        buf.append(value.toString());
+    }
+
+    public static String toString(int value) {
+        return Integer.toString(value);
     }
 }

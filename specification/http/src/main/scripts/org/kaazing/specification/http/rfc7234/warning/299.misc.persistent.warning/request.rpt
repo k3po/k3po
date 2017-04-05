@@ -14,15 +14,15 @@
 # limitations under the License.
 #
 
-connect http://localhost:8000/resource
+connect "http://localhost:8000/resource"
 connected
 
-write method "GET"
-write version "HTTP/1.1"
-write header content-length
+write http:method "GET"
+write http:version "HTTP/1.1"
+write http:content-length
 write flush
 	
-read status "400" /.+/
-read header "Warning" /.+/
+read http:status "400" /.+/
+read http:header "Warning" /.+/
 
 

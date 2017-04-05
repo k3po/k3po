@@ -15,45 +15,59 @@
  */
 package org.kaazing.k3po.lang.internal.ast;
 
-import static java.lang.String.format;
-import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
-
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 
 import org.kaazing.k3po.lang.internal.ast.matcher.AstValueMatcher;
-import org.kaazing.k3po.lang.internal.ast.value.AstValue;
+import org.kaazing.k3po.lang.types.StructuredTypeInfo;
 
 public class AstReadConfigNode extends AstEventNode {
 
-    private String type;
-    private Map<String, AstValue> valuesByName;
+    private StructuredTypeInfo type;
     private Map<String, AstValueMatcher> matchersByName;
+    private Collection<AstValueMatcher> matchers;
+    private boolean missing;
 
     public AstReadConfigNode() {
-        this.valuesByName = new LinkedHashMap<>();
         this.matchersByName = new LinkedHashMap<>();
+        this.matchers = new LinkedHashSet<>();
     }
 
-    public void setType(String type) {
+    public void setType(StructuredTypeInfo type) {
         this.type = type;
     }
 
-    public String getType() {
+    public StructuredTypeInfo getType() {
         return type;
     }
 
-    public void setValue(String name, AstValue value) {
-        valuesByName.put(name, value);
+    public void setMissing(boolean missing) {
+        this.missing = missing;
     }
 
-    public AstValue getValue(String name) {
-        return valuesByName.get(name);
+    public boolean isMissing() {
+        return missing;
+    }
+
+    public AstValueMatcher getMatcher() {
+
+        if (matchersByName.isEmpty()) {
+            switch (matchers.size()) {
+            case 0:
+                return null;
+            case 1:
+                return matchers.iterator().next();
+            }
+        }
+
+        throw new IllegalStateException("Multiple values available, yet assuming only one value");
     }
 
     public Collection<AstValueMatcher> getMatchers() {
-        return matchersByName.values();
+        return matchers;
     }
 
     public AstValueMatcher getMatcher(String name) {
@@ -65,17 +79,15 @@ public class AstReadConfigNode extends AstEventNode {
     }
 
     public void addMatcher(AstValueMatcher matcher) {
-        matchersByName.put(format("matcher#%d", matchersByName.size()), matcher);
+        matchers.add(matcher);
     }
 
     public void addMatchers(Collection<AstValueMatcher> matchers) {
-        for (AstValueMatcher matcher : matchers) {
-            matchersByName.put(format("matcher#%d", matchersByName.size()), matcher);
-        }
+        this.matchers.addAll(matchers);
     }
 
     @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) throws Exception {
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
         return visitor.visit(this, parameter);
     }
 
@@ -87,14 +99,17 @@ public class AstReadConfigNode extends AstEventNode {
             hashCode <<= 4;
             hashCode ^= type.hashCode();
         }
-        if (valuesByName != null) {
+        if (matchers != null) {
             hashCode <<= 4;
-            hashCode ^= valuesByName.hashCode();
+            hashCode ^= matchers.hashCode();
         }
         if (matchersByName != null) {
             hashCode <<= 4;
             hashCode ^= matchersByName.hashCode();
         }
+
+        hashCode <<= 4;
+        hashCode ^= Boolean.hashCode(missing);
 
         return hashCode;
     }
@@ -105,20 +120,23 @@ public class AstReadConfigNode extends AstEventNode {
     }
 
     protected boolean equalTo(AstReadConfigNode that) {
-        return equivalent(this.type, that.type) &&
-                equivalent(this.valuesByName, that.valuesByName) &&
-                equivalent(this.matchersByName, that.matchersByName);
+        return this.missing == that.missing &&
+                Objects.equals(this.type, that.type) &&
+                Objects.equals(this.matchers, that.matchers) &&
+                Objects.equals(this.matchersByName, that.matchersByName);
     }
 
     @Override
     protected void describe(StringBuilder buf) {
         super.describe(buf);
         buf.append("read ").append(type);
-        for (AstValue value : valuesByName.values()) {
-            buf.append(' ').append(value);
+        for (Map.Entry<String, AstValueMatcher> entry : matchersByName.entrySet()) {
+            String name = entry.getKey();
+            AstValueMatcher matcher = entry.getValue();
+            buf.append(' ').append(name).append('=').append(matcher);
         }
-        for (AstValueMatcher matcher : matchersByName.values()) {
-            buf.append(' ').append(matcher);
+        for (AstValueMatcher value : matchers) {
+            buf.append(' ').append(value);
         }
         buf.append('\n');
     }

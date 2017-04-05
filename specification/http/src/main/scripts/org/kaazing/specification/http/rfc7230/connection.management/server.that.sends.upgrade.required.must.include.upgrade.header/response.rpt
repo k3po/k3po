@@ -14,12 +14,12 @@
 # limitations under the License.
 #
 
-accept http://localhost:8080/
+accept "http://localhost:8080/"
 accepted
 connected
-read method "GET"
+read http:method "GET"
 
-write status "426" "Upgrade Required"
-write header "Upgrade" "WebSocket"
+write http:status "426" "Upgrade Required"
+write http:header "Upgrade" "WebSocket"
 write flush
 

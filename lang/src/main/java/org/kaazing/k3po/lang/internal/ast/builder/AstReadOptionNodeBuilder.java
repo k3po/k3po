@@ -15,13 +15,20 @@
  */
 package org.kaazing.k3po.lang.internal.ast.builder;
 
+import java.net.URI;
+
 import javax.el.ValueExpression;
 
 import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
 import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralIntegerValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralLongValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
+import org.kaazing.k3po.lang.types.TypeInfo;
 
 public class AstReadOptionNodeBuilder extends AbstractAstStreamableNodeBuilder<AstReadOptionNode, AstReadOptionNode> {
 
@@ -29,18 +36,43 @@ public class AstReadOptionNodeBuilder extends AbstractAstStreamableNodeBuilder<A
         this(new AstReadOptionNode());
     }
 
+    public AstReadOptionNodeBuilder setOptionType(TypeInfo<?> optionType) {
+        node.setOptionType(optionType);
+        return this;
+    }
+
     public AstReadOptionNodeBuilder setOptionName(String optionName) {
         node.setOptionName(optionName);
         return this;
     }
 
-    public AstReadOptionNodeBuilder setOptionValue(byte[] exactBytes) {
-        node.setOptionValue(new AstLiteralBytesValue(exactBytes));
+    public AstReadOptionNodeBuilder setOptionValue(URI optionValue) {
+        node.setOptionValue(new AstLiteralURIValue(optionValue));
+        return this;
+    }
+
+    public AstReadOptionNodeBuilder setOptionValue(String optionValue) {
+        node.setOptionValue(new AstLiteralTextValue(optionValue));
+        return this;
+    }
+
+    public AstReadOptionNodeBuilder setOptionValue(byte[] optionValue) {
+        node.setOptionValue(new AstLiteralBytesValue(optionValue));
+        return this;
+    }
+
+    public AstReadOptionNodeBuilder setOptionValue(int optionValue) {
+        node.setOptionValue(new AstLiteralIntegerValue(optionValue));
+        return this;
+    }
+
+    public AstReadOptionNodeBuilder setOptionValue(long optionValue) {
+        node.setOptionValue(new AstLiteralLongValue(optionValue));
         return this;
     }
 
     public AstReadOptionNodeBuilder setOptionValue(ValueExpression expression, ExpressionContext environment) {
-        node.setOptionValue(new AstExpressionValue(expression, environment));
+        node.setOptionValue(new AstExpressionValue<>(expression, environment));
         return this;
     }
 
@@ -60,18 +92,43 @@ public class AstReadOptionNodeBuilder extends AbstractAstStreamableNodeBuilder<A
             super(new AstReadOptionNode(), builder);
         }
 
+        public StreamNested<R> setOptionType(TypeInfo<?> optionType) {
+            node.setOptionType(optionType);
+            return this;
+        }
+
         public StreamNested<R> setOptionName(String optionName) {
             node.setOptionName(optionName);
             return this;
         }
 
-        public StreamNested<R> setOptionValue(byte[] exactBytes) {
-            node.setOptionValue(new AstLiteralBytesValue(exactBytes));
+        public StreamNested<R> setOptionValue(URI optionValue) {
+            node.setOptionValue(new AstLiteralURIValue(optionValue));
+            return this;
+        }
+
+        public StreamNested<R> setOptionValue(String optionValue) {
+            node.setOptionValue(new AstLiteralTextValue(optionValue));
+            return this;
+        }
+
+        public StreamNested<R> setOptionValue(byte[] optionValue) {
+            node.setOptionValue(new AstLiteralBytesValue(optionValue));
+            return this;
+        }
+
+        public StreamNested<R> setOptionValue(int optionValue) {
+            node.setOptionValue(new AstLiteralIntegerValue(optionValue));
+            return this;
+        }
+
+        public StreamNested<R> setOptionValue(long optionValue) {
+            node.setOptionValue(new AstLiteralLongValue(optionValue));
             return this;
         }
 
         public StreamNested<R> setOptionValue(ValueExpression expression, ExpressionContext environment) {
-            node.setOptionValue(new AstExpressionValue(expression, environment));
+            node.setOptionValue(new AstExpressionValue<>(expression, environment));
             return this;
         }
 

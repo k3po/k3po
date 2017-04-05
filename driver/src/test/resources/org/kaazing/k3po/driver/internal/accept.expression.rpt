@@ -16,7 +16,7 @@
 
 property location "tcp://localhost:8080"
 
-connect tcp://localhost:8080
+connect "tcp://localhost:8080"
 connected
 write "Hello"
 close

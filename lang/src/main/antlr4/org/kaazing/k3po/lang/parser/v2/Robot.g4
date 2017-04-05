@@ -14,7 +14,7 @@ scriptNode
     ;
 
 propertyNode
-    : k=PropertyKeyword name=propertyName value=propertyValue
+    : PropertyKeyword name=propertyName value=propertyValue
     ;
 
 propertyName
@@ -25,6 +25,11 @@ propertyValue
     : writeValue
     ;
 
+optionName
+    : QualifiedName
+    | Name
+    ;
+
 streamNode
     : acceptNode
     | acceptableNode
@@ -32,29 +37,32 @@ streamNode
     ;
 
 acceptNode
-    : k=AcceptKeyword (AwaitKeyword await=Name)? acceptURI=location (AsKeyword as=Name)?
-      (NotifyKeyword notify=Name)? 
-      (OptionKeyword TransportKeyword transport=location)?
-      (OptionKeyword ReaderKeyword reader=expressionValue)?
-      (OptionKeyword WriterKeyword writer=expressionValue)?
-      (OptionKeyword TimeoutKeyword timeout=DecimalLiteral)?
+    : AcceptKeyword
+      (AwaitKeyword await=Name)?
+      acceptURI=location (AsKeyword as=Name)?
+      (NotifyKeyword notify=Name)?
+      acceptOption*
       serverStreamableNode*
     ;
 
+acceptOption
+    : OptionKeyword optionName writeValue
+    ;
+
 acceptableNode
-    : k=AcceptedKeyword ( text=Name )? streamableNode+
+    : AcceptedKeyword ( text=Name )? streamableNode+
     ;
 
 connectNode
-    : k=ConnectKeyword (AwaitKeyword await=Name ConnectKeyword?)? connectURI=location
-                       (OptionKeyword TransportKeyword transport=location)?
-                       (OptionKeyword SizeKeyword size=DecimalLiteral)?
-                       (OptionKeyword ModeKeyword fmode=ModeValue)?
-                       (OptionKeyword ReaderKeyword reader=expressionValue)?
-                       (OptionKeyword WriterKeyword writer=expressionValue)?
-                       (OptionKeyword TimeoutKeyword timeout=DecimalLiteral)?
+    : ConnectKeyword
+      (AwaitKeyword await=Name)?
+      connectURI=location
+      connectOption*
+      streamableNode+
+    ;
 
-        streamableNode+
+connectOption
+    : OptionKeyword optionName writeValue
     ;
 
 serverStreamableNode
@@ -64,37 +72,17 @@ serverStreamableNode
     | optionNode
     ;
     
-optionNode 
-    : readOptionMaskNode
-    | readOptionOffsetNode
-    | writeOptionMaskNode
-    | writeOptionOffsetNode
-    | writeOptionHttpChunkExtensionNode
-    | readOptionHttpChunkExtensionNode
+optionNode
+    : readOptionNode
+    | writeOptionNode
     ;
 
-readOptionMaskNode
-    : k=ReadKeyword OptionKeyword name=MaskKeyword value=writeValue
+readOptionNode
+    : ReadKeyword OptionKeyword optionName writeValue
     ;
 
-readOptionOffsetNode
-    : k=ReadKeyword OptionKeyword name=OffsetKeyword value=writeValue
-    ;
-
-readOptionHttpChunkExtensionNode
-    : k=ReadKeyword OptionKeyword name=ChunkExtensionKeyWord value=writeValue
-    ;
-
-writeOptionMaskNode
-    : k=WriteKeyword OptionKeyword name=MaskKeyword value=writeValue
-    ;
-
-writeOptionOffsetNode
-    : k=WriteKeyword OptionKeyword name=OffsetKeyword value=writeValue
-    ;
-
-writeOptionHttpChunkExtensionNode
-    : k=WriteKeyword OptionKeyword name=ChunkExtensionKeyWord value=writeValue
+writeOptionNode
+    : WriteKeyword OptionKeyword optionName writeValue
     ;
 
 serverCommandNode
@@ -119,37 +107,24 @@ streamableNode
     ;
 
 commandNode
-    : writeNode
+    : writeConfigNode
+    | writeNode
     | writeFlushNode
     | writeCloseNode
     | closeNode
-    | writeHttpContentLengthNode
-    | writeHttpHeaderNode
-    | writeHttpChunkTrailerNode
-    | writeHttpHostNode
-    | writeHttpMethodNode
-    | writeHttpParameterNode
-    | writeHttpRequestNode
-    | writeHttpStatusNode
-    | writeHttpVersionNode
     | abortNode
     ;
 
 eventNode
     : openedNode
     | boundNode
+    | readConfigNode
     | readNode
     | readClosedNode
     | disconnectedNode
     | unboundNode
     | closedNode
     | connectedNode
-    | readHttpHeaderNode
-    | readHttpChunkTrailerNode
-    | readHttpMethodNode
-    | readHttpParameterNode
-    | readHttpVersionNode
-    | readHttpStatusNode
     | abortedNode
     ;
 
@@ -161,148 +136,99 @@ barrierNode
     ;
 
 closeNode
-    : k=CloseKeyword
+    : CloseKeyword
     ;
 
-writeFlushNode: 
-    k=WriteKeyword FlushKeyword;
+writeFlushNode
+    : WriteKeyword FlushKeyword
+    ;
 
-writeCloseNode: 
-    k=WriteKeyword CloseKeyword;
+writeCloseNode
+    : WriteKeyword CloseKeyword
+    ;
 
 disconnectNode
-    : k=DisconnectKeyword
+    : DisconnectKeyword
     ;
 
 unbindNode
-    : k=UnbindKeyword
+    : UnbindKeyword
+    ;
+
+writeConfigNode
+    : WriteKeyword QualifiedName writeValue*
     ;
 
 writeNode
-    : k=WriteKeyword writeValue+
+    : WriteKeyword writeValue+
     ;
 
 childOpenedNode
-    : k=ChildKeyword OpenedKeyword
+    : ChildKeyword OpenedKeyword
     ;
 
 childClosedNode
-    : k=ChildKeyword ClosedKeyword
+    : ChildKeyword ClosedKeyword
     ;
 
 boundNode
-    : k=BoundKeyword
+    : BoundKeyword
     ;
 
 closedNode
-    : k=ClosedKeyword
+    : ClosedKeyword
     ;
 
 connectedNode
-    : k=ConnectedKeyword
+    : ConnectedKeyword
     ;
 
 disconnectedNode
-    : k=DisconnectedKeyword
+    : DisconnectedKeyword
     ;
 
 openedNode
-    : k=OpenedKeyword
+    : OpenedKeyword
     ;
 
 abortNode
-    : k=AbortKeyword
+    : AbortKeyword
     ;
 
 abortedNode
-    : k=AbortedKeyword
+    : AbortedKeyword
     ;
 
-readClosedNode: 
-    k=ReadKeyword ClosedKeyword;
+readClosedNode
+    : ReadKeyword ClosedKeyword
+    ;
+
+readConfigNode
+    : ReadKeyword QualifiedName matcher* MissingKeyword?
+    ;
 
 readNode
-    : k=ReadKeyword matcher+
+    : ReadKeyword matcher+
     ;
 
 unboundNode
-    : k=UnboundKeyword
+    : UnboundKeyword
     ;
 
 readAwaitNode
-    : k=ReadKeyword AwaitKeyword barrier=Name
+    : ReadKeyword AwaitKeyword Name
     ;
 
 readNotifyNode
-    : k=ReadKeyword NotifyKeyword barrier=Name
+    : ReadKeyword NotifyKeyword Name
     ;
     
 writeAwaitNode
-    : k=WriteKeyword AwaitKeyword barrier=Name
+    : WriteKeyword AwaitKeyword Name
     ;
 
 writeNotifyNode
-    : k=WriteKeyword NotifyKeyword barrier=Name
-    ;
-
-readHttpHeaderNode
-    : k=ReadKeyword HttpHeaderKeyword name=literalText (HttpMissingKeyword | matcher+)
-    ;
-
-readHttpChunkTrailerNode
-    : k=ReadKeyword HttpChunkTrailerKeyword name=literalText (HttpMissingKeyword | matcher+)
-    ;
-
-writeHttpHeaderNode
-    : k=WriteKeyword HttpHeaderKeyword name=literalText writeValue+
-    ;
-
-writeHttpChunkTrailerNode
-    : k=WriteKeyword HttpChunkTrailerKeyword name=literalText writeValue+
-    ;
-
-writeHttpContentLengthNode
-    : k=WriteKeyword HttpHeaderKeyword HttpContentLengthKeyword
-    ;
-
-writeHttpHostNode
-    : k=WriteKeyword HttpHeaderKeyword HttpHostKeyword
-    ;
-
-readHttpMethodNode
-    : k=ReadKeyword HttpMethodKeyword method=matcher
-    ;
-
-writeHttpMethodNode
-    : k=WriteKeyword HttpMethodKeyword method=writeValue
-    ;
-
-readHttpParameterNode
-    : k=ReadKeyword HttpParameterKeyword name=literalText matcher+
-    ;
-
-writeHttpParameterNode
-    : k=WriteKeyword HttpParameterKeyword name=literalText writeValue+
-    ;
-
-readHttpVersionNode
-    : k=ReadKeyword HttpVersionKeyword version=matcher
-    ;
-
-writeHttpVersionNode
-    : k=WriteKeyword HttpVersionKeyword version=writeValue
-    ;
-
-readHttpStatusNode
-    : k=ReadKeyword HttpStatusKeyword code=matcher reason=matcher
-    ;
-
-writeHttpRequestNode
-    : k=WriteKeyword HttpRequestKeyword form=writeValue
-    ;
-
-writeHttpStatusNode
-    : k=WriteKeyword HttpStatusKeyword code=writeValue reason=writeValue
+    : WriteKeyword NotifyKeyword Name
     ;
 
 matcher
@@ -322,8 +248,8 @@ exactBytesMatcher
     : bytes=BytesLiteral
     | byteLiteral=ByteLiteral
     | shortLiteral=TwoByteLiteral
-    | longLiteral=(SignedDecimalLiteral | DecimalLiteral) 'L'
     | intLiteral=(SignedDecimalLiteral | DecimalLiteral)
+    | longLiteral=(SignedDecimalLiteral | DecimalLiteral) 'L'
     ;
 
 regexMatcher
@@ -338,13 +264,6 @@ fixedLengthBytesMatcher
     : '[0..' lastIndex=DecimalLiteral ']'
     | '([0..' lastIndex=DecimalLiteral ']' capture=CaptureLiteral ')'
     | '[(' capture=CaptureLiteral '){' lastIndex=DecimalLiteral '}]'
-    /*
-     * TODO: If I use lexer rules here for example:
-     *
-     *   '(' ByteKeyword capture=CaptureLiteral ')'
-     *
-     *   Then it will not parse "(byte:var)" It will only parse if there is a space in between, "(byte :var)". How come?
-     */
     |  '(byte' byteCapture=CaptureLiteral ')'
     |  '(short' shortCapture=CaptureLiteral ')'
     |  '(int' intCapture=CaptureLiteral ')'
@@ -359,27 +278,43 @@ variableLengthBytesMatcher
 writeValue
     : literalText
     | literalBytes
+    | literalByte
+    | literalShort
+    | literalInteger
+    | literalLong
     | expressionValue
     ;
 
 literalText
-    : text=TextLiteral
+    : literal=TextLiteral
     ;
 
 literalBytes
-    : bytes=BytesLiteral
+    : literal=BytesLiteral
+    ;
+
+literalByte
+    : literal=ByteLiteral
+    ;
+
+literalShort
+    : literal=TwoByteLiteral
+    ;
+
+literalInteger
+    : literal=(SignedDecimalLiteral | DecimalLiteral)
+    ;
+
+literalLong
+    : literal=(SignedDecimalLiteral | DecimalLiteral) 'L'
     ;
 
 expressionValue
     : expression=ExpressionLiteral
     ;
 
-uriValue
-    : uri=URILiteral
-    ;
-
 location
-    : uriValue
+    : literalText
     | expressionValue
     ;
 
@@ -389,44 +324,12 @@ SignedDecimalLiteral
 //    |  DecimalLiteral
     ;
 
-MaskKeyword: 'mask';
-
-ModeKeyword: 'mode';
-
-OffsetKeyword : 'offset';
-
-OptionKeyword: 'option';
-
-ReaderKeyword: 'reader';
-
-SizeKeyword: 'size';
-
-ChunkExtensionKeyWord: 'chunkExtension';
-
-ShortKeyword
-    : 'short'
+AbortKeyword
+    : 'abort'
     ;
 
-TransportKeyword
-    : 'transport'
-    ;
-
-TimeoutKeyword
-    : 'timeout'
-    ;
-
-WriterKeyword: 'writer';
-
-IntKeyword
-    : 'int'
-    ;
-
-ByteKeyword
-    : 'byte'
-    ;
-
-LongKeyword
-    : 'long'
+AbortedKeyword
+    : 'aborted'
     ;
 
 AcceptKeyword
@@ -453,6 +356,10 @@ BoundKeyword
     : 'bound'
     ;
 
+ByteKeyword
+    : 'byte'
+    ;
+
 ChildKeyword
     : 'child'
     ;
@@ -463,6 +370,10 @@ CloseKeyword
 
 ClosedKeyword
     : 'closed'
+    ;
+
+ConfigKeyword
+    : 'config'
     ;
 
 ConnectKeyword
@@ -481,16 +392,20 @@ DisconnectedKeyword
     : 'disconnected'
     ;
 
-AbortKeyword
-    : 'abort'
-    ;
-
-AbortedKeyword
-    : 'aborted'
+IntKeyword
+    : 'int'
     ;
 
 FlushKeyword
     : 'flush'
+    ;
+
+LongKeyword
+    : 'long'
+    ;
+
+MissingKeyword
+    : 'missing'
     ;
 
 NotifyKeyword
@@ -501,12 +416,20 @@ OpenedKeyword
     : 'opened'
     ;
 
+OptionKeyword
+    : 'option'
+    ;
+
 PropertyKeyword
     : 'property'
     ;
 
 ReadKeyword
     : 'read'
+    ;
+
+ShortKeyword
+    : 'short'
     ;
 
 UnbindKeyword
@@ -521,58 +444,9 @@ WriteKeyword
     : 'write'
     ;
 
-HttpContentLengthKeyword
-    : 'content-length'
-    ;
-
-HttpHeaderKeyword
-    : 'header'
-    ;
-
-HttpChunkTrailerKeyword
-    : 'trailer'
-    ;
-
-HttpHostKeyword
-    : 'host'
-    ;
-
-HttpMethodKeyword
-    : 'method'
-    ;
-
-HttpMissingKeyword
-    : 'missing'
-    ;
-
-HttpParameterKeyword
-    : 'parameter'
-    ;
-
-HttpRequestKeyword
-    : 'request'
-    ;
-
-HttpResponseKeyword
-    : 'response'
-    ;
-
-HttpStatusKeyword
-    : 'status'
-    ;
-
-HttpVersionKeyword
-    : 'version'
-    ;
-
-ModeValue
-    : 'r'
-    | 'rw'
-    ;
-
 // URI cannot begin with any of our data type delimiters, and MUST contain a colon.
 URILiteral
-    : Letter (Letter | '+')+ ':'
+    : Letter (Letter | '+')+ ':' '/'
       (Letter | ':' | ';' | '/' | '=' | '.' | DecimalLiteral | '?' | '&' | '%' | '-' | ',' | '*')+
 //      ~('"' | '/' | ']' | '}')
     ;
@@ -665,9 +539,13 @@ Name
     : Identifier
     ;
 
+QualifiedName
+    : Identifier ':' Identifier ('.' Identifier)*
+    ;
+
 fragment
 Identifier
-    : Letter (Digit | Letter)*
+    : Letter (Digit | Minus | Letter)*
     ;
 
 fragment
