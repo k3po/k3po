@@ -35,14 +35,12 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
-import org.jboss.netty.channel.AbstractChannel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.socket.nio.AbstractNioChannelSink;
 import org.jboss.netty.channel.socket.nio.NioSocketChannel;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
@@ -69,6 +67,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     private static final String ERROR_MSG_ALREADY_STARTED = "Script has already been started\n";
 
     private static Robot lastRobot;
+    private static AtomicBoolean testFinished = new AtomicBoolean(true);
     private Robot robot;
     private ChannelFutureListener whenAbortedOrFinished;
     
@@ -96,6 +95,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 public void operationComplete(ChannelFuture future) throws Exception {
                     channelClosedFuture.setSuccess();
                     ctx.sendUpstream(e);
+                    testFinished.set(true);
                 }
             });
         }
@@ -109,7 +109,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             return;
         }
 
-        if (lastRobot != null && ! lastRobot.getDisposedFuture().isDone()) {
+        if ((lastRobot != null && ! lastRobot.getDisposedFuture().isDone()) || ! testFinished.compareAndSet(true, false)) {
             // we need to wait for it to end
             lastRobot.getDisposedFuture().addListener(new ChannelFutureListener() {
                 @Override
@@ -120,9 +120,8 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                             try {
                                 prepareReceived(ctx, evt);
                             } catch (Exception e) {
-                                // TODO Not sure what needs to be done here. 
-                                // Anyway, there is a catch (Exception e) in prepareReceived,
-                                // I don't think we will ever reach this point
+                                sendErrorMessage(ctx, e);
+                                return;
                             }
                         }
                     });
