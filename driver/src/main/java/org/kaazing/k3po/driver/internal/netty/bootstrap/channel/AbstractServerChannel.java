@@ -26,7 +26,6 @@ import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelSink;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
-import org.kaazing.k3po.driver.internal.netty.channel.agrona.AgronaChannelAddress;
 
 public class AbstractServerChannel<T extends ChannelConfig> extends org.jboss.netty.channel.AbstractServerChannel {
 
@@ -66,7 +65,7 @@ public class AbstractServerChannel<T extends ChannelConfig> extends org.jboss.ne
     }
 
     @Override
-    public AgronaChannelAddress getRemoteAddress() {
+    public ChannelAddress getRemoteAddress() {
         return null;
     }
 
