@@ -66,8 +66,12 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     private static final String ERROR_MSG_ALREADY_PREPARED = "Script already prepared\n";
     private static final String ERROR_MSG_ALREADY_STARTED = "Script has already been started\n";
 
-    private static Robot lastRobot;
+    // the robot that is executing the current test. Will be used to check when it is disposed in order to start the next test
+    private volatile static Robot currentlyExecutingRobot;
+    
+    // a semaphore to make sure that only one test will start from the tests that are waiting for the previous one to end
     private static AtomicBoolean testFinished = new AtomicBoolean(true);
+    
     private Robot robot;
     private ChannelFutureListener whenAbortedOrFinished;
     
@@ -99,81 +103,70 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 }
             });
         }
-
     }
 
     @Override
-    public void prepareReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
-        if (robot != null && robot.getPreparedFuture() != null) {
-            sendErrorMessage(ctx, ERROR_MSG_ALREADY_PREPARED);
-            return;
-        }
-
-        if ((lastRobot != null && ! lastRobot.getDisposedFuture().isDone()) || ! testFinished.compareAndSet(true, false)) {
-            // we need to wait for it to end
-            lastRobot.getDisposedFuture().addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture future) throws Exception {
-                    ((NioSocketChannel)ctx.getChannel()).getWorker().executeInIoThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                prepareReceived(ctx, evt);
-                            } catch (Exception e) {
-                                sendErrorMessage(ctx, e);
-                                return;
-                            }
-                        }
-                    });
-                    Channels.fireMessageReceived(ctx, evt);
-                }
-            });
-            return;
-        }
-
-        final PrepareMessage prepare = (PrepareMessage) evt.getMessage();
-
-        // enforce control protocol version
-        String version = prepare.getVersion();
-        if (!"2.0".equals(version)) {
-            sendVersionError(ctx);
-            return;
-        }
-
-        List<String> scriptNames = prepare.getNames();
-        if (logger.isDebugEnabled()) {
-            logger.debug("preparing script(s) " + scriptNames);
-        }
-
-        whenAbortedOrFinished = whenAbortedOrFinished(ctx);
-
-        String originScript = "";
-        String origin = prepare.getOrigin();
-        if (origin != null) {
-            try {
-                originScript = OriginScript.get(origin);
-            } catch (URISyntaxException e) {
-                throw new Exception("Could not find origin: ", e);
-            }
-        }
-
-        ChannelFuture prepareFuture;
+    public void prepareReceived(final ChannelHandlerContext ctx, MessageEvent evt) {
         try {
+            if (robot != null && robot.getPreparedFuture() != null) {
+                sendErrorMessage(ctx, ERROR_MSG_ALREADY_PREPARED);
+                return;
+            }
+
+            if ((currentlyExecutingRobot != null && ! currentlyExecutingRobot.getDisposedFuture().isDone()) || ! testFinished.compareAndSet(true, false)) {
+                // we need to wait for it to end
+                currentlyExecutingRobot.getDisposedFuture().addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        ((NioSocketChannel)ctx.getChannel()).getWorker().executeInIoThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                prepareReceived(ctx, evt);
+                            }
+                        }, true);
+                        Channels.fireMessageReceived(ctx, evt);
+                    }
+                });
+                return;
+            }
+
+            final PrepareMessage prepare = (PrepareMessage) evt.getMessage();
+
+            // enforce control protocol version
+            String version = prepare.getVersion();
+            if (!"2.0".equals(version)) {
+                sendVersionError(ctx);
+                return;
+            }
+
+            List<String> scriptNames = prepare.getNames();
+            if (logger.isDebugEnabled()) {
+                logger.debug("preparing script(s) " + scriptNames);
+            }
+
+            whenAbortedOrFinished = whenAbortedOrFinished(ctx);
+
+            String originScript = "";
+            String origin = prepare.getOrigin();
+            if (origin != null) {
+                try {
+                    originScript = OriginScript.get(origin);
+                } catch (URISyntaxException e) {
+                    throw new Exception("Could not find origin: ", e);
+                }
+            }
+
+            ChannelFuture prepareFuture;
 
             String aggregatedScript = originScript + aggregateScript(scriptNames, scriptLoader);
             List<String> properyOverrides = prepare.getProperties();
             // consider hard fail in the future, when test frameworks support
             // override per test method
 
-            // Checks that it is a supported version
-            if (!"2.0".equals(version)) {
-                sendVersionError(ctx);
-            }
-
             aggregatedScript = injectOverridenProperties(aggregatedScript, properyOverrides);
 
             robot = new Robot();
-            lastRobot = robot;
+            currentlyExecutingRobot = robot;
 
             if (scriptLoader != null) {
                 Thread currentThread = currentThread();
@@ -201,7 +194,11 @@ public class ControlServerHandler extends ControlUpstreamHandler {
         } catch (Exception e) {
             sendErrorMessage(ctx, e);
             return;
+        } finally {
+            if (robot == null)
+                testFinished.set(true);
         }
+        
     }
 
     private String injectOverridenProperties(String aggregatedScript, List<String> scriptProperties)
