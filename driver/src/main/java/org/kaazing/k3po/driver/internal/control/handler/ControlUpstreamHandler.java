@@ -16,41 +16,47 @@
 package org.kaazing.k3po.driver.internal.control.handler;
 
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.kaazing.k3po.driver.internal.control.ControlMessage;
+import org.kaazing.k3po.driver.internal.control.ErrorMessage;
+import org.kaazing.k3po.lang.internal.parser.ScriptParseException;
 
 public class ControlUpstreamHandler extends SimpleChannelUpstreamHandler {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(ControlUpstreamHandler.class);
 
     @Override
-    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        ControlMessage message = (ControlMessage) e.getMessage();
+    public void messageReceived(ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
+        ControlMessage message = (ControlMessage) evt.getMessage();
 
-        switch (message.getKind()) {
-        case PREPARE:
-            prepareReceived(ctx, e);
-            break;
-        case START:
-            startReceived(ctx, e);
-            break;
-        case ABORT:
-            abortReceived(ctx, e);
-            break;
-        case NOTIFY:
-            notifyReceived(ctx, e);
-            break;
-        case AWAIT:
-            awaitReceived(ctx, e);
-            break;
-        default:
-            throw new IllegalArgumentException(String.format("Unexpected control message: %s", message.getKind()));
+        try {
+            switch (message.getKind()) {
+            case PREPARE:
+                prepareReceived(ctx, evt);
+                break;
+            case START:
+                startReceived(ctx, evt);
+                break;
+            case ABORT:
+                abortReceived(ctx, evt);
+                break;
+            case NOTIFY:
+                notifyReceived(ctx, evt);
+                break;
+            case AWAIT:
+                awaitReceived(ctx, evt);
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("Unexpected control message: %s", message.getKind()));
+            }
+        } catch (Exception ex) {
+            sendErrorMessage(ctx, ex);
         }
-
     }
 
     public void prepareReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
@@ -83,4 +89,31 @@ public class ControlUpstreamHandler extends SimpleChannelUpstreamHandler {
         }
     }
 
+    protected void sendErrorMessage(ChannelHandlerContext ctx, Throwable throwable) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setDescription(throwable.getMessage());
+
+        if (throwable instanceof ScriptParseException) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.error("Caught exception trying to parse script. Sending error to client", throwable);
+            } else {
+                LOGGER.error("Caught exception trying to parse script. Sending error to client. Due to " + throwable);
+            }
+            errorMessage.setSummary("Parse Error");
+            Channels.write(ctx, Channels.future(null), errorMessage);
+        } else {
+            LOGGER.error("Internal error. Sending error to client", throwable);
+            errorMessage.setSummary("Internal error");
+            Channels.write(ctx, Channels.future(null), errorMessage);
+        }
+    }
+    
+    protected void sendErrorMessage(ChannelHandlerContext ctx, String description) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setSummary("Internal error");
+        errorMessage.setDescription(description);
+        if (LOGGER.isDebugEnabled())
+            LOGGER.error("Sending error to client:" + description);
+        Channels.write(ctx, Channels.future(null), errorMessage);
+    }
 }
