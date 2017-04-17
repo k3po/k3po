@@ -112,6 +112,14 @@ public class FragmentationIT {
 
     @Test
     @Specification({
+        "client.send.text.payload.length.125.fragmented/handshake.request.and.frames",
+        "client.send.text.payload.length.125.fragmented/handshake.response.and.frames" })
+    public void shouldEchoFragmentedPayloadWhenClientSendTextFrameWithPayloadFragmented() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
         "client.send.text.payload.length.125.fragmented.but.not.continued/handshake.request.and.frames",
         "client.send.text.payload.length.125.fragmented.but.not.continued/handshake.response.and.frame" })
     public void shouldFailWebSocketConnectionWhenClientSendTextFrameWithPayloadFragmentedButNotContinued() throws Exception {
@@ -163,6 +171,14 @@ public class FragmentationIT {
         "client.echo.binary.payload.length.125.fragmented.with.injected.ping.pong/handshake.request.and.frames",
         "client.echo.binary.payload.length.125.fragmented.with.injected.ping.pong/handshake.response.and.frame" })
     public void shouldEchoClientSendBinaryFrameWithPayloadFragmentedAndInjectedPingPong() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @Specification({
+        "client.send.binary.payload.length.125.fragmented/handshake.request.and.frames",
+        "client.send.binary.payload.length.125.fragmented/handshake.response.and.frames" })
+    public void shouldEchoFragmentedPayloadWhenClientSendBinaryFrameWithPayloadFragmented() throws Exception {
         k3po.finish();
     }
 
