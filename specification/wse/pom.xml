@@ -6,7 +6,6 @@
         <groupId>org.kaazing</groupId>
         <artifactId>k3po.parent</artifactId>
         <version>develop-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>specification.wse</artifactId>
