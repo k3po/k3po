@@ -69,7 +69,7 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     // the dispose future of the robot that is executing the current test. Will be used to check when it is disposed 
     // in order to start this test
-    private AtomicReference<ChannelFuture> previousTestFuture;
+    private AtomicReference<Robot> activeRobotRef;
     
     private Robot robot;
     private ChannelFutureListener whenAbortedOrFinished;
@@ -80,8 +80,8 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     private ClassLoader scriptLoader;
     
-    public ControlServerHandler(AtomicReference<ChannelFuture> previousTestFuture) {
-        this.previousTestFuture = previousTestFuture;
+    public ControlServerHandler(AtomicReference<Robot> activeRobotRef) {
+        this.activeRobotRef = activeRobotRef;
     }
     
     public void setScriptLoader(ClassLoader scriptLoader) {
@@ -102,13 +102,14 @@ public class ControlServerHandler extends ControlUpstreamHandler {
                 public void operationComplete(ChannelFuture future) throws Exception {
                     channelClosedFuture.setSuccess();
                     ctx.sendUpstream(e);
+                    activeRobotRef.compareAndSet(robot, null);
                 }
             });
         }
     }
 
     @Override
-    public synchronized void prepareReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
+    public void prepareReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
         if (robot != null && robot.getPreparedFuture() != null) {
             sendErrorMessage(ctx, ERROR_MSG_ALREADY_PREPARED);
             return;
@@ -118,29 +119,30 @@ public class ControlServerHandler extends ControlUpstreamHandler {
             robot = new Robot();
         }
 
-        if (previousTestFuture.get() != null && previousTestFuture.get() != robot.getDisposedFuture() 
-                && !previousTestFuture.get().isDone()) {
-            previousTestFuture.get().addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture future) throws Exception {
-                    ((NioSocketChannel) ctx.getChannel()).getWorker().executeInIoThread(() -> {
-                        try {
-                            prepareReceived0(ctx, evt);
-                        } catch (Exception e) {
-                            sendErrorMessage(ctx, e);
-                        }
-                    }, true);
-                }
-            });
-            return;
+        if (activeRobotRef.get() != robot && ! activeRobotRef.compareAndSet(null, robot)) {
+            Robot activeRobot = activeRobotRef.get();
+            if (activeRobot == null) {
+                // it seems the active robot finished in the mean time, so we will try again
+                prepareReceived(ctx, evt);
+            } else {
+                activeRobot.getDisposedFuture().addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        ((NioSocketChannel) ctx.getChannel()).getWorker().executeInIoThread(() -> {
+                            try {
+                                prepareReceived(ctx, evt);
+                            } catch (Exception e) {
+                                sendErrorMessage(ctx, e);
+                            }
+                        }, true);
+                    }
+                });
+                return;
+            }
         }
-        previousTestFuture.set(robot.getDisposedFuture());
 
-        prepareReceived0(ctx, evt);
-    }
-
-    private void prepareReceived0(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
-        if (ctx.getChannel().getCloseFuture().isDone()) { //just in case it was called after connection was closed (test timeout ?)
+        //just in case it was called after connection was closed (test timeout ?)
+        if (ctx.getChannel().getCloseFuture().isDone()) {
             return;
         }
 

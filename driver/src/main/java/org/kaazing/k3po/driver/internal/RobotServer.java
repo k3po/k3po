@@ -71,7 +71,7 @@ public class RobotServer {
     private NioClientSocketChannelFactory clientChannelFactory;
     private NioServerSocketChannelFactory serverChannelFactory;
 
-    private AtomicReference<ChannelFuture> previousTestFuture = new AtomicReference<ChannelFuture>(null);
+    private AtomicReference<Robot> activeRobotRef  = new AtomicReference<Robot>(null);
 
     public RobotServer(URI controlURI, boolean verbose, ClassLoader scriptLoader) {
         this.controlURI = controlURI;
@@ -127,7 +127,7 @@ public class RobotServer {
                     pipeline.addLast("control.logging", logging);
                 }
 
-                ControlServerHandler controller = new ControlServerHandler(previousTestFuture);
+                ControlServerHandler controller = new ControlServerHandler(activeRobotRef);
                 controller.setScriptLoader(scriptLoader);
                 pipeline.addLast("control.handler", controller);
 
