@@ -15,6 +15,9 @@
  */
 package org.kaazing.k3po.driver.internal.netty.bootstrap.channel;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.jboss.netty.channel.ChannelConfig;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipeline;
@@ -30,6 +33,8 @@ public abstract class AbstractChannel<T extends ChannelConfig> extends org.jboss
     private static final int ST_CLOSED = -1;
 
     private final T config;
+    private final AtomicInteger closeState;
+    private final AtomicBoolean abortedState;
 
     private volatile int state;
     private volatile ChannelAddress localAddress;
@@ -40,6 +45,8 @@ public abstract class AbstractChannel<T extends ChannelConfig> extends org.jboss
         super(parent, factory, pipeline, sink);
 
         this.config = config;
+        this.closeState = new AtomicInteger();
+        this.abortedState = new AtomicBoolean();
         this.state = ST_OPEN;
     }
 
@@ -85,8 +92,7 @@ public abstract class AbstractChannel<T extends ChannelConfig> extends org.jboss
     }
 
     protected boolean setClosed() {
-        state = ST_CLOSED;
-        return super.setClosed();
+        return setClosed0();
     }
 
     protected void setLocalAddress(ChannelAddress localAddress) {
@@ -95,5 +101,34 @@ public abstract class AbstractChannel<T extends ChannelConfig> extends org.jboss
 
     protected void setRemoteAddress(ChannelAddress remoteAddress) {
         this.remoteAddress = remoteAddress;
+    }
+
+    protected boolean setReadClosed() {
+        if ((this.closeState.get() & 0x01) == 0x00) {
+            int closeStatus = this.closeState.addAndGet(1);
+            if (closeStatus == 0x03) {
+                return setClosed0();
+            }
+        }
+        return false;
+    }
+
+    protected boolean setWriteClosed() {
+        if ((this.closeState.get() & 0x02) == 0x00) {
+            int closeStatus = this.closeState.addAndGet(2);
+            if (closeStatus == 0x03) {
+                return setClosed0();
+            }
+        }
+        return false;
+    }
+
+    protected boolean setAborted() {
+        return abortedState.compareAndSet(false, true);
+    }
+
+    private boolean setClosed0() {
+        state = ST_CLOSED;
+        return super.setClosed();
     }
 }

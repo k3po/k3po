@@ -19,6 +19,7 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.function.BiFunction;
 
 import org.jboss.netty.channel.ChannelException;
 
@@ -54,6 +55,10 @@ public class ChannelAddress extends SocketAddress {
         this(location, null);
     }
 
+    public ChannelAddress(URI location, boolean ephemeral) {
+        this(location, null, ephemeral);
+    }
+
     public ChannelAddress(URI location, ChannelAddress transport) {
         this(location, transport, false);
     }
@@ -77,11 +82,7 @@ public class ChannelAddress extends SocketAddress {
     }
 
     public ChannelAddress newEphemeralAddress() {
-        if (ephemeral) {
-            throw new ChannelException("Channel address is already ephemeral");
-        }
-
-        return new ChannelAddress(location, transport, true);
+        return createEphemeralAddress(this::newEphemeralAddress);
     }
 
     @Override
@@ -115,5 +116,27 @@ public class ChannelAddress extends SocketAddress {
             sb.append(" @ ").append(transport);
         }
         return sb.toString();
+    }
+
+    protected boolean isEphemeral() {
+        return ephemeral;
+    }
+
+    protected final <T extends ChannelAddress> T createEphemeralAddress(BiFunction<URI, ChannelAddress, T> factory) {
+        if (ephemeral) {
+            throw new ChannelException("Channel address is already ephemeral");
+        }
+
+        T channel = factory.apply(location, transport);
+
+        if (!channel.isEphemeral()) {
+            throw new ChannelException("Ephemeral channel address is not ephemeral");
+        }
+
+        return channel;
+    }
+
+    private ChannelAddress newEphemeralAddress(URI location, ChannelAddress transport) {
+        return new ChannelAddress(location, transport, true);
     }
 }

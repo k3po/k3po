@@ -32,6 +32,7 @@ import static org.kaazing.k3po.driver.internal.channel.Channels.chainWriteComple
 import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChildChannel.HttpWriteState.CONTENT_BUFFERED;
 import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChildChannel.HttpWriteState.CONTENT_CHUNKED;
 import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChildChannel.HttpWriteState.CONTENT_CLOSE;
+import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChildChannel.HttpWriteState.CONTENT_CLOSING;
 import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChildChannel.HttpWriteState.CONTENT_COMPLETE;
 import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChildChannel.HttpWriteState.UPGRADED;
 
@@ -41,6 +42,7 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.DefaultHttpChunk;
 import org.jboss.netty.handler.codec.http.DefaultHttpChunkTrailer;
@@ -168,6 +170,7 @@ public class HttpChildChannelSink extends AbstractChannelSink {
             chainWriteCompletes(future, httpFuture, httpReadableBytes);
             break;
         }
+        case CONTENT_CLOSING:
         case CONTENT_COMPLETE:
             throw new IllegalStateException();
         }
@@ -182,12 +185,25 @@ public class HttpChildChannelSink extends AbstractChannelSink {
 
     @Override
     protected void abortRequested(ChannelPipeline pipeline, final AbortEvent evt) throws Exception {
-        transport.close().addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
-                evt.getFuture().setSuccess();
-            }
-        });
+        HttpChildChannel channel = (HttpChildChannel) evt.getChannel();
+        switch (channel.writeState())
+        {
+        case CONTENT_BUFFERED:
+            ChannelFuture flushFuture = Channels.future(channel);
+            flushRequested(channel, flushFuture);
+            flushFuture.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    ChannelFuture disconnect = transport.disconnect();
+                    chainFutures(disconnect, evt.getFuture());
+                }
+            });
+            break;
+        default:
+            ChannelFuture disconnect = transport.disconnect();
+            chainFutures(disconnect, evt.getFuture());
+            break;
+        }
     }
 
     @Override
@@ -222,6 +238,7 @@ public class HttpChildChannelSink extends AbstractChannelSink {
         switch (httpChildChannel.writeState()) {
         case UPGRADED:
         case CONTENT_CLOSE:
+            httpChildChannel.writeState(CONTENT_CLOSING);
             // setClosed() chained asynchronously after transport.close() completes
             transport.close();
             break;
@@ -249,7 +266,7 @@ public class HttpChildChannelSink extends AbstractChannelSink {
             }
             break;
         default:
-            throw new IllegalStateException("Unexpected state after flushRequested: " + httpChildChannel.writeState());
+            throw new IllegalStateException("Unexpected state after closeRequested: " + httpChildChannel.writeState());
         }
     }
 
@@ -321,6 +338,7 @@ public class HttpChildChannelSink extends AbstractChannelSink {
         }
         case CONTENT_CHUNKED:
         case CONTENT_CLOSE:
+        case CONTENT_CLOSING:
         case CONTENT_COMPLETE:
         case UPGRADED:
             httpFuture.setSuccess();

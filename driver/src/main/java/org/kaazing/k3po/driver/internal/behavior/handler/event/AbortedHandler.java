@@ -19,9 +19,26 @@ package org.kaazing.k3po.driver.internal.behavior.handler.event;
 import static java.util.EnumSet.of;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.ABORTED;
 
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.kaazing.k3po.driver.internal.netty.channel.AbortEvent;
+
 public class AbortedHandler extends AbstractEventHandler {
 
     public AbortedHandler() {
         super(of(ABORTED));
+    }
+
+    @Override
+    public void aborted(ChannelHandlerContext ctx, AbortEvent e) {
+
+        ChannelFuture handlerFuture = getHandlerFuture();
+        assert handlerFuture != null;
+        handlerFuture.setSuccess();
+    }
+
+    @Override
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("aborted");
     }
 }

@@ -1120,6 +1120,18 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
             return unboundNode;
         }
+
+        @Override
+        public AstAbortedNode visitAbortedNode(AbortedNodeContext ctx) {
+
+            AstAbortedNodeVisitor visitor = new AstAbortedNodeVisitor(factory, environment);
+            AstAbortedNode abortedNode = visitor.visitAbortedNode(ctx);
+            if (abortedNode != null) {
+                childInfos().add(abortedNode.getRegionInfo());
+            }
+
+            return abortedNode;
+        }
     }
 
     private static class AstCommandNodeVisitor extends AstNodeVisitor<AstCommandNode> {

@@ -266,9 +266,6 @@ public class HttpClientChannelSink extends AbstractChannelSink {
     @Override
     protected void abortRequested(ChannelPipeline pipeline, final AbortEvent evt) throws Exception {
         HttpClientChannel channel = (HttpClientChannel) pipeline.getChannel();
-        // We flush before an abort, as we don't expect script authors
-        // to purposely add a write before an abort and not expect it
-        // to make it on the wire
         ChannelFuture flushFuture = Channels.future(channel);
         flushRequested(channel, flushFuture);
         flushFuture.addListener(new ChannelFutureListener() {
