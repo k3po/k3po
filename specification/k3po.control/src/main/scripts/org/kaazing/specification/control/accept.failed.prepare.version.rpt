@@ -30,13 +30,4 @@ write "content-length:43\n"
 write "\n"
 write "Robot requires control protocol version 2.0"
 
-read "DISPOSE\n"
-read "\n"
-
-write "ERROR\n"
-write "summary:Internal error\n"
-write "content-length:51\n"
-write "\n"
-write "Script has not been prepared or is still preparing\n"
-
 closed

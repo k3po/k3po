@@ -35,10 +35,3 @@ write "\n"
 write "FINISHED\n"
 write "content-length:0\n"
 write "\n"
-
-read "DISPOSE\n"
-read "\n"
-
-write "DISPOSED\n"
-write "\n"
-

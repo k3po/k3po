@@ -48,7 +48,6 @@ final class ScriptRunner implements Callable<ScriptPair> {
     private volatile boolean abortScheduled;
     private volatile Map<String, CountDownLatch> barriers;
     private final List<String> overridenScriptProperties;
-    private static final int DISPOSE_TIMEOUT = isDebugging() ? 0: 5000;
 
     ScriptRunner(URL controlURL, List<String> names, Latch latch, List<String> overridenScriptProperties) {
 
@@ -215,42 +214,8 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
 
     public void dispose() throws Exception {
-        try {
-            // if called when there was a problem connecting to the driver, just skip it
-            if (! controller.isConnected())
-                return;
-            
-            controller.dispose();
-
-            latch.awaitFinished();
-            if (! latch.hasException()) {
-                CommandEvent event = controller.readEvent(DISPOSE_TIMEOUT, MILLISECONDS);
-    
-                // ensure it is the correct event
-                switch (event.getKind()) {
-                case DISPOSED:
-                    break;
-                case ERROR:
-                    // dispose can have a result a DISPOSED or an ERROR according to new specs
-                    ErrorEvent error = (ErrorEvent) event;
-                    throw new SpecificationException(format("%s:%s", error.getSummary(), error.getDescription()));
-                default:
-                    throw new IllegalArgumentException("Unexpected event kind: " + event.getKind());
-                }
-            }
-        } catch (InterruptedException e) {
-            // just ignore, most probably there was an exception on the k3po driver, so we might not receive a DISPOSED anyway
-        } catch (Exception e) {
-            // TODO log this when we get a logger added to Junit, or remove need for this which always clean
-            // shutdown of k3po channels
-            e.printStackTrace();
-            // NOOP swallow exception as this is a clean up task that may fail in case setup didn't complete,
-            // expressions didn't get resolved. Etc.  This happens frequently when Junit Assume is used, as K3po
-            // will have inited the accept channels outside of the test method.
-        }
-        finally {
+        if (controller.isConnected())
             controller.disconnect();
-        }
     }
 
     private static boolean isDebugging() {

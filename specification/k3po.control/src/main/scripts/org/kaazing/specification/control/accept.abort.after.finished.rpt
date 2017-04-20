@@ -73,10 +73,4 @@ write "closed\n"
 read "ABORT\n"
 read "\n"
 
-read "DISPOSE\n"
-read "\n"
-
-write "DISPOSED\n"
-write "\n"
-
 closed

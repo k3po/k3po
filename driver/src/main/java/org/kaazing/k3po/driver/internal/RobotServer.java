@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -69,6 +70,8 @@ public class RobotServer {
     private ShareableWorkerPool<NioWorker> sharedWorkerPool;
     private NioClientSocketChannelFactory clientChannelFactory;
     private NioServerSocketChannelFactory serverChannelFactory;
+
+    private AtomicReference<Robot> activeRobotRef  = new AtomicReference<Robot>(null);
 
     public RobotServer(URI controlURI, boolean verbose, ClassLoader scriptLoader) {
         this.controlURI = controlURI;
@@ -124,7 +127,7 @@ public class RobotServer {
                     pipeline.addLast("control.logging", logging);
                 }
 
-                ControlServerHandler controller = new ControlServerHandler();
+                ControlServerHandler controller = new ControlServerHandler(activeRobotRef);
                 controller.setScriptLoader(scriptLoader);
                 pipeline.addLast("control.handler", controller);
 

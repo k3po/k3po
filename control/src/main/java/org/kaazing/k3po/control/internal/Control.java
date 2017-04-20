@@ -42,12 +42,10 @@ import java.util.regex.Pattern;
 import org.kaazing.k3po.control.internal.command.AbortCommand;
 import org.kaazing.k3po.control.internal.command.AwaitCommand;
 import org.kaazing.k3po.control.internal.command.Command;
-import org.kaazing.k3po.control.internal.command.DisposeCommand;
 import org.kaazing.k3po.control.internal.command.NotifyCommand;
 import org.kaazing.k3po.control.internal.command.PrepareCommand;
 import org.kaazing.k3po.control.internal.command.StartCommand;
 import org.kaazing.k3po.control.internal.event.CommandEvent;
-import org.kaazing.k3po.control.internal.event.DisposedEvent;
 import org.kaazing.k3po.control.internal.event.ErrorEvent;
 import org.kaazing.k3po.control.internal.event.FinishedEvent;
 import org.kaazing.k3po.control.internal.event.NotifiedEvent;
@@ -65,7 +63,6 @@ public final class Control {
     private static final String STARTED_EVENT = "STARTED";
     private static final String PREPARED_EVENT = "PREPARED";
     private static final String NOTIFIED_EVENT = "NOTIFIED";
-    private static final String DISPOSED_EVENT = "DISPOSED";
 
     private static final Pattern HEADER_PATTERN = Pattern.compile("([a-z\\-]+):([^\n]+)");
     private static final Charset UTF_8 = Charset.forName("UTF-8");
@@ -150,9 +147,6 @@ public final class Control {
         case NOTIFY:
             writeCommand((NotifyCommand) command);
             break;
-        case DISPOSE:
-            writeCommand((DisposeCommand) command);
-            break;
         default:
             throw new IllegalArgumentException("Urecognized command kind: " + command.getKind());
         }
@@ -194,8 +188,6 @@ public final class Control {
                 return readFinishedEvent();
             case NOTIFIED_EVENT:
                 return readNotifiedEvent();
-            case DISPOSED_EVENT:
-                return readDisposedEvent();
             }
         }
 
@@ -279,16 +271,6 @@ public final class Control {
 
         textOut.append("AWAIT\n");
         textOut.append(format("barrier:%s\n", await.getBarrier()));
-        textOut.append("\n");
-        textOut.flush();
-    }
-
-    private void writeCommand(DisposeCommand dispose) throws IOException, CharacterCodingException {
-        OutputStream bytesOut = connection.getOutputStream();
-        CharsetEncoder encoder = UTF_8.newEncoder();
-        Writer textOut = new OutputStreamWriter(bytesOut, encoder);
-
-        textOut.append("DISPOSE\n");
         textOut.append("\n");
         textOut.flush();
     }
@@ -408,24 +390,6 @@ public final class Control {
         return notified;
     }
 
-    private DisposedEvent readDisposedEvent() throws IOException {
-        DisposedEvent disposed = new DisposedEvent();
-        String line;
-        do {
-            line = textIn.readLine();
-            Matcher matcher = HEADER_PATTERN.matcher(line);
-            if (matcher.matches()) {
-                String headerName = matcher.group(1);
-                // String headerValue = matcher.group(2);
-                switch (headerName) {
-                default:
-                    // NOP allow unrecognized headers for future compatibility
-                }
-            }
-        } while (!line.isEmpty());
-        return disposed;
-    }
-
     private ErrorEvent readErrorEvent() throws IOException {
         ErrorEvent error = new ErrorEvent();
         String line;
@@ -483,10 +447,5 @@ public final class Control {
         final AwaitCommand awaitCommand = new AwaitCommand();
         awaitCommand.setBarrier(barrierName);
         this.writeCommand(awaitCommand);
-    }
-
-    public void dispose() throws Exception {
-        final DisposeCommand disposeCommand = new DisposeCommand();
-        this.writeCommand(disposeCommand);
     }
 }
