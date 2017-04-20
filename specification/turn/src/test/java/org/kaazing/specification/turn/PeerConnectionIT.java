@@ -120,6 +120,8 @@ public class PeerConnectionIT {
      * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
      */
     @Test
+    @Ignore ("This behavior is optional, it will be added when a coturn server will be implemented." +
+            "Please see issue #733: https://github.com/kaazing/tickets/issues/733")
     @Specification({
             "incorrect.channel.data.message.short.length/request",
             "incorrect.channel.data.message.short.length/response" })
@@ -142,6 +144,8 @@ public class PeerConnectionIT {
      * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
      */
     @Test
+    @Ignore ("This behavior is optional, it will be added when a coturn server will be implemented." +
+            "Please see issue #733: https://github.com/kaazing/tickets/issues/733")
     @Specification({
             "incorrect.channel.data.message.wrong.channel.number/request",
             "incorrect.channel.data.message.wrong.channel.number/response" })
@@ -153,6 +157,8 @@ public class PeerConnectionIT {
      * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
      */
     @Test
+    @Ignore ("This behavior is optional, it will be added when a coturn server will be implemented." +
+            "Please see issue #733: https://github.com/kaazing/tickets/issues/733")
     @Specification({
             "channel.data.message.without.create.permissions/request",
             "channel.data.message.without.create.permissions/response" })
@@ -164,6 +170,8 @@ public class PeerConnectionIT {
      * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
      */
     @Test
+    @Ignore ("This behavior is optional, it will be added when a coturn server will be implemented." +
+            "Please see issue #733: https://github.com/kaazing/tickets/issues/733")
     @Specification({
             "send.indication.message.without.create.permissions/request",
             "send.indication.message.without.create.permissions/response" })
@@ -179,39 +187,6 @@ public class PeerConnectionIT {
             "correct.turn.protocol.with.both.types.of.message/request",
             "correct.turn.protocol.with.both.types.of.message/response" })
     public void shouldSucceedSendingIndicationAndChannelDataMessages() throws Exception {
-        k3po.finish();
-    }
-
-    /**
-     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
-     */
-    @Test
-    @Specification({
-            "send.indication.with.invalid.xor.peer.address/request",
-            "send.indication.with.invalid.xor.peer.address/response" })
-    public void shouldFailSendingIndicationWithInvalidPeerAddress() throws Exception {
-        k3po.finish();
-    }
-
-    /**
-     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
-     */
-    @Test
-    @Specification({
-            "send.indication.without.allocation/request",
-            "send.indication.without.allocation/response" })
-    public void shouldFailSendingIndicationWithoutAllocation() throws Exception {
-        k3po.finish();
-    }
-
-    /**
-     * See <a href="https://tools.ietf.org/html/rfc5766">RFC 5766: Turn Protocol</a>.
-     */
-    @Test
-    @Specification({
-            "send.indication.without.channel.bind/request",
-            "send.indication.without.channel.bind/response" })
-    public void shouldFailSendingIndicationWithoutChannelBind() throws Exception {
         k3po.finish();
     }
 
