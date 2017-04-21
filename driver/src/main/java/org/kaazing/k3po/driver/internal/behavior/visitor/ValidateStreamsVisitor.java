@@ -24,10 +24,12 @@ import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildOpenedNode;
 import org.kaazing.k3po.lang.internal.ast.AstCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
+import org.kaazing.k3po.lang.internal.ast.AstCommandNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstDisconnectNode;
 import org.kaazing.k3po.lang.internal.ast.AstDisconnectedNode;
+import org.kaazing.k3po.lang.internal.ast.AstEventNode;
 import org.kaazing.k3po.lang.internal.ast.AstNode;
 import org.kaazing.k3po.lang.internal.ast.AstOpenedNode;
 import org.kaazing.k3po.lang.internal.ast.AstPropertyNode;
@@ -148,7 +150,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
             state.readState = StreamState.CLOSED;
             break;
         default:
-            throw new IllegalStateException(unexpectedReadEvent(node, state));
+            throw new IllegalStateException(unexpectedInReadState(node, state));
         }
         return null;
     }
@@ -161,20 +163,20 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
             state.writeState = StreamState.CLOSED;
             break;
         default:
-            throw new IllegalStateException(unexpectedWriteEvent(node, state));
+            throw new IllegalStateException(unexpectedInWriteState(node, state));
         }
         return null;
     }
 
     @Override
     public AstScriptNode visit(AstAbortNode node, State state) {
-        switch (state.writeState) {
+        switch (state.readState) {
         case OPEN:
         case CLOSED:
-            state.writeState = StreamState.CLOSED;
+            state.readState = StreamState.CLOSED;
             break;
         default:
-            throw new IllegalStateException(unexpectedWriteEvent(node, state));
+            throw new IllegalStateException(unexpectedInReadState(node, state));
         }
         return null;
     }
@@ -184,10 +186,11 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
 
         switch (state.writeState) {
         case OPEN:
+        case CLOSED:
             state.writeState = StreamState.CLOSED;
             break;
         default:
-            throw new IllegalStateException(unexpectedWriteEvent(node, state));
+            throw new IllegalStateException(unexpectedInWriteState(node, state));
         }
         return null;
     }
@@ -199,7 +202,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
         case OPEN:
             break;
         default:
-            throw new IllegalStateException(unexpectedReadEvent(node, state));
+            throw new IllegalStateException(unexpectedInReadState(node, state));
         }
         return null;
     }
@@ -211,7 +214,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
         case OPEN:
             break;
         default:
-            throw new IllegalStateException(unexpectedWriteEvent(node, state));
+            throw new IllegalStateException(unexpectedInWriteState(node, state));
         }
         return null;
     }
@@ -223,7 +226,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
         case OPEN:
             break;
         default:
-            throw new IllegalStateException(unexpectedWriteEvent(node, state));
+            throw new IllegalStateException(unexpectedInWriteState(node, state));
         }
         return null;
     }
@@ -297,7 +300,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
         case CLOSED:
             break;
         default:
-            throw new IllegalStateException(unexpectedReadEvent(node, state));
+            throw new IllegalStateException(unexpectedInReadState(node, state));
         }
 
         switch (state.writeState) {
@@ -307,7 +310,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
         case CLOSED:
             break;
         default:
-            throw new IllegalStateException(unexpectedWriteEvent(node, state));
+            throw new IllegalStateException(unexpectedInWriteState(node, state));
         }
 
         return null;
@@ -343,14 +346,24 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
         return null;
     }
 
-    private String unexpectedReadEvent(AstNode node, State state) {
-        return String.format("Unexpected event (%s) while reading in state %s", node
-                .toString().trim(), state.readState);
+    private String unexpectedInReadState(AstNode node, State state) {
+        return String.format("Unexpected %s while reading in state %s", description(node), state.readState);
     }
 
-    private String unexpectedWriteEvent(AstNode node, State state) {
-        return String.format("Unexpected command (%s) while writing in state %s", node
-                .toString().trim(), state.writeState);
+    private String unexpectedInWriteState(AstNode node, State state) {
+        return String.format("Unexpected %s while writing in state %s", description(node), state.writeState);
     }
 
+    private String description(AstNode node) {
+        String description = node.toString().trim();
+
+        if (node instanceof AstEventNode) {
+            description = String.format("event (%s)", description);
+        }
+        else if (node instanceof AstCommandNode) {
+            description = String.format("command (%s)", description);
+        }
+
+        return description;
+    }
 }
