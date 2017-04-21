@@ -19,6 +19,7 @@ import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
 import static java.util.EnumSet.complementOf;
 import static java.util.EnumSet.of;
+import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.ABORTED;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.BOUND;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.CHILD_CLOSED;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.CHILD_OPEN;
@@ -53,6 +54,7 @@ import org.jboss.netty.channel.WriteCompletionEvent;
 import org.jboss.netty.handler.timeout.IdleStateEvent;
 import org.kaazing.k3po.driver.internal.behavior.ScriptProgressException;
 import org.kaazing.k3po.driver.internal.behavior.handler.ExecutionHandler;
+import org.kaazing.k3po.driver.internal.netty.channel.AbortEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.FlushEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownInputEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownOutputEvent;
@@ -121,6 +123,8 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
                 throw new ScriptProgressException(getRegionInfo(), "closed");
             case FLUSHED:
                 throw new ScriptProgressException(getRegionInfo(), "flushed");
+            case ABORTED:
+                throw new ScriptProgressException(getRegionInfo(), "aborted");
             case MESSAGE:
                 throw new ScriptProgressException(getRegionInfo(), "read ...");
             case INPUT_SHUTDOWN:
@@ -150,6 +154,10 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
     }
 
     private static ChannelEventKind asEventKind(ChannelEvent evt) {
+        if (evt instanceof AbortEvent) {
+            return ABORTED;
+        }
+
         if (evt instanceof ShutdownInputEvent) {
             return INPUT_SHUTDOWN;
         }

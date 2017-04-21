@@ -68,6 +68,7 @@ public class ClientBootstrapResolver {
             LOGGER.debug("Initializing client Bootstrap connecting to remoteAddress " + remoteAddress);
             ClientBootstrap clientBootstrapCandidate = bootstrapFactory.newClientBootstrap(connectURI.getScheme());
             clientBootstrapCandidate.setPipelineFactory(pipelineFactory);
+            clientBootstrapCandidate.setOptions(connectOptions);
             clientBootstrapCandidate.setOption("remoteAddress", remoteAddress);
             bootstrap = clientBootstrapCandidate;
         }

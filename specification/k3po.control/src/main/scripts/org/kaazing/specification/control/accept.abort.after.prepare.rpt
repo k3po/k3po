@@ -58,10 +58,4 @@ write "# client\n"
 write "property uri \"tcp://localhost:8000\"\n"
 write "\n"
 
-read "DISPOSE\n"
-read "\n"
-
-write "DISPOSED\n"
-write "\n"
-
 closed

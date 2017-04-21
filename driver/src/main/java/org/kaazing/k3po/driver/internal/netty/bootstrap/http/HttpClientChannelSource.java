@@ -23,11 +23,11 @@ import static org.jboss.netty.channel.Channels.fireChannelUnbound;
 import static org.jboss.netty.channel.Channels.fireExceptionCaught;
 import static org.jboss.netty.channel.Channels.fireMessageReceived;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.SWITCHING_PROTOCOLS;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireChannelAborted;
 import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireInputShutdown;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelException;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
@@ -158,7 +158,12 @@ public class HttpClientChannelSource extends HttpChannelHandler {
 
     @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+
+        HttpClientChannel httpClientChannel = this.httpClientChannel;
         if (httpClientChannel != null) {
+
+            this.httpClientChannel = null;
+
             HttpChannelConfig httpClientConfig = httpClientChannel.getConfig();
             HttpResponseStatus httpStatus = httpClientConfig.getStatus();
             int httpStatusCode = (httpStatus != null) ? httpStatus.getCode() : 0;
@@ -170,9 +175,7 @@ public class HttpClientChannelSource extends HttpChannelHandler {
                 }
             }
             else {
-                ChannelException exception = new ChannelException("transport closed unexpectedly");
-                exception.fillInStackTrace();
-                fireExceptionCaught(httpClientChannel, exception);
+                fireChannelAborted(httpClientChannel);
             }
         }
     }

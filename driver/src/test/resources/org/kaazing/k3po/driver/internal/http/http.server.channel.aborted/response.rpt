@@ -19,4 +19,5 @@ accepted
 connected
 
 read http:method "GET"
+read closed
 aborted

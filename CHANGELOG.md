@@ -2,7 +2,17 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-65...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-66...HEAD)
+
+**Merged pull requests:**
+
+- Implement aborted event [\#425](https://github.com/k3po/k3po/pull/425) ([jfallows](https://github.com/jfallows))
+- Updated license to apache [\#423](https://github.com/k3po/k3po/pull/423) ([dpwspoon](https://github.com/dpwspoon))
+- Fix typo in return type [\#422](https://github.com/k3po/k3po/pull/422) ([jfallows](https://github.com/jfallows))
+- Removal of DISPOSE and DISPOSED messages. [\#417](https://github.com/k3po/k3po/pull/417) ([StCostea](https://github.com/StCostea))
+
+## [3.0.0-alpha-66](https://github.com/k3po/k3po/tree/3.0.0-alpha-66) (2017-04-05)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-65...3.0.0-alpha-66)
 
 **Implemented enhancements:**
 

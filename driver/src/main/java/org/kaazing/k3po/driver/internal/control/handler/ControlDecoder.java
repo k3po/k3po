@@ -29,12 +29,9 @@ import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.kaazing.k3po.driver.internal.control.AbortMessage;
 import org.kaazing.k3po.driver.internal.control.AwaitMessage;
 import org.kaazing.k3po.driver.internal.control.ControlMessage;
-import org.kaazing.k3po.driver.internal.control.DisposeMessage;
-import org.kaazing.k3po.driver.internal.control.ErrorMessage;
-import org.kaazing.k3po.driver.internal.control.FinishedMessage;
+import org.kaazing.k3po.driver.internal.control.ControlMessage.Kind;
 import org.kaazing.k3po.driver.internal.control.NotifyMessage;
 import org.kaazing.k3po.driver.internal.control.PrepareMessage;
-import org.kaazing.k3po.driver.internal.control.PreparedMessage;
 import org.kaazing.k3po.driver.internal.control.StartMessage;
 import org.kaazing.k3po.lang.internal.parser.ScriptParseException;
 import org.kaazing.k3po.lang.internal.parser.ScriptParserImpl;
@@ -128,8 +125,6 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
             return new NotifyMessage();
         case AWAIT:
             return new AwaitMessage();
-        case DISPOSE:
-            return new DisposeMessage();
          default:
             throw new IllegalArgumentException(format("Unrecognized message kind: %s", messageKind));
         }
@@ -143,18 +138,10 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
                 return State.READ_INITIAL;
             }
 
-            switch (message.getKind()) {
-            case PREPARE:
-            case FINISHED:
-            case ERROR:
-                // content for these message kinds
-                return State.READ_CONTENT;
-            default:
-                return State.READ_INITIAL;
-            }
+            return Kind.PREPARE.equals(message.getKind()) ? State.READ_CONTENT : State.READ_INITIAL;
         }
 
-        int colonAt = line.indexOf(":");
+        int colonAt = line.indexOf(':');
 
         // colon not found
         if (colonAt == -1) {
@@ -180,18 +167,6 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
             case "origin":
                 prepareMessage.setOrigin(headerValue);
                 break;
-            case "content-length":
-                contentLength = Integer.parseInt(headerValue);
-                if (contentLength > maxContentLength) {
-                    throw new IllegalArgumentException("Content too long");
-                }
-                break;
-            }
-            break;
-        case PREPARED:
-        case ERROR:
-        case FINISHED:
-            switch (headerName) {
             case "content-length":
                 contentLength = Integer.parseInt(headerValue);
                 if (contentLength > maxContentLength) {
@@ -240,18 +215,6 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
                 properties.add(scriptFragment);
             }
             prepareMessage.setProperties(properties);
-            break;
-        case PREPARED:
-            PreparedMessage preparedMessage = (PreparedMessage) message;
-            preparedMessage.setScript(content);
-            break;
-        case FINISHED:
-            FinishedMessage finishedMessage = (FinishedMessage) message;
-            finishedMessage.setScript(content);
-            break;
-        case ERROR:
-            ErrorMessage errorMessage = (ErrorMessage) message;
-            errorMessage.setDescription(content);
             break;
         default:
             throw new IllegalStateException("Unexpected message kind: " + message.getKind());
