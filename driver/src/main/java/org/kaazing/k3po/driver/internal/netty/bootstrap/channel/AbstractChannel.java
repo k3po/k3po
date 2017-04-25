@@ -103,6 +103,14 @@ public abstract class AbstractChannel<T extends ChannelConfig> extends org.jboss
         this.remoteAddress = remoteAddress;
     }
 
+    protected boolean isReadClosed() {
+        return ((this.closeState.get() & 0x01) != 0x00);
+    }
+
+    protected boolean isWriteClosed() {
+        return ((this.closeState.get() & 0x02) != 0x00);
+    }
+
     protected boolean setReadClosed() {
         if ((this.closeState.get() & 0x01) == 0x00) {
             int closeStatus = this.closeState.addAndGet(1);

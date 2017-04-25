@@ -103,7 +103,7 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
         }
     }
 
-    protected void handleUnexpectedEvent(ChannelHandlerContext ctx, ChannelEvent evt) throws Exception {
+    protected void handleUnexpectedEvent(ChannelHandlerContext ctx, ChannelEvent evt) {
         ChannelEventKind eventAsKind = asEventKind(evt);
 
         // Treat interesting but unexpected events as failure
