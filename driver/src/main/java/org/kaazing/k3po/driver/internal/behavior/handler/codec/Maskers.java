@@ -50,12 +50,12 @@ public final class Maskers {
         }
 
         @Override
-        public ChannelBuffer applyMask(ChannelBuffer buffer) throws Exception {
+        public ChannelBuffer applyMask(ChannelBuffer buffer) {
             return applyMask(buffer, maskingKey);
         }
 
         @Override
-        public ChannelBuffer undoMask(ChannelBuffer buffer) throws Exception {
+        public ChannelBuffer undoMask(ChannelBuffer buffer) {
             return undoMask(buffer, maskingKey);
         }
     }
@@ -69,13 +69,13 @@ public final class Maskers {
         }
 
         @Override
-        public ChannelBuffer applyMask(ChannelBuffer buffer) throws Exception {
+        public ChannelBuffer applyMask(ChannelBuffer buffer) {
             final byte[] maskingKey = supplier.get();
             return applyMask(buffer, maskingKey);
         }
 
         @Override
-        public ChannelBuffer undoMask(ChannelBuffer buffer) throws Exception {
+        public ChannelBuffer undoMask(ChannelBuffer buffer) {
             final byte[] maskingKey = supplier.get();
             return undoMask(buffer, maskingKey);
         }
@@ -85,7 +85,7 @@ public final class Maskers {
 
         private int offset;
 
-        protected final ChannelBuffer applyMask(ChannelBuffer buffer, byte[] maskingKey) throws Exception {
+        protected final ChannelBuffer applyMask(ChannelBuffer buffer, byte[] maskingKey) {
 
             int readerIndex = buffer.readerIndex();
             int writerIndex = buffer.writerIndex();
@@ -105,7 +105,7 @@ public final class Maskers {
             return buffer;
         }
 
-        protected final ChannelBuffer undoMask(ChannelBuffer buffer, byte[] maskingKey) throws Exception {
+        protected final ChannelBuffer undoMask(ChannelBuffer buffer, byte[] maskingKey) {
 
             int readerIndex = buffer.readerIndex();
             int writerIndex = buffer.writerIndex();
