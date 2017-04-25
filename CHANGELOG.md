@@ -2,7 +2,18 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-66...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-67...HEAD)
+
+**Closed issues:**
+
+- Remove Dispose/Disposed: https://github.com/k3po/k3po/pull/408 [\#412](https://github.com/k3po/k3po/issues/412)
+
+**Merged pull requests:**
+
+- Support optional read closed event before closed event … [\#427](https://github.com/k3po/k3po/pull/427) ([jfallows](https://github.com/jfallows))
+
+## [3.0.0-alpha-67](https://github.com/k3po/k3po/tree/3.0.0-alpha-67) (2017-04-21)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-66...3.0.0-alpha-67)
 
 **Merged pull requests:**
 

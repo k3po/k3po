@@ -72,7 +72,7 @@ public class ReadHandler extends AbstractEventHandler {
     }
 
     @Override
-    protected void handleUnexpectedEvent(ChannelHandlerContext ctx, ChannelEvent evt) throws Exception {
+    protected void handleUnexpectedEvent(ChannelHandlerContext ctx, ChannelEvent evt) {
         Channel channel = evt.getChannel();
         MessageEvent msg = new UpstreamMessageEvent(channel, copiedBuffer("", UTF_8), channel.getRemoteAddress());
         // We create a message with an empty string. We need make sure our decoders get the decoder Last call.
@@ -84,7 +84,7 @@ public class ReadHandler extends AbstractEventHandler {
         }
     }
 
-    private void messageReceived(ChannelHandlerContext ctx, MessageEvent e, boolean isLast) throws Exception {
+    private void messageReceived(ChannelHandlerContext ctx, MessageEvent e, boolean isLast) {
 
         ChannelBuffer buf = (ChannelBuffer) e.getMessage();
         // first unmask the bytes (if mask read option is specified)

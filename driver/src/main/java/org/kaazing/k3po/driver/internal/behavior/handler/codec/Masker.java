@@ -22,12 +22,12 @@ public abstract class Masker {
     public static final Masker IDENTITY_MASKER = new Masker() {
 
         @Override
-        public ChannelBuffer applyMask(ChannelBuffer buffer) throws Exception {
+        public ChannelBuffer applyMask(ChannelBuffer buffer) {
             return buffer;
         }
 
         @Override
-        public ChannelBuffer undoMask(ChannelBuffer buffer) throws Exception {
+        public ChannelBuffer undoMask(ChannelBuffer buffer) {
             return buffer;
         }
 
@@ -38,7 +38,7 @@ public abstract class Masker {
 
     };
 
-    public abstract ChannelBuffer applyMask(ChannelBuffer buffer) throws Exception;
+    public abstract ChannelBuffer applyMask(ChannelBuffer buffer);
 
-    public abstract ChannelBuffer undoMask(ChannelBuffer buffer) throws Exception;
+    public abstract ChannelBuffer undoMask(ChannelBuffer buffer);
 }
