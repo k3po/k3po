@@ -33,15 +33,15 @@ public final class HttpTypeSystem implements TypeSystemSpi
     public static final TypeInfo<URI> OPTION_TRANSPORT = new TypeInfo<>("transport", URI.class);
     public static final TypeInfo<String> OPTION_CHUNK_EXT = new TypeInfo<>("chunkExtension", String.class);
 
-    public static final StructuredTypeInfo CONFIG_METHOD = new StructuredTypeInfo("method", emptyList(), 1);
-    public static final StructuredTypeInfo CONFIG_HEADER = new StructuredTypeInfo("header", singletonList(new TypeInfo<>("name", String.class)), Integer.MAX_VALUE);
-    public static final StructuredTypeInfo CONFIG_PARAMETER = new StructuredTypeInfo("parameter", singletonList(new TypeInfo<>("name", String.class)), Integer.MAX_VALUE);
-    public static final StructuredTypeInfo CONFIG_STATUS = new StructuredTypeInfo("status", asList(new TypeInfo<>("code", String.class), new TypeInfo<>("reason", String.class)), 0);
-    public static final StructuredTypeInfo CONFIG_VERSION = new StructuredTypeInfo("version", emptyList(), 1);
-    public static final StructuredTypeInfo CONFIG_TRAILER = new StructuredTypeInfo("trailer", singletonList(new TypeInfo<>("name", String.class)), Integer.MAX_VALUE);
-    public static final StructuredTypeInfo CONFIG_REQUEST = new StructuredTypeInfo("request", emptyList(), 1);
-    public static final StructuredTypeInfo CONFIG_HOST = new StructuredTypeInfo("host", emptyList(), 0);
-    public static final StructuredTypeInfo CONFIG_CONTENT_LENGTH = new StructuredTypeInfo("content-length", emptyList(), 0);
+    public static final StructuredTypeInfo CONFIG_METHOD = new StructuredTypeInfo("http", "method", emptyList(), 1);
+    public static final StructuredTypeInfo CONFIG_HEADER = new StructuredTypeInfo("http", "header", singletonList(new TypeInfo<>("name", String.class)), Integer.MAX_VALUE);
+    public static final StructuredTypeInfo CONFIG_PARAMETER = new StructuredTypeInfo("http", "parameter", singletonList(new TypeInfo<>("name", String.class)), Integer.MAX_VALUE);
+    public static final StructuredTypeInfo CONFIG_STATUS = new StructuredTypeInfo("http", "status", asList(new TypeInfo<>("code", String.class), new TypeInfo<>("reason", String.class)), 0);
+    public static final StructuredTypeInfo CONFIG_VERSION = new StructuredTypeInfo("http", "version", emptyList(), 1);
+    public static final StructuredTypeInfo CONFIG_TRAILER = new StructuredTypeInfo("http", "trailer", singletonList(new TypeInfo<>("name", String.class)), Integer.MAX_VALUE);
+    public static final StructuredTypeInfo CONFIG_REQUEST = new StructuredTypeInfo("http", "request", emptyList(), 1);
+    public static final StructuredTypeInfo CONFIG_HOST = new StructuredTypeInfo("http", "host", emptyList(), 0);
+    public static final StructuredTypeInfo CONFIG_CONTENT_LENGTH = new StructuredTypeInfo("http", "content-length", emptyList(), 0);
 
     private final Set<TypeInfo<?>> acceptOptions;
     private final Set<TypeInfo<?>> connectOptions;
