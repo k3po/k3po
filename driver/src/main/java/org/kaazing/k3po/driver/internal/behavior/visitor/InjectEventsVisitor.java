@@ -428,6 +428,7 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
     public AstScriptNode visit(AstReadConfigNode node, State state) {
 
         switch (state.connectivityState) {
+        case NONE:
         case CONNECTED:
             break;
         default:
@@ -442,6 +443,7 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
     public AstScriptNode visit(AstWriteConfigNode node, State state) {
 
         switch (state.connectivityState) {
+        case NONE:
         case CONNECTED:
             break;
         default:

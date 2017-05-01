@@ -18,13 +18,11 @@ package org.kaazing.k3po.driver.internal.behavior.handler.event;
 import static java.util.EnumSet.of;
 
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownInputEvent;
 
-// TODO: handle stream completion externally via event future
 public class ClosedHandler extends AbstractEventHandler {
 
     public ClosedHandler() {

@@ -20,18 +20,25 @@ import java.util.Objects;
 
 public final class StructuredTypeInfo {
 
+    private final String qualifiedName;
     private final String name;
     private final List<TypeInfo<?>> namedFields;
     private final int anonymousFields;
 
     public StructuredTypeInfo(
+        String scope,
         String name,
         List<TypeInfo<?>> namedFields,
         int anonymousFields)
     {
+        this.qualifiedName = String.format("%s:%s", scope, name);
         this.name = name;
         this.namedFields = namedFields;
         this.anonymousFields = anonymousFields;
+    }
+
+    public String getQualifiedName() {
+        return qualifiedName;
     }
 
     public String getName() {
@@ -84,6 +91,6 @@ public final class StructuredTypeInfo {
 
     @Override
     public String toString() {
-        return String.format("%s[%s %s %d]", getClass().getSimpleName(), name, namedFields, anonymousFields);
+        return String.format("%s[%s %s %d]", getClass().getSimpleName(), qualifiedName, namedFields, anonymousFields);
     }
 }

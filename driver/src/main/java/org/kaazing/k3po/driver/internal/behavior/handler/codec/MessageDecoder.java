@@ -44,7 +44,7 @@ public abstract class MessageDecoder {
         return decode0(buffer, false);
     }
 
-    protected RegionInfo getRegionInfo() {
+    public RegionInfo getRegionInfo() {
         return regionInfo;
     }
 
