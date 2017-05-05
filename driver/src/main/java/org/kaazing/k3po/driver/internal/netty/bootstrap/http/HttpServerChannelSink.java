@@ -84,6 +84,7 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
             ServerBootstrap bootstrap = bootstrapFactory.newServerBootstrap(schemeName);
             bootstrap.setParentHandler(createParentHandler(httpBindChannel, address));
             bootstrap.setPipelineFactory(pipelineFactory);
+            bootstrap.setOptions(httpBindChannel.getConfig().getTransportOptions());
             bootstrap.setOption(format("%s.nextProtocol", schemeName), httpSchemeName);
 
             // bind transport

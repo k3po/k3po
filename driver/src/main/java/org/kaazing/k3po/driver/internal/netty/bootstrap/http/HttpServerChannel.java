@@ -20,11 +20,11 @@ import org.jboss.netty.channel.ChannelConfig;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelSink;
-import org.jboss.netty.channel.DefaultServerChannelConfig;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractServerChannel;
+import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.DefaultServerChannelConfig;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
-public class HttpServerChannel extends AbstractServerChannel<ChannelConfig> {
+public class HttpServerChannel extends AbstractServerChannel<DefaultServerChannelConfig> {
 
     HttpServerChannel(ChannelFactory factory, ChannelPipeline pipeline, ChannelSink sink) {
         super(factory, pipeline, sink, new DefaultServerChannelConfig());

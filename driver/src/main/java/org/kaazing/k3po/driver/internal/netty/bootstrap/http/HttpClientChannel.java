@@ -23,7 +23,7 @@ import org.jboss.netty.channel.ChannelSink;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannel;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
-public class HttpClientChannel extends AbstractChannel<HttpChannelConfig> {
+public class HttpClientChannel extends AbstractChannel<DefaultHttpChannelConfig> {
 
     public enum HttpState { REQUEST, CONTENT_CHUNKED, CONTENT_BUFFERED, CONTENT_STREAMED, CONTENT_COMPLETE, UPGRADEABLE }
 

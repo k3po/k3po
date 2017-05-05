@@ -32,6 +32,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.EnumSet;
@@ -44,12 +45,14 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.WriteCompletionEvent;
+import org.jboss.netty.channel.socket.nio.NioSocketChannel;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Values;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
@@ -191,5 +194,31 @@ public class HttpClientBootstrapTest {
         childClose.verify(clientSpy).channelClosed(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
 
         verifyNoMoreInteractions(clientSpy);
+    }
+
+    @Test
+    public void shouldPropagateTransportOptions() throws Exception {
+
+        SimpleChannelHandler client = new SimpleChannelHandler();
+        SimpleChannelHandler clientSpy = spy(client);
+
+        bootstrap.setPipeline(pipeline(clientSpy));
+
+        ChannelAddressFactory channelAddressFactory = newChannelAddressFactory();
+        ChannelAddress channelAddress = channelAddressFactory.newChannelAddress(URI.create("http://localhost:8000/path"));
+
+        httpServer.createContext("/path");
+
+        bootstrap.setOption("writeBufferLowWaterMark", 123);
+
+        HttpClientChannel channel = (HttpClientChannel) bootstrap.connect(channelAddress).syncUninterruptibly().getChannel();
+
+        assertEquals(123, channel.getConfig().getTransportOptions().get("writeBufferLowWaterMark"));
+        HttpClientChannelSink sink = (HttpClientChannelSink) channel.getPipeline().getSink();
+        Field field = sink.getClass().getDeclaredField("transport");
+        field.setAccessible(true);
+        NioSocketChannel transport = (NioSocketChannel) field.get(sink);
+        assertEquals(123, transport.getConfig().getWriteBufferLowWaterMark());
+        bootstrap.shutdown();
     }
 }

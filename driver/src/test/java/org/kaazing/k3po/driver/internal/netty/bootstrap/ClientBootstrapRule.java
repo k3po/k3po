@@ -60,6 +60,14 @@ public class ClientBootstrapRule implements TestRule {
         bootstrap.setPipeline(pipeline);
     }
 
+    public void setOption(String key, Object value) {
+        bootstrap.setOption(key, value);
+    }
+
+    public void getOption(String key) {
+        bootstrap.getOption(key);
+    }
+
     public void shutdown() {
         bootstrapFactory.shutdown();
     }

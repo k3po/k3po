@@ -127,6 +127,7 @@ public class HttpClientChannelSink extends AbstractChannelSink {
 
         ClientBootstrap bootstrap = bootstrapFactory.newClientBootstrap(schemeName);
         bootstrap.setPipelineFactory(pipelineFactory);
+        bootstrap.setOptions(httpConnectChannel.getConfig().getTransportOptions());
         bootstrap.setOption(format("%s.nextProtocol", schemeName), httpSchemeName);
 
         // TODO: reuse connections with keep-alive
