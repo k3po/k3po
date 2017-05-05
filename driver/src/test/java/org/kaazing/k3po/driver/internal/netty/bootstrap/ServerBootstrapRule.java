@@ -82,6 +82,14 @@ public class ServerBootstrapRule implements TestRule {
         return addressFactory;
     }
 
+    public void setOption(String key, Object value) {
+        bootstrap.setOption(key, value);
+    }
+
+    public void getOption(String key) {
+        bootstrap.getOption(key);
+    }
+
     public void shutdown() {
         bootstrapFactory.shutdown();
     }
