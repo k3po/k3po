@@ -16,15 +16,15 @@
 package org.kaazing.k3po.driver.internal.netty.bootstrap.http;
 
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelConfig;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelSink;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractServerChannel;
+import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.ChannelConfig;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.DefaultServerChannelConfig;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
-public class HttpServerChannel extends AbstractServerChannel<DefaultServerChannelConfig> {
+public class HttpServerChannel extends AbstractServerChannel<ChannelConfig> {
 
     HttpServerChannel(ChannelFactory factory, ChannelPipeline pipeline, ChannelSink sink) {
         super(factory, pipeline, sink, new DefaultServerChannelConfig());

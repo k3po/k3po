@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DefaultChannelConfig extends org.jboss.netty.channel.DefaultChannelConfig
+    implements ChannelConfig
 {
     private final Map<String, Object> transportOptions = new HashMap<>();
 
@@ -33,14 +34,15 @@ public class DefaultChannelConfig extends org.jboss.netty.channel.DefaultChannel
         return true;
     }
 
-    protected boolean setOption0(String key, Object value)
-    {
-        return false;
-    }
-
+    @Override
     public Map<String, Object> getTransportOptions()
     {
         return Collections.unmodifiableMap(transportOptions);
+    }
+
+    protected boolean setOption0(String key, Object value)
+    {
+        return false;
     }
 
 }
