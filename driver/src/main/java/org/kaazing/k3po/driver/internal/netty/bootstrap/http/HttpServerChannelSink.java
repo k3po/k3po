@@ -158,7 +158,7 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
         final HttpServerChannel httpCloseChannel = (HttpServerChannel) evt.getChannel();
         final ChannelFuture httpCloseFuture = evt.getFuture();
         boolean wasBound = httpCloseChannel.isBound();
-        if (httpCloseChannel.setClosed()) {
+        if (!httpCloseFuture.isDone()) {
             if (wasBound) {
                 unbindRequested(pipeline, evt);
             }
@@ -253,7 +253,7 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
 
         if (closeFuture.isSuccess()) {
             fireChannelClosed(httpCloseChannel);
-            httpCloseFuture.setSuccess();
+            httpCloseChannel.setClosed();
         }
         else {
             httpCloseFuture.setFailure(closeFuture.getCause());
