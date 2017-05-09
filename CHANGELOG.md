@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-69...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-70...HEAD)
+
+**Merged pull requests:**
+
+- Upgrade agrona dependency version [\#431](https://github.com/k3po/k3po/pull/431) ([jfallows](https://github.com/jfallows))
+
+## [3.0.0-alpha-70](https://github.com/k3po/k3po/tree/3.0.0-alpha-70) (2017-05-09)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-69...3.0.0-alpha-70)
 
 **Implemented enhancements:**
 
