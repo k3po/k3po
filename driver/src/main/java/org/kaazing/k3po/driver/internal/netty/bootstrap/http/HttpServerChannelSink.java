@@ -84,6 +84,7 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
             ServerBootstrap bootstrap = bootstrapFactory.newServerBootstrap(schemeName);
             bootstrap.setParentHandler(createParentHandler(httpBindChannel, address));
             bootstrap.setPipelineFactory(pipelineFactory);
+            bootstrap.setOptions(httpBindChannel.getConfig().getTransportOptions());
             bootstrap.setOption(format("%s.nextProtocol", schemeName), httpSchemeName);
 
             // bind transport
@@ -157,7 +158,7 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
         final HttpServerChannel httpCloseChannel = (HttpServerChannel) evt.getChannel();
         final ChannelFuture httpCloseFuture = evt.getFuture();
         boolean wasBound = httpCloseChannel.isBound();
-        if (httpCloseChannel.setClosed()) {
+        if (!httpCloseFuture.isDone()) {
             if (wasBound) {
                 unbindRequested(pipeline, evt);
             }
@@ -252,7 +253,7 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
 
         if (closeFuture.isSuccess()) {
             fireChannelClosed(httpCloseChannel);
-            httpCloseFuture.setSuccess();
+            httpCloseChannel.setClosed();
         }
         else {
             httpCloseFuture.setFailure(closeFuture.getCause());

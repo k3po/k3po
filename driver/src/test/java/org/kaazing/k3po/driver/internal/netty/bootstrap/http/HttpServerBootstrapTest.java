@@ -51,6 +51,7 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.WriteCompletionEvent;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
+import org.jboss.netty.channel.socket.ServerSocketChannelConfig;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Values;
@@ -101,8 +102,7 @@ public class HttpServerBootstrapTest {
         binding2.unbind().syncUninterruptibly();
     }
 
-    @Test(
-            expected = Exception.class)
+    @Test(expected = Exception.class)
     public void shouldFailToBindMoreThanOnceWithEquivalentAddresses() throws Exception {
 
         server.setPipeline(pipeline(new SimpleChannelHandler()));
@@ -234,5 +234,26 @@ public class HttpServerBootstrapTest {
         childClose.verify(childSpy).channelClosed(any(ChannelHandlerContext.class), any(ChannelStateEvent.class));
 
         verifyNoMoreInteractions(parentSpy, childSpy);
+    }
+
+    @Test
+    public void shouldPropagateTransportOptions() throws Exception {
+        SimpleChannelHandler parent = new SimpleChannelHandler();
+        SimpleChannelHandler child = new SimpleChannelHandler();
+
+        server.setOption("backlog", 123);
+        server.setOption("writeBufferLowWaterMark", 1234);
+        server.setParentHandler(parent);
+        server.setPipeline(pipeline(child));
+
+        ChannelAddressFactory channelAddressFactory = newChannelAddressFactory();
+        ChannelAddress channelAddress = channelAddressFactory.newChannelAddress(URI.create("http://localhost:8000/path"));
+        HttpServerChannel binding = (HttpServerChannel) server.bind(channelAddress).syncUninterruptibly().getChannel();
+
+        assertEquals(123, binding.getConfig().getTransportOptions().get("backlog"));
+        ServerSocketChannelConfig transportConfig = (ServerSocketChannelConfig) binding.getTransport().getConfig();
+        assertEquals(123, transportConfig.getBacklog());
+
+        server.shutdown();
     }
 }

@@ -2,7 +2,18 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-68...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-69...HEAD)
+
+**Implemented enhancements:**
+
+- \[k3po junit\] add support for named script roots [\#377](https://github.com/k3po/k3po/issues/377)
+
+**Merged pull requests:**
+
+- Altered http to push connect and accept options down on to the transport [\#430](https://github.com/k3po/k3po/pull/430) ([cmebarrow](https://github.com/cmebarrow))
+
+## [3.0.0-alpha-69](https://github.com/k3po/k3po/tree/3.0.0-alpha-69) (2017-05-01)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-68...3.0.0-alpha-69)
 
 **Merged pull requests:**
 

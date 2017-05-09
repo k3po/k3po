@@ -15,7 +15,6 @@
  */
 package org.kaazing.k3po.driver.internal.netty.bootstrap.http;
 
-import org.jboss.netty.channel.DefaultChannelConfig;
 import org.jboss.netty.handler.codec.http.DefaultHttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -23,6 +22,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.QueryStringEncoder;
+import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.DefaultChannelConfig;
 
 public class DefaultHttpChannelConfig extends DefaultChannelConfig implements HttpChannelConfig {
 
