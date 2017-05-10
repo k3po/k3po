@@ -19,7 +19,7 @@ import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
@@ -32,8 +32,8 @@ public class AstWriteConfigNode extends AstCommandNode {
     private Map<String, AstValue<?>> valuesByName;
 
     public AstWriteConfigNode() {
-        this.values = new LinkedHashSet<>();
         this.valuesByName = new LinkedHashMap<>();
+        this.values = new LinkedList<>();
     }
 
     public void setType(StructuredTypeInfo type) {

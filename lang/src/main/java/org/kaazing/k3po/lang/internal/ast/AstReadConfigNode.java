@@ -17,7 +17,7 @@ package org.kaazing.k3po.lang.internal.ast;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 
@@ -33,7 +33,7 @@ public class AstReadConfigNode extends AstEventNode {
 
     public AstReadConfigNode() {
         this.matchersByName = new LinkedHashMap<>();
-        this.matchers = new LinkedHashSet<>();
+        this.matchers = new LinkedList<>();
     }
 
     public void setType(StructuredTypeInfo type) {

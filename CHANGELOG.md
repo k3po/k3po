@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-70...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-71...HEAD)
+
+**Merged pull requests:**
+
+- Providing type coercion from byte\[\] to long [\#433](https://github.com/k3po/k3po/pull/433) ([jitsni](https://github.com/jitsni))
+- Matchers need to be in list otherwise they are getting overwritten. [\#432](https://github.com/k3po/k3po/pull/432) ([jitsni](https://github.com/jitsni))
+
+## [3.0.0-alpha-71](https://github.com/k3po/k3po/tree/3.0.0-alpha-71) (2017-05-09)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-70...3.0.0-alpha-71)
 
 **Merged pull requests:**
 
