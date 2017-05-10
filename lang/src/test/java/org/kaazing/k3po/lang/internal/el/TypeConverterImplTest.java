@@ -22,6 +22,7 @@ import static org.junit.Assert.assertThat;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import javax.el.ELException;
 import javax.el.ExpressionFactory;
@@ -63,6 +64,22 @@ public class TypeConverterImplTest {
         assertThat(o, instanceOf(byte[].class));
 
         assertArrayEquals(byteArr, (byte[]) o);
+    }
+
+    @Test
+    public void shouldConvertByteArrayToLong() throws Exception {
+        TypeConverter converter = new TypeConverterImpl();
+        long value = 2L;
+        byte[] bytes = ByteBuffer.allocate(Long.SIZE / Byte.SIZE)
+                                 .order(ByteOrder.nativeOrder())
+                                 .putLong(value)
+                                 .array();
+
+        Object o = converter.convert(bytes, Long.class);
+
+        assertThat(o, instanceOf(Long.class));
+
+        assertEquals(2L, (long) o);
     }
 
     @Test()
