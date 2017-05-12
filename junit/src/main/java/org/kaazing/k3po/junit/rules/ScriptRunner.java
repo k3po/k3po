@@ -214,6 +214,7 @@ final class ScriptRunner implements Callable<ScriptPair> {
 
 
     public void dispose() throws Exception {
+        latch.awaitFinished();
         if (controller.isConnected())
             controller.disconnect();
     }
