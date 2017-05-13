@@ -19,6 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import javax.el.ELException;
 
@@ -49,6 +50,21 @@ public class TypeConverterImpl extends de.odysseus.el.misc.TypeConverterImpl {
     private <T> T coerceFromByteArray(byte[] value, Class<T> type) {
         if (type == String.class) {
             return (T) new String(value, UTF_8);
+        } else if (type == Long.class && value.length == 8) {
+            long result = (value[0] & 0xFFL) << 56
+                    | (value[1] & 0xFFL) << 48
+                    | (value[2] & 0xFFL) << 40
+                    | (value[3] & 0xFFL) << 32
+                    | (value[4] & 0xFFL) << 24
+                    | (value[5] & 0xFFL) << 16
+                    | (value[6] & 0xFFL) << 8
+                    | (value[7] & 0xFFL);
+
+            if (ByteOrder.nativeOrder() != ByteOrder.BIG_ENDIAN) {
+                result = Long.reverseBytes(result);
+            }
+
+            return (T) (Long) result;
         }
 
         return super.convert(value, type);
