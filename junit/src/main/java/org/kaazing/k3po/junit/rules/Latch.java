@@ -30,7 +30,7 @@ class Latch {
     private final CountDownLatch finished;
     private volatile Thread testThread;
     
-    private final AtomicBoolean exceptionOccurred = new AtomicBoolean(false); 
+    private final AtomicBoolean testThreadInterrupted = new AtomicBoolean(false); 
 
     Latch() {
         state = State.INIT;
@@ -132,19 +132,19 @@ class Latch {
 
     void notifyException(Exception exception) {
         this.exception = exception;
-        if (testThread != null 
-                && testThread != Thread.currentThread() 
-                && exceptionOccurred.compareAndSet(false, true))
-        {
-            testThread.interrupt();
-        }
+        interruptTestThread();
     }
 
     public void setInterruptOnException(Thread testThread) {
         this.testThread = testThread;
-        if (this.exception != null 
-                && testThread != Thread.currentThread() 
-                && exceptionOccurred.compareAndSet(false, true)) {
+        interruptTestThread();
+    }
+    
+    private void interruptTestThread() {
+        if (exception == null || testThread == null)
+            return;
+
+        if (! testThread.equals(Thread.currentThread()) && testThreadInterrupted.compareAndSet(false, true)) {
             testThread.interrupt();
         }
     }
