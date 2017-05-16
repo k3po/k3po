@@ -56,7 +56,7 @@ import org.kaazing.k3po.lang.internal.ast.AstWriteValueNode;
 public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State> {
 
     public enum ReadWriteState {
-        NONE, CONFIG_ONLY, CONFIG_OR_VALUE
+        NONE, CONNECTED, CONFIG_ONLY, CONFIG_OR_VALUE
     }
 
     public static final class State {
@@ -248,6 +248,9 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     public AstScriptNode visit(AstConnectedNode connectedNode, State state) {
 
         state.streamables.add(connectedNode);
+
+        state.readState = ReadWriteState.CONNECTED;
+        state.writeState = ReadWriteState.CONNECTED;
         return null;
     }
 
@@ -305,6 +308,7 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
 
         state.streamables.add(node);
         switch (state.readState) {
+        case NONE:
         case CONFIG_ONLY:
         case CONFIG_OR_VALUE:
             break;
@@ -319,6 +323,7 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     public AstScriptNode visit(AstWriteConfigNode node, State state) {
         state.streamables.add(node);
         switch (state.writeState) {
+        case NONE:
         case CONFIG_ONLY:
         case CONFIG_OR_VALUE:
             break;

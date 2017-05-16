@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-71...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-72...HEAD)
+
+**Merged pull requests:**
+
+- Inject write flush only after connected event [\#435](https://github.com/k3po/k3po/pull/435) ([jfallows](https://github.com/jfallows))
+
+## [3.0.0-alpha-72](https://github.com/k3po/k3po/tree/3.0.0-alpha-72) (2017-05-10)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-71...3.0.0-alpha-72)
 
 **Merged pull requests:**
 

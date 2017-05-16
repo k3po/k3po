@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>k3po.parent</artifactId>
-    <version>3.0.0-alpha-72</version>
+    <version>3.0.0-alpha-73</version>
 
     <name>k3po/parent</name>
     <url>https://github.com/kaazing/k3po</url>
