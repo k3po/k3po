@@ -182,39 +182,29 @@ final class ScriptRunner implements Callable<ScriptPair> {
         controller.writeCommand(abort);
     }
 
-    public void awaitBarrier(String barrierName) throws InterruptedException {
+    public void awaitBarrier(String barrierName) throws Exception {
         if (!barriers.keySet().contains(barrierName)) {
             throw new IllegalArgumentException(String.format(
                     "Barrier with %s is not present in the script and thus can't be waited upon", barrierName));
         }
-        try {
-            controller.sendAwaitBarrier(barrierName);
-        } catch (Exception e) {
-            latch.notifyException(e);
-        }
+        controller.sendAwaitBarrier(barrierName);
         final CountDownLatch notifiedLatch = barriers.get(barrierName);
         notifiedLatch.await();
     }
 
-    public void notifyBarrier(final String barrierName) throws InterruptedException {
+    public void notifyBarrier(final String barrierName) throws Exception {
         if (!barriers.keySet().contains(barrierName)) {
             throw new IllegalArgumentException(String.format(
                     "Barrier with %s is not present in the script and thus can't be notified", barrierName));
         }
         final CountDownLatch notifiedLatch = barriers.get(barrierName);
         if (notifiedLatch.getCount() > 0) {
-            try {
-                controller.notifyBarrier(barrierName);
-            } catch (Exception e) {
-                latch.notifyException(e);
-            }
+            controller.notifyBarrier(barrierName);
         }
         notifiedLatch.await();
     }
 
-
     public void dispose() throws Exception {
-        latch.awaitFinished();
         if (controller.isConnected())
             controller.disconnect();
     }

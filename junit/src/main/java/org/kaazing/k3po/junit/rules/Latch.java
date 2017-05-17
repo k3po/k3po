@@ -137,7 +137,6 @@ class Latch {
 
     public void setInterruptOnException(Thread testThread) {
         this.testThread = testThread;
-        interruptTestThread();
     }
     
     private void interruptTestThread() {

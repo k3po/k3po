@@ -227,7 +227,7 @@ public class K3poRule extends Verifier {
      * @param barrierName is the name of the barrier to await
      * @throws InterruptedException if await is interrupted
      */
-    public void awaitBarrier(String barrierName) throws InterruptedException {
+    public void awaitBarrier(String barrierName) throws Exception {
         statement.awaitBarrier(barrierName);
     }
 
@@ -246,7 +246,7 @@ public class K3poRule extends Verifier {
      * @param barrierName is the name for the barrier to notify
      * @throws InterruptedException if notify is interrupted (note: waits for confirm that is notified)
      */
-    public void notifyBarrier(String barrierName) throws InterruptedException {
+    public void notifyBarrier(String barrierName) throws Exception {
         statement.notifyBarrier(barrierName);
     }
 
