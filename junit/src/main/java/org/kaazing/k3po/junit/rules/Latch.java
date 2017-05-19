@@ -15,6 +15,7 @@
  */
 package org.kaazing.k3po.junit.rules;
 
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -131,21 +132,16 @@ class Latch {
     }
 
     void notifyException(Exception exception) {
-        this.exception = exception;
-        interruptTestThread();
+        this.exception = Objects.requireNonNull(exception);
+
+        if (! Thread.currentThread().equals(testThread) 
+                && testThreadInterrupted.compareAndSet(false, true)) {
+            testThread.interrupt();
+        }
     }
 
     public void setInterruptOnException(Thread testThread) {
         this.testThread = testThread;
-    }
-    
-    private void interruptTestThread() {
-        if (exception == null || testThread == null)
-            return;
-
-        if (! testThread.equals(Thread.currentThread()) && testThreadInterrupted.compareAndSet(false, true)) {
-            testThread.interrupt();
-        }
     }
 
     public Exception getException() {

@@ -61,14 +61,14 @@ final class SpecificationStatement extends Statement {
                 if (latch.hasException()) {
                     // propagate exception if the latch has an exception
                     throw latch.getException();
-                } else
-                    throw e;
+                }
+                throw e;
             }
 
             try {
                 // note: JUnit timeout will trigger an exception
                 statement.evaluate();
-            } catch (Throwable cause) {
+            } catch (Exception cause) {
                 // any exception aborts the script (including timeout)
                 if (!latch.isFinished()) {
                     scriptRunner.abort();
@@ -89,35 +89,35 @@ final class SpecificationStatement extends Statement {
                     throw cause;
                 }
 
+                // propagate exception if the latch has an exception
                 if (latch.hasException()) {
-                    // propagate exception if the latch has an exception
-                	if (cause instanceof InterruptedException) {
-                		// take the error from the latch, it is more meaningful
-                		throw latch.getException();
-                	}
-                    throw cause.initCause(latch.getException());
-                } else {
-                    if (scriptFutureException != null) {
-                        if (scriptFutureException instanceof ExecutionException) {
-                            throw scriptFutureException.getCause().initCause(cause);
-                        } else {
-                            // we will ignore any other exception from scriptFuture.get()
-                            throw cause;
-                        }
-                    } else {
-                        try {
-                            assertEquals("Specified behavior did not match", scripts.getExpectedScript(),
-                                    scripts.getObservedScript());
-                            // Throw the original exception if we are equal
-                            throw cause;
-                        } catch (ComparisonFailure f) {
-                            // throw an exception that highlights the difference in behavior, but caused by the timeout 
-                            // (or original exception)
-                            f.initCause(cause);
-                            throw f;
-                        }
+                    if (cause instanceof InterruptedException) {
+                        // take the error from the latch, it is more meaningful
+                        throw latch.getException();
                     }
+                    throw cause.initCause(latch.getException());
                 }
+
+                if (scriptFutureException != null) {
+                    if (scriptFutureException instanceof ExecutionException) {
+                        throw scriptFutureException.getCause().initCause(cause);
+                    }
+
+                    // we will ignore any other exception from scriptFuture.get()
+                    throw cause;
+                }
+
+                try {
+                    assertEquals("Specified behavior did not match", scripts.getExpectedScript(), scripts.getObservedScript());
+                } catch (ComparisonFailure f) {
+                    // throw an exception that highlights the difference in behavior, but caused by the timeout 
+                    // (or original exception)
+                    f.initCause(cause);
+                    throw f;
+                }
+
+                // Throw the original exception if we are equal
+                throw cause;
             }
 
             // note: statement MUST call start() or finish to allow Specification script(s) to make progress
