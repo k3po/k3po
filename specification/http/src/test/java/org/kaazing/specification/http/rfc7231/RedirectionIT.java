@@ -63,4 +63,12 @@ public class RedirectionIT {
     public void relativeLocation() throws Exception {
         k3po.finish();
     }
+
+    @Test
+    @Specification({
+        "secure.location/request",
+        "secure.location/response" })
+    public void secureLocationHeader() throws Exception {
+        k3po.finish();
+    }
 }
