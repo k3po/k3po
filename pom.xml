@@ -54,6 +54,7 @@
         <module>specification/ws.extensions/x-kaazing-idle-timeout</module>
         <module>specification/ws.extensions/x-kaazing-ping-pong</module>
         <module>specification/http.multi.auth</module>
+        <module>specification/saml.auth</module>
     </modules>
 
     <properties>
@@ -66,6 +67,7 @@
         <animal.sniffer.skip>true</animal.sniffer.skip>
 	<!-- skipping because eclipse complains about javadoc and other non errors -->
         <checkstyle.skip>true</checkstyle.skip>
+        <opensaml.version>3.2.0</opensaml.version>
     </properties>
 
     <profiles>
