@@ -21,12 +21,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 import org.junit.AssumptionViolatedException;
 import org.junit.ComparisonFailure;
+import org.junit.runners.model.MultipleFailureException;
 import org.junit.runners.model.Statement;
 import org.kaazing.k3po.junit.rules.internal.ScriptPair;
 
@@ -112,8 +114,8 @@ final class SpecificationStatement extends Statement {
                 } catch (ComparisonFailure f) {
                     // throw an exception that highlights the difference in behavior, but caused by the timeout 
                     // (or original exception)
-                    f.initCause(cause);
-                    throw f;
+
+                    throw new MultipleFailureException(Arrays.asList(f, cause));
                 }
 
                 // Throw the original exception if we are equal
