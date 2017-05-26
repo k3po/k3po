@@ -21,12 +21,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 import org.junit.AssumptionViolatedException;
 import org.junit.ComparisonFailure;
+import org.junit.runners.model.MultipleFailureException;
 import org.junit.runners.model.Statement;
 import org.kaazing.k3po.junit.rules.internal.ScriptPair;
 
@@ -61,70 +63,66 @@ final class SpecificationStatement extends Statement {
                 if (latch.hasException()) {
                     // propagate exception if the latch has an exception
                     throw latch.getException();
-                } else
-                    throw e;
+                }
+                throw e;
             }
 
             try {
                 // note: JUnit timeout will trigger an exception
                 statement.evaluate();
-            } catch (AssumptionViolatedException e) {
-
+            } catch (Exception cause) {
+                // any exception aborts the script (including timeout)
                 if (!latch.isFinished()) {
                     scriptRunner.abort();
                 }
 
-                throw e;
-            } catch (Throwable cause) {
-                // any exception aborts the script (including timeout)
-                if (latch.hasException()) {
-                    // propagate exception if the latch has an exception
-                	if (cause instanceof InterruptedException) {
-                		// take the error from the latch, it is more meaningful
-                		throw latch.getException();
-                	}
-                    throw cause;
-                } else {
-                    // It is possible that the script is finished even if we get an exception
-                    // in particular a timeout may occur but the script may finish before we actually
-                    // process it the timeout, send the abort and get the result back.
-
-                    // No reason to send the abort if we are already finished.
-                    // Note that there is a race in that the script may be finished before
-                    // we actually send the abort. But that is ok.
-                    if (!latch.isFinished()) {
-                        scriptRunner.abort();
-                    }
-
-                    try {
-                        // wait at most 5sec for the observed script (due to the abort case)
-                        // should take less than a second for K3PO to complete
-                        ScriptPair scripts = scriptFuture.get(5, SECONDS);
-
-                        try {
-                            assertEquals("Specified behavior did not match", scripts.getExpectedScript(),
-                                    scripts.getObservedScript());
-                            // Throw the original exception if we are equal
-                            throw cause;
-                        } catch (ComparisonFailure f) {
-                            // throw an exception that highlights the difference in behavior, but caused by the timeout 
-                            // (or original exception)
-                            f.initCause(cause);
-                            throw f;
-                        }
-
-                    } catch (ExecutionException ee) {
-                        throw ee.getCause().initCause(cause);
-                    } catch (Exception e) {
-                        // Note that ComparisonFailure are not an Exception we do want those to bubble up.
-                        throw cause;
-                    }
+                // wait at most 5sec for the observed script (due to the abort case)
+                // should take less than a second for K3PO to complete
+                ScriptPair scripts = null;
+                Exception scriptFutureException = null;
+                try {
+                    scripts = scriptFuture.get(5, SECONDS);
+                } catch (Exception e) {
+                    scriptFutureException = e;
                 }
+                // now that the script is stopped, handle exception
+
+                if (cause instanceof AssumptionViolatedException) {
+                    throw cause;
+                }
+
+                // propagate exception if the latch has an exception
+                if (latch.hasException()) {
+                    if (cause instanceof InterruptedException) {
+                        // take the error from the latch, it is more meaningful
+                        throw latch.getException();
+                    }
+                    throw cause.initCause(latch.getException());
+                }
+
+                if (scriptFutureException != null) {
+                    if (scriptFutureException instanceof ExecutionException) {
+                        throw scriptFutureException.getCause().initCause(cause);
+                    }
+
+                    // we will ignore any other exception from scriptFuture.get()
+                    throw cause;
+                }
+
+                try {
+                    assertEquals("Specified behavior did not match", scripts.getExpectedScript(), scripts.getObservedScript());
+                } catch (ComparisonFailure f) {
+                    // throw an exception that highlights the difference in behavior, but caused by the timeout 
+                    // (or original exception)
+
+                    throw new MultipleFailureException(Arrays.asList(f, cause));
+                }
+
+                // Throw the original exception if we are equal
+                throw cause;
             }
 
-            // Stefan - not sure what the comment bellow is about. There is no join() method in the statement or rule class.
-            // note: statement MUST call join() to ensure wrapped Rule(s) do not complete early
-            // and to allow Specification script(s) to make progress
+            // note: statement MUST call start() or finish to allow Specification script(s) to make progress
             String k3poSimpleName = K3poRule.class.getSimpleName();
             assertTrue(format("Did you instantiate %s with a @Rule and call %s.start() or %s.finish()?", k3poSimpleName, k3poSimpleName, k3poSimpleName),
                     latch.isStartable());
@@ -143,11 +141,11 @@ final class SpecificationStatement extends Statement {
         }
     }
 
-    public void awaitBarrier(String barrierName) throws InterruptedException {
+    public void awaitBarrier(String barrierName) throws Exception {
         scriptRunner.awaitBarrier(barrierName);
     }
 
-    public void notifyBarrier(String barrierName) throws InterruptedException {
+    public void notifyBarrier(String barrierName) throws Exception {
         scriptRunner.notifyBarrier(barrierName);
     }
 }

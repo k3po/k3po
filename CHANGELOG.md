@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-72...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-73...HEAD)
+
+**Merged pull requests:**
+
+- Wait for ABORT before close and send interrupt only once [\#434](https://github.com/k3po/k3po/pull/434) ([StCostea](https://github.com/StCostea))
+- Suggested control SPEC improvements [\#408](https://github.com/k3po/k3po/pull/408) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-73](https://github.com/k3po/k3po/tree/3.0.0-alpha-73) (2017-05-16)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-72...3.0.0-alpha-73)
 
 **Merged pull requests:**
 
