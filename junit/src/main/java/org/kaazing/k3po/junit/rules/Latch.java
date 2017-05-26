@@ -15,7 +15,9 @@
  */
 package org.kaazing.k3po.junit.rules;
 
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 class Latch {
 
@@ -28,6 +30,8 @@ class Latch {
     private final CountDownLatch startable;
     private final CountDownLatch finished;
     private volatile Thread testThread;
+    
+    private final AtomicBoolean testThreadInterrupted = new AtomicBoolean(false); 
 
     Latch() {
         state = State.INIT;
@@ -128,22 +132,16 @@ class Latch {
     }
 
     void notifyException(Exception exception) {
-        this.exception = exception;
-        // Commented because of issue https://github.com/k3po/k3po/issues/391
-//        prepared.countDown();
-//        startable.countDown();
-//        finished.countDown();
-        if (testThread != null) {
-            if (testThread != Thread.currentThread())
-                testThread.interrupt();
+        this.exception = Objects.requireNonNull(exception);
+
+        if (! Thread.currentThread().equals(testThread) 
+                && testThreadInterrupted.compareAndSet(false, true)) {
+            testThread.interrupt();
         }
     }
 
     public void setInterruptOnException(Thread testThread) {
         this.testThread = testThread;
-        if (this.exception != null) {
-            testThread.interrupt();
-        }
     }
 
     public Exception getException() {
