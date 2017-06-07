@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-73...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-74...HEAD)
+
+**Implemented enhancements:**
+
+- TLS/SSL support [\#93](https://github.com/k3po/k3po/issues/93)
+- Implement TLS transport, fix \#93 [\#440](https://github.com/k3po/k3po/pull/440) ([jfallows](https://github.com/jfallows))
+
+## [3.0.0-alpha-74](https://github.com/k3po/k3po/tree/3.0.0-alpha-74) (2017-05-26)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-73...3.0.0-alpha-74)
 
 **Merged pull requests:**
 
