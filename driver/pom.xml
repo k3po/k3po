@@ -101,6 +101,28 @@
 
     <build>
         <plugins>
+        <!-- TODO: democa-maven-plugin requires https://github.com/mojohaus/keytool/pull/8
+             TODO: remove src/test/democa and update TLS client.rpt and server.rpt
+            <plugin>
+                <groupId>org.reaktivity</groupId>
+                <artifactId>democa-maven-plugin</artifactId>
+                <version>develop-SNAPSHOT</version>
+                <configuration>
+                    <caDistinguishedName>C=US, ST=California, O=Reaktivity, OU=Development, CN=DemoCA</caDistinguishedName>
+                    <certDistinguishedName>C=US, ST=California, O=Reaktivity, OU=Development, CN=localhost</certDistinguishedName>
+                    <certServerName>localhost</certServerName>
+                    <skipIfExists>true</skipIfExists>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate-certificate-authority</goal>
+                            <goal>generate-server-certificate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+         -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
