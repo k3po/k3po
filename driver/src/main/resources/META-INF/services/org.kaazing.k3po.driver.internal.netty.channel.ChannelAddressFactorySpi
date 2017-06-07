@@ -4,3 +4,4 @@ org.kaazing.k3po.driver.internal.netty.channel.http.HttpChannelAddressFactorySpi
 org.kaazing.k3po.driver.internal.netty.channel.bbosh.BBoshChannelAddressFactorySpi
 org.kaazing.k3po.driver.internal.netty.channel.file.FileChannelAddressFactorySpi
 org.kaazing.k3po.driver.internal.netty.channel.agrona.AgronaChannelAddressFactorySpi
+org.kaazing.k3po.driver.internal.ext.tls.channel.TlsChannelAddressFactorySpi

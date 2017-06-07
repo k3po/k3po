@@ -4,3 +4,4 @@ org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpBootstrapFactorySpi
 org.kaazing.k3po.driver.internal.netty.bootstrap.bbosh.BBoshBootstrapFactorySpi
 org.kaazing.k3po.driver.internal.netty.bootstrap.file.FileBootstrapFactorySpi
 org.kaazing.k3po.driver.internal.netty.bootstrap.agrona.AgronaBootstrapFactorySpi
+org.kaazing.k3po.driver.internal.ext.tls.bootstrap.TlsBootstrapFactorySpi

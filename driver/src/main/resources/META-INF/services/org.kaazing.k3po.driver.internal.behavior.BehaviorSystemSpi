@@ -1,2 +1,3 @@
 org.kaazing.k3po.driver.internal.behavior.FileBehaviorSystem
 org.kaazing.k3po.driver.internal.behavior.HttpBehaviorSystem
+org.kaazing.k3po.driver.internal.ext.tls.TlsBehaviorSystem
