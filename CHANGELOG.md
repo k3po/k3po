@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-74...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-75...HEAD)
+
+**Merged pull requests:**
+
+- Fix bug during TLS transport shutdown that can cause driver to hang [\#442](https://github.com/k3po/k3po/pull/442) ([jfallows](https://github.com/jfallows))
+
+## [3.0.0-alpha-75](https://github.com/k3po/k3po/tree/3.0.0-alpha-75) (2017-06-07)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-74...3.0.0-alpha-75)
 
 **Implemented enhancements:**
 
