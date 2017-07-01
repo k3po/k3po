@@ -53,10 +53,6 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ChildChannelStateEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.group.ChannelGroupFuture;
-import org.jboss.netty.channel.group.ChannelGroupFutureListener;
-import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.jboss.netty.util.internal.ConcurrentHashMap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
@@ -251,33 +247,11 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
 
     private ChannelHandler createParentHandler(TlsServerChannel channel, final ChannelAddress address) {
         return new SimpleChannelHandler() {
-
-            private final ChannelGroup childChannels = new DefaultChannelGroup();
-
             @Override
             public void childChannelOpen(ChannelHandlerContext ctx, ChildChannelStateEvent e) throws Exception {
                 e.getChannel().setAttachment(address);
-                childChannels.add(e.getChildChannel());
                 super.childChannelOpen(ctx, e);
             }
-
-            @Override
-            public void childChannelClosed(ChannelHandlerContext ctx, ChildChannelStateEvent e) throws Exception {
-                childChannels.remove(e.getChildChannel());
-                super.childChannelClosed(ctx, e);
-            }
-
-            @Override
-            public void closeRequested(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-                // close up any transports previously in use for TLS
-                childChannels.close().addListener(new ChannelGroupFutureListener() {
-                    @Override
-                    public void operationComplete(ChannelGroupFuture future) throws Exception {
-                        ctx.sendDownstream(e);
-                    }
-                });
-            }
-
         };
     }
 

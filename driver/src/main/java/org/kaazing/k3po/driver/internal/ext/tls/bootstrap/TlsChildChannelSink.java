@@ -78,10 +78,10 @@ public class TlsChildChannelSink extends AbstractChannelSink {
 
     @Override
     protected void shutdownOutputRequested(ChannelPipeline pipeline, ShutdownOutputEvent evt) throws Exception {
-        TlsChildChannel httpChildChannel = (TlsChildChannel) pipeline.getChannel();
-        ChannelFuture httpFuture = evt.getFuture();
+        TlsChildChannel tlsChildChannel = (TlsChildChannel) pipeline.getChannel();
+        ChannelFuture tlsFuture = evt.getFuture();
         // TODO: shutdown response output is identical to close semantics (if request fully read already)
-        closeRequested(httpChildChannel, httpFuture);
+        closeRequested(tlsChildChannel, tlsFuture);
     }
 
     @Override
