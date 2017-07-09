@@ -15,7 +15,7 @@
  */
 package org.kaazing.k3po.lang.internal.ast;
 
-public final class AstAbortedNode extends AstEventNode {
+public final class AstWriteAbortNode extends AstCommandNode {
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
@@ -29,12 +29,12 @@ public final class AstAbortedNode extends AstEventNode {
 
     @Override
     protected boolean equalTo(AstRegion that) {
-        return that instanceof AstAbortedNode;
+        return that instanceof AstWriteAbortNode;
     }
 
     @Override
     protected void describe(StringBuilder buf) {
         super.describe(buf);
-        buf.append("aborted\n");
+        buf.append("write abort\n");
     }
 }

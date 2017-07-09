@@ -55,7 +55,7 @@ read http:header "Content-Type" "application/octet-stream"
 read http:header "Connection" "close"
 
 write await READ_BAD_STATUS
-abort
+write abort
 
 # Upstream
 connect await CREATED

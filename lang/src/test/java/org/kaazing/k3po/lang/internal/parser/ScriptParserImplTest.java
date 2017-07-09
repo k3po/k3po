@@ -16,8 +16,6 @@
 package org.kaazing.k3po.lang.internal.parser;
 
 import static org.junit.Assert.assertEquals;
-import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.ABORT;
-import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.ABORTED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.ACCEPT;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.CLOSE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.CLOSED;
@@ -29,6 +27,8 @@ import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.LITERAL_
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.LITERAL_TEXT_VALUE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.PROPERTY_NODE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_ABORT;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_ABORTED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_AWAIT;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_CONFIG;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_NOTIFY;
@@ -36,6 +36,8 @@ import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_OPT
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.SCRIPT;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.VARIABLE_LENGTH_BYTES_MATCHER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_ABORT;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_ABORTED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_AWAIT;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_CONFIG;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_NOTIFY;
@@ -59,37 +61,41 @@ import javax.el.ValueExpression;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
-import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstPropertyNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteValueNode;
-import org.kaazing.k3po.lang.internal.ast.builder.AstAbortNodeBuilder;
-import org.kaazing.k3po.lang.internal.ast.builder.AstAbortedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstAcceptNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstCloseNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstClosedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstConnectedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstPropertyNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstReadAbortNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstReadAbortedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadAwaitNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadConfigNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadNotifyNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadOptionNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstScriptNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstWriteAbortNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstWriteAbortedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteAwaitNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteConfigNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteNodeBuilder;
@@ -871,27 +877,53 @@ public class ScriptParserImplTest {
     }
 
     @Test
-    public void shouldParseAbort() throws Exception {
+    public void shouldParseWriteAbort() throws Exception {
 
-        String scriptFragment = "abort";
+        String scriptFragment = "write abort";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstAbortNode actual = parser.parseWithStrategy(scriptFragment, ABORT);
+        AstWriteAbortNode actual = parser.parseWithStrategy(scriptFragment, WRITE_ABORT);
 
-        AstAbortNode expected = new AstAbortNodeBuilder().done();
+        AstWriteAbortNode expected = new AstWriteAbortNodeBuilder().done();
 
         assertEquals(expected, actual);
     }
 
     @Test
-    public void shouldParseAborted() throws Exception {
+    public void shouldParseReadAbort() throws Exception {
 
-        String scriptFragment = "aborted";
+        String scriptFragment = "read abort";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstAbortedNode actual = parser.parseWithStrategy(scriptFragment, ABORTED);
+        AstReadAbortNode actual = parser.parseWithStrategy(scriptFragment, READ_ABORT);
 
-        AstAbortedNode expected = new AstAbortedNodeBuilder().done();
+        AstReadAbortNode expected = new AstReadAbortNodeBuilder().done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseReadAborted() throws Exception {
+
+        String scriptFragment = "read aborted";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadAbortedNode actual = parser.parseWithStrategy(scriptFragment, READ_ABORTED);
+
+        AstReadAbortedNode expected = new AstReadAbortedNodeBuilder().done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseWriteAborted() throws Exception {
+
+        String scriptFragment = "write aborted";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteAbortedNode actual = parser.parseWithStrategy(scriptFragment, WRITE_ABORTED);
+
+        AstWriteAbortedNode expected = new AstWriteAbortedNodeBuilder().done();
 
         assertEquals(expected, actual);
     }

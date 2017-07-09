@@ -15,29 +15,29 @@
  */
 package org.kaazing.k3po.lang.internal.ast.builder;
 
-import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAbortNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
 
-public class AstAbortNodeBuilder extends AbstractAstStreamableNodeBuilder<AstAbortNode, AstAbortNode> {
+public class AstWriteAbortNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWriteAbortNode, AstWriteAbortNode> {
 
-    public AstAbortNodeBuilder() {
-        this(new AstAbortNode());
+    public AstWriteAbortNodeBuilder() {
+        this(new AstWriteAbortNode());
     }
 
     @Override
-    public AstAbortNode done() {
+    public AstWriteAbortNode done() {
         return result;
     }
 
-    private AstAbortNodeBuilder(AstAbortNode node) {
+    private AstWriteAbortNodeBuilder(AstWriteAbortNode node) {
         super(node, node);
     }
 
     public static class StreamNested<R extends AbstractAstNodeBuilder<? extends AstStreamNode, ?>> extends
-            AbstractAstStreamableNodeBuilder<AstAbortNode, R> {
+            AbstractAstStreamableNodeBuilder<AstWriteAbortNode, R> {
 
         public StreamNested(R builder) {
-            super(new AstAbortNode(), builder);
+            super(new AstWriteAbortNode(), builder);
         }
 
         @Override

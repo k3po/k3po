@@ -57,7 +57,7 @@ write http:header "Connection" "close"
 write flush
 
 read await WROTE_BAD_STATUS
-aborted
+read aborted
 
 # Upstream
 accept ${upstream}

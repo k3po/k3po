@@ -53,7 +53,7 @@ read http:header "Content-Type" "application/octet-stream"
 read http:header "Connection" "close"
 
 write await UPSTREAM_ABORTED
-abort
+write abort
 
 # Upstream
 connect await CREATED
@@ -69,7 +69,7 @@ write http:header "X-Next-Protocol" "wse/1.0"
 write http:header "X-Sequence-No" ${wse:asString(sequence + 1)}
 write flush
 
-aborted
+read aborted
 read notify UPSTREAM_ABORTED
 
 

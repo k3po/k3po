@@ -34,7 +34,7 @@ import static org.jboss.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.SWITCHING_PROTOCOLS;
 import static org.kaazing.k3po.driver.internal.channel.Channels.remoteAddress;
-import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireChannelAborted;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireInputAborted;
 import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireInputShutdown;
 
 import java.net.URI;
@@ -113,7 +113,7 @@ public class HttpChildChannelSource extends HttpChannelHandler {
                 break;
             default:
                 if (httpChildChannel.setAborted()) {
-                    fireChannelAborted(httpChildChannel);
+                    fireInputAborted(httpChildChannel);
                 }
                 break;
             }
@@ -289,7 +289,7 @@ public class HttpChildChannelSource extends HttpChannelHandler {
                     break;
                 default:
                     if (httpChildChannel.setAborted()) {
-                        fireChannelAborted(httpChildChannel);
+                        fireInputAborted(httpChildChannel);
                     }
                     break;
                 }

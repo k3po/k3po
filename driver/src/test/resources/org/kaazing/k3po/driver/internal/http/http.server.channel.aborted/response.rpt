@@ -20,4 +20,4 @@ connected
 
 read http:method "GET"
 read closed
-aborted
+read aborted

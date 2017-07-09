@@ -55,10 +55,10 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannelSink;
-import org.kaazing.k3po.driver.internal.netty.channel.AbortEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.FlushEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownOutputEvent;
+import org.kaazing.k3po.driver.internal.netty.channel.WriteAbortEvent;
 
 public class TlsClientChannelSink extends AbstractChannelSink {
 
@@ -248,7 +248,7 @@ public class TlsClientChannelSink extends AbstractChannelSink {
     }
 
     @Override
-    protected void abortRequested(ChannelPipeline pipeline, final AbortEvent evt) throws Exception {
+    protected void abortOutputRequested(ChannelPipeline pipeline, final WriteAbortEvent evt) throws Exception {
         TlsClientChannel channel = (TlsClientChannel) pipeline.getChannel();
         ChannelFuture flushFuture = Channels.future(channel);
         flushRequested(channel, flushFuture);

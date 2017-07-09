@@ -15,6 +15,7 @@
  */
 package org.kaazing.k3po.driver.internal.netty.channel;
 
+import static org.jboss.netty.channel.Channels.close;
 import static org.jboss.netty.channel.Channels.future;
 
 import org.jboss.netty.channel.Channel;
@@ -23,6 +24,7 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
+import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannel;
 
 public final class Channels {
 
@@ -174,20 +176,72 @@ public final class Channels {
                 new DownstreamFlushEvent(ctx.getChannel(), future));
     }
 
-    public static ChannelFuture abort(Channel channel) {
+    public static ChannelFuture abortOutput(Channel channel) {
         ChannelFuture future = future(channel);
         channel.getPipeline().sendDownstream(
-                new DownstreamAbortEvent(channel, future));
+                new DownstreamWriteAbortEvent(channel, future));
         return future;
     }
 
 
-    public static void abort(ChannelHandlerContext ctx, ChannelFuture future) {
-        ctx.sendDownstream(new DownstreamAbortEvent(ctx.getChannel(), future));
+    public static void abortOutput(ChannelHandlerContext ctx, ChannelFuture future) {
+        ctx.sendDownstream(new DownstreamWriteAbortEvent(ctx.getChannel(), future));
     }
 
-    public static void fireChannelAborted(Channel channel) {
-        channel.getPipeline().sendUpstream(new UpstreamAbortEvent(channel));
+    public static void fireOutputAborted(Channel channel) {
+        channel.getPipeline().sendUpstream(new UpstreamWriteAbortEvent(channel));
+    }
+
+    public static ChannelFuture abortInput(Channel channel) {
+        ChannelFuture future = future(channel);
+        channel.getPipeline().sendDownstream(
+                new DownstreamReadAbortEvent(channel, future));
+        return future;
+    }
+
+
+    public static void abortInput(ChannelHandlerContext ctx, ChannelFuture future) {
+        ctx.sendDownstream(new DownstreamReadAbortEvent(ctx.getChannel(), future));
+    }
+
+    public static void fireInputAborted(Channel channel) {
+        channel.getPipeline().sendUpstream(new UpstreamReadAbortEvent(channel));
+    }
+
+    public static void shutdownOutputOrClose(Channel channel) {
+        if (channel instanceof AbstractChannel) {
+            shutdownOutput(channel);
+        }
+        else {
+            close(channel);
+        }
+    }
+
+    public static void shutdownOutputOrClose(ChannelHandlerContext ctx, ChannelFuture future) {
+        if (ctx.getChannel() instanceof AbstractChannel) {
+            shutdownOutput(ctx, future);
+        }
+        else {
+            close(ctx, future);
+        }
+    }
+
+    public static void abortOutputOrClose(Channel channel) {
+        if (channel instanceof AbstractChannel) {
+            abortOutput(channel);
+        }
+        else {
+            close(channel);
+        }
+    }
+
+    public static void abortOutputOrClose(ChannelHandlerContext ctx, ChannelFuture future) {
+        if (ctx.getChannel() instanceof AbstractChannel) {
+            abortOutput(ctx, future);
+        }
+        else {
+            close(ctx, future);
+        }
     }
 
     private Channels() {

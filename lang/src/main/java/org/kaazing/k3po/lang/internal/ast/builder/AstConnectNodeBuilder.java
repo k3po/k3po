@@ -104,13 +104,23 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
     }
 
     @Override
-    public AstAbortNodeBuilder.StreamNested<AstConnectNodeBuilder> addAbortCommand() {
-        return new AstAbortNodeBuilder.StreamNested<>(this);
+    public AstWriteAbortNodeBuilder.StreamNested<AstConnectNodeBuilder> addWriteAbortCommand() {
+        return new AstWriteAbortNodeBuilder.StreamNested<>(this);
     }
 
     @Override
-    public AstAbortedNodeBuilder.StreamNested<AstConnectNodeBuilder> addAbortedEvent() {
-        return new AstAbortedNodeBuilder.StreamNested<>(this);
+    public AstReadAbortedNodeBuilder.StreamNested<AstConnectNodeBuilder> addReadAbortedEvent() {
+        return new AstReadAbortedNodeBuilder.StreamNested<>(this);
+    }
+
+    @Override
+    public AstReadAbortNodeBuilder.StreamNested<AstConnectNodeBuilder> addReadAbortCommand() {
+        return new AstReadAbortNodeBuilder.StreamNested<>(this);
+    }
+
+    @Override
+    public AstWriteAbortedNodeBuilder.StreamNested<AstConnectNodeBuilder> addWriteAbortedEvent() {
+        return new AstWriteAbortedNodeBuilder.StreamNested<>(this);
     }
 
     @Override
@@ -260,13 +270,23 @@ public final class AstConnectNodeBuilder extends AbstractAstConnectNodeBuilder<A
         }
 
         @Override
-        public AstAbortNodeBuilder.StreamNested<ScriptNested<R>> addAbortCommand() {
-            return new AstAbortNodeBuilder.StreamNested<>(this);
+        public AstWriteAbortNodeBuilder.StreamNested<ScriptNested<R>> addWriteAbortCommand() {
+            return new AstWriteAbortNodeBuilder.StreamNested<>(this);
         }
 
         @Override
-        public AstAbortedNodeBuilder.StreamNested<ScriptNested<R>> addAbortedEvent() {
-            return new AstAbortedNodeBuilder.StreamNested<>(this);
+        public AstReadAbortedNodeBuilder.StreamNested<ScriptNested<R>> addReadAbortedEvent() {
+            return new AstReadAbortedNodeBuilder.StreamNested<>(this);
+        }
+
+        @Override
+        public AstReadAbortNodeBuilder.StreamNested<ScriptNested<R>> addReadAbortCommand() {
+            return new AstReadAbortNodeBuilder.StreamNested<>(this);
+        }
+
+        @Override
+        public AstWriteAbortedNodeBuilder.StreamNested<ScriptNested<R>> addWriteAbortedEvent() {
+            return new AstWriteAbortedNodeBuilder.StreamNested<>(this);
         }
 
         @Override

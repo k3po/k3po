@@ -23,7 +23,7 @@ import static org.jboss.netty.channel.Channels.fireChannelUnbound;
 import static org.jboss.netty.channel.Channels.fireExceptionCaught;
 import static org.jboss.netty.channel.Channels.fireMessageReceived;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.SWITCHING_PROTOCOLS;
-import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireChannelAborted;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireInputAborted;
 import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireInputShutdown;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -175,7 +175,7 @@ public class HttpClientChannelSource extends HttpChannelHandler {
                 }
             }
             else {
-                fireChannelAborted(httpClientChannel);
+                fireInputAborted(httpClientChannel);
             }
         }
     }

@@ -25,6 +25,12 @@ s/\([^\"\'#]*\)option[[:space:]][[:space:]]*/\1option /
 s/\(^[^\"\'#]*[[:space:]][[:space:]]*\)\([a-z]*:[^[:space:]]*\/[^[:space:]]*\)/\1\"\2\"/
 
 #
+# abort and aborted
+#
+s/^abort$/write abort/
+s/^aborted$/read aborted/
+
+#
 # HTTP accept and connect options
 #
 s/option transport/option http:transport/

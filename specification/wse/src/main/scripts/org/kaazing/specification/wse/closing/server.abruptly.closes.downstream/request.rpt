@@ -51,7 +51,7 @@ write http:content-length
 write close
 
 # Server abrupt close of downstream
-aborted
+read aborted
 
 
 
