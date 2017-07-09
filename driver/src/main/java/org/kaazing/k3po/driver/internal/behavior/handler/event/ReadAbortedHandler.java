@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-package org.kaazing.k3po.driver.internal.behavior.handler.command;
+package org.kaazing.k3po.driver.internal.behavior.handler.event;
 
-import static org.kaazing.k3po.driver.internal.netty.channel.Channels.abort;
+import static java.util.EnumSet.of;
+import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.READ_ABORTED;
 
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.kaazing.k3po.driver.internal.netty.channel.ReadAbortEvent;
 
-public class AbortHandler extends AbstractCommandHandler {
+public class ReadAbortedHandler extends AbstractEventHandler {
+
+    public ReadAbortedHandler() {
+        super(of(READ_ABORTED));
+    }
 
     @Override
-    protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
+    public void inputAborted(ChannelHandlerContext ctx, ReadAbortEvent e) {
 
         ChannelFuture handlerFuture = getHandlerFuture();
-        abort(ctx, handlerFuture);
+        assert handlerFuture != null;
+        handlerFuture.setSuccess();
     }
 
     @Override
     protected StringBuilder describe(StringBuilder sb) {
-        return sb.append("abort");
+        return sb.append("read aborted");
     }
-
 }

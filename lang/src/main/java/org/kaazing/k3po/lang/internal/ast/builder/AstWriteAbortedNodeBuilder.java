@@ -15,29 +15,29 @@
  */
 package org.kaazing.k3po.lang.internal.ast.builder;
 
-import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAbortedNode;
 
-public class AstAbortedNodeBuilder extends AbstractAstStreamableNodeBuilder<AstAbortedNode, AstAbortedNode> {
+public class AstWriteAbortedNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWriteAbortedNode, AstWriteAbortedNode> {
 
-    public AstAbortedNodeBuilder() {
-        this(new AstAbortedNode());
+    public AstWriteAbortedNodeBuilder() {
+        this(new AstWriteAbortedNode());
     }
 
     @Override
-    public AstAbortedNode done() {
+    public AstWriteAbortedNode done() {
         return result;
     }
 
-    private AstAbortedNodeBuilder(AstAbortedNode node) {
+    private AstWriteAbortedNodeBuilder(AstWriteAbortedNode node) {
         super(node, node);
     }
 
     public static class StreamNested<R extends AbstractAstNodeBuilder<? extends AstStreamNode, ?>> extends
-            AbstractAstStreamableNodeBuilder<AstAbortedNode, R> {
+            AbstractAstStreamableNodeBuilder<AstWriteAbortedNode, R> {
 
         public StreamNested(R builder) {
-            super(new AstAbortedNode(), builder);
+            super(new AstWriteAbortedNode(), builder);
         }
 
         @Override
@@ -46,6 +46,5 @@ public class AstAbortedNodeBuilder extends AbstractAstStreamableNodeBuilder<AstA
             streamNode.getStreamables().add(node);
             return result;
         }
-
     }
 }

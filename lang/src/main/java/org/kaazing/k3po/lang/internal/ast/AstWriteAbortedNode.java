@@ -13,10 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.driver.internal.netty.channel;
+package org.kaazing.k3po.lang.internal.ast;
 
-import org.jboss.netty.channel.ChannelEvent;
+public final class AstWriteAbortedNode extends AstEventNode {
 
-public interface AbortEvent extends ChannelEvent {
+    @Override
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
+        return visitor.visit(this, parameter);
+    }
 
+    @Override
+    protected int hashTo() {
+        return getClass().hashCode();
+    }
+
+    @Override
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstWriteAbortedNode;
+    }
+
+    @Override
+    protected void describe(StringBuilder buf) {
+        super.describe(buf);
+        buf.append("read aborted\n");
+    }
 }

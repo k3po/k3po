@@ -53,6 +53,6 @@ read http:header "Content-Type" "application/octet-stream"
 read http:header "Connection" "close"
 
 # Client abrupt close of downstream http transport
-abort
+write abort
 
 

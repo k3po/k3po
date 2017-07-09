@@ -19,7 +19,6 @@ import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
 import static java.util.EnumSet.complementOf;
 import static java.util.EnumSet.of;
-import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.ABORTED;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.BOUND;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.CHILD_CLOSED;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.CHILD_OPEN;
@@ -34,8 +33,10 @@ import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEv
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.MESSAGE;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.OPEN;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.OUTPUT_SHUTDOWN;
+import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.READ_ABORTED;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.UNBOUND;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.UNKNOWN;
+import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.WRITE_ABORTED;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.WRITE_COMPLETED;
 
 import java.util.EnumSet;
@@ -54,10 +55,11 @@ import org.jboss.netty.channel.WriteCompletionEvent;
 import org.jboss.netty.handler.timeout.IdleStateEvent;
 import org.kaazing.k3po.driver.internal.behavior.ScriptProgressException;
 import org.kaazing.k3po.driver.internal.behavior.handler.ExecutionHandler;
-import org.kaazing.k3po.driver.internal.netty.channel.AbortEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.FlushEvent;
+import org.kaazing.k3po.driver.internal.netty.channel.ReadAbortEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownInputEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownOutputEvent;
+import org.kaazing.k3po.driver.internal.netty.channel.WriteAbortEvent;
 
 public abstract class AbstractEventHandler extends ExecutionHandler {
 
@@ -67,7 +69,7 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
 
     public enum ChannelEventKind {
         CHILD_OPEN, CHILD_CLOSED, OPEN, BOUND, CONNECTED, MESSAGE, WRITE_COMPLETED, DISCONNECTED, UNBOUND, CLOSED, EXCEPTION,
-        INTEREST_OPS, IDLE_STATE, INPUT_SHUTDOWN, OUTPUT_SHUTDOWN, FLUSHED, UNKNOWN, ABORTED
+        INTEREST_OPS, IDLE_STATE, INPUT_SHUTDOWN, OUTPUT_SHUTDOWN, FLUSHED, UNKNOWN, READ_ABORTED, WRITE_ABORTED
     };
 
     private final Set<ChannelEventKind> interestEvents;
@@ -123,8 +125,10 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
                 throw new ScriptProgressException(getRegionInfo(), "closed");
             case FLUSHED:
                 throw new ScriptProgressException(getRegionInfo(), "flushed");
-            case ABORTED:
-                throw new ScriptProgressException(getRegionInfo(), "aborted");
+            case READ_ABORTED:
+                throw new ScriptProgressException(getRegionInfo(), "read aborted");
+            case WRITE_ABORTED:
+                throw new ScriptProgressException(getRegionInfo(), "write aborted");
             case MESSAGE:
                 throw new ScriptProgressException(getRegionInfo(), "read ...");
             case INPUT_SHUTDOWN:
@@ -154,8 +158,12 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
     }
 
     private static ChannelEventKind asEventKind(ChannelEvent evt) {
-        if (evt instanceof AbortEvent) {
-            return ABORTED;
+        if (evt instanceof ReadAbortEvent) {
+            return READ_ABORTED;
+        }
+
+        if (evt instanceof WriteAbortEvent) {
+            return WRITE_ABORTED;
         }
 
         if (evt instanceof ShutdownInputEvent) {

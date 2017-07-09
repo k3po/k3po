@@ -48,4 +48,4 @@ read http:version "HTTP/1.1"
 read http:header "X-Sequence-No" ${wse:asString(sequence + 1)}
 read closed
 
-abort
+write abort

@@ -56,7 +56,7 @@ read notify DOWNSTREAM_OPENED
 write await CLOSE_SENT
 
 # Client abruptly closes the downstream without responding to the close handshake
-abort
+write abort
 
 
 # Upstream

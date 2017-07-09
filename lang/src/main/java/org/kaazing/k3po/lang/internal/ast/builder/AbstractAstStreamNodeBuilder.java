@@ -15,8 +15,6 @@
  */
 package org.kaazing.k3po.lang.internal.ast.builder;
 
-import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
-import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
 import org.kaazing.k3po.lang.internal.ast.AstCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
@@ -24,6 +22,8 @@ import org.kaazing.k3po.lang.internal.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstDisconnectNode;
 import org.kaazing.k3po.lang.internal.ast.AstDisconnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstOpenedNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
@@ -33,6 +33,8 @@ import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
 import org.kaazing.k3po.lang.internal.ast.AstUnbindNode;
 import org.kaazing.k3po.lang.internal.ast.AstUnboundNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
@@ -79,11 +81,17 @@ public abstract class AbstractAstStreamNodeBuilder<T extends AstStreamNode, R> e
     public abstract AbstractAstStreamableNodeBuilder<AstCloseNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
             addCloseCommand();
 
-    public abstract AbstractAstStreamableNodeBuilder<AstAbortNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
-            addAbortCommand();
+    public abstract AbstractAstStreamableNodeBuilder<AstWriteAbortNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
+            addWriteAbortCommand();
 
-    public abstract AbstractAstStreamableNodeBuilder<AstAbortedNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
-            addAbortedEvent();
+    public abstract AbstractAstStreamableNodeBuilder<AstReadAbortedNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
+            addReadAbortedEvent();
+
+    public abstract AbstractAstStreamableNodeBuilder<AstReadAbortNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
+            addReadAbortCommand();
+
+    public abstract AbstractAstStreamableNodeBuilder<AstWriteAbortedNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
+            addWriteAbortedEvent();
 
     public abstract AbstractAstStreamableNodeBuilder<AstReadAwaitNode, ? extends AbstractAstStreamNodeBuilder<T, R>>
             addReadAwaitBarrier();

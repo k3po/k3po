@@ -111,8 +111,9 @@ commandNode
     | writeNode
     | writeFlushNode
     | writeCloseNode
+    | writeAbortNode
+    | readAbortNode
     | closeNode
-    | abortNode
     ;
 
 eventNode
@@ -121,11 +122,12 @@ eventNode
     | readConfigNode
     | readNode
     | readClosedNode
+    | readAbortedNode
+    | writeAbortedNode
     | disconnectedNode
     | unboundNode
     | closedNode
     | connectedNode
-    | abortedNode
     ;
 
 barrierNode
@@ -145,6 +147,14 @@ writeFlushNode
 
 writeCloseNode
     : WriteKeyword CloseKeyword
+    ;
+
+writeAbortNode
+    : WriteKeyword AbortKeyword
+    ;
+
+writeAbortedNode
+    : WriteKeyword AbortedKeyword
     ;
 
 disconnectNode
@@ -191,12 +201,12 @@ openedNode
     : OpenedKeyword
     ;
 
-abortNode
-    : AbortKeyword
+readAbortNode
+    : ReadKeyword AbortKeyword
     ;
 
-abortedNode
-    : AbortedKeyword
+readAbortedNode
+    : ReadKeyword AbortedKeyword
     ;
 
 readClosedNode

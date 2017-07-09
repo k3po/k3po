@@ -70,14 +70,14 @@ import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteExpressionEn
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteIntegerEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteLongEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteTextEncoder;
-import org.kaazing.k3po.driver.internal.behavior.handler.command.AbortHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.CloseHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.DisconnectHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.FlushHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.command.ReadAbortHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.ShutdownOutputHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.UnbindHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteAbortHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.WriteHandler;
-import org.kaazing.k3po.driver.internal.behavior.handler.event.AbortedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.BoundHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ChildClosedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ChildOpenedHandler;
@@ -86,8 +86,10 @@ import org.kaazing.k3po.driver.internal.behavior.handler.event.ConnectedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.DisconnectedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.InputShutdownHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.OpenedHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.event.ReadAbortedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ReadHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.UnboundHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.event.WriteAbortedHandler;
 import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVisitor.State;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
@@ -95,8 +97,6 @@ import org.kaazing.k3po.driver.internal.resolver.ClientBootstrapResolver;
 import org.kaazing.k3po.driver.internal.resolver.OptionsResolver;
 import org.kaazing.k3po.driver.internal.resolver.ServerBootstrapResolver;
 import org.kaazing.k3po.lang.internal.RegionInfo;
-import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
-import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
@@ -111,6 +111,8 @@ import org.kaazing.k3po.lang.internal.ast.AstDisconnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstNode;
 import org.kaazing.k3po.lang.internal.ast.AstOpenedNode;
 import org.kaazing.k3po.lang.internal.ast.AstPropertyNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
@@ -122,6 +124,8 @@ import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamableNode;
 import org.kaazing.k3po.lang.internal.ast.AstUnbindNode;
 import org.kaazing.k3po.lang.internal.ast.AstUnboundNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
@@ -573,15 +577,30 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     }
 
     @Override
-    public Configuration visit(AstAbortNode node, State state) {
+    public Configuration visit(AstWriteAbortNode node, State state) {
 
         RegionInfo regionInfo = node.getRegionInfo();
 
-        AbortHandler handler = new AbortHandler();
+        WriteAbortHandler handler = new WriteAbortHandler();
         handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
-        String handlerName = String.format("abort#%d", pipelineAsMap.size() + 1);
+        String handlerName = String.format("write abort#%d", pipelineAsMap.size() + 1);
+        pipelineAsMap.put(handlerName, handler);
+
+        return state.configuration;
+    }
+
+    @Override
+    public Configuration visit(AstReadAbortNode node, State state) {
+
+        RegionInfo regionInfo = node.getRegionInfo();
+
+        ReadAbortHandler handler = new ReadAbortHandler();
+        handler.setRegionInfo(regionInfo);
+
+        Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+        String handlerName = String.format("read abort#%d", pipelineAsMap.size() + 1);
         pipelineAsMap.put(handlerName, handler);
 
         return state.configuration;
@@ -844,15 +863,30 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     }
 
     @Override
-    public Configuration visit(AstAbortedNode node, State state) {
+    public Configuration visit(AstReadAbortedNode node, State state) {
 
         RegionInfo regionInfo = node.getRegionInfo();
 
-        AbortedHandler handler = new AbortedHandler();
+        ReadAbortedHandler handler = new ReadAbortedHandler();
         handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
-        String handlerName = String.format("aborted#%d", pipelineAsMap.size() + 1);
+        String handlerName = String.format("read aborted#%d", pipelineAsMap.size() + 1);
+        pipelineAsMap.put(handlerName, handler);
+
+        return state.configuration;
+    }
+
+    @Override
+    public Configuration visit(AstWriteAbortedNode node, State state) {
+
+        RegionInfo regionInfo = node.getRegionInfo();
+
+        WriteAbortedHandler handler = new WriteAbortedHandler();
+        handler.setRegionInfo(regionInfo);
+
+        Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+        String handlerName = String.format("write aborted#%d", pipelineAsMap.size() + 1);
         pipelineAsMap.put(handlerName, handler);
 
         return state.configuration;

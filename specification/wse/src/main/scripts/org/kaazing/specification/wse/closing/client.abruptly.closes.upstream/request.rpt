@@ -74,7 +74,7 @@ write http:header "Transfer-Encoding" "chunked"
 write http:header "X-Next-Protocol" "wse/1.0"
 write http:header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
-abort
+write abort
 write notify UPSTREAM_ABORT
 
 

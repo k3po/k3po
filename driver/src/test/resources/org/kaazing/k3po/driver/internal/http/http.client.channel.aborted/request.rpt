@@ -20,5 +20,5 @@ connected
 write http:method "GET"
 write http:host
 write close
-aborted
+read aborted
 

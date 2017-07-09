@@ -27,9 +27,9 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannelSink;
-import org.kaazing.k3po.driver.internal.netty.channel.AbortEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.FlushEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownOutputEvent;
+import org.kaazing.k3po.driver.internal.netty.channel.WriteAbortEvent;
 
 public class TlsChildChannelSink extends AbstractChannelSink {
 
@@ -71,7 +71,7 @@ public class TlsChildChannelSink extends AbstractChannelSink {
     }
 
     @Override
-    protected void abortRequested(ChannelPipeline pipeline, final AbortEvent evt) throws Exception {
+    protected void abortOutputRequested(ChannelPipeline pipeline, final WriteAbortEvent evt) throws Exception {
         ChannelFuture disconnect = transport.disconnect();
         chainFutures(disconnect, evt.getFuture());
     }
