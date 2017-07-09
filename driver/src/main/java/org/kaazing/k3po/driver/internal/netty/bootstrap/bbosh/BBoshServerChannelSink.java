@@ -113,7 +113,7 @@ public class BBoshServerChannelSink extends AbstractServerChannelSink<BBoshServe
         URI bboshLocation = bboshLocalAddress.getLocation();
 
         if (!bboshBindings.remove(bboshLocation, bboshUnbindChannel)) {
-            bboshUnbindFuture.setFailure(new ChannelException("Channel not bound").fillInStackTrace());
+            bboshUnbindFuture.setFailure(new ChannelException("Channel not bound"));
             return;
         }
 

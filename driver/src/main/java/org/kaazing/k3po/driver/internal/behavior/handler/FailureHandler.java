@@ -27,7 +27,7 @@ public class FailureHandler extends ExecutionHandler {
 
         ChannelFuture handlerFuture = getHandlerFuture();
         assert handlerFuture != null;
-        handlerFuture.setFailure(new ChannelException("Unexpected accepted stream").fillInStackTrace());
+        handlerFuture.setFailure(new ChannelException("Unexpected accepted stream"));
 
         super.handleUpstream1(ctx, e);
     }

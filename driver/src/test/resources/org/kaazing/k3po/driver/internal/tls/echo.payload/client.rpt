@@ -23,6 +23,3 @@ connected
 write "Hello, world"
 
 read "Hello, world"
-
-close
-closed

@@ -37,10 +37,73 @@ public class TlsIT {
 
     @Test
     @TestSpecification({
-        "server",
-        "client"
+        "connection.established/server",
+        "connection.established/client"
+    })
+    public void shouldEstablishConnection() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "echo.payload/server",
+        "echo.payload/client"
     })
     public void shouldEchoPayload() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "server.sent.close/server",
+        "server.sent.close/client"
+    })
+    public void shouldReceiveServerSentClose() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "server.sent.write.abort/server",
+        "server.sent.write.abort/client"
+    })
+    public void shouldReceiveServerSentWriteAbort() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "client.sent.close/server",
+        "client.sent.close/client"
+    })
+    public void shouldReceiveClientSentClose() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "client.sent.write.abort/server",
+        "client.sent.write.abort/client"
+    })
+    public void shouldReceiveClientSentWriteAbort() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "server.sent.write.close/server",
+        "server.sent.write.close/client"
+    })
+    public void shouldReceiveServerSentWriteClose() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "client.sent.write.close/server",
+        "client.sent.write.close/client"
+    })
+    public void shouldReceiveClientSentWriteClose() throws Exception {
         k3po.finish();
     }
 }

@@ -119,7 +119,7 @@ public class HttpServerChannelSink extends AbstractServerChannelSink<HttpServerC
         ChannelAddress httpLocalAddress = httpUnbindChannel.getLocalAddress();
 
         if (!httpBindings.remove(httpLocalAddress, httpUnbindChannel)) {
-            httpUnbindFuture.setFailure(new ChannelException("Channel not bound").fillInStackTrace());
+            httpUnbindFuture.setFailure(new ChannelException("Channel not bound"));
             return;
         }
 

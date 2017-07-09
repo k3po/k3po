@@ -244,6 +244,15 @@ public final class Channels {
         }
     }
 
+    public static void abortInputOrSuccess(ChannelHandlerContext ctx, ChannelFuture future) {
+        if (ctx.getChannel() instanceof AbstractChannel) {
+            abortInput(ctx, future);
+        }
+        else {
+            future.setSuccess();
+        }
+    }
+
     private Channels() {
         // no instances
     }

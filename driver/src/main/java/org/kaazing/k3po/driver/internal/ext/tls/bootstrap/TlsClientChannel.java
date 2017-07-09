@@ -51,12 +51,23 @@ public class TlsClientChannel extends AbstractChannel<TlsChannelConfig> {
         super.setConnected();
     }
 
-    @Override
-    protected boolean setClosed() {
-        return super.setClosed();
+    protected boolean setReadClosed() {
+        return super.setReadClosed();
+    }
+
+    protected boolean setWriteClosed() {
+        return super.setWriteClosed();
     }
 
     protected void setInterestOpsNow(int interestOps) {
         super.setInternalInterestOps(interestOps);
+    }
+
+    protected boolean setReadAborted() {
+        return super.setReadAborted();
+    }
+
+    protected boolean setWriteAborted() {
+        return super.setWriteAborted();
     }
 }

@@ -16,18 +16,27 @@
 package org.kaazing.k3po.driver.internal.ext.tls.bootstrap;
 
 import static java.util.Objects.requireNonNull;
+import static org.jboss.netty.channel.Channels.fireChannelClosed;
+import static org.jboss.netty.channel.Channels.fireChannelDisconnected;
+import static org.jboss.netty.channel.Channels.fireChannelUnbound;
 import static org.jboss.netty.channel.Channels.future;
 import static org.kaazing.k3po.driver.internal.channel.Channels.chainFutures;
 import static org.kaazing.k3po.driver.internal.channel.Channels.chainWriteCompletes;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.abortInputOrSuccess;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.abortOutputOrClose;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.handler.ssl.SslHandler;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannelSink;
 import org.kaazing.k3po.driver.internal.netty.channel.FlushEvent;
+import org.kaazing.k3po.driver.internal.netty.channel.ReadAbortEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownOutputEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.WriteAbortEvent;
 
@@ -71,17 +80,24 @@ public class TlsChildChannelSink extends AbstractChannelSink {
     }
 
     @Override
+    protected void abortInputRequested(ChannelPipeline pipeline, final ReadAbortEvent evt) throws Exception {
+        ChannelHandlerContext ctx = transport.getPipeline().getContext(SslHandler.class);
+        ChannelFuture tlsFuture = evt.getFuture();
+        abortInputOrSuccess(ctx, tlsFuture);
+    }
+
+    @Override
     protected void abortOutputRequested(ChannelPipeline pipeline, final WriteAbortEvent evt) throws Exception {
-        ChannelFuture disconnect = transport.disconnect();
-        chainFutures(disconnect, evt.getFuture());
+        ChannelHandlerContext ctx = transport.getPipeline().getContext(SslHandler.class);
+        ChannelFuture tlsFuture = evt.getFuture();
+        abortOutputOrClose(ctx, tlsFuture);
     }
 
     @Override
     protected void shutdownOutputRequested(ChannelPipeline pipeline, ShutdownOutputEvent evt) throws Exception {
         TlsChildChannel tlsChildChannel = (TlsChildChannel) pipeline.getChannel();
         ChannelFuture tlsFuture = evt.getFuture();
-        // TODO: shutdown response output is identical to close semantics (if request fully read already)
-        closeRequested(tlsChildChannel, tlsFuture);
+        shutdownOutputRequested(tlsChildChannel, tlsFuture);
     }
 
     @Override
@@ -91,22 +107,32 @@ public class TlsChildChannelSink extends AbstractChannelSink {
         closeRequested(tlsChildChannel, tlsFuture);
     }
 
+    private void shutdownOutputRequested(TlsChildChannel tlsChildChannel, ChannelFuture tlsFuture) {
+        SslHandler tlsHandler = transport.getPipeline().get(SslHandler.class);
+        if (tlsHandler != null) {
+            ChannelFuture tlsCloseFuture = tlsHandler.close();
+            tlsCloseFuture.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    if (tlsChildChannel.setWriteClosed()) {
+                        fireChannelDisconnected(tlsChildChannel);
+                        fireChannelUnbound(tlsChildChannel);
+                        fireChannelClosed(tlsChildChannel);
+                    }
+                }
+            });
+            chainFutures(tlsCloseFuture, tlsFuture);
+        }
+    }
+
     private void closeRequested(final TlsChildChannel tlsChildChannel, ChannelFuture tlsFuture) {
         if (!tlsChildChannel.isOpen()) {
             tlsFuture.setSuccess();
         }
         else
         {
-            ChannelFuture tlsCloseFuture = tlsChildChannel.getCloseFuture();
-            if (tlsFuture != tlsCloseFuture) {
-                chainFutures(tlsCloseFuture, tlsFuture);
-            }
-
-            ChannelFuture tlsFlushed = future(tlsChildChannel);
-            flushRequested(tlsChildChannel, tlsFlushed);
-
-            // setClosed() chained asynchronously after transport.close() completes
-            transport.close();
+            tlsChildChannel.setReadClosed();
+            shutdownOutputRequested(tlsChildChannel, tlsFuture);
         }
     }
 

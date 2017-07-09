@@ -220,7 +220,7 @@ public class InputShutdownHandlerTest {
 
         Channel channel = channelFactory.newChannel(pipeline);
         ChannelFuture handlerFuture = handler.getHandlerFuture();
-        fireExceptionCaught(channel, new Exception().fillInStackTrace());
+        fireExceptionCaught(channel, new Exception());
 
         assertFalse(handlerFuture.isDone());
 

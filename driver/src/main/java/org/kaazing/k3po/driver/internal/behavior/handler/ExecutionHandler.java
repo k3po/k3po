@@ -102,7 +102,6 @@ public class ExecutionHandler extends SimplePrepareUpstreamHandler implements Li
         assert handlerFuture != null;
         if (!handlerFuture.isDone()) {
             ScriptProgressException exception = new ScriptProgressException(getRegionInfo(), "");
-            exception.fillInStackTrace();
             handlerFuture.setFailure(exception);
         }
         handlerFuture = null;
