@@ -20,6 +20,10 @@ import static org.jboss.netty.channel.Channels.fireChannelDisconnected;
 import static org.jboss.netty.channel.Channels.fireChannelUnbound;
 import static org.jboss.netty.channel.Channels.fireExceptionCaught;
 import static org.jboss.netty.channel.Channels.fireMessageReceived;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireInputAborted;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireOutputAborted;
+
+import javax.net.ssl.SSLEngine;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
@@ -27,11 +31,14 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
+import org.jboss.netty.handler.ssl.SslHandler;
+import org.kaazing.k3po.driver.internal.netty.channel.ReadAbortEvent;
+import org.kaazing.k3po.driver.internal.netty.channel.SimpleChannelHandler;
+import org.kaazing.k3po.driver.internal.netty.channel.WriteAbortEvent;
 
 public class TlsClientChannelSource extends SimpleChannelHandler {
 
-    private TlsClientChannel tlsClientChannel;
+    volatile TlsClientChannel tlsClientChannel;
 
     public void setTlsChannel(TlsClientChannel tlsClientChannel) {
         assert this.tlsClientChannel == null;
@@ -52,7 +59,7 @@ public class TlsClientChannelSource extends SimpleChannelHandler {
         if (tlsClientChannel != null) {
             TlsClientChannel tlsClientChannel = this.tlsClientChannel;
             this.tlsClientChannel = null;
-            if (tlsClientChannel.setClosed()) {
+            if (tlsClientChannel.setReadClosed()) {
                 fireExceptionCaught(tlsClientChannel, e.getCause());
                 fireChannelClosed(tlsClientChannel);
             }
@@ -63,14 +70,47 @@ public class TlsClientChannelSource extends SimpleChannelHandler {
     }
 
     @Override
-    public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+    public void inputAborted(ChannelHandlerContext ctx, ReadAbortEvent e) {
+        TlsClientChannel tlsClientChannel = this.tlsClientChannel;
+        if (tlsClientChannel != null) {
+            if (tlsClientChannel.setReadAborted()) {
+                fireInputAborted(tlsClientChannel);
+            }
+        }
+    }
 
+    @Override
+    public void outputAborted(ChannelHandlerContext ctx, WriteAbortEvent e) {
+        TlsClientChannel tlsClientChannel = this.tlsClientChannel;
+        if (tlsClientChannel != null) {
+            if (tlsClientChannel.setWriteAborted()) {
+                fireOutputAborted(tlsClientChannel);
+            }
+        }
+    }
+
+    @Override
+    public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+        TlsClientChannel tlsClientChannel = this.tlsClientChannel;
+        if (tlsClientChannel != null) {
+            SslHandler tlsHandler = ctx.getPipeline().get(SslHandler.class);
+            SSLEngine tlsEngine = tlsHandler.getEngine();
+            if (!tlsEngine.isInboundDone()) {
+                if (tlsClientChannel.setReadAborted()) {
+                    fireInputAborted(tlsClientChannel);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         TlsClientChannel tlsClientChannel = this.tlsClientChannel;
         if (tlsClientChannel != null) {
 
             this.tlsClientChannel = null;
 
-            if (tlsClientChannel.setClosed()) {
+            if (tlsClientChannel.setReadClosed()) {
                 fireChannelDisconnected(tlsClientChannel);
                 fireChannelUnbound(tlsClientChannel);
                 fireChannelClosed(tlsClientChannel);

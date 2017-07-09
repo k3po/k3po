@@ -24,6 +24,9 @@ import static org.jboss.netty.channel.Channels.fireChannelUnbound;
 import static org.jboss.netty.channel.Channels.fireExceptionCaught;
 import static org.jboss.netty.channel.Channels.fireMessageReceived;
 import static org.kaazing.k3po.driver.internal.channel.Channels.remoteAddress;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireInputAborted;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireInputShutdown;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireOutputAborted;
 
 import java.net.URI;
 import java.util.List;
@@ -47,10 +50,12 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.ChannelConfig;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
+import org.kaazing.k3po.driver.internal.netty.channel.ReadAbortEvent;
+import org.kaazing.k3po.driver.internal.netty.channel.SimpleChannelHandler;
+import org.kaazing.k3po.driver.internal.netty.channel.WriteAbortEvent;
 
 public class TlsChildChannelSource extends SimpleChannelHandler {
 
@@ -59,6 +64,7 @@ public class TlsChildChannelSource extends SimpleChannelHandler {
     private volatile TlsChildChannel tlsChildChannel;
 
     public TlsChildChannelSource(NavigableMap<ChannelAddress, TlsServerChannel> tlsBindings) {
+
         this.tlsBindings = tlsBindings;
     }
 
@@ -110,6 +116,24 @@ public class TlsChildChannelSource extends SimpleChannelHandler {
             TlsChannelConfig tlsChildConfig = tlsChildChannel.getConfig();
             tlsChildConfig.setParameters(tlsEngine.getSSLParameters());
 
+            ChannelFuture tlsCloseFuture = handler.getSSLEngineInboundCloseFuture();
+            tlsCloseFuture.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+
+                    if (tlsChildChannel.setReadClosed()) {
+                        fireInputShutdown(tlsChildChannel);
+                        fireChannelDisconnected(tlsChildChannel);
+                        fireChannelUnbound(tlsChildChannel);
+                        fireChannelClosed(tlsChildChannel);
+                    }
+                    else
+                    {
+                        fireInputShutdown(tlsChildChannel);
+                    }
+                }
+            });
+
             this.tlsChildChannel = tlsChildChannel;
 
             detectWriteTransportClosed(transport, tlsChildChannel);
@@ -150,6 +174,42 @@ public class TlsChildChannelSource extends SimpleChannelHandler {
 
         Channel channel = ctx.getChannel();
         channel.close();
+    }
+
+    @Override
+    public void inputAborted(ChannelHandlerContext ctx, ReadAbortEvent e) {
+        TlsChildChannel tlsChildChannel = this.tlsChildChannel;
+        if (tlsChildChannel != null) {
+            if (tlsChildChannel.setReadAborted()) {
+                fireInputAborted(tlsChildChannel);
+            }
+        }
+    }
+
+    @Override
+    public void outputAborted(ChannelHandlerContext ctx, WriteAbortEvent e) {
+        TlsChildChannel tlsChildChannel = this.tlsChildChannel;
+        if (tlsChildChannel != null) {
+            if (tlsChildChannel.setWriteAborted()) {
+                fireOutputAborted(tlsChildChannel);
+            }
+        }
+    }
+
+    @Override
+    public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+        TlsChildChannel tlsChildChannel = this.tlsChildChannel;
+        if (tlsChildChannel != null) {
+            SslHandler tlsHandler = ctx.getPipeline().get(SslHandler.class);
+            SSLEngine tlsEngine = tlsHandler.getEngine();
+            if (!tlsEngine.isInboundDone()) {
+                if (tlsChildChannel.setReadAborted()) {
+                    fireInputAborted(tlsChildChannel);
+                }
+            }
+        }
+
+        super.channelDisconnected(ctx, e);
     }
 
     @Override

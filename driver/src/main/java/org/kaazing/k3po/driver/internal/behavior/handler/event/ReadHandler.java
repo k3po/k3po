@@ -106,7 +106,6 @@ public class ReadHandler extends AbstractEventHandler {
             } catch (ELException ele) {
                 ScriptProgressException exception = new ScriptProgressException(getRegionInfo(), ele.getMessage());
                 exception.initCause(ele);
-                exception.fillInStackTrace();
                 handlerFuture.setFailure(exception);
                 return;
             } catch (Exception mme) {

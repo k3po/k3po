@@ -143,7 +143,6 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
             default:
                 String message = format("Unexpected event |%s| for handler %s", eventAsKind, getClass());
                 ChannelException exception = new ChannelException(message);
-                exception.fillInStackTrace();
                 if (evt instanceof ExceptionEvent) {
                     Throwable cause = ((ExceptionEvent) evt).getCause();
                     exception.initCause(cause);
