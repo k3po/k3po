@@ -35,8 +35,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
 import org.kaazing.k3po.lang.internal.RegionInfo;
-import org.kaazing.k3po.lang.internal.ast.AstAbortNode;
-import org.kaazing.k3po.lang.internal.ast.AstAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
 import org.kaazing.k3po.lang.internal.ast.AstBarrierNode;
@@ -54,6 +52,8 @@ import org.kaazing.k3po.lang.internal.ast.AstEventNode;
 import org.kaazing.k3po.lang.internal.ast.AstNode;
 import org.kaazing.k3po.lang.internal.ast.AstOpenedNode;
 import org.kaazing.k3po.lang.internal.ast.AstPropertyNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
@@ -66,6 +66,8 @@ import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamableNode;
 import org.kaazing.k3po.lang.internal.ast.AstUnbindNode;
 import org.kaazing.k3po.lang.internal.ast.AstUnboundNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
@@ -96,8 +98,6 @@ import org.kaazing.k3po.lang.internal.parser.types.TypeSystem;
 import org.kaazing.k3po.lang.internal.regex.NamedGroupPattern;
 import org.kaazing.k3po.lang.parser.v2.RobotBaseVisitor;
 import org.kaazing.k3po.lang.parser.v2.RobotParser;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.AbortNodeContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.AbortedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.AcceptNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.AcceptOptionContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.AcceptableNodeContext;
@@ -126,6 +126,8 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralTextContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.MatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.OpenedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.PropertyNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadAbortNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadAbortedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadAwaitNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadClosedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadConfigNodeContext;
@@ -140,6 +142,8 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.StreamableNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.UnbindNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.UnboundNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.VariableLengthBytesMatcherContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteAbortNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteAbortedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteAwaitNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteCloseNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.WriteConfigNodeContext;
@@ -266,12 +270,19 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
     };
 
-    public static final ScriptParseStrategy<AstAbortNode> ABORT = new ScriptParseStrategy<AstAbortNode>() {
+    public static final ScriptParseStrategy<AstWriteAbortNode> WRITE_ABORT = new ScriptParseStrategy<AstWriteAbortNode>() {
         @Override
-        public AstAbortNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+        public AstWriteAbortNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
                 throws RecognitionException {
-            AstAbortNodeVisitor astAbortNodeVisitor = new AstAbortNodeVisitor(factory, environment);
-            return astAbortNodeVisitor.visit(parser.abortNode());
+            return new AstWriteAbortNodeVisitor(factory, environment).visit(parser.writeAbortNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstReadAbortNode> READ_ABORT = new ScriptParseStrategy<AstReadAbortNode>() {
+        @Override
+        public AstReadAbortNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+                throws RecognitionException {
+            return new AstReadAbortNodeVisitor(factory, environment).visit(parser.readAbortNode());
         }
     };
 
@@ -331,12 +342,19 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
     };
 
-    public static final ScriptParseStrategy<AstAbortedNode> ABORTED = new ScriptParseStrategy<AstAbortedNode>() {
+    public static final ScriptParseStrategy<AstReadAbortedNode> READ_ABORTED = new ScriptParseStrategy<AstReadAbortedNode>() {
         @Override
-        public AstAbortedNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+        public AstReadAbortedNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
                 throws RecognitionException {
-            AstAbortedNodeVisitor astAbortedNodeVisitor = new AstAbortedNodeVisitor(factory, environment);
-            return astAbortedNodeVisitor.visit(parser.abortedNode());
+            return new AstReadAbortedNodeVisitor(factory, environment).visit(parser.readAbortedNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstWriteAbortedNode> WRITE_ABORTED = new ScriptParseStrategy<AstWriteAbortedNode>() {
+        @Override
+        public AstWriteAbortedNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+                throws RecognitionException {
+            return new AstWriteAbortedNodeVisitor(factory, environment).visit(parser.writeAbortedNode());
         }
     };
 
@@ -1122,10 +1140,22 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
-        public AstAbortedNode visitAbortedNode(AbortedNodeContext ctx) {
+        public AstReadAbortedNode visitReadAbortedNode(ReadAbortedNodeContext ctx) {
 
-            AstAbortedNodeVisitor visitor = new AstAbortedNodeVisitor(factory, environment);
-            AstAbortedNode abortedNode = visitor.visitAbortedNode(ctx);
+            AstReadAbortedNodeVisitor visitor = new AstReadAbortedNodeVisitor(factory, environment);
+            AstReadAbortedNode abortedNode = visitor.visitReadAbortedNode(ctx);
+            if (abortedNode != null) {
+                childInfos().add(abortedNode.getRegionInfo());
+            }
+
+            return abortedNode;
+        }
+
+        @Override
+        public AstWriteAbortedNode visitWriteAbortedNode(WriteAbortedNodeContext ctx) {
+
+            AstWriteAbortedNodeVisitor visitor = new AstWriteAbortedNodeVisitor(factory, environment);
+            AstWriteAbortedNode abortedNode = visitor.visitWriteAbortedNode(ctx);
             if (abortedNode != null) {
                 childInfos().add(abortedNode.getRegionInfo());
             }
@@ -1211,10 +1241,22 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
-        public AstAbortNode visitAbortNode(AbortNodeContext ctx) {
+        public AstWriteAbortNode visitWriteAbortNode(WriteAbortNodeContext ctx) {
 
-            AstAbortNodeVisitor visitor = new AstAbortNodeVisitor(factory, environment);
-            AstAbortNode abortNode = visitor.visitAbortNode(ctx);
+            AstWriteAbortNodeVisitor visitor = new AstWriteAbortNodeVisitor(factory, environment);
+            AstWriteAbortNode abortNode = visitor.visitWriteAbortNode(ctx);
+            if (abortNode != null) {
+                childInfos().add(abortNode.getRegionInfo());
+            }
+
+            return abortNode;
+        }
+
+        @Override
+        public AstReadAbortNode visitReadAbortNode(ReadAbortNodeContext ctx) {
+
+            AstReadAbortNodeVisitor visitor = new AstReadAbortNodeVisitor(factory, environment);
+            AstReadAbortNode abortNode = visitor.visitReadAbortNode(ctx);
             if (abortNode != null) {
                 childInfos().add(abortNode.getRegionInfo());
             }
@@ -1238,15 +1280,30 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
     }
 
-    private static class AstAbortNodeVisitor extends AstNodeVisitor<AstAbortNode> {
+    private static class AstWriteAbortNodeVisitor extends AstNodeVisitor<AstWriteAbortNode> {
 
-        public AstAbortNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
+        public AstWriteAbortNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
             super(factory, environment);
         }
 
         @Override
-        public AstAbortNode visitAbortNode(AbortNodeContext ctx) {
-            node = new AstAbortNode();
+        public AstWriteAbortNode visitWriteAbortNode(WriteAbortNodeContext ctx) {
+            node = new AstWriteAbortNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return node;
+        }
+
+    }
+
+    private static class AstReadAbortNodeVisitor extends AstNodeVisitor<AstReadAbortNode> {
+
+        public AstReadAbortNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
+            super(factory, environment);
+        }
+
+        @Override
+        public AstReadAbortNode visitReadAbortNode(ReadAbortNodeContext ctx) {
+            node = new AstReadAbortNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return node;
         }
@@ -1369,15 +1426,30 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
     }
 
 
-    private static class AstAbortedNodeVisitor extends AstNodeVisitor<AstAbortedNode> {
+    private static class AstReadAbortedNodeVisitor extends AstNodeVisitor<AstReadAbortedNode> {
 
-        public AstAbortedNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
+        public AstReadAbortedNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
             super(factory, environment);
         }
 
         @Override
-        public AstAbortedNode visitAbortedNode(AbortedNodeContext ctx) {
-            node = new AstAbortedNode();
+        public AstReadAbortedNode visitReadAbortedNode(ReadAbortedNodeContext ctx) {
+            node = new AstReadAbortedNode();
+            node.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return node;
+        }
+
+    }
+
+    private static class AstWriteAbortedNodeVisitor extends AstNodeVisitor<AstWriteAbortedNode> {
+
+        public AstWriteAbortedNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
+            super(factory, environment);
+        }
+
+        @Override
+        public AstWriteAbortedNode visitWriteAbortedNode(WriteAbortedNodeContext ctx) {
+            node = new AstWriteAbortedNode();
             node.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return node;
         }

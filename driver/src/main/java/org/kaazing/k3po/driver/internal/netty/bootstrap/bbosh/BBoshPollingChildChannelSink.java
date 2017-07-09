@@ -101,7 +101,6 @@ public class BBoshPollingChildChannelSink extends AbstractChannelSink {
         if (sequenceNo < nextSequenceNo.get()) {
             String message = format("Replayed sequence number: %d", sequenceNo);
             ChannelException exception = new ChannelException(message);
-            exception.fillInStackTrace();
             httpFuture.setFailure(exception);
         }
         else if (nextSequenceNo.compareAndSet(sequenceNo, sequenceNo + 1)) {

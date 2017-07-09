@@ -26,12 +26,16 @@ import static org.jboss.netty.channel.Channels.future;
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.kaazing.k3po.driver.internal.channel.Channels.chainFutures;
 import static org.kaazing.k3po.driver.internal.channel.Channels.chainWriteCompletes;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.abortInputOrSuccess;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.abortOutputOrClose;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireInputShutdown;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URI;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.util.Objects;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -47,18 +51,19 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannelSink;
-import org.kaazing.k3po.driver.internal.netty.channel.AbortEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 import org.kaazing.k3po.driver.internal.netty.channel.FlushEvent;
+import org.kaazing.k3po.driver.internal.netty.channel.ReadAbortEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownOutputEvent;
+import org.kaazing.k3po.driver.internal.netty.channel.WriteAbortEvent;
 
 public class TlsClientChannelSink extends AbstractChannelSink {
 
@@ -109,7 +114,7 @@ public class TlsClientChannelSink extends AbstractChannelSink {
 
     @Override
     protected void connectRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
-        final TlsClientChannel tlsConnectChannel = (TlsClientChannel) evt.getChannel();
+        final TlsClientChannel tlsClientChannel = (TlsClientChannel) evt.getChannel();
         final ChannelFuture tlsConnectFuture = evt.getFuture();
         final ChannelAddress tlsRemoteAddress = (ChannelAddress) evt.getValue();
         URI tlsLocation = tlsRemoteAddress.getLocation();
@@ -117,7 +122,7 @@ public class TlsClientChannelSink extends AbstractChannelSink {
         String schemeName = address.getLocation().getScheme();
         String tlsSchemeName = tlsLocation.getScheme();
 
-        TlsChannelConfig tlsConnectConfig = tlsConnectChannel.getConfig();
+        TlsChannelConfig tlsConnectConfig = tlsClientChannel.getConfig();
         File keyStoreFile = tlsConnectConfig.getKeyStoreFile();
         File trustStoreFile = tlsConnectConfig.getTrustStoreFile();
         char[] keyStorePassword = tlsConnectConfig.getKeyStorePassword();
@@ -155,15 +160,15 @@ public class TlsClientChannelSink extends AbstractChannelSink {
                 String tlsHostname = tlsLocation.getHost();
                 int tlsPort = tlsLocation.getPort();
 
-                SSLEngine sslEngine = tlsContext.createSSLEngine(tlsHostname, tlsPort);
-                sslEngine.setUseClientMode(true);
+                SSLEngine tlsEngine = tlsContext.createSSLEngine(tlsHostname, tlsPort);
+                tlsEngine.setUseClientMode(true);
 
-                SSLParameters tlsParameters = sslEngine.getSSLParameters();
+                SSLParameters tlsParameters = tlsEngine.getSSLParameters();
                 tlsParameters.setEndpointIdentificationAlgorithm("HTTPS");
                 tlsParameters.setServerNames(asList(new SNIHostName(tlsHostname)));
-                sslEngine.setSSLParameters(tlsParameters);
+                tlsEngine.setSSLParameters(tlsParameters);
 
-                SslHandler sslHandler = new SslHandler(sslEngine);
+                SslHandler sslHandler = new SslHandler(tlsEngine);
                 sslHandler.setIssueHandshake(true);
 
                 return pipeline(sslHandler, new TlsClientChannelSource());
@@ -172,7 +177,7 @@ public class TlsClientChannelSink extends AbstractChannelSink {
 
         ClientBootstrap bootstrap = bootstrapFactory.newClientBootstrap(schemeName);
         bootstrap.setPipelineFactory(pipelineFactory);
-        bootstrap.setOptions(tlsConnectChannel.getConfig().getTransportOptions());
+        bootstrap.setOptions(tlsClientChannel.getConfig().getTransportOptions());
         bootstrap.setOption(format("%s.nextProtocol", schemeName), tlsSchemeName);
 
         ChannelFuture connectFuture = bootstrap.connect(address);
@@ -189,25 +194,49 @@ public class TlsClientChannelSink extends AbstractChannelSink {
                         @Override
                         public void operationComplete(ChannelFuture handshakeFuture) throws Exception {
                             if (handshakeFuture.isSuccess()) {
-                                TlsChannelConfig tlsConnectConfig = tlsConnectChannel.getConfig();
-                                SSLEngine sslEngine = sslHandler.getEngine();
-                                tlsConnectConfig.setParameters(sslEngine.getSSLParameters());
+                                TlsChannelConfig tlsConnectConfig = tlsClientChannel.getConfig();
+                                SSLEngine tlsEngine = sslHandler.getEngine();
+                                tlsConnectConfig.setParameters(tlsEngine.getSSLParameters());
 
                                 TlsClientChannelSource tlsChannelSource = pipeline.get(TlsClientChannelSource.class);
 
-                                if (!tlsConnectChannel.isBound()) {
+                                detectWriteTransportClosed(transport, tlsClientChannel);
+
+                                ChannelFuture tlsCloseFuture = sslHandler.getSSLEngineInboundCloseFuture();
+                                tlsCloseFuture.addListener(new ChannelFutureListener() {
+                                    @Override
+                                    public void operationComplete(ChannelFuture future) throws Exception {
+
+                                        if (tlsClientChannel != null) {
+
+                                            if (tlsClientChannel.setReadClosed()) {
+                                                fireInputShutdown(tlsClientChannel);
+                                                fireChannelDisconnected(tlsClientChannel);
+                                                fireChannelUnbound(tlsClientChannel);
+                                                fireChannelClosed(tlsClientChannel);
+                                            }
+                                            else
+                                            {
+                                                fireInputShutdown(tlsClientChannel);
+                                            }
+                                        }
+                                    }
+                                });
+
+                                if (!tlsClientChannel.isBound()) {
                                     ChannelAddress tlsLocalAddress = tlsRemoteAddress;
-                                    tlsConnectChannel.setLocalAddress(tlsLocalAddress);
-                                    tlsConnectChannel.setBound();
-                                    fireChannelBound(tlsConnectChannel, tlsLocalAddress);
+                                    tlsClientChannel.setLocalAddress(tlsLocalAddress);
+                                    tlsClientChannel.setBound();
+                                    fireChannelBound(tlsClientChannel, tlsLocalAddress);
                                 }
 
-                                tlsChannelSource.setTlsChannel(tlsConnectChannel);
-                                tlsConnectChannel.setRemoteAddress(tlsRemoteAddress);
-                                tlsConnectChannel.setConnected();
+                                tlsChannelSource.setTlsChannel(tlsClientChannel);
+                                tlsClientChannel.setRemoteAddress(tlsRemoteAddress);
+                                tlsClientChannel.setConnected();
 
                                 tlsConnectFuture.setSuccess();
-                                fireChannelConnected(tlsConnectChannel, tlsRemoteAddress);
+                                fireChannelConnected(tlsClientChannel, tlsRemoteAddress);
+
                             }
                             else {
                                 tlsConnectFuture.setFailure(handshakeFuture.getCause());
@@ -233,14 +262,6 @@ public class TlsClientChannelSink extends AbstractChannelSink {
     }
 
     @Override
-    protected void shutdownOutputRequested(ChannelPipeline pipeline, ShutdownOutputEvent evt) throws Exception {
-        TlsClientChannel tlsClientChannel = (TlsClientChannel) pipeline.getChannel();
-        ChannelFuture tlsFuture = evt.getFuture();
-
-        shutdownOutputRequested(tlsClientChannel, tlsFuture);
-    }
-
-    @Override
     protected void flushRequested(ChannelPipeline pipeline, FlushEvent evt) throws Exception {
         TlsClientChannel tlsClientChannel = (TlsClientChannel) pipeline.getChannel();
         ChannelFuture tlsFuture = evt.getFuture();
@@ -248,50 +269,85 @@ public class TlsClientChannelSink extends AbstractChannelSink {
     }
 
     @Override
-    protected void abortRequested(ChannelPipeline pipeline, final AbortEvent evt) throws Exception {
-        TlsClientChannel channel = (TlsClientChannel) pipeline.getChannel();
-        ChannelFuture flushFuture = Channels.future(channel);
-        flushRequested(channel, flushFuture);
-        flushFuture.addListener(new ChannelFutureListener() {
+    protected void abortInputRequested(ChannelPipeline pipeline, final ReadAbortEvent evt) throws Exception {
+        ChannelHandlerContext ctx = transport.getPipeline().getContext(SslHandler.class);
+        ChannelFuture tlsFuture = evt.getFuture();
+        abortInputOrSuccess(ctx, tlsFuture);
+    }
 
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
-                ChannelFuture disconnect = transport.disconnect();
-                chainFutures(disconnect, evt.getFuture());
-            }
-        });
+    @Override
+    protected void abortOutputRequested(ChannelPipeline pipeline, final WriteAbortEvent evt) throws Exception {
+        ChannelHandlerContext ctx = transport.getPipeline().getContext(SslHandler.class);
+        ChannelFuture tlsFuture = evt.getFuture();
+        abortOutputOrClose(ctx, tlsFuture);
     };
+
+    @Override
+    protected void shutdownOutputRequested(ChannelPipeline pipeline, ShutdownOutputEvent evt) throws Exception {
+        TlsClientChannel tlsClientChannel = (TlsClientChannel) pipeline.getChannel();
+        ChannelFuture tlsFuture = evt.getFuture();
+        shutdownOutputRequested(tlsClientChannel, tlsFuture);
+    }
 
     @Override
     protected void closeRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
         TlsClientChannel tlsClientChannel = (TlsClientChannel) pipeline.getChannel();
         ChannelFuture tlsFuture = evt.getFuture();
-        tlsFuture.setSuccess();
-
-        if (transport != null)
-        {
-            transport.close();
+        if (!tlsClientChannel.isOpen()) {
+            tlsFuture.setSuccess();
         }
-
-        boolean wasConnected = tlsClientChannel.isConnected();
-        boolean wasBound = tlsClientChannel.isBound();
-        if (tlsClientChannel.setClosed()) {
-            if (wasConnected) {
-                fireChannelDisconnected(tlsClientChannel);
-            }
-            if (wasBound) {
-                fireChannelUnbound(tlsClientChannel);
-            }
-            fireChannelClosed(tlsClientChannel);
+        else
+        {
+            tlsClientChannel.setReadClosed();
+            shutdownOutputRequested(tlsClientChannel, tlsFuture);
         }
     }
 
-    private void shutdownOutputRequested(TlsClientChannel tlsClientChannel, ChannelFuture tlsFuture) throws Exception {
-
-        flushRequested(tlsClientChannel, tlsFuture);
+    private void shutdownOutputRequested(TlsClientChannel tlsClientChannel, ChannelFuture tlsFuture) {
+        SslHandler tlsHandler = transport.getPipeline().get(SslHandler.class);
+        if (tlsHandler != null) {
+            ChannelFuture tlsCloseFuture = tlsHandler.close();
+            tlsCloseFuture.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    if (tlsClientChannel.setWriteClosed()) {
+                        fireChannelDisconnected(tlsClientChannel);
+                        fireChannelUnbound(tlsClientChannel);
+                        fireChannelClosed(tlsClientChannel);
+                    }
+                }
+            });
+            chainFutures(tlsCloseFuture, tlsFuture);
+        }
     }
 
     private void flushRequested(TlsClientChannel httpClientChannel, ChannelFuture tlsFuture) throws Exception {
         tlsFuture.setSuccess();
+    }
+
+    private void detectWriteTransportClosed(Channel transport, TlsClientChannel tlsClientChannel) {
+
+        Objects.requireNonNull(tlsClientChannel);
+
+        final ChannelFutureListener closeListener = new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                if (tlsClientChannel.setWriteClosed()) {
+                    fireChannelDisconnected(tlsClientChannel);
+                    fireChannelUnbound(tlsClientChannel);
+                    fireChannelClosed(tlsClientChannel);
+                }
+            }
+        };
+
+        transport.getCloseFuture().addListener(closeListener);
+
+        tlsClientChannel.getCloseFuture().addListener(new ChannelFutureListener()
+        {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                transport.getCloseFuture().removeListener(closeListener);
+            }
+        });
     }
 }

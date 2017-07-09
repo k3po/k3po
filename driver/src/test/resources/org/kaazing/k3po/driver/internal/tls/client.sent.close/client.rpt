@@ -14,16 +14,11 @@
 # limitations under the License.
 #
 
-accept "tls://localhost:8001"
-       option tls:keyStoreFile "src/test/democa/localhost"
-       option tls:keyStorePassword "generated"
+connect "tls://localhost:8001"
+        option tls:trustStoreFile "src/test/democa/cacerts"
+        option tls:trustStorePassword "generated"
 
-accepted
 connected
-
-read "Hello, world"
-
-write "Hello, world"
 
 close
 closed

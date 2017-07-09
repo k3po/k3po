@@ -32,8 +32,11 @@ public class SimpleChannelHandler extends org.jboss.netty.channel.SimpleChannelH
         else if (e instanceof FlushEvent) {
             flushed(ctx, (FlushEvent) e);
         }
-        else if (e instanceof AbortEvent) {
-            abort(ctx, (AbortEvent) e);
+        else if (e instanceof ReadAbortEvent) {
+            inputAborted(ctx, (ReadAbortEvent) e);
+        }
+        else if (e instanceof WriteAbortEvent) {
+            outputAborted(ctx, (WriteAbortEvent) e);
         }
         else {
             super.handleUpstream(ctx, e);
@@ -52,7 +55,11 @@ public class SimpleChannelHandler extends org.jboss.netty.channel.SimpleChannelH
         ctx.sendUpstream(e);
     }
 
-    public void abort(ChannelHandlerContext ctx, AbortEvent e) {
+    public void inputAborted(ChannelHandlerContext ctx, ReadAbortEvent e) {
+        ctx.sendUpstream(e);
+    }
+
+    public void outputAborted(ChannelHandlerContext ctx, WriteAbortEvent e) {
         ctx.sendUpstream(e);
     }
 
@@ -67,8 +74,11 @@ public class SimpleChannelHandler extends org.jboss.netty.channel.SimpleChannelH
         else if (e instanceof FlushEvent) {
             flushRequested(ctx, (FlushEvent) e);
         }
-        else if (e instanceof AbortEvent) {
-            abortRequested(ctx, (AbortEvent) e);
+        else if (e instanceof ReadAbortEvent) {
+            abortInputRequested(ctx, (ReadAbortEvent) e);
+        }
+        else if (e instanceof WriteAbortEvent) {
+            abortOutputRequested(ctx, (WriteAbortEvent) e);
         }
         else {
             super.handleDownstream(ctx, e);
@@ -87,7 +97,11 @@ public class SimpleChannelHandler extends org.jboss.netty.channel.SimpleChannelH
         ctx.sendDownstream(e);
     }
 
-    public void abortRequested(ChannelHandlerContext ctx, AbortEvent e) {
+    public void abortInputRequested(ChannelHandlerContext ctx, ReadAbortEvent e) {
+        ctx.sendDownstream(e);
+    }
+
+    public void abortOutputRequested(ChannelHandlerContext ctx, WriteAbortEvent e) {
         ctx.sendDownstream(e);
     }
 

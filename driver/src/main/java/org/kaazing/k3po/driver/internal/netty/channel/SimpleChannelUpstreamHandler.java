@@ -32,8 +32,11 @@ public class SimpleChannelUpstreamHandler extends org.jboss.netty.channel.Simple
         else if (e instanceof FlushEvent) {
             flushed(ctx, (FlushEvent) e);
         }
-        else if (e instanceof AbortEvent) {
-            aborted(ctx, (AbortEvent) e);
+        else if (e instanceof ReadAbortEvent) {
+            inputAborted(ctx, (ReadAbortEvent) e);
+        }
+        else if (e instanceof WriteAbortEvent) {
+            outputAborted(ctx, (WriteAbortEvent) e);
         }
         else {
             super.handleUpstream(ctx, e);
@@ -52,7 +55,11 @@ public class SimpleChannelUpstreamHandler extends org.jboss.netty.channel.Simple
         ctx.sendUpstream(e);
     }
 
-    public void aborted(ChannelHandlerContext ctx, AbortEvent e) {
+    public void inputAborted(ChannelHandlerContext ctx, ReadAbortEvent e) {
+        ctx.sendUpstream(e);
+    }
+
+    public void outputAborted(ChannelHandlerContext ctx, WriteAbortEvent e) {
         ctx.sendUpstream(e);
     }
 }

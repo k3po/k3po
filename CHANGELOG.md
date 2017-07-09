@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/k3po/k3po/tree/HEAD)
 
-[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-75...HEAD)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-76...HEAD)
+
+**Merged pull requests:**
+
+- Improve TLS transport test coverage … [\#444](https://github.com/k3po/k3po/pull/444) ([jfallows](https://github.com/jfallows))
+- Ensure abort semantics are consistent across transports [\#443](https://github.com/k3po/k3po/pull/443) ([jfallows](https://github.com/jfallows))
+
+## [3.0.0-alpha-76](https://github.com/k3po/k3po/tree/3.0.0-alpha-76) (2017-07-01)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-75...3.0.0-alpha-76)
 
 **Merged pull requests:**
 

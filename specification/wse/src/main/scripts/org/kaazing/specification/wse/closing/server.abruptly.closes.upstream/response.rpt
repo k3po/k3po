@@ -55,7 +55,7 @@ write http:header "Content-Type" "application/octet-stream"
 write http:header "Connection" "close"
 write flush
 
-aborted
+read aborted
 
 # Upstream
 accept ${upstream}
@@ -68,5 +68,5 @@ read http:version "HTTP/1.1"
 read http:header "Content-Type" "application/octet-stream"
 read http:header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
-abort
+write abort
 

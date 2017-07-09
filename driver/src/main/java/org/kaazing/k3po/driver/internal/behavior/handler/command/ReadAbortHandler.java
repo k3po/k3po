@@ -13,28 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.lang.internal.ast;
 
-public final class AstAbortNode extends AstCommandNode {
+package org.kaazing.k3po.driver.internal.behavior.handler.command;
+
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.abortInput;
+
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelHandlerContext;
+
+public class ReadAbortHandler extends AbstractCommandHandler {
 
     @Override
-    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
-        return visitor.visit(this, parameter);
+    protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
+
+        ChannelFuture handlerFuture = getHandlerFuture();
+        abortInput(ctx, handlerFuture);
     }
 
     @Override
-    protected int hashTo() {
-        return getClass().hashCode();
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("read abort");
     }
 
-    @Override
-    protected boolean equalTo(AstRegion that) {
-        return that instanceof AstAbortNode;
-    }
-
-    @Override
-    protected void describe(StringBuilder buf) {
-        super.describe(buf);
-        buf.append("abort\n");
-    }
 }

@@ -183,7 +183,7 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
         ChannelAddress tlsLocalAddress = tlsUnbindChannel.getLocalAddress();
 
         if (!tlsBindings.remove(tlsLocalAddress, tlsUnbindChannel)) {
-            tlsUnbindFuture.setFailure(new ChannelException("Channel not bound").fillInStackTrace());
+            tlsUnbindFuture.setFailure(new ChannelException("Channel not bound"));
             return;
         }
 

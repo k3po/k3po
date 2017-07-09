@@ -72,6 +72,6 @@ read http:version "HTTP/1.1"
 read http:header "Content-Type" "application/octet-stream"
 read http:header "X-Sequence-No" ${wse:asString(sequence + 1)}
 
-aborted
+read aborted
 read notify UPSTREAM_ABORTED
 

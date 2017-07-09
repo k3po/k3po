@@ -15,7 +15,6 @@
  */
 package org.kaazing.k3po.driver.internal.netty.bootstrap.channel;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jboss.netty.channel.ChannelConfig;
@@ -34,7 +33,7 @@ public abstract class AbstractChannel<T extends ChannelConfig> extends org.jboss
 
     private final T config;
     private final AtomicInteger closeState;
-    private final AtomicBoolean abortedState;
+    private final AtomicInteger abortState;
 
     private volatile int state;
     private volatile ChannelAddress localAddress;
@@ -46,7 +45,7 @@ public abstract class AbstractChannel<T extends ChannelConfig> extends org.jboss
 
         this.config = config;
         this.closeState = new AtomicInteger();
-        this.abortedState = new AtomicBoolean();
+        this.abortState = new AtomicInteger();
         this.state = ST_OPEN;
     }
 
@@ -131,8 +130,28 @@ public abstract class AbstractChannel<T extends ChannelConfig> extends org.jboss
         return false;
     }
 
-    protected boolean setAborted() {
-        return abortedState.compareAndSet(false, true);
+    protected boolean isReadAborted() {
+        return ((this.abortState.get() & 0x01) != 0x00);
+    }
+
+    protected boolean isWriteAborted() {
+        return ((this.abortState.get() & 0x02) != 0x00);
+    }
+
+    protected boolean setReadAborted() {
+        if ((this.abortState.get() & 0x01) == 0x00) {
+            this.abortState.addAndGet(1);
+            return true;
+        }
+        return false;
+    }
+
+    protected boolean setWriteAborted() {
+        if ((this.abortState.get() & 0x02) == 0x00) {
+            this.abortState.addAndGet(2);
+            return true;
+        }
+        return false;
     }
 
     private boolean setClosed0() {

@@ -54,7 +54,7 @@ write http:header "Content-Type" "application/octet-stream"
 write http:header "Connection" "close"
 write flush
 
-aborted
+read aborted
 
 
 # Upstream

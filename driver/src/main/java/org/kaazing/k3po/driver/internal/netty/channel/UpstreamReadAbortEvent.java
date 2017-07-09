@@ -16,22 +16,19 @@
 package org.kaazing.k3po.driver.internal.netty.channel;
 
 import static java.util.Objects.requireNonNull;
+import static org.jboss.netty.channel.Channels.succeededFuture;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 
-final class DownstreamAbortEvent implements AbortEvent {
+final class UpstreamReadAbortEvent implements ReadAbortEvent {
 
     private final Channel channel;
-    private final ChannelFuture future;
 
-    DownstreamAbortEvent(
-            Channel channel,
-            ChannelFuture future) {
+    UpstreamReadAbortEvent(
+            Channel channel) {
         requireNonNull(channel);
-        requireNonNull(future);
         this.channel = channel;
-        this.future = future;
     }
 
     @Override
@@ -41,7 +38,7 @@ final class DownstreamAbortEvent implements AbortEvent {
 
     @Override
     public ChannelFuture getFuture() {
-        return future;
+        return succeededFuture(channel);
     }
 
     @Override
@@ -49,7 +46,7 @@ final class DownstreamAbortEvent implements AbortEvent {
         String channelString = getChannel().toString();
         StringBuilder buf = new StringBuilder(channelString.length() + 64);
         buf.append(channelString);
-        buf.append(" ABORT_REQUEST");
+        buf.append(" READ_ABORTED");
         return buf.toString();
     }
 
