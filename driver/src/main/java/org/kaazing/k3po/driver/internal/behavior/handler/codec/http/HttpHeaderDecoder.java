@@ -40,7 +40,7 @@ public class HttpHeaderDecoder extends AbstractConfigDecoder {
     }
 
     @Override
-    public void decode(Channel channel) throws Exception {
+    public boolean decode(Channel channel) throws Exception {
         HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
         HttpHeaders headers = httpConfig.getReadHeaders();
         List<String> headerValues = headers.getAll(name);
@@ -53,6 +53,7 @@ public class HttpHeaderDecoder extends AbstractConfigDecoder {
                 decodeHeaderValue(headers, headerValues, valueDecoder);
             }
         }
+        return true;
     }
 
     @Override

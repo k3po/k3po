@@ -34,13 +34,14 @@ public class HttpHeaderMissingDecoder extends AbstractConfigDecoder {
     }
 
     @Override
-    public void decode(Channel channel) throws Exception {
+    public boolean decode(Channel channel) throws Exception {
         HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
         HttpHeaders headers = httpConfig.getReadHeaders();
         List<String> headerValues = headers.getAll(name);
         if (!headerValues.isEmpty()) {
             throw new ScriptProgressException(getRegionInfo(), format("HTTP header not missing: %s", name));
         }
+        return true;
     }
 
     @Override
