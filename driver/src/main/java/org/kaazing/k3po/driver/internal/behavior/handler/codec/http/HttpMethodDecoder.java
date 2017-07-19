@@ -35,12 +35,13 @@ public class HttpMethodDecoder extends AbstractConfigDecoder {
     }
 
     @Override
-    public void decode(Channel channel) throws Exception {
+    public boolean decode(Channel channel) throws Exception {
         HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
         HttpMethod method = httpConfig.getMethod();
         String methodName = method.getName();
         ChannelBuffer buffer = copiedBuffer(methodName, UTF_8);
         methodDecoder.decodeLast(buffer);
+        return true;
     }
 
     @Override
