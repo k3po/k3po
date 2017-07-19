@@ -318,8 +318,8 @@ public class ControlServerHandler extends ControlUpstreamHandler {
 
     @Override
     public void abortReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("ABORT");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("ABORT");
         }
 
         if (robot == null || robot.getPreparedFuture() == null) {
