@@ -41,7 +41,7 @@ public class HttpParameterDecoder extends AbstractConfigDecoder {
     }
 
     @Override
-    public void decode(Channel channel) throws Exception {
+    public boolean decode(Channel channel) throws Exception {
         HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
         QueryStringDecoder query = httpConfig.getReadQuery();
         Map<String, List<String>> parameters = query.getParameters();
@@ -55,6 +55,7 @@ public class HttpParameterDecoder extends AbstractConfigDecoder {
                 decodeParameterValue(parameters, parameterValues, valueDecoder);
             }
         }
+        return true;
     }
 
     @Override

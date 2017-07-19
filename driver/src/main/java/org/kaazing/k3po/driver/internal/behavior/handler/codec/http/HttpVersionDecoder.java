@@ -35,11 +35,12 @@ public class HttpVersionDecoder extends AbstractConfigDecoder {
     }
 
     @Override
-    public void decode(Channel channel) throws Exception {
+    public boolean decode(Channel channel) throws Exception {
         HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
         HttpVersion version = httpConfig.getVersion();
         ChannelBuffer buffer = copiedBuffer(version.getText(), UTF_8);
         versionDecoder.decode(buffer);
+        return true;
     }
 
     @Override

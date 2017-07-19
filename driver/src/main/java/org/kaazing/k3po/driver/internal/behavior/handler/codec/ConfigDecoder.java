@@ -20,6 +20,6 @@ import org.jboss.netty.channel.Channel;
 
 public interface ConfigDecoder {
 
-    void decode(Channel channel) throws Exception;
+    boolean decode(Channel channel) throws Exception;
 
 }
