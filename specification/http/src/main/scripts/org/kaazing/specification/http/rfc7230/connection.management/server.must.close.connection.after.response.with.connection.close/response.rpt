@@ -27,6 +27,7 @@ write "Content-Type: text/plain\r\n"
 write "Connection: close\r\n"
 write "\r\n"
 
+write "<html><head><title>Connection:close test</title></head><body>TEST</body></html>"
 close
 closed
 
