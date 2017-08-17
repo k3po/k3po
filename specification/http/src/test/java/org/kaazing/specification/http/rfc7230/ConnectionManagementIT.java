@@ -109,6 +109,27 @@ public class ConnectionManagementIT {
     }
 
     /**
+     * See <a href="https://tools.ietf.org/html/rfc7230#section-6.1">RFC 7230 section 6.1: Connection</a>.
+     *
+     * The "close" connection option is defined for a sender to signal that this connection will be closed after
+     * completion of the response. For example,
+     *
+     * Connection: close
+     *
+     * in either the request or the response header fields indicates that the sender is going to close the connection
+     * after the current request/response is complete (Section 6.6).
+     *
+     * @throws Exception when K3PO is not started
+     */
+    @Test
+    @Specification({
+       "server.must.close.connection.after.request.with.connection.close/request",
+       "server.must.close.connection.after.request.with.connection.close/response" })
+    public void serverMustCloseConnectionAfterRequestWithConnectionClose() throws Exception {
+        k3po.finish();
+    }
+
+    /**
      * See <a href="https://tools.ietf.org/html/rfc7230#section-6.3">RFC 7230 section 6.3: Persistence</a>.
      *
      * HTTP implementations SHOULD support persistent connections.
