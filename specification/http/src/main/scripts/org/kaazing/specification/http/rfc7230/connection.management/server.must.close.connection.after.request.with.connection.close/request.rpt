@@ -14,20 +14,22 @@
 # limitations under the License.
 #
 
-accept "tcp://localhost:8080"
-accepted
+connect "tcp://localhost:8080"
 connected
 
-read "GET / HTTP/1.1\r\n"
-read /Host:.*\r\n/
-read "\r\n"
-
-write "HTTP/1.1 200 OK\r\n"
-write "Content-Type: text/plain\r\n"
-write "Connection: close\r\n"
+write "GET / HTTP/1.1" "\r\n"
+write "Host: localhost:8080" "\r\n"
+write "Connection: close" "\r\n"
 write "\r\n"
 
-write "<html><head><title>Connection:close test</title></head><body>TEST</body></html>"
+read "HTTP/1.1 200 OK\r\n"
+read /Content-Length: 79\r\n/
+read "Content-Type: text/plain\r\n"
+read /Date: .*\r\n/
+read "Server: Kaazing Gateway\r\n"
+read "\r\n"
+read "<html><head><title>Connection:close test</title></head><body>TEST</body></html>"
+
 close
 closed
 

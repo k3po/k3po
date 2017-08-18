@@ -18,16 +18,19 @@ accept "tcp://localhost:8080"
 accepted
 connected
 
-read "GET / HTTP/1.1\r\n"
-read /Host:.*\r\n/
+read "GET / HTTP/1.1" "\r\n"
+read "Host: localhost:8080" "\r\n"
+read "Connection: close" "\r\n"
 read "\r\n"
 
 write "HTTP/1.1 200 OK\r\n"
+write "Content-Length: 79\r\n"
 write "Content-Type: text/plain\r\n"
-write "Connection: close\r\n"
+write "Date: Mon, 8th of August 2017\r\n"
+write "Server: Kaazing Gateway\r\n"
 write "\r\n"
-
 write "<html><head><title>Connection:close test</title></head><body>TEST</body></html>"
+
 close
 closed
 

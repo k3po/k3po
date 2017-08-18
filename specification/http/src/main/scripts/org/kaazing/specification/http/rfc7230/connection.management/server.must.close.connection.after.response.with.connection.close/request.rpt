@@ -24,5 +24,7 @@ write close
 read http:status "200" "OK"
 read http:header "Content-Type" "text/plain"
 read http:header "Connection" "close"
+
+read "<html><head><title>Connection:close test</title></head><body>TEST</body></html>"
 read closed
 
