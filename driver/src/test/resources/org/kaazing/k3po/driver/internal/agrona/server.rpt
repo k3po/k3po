@@ -25,9 +25,13 @@ connected
 
 read [0x00 0x00 0x00 0x01]
 read ([0..32] :server32)
+read (int :serverInt)
+read (long :serverLong)
 
 write [0x00 0x00 0x00 0x02]
 write ${server32}
+write ${serverInt}
+write ${serverLong}
 write flush
 
 close
