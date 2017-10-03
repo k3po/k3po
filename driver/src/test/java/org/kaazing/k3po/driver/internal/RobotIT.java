@@ -844,38 +844,6 @@ public class RobotIT {
     }
 
     @Test
-    public void shouldReadByteLiteralOK() throws Exception {
-        // @formatter:off
-        String script =
-            "connect 'tcp://localhost:8080'\n" +
-            "connected\n" +
-            "read 0xFF\n" +
-            "close\n" +
-            "closed\n";
-
-        String expected = script;
-        // @formatter:on
-
-        server.bind(new InetSocketAddress("localhost", 8080));
-
-        robot.prepareAndStart(script).await();
-
-        accepted = server.accept();
-
-        byte[] b = new byte[]{(byte) 0xff};
-
-        OutputStream out = accepted.getOutputStream();
-        out.write(b);
-        out.flush();
-
-        robot.finish().await();
-
-        assertEquals(expected, robot.getObservedScript());
-
-        assertEquals(-1, accepted.getInputStream().read());
-    }
-
-    @Test
     public void shouldReadCaptureByteOK() throws Exception {
         // @formatter:off
         String script =
@@ -951,38 +919,6 @@ public class RobotIT {
             "connect 'tcp://localhost:8080'\n" +
             "connected\n" +
             "read [0..2]\n" +
-            "close\n" +
-            "closed\n";
-
-        String expected = script;
-        // @formatter:on
-
-        server.bind(new InetSocketAddress("localhost", 8080));
-
-        robot.prepareAndStart(script).await();
-
-        accepted = server.accept();
-
-        byte[] b = new byte[]{0x00, 0x01};
-
-        OutputStream out = accepted.getOutputStream();
-        out.write(b);
-        out.flush();
-
-        robot.finish().await();
-
-        assertEquals(expected, robot.getObservedScript());
-
-        assertEquals(-1, accepted.getInputStream().read());
-    }
-
-    @Test
-    public void shouldReadShortLiteralOK() throws Exception {
-        // @formatter:off
-        String script =
-            "connect 'tcp://localhost:8080'\n" +
-            "connected\n" +
-            "read 0x0001\n" +
             "close\n" +
             "closed\n";
 

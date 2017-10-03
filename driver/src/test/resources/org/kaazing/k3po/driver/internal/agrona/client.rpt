@@ -16,6 +16,8 @@
 
 property layout ${agronaIT:layout("target/agrona-itest", 1024, 1024)}
 property client32 ${agronaIT:randomBytes(32)}
+property clientInt ${agronaIT:randomInt()}
+property clientLong ${agronaIT:randomLong()}
 
 connect "agrona://stream/bidirectional"
         option agrona:reader ${agrona:broadcastReceiver(layout.broadcast)}
@@ -23,12 +25,16 @@ connect "agrona://stream/bidirectional"
 
 connected
 
-write [0x00 0x00 0x00 0x01]
+write 0x00000001
 write ${client32}
+write ${clientInt}
+write ${clientLong}
 write flush
 
-read [0x00 0x00 0x00 0x02]
+read 0x00000002
 read ${client32}
+read ${clientInt}
+read ${clientLong}
 
 close
 closed

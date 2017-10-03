@@ -18,6 +18,8 @@ package org.kaazing.k3po.driver.internal.behavior.handler.codec.http;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
+import java.nio.ByteOrder;
+
 import org.jboss.netty.channel.Channel;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageEncoder;
@@ -35,7 +37,8 @@ public class HttpRequestFormEncoder implements ConfigEncoder {
     @Override
     public void encode(Channel channel) throws Exception {
         HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
-        String formName = formEncoder.encode().toString(US_ASCII);
+        ByteOrder endian = httpConfig.getEndian();
+        String formName = formEncoder.encode(endian).toString(US_ASCII);
         HttpRequestForm form = HttpRequestForm.valueOf(formName);
         httpConfig.setRequestForm(form);
     }

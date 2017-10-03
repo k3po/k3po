@@ -78,5 +78,4 @@ public final class AstExpressionValue<T> extends AstValue<T> {
     protected void describe(StringBuilder buf) {
         buf.append(format("(%s)%s", expression.getExpectedType().getSimpleName(), expression.getExpressionString()));
     }
-
 }

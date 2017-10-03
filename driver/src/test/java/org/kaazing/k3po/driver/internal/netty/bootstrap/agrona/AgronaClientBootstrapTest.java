@@ -17,6 +17,7 @@ package org.kaazing.k3po.driver.internal.netty.bootstrap.agrona;
 
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
+import static java.nio.ByteOrder.nativeOrder;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.jboss.netty.buffer.ChannelBuffers.buffer;
@@ -42,6 +43,15 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.agrona.MutableDirectBuffer;
+import org.agrona.concurrent.MessageHandler;
+import org.agrona.concurrent.UnsafeBuffer;
+import org.agrona.concurrent.broadcast.BroadcastBufferDescriptor;
+import org.agrona.concurrent.broadcast.BroadcastReceiver;
+import org.agrona.concurrent.broadcast.BroadcastTransmitter;
+import org.agrona.concurrent.broadcast.CopyBroadcastReceiver;
+import org.agrona.concurrent.ringbuffer.ManyToOneRingBuffer;
+import org.agrona.concurrent.ringbuffer.RingBufferDescriptor;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelEvent;
@@ -69,16 +79,6 @@ import org.kaazing.k3po.driver.internal.netty.channel.agrona.CopyBroadcastReceiv
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.RingBufferChannelReader;
 import org.kaazing.k3po.driver.internal.netty.channel.agrona.RingBufferChannelWriter;
 import org.mockito.InOrder;
-
-import org.agrona.MutableDirectBuffer;
-import org.agrona.concurrent.MessageHandler;
-import org.agrona.concurrent.UnsafeBuffer;
-import org.agrona.concurrent.broadcast.BroadcastBufferDescriptor;
-import org.agrona.concurrent.broadcast.BroadcastReceiver;
-import org.agrona.concurrent.broadcast.BroadcastTransmitter;
-import org.agrona.concurrent.broadcast.CopyBroadcastReceiver;
-import org.agrona.concurrent.ringbuffer.ManyToOneRingBuffer;
-import org.agrona.concurrent.ringbuffer.RingBufferDescriptor;
 
 @RunWith(Theories.class)
 public class AgronaClientBootstrapTest {
@@ -168,7 +168,7 @@ public class AgronaClientBootstrapTest {
         options.put(OPTION_WRITER, pingWriter);
         ChannelAddress channelAddress = channelAddressFactory.newChannelAddress(location, options);
 
-        ChannelBuffer ping = buffer(256);
+        ChannelBuffer ping = buffer(nativeOrder(), 256);
         ping.writeInt(0x01);
         ping.writeBytes("Hello, world".getBytes(UTF_8));
 

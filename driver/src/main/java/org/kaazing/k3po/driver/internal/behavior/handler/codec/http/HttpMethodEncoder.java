@@ -18,6 +18,8 @@ package org.kaazing.k3po.driver.internal.behavior.handler.codec.http;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
+import java.nio.ByteOrder;
+
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigEncoder;
@@ -35,7 +37,8 @@ public class HttpMethodEncoder implements ConfigEncoder {
     @Override
     public void encode(Channel channel) throws Exception {
         HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
-        String methodName = methodEncoder.encode().toString(US_ASCII);
+        ByteOrder endian = httpConfig.getEndian();
+        String methodName = methodEncoder.encode(endian).toString(US_ASCII);
         HttpMethod method = HttpMethod.valueOf(methodName);
         httpConfig.setMethod(method);
     }

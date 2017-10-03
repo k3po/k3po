@@ -15,6 +15,7 @@
  */
 package org.kaazing.k3po.driver.internal.netty.bootstrap.channel;
 
+import java.nio.ByteOrder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,33 @@ import java.util.Map;
 public class DefaultChannelConfig extends org.jboss.netty.channel.DefaultChannelConfig
     implements ChannelConfig
 {
+    private static final ByteOrder DEFAULT_ENDIAN = ByteOrder.BIG_ENDIAN;
+
+    private ByteOrder endian = DEFAULT_ENDIAN;
     private final Map<String, Object> transportOptions = new HashMap<>();
+
+    public static ByteOrder getEndian(org.jboss.netty.channel.ChannelConfig config) {
+
+        ByteOrder endian = DEFAULT_ENDIAN;
+
+        if (config instanceof ChannelConfig) {
+            endian = ((ChannelConfig) config).getEndian();
+        }
+
+        return endian;
+    }
+
+    @Override
+    public ByteOrder getEndian()
+    {
+        return endian;
+    }
+
+    public void setEndian(
+        ByteOrder endian)
+    {
+        this.endian = endian;
+    }
 
     @Override
     public final boolean setOption(String key, Object value)

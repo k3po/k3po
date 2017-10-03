@@ -45,6 +45,16 @@ public final class Functions {
     }
 
     @Function
+    public static Integer randomInt() {
+        return RANDOM.nextInt();
+    }
+
+    @Function
+    public static Long randomLong() {
+        return RANDOM.nextLong();
+    }
+
+    @Function
     public static Layout layoutInit(String filename, int ringCapacity, int broadcastCapacity) {
         return layout(filename, ringCapacity, broadcastCapacity, true);
     }
