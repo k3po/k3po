@@ -35,6 +35,6 @@ public final class AstWriteAbortedNode extends AstEventNode {
     @Override
     protected void describe(StringBuilder buf) {
         super.describe(buf);
-        buf.append("read aborted\n");
+        buf.append("write aborted\n");
     }
 }
