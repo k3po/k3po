@@ -15,9 +15,14 @@
  */
 package org.kaazing.k3po.driver.internal.netty.bootstrap.agrona;
 
-import org.jboss.netty.channel.DefaultChannelConfig;
+import java.nio.ByteOrder;
+
+import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.DefaultChannelConfig;
 
 public class DefaultAgronaChannelConfig extends DefaultChannelConfig implements AgronaChannelConfig {
 
-
+    public DefaultAgronaChannelConfig() {
+        super();
+        setEndian(ByteOrder.nativeOrder());
+    }
 }

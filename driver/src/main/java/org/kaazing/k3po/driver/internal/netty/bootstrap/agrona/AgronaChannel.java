@@ -17,6 +17,9 @@ package org.kaazing.k3po.driver.internal.netty.bootstrap.agrona;
 
 import static org.jboss.netty.buffer.ChannelBuffers.dynamicBuffer;
 import static org.jboss.netty.channel.Channels.fireMessageReceived;
+
+import java.nio.ByteOrder;
+
 import static org.agrona.BitUtil.SIZE_OF_INT;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -33,13 +36,15 @@ import org.agrona.concurrent.MessageHandler;
 
 public abstract class AgronaChannel extends AbstractChannel<AgronaChannelConfig> {
 
+    private static final ByteOrder NATIVE_ORDER = ByteOrder.nativeOrder();
+
     final AgronaWorker worker;
 
     final MessageHandler messageHandler = new MessageHandler() {
 
         @Override
         public void onMessage(int msgTypeId, MutableDirectBuffer buffer, int index, int length) {
-            ChannelBuffer message = ChannelBuffers.buffer(SIZE_OF_INT + length);
+            ChannelBuffer message = ChannelBuffers.buffer(NATIVE_ORDER, SIZE_OF_INT + length);
             message.setInt(0, msgTypeId);
             buffer.getBytes(index, message.array(), message.arrayOffset() + SIZE_OF_INT, length);
             message.writerIndex(SIZE_OF_INT + length);

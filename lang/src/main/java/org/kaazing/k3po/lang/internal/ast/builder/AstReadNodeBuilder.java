@@ -23,6 +23,7 @@ import org.kaazing.k3po.lang.internal.ast.matcher.AstExactBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstExactTextMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstExpressionMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstFixedLengthBytesMatcher;
+import org.kaazing.k3po.lang.internal.ast.matcher.AstNumberMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstRegexMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstVariableLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
@@ -41,6 +42,11 @@ public class AstReadNodeBuilder extends AbstractAstStreamableNodeBuilder<AstRead
 
     public AstReadNodeBuilder addExactText(String exactText) {
         node.addMatcher(new AstExactTextMatcher(exactText));
+        return this;
+    }
+
+    public AstReadNodeBuilder addNumber(Number number) {
+        node.addMatcher(new AstNumberMatcher(number));
         return this;
     }
 

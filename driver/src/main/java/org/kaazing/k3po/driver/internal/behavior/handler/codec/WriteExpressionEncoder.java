@@ -18,6 +18,7 @@ package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 import static org.jboss.netty.buffer.ChannelBuffers.buffer;
 import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
 
+import java.nio.ByteOrder;
 import java.util.function.Supplier;
 
 import javax.el.ValueExpression;
@@ -39,7 +40,7 @@ public class WriteExpressionEncoder implements MessageEncoder {
     }
 
     @Override
-    public ChannelBuffer encode() {
+    public ChannelBuffer encode(ByteOrder endian) {
 
         final byte[] value = supplier.get();
         final ChannelBuffer result;

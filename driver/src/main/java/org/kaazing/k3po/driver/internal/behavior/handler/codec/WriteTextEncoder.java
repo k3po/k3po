@@ -17,6 +17,7 @@ package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 
+import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -32,7 +33,7 @@ public class WriteTextEncoder implements MessageEncoder {
     }
 
     @Override
-    public ChannelBuffer encode() {
+    public ChannelBuffer encode(ByteOrder endian) {
         return copiedBuffer(text, charset);
     }
 

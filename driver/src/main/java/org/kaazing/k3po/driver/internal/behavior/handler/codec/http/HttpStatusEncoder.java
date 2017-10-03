@@ -18,6 +18,8 @@ package org.kaazing.k3po.driver.internal.behavior.handler.codec.http;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
+import java.nio.ByteOrder;
+
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigEncoder;
@@ -37,8 +39,9 @@ public class HttpStatusEncoder implements ConfigEncoder {
     @Override
     public void encode(Channel channel) throws Exception {
         HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
-        int code = Integer.parseInt(codeEncoder.encode().toString(US_ASCII));
-        String reason = reasonEncoder.encode().toString(US_ASCII);
+        ByteOrder endian = httpConfig.getEndian();
+        int code = Integer.parseInt(codeEncoder.encode(endian).toString(US_ASCII));
+        String reason = reasonEncoder.encode(endian).toString(US_ASCII);
         HttpResponseStatus status = new HttpResponseStatus(code, reason);
         httpConfig.setStatus(status);
     }

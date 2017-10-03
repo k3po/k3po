@@ -33,6 +33,8 @@ public abstract class AstValueMatcher extends AstRegion {
 
         R visit(AstExactBytesMatcher matcher, P parameter);
 
+        R visit(AstNumberMatcher matcher, P parameter);
+
         R visit(AstVariableLengthBytesMatcher matcher, P parameter);
 
         R visit(AstByteLengthBytesMatcher matcher, P parameter);
