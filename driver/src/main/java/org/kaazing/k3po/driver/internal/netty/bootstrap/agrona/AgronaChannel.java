@@ -53,7 +53,7 @@ public abstract class AgronaChannel extends AbstractChannel<AgronaChannelConfig>
 
     };
 
-    final ChannelBuffer writeBuffer = dynamicBuffer(8192);
+    final ChannelBuffer writeBuffer = dynamicBuffer(NATIVE_ORDER, 8192);
 
     AgronaChannel(AgronaServerChannel parent, ChannelFactory factory,
             ChannelPipeline pipeline, ChannelSink sink, AgronaWorker worker) {
