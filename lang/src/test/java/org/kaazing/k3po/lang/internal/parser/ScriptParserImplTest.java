@@ -20,11 +20,11 @@ import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.ACCEPT;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.CLOSE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.CLOSED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.CONNECTED;
-import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.EXACT_BYTES_MATCHER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.EXPRESSION_MATCHER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.FIXED_LENGTH_BYTES_MATCHER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.LITERAL_BYTES_VALUE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.LITERAL_TEXT_VALUE;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.NUMBER_MATCHER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.PROPERTY_NODE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_ABORT;
@@ -53,7 +53,6 @@ import static org.kaazing.k3po.lang.internal.regex.NamedGroupPattern.compile;
 import static org.kaazing.k3po.lang.internal.test.junit.Assert.assertEquals;
 
 import java.net.URI;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import javax.el.ExpressionFactory;
@@ -108,6 +107,7 @@ import org.kaazing.k3po.lang.internal.ast.matcher.AstExpressionMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstFixedLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstIntLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstLongLengthBytesMatcher;
+import org.kaazing.k3po.lang.internal.ast.matcher.AstNumberMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstRegexMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstShortLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstValueMatcher;
@@ -203,77 +203,14 @@ public class ScriptParserImplTest {
     }
 
     @Test
-    public void shouldParseShortLiteral() throws Exception {
-
-        String scriptFragment = "0x0005";
-
-        ScriptParserImpl parser = new ScriptParserImpl();
-        AstExactBytesMatcher actual = parser.parseWithStrategy(scriptFragment, EXACT_BYTES_MATCHER);
-
-        byte[] arr = {0x00, 0x05};
-
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void shouldParseShortNegativeLiteral() throws Exception {
-
-        String scriptFragment = "0xFFFB";
-
-        ScriptParserImpl parser = new ScriptParserImpl();
-        AstExactBytesMatcher actual = parser.parseWithStrategy(scriptFragment, EXACT_BYTES_MATCHER);
-
-        byte[] arr = ByteBuffer.allocate(2).putShort((short) -5).array();
-
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void shouldParseNegativeByteLiteral() throws Exception {
-
-        String scriptFragment = "0xFB";
-
-        ScriptParserImpl parser = new ScriptParserImpl();
-        AstExactBytesMatcher actual = parser.parseWithStrategy(scriptFragment, EXACT_BYTES_MATCHER);
-
-        byte[] arr = {(byte) -5};
-
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void shouldParseByteLiteral() throws Exception {
-
-        String scriptFragment = "0x05";
-
-        ScriptParserImpl parser = new ScriptParserImpl();
-        AstExactBytesMatcher actual = parser.parseWithStrategy(scriptFragment, EXACT_BYTES_MATCHER);
-
-        byte[] arr = {0x05};
-
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
     public void shouldParseIntLiteral() throws Exception {
 
         String scriptFragment = "5";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstExactBytesMatcher actual = parser.parseWithStrategy(scriptFragment, EXACT_BYTES_MATCHER);
+        AstNumberMatcher actual = parser.parseWithStrategy(scriptFragment, NUMBER_MATCHER);
 
-        byte[] arr = {0x00, 0x00, 0x00, 0x05};
-
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
-
+        AstNumberMatcher expected = new AstNumberMatcher(5);
         assertEquals(expected, actual);
     }
 
@@ -283,12 +220,45 @@ public class ScriptParserImplTest {
         String scriptFragment = "-5";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstExactBytesMatcher actual = parser.parseWithStrategy(scriptFragment, EXACT_BYTES_MATCHER);
+        AstNumberMatcher actual = parser.parseWithStrategy(scriptFragment, NUMBER_MATCHER);
 
-        byte[] arr = ByteBuffer.allocate(4).putInt(-5).array();
+        AstNumberMatcher expected = new AstNumberMatcher(-5);
+        assertEquals(expected, actual);
+    }
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
+    @Test
+    public void shouldParseHexIntLiteral() throws Exception {
 
+        String scriptFragment = "0x00000005";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstNumberMatcher actual = parser.parseWithStrategy(scriptFragment, NUMBER_MATCHER);
+
+        AstNumberMatcher expected = new AstNumberMatcher(5);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseHexIntLiteralWithUnderscores() throws Exception {
+
+        String scriptFragment = "0x0000_0005";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstNumberMatcher actual = parser.parseWithStrategy(scriptFragment, NUMBER_MATCHER);
+
+        AstNumberMatcher expected = new AstNumberMatcher(5);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseHexBriefIntLiteral() throws Exception {
+
+        String scriptFragment = "0x5";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstNumberMatcher actual = parser.parseWithStrategy(scriptFragment, NUMBER_MATCHER);
+
+        AstNumberMatcher expected = new AstNumberMatcher(5);
         assertEquals(expected, actual);
     }
 
@@ -298,11 +268,9 @@ public class ScriptParserImplTest {
         String scriptFragment = "5L";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstExactBytesMatcher actual = parser.parseWithStrategy(scriptFragment, EXACT_BYTES_MATCHER);
+        AstNumberMatcher actual = parser.parseWithStrategy(scriptFragment, NUMBER_MATCHER);
 
-        byte[] arr = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05};
-
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
+        AstNumberMatcher expected = new AstNumberMatcher(5L);
 
         assertEquals(expected, actual);
     }
@@ -313,11 +281,45 @@ public class ScriptParserImplTest {
         String scriptFragment = "-5L";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        AstExactBytesMatcher actual = parser.parseWithStrategy(scriptFragment, EXACT_BYTES_MATCHER);
+        AstNumberMatcher actual = parser.parseWithStrategy(scriptFragment, NUMBER_MATCHER);
 
-        byte[] arr = ByteBuffer.allocate(8).putLong(-5).array();
+        AstNumberMatcher expected = new AstNumberMatcher(-5L);
+        assertEquals(expected, actual);
+    }
 
-        AstExactBytesMatcher expected = new AstExactBytesMatcher(arr);
+    @Test
+    public void shouldParseHexLongLiteral() throws Exception {
+
+        String scriptFragment = "0x0000000000000005L";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstNumberMatcher actual = parser.parseWithStrategy(scriptFragment, NUMBER_MATCHER);
+
+        AstNumberMatcher expected = new AstNumberMatcher(5L);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseHexLongLiteralWithUnderscores() throws Exception {
+
+        String scriptFragment = "0x0000_0000_0000_0005L";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstNumberMatcher actual = parser.parseWithStrategy(scriptFragment, NUMBER_MATCHER);
+
+        AstNumberMatcher expected = new AstNumberMatcher(5L);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseHexBriefLongLiteral() throws Exception {
+
+        String scriptFragment = "0x5L";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstNumberMatcher actual = parser.parseWithStrategy(scriptFragment, NUMBER_MATCHER);
+
+        AstNumberMatcher expected = new AstNumberMatcher(5L);
         assertEquals(expected, actual);
     }
 
@@ -792,7 +794,7 @@ public class ScriptParserImplTest {
 
     @Test
     public void shouldParseWriteMultAllValue() throws Exception {
-        String scriptFragment = "write \"Hello\" [0x01 0x02] ${var1}";
+        String scriptFragment = "write \"Hello\" [0x01 0x02] ${var1} 5 5L 0x5 0x5L 0x0000_0005 0x0000_0000_0000_0005L";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
@@ -805,10 +807,17 @@ public class ScriptParserImplTest {
                         .addExactText("Hello")
                         .addExactBytes(new byte[]{0x01, (byte) 0x02})
                         .addExpression(factory.createValueExpression(context, "${var1}", byte[].class),
-                                parser.getExpressionContext()).done();
+                                parser.getExpressionContext())
+                        .addInteger(5)
+                        .addLong(5L)
+                        .addInteger(5)
+                        .addLong(5L)
+                        .addInteger(5)
+                        .addLong(5L)
+                        .done();
 
         assertEquals(expected, actual);
-        assertEquals(3, actual.getRegionInfo().children.size());
+        assertEquals(9, actual.getRegionInfo().children.size());
     }
 
     @Test
@@ -969,37 +978,7 @@ public class ScriptParserImplTest {
     }
 
     @Test
-    public void shouldParseReadExactByte() throws Exception {
-
-        String scriptFragment = "read 0x05";
-
-        ScriptParserImpl parser = new ScriptParserImpl();
-        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
-
-        AstReadValueNode expected =
-                new AstReadNodeBuilder().addExactBytes(new byte[]{0x05}, parser.getExpressionContext()).done();
-
-        assertEquals(expected, actual);
-        assertEquals(1, actual.getRegionInfo().children.size());
-    }
-
-    @Test
-    public void shouldParseReadExactShort() throws Exception {
-
-        String scriptFragment = "read 0x0005";
-
-        ScriptParserImpl parser = new ScriptParserImpl();
-        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
-
-        AstReadValueNode expected =
-                new AstReadNodeBuilder().addExactBytes(new byte[]{0x00, 0x05}, parser.getExpressionContext()).done();
-
-        assertEquals(expected, actual);
-        assertEquals(1, actual.getRegionInfo().children.size());
-    }
-
-    @Test
-    public void shouldParseReadExactInt() throws Exception {
+    public void shouldParseReadLiteralInt() throws Exception {
 
         String scriptFragment = "read 5";
 
@@ -1007,15 +986,44 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadNodeBuilder()
-
-        .addExactBytes(new byte[]{0x00, 0x00, 0x00, 0x05}, parser.getExpressionContext()).done();
+                .addNumber(5).done();
 
         assertEquals(expected, actual);
         assertEquals(1, actual.getRegionInfo().children.size());
     }
 
     @Test
-    public void shouldParseReadExactLong() throws Exception {
+    public void shouldParseReadLiteralHexInt() throws Exception {
+
+        String scriptFragment = "read 0x00000005";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
+
+        AstReadValueNode expected = new AstReadNodeBuilder()
+                .addNumber(5).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseReadLiteralHexIntWithUnderscores() throws Exception {
+
+        String scriptFragment = "read 0x0000_0005";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
+
+        AstReadValueNode expected = new AstReadNodeBuilder()
+                .addNumber(5).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseReadLiteralLong() throws Exception {
 
         String scriptFragment = "read 5L";
 
@@ -1023,8 +1031,52 @@ public class ScriptParserImplTest {
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
 
         AstReadValueNode expected = new AstReadNodeBuilder()
+                .addNumber(5L).done();
 
-        .addExactBytes(new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05}, parser.getExpressionContext()).done();
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseReadLiteralHexBriefLong() throws Exception {
+
+        String scriptFragment = "read 0x5L";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
+
+        AstReadValueNode expected = new AstReadNodeBuilder()
+                .addNumber(5L).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseReadLiteralHexLong() throws Exception {
+
+        String scriptFragment = "read 0x0000000000000005L";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
+
+        AstReadValueNode expected = new AstReadNodeBuilder()
+                .addNumber(5L).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseReadLiteralHexLongWithUnderscores() throws Exception {
+
+        String scriptFragment = "read 0x0000_0000_0000_0005L";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
+
+        AstReadValueNode expected = new AstReadNodeBuilder()
+                .addNumber(5L).done();
 
         assertEquals(expected, actual);
         assertEquals(1, actual.getRegionInfo().children.size());

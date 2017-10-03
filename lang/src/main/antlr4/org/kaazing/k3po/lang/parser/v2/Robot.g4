@@ -244,6 +244,7 @@ writeNotifyNode
 matcher
     : exactTextMatcher
     | exactBytesMatcher
+    | numberMatcher
     | regexMatcher
     | expressionMatcher
     | fixedLengthBytesMatcher
@@ -256,10 +257,11 @@ exactTextMatcher
 
 exactBytesMatcher
     : bytes=BytesLiteral
-    | byteLiteral=ByteLiteral
-    | shortLiteral=TwoByteLiteral
-    | intLiteral=(SignedDecimalLiteral | DecimalLiteral)
-    | longLiteral=(SignedDecimalLiteral | DecimalLiteral) 'L'
+    ;
+
+numberMatcher
+    : intLiteral=(SignedDecimalLiteral | DecimalLiteral | HexLiteral)
+    | longLiteral=(SignedDecimalLiteral | DecimalLiteral | HexLiteral) 'L'
     ;
 
 regexMatcher
@@ -288,8 +290,6 @@ variableLengthBytesMatcher
 writeValue
     : literalText
     | literalBytes
-    | literalByte
-    | literalShort
     | literalInteger
     | literalLong
     | expressionValue
@@ -303,20 +303,12 @@ literalBytes
     : literal=BytesLiteral
     ;
 
-literalByte
-    : literal=ByteLiteral
-    ;
-
-literalShort
-    : literal=TwoByteLiteral
-    ;
-
 literalInteger
-    : literal=(SignedDecimalLiteral | DecimalLiteral)
+    : literal=(SignedDecimalLiteral | DecimalLiteral | HexLiteral) 
     ;
 
 literalLong
-    : literal=(SignedDecimalLiteral | DecimalLiteral) 'L'
+    : literal=(SignedDecimalLiteral | DecimalLiteral | HexLiteral) 'L'
     ;
 
 expressionValue
@@ -487,17 +479,13 @@ BytesLiteral
     : '[' (' ')? (ByteLiteral (' ')*)+ ']'
     ;
 
-ByteLiteral
-    : HexPrefix HexDigit HexDigit
-    ;
-
-TwoByteLiteral
-    : HexPrefix HexDigit HexDigit HexDigit HexDigit
-    ;
-
 fragment
+ByteLiteral
+    :  HexPrefix HexDigit HexDigit
+    ;
+
 HexLiteral
-    : HexPrefix HexDigit+
+    : HexPrefix HexDigit ('_'? HexDigit)*
     ;
 
 fragment

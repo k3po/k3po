@@ -23,7 +23,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -62,6 +61,7 @@ import org.kaazing.k3po.driver.internal.behavior.handler.codec.ReadExactTextDeco
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ReadExpressionDecoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ReadIntLengthBytesDecoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ReadLongLengthBytesDecoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.ReadNumberDecoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ReadRegexDecoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ReadShortLengthBytesDecoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ReadVariableLengthBytesDecoder;
@@ -140,6 +140,7 @@ import org.kaazing.k3po.lang.internal.ast.matcher.AstExpressionMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstFixedLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstIntLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstLongLengthBytesMatcher;
+import org.kaazing.k3po.lang.internal.ast.matcher.AstNumberMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstRegexMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstShortLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstValueMatcher;
@@ -173,16 +174,11 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         private Masker readUnmasker;
         private Masker writeMasker;
 
-        private ByteOrder endian;
-
         /* The pipelineAsMap is built by each node that is visited. */
         private Map<String, ChannelHandler> pipelineAsMap;
 
         public State(ConcurrentMap<String, Barrier> barriersByName) {
             this.barriersByName = barriersByName;
-
-            // default to network byte order
-            this.endian = ByteOrder.BIG_ENDIAN;
         }
 
         private Barrier lookupBarrier(String barrierName) {
@@ -262,6 +258,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // masking is a no-op by default for each stream
         state.readUnmasker = Masker.IDENTITY_MASKER;
         state.writeMasker = Masker.IDENTITY_MASKER;
+
         state.pipelineAsMap = new LinkedHashMap<>();
 
         for (AstStreamableNode streamable : acceptedNode.getStreamables()) {
@@ -488,7 +485,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         List<MessageEncoder> messageEncoders = new ArrayList<>();
 
         for (AstValue<?> val : node.getValues()) {
-            messageEncoders.add(val.accept(new GenerateWriteEncoderVisitor(), state.endian));
+            messageEncoders.add(val.accept(new GenerateWriteEncoderVisitor(), null));
         }
         WriteHandler handler = new WriteHandler(messageEncoders, state.writeMasker);
         handler.setRegionInfo(node.getRegionInfo());
@@ -497,36 +494,36 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         return state.configuration;
     }
 
-    private static final class GenerateWriteEncoderVisitor implements AstValue.Visitor<MessageEncoder, ByteOrder> {
+    private static final class GenerateWriteEncoderVisitor implements AstValue.Visitor<MessageEncoder, Void> {
 
         @Override
-        public MessageEncoder visit(AstExpressionValue<?> value, ByteOrder endian) {
+        public MessageEncoder visit(AstExpressionValue<?> value, Void parameter) {
             Supplier<byte[]> supplier = () -> value.getValue(byte[].class);
             return new WriteExpressionEncoder(supplier, value.getExpression());
         }
 
         @Override
-        public MessageEncoder visit(AstLiteralTextValue value, ByteOrder endian) {
+        public MessageEncoder visit(AstLiteralTextValue value, Void parameter) {
             return new WriteTextEncoder(value.getValue(), UTF_8);
         }
 
         @Override
-        public MessageEncoder visit(AstLiteralBytesValue value, ByteOrder endian) {
+        public MessageEncoder visit(AstLiteralBytesValue value, Void parameter) {
             return new WriteBytesEncoder(value.getValue());
         }
 
         @Override
-        public MessageEncoder visit(AstLiteralIntegerValue value, ByteOrder endian) {
-            return new WriteIntegerEncoder(value.getValue(), endian);
+        public MessageEncoder visit(AstLiteralIntegerValue value, Void parameter) {
+            return new WriteIntegerEncoder(value.getValue());
         }
 
         @Override
-        public MessageEncoder visit(AstLiteralLongValue value, ByteOrder endian) {
-            return new WriteLongEncoder(value.getValue(), endian);
+        public MessageEncoder visit(AstLiteralLongValue value, Void parameter) {
+            return new WriteLongEncoder(value.getValue());
         }
 
         @Override
-        public MessageEncoder visit(AstLiteralURIValue value, ByteOrder endian) {
+        public MessageEncoder visit(AstLiteralURIValue value, Void parameter) {
             return new WriteTextEncoder(value.getValue().toString(), UTF_8);
         }
     }
@@ -804,6 +801,11 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         }
 
         @Override
+        public MessageDecoder visit(AstNumberMatcher matcher, Configuration config) {
+            return new ReadNumberDecoder(matcher.getRegionInfo(), matcher.getValue());
+        }
+
+        @Override
         public MessageDecoder visit(AstVariableLengthBytesMatcher matcher, Configuration config) {
 
             ValueExpression length = matcher.getLength();
@@ -922,7 +924,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     @Override
     public Configuration visit(AstWriteConfigNode node, State state) {
 
-        Function<AstValue<?>, MessageEncoder> encoderFactory = v -> v.accept(new GenerateWriteEncoderVisitor(), state.endian);
+        Function<AstValue<?>, MessageEncoder> encoderFactory = v -> v.accept(new GenerateWriteEncoderVisitor(), null);
         ChannelHandler handler = behaviorSystem.newWriteConfigHandler(node, encoderFactory);
 
         if (handler != null) {
@@ -1057,7 +1059,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             int value = literal.getValue();
             if (value != 0) {
                 byte[] array = ByteBuffer.allocate(Integer.BYTES)
-                                         .order(state.endian)
                                          .putInt(value)
                                          .array();
                 return Maskers.newMasker(array);
@@ -1072,7 +1073,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             long value = literal.getValue();
             if (value != 0L) {
                 byte[] array = ByteBuffer.allocate(Long.BYTES)
-                                         .order(state.endian)
                                          .putLong(value)
                                          .array();
                 return Maskers.newMasker(array);

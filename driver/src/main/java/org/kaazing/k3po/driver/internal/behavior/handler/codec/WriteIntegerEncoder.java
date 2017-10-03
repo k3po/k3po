@@ -25,15 +25,13 @@ import org.jboss.netty.buffer.ChannelBuffer;
 public class WriteIntegerEncoder implements MessageEncoder {
 
     private final int value;
-    private final ByteOrder endian;
 
-    public WriteIntegerEncoder(int value, ByteOrder endian) {
+    public WriteIntegerEncoder(int value) {
         this.value = value;
-        this.endian = endian;
     }
 
     @Override
-    public ChannelBuffer encode() {
+    public ChannelBuffer encode(ByteOrder endian) {
         byte[] array = ByteBuffer.allocate(Integer.BYTES)
                                  .order(endian)
                                  .putInt(value)

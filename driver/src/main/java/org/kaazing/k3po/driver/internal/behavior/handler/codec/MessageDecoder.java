@@ -52,7 +52,7 @@ public abstract class MessageDecoder {
         try {
             // If we don't have a cumulation buffer yet, create it
             if (cumulation == null) {
-                cumulation = ChannelBuffers.dynamicBuffer();
+                cumulation = ChannelBuffers.dynamicBuffer(buffer.order(), 256);
             }
 
             // Write the input bytes in the cumulation buffer

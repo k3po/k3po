@@ -13,28 +13,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.lang.internal.ast;
+package org.kaazing.k3po.lang.internal.ast.matcher;
 
-public final class AstWriteAbortedNode extends AstEventNode {
+import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
+
+import java.util.Objects;
+
+import org.kaazing.k3po.lang.internal.ast.AstRegion;
+
+public final class AstNumberMatcher extends AstValueMatcher {
+
+    private final Number value;
+
+    public AstNumberMatcher(Number value) {
+        if (value == null) {
+            throw new NullPointerException("value");
+        }
+        this.value = value;
+    }
+
+    public Number getValue() {
+        return value;
+    }
 
     @Override
     public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
+
         return visitor.visit(this, parameter);
     }
 
     @Override
     protected int hashTo() {
-        return getClass().hashCode();
+        return Objects.hashCode(value);
     }
 
     @Override
     protected boolean equalTo(AstRegion that) {
-        return that instanceof AstWriteAbortedNode;
+        return (that instanceof AstNumberMatcher) && equalTo((AstNumberMatcher) that);
+    }
+
+    protected boolean equalTo(AstNumberMatcher that) {
+        return equivalent(this.value, that.value);
     }
 
     @Override
     protected void describe(StringBuilder buf) {
-        super.describe(buf);
-        buf.append("write aborted\n");
+        buf.append(value.toString());
+        if (value instanceof Long)
+        {
+            buf.append('L');
+        }
     }
 }

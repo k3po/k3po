@@ -15,7 +15,8 @@
  */
 package org.kaazing.k3po.driver.internal.test.utils;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.junit.Assert.assertThat;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -72,8 +73,8 @@ public class ThreadCountTestRule implements TestRule {
                         System.out.println(type.getName());
                     }
                 }
-                
-                assertEquals("Number of threads is not equal", threadCountBefore, threadCountAfter);
+
+                assertThat(threadCountAfter, lessThanOrEqualTo(threadCountBefore));
             }
         };
     }

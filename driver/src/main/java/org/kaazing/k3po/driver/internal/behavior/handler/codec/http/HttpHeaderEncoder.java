@@ -18,6 +18,7 @@ package org.kaazing.k3po.driver.internal.behavior.handler.codec.http;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
+import java.nio.ByteOrder;
 import java.util.List;
 
 import org.jboss.netty.channel.Channel;
@@ -40,16 +41,17 @@ public class HttpHeaderEncoder implements ConfigEncoder {
     public void encode(Channel channel) throws Exception {
         HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
         HttpHeaders writeHeaders = httpConfig.getWriteHeaders();
+        ByteOrder endian = httpConfig.getEndian();
 
-        String headerName = nameEncoder.encode().toString(US_ASCII);
+        String headerName = nameEncoder.encode(endian).toString(US_ASCII);
         if (valueEncoders.size() == 1) {
             MessageEncoder valueEncoder = valueEncoders.get(0);
-            String headerValue = valueEncoder.encode().toString(US_ASCII);
+            String headerValue = valueEncoder.encode(endian).toString(US_ASCII);
             writeHeaders.add(headerName, headerValue);
         }
         else {
             for (MessageEncoder valueEncoder : valueEncoders) {
-                String headerValue = valueEncoder.encode().toString(US_ASCII);
+                String headerValue = valueEncoder.encode(endian).toString(US_ASCII);
                 writeHeaders.add(headerName, headerValue);
             }
         }

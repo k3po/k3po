@@ -22,7 +22,6 @@ import static org.kaazing.k3po.lang.internal.RegionInfo.newSequential;
 import static org.kaazing.k3po.lang.internal.parser.ParserHelper.parseHexBytes;
 
 import java.net.URI;
-import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,6 +81,7 @@ import org.kaazing.k3po.lang.internal.ast.matcher.AstExpressionMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstFixedLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstIntLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstLongLengthBytesMatcher;
+import org.kaazing.k3po.lang.internal.ast.matcher.AstNumberMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstRegexMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstShortLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstValueMatcher;
@@ -124,6 +124,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralIntegerContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralLongContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralTextContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.MatcherContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.NumberMatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.OpenedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.PropertyNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadAbortNodeContext;
@@ -480,6 +481,15 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
                 return new AstExactBytesMatcherVisitor(factory, environment).visit(parser.exactBytesMatcher());
             }
         };
+
+        public static final ScriptParseStrategy<AstNumberMatcher> NUMBER_MATCHER =
+                new ScriptParseStrategy<AstNumberMatcher>() {
+                    @Override
+                    public AstNumberMatcher parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+                            throws RecognitionException {
+                        return new AstNumberMatcherVisitor(factory, environment).visit(parser.numberMatcher());
+                    }
+                };
 
     public static final ScriptParseStrategy<AstRegexMatcher> REGEX_MATCHER = new ScriptParseStrategy<AstRegexMatcher>() {
         @Override
@@ -1636,6 +1646,18 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
+        public AstValueMatcher visitNumberMatcher(NumberMatcherContext ctx) {
+
+            AstNumberMatcherVisitor visitor = new AstNumberMatcherVisitor(factory, environment);
+            AstNumberMatcher matcher = visitor.visit(ctx);
+            if (matcher != null) {
+                childInfos().add(matcher.getRegionInfo());
+            }
+
+            return matcher;
+        }
+
+        @Override
         public AstRegexMatcher visitRegexMatcher(RegexMatcherContext ctx) {
 
             AstRegexMatcherVisitor visitor = new AstRegexMatcherVisitor(factory, environment);
@@ -1716,28 +1738,29 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
                 AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
-            } else if (ctx.byteLiteral != null) {
-                byte[] array = parseHexBytes(ctx.byteLiteral.getText());
-                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
-                matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
-                return matcher;
-            } else if (ctx.shortLiteral != null) {
-                byte[] array = parseHexBytes(ctx.shortLiteral.getText());
-                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
-                matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
-                return matcher;
-            } else if (ctx.longLiteral != null) {
-                ByteBuffer buf = ByteBuffer.allocate(Long.SIZE / 8);
-                buf.putLong(Long.parseLong(ctx.longLiteral.getText()));
-                byte[] array = buf.array();
-                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
+            }
+
+            return null;
+        }
+
+    }
+
+    private static class AstNumberMatcherVisitor extends AstVisitor<AstNumberMatcher> {
+
+        public AstNumberMatcherVisitor(ExpressionFactory factory, ExpressionContext environment) {
+            super(factory, environment);
+        }
+
+        @Override
+        public AstNumberMatcher visitNumberMatcher(NumberMatcherContext ctx) {
+            if (ctx.longLiteral != null) {
+                Long literal = Long.decode(ctx.longLiteral.getText().replaceAll("\\_", ""));
+                AstNumberMatcher matcher = new AstNumberMatcher(literal);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             } else if (ctx.intLiteral != null) {
-                ByteBuffer buf = ByteBuffer.allocate(Integer.SIZE / 8);
-                buf.putInt(Integer.parseInt(ctx.intLiteral.getText()));
-                byte[] array = buf.array();
-                AstExactBytesMatcher matcher = new AstExactBytesMatcher(array);
+                Integer literal = Integer.decode(ctx.intLiteral.getText().replaceAll("\\_", ""));
+                AstNumberMatcher matcher = new AstNumberMatcher(literal);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
             }
@@ -2029,8 +2052,8 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
         @Override
         public AstLiteralIntegerValue visitLiteralInteger(LiteralIntegerContext ctx) {
-            String literal = ctx.literal.getText();
-            AstLiteralIntegerValue value = new AstLiteralIntegerValue(Integer.parseInt(literal));
+            String literal = ctx.literal.getText().replaceAll("_", "");
+            AstLiteralIntegerValue value = new AstLiteralIntegerValue(Integer.decode(literal));
             value.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return value;
         }
@@ -2045,8 +2068,8 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
         @Override
         public AstLiteralLongValue visitLiteralLong(LiteralLongContext ctx) {
-            String literal = ctx.literal.getText();
-            AstLiteralLongValue value = new AstLiteralLongValue(Long.parseLong(literal));
+            String literal = ctx.literal.getText().replaceAll("_", "");
+            AstLiteralLongValue value = new AstLiteralLongValue(Long.decode(literal));
             value.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return value;
         }
