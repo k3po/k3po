@@ -23,12 +23,12 @@ accept "agrona://stream/bidirectional"
 accepted
 connected
 
-read [0x00 0x00 0x00 0x01]
+read 0x00000001
 read ([0..32] :server32)
-read (int :serverInt)
-read (long :serverLong)
+read ([0..4] :serverInt)
+read ([0..8] :serverLong)
 
-write [0x00 0x00 0x00 0x02]
+write 0x00000002
 write ${server32}
 write ${serverInt}
 write ${serverLong}
