@@ -186,6 +186,7 @@ public class TlsClientChannelSink extends AbstractChannelSink {
             public void operationComplete(ChannelFuture connectFuture) throws Exception {
                 if (connectFuture.isSuccess()) {
                     transport = connectFuture.getChannel();
+                    transport.getConfig().setBufferFactory(tlsConnectConfig.getBufferFactory());
 
                     ChannelPipeline pipeline = transport.getPipeline();
                     SslHandler sslHandler = pipeline.get(SslHandler.class);

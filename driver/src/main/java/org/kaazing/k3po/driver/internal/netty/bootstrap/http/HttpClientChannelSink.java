@@ -119,6 +119,7 @@ public class HttpClientChannelSink extends AbstractChannelSink {
     @Override
     protected void connectRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
         final HttpClientChannel httpConnectChannel = (HttpClientChannel) evt.getChannel();
+        final HttpChannelConfig httpConnectConfig = httpConnectChannel.getConfig();
         final ChannelFuture httpConnectFuture = evt.getFuture();
         final ChannelAddress httpRemoteAddress = (ChannelAddress) evt.getValue();
         ChannelAddress address = httpRemoteAddress.getTransport();
@@ -127,7 +128,7 @@ public class HttpClientChannelSink extends AbstractChannelSink {
 
         ClientBootstrap bootstrap = bootstrapFactory.newClientBootstrap(schemeName);
         bootstrap.setPipelineFactory(pipelineFactory);
-        bootstrap.setOptions(httpConnectChannel.getConfig().getTransportOptions());
+        bootstrap.setOptions(httpConnectConfig.getTransportOptions());
         bootstrap.setOption(format("%s.nextProtocol", schemeName), httpSchemeName);
 
         // TODO: reuse connections with keep-alive
@@ -137,6 +138,7 @@ public class HttpClientChannelSink extends AbstractChannelSink {
             public void operationComplete(ChannelFuture connectFuture) throws Exception {
                 if (connectFuture.isSuccess()) {
                     transport = connectFuture.getChannel();
+                    transport.getConfig().setBufferFactory(httpConnectConfig.getBufferFactory());
 
                     ChannelPipeline pipeline = transport.getPipeline();
                     ChannelHandlerContext ctx = pipeline.getContext(HttpClientChannelSource.class);

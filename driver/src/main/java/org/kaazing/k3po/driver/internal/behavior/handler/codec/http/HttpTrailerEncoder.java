@@ -18,9 +18,9 @@ package org.kaazing.k3po.driver.internal.behavior.handler.codec.http;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
-import java.nio.ByteOrder;
 import java.util.List;
 
+import org.jboss.netty.buffer.ChannelBufferFactory;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigEncoder;
@@ -41,16 +41,16 @@ public class HttpTrailerEncoder implements ConfigEncoder {
     public void encode(Channel channel) throws Exception {
         HttpChannelConfig httpConfig = (HttpChannelConfig) channel.getConfig();
         HttpHeaders writeTrailers = httpConfig.getWriteTrailers();
-        ByteOrder endian = httpConfig.getEndian();
+        ChannelBufferFactory bufferFactory = httpConfig.getBufferFactory();
 
-        String headerName = nameEncoder.encode(endian).toString(US_ASCII);
+        String headerName = nameEncoder.encode(bufferFactory).toString(US_ASCII);
         if (valueEncoders.size() == 1) {
             MessageEncoder valueEncoder = valueEncoders.get(0);
-            String headerValue = valueEncoder.encode(endian).toString(US_ASCII);
+            String headerValue = valueEncoder.encode(bufferFactory).toString(US_ASCII);
             writeTrailers.add(headerName, headerValue);
         } else {
             for (MessageEncoder valueEncoder : valueEncoders) {
-                String headerValue = valueEncoder.encode(endian).toString(US_ASCII);
+                String headerValue = valueEncoder.encode(bufferFactory).toString(US_ASCII);
                 writeTrailers.add(headerName, headerValue);
             }
         }

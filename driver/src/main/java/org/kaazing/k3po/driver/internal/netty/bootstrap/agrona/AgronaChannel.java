@@ -23,7 +23,9 @@ import java.nio.ByteOrder;
 import static org.agrona.BitUtil.SIZE_OF_INT;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBufferFactory;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.buffer.HeapChannelBufferFactory;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelSink;
@@ -37,6 +39,7 @@ import org.agrona.concurrent.MessageHandler;
 public abstract class AgronaChannel extends AbstractChannel<AgronaChannelConfig> {
 
     private static final ByteOrder NATIVE_ORDER = ByteOrder.nativeOrder();
+    static final ChannelBufferFactory NATIVE_BUFFER_FACTORY = HeapChannelBufferFactory.getInstance(NATIVE_ORDER);
 
     final AgronaWorker worker;
 

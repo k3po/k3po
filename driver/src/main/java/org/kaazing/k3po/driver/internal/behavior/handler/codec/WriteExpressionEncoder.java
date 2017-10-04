@@ -16,14 +16,13 @@
 package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 
 import static org.jboss.netty.buffer.ChannelBuffers.buffer;
-import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
 
-import java.nio.ByteOrder;
 import java.util.function.Supplier;
 
 import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBufferFactory;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 
@@ -40,12 +39,12 @@ public class WriteExpressionEncoder implements MessageEncoder {
     }
 
     @Override
-    public ChannelBuffer encode(ByteOrder endian) {
+    public ChannelBuffer encode(ChannelBufferFactory bufferFactory) {
 
         final byte[] value = supplier.get();
         final ChannelBuffer result;
         if (value != null) {
-            result = wrappedBuffer(value);
+            result = bufferFactory.getBuffer(value, 0, value.length);
         } else {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Value of expression is null. Encoding as a 0 length buffer");

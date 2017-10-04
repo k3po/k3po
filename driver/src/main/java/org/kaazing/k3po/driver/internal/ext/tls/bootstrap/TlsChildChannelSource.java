@@ -134,6 +134,7 @@ public class TlsChildChannelSource extends SimpleChannelHandler {
                 }
             });
 
+            transport.getConfig().setBufferFactory(tlsChildConfig.getBufferFactory());
             this.tlsChildChannel = tlsChildChannel;
 
             detectWriteTransportClosed(transport, tlsChildChannel);

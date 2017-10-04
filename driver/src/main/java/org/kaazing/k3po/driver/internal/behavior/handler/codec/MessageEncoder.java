@@ -15,13 +15,12 @@
  */
 package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 
-import java.nio.ByteOrder;
-
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBufferFactory;
 
 
 public interface MessageEncoder {
 
-    ChannelBuffer encode(ByteOrder endian);
+    ChannelBuffer encode(ChannelBufferFactory bufferFactory);
 
 }
