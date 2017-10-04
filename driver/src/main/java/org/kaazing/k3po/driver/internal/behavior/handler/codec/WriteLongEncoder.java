@@ -15,12 +15,8 @@
  */
 package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 
-import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBufferFactory;
 
 public class WriteLongEncoder implements MessageEncoder {
 
@@ -31,12 +27,10 @@ public class WriteLongEncoder implements MessageEncoder {
     }
 
     @Override
-    public ChannelBuffer encode(ByteOrder endian) {
-        byte[] array = ByteBuffer.allocate(Long.BYTES)
-                                 .order(endian)
-                                 .putLong(value)
-                                 .array();
-        return wrappedBuffer(array);
+    public ChannelBuffer encode(ChannelBufferFactory bufferFactory) {
+        ChannelBuffer buffer = bufferFactory.getBuffer(Long.BYTES);
+        buffer.writeLong(value);
+        return buffer;
     }
 
     @Override

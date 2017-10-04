@@ -20,15 +20,14 @@ import static org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer;
 import static org.jboss.netty.channel.Channels.write;
 import static org.kaazing.k3po.driver.internal.behavior.handler.codec.Masker.IDENTITY_MASKER;
 
-import java.nio.ByteOrder;
 import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBufferFactory;
 import org.jboss.netty.channel.ChannelConfig;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.Masker;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageEncoder;
-import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.DefaultChannelConfig;
 
 public class WriteHandler extends AbstractCommandHandler {
 
@@ -48,11 +47,11 @@ public class WriteHandler extends AbstractCommandHandler {
     @Override
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
         ChannelConfig config = ctx.getChannel().getConfig();
-        ByteOrder endian = DefaultChannelConfig.getEndian(config);
+        ChannelBufferFactory bufferFactory = config.getBufferFactory();
         ChannelBuffer[] buffers = new ChannelBuffer[encoders.size()];
         int idx = 0;
         for (MessageEncoder encoder : encoders) {
-            buffers[idx] = encoder.encode(endian);
+            buffers[idx] = encoder.encode(bufferFactory);
             idx++;
         }
 

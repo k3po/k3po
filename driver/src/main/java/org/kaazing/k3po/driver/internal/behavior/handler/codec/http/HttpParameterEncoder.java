@@ -20,9 +20,9 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.kaazing.k3po.driver.internal.channel.Channels.remoteAddress;
 
 import java.net.URI;
-import java.nio.ByteOrder;
 import java.util.List;
 
+import org.jboss.netty.buffer.ChannelBufferFactory;
 import org.jboss.netty.channel.Channel;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageEncoder;
@@ -50,10 +50,10 @@ public class HttpParameterEncoder implements ConfigEncoder {
             httpConfig.setWriteQuery(query);
         }
 
-        ByteOrder endian = httpConfig.getEndian();
-        String paramName = nameEncoder.encode(endian).toString(US_ASCII);
+        ChannelBufferFactory bufferFactory = httpConfig.getBufferFactory();
+        String paramName = nameEncoder.encode(bufferFactory).toString(US_ASCII);
         for (MessageEncoder valueEncoder : valueEncoders) {
-            String paramValue = valueEncoder.encode(endian).toString(US_ASCII);
+            String paramValue = valueEncoder.encode(bufferFactory).toString(US_ASCII);
             query.addParam(paramName, paramValue);
         }
     }

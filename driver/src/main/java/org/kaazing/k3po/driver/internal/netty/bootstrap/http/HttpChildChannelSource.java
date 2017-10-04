@@ -167,6 +167,7 @@ public class HttpChildChannelSource extends HttpChannelHandler {
         httpChildConfig.setWriteQuery(new QueryStringEncoder(httpRequest.getUri()));
         httpChildConfig.setStatus(HttpResponseStatus.OK);
 
+        transport.getConfig().setBufferFactory(httpChildConfig.getBufferFactory());
         this.httpChildChannel = httpChildChannel;
 
         detectWriteTransportClosed(transport, httpChildChannel);
