@@ -1367,7 +1367,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstWriteValueNode visitWriteValue(WriteValueContext ctx) {
 
-            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, byte[].class);
+            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, Object.class);
             AstValue<?> value = visitor.visit(ctx);
             node.addValue(value);
             childInfos().add(value.getRegionInfo());
@@ -1795,7 +1795,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
         @Override
         public AstExpressionMatcher visitExpressionMatcher(ExpressionMatcherContext ctx) {
-            ValueExpression expression = factory.createValueExpression(environment, ctx.expression.getText(), byte[].class);
+            ValueExpression expression = factory.createValueExpression(environment, ctx.expression.getText(), Object.class);
             AstExpressionMatcher matcher = new AstExpressionMatcher(expression, environment);
             matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return matcher;
@@ -1988,7 +1988,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
                 childInfos().add(value.getRegionInfo());
             }
 
-            return (AstValue<T>) value;
+            return value;
         }
 
     }
@@ -2166,7 +2166,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstWriteConfigNode visitWriteConfigNode(WriteConfigNodeContext ctx) {
 
             String configQName = ctx.QualifiedName().getText();
- 
+
             node = new AstWriteConfigNode();
 
             StructuredTypeInfo configType = TYPE_SYSTEM.writeConfig(configQName);
