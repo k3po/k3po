@@ -527,15 +527,6 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             }
         };
 
-    public static final ScriptParseStrategy<AstValue<?>> VALUE =
-        new ScriptParseStrategy<AstValue<?>>() {
-            @Override
-            public AstValue<?> parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                    throws RecognitionException {
-                return new AstValueVisitor<>(factory, environment, byte[].class).visit(parser.writeValue());
-            }
-        };
-
     public static final ScriptParseStrategy<AstLiteralTextValue> LITERAL_TEXT_VALUE =
         new ScriptParseStrategy<AstLiteralTextValue>() {
             @Override
@@ -551,15 +542,6 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             public AstLiteralBytesValue parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
                     throws RecognitionException {
                 return new AstLiteralBytesValueVisitor(factory, environment).visit(parser.literalBytes());
-            }
-        };
-
-    public static final ScriptParseStrategy<AstExpressionValue<?>> EXPRESSION_VALUE =
-        new ScriptParseStrategy<AstExpressionValue<?>>() {
-            @Override
-            public AstExpressionValue<?> parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
-                    throws RecognitionException {
-                return new AstExpressionValueVisitor<>(factory, environment, byte[].class).visit(parser.expressionValue());
             }
         };
 
@@ -2185,10 +2167,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstWriteConfigNode visitWriteValue(WriteValueContext ctx) {
 
-            // TODO: discover expected type
-            Class<byte[]> expectedType = byte[].class;
-
-            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, expectedType);
+            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, Object.class);
             AstValue<?> value = visitor.visit(ctx);
 
             if (value != null) {

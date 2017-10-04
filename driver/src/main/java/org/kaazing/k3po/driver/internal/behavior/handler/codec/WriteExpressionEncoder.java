@@ -15,6 +15,7 @@
  */
 package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 
+import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.jboss.netty.buffer.ChannelBuffers.buffer;
 
@@ -27,8 +28,6 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferFactory;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
-import de.odysseus.el.misc.LocalMessages;
 
 public class WriteExpressionEncoder implements MessageEncoder {
 
@@ -86,7 +85,7 @@ public class WriteExpressionEncoder implements MessageEncoder {
         }
         else if (value instanceof Byte) {
             result = bufferFactory.getBuffer(Byte.BYTES);
-            result.setInt(0, (Byte) value);
+            result.setByte(0, (Byte) value);
             result.writerIndex(Byte.BYTES);
         }
         else if (value instanceof String) {
@@ -94,7 +93,8 @@ public class WriteExpressionEncoder implements MessageEncoder {
             result = bufferFactory.getBuffer(valueBytes, 0, valueBytes.length);
         }
         else {
-            throw new ELException(LocalMessages.get("error.coerce.type", value.getClass(), byte[].class));
+            throw new ELException(format("Unable to encode expression value \"%s\" of type \"$s\" of expression \"%s\"",
+                    value.toString(), value.getClass(), expression.toString()));
         }
         return result;
     }

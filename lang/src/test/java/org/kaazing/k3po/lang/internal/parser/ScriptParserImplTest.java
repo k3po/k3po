@@ -1842,6 +1842,27 @@ public class ScriptParserImplTest {
     }
 
     @Test
+    public void shouldParseWriteConfigStringExpressionParameter() throws Exception {
+
+        String scriptFragment = "write test:config \"configName\" ${'value'}";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        ExpressionFactory factory = parser.getExpressionFactory();
+        ExpressionContext context = parser.getExpressionContext();
+
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_CONFIG);
+
+        AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
+                .setType(CONFIG_CONFIG)
+                .addValue("configName")
+                .addValue(factory.createValueExpression(context, "${'value'}", Object.class),
+                        parser.getExpressionContext())
+                .done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void shouldParseCapturingFixedLengthBytesMatcher2() throws Exception {
 
         String scriptFragment = "[(:capture){5}]";
