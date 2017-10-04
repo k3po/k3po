@@ -15,12 +15,9 @@
  */
 package org.kaazing.k3po.driver.internal.netty.bootstrap.channel;
 
-import java.nio.ByteOrder;
 import java.util.Map;
 
 public interface ChannelConfig extends org.jboss.netty.channel.ChannelConfig
 {
-    ByteOrder getEndian();
-
     Map<String, Object> getTransportOptions();
 }

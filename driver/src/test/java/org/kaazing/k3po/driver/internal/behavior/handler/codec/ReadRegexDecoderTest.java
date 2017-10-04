@@ -77,8 +77,8 @@ public class ReadRegexDecoderTest {
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer("Hello\n", UTF_8));
         assertEquals(0, remainingBuffer.readableBytes());
 
-        ValueExpression expression = expressionFactory.createValueExpression(environment, "${var}", byte[].class);
-        assertArrayEquals("Hello".getBytes(UTF_8), (byte[]) expression.getValue(environment));
+        ValueExpression expression = expressionFactory.createValueExpression(environment, "${var}", Object.class);
+        assertEquals("Hello", expression.getValue(environment));
     }
 
     @Test(
@@ -118,7 +118,7 @@ public class ReadRegexDecoderTest {
 
         ChannelBuffer remainingBuffer = decoder.decode(copiedBuffer("Hel", UTF_8));
         assertNull(remainingBuffer);
-        ValueExpression expression = expressionFactory.createValueExpression(environment, "${var}", byte[].class);
+        ValueExpression expression = expressionFactory.createValueExpression(environment, "${var}", Object.class);
         try {
             expression.getValue(environment);
         } catch (PropertyNotFoundException p) {
@@ -127,7 +127,7 @@ public class ReadRegexDecoderTest {
 
         remainingBuffer = decoder.decode(copiedBuffer("o\n", UTF_8));
         assertEquals(0, remainingBuffer.readableBytes());
-        assertArrayEquals("Helo".getBytes(UTF_8), (byte[]) expression.getValue(environment));
+        assertEquals("Helo", expression.getValue(environment));
 
     }
 
@@ -151,7 +151,7 @@ public class ReadRegexDecoderTest {
         assertNotNull(remainingBuffer);
         assertEquals(copiedBuffer("World", UTF_8), remainingBuffer);
 
-        ValueExpression expression = expressionFactory.createValueExpression(environment, "${var}", byte[].class);
-        assertArrayEquals("Hello".getBytes(UTF_8), (byte[]) expression.getValue(environment));
+        ValueExpression expression = expressionFactory.createValueExpression(environment, "${var}", Object.class);
+        assertEquals("Hello", expression.getValue(environment));
     }
 }

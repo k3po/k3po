@@ -18,14 +18,13 @@ package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.jboss.netty.buffer.ChannelBuffers.buffer;
 
-import java.nio.ByteOrder;
 import java.util.function.Supplier;
 
 import javax.el.ELException;
 import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.buffer.ChannelBufferFactory;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 
@@ -44,17 +43,17 @@ public class WriteExpressionEncoder implements MessageEncoder {
     }
 
     @Override
-    public ChannelBuffer encode(ByteOrder endian) {
+    public ChannelBuffer encode(ChannelBufferFactory bufferFactory) {
 
         final Object value = supplier.get();
         final ChannelBuffer result;
         if (value != null) {
-            result = asChannelBuffer(endian, value);
+            result = asChannelBuffer(bufferFactory, value);
         } else {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Value of expression is null. Encoding as a 0 length buffer");
             }
-            result = buffer(endian, 0);
+            result = buffer(bufferFactory.getDefaultOrder(), 0);
         }
         return result;
     }
@@ -64,33 +63,35 @@ public class WriteExpressionEncoder implements MessageEncoder {
         return expression.getExpressionString();
     }
 
-    private ChannelBuffer asChannelBuffer(ByteOrder endian, Object value) {
+    private ChannelBuffer asChannelBuffer(ChannelBufferFactory bufferFactory, Object value) {
         ChannelBuffer result;
         if (value instanceof byte[]) {
-            result = ChannelBuffers.wrappedBuffer(endian, (byte[]) value);
+            byte[] valueBytes = (byte[]) value;
+            result = bufferFactory.getBuffer(valueBytes, 0, valueBytes.length);
         }
         else if (value instanceof Long) {
-            result = ChannelBuffers.dynamicBuffer(endian, Long.BYTES);
+            result = bufferFactory.getBuffer(Long.BYTES);
             result.setLong(0, (Long) value);
             result.writerIndex(Long.BYTES);
         }
         else if (value instanceof Integer) {
-            result = ChannelBuffers.dynamicBuffer(endian, Integer.BYTES);
+            result = bufferFactory.getBuffer(Integer.BYTES);
             result.setInt(0, (Integer) value);
             result.writerIndex(Integer.BYTES);
         }
         else if (value instanceof Short) {
-            result = ChannelBuffers.dynamicBuffer(endian, Short.BYTES);
+            result = bufferFactory.getBuffer(Short.BYTES);
             result.setShort(0, (Short) value);
             result.writerIndex(Short.BYTES);
         }
         else if (value instanceof Byte) {
-            result = ChannelBuffers.dynamicBuffer(endian, Byte.BYTES);
+            result = bufferFactory.getBuffer(Byte.BYTES);
             result.setInt(0, (Byte) value);
             result.writerIndex(Byte.BYTES);
         }
         else if (value instanceof String) {
-            result = ChannelBuffers.wrappedBuffer(((String) value).getBytes(UTF_8));
+            byte[] valueBytes = ((String) value).getBytes(UTF_8);
+            result = bufferFactory.getBuffer(valueBytes, 0, valueBytes.length);
         }
         else {
             throw new ELException(LocalMessages.get("error.coerce.type", value.getClass(), byte[].class));

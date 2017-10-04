@@ -320,7 +320,7 @@ public class NamedGroupPatternTest {
                 .addRegex(NamedGroupPattern.compile("(?<cap1>.*)\\n"), environment)
                 .addExpression(
                         factory.createValueExpression(context, "${var}",
-                                byte[].class), environment)
+                                Object.class), environment)
                 .addFixedLengthBytes(64)
                 .addFixedLengthBytes(64, "cap2", environment)
                 .addVariableLengthBytes(
@@ -354,7 +354,7 @@ public class NamedGroupPatternTest {
 
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
-        ValueExpression value = factory.createValueExpression(context, "${var}", byte[].class);
+        ValueExpression value = factory.createValueExpression(context, "${var}", Object.class);
         ValueExpression value2 = factory.createValueExpression(context, "${var}", Integer.class);
         ValueExpression value3 = factory.createValueExpression(context, "${var-1}", Integer.class);
         ValueExpression value4 = factory.createValueExpression(context, "${var}", Integer.class);

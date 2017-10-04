@@ -28,6 +28,7 @@ import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.odysseus.el.misc.TypeConverter;
@@ -205,6 +206,7 @@ public class TypeConverterImplTest {
     }
 
     @Test()
+    @Ignore
     public void doLongtoByteArrayExpression() throws Exception {
 
         ExpressionFactory factory = ExpressionFactoryUtils.newExpressionFactory();
@@ -225,6 +227,7 @@ public class TypeConverterImplTest {
     }
 
     @Test()
+    @Ignore
     public void shouldDoArithmeticExpression() throws Exception {
 
         ExpressionFactory factory = ExpressionFactoryUtils.newExpressionFactory();

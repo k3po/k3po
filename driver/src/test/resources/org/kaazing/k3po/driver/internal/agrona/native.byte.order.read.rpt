@@ -20,6 +20,8 @@ property intProperty 1
 property longProperty 1L
 property intHexProperty 0x01020304
 property longHexProperty 0x0102030405060708L
+property intNegativeProperty 0x7fffffff
+property longNegativeProperty -1L
 
 property clientLong ${agronaIT:randomLong()}
 
@@ -37,6 +39,8 @@ write ${agronaIT:intToNativeBytes(intProperty)}
 write ${agronaIT:longToNativeBytes(longProperty)}
 write ${agronaIT:intToNativeBytes(intHexProperty)}
 write ${agronaIT:longToNativeBytes(longHexProperty)}
+write ${agronaIT:intToNativeBytes(intNegativeProperty)}
+write ${agronaIT:longToNativeBytes(longNegativeProperty)}
 write flush
 
 close
@@ -59,6 +63,8 @@ read ${intProperty}
 read ${longProperty}
 read ${intHexProperty}
 read ${longHexProperty}
+read ${intNegativeProperty}
+read ${longNegativeProperty}
 
 close
 closed

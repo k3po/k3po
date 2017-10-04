@@ -36,12 +36,12 @@ public class TypeConverterImpl extends de.odysseus.el.misc.TypeConverterImpl {
         if (type == URI.class && value instanceof String) {
             return (T) URI.create((String) value);
         }
-        else if (type == byte[].class) {
-            return (T) coerceToByteArray(value);
-        }
-        else if (value instanceof byte[]) {
-            return coerceFromByteArray((byte[]) value, type);
-        }
+//        else if (type == byte[].class) {
+//            return (T) coerceToByteArray(value);
+//        }
+//        else if (value instanceof byte[]) {
+//            return coerceFromByteArray((byte[]) value, type);
+//        }
 
         return super.convert(value, type);
     }

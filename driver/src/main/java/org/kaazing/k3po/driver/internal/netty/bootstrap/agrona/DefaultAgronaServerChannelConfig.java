@@ -15,7 +15,7 @@
  */
 package org.kaazing.k3po.driver.internal.netty.bootstrap.agrona;
 
-import java.nio.ByteOrder;
+import static org.kaazing.k3po.driver.internal.netty.bootstrap.agrona.AgronaChannel.NATIVE_BUFFER_FACTORY;
 
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.DefaultServerChannelConfig;
 
@@ -23,6 +23,6 @@ public class DefaultAgronaServerChannelConfig extends DefaultServerChannelConfig
 
     public DefaultAgronaServerChannelConfig() {
         super();
-        setEndian(ByteOrder.nativeOrder());
+        setBufferFactory(NATIVE_BUFFER_FACTORY);
     }
 }
