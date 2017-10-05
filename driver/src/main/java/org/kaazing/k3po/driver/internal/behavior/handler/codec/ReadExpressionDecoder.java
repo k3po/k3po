@@ -76,14 +76,7 @@ public class ReadExpressionDecoder extends MessageDecoder {
         Object observed = null;
         int available = buffer.readableBytes();
         if (expected instanceof byte[] || expected instanceof String) {
-            byte[] expectedBytes = expected instanceof String ?
-                    ((String) expected).getBytes(UTF_8) : (byte[]) expected;
-            byte[] read = readByteArray(buffer, expectedBytes);
-            if (read != null && !Arrays.equals(read, expectedBytes)) {
-                // Use a mismatch exception subclass, include the expression?
-                throw new ScriptProgressException(getRegionInfo(), Utils.format(read));
-            }
-            observed = read;
+            observed = readByteArrayOrString(buffer, expected);
         }
         else {
             if (expected instanceof Long && available >= Long.BYTES) {
@@ -106,6 +99,22 @@ public class ReadExpressionDecoder extends MessageDecoder {
                 throw new ScriptProgressException(getRegionInfo(), observed.toString());
             }
         }
+        return observed;
+    }
+
+    private Object readByteArrayOrString(
+        ChannelBuffer buffer,
+        Object expected) throws ScriptProgressException
+    {
+        Object observed;
+        byte[] expectedBytes = expected instanceof String ?
+                ((String) expected).getBytes(UTF_8) : (byte[]) expected;
+        byte[] read = readByteArray(buffer, expectedBytes);
+        if (read != null && !Arrays.equals(read, expectedBytes)) {
+            // Use a mismatch exception subclass, include the expression?
+            throw new ScriptProgressException(getRegionInfo(), Utils.format(read));
+        }
+        observed = read;
         return observed;
     }
 
