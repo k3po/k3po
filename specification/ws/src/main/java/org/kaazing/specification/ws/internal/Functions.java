@@ -17,7 +17,7 @@ package org.kaazing.specification.ws.internal;
 
 import static java.lang.Character.toLowerCase;
 import static java.lang.Character.toUpperCase;
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.charset.StandardCharsets.US_ASCII;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -30,7 +30,7 @@ import org.kaazing.k3po.lang.el.spi.FunctionMapperSpi;
 public final class Functions {
 
     // See RFC-6455, section 1.3 Opening Handshake
-    private static final byte[] WEBSOCKET_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11".getBytes(UTF_8);
+    private static final byte[] WEBSOCKET_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11".getBytes(US_ASCII);
     private static final Random RANDOM = new Random();
     private static final int MAX_ACCEPTABLE_HEADER_LENGTH = 200;
 
@@ -50,18 +50,18 @@ public final class Functions {
     }
 
     @Function
-    public static byte[] handshakeKey() {
+    public static String handshakeKey() {
         byte[] bytes = new byte[16];
         RANDOM.nextBytes(bytes);
-        return Base64.encode(bytes);
+        return new String(Base64.encode(bytes), US_ASCII);
     }
 
     @Function
-    public static byte[] handshakeHash(byte[] wsKeyBytes) throws NoSuchAlgorithmException {
+    public static String handshakeHash(String wsKey) throws NoSuchAlgorithmException {
         MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
-        sha1.update(wsKeyBytes);
+        sha1.update(wsKey.getBytes(US_ASCII));
         byte[] digest = sha1.digest(WEBSOCKET_GUID);
-        return Base64.encode(digest);
+        return new String(Base64.encode(digest), US_ASCII);
     }
 
     @Function

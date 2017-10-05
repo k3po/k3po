@@ -44,4 +44,20 @@ public class AgronaIT {
         k3po.finish();
     }
 
+    @Test
+    @TestSpecification({
+        "native.byte.order.read"
+    })
+    public void shouldReadNumbersInNativeByteOrder() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
+        "native.byte.order.write"
+    })
+    public void shouldWriteNumbersInNativeByteOrder() throws Exception {
+        k3po.finish();
+    }
+
 }

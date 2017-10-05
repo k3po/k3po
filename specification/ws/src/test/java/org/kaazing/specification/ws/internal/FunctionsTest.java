@@ -43,8 +43,8 @@ public class FunctionsTest {
     public void shouldComputeHandshakeHash() throws Exception {
 
         String expressionText = "${ws:handshakeHash('dGhlIHNhbXBsZSBub25jZQ==')}";
-        ValueExpression expression = factory.createValueExpression(ctx, expressionText, String.class);
-        String computedHash = (String) expression.getValue(ctx);
+        ValueExpression expression = factory.createValueExpression(ctx, expressionText, Object.class);
+        Object computedHash = expression.getValue(ctx);
 
         assertEquals("Inconsistent handshake hash", "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=", computedHash);
     }

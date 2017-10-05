@@ -498,8 +498,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         @Override
         public MessageEncoder visit(AstExpressionValue<?> value, Void parameter) {
-            Supplier<byte[]> supplier = () -> value.getValue(byte[].class);
-            return new WriteExpressionEncoder(supplier, value.getExpression());
+            return new WriteExpressionEncoder(value::getValue, value.getExpression());
         }
 
         @Override

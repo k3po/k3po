@@ -21,8 +21,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.net.URI;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import javax.el.ELException;
 import javax.el.ExpressionFactory;
@@ -66,105 +64,6 @@ public class TypeConverterImplTest {
         assertArrayEquals(byteArr, (byte[]) o);
     }
 
-    @Test
-    public void shouldConvertByteArrayToLong() throws Exception {
-        TypeConverter converter = new TypeConverterImpl();
-        long value = 2L;
-        byte[] bytes = ByteBuffer.allocate(Long.SIZE / Byte.SIZE)
-                                 .order(ByteOrder.nativeOrder())
-                                 .putLong(value)
-                                 .array();
-
-        Object o = converter.convert(bytes, Long.class);
-
-        assertThat(o, instanceOf(Long.class));
-
-        assertEquals(2L, (long) o);
-    }
-
-    @Test()
-    public void shouldConvertLongToByteArray() throws Exception {
-        TypeConverter converter = new TypeConverterImpl();
-
-        long l = 4096L;
-        byte[] expected = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(l).array();
-
-        Object o = converter.convert(l, byte[].class);
-
-        assertThat(o, instanceOf(byte[].class));
-
-        assertArrayEquals(expected, (byte[]) o);
-
-        Long lg = l;
-
-        o = converter.convert(lg, byte[].class);
-
-        assertArrayEquals(expected, (byte[]) o);
-
-    }
-
-    @Test()
-    public void shouldConvertIntegerToByteArray() throws Exception {
-        TypeConverter converter = new TypeConverterImpl();
-
-        int l = 4096;
-        byte[] expected = ByteBuffer.allocate(Integer.SIZE / Byte.SIZE).putInt(l).array();
-
-        Object o = converter.convert(l, byte[].class);
-
-        assertThat(o, instanceOf(byte[].class));
-
-        assertArrayEquals(expected, (byte[]) o);
-
-        Integer lg = l;
-
-        o = converter.convert(lg, byte[].class);
-
-        assertArrayEquals(expected, (byte[]) o);
-
-    }
-
-    @Test()
-    public void shouldConvertShortToByteArray() throws Exception {
-        TypeConverter converter = new TypeConverterImpl();
-
-        short l = 4096;
-        byte[] expected = ByteBuffer.allocate(Short.SIZE / Byte.SIZE).putShort(l).array();
-
-        Object o = converter.convert(l, byte[].class);
-
-        assertThat(o, instanceOf(byte[].class));
-
-        assertArrayEquals(expected, (byte[]) o);
-
-        Short lg = l;
-
-        o = converter.convert(lg, byte[].class);
-
-        assertArrayEquals(expected, (byte[]) o);
-
-    }
-
-    @Test()
-    public void shouldConvertByteToByteArray() throws Exception {
-        TypeConverter converter = new TypeConverterImpl();
-
-        byte l = 16;
-        byte[] expected = ByteBuffer.allocate(Byte.SIZE / Byte.SIZE).put(l).array();
-
-        Object o = converter.convert(l, byte[].class);
-
-        assertThat(o, instanceOf(byte[].class));
-
-        assertArrayEquals(expected, (byte[]) o);
-
-        Byte lg = l;
-
-        o = converter.convert(lg, byte[].class);
-
-        assertArrayEquals(expected, (byte[]) o);
-    }
-
     @Test()
     public void shouldConvertAnObjectToCompatibleObject() throws Exception {
         TypeConverter converter = new TypeConverterImpl();
@@ -202,48 +101,6 @@ public class TypeConverterImplTest {
 
         assertArrayEquals(expected, result);
 
-    }
-
-    @Test()
-    public void doLongtoByteArrayExpression() throws Exception {
-
-        ExpressionFactory factory = ExpressionFactoryUtils.newExpressionFactory();
-
-        SimpleContext evalContext = new SimpleContext();
-
-        ValueExpression byteExpr = factory.createValueExpression(new SimpleContext(), "${bytes}", byte[].class);
-
-        long number = 4096L;
-
-        evalContext.getELResolver().setValue(new SimpleContext(), null, "bytes", number);
-
-        byte[] expected = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(number).array();
-
-        byte[] result = (byte[]) byteExpr.getValue(evalContext);
-
-        assertArrayEquals(expected, result);
-    }
-
-    @Test()
-    public void shouldDoArithmeticExpression() throws Exception {
-
-        ExpressionFactory factory = ExpressionFactoryUtils.newExpressionFactory();
-
-        SimpleContext evalContext = new SimpleContext();
-
-        ValueExpression byteExpr = factory.createValueExpression(new SimpleContext(), "${bytes-1}", byte[].class);
-
-        short number = 4096;
-
-        evalContext.getELResolver().setValue(new SimpleContext(), null, "bytes", number);
-
-        // Note that the expression should result in a widening conversion. EL
-        // specification Section 1.17
-        byte[] expected = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(number - 1).array();
-
-        byte[] result = (byte[]) byteExpr.getValue(evalContext);
-
-        assertArrayEquals(expected, result);
     }
 
     @Test(expected = ELException.class)

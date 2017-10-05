@@ -379,7 +379,7 @@ public class ScriptParserImplTest {
 
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
-        ValueExpression value = factory.createValueExpression(context, "${ byteArray }", byte[].class);
+        ValueExpression value = factory.createValueExpression(context, "${ byteArray }", Object.class);
         AstExpressionMatcher expected = new AstExpressionMatcher(value, parser.getExpressionContext());
 
         assertEquals(expected, actual);
@@ -641,8 +641,8 @@ public class ScriptParserImplTest {
 
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
-        ValueExpression value = factory.createValueExpression(context, "${var}", byte[].class);
-        ValueExpression value2 = factory.createValueExpression(context, "${var2}", byte[].class);
+        ValueExpression value = factory.createValueExpression(context, "${var}", Object.class);
+        ValueExpression value2 = factory.createValueExpression(context, "${var2}", Object.class);
 
         AstReadValueNode expected = new AstReadValueNode();
         ExpressionContext environment = parser.getExpressionContext();
@@ -762,8 +762,8 @@ public class ScriptParserImplTest {
 
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
-        ValueExpression value1 = factory.createValueExpression(context, "${var1}", byte[].class);
-        ValueExpression value2 = factory.createValueExpression(context, "${var2}", byte[].class);
+        ValueExpression value1 = factory.createValueExpression(context, "${var1}", Object.class);
+        ValueExpression value2 = factory.createValueExpression(context, "${var2}", Object.class);
 
         AstWriteValueNode expected = new AstWriteValueNode();
         expected.setValues(Arrays.<AstValue<?>>asList(new AstExpressionValue<>(value1, parser.getExpressionContext()),
@@ -782,7 +782,7 @@ public class ScriptParserImplTest {
 
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
-        ValueExpression value1 = factory.createValueExpression(context, "${var1}", byte[].class);
+        ValueExpression value1 = factory.createValueExpression(context, "${var1}", Object.class);
 
         AstWriteValueNode expected = new AstWriteValueNode();
         expected.setValues(Arrays.<AstValue<?>>asList(new AstLiteralTextValue("Hello"), new AstLiteralBytesValue(new byte[]{
@@ -806,7 +806,7 @@ public class ScriptParserImplTest {
                 new AstWriteNodeBuilder()
                         .addExactText("Hello")
                         .addExactBytes(new byte[]{0x01, (byte) 0x02})
-                        .addExpression(factory.createValueExpression(context, "${var1}", byte[].class),
+                        .addExpression(factory.createValueExpression(context, "${var1}", Object.class),
                                 parser.getExpressionContext())
                         .addInteger(5)
                         .addLong(5L)
@@ -1134,7 +1134,7 @@ public class ScriptParserImplTest {
 
         AstReadValueNode expected = new AstReadNodeBuilder()
 
-        .addExpression(factory.createValueExpression(context, "${hello}", byte[].class), parser.getExpressionContext()).done();
+        .addExpression(factory.createValueExpression(context, "${hello}", Object.class), parser.getExpressionContext()).done();
 
         assertEquals(expected, actual);
         assertEquals(1, actual.getRegionInfo().children.size());
@@ -1700,7 +1700,7 @@ public class ScriptParserImplTest {
                 .done().addClosedEvent()
                 .done().done().addConnectStream().setLocation(location8000).addOpenedEvent().done().addBoundEvent()
                 .done().addConnectedEvent().done().addWriteCommand()
-                .addExpression(factory.createValueExpression(context, "${input}", byte[].class), context).done()
+                .addExpression(factory.createValueExpression(context, "${input}", Object.class), context).done()
                 .addReadEvent().addExactBytes(new byte[] { 0x00, -0x01 }, context).done().addCloseCommand().done()
                 .addDisconnectedEvent().done().addUnboundEvent().done().addClosedEvent().done().done().done();
 
@@ -1836,6 +1836,27 @@ public class ScriptParserImplTest {
                 .setType(CONFIG_CONFIG)
                 .addValue("configName")
                 .addValue(new byte[]{0x01, 0x02, 0x03, 0x04})
+                .done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseWriteConfigStringExpressionParameter() throws Exception {
+
+        String scriptFragment = "write test:config \"configName\" ${'value'}";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        ExpressionFactory factory = parser.getExpressionFactory();
+        ExpressionContext context = parser.getExpressionContext();
+
+        AstWriteConfigNode actual = parser.parseWithStrategy(scriptFragment, WRITE_CONFIG);
+
+        AstWriteConfigNode expected = new AstWriteConfigNodeBuilder()
+                .setType(CONFIG_CONFIG)
+                .addValue("configName")
+                .addValue(factory.createValueExpression(context, "${'value'}", Object.class),
+                        parser.getExpressionContext())
                 .done();
 
         assertEquals(expected, actual);

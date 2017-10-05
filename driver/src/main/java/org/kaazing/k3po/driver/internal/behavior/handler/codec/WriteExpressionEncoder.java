@@ -15,10 +15,13 @@
  */
 package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 
+import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.jboss.netty.buffer.ChannelBuffers.buffer;
 
 import java.util.function.Supplier;
 
+import javax.el.ELException;
 import javax.el.ValueExpression;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -30,10 +33,10 @@ public class WriteExpressionEncoder implements MessageEncoder {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(WriteExpressionEncoder.class);
 
-    private final Supplier<byte[]> supplier;
+    private final Supplier<Object> supplier;
     private final ValueExpression expression;
 
-    public WriteExpressionEncoder(Supplier<byte[]> supplier, ValueExpression expression) {
+    public WriteExpressionEncoder(Supplier<Object> supplier, ValueExpression expression) {
         this.supplier = supplier;
         this.expression = expression;
     }
@@ -41,15 +44,15 @@ public class WriteExpressionEncoder implements MessageEncoder {
     @Override
     public ChannelBuffer encode(ChannelBufferFactory bufferFactory) {
 
-        final byte[] value = supplier.get();
+        final Object value = supplier.get();
         final ChannelBuffer result;
         if (value != null) {
-            result = bufferFactory.getBuffer(value, 0, value.length);
+            result = asChannelBuffer(bufferFactory, value);
         } else {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Value of expression is null. Encoding as a 0 length buffer");
             }
-            result = buffer(0);
+            result = buffer(bufferFactory.getDefaultOrder(), 0);
         }
         return result;
     }
@@ -57,6 +60,43 @@ public class WriteExpressionEncoder implements MessageEncoder {
     @Override
     public String toString() {
         return expression.getExpressionString();
+    }
+
+    private ChannelBuffer asChannelBuffer(ChannelBufferFactory bufferFactory, Object value) {
+        ChannelBuffer result;
+        if (value instanceof byte[]) {
+            byte[] valueBytes = (byte[]) value;
+            result = bufferFactory.getBuffer(valueBytes, 0, valueBytes.length);
+        }
+        else if (value instanceof Long) {
+            result = bufferFactory.getBuffer(Long.BYTES);
+            result.setLong(0, (Long) value);
+            result.writerIndex(Long.BYTES);
+        }
+        else if (value instanceof Integer) {
+            result = bufferFactory.getBuffer(Integer.BYTES);
+            result.setInt(0, (Integer) value);
+            result.writerIndex(Integer.BYTES);
+        }
+        else if (value instanceof Short) {
+            result = bufferFactory.getBuffer(Short.BYTES);
+            result.setShort(0, (Short) value);
+            result.writerIndex(Short.BYTES);
+        }
+        else if (value instanceof Byte) {
+            result = bufferFactory.getBuffer(Byte.BYTES);
+            result.setByte(0, (Byte) value);
+            result.writerIndex(Byte.BYTES);
+        }
+        else if (value instanceof String) {
+            byte[] valueBytes = ((String) value).getBytes(UTF_8);
+            result = bufferFactory.getBuffer(valueBytes, 0, valueBytes.length);
+        }
+        else {
+            throw new ELException(format("Unable to encode expression value \"%s\" of type \"$s\" of expression \"%s\"",
+                    value.toString(), value.getClass(), expression.toString()));
+        }
+        return result;
     }
 
 }
