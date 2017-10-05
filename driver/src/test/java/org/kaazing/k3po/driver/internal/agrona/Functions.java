@@ -20,6 +20,8 @@ import static org.agrona.IoUtil.mapNewFile;
 import static org.agrona.IoUtil.unmap;
 
 import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.util.Random;
 
@@ -52,6 +54,16 @@ public final class Functions {
     @Function
     public static Long randomLong() {
         return RANDOM.nextLong();
+    }
+
+    @Function
+    public static byte[] intToNativeBytes(int value) {
+        return ByteBuffer.allocate(Integer.BYTES).order(ByteOrder.nativeOrder()).putInt(value).array();
+    }
+
+    @Function
+    public static byte[] longToNativeBytes(long value) {
+        return ByteBuffer.allocate(Long.BYTES).order(ByteOrder.nativeOrder()).putLong(value).array();
     }
 
     @Function

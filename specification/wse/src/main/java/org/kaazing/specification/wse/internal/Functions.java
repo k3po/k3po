@@ -15,6 +15,8 @@
  */
 package org.kaazing.specification.wse.internal;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -36,10 +38,10 @@ public final class Functions {
     }
 
     @Function
-    public static byte[] uniqueId() {
+    public static String uniqueId() {
         byte[] bytes = new byte[16];
         RANDOM.nextBytes(bytes);
-        return Base64.encode(bytes);
+        return new String(Base64.encode(bytes), US_ASCII);
     }
 
     @Function

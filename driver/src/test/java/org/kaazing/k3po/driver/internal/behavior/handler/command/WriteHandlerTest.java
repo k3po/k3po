@@ -124,7 +124,7 @@ public class WriteHandlerTest {
         ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
         environment = new ExpressionContext();
         expression = expressionFactory.createValueExpression(environment, "${variable}", byte[].class);
-        Supplier<byte[]> supplier = synchronizedSupplier(expression, environment, byte[].class);
+        Supplier<Object> supplier = synchronizedSupplier(expression, environment, Object.class);
         encoders.add(new WriteExpressionEncoder(supplier, expression));
 
         masker = newMasker(maskingKey);

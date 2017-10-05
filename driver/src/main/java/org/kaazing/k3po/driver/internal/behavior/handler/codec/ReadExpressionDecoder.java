@@ -15,6 +15,8 @@
  */
 package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 
+import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.kaazing.k3po.lang.internal.RegionInfo.newSequential;
 
 import java.util.Arrays;
@@ -46,29 +48,142 @@ public class ReadExpressionDecoder extends MessageDecoder {
     @Override
     protected Object decodeBuffer(ChannelBuffer buffer) throws Exception {
 
-        final byte[] expected;
+        final Object expected;
         // TODO: Remove when JUEL sync bug is fixed https://github.com/k3po/k3po/issues/147
         synchronized (environment) {
-            expected = (byte[]) expression.getValue(environment);
+            expected = expression.getValue(environment);
         }
 
-        if (buffer.readableBytes() < expected.length) {
+        Object read = readValue(buffer, expected);
+
+        if (read == null) {
             return null;
         }
-
-        byte[] observed = new byte[expected.length];
-        buffer.readBytes(observed);
-        if (!Arrays.equals(observed, expected)) {
-            // Use a mismatch exception subclass, include the expression?
-            throw new ScriptProgressException(getRegionInfo(), Utils.format(observed));
+        else {
+            return buffer;
         }
-
-        return buffer;
     }
 
     // unit tests
     ReadExpressionDecoder(ValueExpression expression, ExpressionContext environment) {
         this(newSequential(0, 0), expression, environment);
+    }
+
+    private Object readValue(
+        ChannelBuffer buffer,
+        Object expected) throws ScriptProgressException
+    {
+        Object observed = null;
+        int available = buffer.readableBytes();
+        if (expected instanceof byte[] || expected instanceof String) {
+            observed = readByteArrayOrString(buffer, expected);
+        }
+        else {
+            if (expected instanceof Long && available >= Long.BYTES) {
+                observed = readLong(buffer, (Long) expected);
+            }
+            else if (expected instanceof Integer && available >= Integer.BYTES) {
+                 observed = readInteger(buffer, (Integer) expected);
+            }
+            else if (expected instanceof Short && available >= Short.BYTES) {
+                observed = readShort(buffer, (Short) expected);
+            }
+            else if (expected instanceof Byte && available >= Byte.BYTES) {
+                observed = readByte(buffer, (Byte) expected);
+            }
+            else {
+                throw new ScriptProgressException(getRegionInfo(), format("Expected value %s has unsupported type",
+                        expected));
+            }
+            if (observed != null && !expected.equals(observed)) {
+                throw new ScriptProgressException(getRegionInfo(), observed.toString());
+            }
+        }
+        return observed;
+    }
+
+    private Object readByteArrayOrString(
+        ChannelBuffer buffer,
+        Object expected) throws ScriptProgressException
+    {
+        Object observed;
+        byte[] expectedBytes = expected instanceof String ?
+                ((String) expected).getBytes(UTF_8) : (byte[]) expected;
+        byte[] read = readByteArray(buffer, expectedBytes);
+        if (read != null && !Arrays.equals(read, expectedBytes)) {
+            // Use a mismatch exception subclass, include the expression?
+            throw new ScriptProgressException(getRegionInfo(), Utils.format(read));
+        }
+        observed = read;
+        return observed;
+    }
+
+    private byte[] readByteArray(
+        ChannelBuffer buffer,
+        byte[] expected)
+    {
+        byte[] result = null;
+        if (buffer.readableBytes() >= expected.length) {
+            result = new byte[expected.length];
+            buffer.readBytes(result);
+        }
+        return result;
+    }
+
+    private Byte readByte(
+        ChannelBuffer buffer,
+        Byte expected)
+    {
+        Byte result = null;
+        int length = Byte.BYTES;
+        if (buffer.readableBytes() >= length) {
+            int index = buffer.readerIndex();
+            result = buffer.getByte(buffer.readerIndex());
+            buffer.readerIndex(index +  length);
+        }
+        return result;
+    }
+
+    private Short readShort(
+        ChannelBuffer buffer,
+        Short expected)
+    {
+        Short result = null;
+        int length = Short.BYTES;
+        if (buffer.readableBytes() >= length) {
+            int index = buffer.readerIndex();
+            result = buffer.getShort(buffer.readerIndex());
+            buffer.readerIndex(index + length);
+        }
+        return result;
+    }
+
+    private Integer readInteger(
+        ChannelBuffer buffer,
+        Integer expected)
+    {
+        Integer result = null;
+        int length = Integer.BYTES;
+        if (buffer.readableBytes() >= length) {
+            int index = buffer.readerIndex();
+            result = buffer.getInt(buffer.readerIndex());
+            buffer.readerIndex(index + length);
+        }
+        return result;
+    }
+
+    private Long readLong(
+        ChannelBuffer buffer,
+        Long expected)
+    {
+        Long result = null;
+        int length = Long.BYTES;
+        if (buffer.readableBytes() >= length) {
+            int index = buffer.readerIndex();
+            result = buffer.getLong(buffer.readerIndex());
+            buffer.readerIndex(index + length);
+        }
+        return result;
     }
 
 }
