@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.kaazing</groupId>
         <artifactId>k3po.parent</artifactId>
-        <version>3.0.0-alpha-83</version>
+        <version>3.0.0-alpha-84</version>
     </parent>
 
     <artifactId>k3po.driver</artifactId>
@@ -26,6 +26,11 @@
             <groupId>org.kaazing</groupId>
             <artifactId>k3po.lang</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
