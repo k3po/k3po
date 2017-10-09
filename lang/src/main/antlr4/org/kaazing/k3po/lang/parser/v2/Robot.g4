@@ -530,7 +530,7 @@ TextLiteral
 // org.kaazing.k3po.lang.parserScriptParseStrategy.escapeString(String toEscape);
 fragment
 EscapeSequence
-    : '\\' ('b' | 'f' | 'r' | 'n' | 't' | '\"' | '\'' | '\\' )
+    : '\\' ('b' | 'f' | 'r' | 'n' | 't' | '"' | '\'' | '\\' )
     ;
 
 Name
