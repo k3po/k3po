@@ -29,6 +29,10 @@ public abstract class AstValue<T> extends AstRegion {
 
         R visit(AstLiteralBytesValue value, P parameter);
 
+        R visit(AstLiteralByteValue value, P parameter);
+
+        R visit(AstLiteralShortValue value, P parameter);
+
         R visit(AstLiteralIntegerValue value, P parameter);
 
         R visit(AstLiteralLongValue value, P parameter);

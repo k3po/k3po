@@ -65,10 +65,12 @@ import org.kaazing.k3po.driver.internal.behavior.handler.codec.ReadNumberDecoder
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ReadRegexDecoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ReadShortLengthBytesDecoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ReadVariableLengthBytesDecoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteByteEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteBytesEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteExpressionEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteIntegerEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteLongEncoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteShortEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteTextEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.CloseHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.DisconnectHandler;
@@ -146,9 +148,11 @@ import org.kaazing.k3po.lang.internal.ast.matcher.AstShortLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstValueMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstVariableLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralByteValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralIntegerValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralLongValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralShortValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
@@ -509,6 +513,16 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         @Override
         public MessageEncoder visit(AstLiteralBytesValue value, Void parameter) {
             return new WriteBytesEncoder(value.getValue());
+        }
+
+        @Override
+        public MessageEncoder visit(AstLiteralByteValue value, Void parameter) {
+            return new WriteByteEncoder(value.getValue());
+        }
+
+        @Override
+        public MessageEncoder visit(AstLiteralShortValue value, Void parameter) {
+            return new WriteShortEncoder(value.getValue());
         }
 
         @Override
@@ -1047,6 +1061,34 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                 if (literalByte != 0x00) {
                     return Maskers.newMasker(literalBytes);
                 }
+            }
+
+            // no need to unmask for all-zeros masking key
+            return Masker.IDENTITY_MASKER;
+        }
+
+        @Override
+        public Masker visit(AstLiteralByteValue literal, State state) {
+            byte value = literal.getValue();
+            if (value != 0) {
+                byte[] array = ByteBuffer.allocate(Byte.BYTES)
+                                         .put(value)
+                                         .array();
+                return Maskers.newMasker(array);
+            }
+
+            // no need to unmask for all-zeros masking key
+            return Masker.IDENTITY_MASKER;
+        }
+
+        @Override
+        public Masker visit(AstLiteralShortValue literal, State state) {
+            short value = literal.getValue();
+            if (value != 0) {
+                byte[] array = ByteBuffer.allocate(Short.BYTES)
+                                         .putShort(value)
+                                         .array();
+                return Maskers.newMasker(array);
             }
 
             // no need to unmask for all-zeros masking key

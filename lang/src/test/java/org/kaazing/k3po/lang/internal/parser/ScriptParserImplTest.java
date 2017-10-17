@@ -978,9 +978,69 @@ public class ScriptParserImplTest {
     }
 
     @Test
+    public void shouldParseReadLiteralShort() throws Exception {
+
+        String scriptFragment = "read 5s";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
+
+        AstReadValueNode expected = new AstReadNodeBuilder()
+                .addNumber((short)5).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseReadLiteralShortWithKeywordOnly() throws Exception {
+
+        String scriptFragment = "read short 5";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
+
+        AstReadValueNode expected = new AstReadNodeBuilder()
+                .addNumber((short)5).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseReadLiteralShortWithKeywordAndSuffix() throws Exception {
+
+        String scriptFragment = "read short 5s";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
+
+        AstReadValueNode expected = new AstReadNodeBuilder()
+                .addNumber((short)5).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
     public void shouldParseReadLiteralInt() throws Exception {
 
         String scriptFragment = "read 5";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
+
+        AstReadValueNode expected = new AstReadNodeBuilder()
+                .addNumber(5).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseReadLiteralIntWithKeywordOnly() throws Exception {
+
+        String scriptFragment = "read int 5";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
@@ -1026,6 +1086,36 @@ public class ScriptParserImplTest {
     public void shouldParseReadLiteralLong() throws Exception {
 
         String scriptFragment = "read 5L";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
+
+        AstReadValueNode expected = new AstReadNodeBuilder()
+                .addNumber(5L).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseReadLiteralLongWithKeywordOnly() throws Exception {
+
+        String scriptFragment = "read long 5";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
+
+        AstReadValueNode expected = new AstReadNodeBuilder()
+                .addNumber(5L).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseReadLiteralLongWithKeywordAndSuffix() throws Exception {
+
+        String scriptFragment = "read long 5L";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstReadValueNode actual = parser.parseWithStrategy(scriptFragment, READ);
@@ -1150,6 +1240,126 @@ public class ScriptParserImplTest {
         AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
 
         AstWriteValueNode expected = new AstWriteNodeBuilder().addExactText("GET /index.html blah").done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseWriteLiteralShort() throws Exception {
+
+        String scriptFragment = "write 5s";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
+
+        AstWriteValueNode expected = new AstWriteNodeBuilder()
+                .addShort((short)5).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseWriteLiteralShortWithKeywordOnly() throws Exception {
+
+        String scriptFragment = "write short 5";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
+
+        AstWriteValueNode expected = new AstWriteNodeBuilder()
+                .addShort((short)5).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseWriteLiteralShortWithKeywordAndSuffix() throws Exception {
+
+        String scriptFragment = "write short 5s";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
+
+        AstWriteValueNode expected = new AstWriteNodeBuilder()
+                .addShort((short)5).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseWriteLiteralInt() throws Exception {
+
+        String scriptFragment = "write 5";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
+
+        AstWriteValueNode expected = new AstWriteNodeBuilder()
+                .addInteger(5).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseWriteLiteralIntWithKeywordOnly() throws Exception {
+
+        String scriptFragment = "write int 5";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
+
+        AstWriteValueNode expected = new AstWriteNodeBuilder()
+                .addInteger(5).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseWriteLiteralLong() throws Exception {
+
+        String scriptFragment = "write 5L";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
+
+        AstWriteValueNode expected = new AstWriteNodeBuilder()
+                .addLong(5L).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseWriteLiteralLongWithKeywordOnly() throws Exception {
+
+        String scriptFragment = "write long 5";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
+
+        AstWriteValueNode expected = new AstWriteNodeBuilder()
+                .addLong(5L).done();
+
+        assertEquals(expected, actual);
+        assertEquals(1, actual.getRegionInfo().children.size());
+    }
+
+    @Test
+    public void shouldParseWriteLiteralLongWithKeywordAndSuffix() throws Exception {
+
+        String scriptFragment = "write long 5L";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteValueNode actual = parser.parseWithStrategy(scriptFragment, WRITE);
+
+        AstWriteValueNode expected = new AstWriteNodeBuilder()
+                .addLong(5L).done();
 
         assertEquals(expected, actual);
         assertEquals(1, actual.getRegionInfo().children.size());

@@ -87,9 +87,11 @@ import org.kaazing.k3po.lang.internal.ast.matcher.AstShortLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstValueMatcher;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstVariableLengthBytesMatcher;
 import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralByteValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralIntegerValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralLongValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralShortValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralURIValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstValue;
@@ -119,9 +121,11 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.ExactTextMatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ExpressionMatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ExpressionValueContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.FixedLengthBytesMatcherContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralByteContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralBytesContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralIntegerContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralLongContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralShortContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.LiteralTextContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.MatcherContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.NumberMatcherContext;
@@ -1745,11 +1749,20 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
                 AstNumberMatcher matcher = new AstNumberMatcher(literal);
                 matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
                 return matcher;
+            } else if (ctx.shortLiteral != null) {
+                Short literal = Short.decode(ctx.shortLiteral.getText().replaceAll("\\_", ""));
+                AstNumberMatcher matcher = new AstNumberMatcher(literal);
+                matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+                return matcher;
+            } else if (ctx.byteLiteral != null) {
+                Byte literal = Byte.decode(ctx.byteLiteral.getText().replaceAll("\\_", ""));
+                AstNumberMatcher matcher = new AstNumberMatcher(literal);
+                matcher.setRegionInfo(asSequentialRegion(childInfos, ctx));
+                return matcher;
             }
 
             return null;
         }
-
     }
 
     private static class AstRegexMatcherVisitor extends AstVisitor<AstRegexMatcher> {
@@ -1910,6 +1923,30 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
+        public AstValue<T> visitLiteralByte(LiteralByteContext ctx) {
+
+            AstLiteralByteValueVisitor visitor = new AstLiteralByteValueVisitor(factory, environment);
+            AstLiteralByteValue value = visitor.visit(ctx);
+            if (value != null) {
+                childInfos().add(value.getRegionInfo());
+            }
+
+            return (AstValue<T>) value;
+        }
+
+        @Override
+        public AstValue<T> visitLiteralShort(LiteralShortContext ctx) {
+
+            AstLiteralShortValueVisitor visitor = new AstLiteralShortValueVisitor(factory, environment);
+            AstLiteralShortValue value = visitor.visit(ctx);
+            if (value != null) {
+                childInfos().add(value.getRegionInfo());
+            }
+
+            return (AstValue<T>) value;
+        }
+
+        @Override
         public AstValue<T> visitLiteralInteger(LiteralIntegerContext ctx) {
 
             AstLiteralIntegerValueVisitor visitor = new AstLiteralIntegerValueVisitor(factory, environment);
@@ -2020,6 +2057,38 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstLiteralBytesValue visitLiteralBytes(LiteralBytesContext ctx) {
             String literal = ctx.literal.getText();
             AstLiteralBytesValue value = new AstLiteralBytesValue(parseHexBytes(literal));
+            value.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return value;
+        }
+
+    }
+
+    private static class AstLiteralByteValueVisitor extends AstVisitor<AstLiteralByteValue> {
+
+        public AstLiteralByteValueVisitor(ExpressionFactory factory, ExpressionContext environment) {
+            super(factory, environment);
+        }
+
+        @Override
+        public AstLiteralByteValue visitLiteralByte(LiteralByteContext ctx) {
+            String literal = ctx.literal.getText().replaceAll("_", "");
+            AstLiteralByteValue value = new AstLiteralByteValue(Byte.decode(literal));
+            value.setRegionInfo(asSequentialRegion(childInfos, ctx));
+            return value;
+        }
+
+    }
+
+    private static class AstLiteralShortValueVisitor extends AstVisitor<AstLiteralShortValue> {
+
+        public AstLiteralShortValueVisitor(ExpressionFactory factory, ExpressionContext environment) {
+            super(factory, environment);
+        }
+
+        @Override
+        public AstLiteralShortValue visitLiteralShort(LiteralShortContext ctx) {
+            String literal = ctx.literal.getText().replaceAll("_", "");
+            AstLiteralShortValue value = new AstLiteralShortValue(Short.decode(literal));
             value.setRegionInfo(asSequentialRegion(childInfos, ctx));
             return value;
         }
