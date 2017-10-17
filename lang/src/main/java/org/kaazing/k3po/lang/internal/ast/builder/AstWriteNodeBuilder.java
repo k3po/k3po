@@ -23,6 +23,7 @@ import org.kaazing.k3po.lang.internal.ast.value.AstExpressionValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralIntegerValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralLongValue;
+import org.kaazing.k3po.lang.internal.ast.value.AstLiteralShortValue;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralTextValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
@@ -49,6 +50,12 @@ public class AstWriteNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWri
 
     public AstWriteNodeBuilder addInteger(Integer value) {
         node.addValue(new AstLiteralIntegerValue(value));
+        return this;
+    }
+
+    public AstWriteNodeBuilder addShort(Short value)
+    {
+        node.addValue(new AstLiteralShortValue(value));
         return this;
     }
 
@@ -80,6 +87,22 @@ public class AstWriteNodeBuilder extends AbstractAstStreamableNodeBuilder<AstWri
 
         public StreamNested<R> addExactText(String exactText) {
             node.addValue(new AstLiteralTextValue(exactText));
+            return this;
+        }
+
+        public StreamNested<R> addLong(Long value) {
+            node.addValue(new AstLiteralLongValue(value));
+            return this;
+        }
+
+        public StreamNested<R> addInteger(Integer value) {
+            node.addValue(new AstLiteralIntegerValue(value));
+            return this;
+        }
+
+        public StreamNested<R> addShort(Short value)
+        {
+            node.addValue(new AstLiteralShortValue(value));
             return this;
         }
 

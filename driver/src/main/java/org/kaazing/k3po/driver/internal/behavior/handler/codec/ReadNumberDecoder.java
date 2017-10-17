@@ -33,7 +33,11 @@ public class ReadNumberDecoder extends MessageDecoder {
     @Override
     protected Object decodeBuffer(ChannelBuffer buffer) throws Exception {
 
-        if (expected instanceof Integer)
+        if (expected instanceof Short)
+        {
+            return decodeBufferAsShort(buffer);
+        }
+        else if (expected instanceof Integer)
         {
             return decodeBufferAsInteger(buffer);
         }
@@ -43,6 +47,20 @@ public class ReadNumberDecoder extends MessageDecoder {
         }
 
         throw new ScriptProgressException(getRegionInfo(), String.format("Unsupported type: %s", expected.getClass().getName()));
+    }
+
+    private Object decodeBufferAsShort(ChannelBuffer buffer) throws Exception {
+
+        if (buffer.readableBytes() < Short.BYTES) {
+            return null;
+        }
+
+        short observed = buffer.readShort();
+        if (observed != expected.shortValue()) {
+            throw new ScriptProgressException(getRegionInfo(), Short.toString(observed));
+        }
+
+        return buffer;
     }
 
     private Object decodeBufferAsInteger(ChannelBuffer buffer) throws Exception {
