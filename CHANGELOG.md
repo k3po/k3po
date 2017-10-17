@@ -1,5 +1,19 @@
 # Change Log
 
+## [3.0.0-alpha-085](https://github.com/k3po/k3po/tree/3.0.0-alpha-085) (2017-10-17)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-84...3.0.0-alpha-085)
+
+**Closed issues:**
+
+- read long, read int, read byte does not work [\#453](https://github.com/k3po/k3po/issues/453)
+
+**Merged pull requests:**
+
+- Support read and write literal short values [\#455](https://github.com/k3po/k3po/pull/455) ([jfallows](https://github.com/jfallows))
+
+## [3.0.0-alpha-84](https://github.com/k3po/k3po/tree/3.0.0-alpha-84) (2017-10-09)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-83...3.0.0-alpha-84)
+
 ## [3.0.0-alpha-83](https://github.com/k3po/k3po/tree/3.0.0-alpha-83) (2017-10-05)
 [Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-82...3.0.0-alpha-83)
 
