@@ -260,8 +260,12 @@ exactBytesMatcher
     ;
 
 numberMatcher
-    : intLiteral=(SignedDecimalLiteral | DecimalLiteral | HexLiteral)
-    | longLiteral=(SignedDecimalLiteral | DecimalLiteral | HexLiteral) 'L'
+    : ByteKeyword byteLiteral=HexLiteral
+    | ShortKeyword shortLiteral=(SignedDecimalLiteral | DecimalLiteral | HexLiteral) 's'?
+    | ShortKeyword? shortLiteral=(SignedDecimalLiteral | DecimalLiteral | HexLiteral) 's'
+    | IntKeyword? intLiteral=(SignedDecimalLiteral | DecimalLiteral | HexLiteral)
+    | LongKeyword longLiteral=(SignedDecimalLiteral | DecimalLiteral | HexLiteral) 'L'?
+    | LongKeyword? longLiteral=(SignedDecimalLiteral | DecimalLiteral | HexLiteral) 'L'
     ;
 
 regexMatcher
@@ -290,6 +294,8 @@ variableLengthBytesMatcher
 writeValue
     : literalText
     | literalBytes
+    | literalByte
+    | literalShort
     | literalInteger
     | literalLong
     | expressionValue
@@ -303,12 +309,22 @@ literalBytes
     : literal=BytesLiteral
     ;
 
+literalByte
+    : ByteKeyword literal=(SignedDecimalLiteral | DecimalLiteral | HexLiteral)
+    ;
+
+literalShort
+    : ShortKeyword literal=(SignedDecimalLiteral | DecimalLiteral | HexLiteral) 's'?
+    | ShortKeyword? literal=(SignedDecimalLiteral | DecimalLiteral | HexLiteral) 's' 
+    ;
+
 literalInteger
-    : literal=(SignedDecimalLiteral | DecimalLiteral | HexLiteral) 
+    : IntKeyword? literal=(SignedDecimalLiteral | DecimalLiteral | HexLiteral) 
     ;
 
 literalLong
-    : literal=(SignedDecimalLiteral | DecimalLiteral | HexLiteral) 'L'
+    : LongKeyword literal=(SignedDecimalLiteral | DecimalLiteral | HexLiteral) 'L'?
+    | LongKeyword? literal=(SignedDecimalLiteral | DecimalLiteral | HexLiteral) 'L'
     ;
 
 expressionValue
@@ -481,7 +497,7 @@ BytesLiteral
 
 fragment
 ByteLiteral
-    :  HexPrefix HexDigit HexDigit
+    : HexPrefix HexDigit HexDigit
     ;
 
 HexLiteral
