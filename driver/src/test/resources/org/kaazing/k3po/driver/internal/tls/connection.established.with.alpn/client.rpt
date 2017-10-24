@@ -17,6 +17,6 @@
 connect "tls://localhost:8001"
         option tls:trustStoreFile "src/test/democa/cacerts"
         option tls:trustStorePassword "generated"
-        option tls:applicationProtocols "h2, http/1.1"
+        option tls:applicationProtocols "http/1.1,h2"
 
 connected
