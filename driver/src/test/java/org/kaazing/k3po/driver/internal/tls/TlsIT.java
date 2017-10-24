@@ -18,7 +18,6 @@ package org.kaazing.k3po.driver.internal.tls;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.rules.RuleChain.outerRule;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -45,7 +44,6 @@ public class TlsIT {
         k3po.finish();
     }
 
-    @Ignore("Needs JDK 9 to run as it uses SSLParameters#setApplicationProtocols()")
     @Test
     @TestSpecification({
         "connection.established.with.alpn/server",

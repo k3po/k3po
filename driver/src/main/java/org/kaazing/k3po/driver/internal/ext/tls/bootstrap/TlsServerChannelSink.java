@@ -97,7 +97,7 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
             File trustStoreFile = tlsConnectConfig.getTrustStoreFile();
             char[] keyStorePassword = tlsConnectConfig.getKeyStorePassword();
             char[] trustStorePassword = tlsConnectConfig.getTrustStorePassword();
-            String[] applicationProtocol = tlsConnectConfig.getApplicationProtocols();
+            String[] applicationProtocols = tlsConnectConfig.getApplicationProtocols();
 
             ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
                 @Override
@@ -136,8 +136,8 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
 
                     SSLParameters tlsParameters = new SSLParameters();
                     tlsParameters.setSNIMatchers(singleton(createSNIMatcher(tlsHostname)));
-                    if (applicationProtocol != null && applicationProtocol.length > 0) {
-                        setApplicationProtocols(tlsParameters, applicationProtocol);
+                    if (applicationProtocols != null && applicationProtocols.length > 0) {
+                        setApplicationProtocols(tlsParameters, applicationProtocols);
                     }
                     tlsEngine.setSSLParameters(tlsParameters);
 
