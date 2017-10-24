@@ -42,4 +42,8 @@ public interface TlsChannelConfig extends ChannelConfig {
     void setTrustStorePassword(char[] trustStorePassword);
 
     char[] getTrustStorePassword();
+
+    void setApplicationProtocols(String[] applicationProtocol);
+
+    String[] getApplicationProtocols();
 }

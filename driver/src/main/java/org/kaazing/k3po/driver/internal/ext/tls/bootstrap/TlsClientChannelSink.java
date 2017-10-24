@@ -32,7 +32,6 @@ import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireInputS
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.security.KeyStore;
@@ -129,6 +128,7 @@ public class TlsClientChannelSink extends AbstractChannelSink {
         File trustStoreFile = tlsConnectConfig.getTrustStoreFile();
         char[] keyStorePassword = tlsConnectConfig.getKeyStorePassword();
         char[] trustStorePassword = tlsConnectConfig.getTrustStorePassword();
+        String[] applicationProtocol = tlsConnectConfig.getApplicationProtocols();
 
         ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
             @Override
@@ -168,7 +168,9 @@ public class TlsClientChannelSink extends AbstractChannelSink {
                 SSLParameters tlsParameters = tlsEngine.getSSLParameters();
                 tlsParameters.setEndpointIdentificationAlgorithm("HTTPS");
                 tlsParameters.setServerNames(asList(new SNIHostName(tlsHostname)));
-setApplicationProtocols(tlsParameters, new String[] { "protocol" });        // TODO config
+                if (applicationProtocol != null && applicationProtocol.length > 0) {
+                    setApplicationProtocols(tlsParameters, applicationProtocol);
+                }
                 tlsEngine.setSSLParameters(tlsParameters);
 
                 SslHandler sslHandler = new SslHandler(tlsEngine);
@@ -360,8 +362,7 @@ setApplicationProtocols(tlsParameters, new String[] { "protocol" });        // T
             Method setApplicationProtocolsMethod = SSLParameters.class.getMethod("setApplicationProtocols", String[].class);
             setApplicationProtocolsMethod.invoke(parameters, new Object[] { protocols } );
         } catch (Throwable t) {
-            t.printStackTrace();
-            System.out.println("********** Cannot call SSLParameters#setApplicationProtocols(). Use JDK 9 to run k3po");
+            throw new RuntimeException("Cannot call SSLParameters#setApplicationProtocols(). Use JDK 9 to run k3po");
         }
     }
 }

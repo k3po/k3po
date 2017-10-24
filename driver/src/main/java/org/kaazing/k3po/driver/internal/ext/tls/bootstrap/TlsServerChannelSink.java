@@ -97,6 +97,7 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
             File trustStoreFile = tlsConnectConfig.getTrustStoreFile();
             char[] keyStorePassword = tlsConnectConfig.getKeyStorePassword();
             char[] trustStorePassword = tlsConnectConfig.getTrustStorePassword();
+            String[] applicationProtocol = tlsConnectConfig.getApplicationProtocols();
 
             ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
                 @Override
@@ -135,7 +136,9 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
 
                     SSLParameters tlsParameters = new SSLParameters();
                     tlsParameters.setSNIMatchers(singleton(createSNIMatcher(tlsHostname)));
-setApplicationProtocols(tlsParameters, new String[] { "protocol" });        // TODO config
+                    if (applicationProtocol != null && applicationProtocol.length > 0) {
+                        setApplicationProtocols(tlsParameters, applicationProtocol);
+                    }
                     tlsEngine.setSSLParameters(tlsParameters);
 
                     SslHandler sslHandler = new SslHandler(tlsEngine);
@@ -341,7 +344,7 @@ setApplicationProtocols(tlsParameters, new String[] { "protocol" });        // T
             Method setApplicationProtocolsMethod = SSLParameters.class.getMethod("setApplicationProtocols", String[].class);
             setApplicationProtocolsMethod.invoke(parameters, new Object[] { protocols });
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            System.out.println("Cannot call SSLParameters#setApplicationProtocols(). Use JDK 9 to run k3po");
+            throw new RuntimeException("Cannot call SSLParameters#setApplicationProtocols(). Use JDK 9 to run k3po", e);
         }
     }
 
