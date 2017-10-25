@@ -25,6 +25,8 @@ import static org.jboss.netty.channel.Channels.pipeline;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.security.KeyStore;
 import java.security.SecureRandom;
@@ -95,6 +97,7 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
             File trustStoreFile = tlsConnectConfig.getTrustStoreFile();
             char[] keyStorePassword = tlsConnectConfig.getKeyStorePassword();
             char[] trustStorePassword = tlsConnectConfig.getTrustStorePassword();
+            String[] applicationProtocols = tlsConnectConfig.getApplicationProtocols();
 
             ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
                 @Override
@@ -133,6 +136,9 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
 
                     SSLParameters tlsParameters = new SSLParameters();
                     tlsParameters.setSNIMatchers(singleton(createSNIMatcher(tlsHostname)));
+                    if (applicationProtocols != null && applicationProtocols.length > 0) {
+                        setApplicationProtocols(tlsParameters, applicationProtocols);
+                    }
                     tlsEngine.setSSLParameters(tlsParameters);
 
                     SslHandler sslHandler = new SslHandler(tlsEngine);
@@ -332,4 +338,14 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
             return format("[future=@%d, count=%d]", Objects.hashCode(future), count.get());
         }
     }
+
+    static void setApplicationProtocols(SSLParameters parameters, String[] protocols) {
+        try {
+            Method setApplicationProtocolsMethod = SSLParameters.class.getMethod("setApplicationProtocols", String[].class);
+            setApplicationProtocolsMethod.invoke(parameters, new Object[] { protocols });
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("Cannot call SSLParameters#setApplicationProtocols(). Use JDK 9 to run k3po", e);
+        }
+    }
+
 }

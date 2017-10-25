@@ -32,6 +32,7 @@ import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireInputS
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.security.KeyStore;
 import java.security.SecureRandom;
@@ -127,6 +128,7 @@ public class TlsClientChannelSink extends AbstractChannelSink {
         File trustStoreFile = tlsConnectConfig.getTrustStoreFile();
         char[] keyStorePassword = tlsConnectConfig.getKeyStorePassword();
         char[] trustStorePassword = tlsConnectConfig.getTrustStorePassword();
+        String[] applicationProtocols = tlsConnectConfig.getApplicationProtocols();
 
         ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
             @Override
@@ -166,6 +168,9 @@ public class TlsClientChannelSink extends AbstractChannelSink {
                 SSLParameters tlsParameters = tlsEngine.getSSLParameters();
                 tlsParameters.setEndpointIdentificationAlgorithm("HTTPS");
                 tlsParameters.setServerNames(asList(new SNIHostName(tlsHostname)));
+                if (applicationProtocols != null && applicationProtocols.length > 0) {
+                    setApplicationProtocols(tlsParameters, applicationProtocols);
+                }
                 tlsEngine.setSSLParameters(tlsParameters);
 
                 SslHandler sslHandler = new SslHandler(tlsEngine);
@@ -350,5 +355,14 @@ public class TlsClientChannelSink extends AbstractChannelSink {
                 transport.getCloseFuture().removeListener(closeListener);
             }
         });
+    }
+
+    static void setApplicationProtocols(SSLParameters parameters, String[] protocols) {
+        try {
+            Method setApplicationProtocolsMethod = SSLParameters.class.getMethod("setApplicationProtocols", String[].class);
+            setApplicationProtocolsMethod.invoke(parameters, new Object[] { protocols } );
+        } catch (Throwable t) {
+            throw new RuntimeException("Cannot call SSLParameters#setApplicationProtocols(). Use JDK 9 to run k3po");
+        }
     }
 }

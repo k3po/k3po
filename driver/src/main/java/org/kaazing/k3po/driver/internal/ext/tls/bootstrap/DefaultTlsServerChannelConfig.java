@@ -28,6 +28,7 @@ public class DefaultTlsServerChannelConfig extends DefaultServerChannelConfig im
     private char[] keyStorePassword;
     private File trustStoreFile;
     private char[] trustStorePassword;
+    private String[] applicationProtocols;
 
     @Override
     public void setParameters(SSLParameters parameters) {
@@ -92,6 +93,19 @@ public class DefaultTlsServerChannelConfig extends DefaultServerChannelConfig im
     }
 
     @Override
+    public String[] getApplicationProtocols()
+    {
+        return applicationProtocols;
+    }
+
+    @Override
+    public void setApplicationProtocols(
+            String[] applicationProtocol)
+    {
+        this.applicationProtocols = applicationProtocol;
+    }
+
+    @Override
     protected boolean setOption0(
         String key,
         Object value)
@@ -111,6 +125,10 @@ public class DefaultTlsServerChannelConfig extends DefaultServerChannelConfig im
         else if ("trustStorePassword".equals(key))
         {
             trustStorePassword = ((String) value).toCharArray();
+        }
+        else if ("applicationProtocols".equals(key))
+        {
+            applicationProtocols = ((String) value).split(",");
         }
         else
         {
