@@ -1,5 +1,15 @@
 # Change Log
 
+## [3.0.0-alpha-87](https://github.com/k3po/k3po/tree/3.0.0-alpha-87) (2017-10-28)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-86...3.0.0-alpha-87)
+
+**Merged pull requests:**
+
+- TLS ALPN negotiation [\#456](https://github.com/k3po/k3po/pull/456) ([jitsni](https://github.com/jitsni))
+
+## [3.0.0-alpha-86](https://github.com/k3po/k3po/tree/3.0.0-alpha-86) (2017-10-18)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-085...3.0.0-alpha-86)
+
 ## [3.0.0-alpha-085](https://github.com/k3po/k3po/tree/3.0.0-alpha-085) (2017-10-17)
 [Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-84...3.0.0-alpha-085)
 
