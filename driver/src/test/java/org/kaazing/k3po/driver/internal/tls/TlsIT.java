@@ -46,6 +46,15 @@ public class TlsIT {
 
     @Test
     @TestSpecification({
+        "connection.established.with.alpn/server",
+        "connection.established.with.alpn/client"
+    })
+    public void shouldEstablishConnectionWithAlpn() throws Exception {
+        k3po.finish();
+    }
+
+    @Test
+    @TestSpecification({
         "echo.payload/server",
         "echo.payload/client"
     })
