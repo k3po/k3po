@@ -47,7 +47,7 @@ When the extension is negotiated successfully, this indicates the server _requir
 
 ## Extended Handshake Negotiation
 
-An extra extension parameter, `client-pong`, MAY be specified by the client in order to indicated has the capability of sending a WebSocket frame to the server every **\<timeout-millis\>** milliseconds. If the server responds supplying that same extension parameter, the client MUST then honor that commitment. Otherwise it MUST not.
+An extra extension parameter, `client-pong`, MAY be specified by the client in order to indicate it has the capability of sending a WebSocket frame to the server every **\<timeout-millis\>** milliseconds. If the server responds supplying that same extension parameter, the client MUST then honor that commitment. Otherwise it MUST not.
 
 The extended handshake is as follows:
 
