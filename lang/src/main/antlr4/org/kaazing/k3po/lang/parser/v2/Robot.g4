@@ -458,7 +458,7 @@ CaptureLiteral
     ;
 
 ExpressionLiteral
-    : '${' ~('}' | '\r' | '\n')+ '}'
+    : '${' ~('}')+ '}'
     ;
 
 RegexLiteral
