@@ -115,4 +115,10 @@ public class BehaviorIT {
         k3po.notifyBarrier("CLOSE_REQUESTED");
         k3po.finish();
     }
+
+    @TestSpecification("builder.expression")
+    @Test
+    public void testBuilderExpressionOnMultipleLines() throws Exception {
+        k3po.finish();
+    }
 }

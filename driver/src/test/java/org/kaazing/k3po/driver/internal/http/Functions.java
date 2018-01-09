@@ -33,6 +33,33 @@ public final class Functions {
         return bytes;
     }
 
+    public static final class StrBuilder
+    {
+
+        private StringBuilder str = new StringBuilder();
+
+        public StrBuilder(String start) {
+            str.append(start);
+        }
+
+        public StrBuilder append(String string)
+        {
+            str.append(string);
+            return this;
+        }
+
+        public String build()
+        {
+            return str.toString();
+        }
+    }
+
+    @Function
+    public static StrBuilder builder(String start)
+    {
+        return new StrBuilder(start);
+    }
+
     public static class Mapper extends FunctionMapperSpi.Reflective {
 
         public Mapper() {
