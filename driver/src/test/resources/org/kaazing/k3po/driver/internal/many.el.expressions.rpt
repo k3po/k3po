@@ -14,7 +14,8 @@
 # limitations under the License.
 #
 
-property randA ${itest:randomBytes(4)}
+property randA ${itest:randomBytes(4)
+}
 property randB ${itest:randomBytes(4)}
 property randC ${itest:randomBytes(4)}
 property randD ${itest:randomBytes(4)}
