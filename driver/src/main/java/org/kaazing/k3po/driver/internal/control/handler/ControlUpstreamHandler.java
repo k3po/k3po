@@ -51,6 +51,9 @@ public class ControlUpstreamHandler extends SimpleChannelUpstreamHandler {
             case AWAIT:
                 awaitReceived(ctx, evt);
                 break;
+            case CLOSE:
+                closeReceived(ctx, evt);
+                break;
             default:
                 throw new IllegalArgumentException(String.format("Unexpected control message: %s", message.getKind()));
             }
@@ -76,6 +79,10 @@ public class ControlUpstreamHandler extends SimpleChannelUpstreamHandler {
     }
 
     public void awaitReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+        super.messageReceived(ctx, e);
+    }
+
+    public void closeReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         super.messageReceived(ctx, e);
     }
 

@@ -13,26 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.driver.internal.control;
+package org.kaazing.k3po.control.internal.command;
 
-public abstract class ControlMessage {
+import java.util.Objects;
 
-    public enum Kind {
-        PREPARE, PREPARED, START, STARTED, ERROR, ABORT, FINISHED, AWAIT, NOTIFY, NOTIFIED, CLOSE
-    }
+/**
+ * AbortCommand aborts the script execution.
+ *
+ */
+public final class CloseCommand extends Command {
 
-    public abstract Kind getKind();
-
-    public abstract int hashCode();
-
-    public abstract boolean equals(Object obj);
-
-    protected final boolean equalTo(ControlMessage that) {
-        return this.getKind() == that.getKind();
+    @Override
+    public Kind getKind() {
+        return Kind.CLOSE;
     }
 
     @Override
-    public String toString() {
-        return String.format("%s", getKind());
+    public int hashCode() {
+        return Objects.hash(getKind());
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return o == this || o instanceof CloseCommand && equalTo((CloseCommand) o);
+    }
+
 }

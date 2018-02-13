@@ -47,7 +47,11 @@ public abstract class Command {
         /**
          * Notify command.
          */
-        NOTIFY
+        NOTIFY,
+        /**
+         * Close command.
+         */
+        CLOSE
     }
 
     /**

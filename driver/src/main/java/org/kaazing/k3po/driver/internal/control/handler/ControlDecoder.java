@@ -28,6 +28,7 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.kaazing.k3po.driver.internal.control.AbortMessage;
 import org.kaazing.k3po.driver.internal.control.AwaitMessage;
+import org.kaazing.k3po.driver.internal.control.CloseMessage;
 import org.kaazing.k3po.driver.internal.control.ControlMessage;
 import org.kaazing.k3po.driver.internal.control.ControlMessage.Kind;
 import org.kaazing.k3po.driver.internal.control.NotifyMessage;
@@ -125,6 +126,8 @@ public class ControlDecoder extends ReplayingDecoder<ControlDecoder.State> {
             return new NotifyMessage();
         case AWAIT:
             return new AwaitMessage();
+        case CLOSE:
+            return new CloseMessage();
          default:
             throw new IllegalArgumentException(format("Unrecognized message kind: %s", messageKind));
         }

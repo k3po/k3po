@@ -109,6 +109,18 @@ public class ControlServerHandler extends ControlUpstreamHandler {
     }
 
     @Override
+    public void closeReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+        if (robot != null) {
+            robot.dispose().addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    ctx.getChannel().close();
+                }
+            });
+        }
+    }
+
+    @Override
     public void prepareReceived(final ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
         if (robot != null && robot.getPreparedFuture() != null) {
             sendErrorMessage(ctx, ERROR_MSG_ALREADY_PREPARED);

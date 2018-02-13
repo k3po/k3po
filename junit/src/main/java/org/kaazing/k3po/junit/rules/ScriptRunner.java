@@ -18,7 +18,6 @@ package org.kaazing.k3po.junit.rules;
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-import java.lang.management.ManagementFactory;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -30,6 +29,7 @@ import java.util.concurrent.CountDownLatch;
 
 import org.kaazing.k3po.control.internal.Control;
 import org.kaazing.k3po.control.internal.command.AbortCommand;
+import org.kaazing.k3po.control.internal.command.CloseCommand;
 import org.kaazing.k3po.control.internal.command.PrepareCommand;
 import org.kaazing.k3po.control.internal.command.StartCommand;
 import org.kaazing.k3po.control.internal.event.CommandEvent;
@@ -97,6 +97,11 @@ final class ScriptRunner implements Callable<ScriptPair> {
                 try {
                     // validate event name matches command name
                     CommandEvent event = controller.readEvent(200, MILLISECONDS);
+                    if (event == null)
+                    {
+                        // connection closed
+                        return new ScriptPair(expectedScript, "");
+                    }
 
                     // process event
                     switch (event.getKind()) {
@@ -205,19 +210,12 @@ final class ScriptRunner implements Callable<ScriptPair> {
     }
 
     public void dispose() throws Exception {
-        if (controller.isConnected())
-            controller.disconnect();
-    }
-
-    private static boolean isDebugging() {
-        List<String> arguments = ManagementFactory.getRuntimeMXBean().getInputArguments();
-        for (final String argument : arguments) {
-            if ("-Xdebug".equals(argument)) {
-                return true;
-            } else if (argument.startsWith("-agentlib:jdwp")) {
-                return true;
+        if (controller.isConnected()) {
+            controller.writeCommand(new CloseCommand());
+            while (controller.readEvent() != null)
+            {
+                Thread.sleep(20);
             }
         }
-        return false;
     }
 }

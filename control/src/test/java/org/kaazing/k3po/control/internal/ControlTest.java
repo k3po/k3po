@@ -37,6 +37,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.kaazing.k3po.control.internal.command.AbortCommand;
+import org.kaazing.k3po.control.internal.command.CloseCommand;
 import org.kaazing.k3po.control.internal.command.PrepareCommand;
 import org.kaazing.k3po.control.internal.command.StartCommand;
 import org.kaazing.k3po.control.internal.event.CommandEvent;
@@ -168,13 +169,13 @@ public class ControlTest {
 
     @Test
     public void shouldWriteAbortCommand() throws Exception {
-        final byte[] expectedStart =
+        final byte[] expectedAbort =
                 ("ABORT\n" +
                  "\n").getBytes(UTF_8);
 
         mockery.checking(new Expectations() {
             {
-                oneOf(output).write(with(hasInitialBytes(expectedStart)), with(equal(0)), with(equal(expectedStart.length)));
+                oneOf(output).write(with(hasInitialBytes(expectedAbort)), with(equal(0)), with(equal(expectedAbort.length)));
                 oneOf(output).flush();
             }
         });
@@ -183,6 +184,26 @@ public class ControlTest {
 
         control.connect();
         control.writeCommand(abort);
+
+    }
+
+    @Test
+    public void shouldWriteCloseCommand() throws Exception {
+        final byte[] expectedClose =
+                ("CLOSE\n" +
+                 "\n").getBytes(UTF_8);
+
+        mockery.checking(new Expectations() {
+            {
+                oneOf(output).write(with(hasInitialBytes(expectedClose)), with(equal(0)), with(equal(expectedClose.length)));
+                oneOf(output).flush();
+            }
+        });
+
+        CloseCommand close = new CloseCommand();
+
+        control.connect();
+        control.writeCommand(close);
 
     }
 
