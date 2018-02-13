@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
 
 import org.kaazing.k3po.control.internal.command.AbortCommand;
 import org.kaazing.k3po.control.internal.command.AwaitCommand;
+import org.kaazing.k3po.control.internal.command.CloseCommand;
 import org.kaazing.k3po.control.internal.command.Command;
 import org.kaazing.k3po.control.internal.command.NotifyCommand;
 import org.kaazing.k3po.control.internal.command.PrepareCommand;
@@ -147,6 +148,9 @@ public final class Control {
         case NOTIFY:
             writeCommand((NotifyCommand) command);
             break;
+        case CLOSE:
+            writeCommand((CloseCommand) command);
+            break;
         default:
             throw new IllegalArgumentException("Urecognized command kind: " + command.getKind());
         }
@@ -175,23 +179,31 @@ public final class Control {
 
         connection.setReadTimeout((int) unit.toMillis(timeout));
 
+        CommandEvent event = null;
         String eventType = textIn.readLine();
         if (eventType != null) {
             switch (eventType) {
             case PREPARED_EVENT:
-                return readPreparedEvent();
+                event = readPreparedEvent();
+                break;
             case STARTED_EVENT:
-                return readStartedEvent();
+                event = readStartedEvent();
+                break;
             case ERROR_EVENT:
-                return readErrorEvent();
+                event = readErrorEvent();
+                break;
             case FINISHED_EVENT:
-                return readFinishedEvent();
+                event = readFinishedEvent();
+                break;
             case NOTIFIED_EVENT:
-                return readNotifiedEvent();
+                event = readNotifiedEvent();
+                break;
+            default:
+                throw new IllegalStateException("Invalid protocol frame: " + eventType);
             }
         }
 
-        throw new IllegalStateException("Invalid protocol frame: " + eventType);
+        return event;
     }
 
     private void checkConnected() throws Exception {
@@ -271,6 +283,16 @@ public final class Control {
 
         textOut.append("AWAIT\n");
         textOut.append(format("barrier:%s\n", await.getBarrier()));
+        textOut.append("\n");
+        textOut.flush();
+    }
+
+    private void writeCommand(CloseCommand close) throws IOException, CharacterCodingException {
+        OutputStream bytesOut = connection.getOutputStream();
+        CharsetEncoder encoder = UTF_8.newEncoder();
+        Writer textOut = new OutputStreamWriter(bytesOut, encoder);
+
+        textOut.append("CLOSE\n");
         textOut.append("\n");
         textOut.flush();
     }
