@@ -114,6 +114,7 @@ public class HttpChildChannelSource extends HttpChannelHandler {
             default:
                 if (httpChildChannel.setReadAborted()) {
                     fireInputAborted(httpChildChannel);
+                    httpChildChannel.setClosed();
                 }
                 break;
             }
@@ -291,6 +292,7 @@ public class HttpChildChannelSource extends HttpChannelHandler {
                 default:
                     if (httpChildChannel.setReadAborted()) {
                         fireInputAborted(httpChildChannel);
+                        httpChildChannel.setClosed();
                     }
                     break;
                 }

@@ -17,6 +17,7 @@ package org.kaazing.k3po.driver.internal;
 
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.jboss.netty.channel.Channels.pipelineFactory;
 import static org.jboss.netty.util.CharsetUtil.UTF_8;
@@ -44,8 +45,6 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ChildChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.channel.group.ChannelGroupFuture;
-import org.jboss.netty.channel.group.ChannelGroupFutureListener;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.jboss.netty.logging.InternalLogger;
@@ -82,8 +81,7 @@ public class Robot {
     private final ChannelFuture finishedFuture = Channels.future(channel);
     private final ChannelFuture disposedFuture = Channels.future(channel);
 
-    private final DefaultChannelGroup serverChannels = new DefaultChannelGroup();
-    private final DefaultChannelGroup clientChannels = new DefaultChannelGroup();
+    private final DefaultChannelGroup closeableChannels = new DefaultChannelGroup();
 
     private Configuration configuration;
     private ChannelFuture preparedFuture;
@@ -221,35 +219,26 @@ public class Robot {
                     // avoid I/O deadlock checker
                     new Thread(new Runnable() {
                         public void run() {
-                            // close server and client channels
-                            // final ChannelGroupFuture closeFuture =
-                            serverChannels.close().addListener(new ChannelGroupFutureListener() {
+                            closeableChannels.close().awaitUninterruptibly(30, SECONDS);
+                            try {
+                                bootstrapFactory.shutdown();
+                                bootstrapFactory.releaseExternalResources();
 
-                                @Override
-                                public void operationComplete(ChannelGroupFuture future) throws Exception {
-                                    clientChannels.close();
+                                for (AutoCloseable resource : configuration.getResources()) {
                                     try {
-                                        bootstrapFactory.shutdown();
-                                        bootstrapFactory.releaseExternalResources();
-
-                                        for (AutoCloseable resource : configuration.getResources()) {
-                                            try {
-                                                resource.close();
-                                            } catch (Exception e) {
-                                                // ignore
-                                            }
-                                        }
+                                        resource.close();
                                     } catch (Exception e) {
-                                        if (LOGGER.isDebugEnabled()) {
-                                            LOGGER.error("Caught exception releasing resources", e);
-                                        }
-                                    } finally {
-                                        disposedFuture
-                                        .setFailure(new Throwable("Disposed due to shutdown of channel, not due to command"));
+                                        // ignore
                                     }
-
                                 }
-                            });
+
+                                disposedFuture.setSuccess();
+                            } catch (Exception e) {
+                                if (LOGGER.isDebugEnabled()) {
+                                    LOGGER.error("Caught exception releasing resources", e);
+                                }
+                                disposedFuture.setFailure(e);
+                            }
                         }
                     }).start();
                 }
@@ -289,7 +278,7 @@ public class Robot {
             server.setParentHandler(new SimpleChannelHandler() {
                 @Override
                 public void childChannelOpen(ChannelHandlerContext ctx, ChildChannelStateEvent e) throws Exception {
-                    clientChannels.add(e.getChildChannel());
+                    closeableChannels.add(e.getChildChannel());
                 }
 
                 @Override
@@ -303,7 +292,7 @@ public class Robot {
             ChannelFuture bindFuture = server.bindAsync();
 
             // Add to out serverChannel Group
-            serverChannels.add(bindFuture.getChannel());
+            closeableChannels.add(bindFuture.getChannel());
 
             // Add to our list of bindFutures so we can cancel them later on a possible abort
             bindFutures.add(bindFuture);
@@ -344,7 +333,7 @@ public class Robot {
 
         ChannelFuture connectFuture = client.connect();
         connectFutures.add(connectFuture);
-        clientChannels.add(connectFuture.getChannel());
+        closeableChannels.add(connectFuture.getChannel());
         connectFuture.addListener(createConnectCompleteListener(regionInfo));
     }
 
