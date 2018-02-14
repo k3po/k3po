@@ -318,11 +318,16 @@ public class TlsClientChannelSink extends AbstractChannelSink {
                 @Override
                 public void operationComplete(ChannelFuture future) throws Exception {
                     if (tlsClientChannel.setWriteClosed()) {
-                        shutdownOutputOrClose(transport);
                         fireChannelDisconnected(tlsClientChannel);
                         fireChannelUnbound(tlsClientChannel);
                         fireChannelClosed(tlsClientChannel);
                     }
+                }
+            });
+            tlsHandler.getSSLEngineInboundCloseFuture().addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    shutdownOutputOrClose(transport);
                 }
             });
             chainFutures(tlsCloseFuture, tlsFuture);
