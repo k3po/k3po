@@ -44,8 +44,6 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ChildChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.channel.group.ChannelGroupFuture;
-import org.jboss.netty.channel.group.ChannelGroupFutureListener;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.jboss.netty.logging.InternalLogger;
@@ -221,35 +219,27 @@ public class Robot {
                     // avoid I/O deadlock checker
                     new Thread(new Runnable() {
                         public void run() {
-                            // close server and client channels
-                            // final ChannelGroupFuture closeFuture =
-                            serverChannels.close().addListener(new ChannelGroupFutureListener() {
+                            serverChannels.close().awaitUninterruptibly();
+                            clientChannels.close().awaitUninterruptibly();
+                            try {
+                                bootstrapFactory.shutdown();
+                                bootstrapFactory.releaseExternalResources();
 
-                                @Override
-                                public void operationComplete(ChannelGroupFuture future) throws Exception {
-                                    clientChannels.close();
+                                for (AutoCloseable resource : configuration.getResources()) {
                                     try {
-                                        bootstrapFactory.shutdown();
-                                        bootstrapFactory.releaseExternalResources();
-
-                                        for (AutoCloseable resource : configuration.getResources()) {
-                                            try {
-                                                resource.close();
-                                            } catch (Exception e) {
-                                                // ignore
-                                            }
-                                        }
+                                        resource.close();
                                     } catch (Exception e) {
-                                        if (LOGGER.isDebugEnabled()) {
-                                            LOGGER.error("Caught exception releasing resources", e);
-                                        }
-                                    } finally {
-                                        disposedFuture
-                                        .setFailure(new Throwable("Disposed due to shutdown of channel, not due to command"));
+                                        // ignore
                                     }
-
                                 }
-                            });
+
+                                disposedFuture.setSuccess();
+                            } catch (Exception e) {
+                                if (LOGGER.isDebugEnabled()) {
+                                    LOGGER.error("Caught exception releasing resources", e);
+                                }
+                                disposedFuture.setFailure(e);
+                            }
                         }
                     }).start();
                 }

@@ -51,11 +51,19 @@ class UdpChildChannelSink extends AbstractChannelSink {
 
     @Override
     protected void closeRequested(ChannelPipeline pipeline, ChannelStateEvent evt) throws Exception {
-        fireChannelDisconnected(evt.getChannel());
-        fireChannelUnbound(evt.getChannel());
-        fireChannelClosed(evt.getChannel());
+        final UdpChildChannel channel = (UdpChildChannel) evt.getChannel();
 
-        childChannelSource.closeChildChannel((UdpChildChannel) evt.getChannel());
+        if (channel.isConnected()) {
+            childChannelSource.closeChildChannel(channel);
+        }
+
+        if (channel.setClosed())
+        {
+            fireChannelDisconnected(channel);
+            fireChannelUnbound(channel);
+            fireChannelClosed(channel);
+        }
+
         evt.getFuture().setSuccess();
     }
 

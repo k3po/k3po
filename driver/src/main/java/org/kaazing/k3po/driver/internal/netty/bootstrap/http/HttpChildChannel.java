@@ -83,4 +83,8 @@ public final class HttpChildChannel extends AbstractChannel<HttpChannelConfig> {
     protected boolean setReadAborted() {
         return super.setReadAborted();
     }
+
+    protected boolean setClosed() {
+        return super.setClosed();
+    }
 }

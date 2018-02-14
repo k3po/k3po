@@ -57,4 +57,9 @@ class UdpChildChannel extends AbstractChannel<ChannelConfig> {
         super.setRemoteAddress(remoteAddress);
     }
 
+    @Override
+    protected boolean setClosed()
+    {
+        return super.setClosed();
+    }
 }

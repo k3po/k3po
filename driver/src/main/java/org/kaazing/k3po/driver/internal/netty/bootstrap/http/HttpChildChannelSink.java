@@ -239,8 +239,15 @@ public class HttpChildChannelSink extends AbstractChannelSink {
         case UPGRADED:
         case CONTENT_CLOSE:
             httpChildChannel.writeState(CONTENT_CLOSING);
-            // setClosed() chained asynchronously after transport.close() completes
-            transport.close();
+            if (transport.isOpen()) {
+                // setClosed() chained asynchronously after transport.close() completes
+                transport.close();
+            }
+            else if (httpChildChannel.setWriteClosed()) {
+                fireChannelDisconnected(httpChildChannel);
+                fireChannelUnbound(httpChildChannel);
+                fireChannelClosed(httpChildChannel);
+            }
             break;
         case CONTENT_CHUNKED:
             HttpChunkTrailer trailingChunk = new DefaultHttpChunkTrailer();
