@@ -29,6 +29,7 @@ import static org.kaazing.k3po.driver.internal.channel.Channels.chainWriteComple
 import static org.kaazing.k3po.driver.internal.netty.channel.Channels.abortInputOrSuccess;
 import static org.kaazing.k3po.driver.internal.netty.channel.Channels.abortOutputOrClose;
 import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireInputShutdown;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.shutdownOutputOrClose;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -317,6 +318,7 @@ public class TlsClientChannelSink extends AbstractChannelSink {
                 @Override
                 public void operationComplete(ChannelFuture future) throws Exception {
                     if (tlsClientChannel.setWriteClosed()) {
+                        shutdownOutputOrClose(transport);
                         fireChannelDisconnected(tlsClientChannel);
                         fireChannelUnbound(tlsClientChannel);
                         fireChannelClosed(tlsClientChannel);
