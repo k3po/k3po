@@ -181,6 +181,12 @@ public final class Control {
 
         CommandEvent event = null;
         String eventType = textIn.readLine();
+
+        if (Thread.interrupted())
+        {
+            throw new InterruptedException("thread interrupted during blocking read");
+        }
+
         if (eventType != null) {
             switch (eventType) {
             case PREPARED_EVENT:

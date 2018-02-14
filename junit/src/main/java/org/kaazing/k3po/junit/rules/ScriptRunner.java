@@ -213,13 +213,8 @@ final class ScriptRunner implements Callable<ScriptPair> {
     public void dispose() throws Exception {
         if (controller.isConnected()) {
             controller.writeCommand(new CloseCommand());
-            try {
-                while (controller.readEvent(5, SECONDS) != null) {
-                    Thread.sleep(20);
-                }
-            }
-            catch (SocketTimeoutException e) {
-                throw new IllegalStateException("K3PO cleanup incomplete, subsequent tests may fail");
+            while (controller.readEvent(0, SECONDS) != null) {
+                Thread.sleep(20);
             }
         }
     }
