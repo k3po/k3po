@@ -17,6 +17,7 @@ package org.kaazing.k3po.junit.rules;
 
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
@@ -212,9 +213,13 @@ final class ScriptRunner implements Callable<ScriptPair> {
     public void dispose() throws Exception {
         if (controller.isConnected()) {
             controller.writeCommand(new CloseCommand());
-            while (controller.readEvent() != null)
-            {
-                Thread.sleep(20);
+            try {
+                while (controller.readEvent(5, SECONDS) != null) {
+                    Thread.sleep(20);
+                }
+            }
+            catch (SocketTimeoutException e) {
+                throw new IllegalStateException("K3PO cleanup incomplete, subsequent tests may fail");
             }
         }
     }
