@@ -305,14 +305,16 @@ public class TlsClientChannelSink extends AbstractChannelSink {
         }
         else
         {
-            tlsClientChannel.setReadClosed();
             shutdownOutputRequested(tlsClientChannel, tlsFuture);
         }
     }
 
     private void shutdownOutputRequested(TlsClientChannel tlsClientChannel, ChannelFuture tlsFuture) {
         SslHandler tlsHandler = transport.getPipeline().get(SslHandler.class);
-        if (tlsHandler != null) {
+        if (tlsClientChannel.isReadClosed()) {
+            chainFutures(shutdownOutputOrClose(transport), tlsFuture);
+        }
+        else if (tlsHandler != null) {
             ChannelFuture tlsCloseFuture = tlsHandler.close();
             tlsCloseFuture.addListener(new ChannelFutureListener() {
                 @Override
