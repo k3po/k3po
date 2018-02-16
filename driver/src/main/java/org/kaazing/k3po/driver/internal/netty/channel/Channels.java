@@ -208,12 +208,12 @@ public final class Channels {
         channel.getPipeline().sendUpstream(new UpstreamReadAbortEvent(channel));
     }
 
-    public static void shutdownOutputOrClose(Channel channel) {
+    public static ChannelFuture shutdownOutputOrClose(Channel channel) {
         if (channel instanceof AbstractChannel) {
-            shutdownOutput(channel);
+            return shutdownOutput(channel);
         }
         else {
-            close(channel);
+            return close(channel);
         }
     }
 
@@ -226,12 +226,12 @@ public final class Channels {
         }
     }
 
-    public static void abortOutputOrClose(Channel channel) {
+    public static ChannelFuture abortOutputOrClose(Channel channel) {
         if (channel instanceof AbstractChannel) {
-            abortOutput(channel);
+            return abortOutput(channel);
         }
         else {
-            close(channel);
+            return close(channel);
         }
     }
 
