@@ -74,7 +74,16 @@ public class TlsClientChannelSource extends SimpleChannelHandler {
         TlsClientChannel tlsClientChannel = this.tlsClientChannel;
         if (tlsClientChannel != null) {
             if (tlsClientChannel.setReadAborted()) {
-                fireInputAborted(tlsClientChannel);
+
+                if (tlsClientChannel.setReadClosed()) {
+                    fireInputAborted(tlsClientChannel);
+                    fireChannelDisconnected(tlsClientChannel);
+                    fireChannelUnbound(tlsClientChannel);
+                    fireChannelClosed(tlsClientChannel);
+                }
+                else {
+                    fireInputAborted(tlsClientChannel);
+                }
             }
         }
     }
