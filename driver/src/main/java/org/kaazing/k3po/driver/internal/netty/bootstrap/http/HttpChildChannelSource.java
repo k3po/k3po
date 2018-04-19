@@ -126,8 +126,6 @@ public class HttpChildChannelSource extends HttpChannelHandler {
     public void inputShutdown(ChannelHandlerContext ctx, ShutdownInputEvent e) {
         HttpChildChannel httpChildChannel = this.httpChildChannel;
         if (httpChildChannel != null) {
-
-            this.httpChildChannel = null;
             if (httpChildChannel.readState() == HttpReadState.UPGRADED)
             {
                 fireInputShutdown(httpChildChannel);
