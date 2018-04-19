@@ -42,6 +42,7 @@ import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.kaazing.k3po.driver.internal.netty.channel.ShutdownInputEvent;
 
 
 public class HttpClientChannelSource extends HttpChannelHandler {
@@ -176,6 +177,20 @@ public class HttpClientChannelSource extends HttpChannelHandler {
             }
             else {
                 fireInputAborted(httpClientChannel);
+            }
+        }
+    }
+
+    @Override
+    public void inputShutdown(ChannelHandlerContext ctx, ShutdownInputEvent e) {
+        HttpClientChannel httpClientChannel = this.httpClientChannel;
+
+        if (httpClientChannel != null) {
+            HttpChannelConfig httpClientConfig = httpClientChannel.getConfig();
+            HttpResponseStatus httpStatus = httpClientConfig.getStatus();
+            int httpStatusCode = (httpStatus != null) ? httpStatus.getCode() : 0;
+            if (httpStatusCode == SWITCHING_PROTOCOLS.getCode()) {
+                fireInputShutdown(httpClientChannel);
             }
         }
     }
