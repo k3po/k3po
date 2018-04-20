@@ -65,6 +65,7 @@ public class HttpClientChannelSource extends HttpChannelHandler {
             Channel transport = ctx.getChannel();
             ChannelPipeline pipeline = transport.getPipeline();
             pipeline.remove(HttpRequestEncoder.class);
+            httpClientChannel.writeState(HttpClientChannel.HttpState.UPGRADEABLE);
 
             boolean readable = httpClientChannel.isReadable();
             if (!readable) {
@@ -186,10 +187,8 @@ public class HttpClientChannelSource extends HttpChannelHandler {
         HttpClientChannel httpClientChannel = this.httpClientChannel;
 
         if (httpClientChannel != null) {
-            HttpChannelConfig httpClientConfig = httpClientChannel.getConfig();
-            HttpResponseStatus httpStatus = httpClientConfig.getStatus();
-            int httpStatusCode = (httpStatus != null) ? httpStatus.getCode() : 0;
-            if (httpStatusCode == SWITCHING_PROTOCOLS.getCode()) {
+            if (httpClientChannel.readState() == HttpClientChannel.HttpState.UPGRADEABLE)
+            {
                 fireInputShutdown(httpClientChannel);
             }
         }

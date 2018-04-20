@@ -36,11 +36,11 @@ public class HttpClientChannel extends AbstractChannel<HttpChannelConfig> {
         fireChannelOpen(this);
     }
 
-    public HttpState state() {
+    public HttpState readState() {
         return state;
     }
 
-    public void state(HttpState state) {
+    public void writeState(HttpState state) {
         this.state = state;
     }
 
