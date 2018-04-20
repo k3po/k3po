@@ -25,23 +25,33 @@ import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
 public class HttpClientChannel extends AbstractChannel<HttpChannelConfig> {
 
-    public enum HttpState { REQUEST, CONTENT_CHUNKED, CONTENT_BUFFERED, CONTENT_STREAMED, CONTENT_COMPLETE, UPGRADEABLE }
+    public enum HttpReadState { REQUEST, CONTENT_CHUNKED, CONTENT_COMPLETE, UPGRADED }
+    public enum HttpWriteState { REQUEST, CONTENT_CHUNKED, CONTENT_BUFFERED, CONTENT_STREAMED, CONTENT_COMPLETE, UPGRADEABLE }
 
-    private HttpState state;
+    private HttpWriteState writeState;
+    private HttpReadState readState;
 
     HttpClientChannel(ChannelFactory factory, ChannelPipeline pipeline, ChannelSink sink) {
         super(null, factory, pipeline, sink, new DefaultHttpChannelConfig());
-        this.state = HttpState.REQUEST;
+        this.writeState = HttpWriteState.REQUEST;
 
         fireChannelOpen(this);
     }
 
-    public HttpState state() {
-        return state;
+    public HttpWriteState writeState() {
+        return writeState;
     }
 
-    public void state(HttpState state) {
-        this.state = state;
+    public void writeState(HttpWriteState state) {
+        this.writeState = state;
+    }
+
+    public HttpReadState readState() {
+        return readState;
+    }
+
+    public void readState(HttpReadState state) {
+        this.readState = state;
     }
 
     @Override

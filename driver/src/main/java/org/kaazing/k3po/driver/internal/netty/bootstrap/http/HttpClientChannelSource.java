@@ -65,7 +65,7 @@ public class HttpClientChannelSource extends HttpChannelHandler {
             Channel transport = ctx.getChannel();
             ChannelPipeline pipeline = transport.getPipeline();
             pipeline.remove(HttpRequestEncoder.class);
-            httpClientChannel.state(HttpClientChannel.HttpState.UPGRADEABLE);
+            httpClientChannel.readState(HttpClientChannel.HttpReadState.UPGRADED);
 
             boolean readable = httpClientChannel.isReadable();
             if (!readable) {
@@ -187,7 +187,7 @@ public class HttpClientChannelSource extends HttpChannelHandler {
         HttpClientChannel httpClientChannel = this.httpClientChannel;
 
         if (httpClientChannel != null) {
-            if (httpClientChannel.state() == HttpClientChannel.HttpState.UPGRADEABLE)
+            if (httpClientChannel.readState() == HttpClientChannel.HttpReadState.UPGRADED)
             {
                 fireInputShutdown(httpClientChannel);
             }

@@ -29,11 +29,11 @@ import static org.jboss.netty.handler.codec.http.HttpHeaders.isTransferEncodingC
 import static org.jboss.netty.handler.codec.http.HttpHeaders.setContentLength;
 import static org.kaazing.k3po.driver.internal.channel.Channels.chainFutures;
 import static org.kaazing.k3po.driver.internal.channel.Channels.chainWriteCompletes;
-import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpClientChannel.HttpState.CONTENT_BUFFERED;
-import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpClientChannel.HttpState.CONTENT_CHUNKED;
-import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpClientChannel.HttpState.CONTENT_COMPLETE;
-import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpClientChannel.HttpState.CONTENT_STREAMED;
-import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpClientChannel.HttpState.UPGRADEABLE;
+import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpClientChannel.HttpWriteState.CONTENT_BUFFERED;
+import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpClientChannel.HttpWriteState.CONTENT_CHUNKED;
+import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpClientChannel.HttpWriteState.CONTENT_COMPLETE;
+import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpClientChannel.HttpWriteState.CONTENT_STREAMED;
+import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpClientChannel.HttpWriteState.UPGRADEABLE;
 import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpRequestForm.ABSOLUTE_FORM;
 import static org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpRequestForm.ORIGIN_FORM;
 
@@ -173,7 +173,7 @@ public class HttpClientChannelSink extends AbstractChannelSink {
         ChannelBuffer httpContent = (ChannelBuffer) e.getMessage();
         int httpReadableBytes = httpContent.readableBytes();
 
-        switch (httpClientChannel.state()) {
+        switch (httpClientChannel.writeState()) {
         case REQUEST:
             HttpVersion version = httpClientConfig.getVersion();
             HttpMethod method = httpClientConfig.getMethod();
@@ -190,15 +190,15 @@ public class HttpClientChannelSink extends AbstractChannelSink {
                 httpRequest.setContent(httpContent);
                 ChannelFuture future = transport.write(httpRequest);
                 if (httpReadableBytes == getContentLength(httpRequest)) {
-                    httpClientChannel.state(CONTENT_COMPLETE);
+                    httpClientChannel.writeState(CONTENT_COMPLETE);
                 } else {
-                    httpClientChannel.state(CONTENT_STREAMED);
+                    httpClientChannel.writeState(CONTENT_STREAMED);
                 }
                 chainWriteCompletes(future, httpFuture, httpReadableBytes);
             } else if (isTransferEncodingChunked(httpRequest)) {
                 httpRequest.setChunked(true);
                 transport.write(httpRequest);
-                httpClientChannel.state(CONTENT_CHUNKED);
+                httpClientChannel.writeState(CONTENT_CHUNKED);
 
                 HttpChunk httpChunk = new DefaultHttpChunk(httpContent);
                 ChannelFuture future = transport.write(httpChunk);
@@ -206,13 +206,13 @@ public class HttpClientChannelSink extends AbstractChannelSink {
             } else if (httpRequest.headers().contains(Names.UPGRADE)) {
                 httpRequest.setContent(httpContent);
                 ChannelFuture future = transport.write(httpRequest);
-                httpClientChannel.state(UPGRADEABLE);
+                httpClientChannel.writeState(UPGRADEABLE);
                 chainWriteCompletes(future, httpFuture, httpReadableBytes);
             } else if (httpClientConfig.getMaximumBufferedContentLength() >= httpReadableBytes) {
                 // automatically calculate content-length
                 httpRequest.setContent(httpContent);
                 httpBufferedRequest = httpRequest;
-                httpClientChannel.state(CONTENT_BUFFERED);
+                httpClientChannel.writeState(CONTENT_BUFFERED);
                 httpFuture.setSuccess();
             } else {
                 throw new IllegalStateException("Missing Upgrade, Content-Length, Transfer-Encoding: chunked");
@@ -287,7 +287,7 @@ public class HttpClientChannelSink extends AbstractChannelSink {
         ChannelFuture httpFuture = evt.getFuture();
         httpFuture.setSuccess();
 
-        switch (httpClientChannel.state()) {
+        switch (httpClientChannel.writeState()) {
         case UPGRADEABLE:
             transport.close();
             break;
@@ -312,13 +312,13 @@ public class HttpClientChannelSink extends AbstractChannelSink {
     }
 
     private void shutdownOutputRequested(HttpClientChannel httpClientChannel, ChannelFuture httpFuture) throws Exception {
-        switch (httpClientChannel.state()) {
+        switch (httpClientChannel.writeState()) {
         case CONTENT_CHUNKED:
             DefaultHttpChunkTrailer trailingChunk = new DefaultHttpChunkTrailer();
             HttpHeaders writeTrailers = httpClientChannel.getConfig().getWriteTrailers();
             trailingChunk.trailingHeaders().add(writeTrailers);
             ChannelFuture future = transport.write(trailingChunk);
-            httpClientChannel.state(CONTENT_COMPLETE);
+            httpClientChannel.writeState(CONTENT_COMPLETE);
             chainFutures(future, httpFuture);
             break;
         default:
@@ -328,7 +328,7 @@ public class HttpClientChannelSink extends AbstractChannelSink {
     }
 
     private void flushRequested(HttpClientChannel httpClientChannel, ChannelFuture httpFuture) throws Exception {
-        switch (httpClientChannel.state()) {
+        switch (httpClientChannel.writeState()) {
         case REQUEST: {
             HttpChannelConfig httpClientConfig = httpClientChannel.getConfig();
             HttpVersion version = httpClientConfig.getVersion();
@@ -346,31 +346,31 @@ public class HttpClientChannelSink extends AbstractChannelSink {
             if (isContentLengthSet(httpRequest)) {
                 ChannelFuture future = transport.write(httpRequest);
                 if (getContentLength(httpRequest) == 0) {
-                    httpClientChannel.state(CONTENT_COMPLETE);
+                    httpClientChannel.writeState(CONTENT_COMPLETE);
                 } else {
-                    httpClientChannel.state(CONTENT_STREAMED);
+                    httpClientChannel.writeState(CONTENT_STREAMED);
                 }
                 chainFutures(future, httpFuture);
             } else if (isTransferEncodingChunked(httpRequest)) {
                 httpRequest.setChunked(true);
                 ChannelFuture future = transport.write(httpRequest);
-                httpClientChannel.state(CONTENT_CHUNKED);
+                httpClientChannel.writeState(CONTENT_CHUNKED);
                 chainFutures(future, httpFuture);
             } else if (httpRequestHeaders.contains(Names.UPGRADE)) {
                 ChannelFuture future = transport.write(httpRequest);
-                httpClientChannel.state(UPGRADEABLE);
+                httpClientChannel.writeState(UPGRADEABLE);
                 chainFutures(future, httpFuture);
             } else if ("GET".equalsIgnoreCase(method.getName()) || "HEAD".equalsIgnoreCase(method.getName())) {
 
                 // no content and no content-length
                 ChannelFuture future = transport.write(httpRequest);
-                httpClientChannel.state(CONTENT_COMPLETE);
+                httpClientChannel.writeState(CONTENT_COMPLETE);
                 chainFutures(future, httpFuture);
             } else if (httpClientConfig.getMaximumBufferedContentLength() > 0) {
                 // no content and content-length: 0
                 setContentLength(httpRequest, 0);
                 ChannelFuture future = transport.write(httpRequest);
-                httpClientChannel.state(CONTENT_COMPLETE);
+                httpClientChannel.writeState(CONTENT_COMPLETE);
                 chainFutures(future, httpFuture);
             } else {
                 throw new IllegalStateException("Missing Upgrade, Content-Length, or Transfer-Encoding: chunked");
@@ -385,7 +385,7 @@ public class HttpClientChannelSink extends AbstractChannelSink {
                 int httpReadableBytes = httpBufferedContent.readableBytes();
                 setContentLength(httpBufferedRequest, httpReadableBytes);
                 ChannelFuture future = transport.write(httpBufferedRequest);
-                httpClientChannel.state(CONTENT_COMPLETE);
+                httpClientChannel.writeState(CONTENT_COMPLETE);
                 chainWriteCompletes(future, httpFuture, httpReadableBytes);
             } else {
                 throw new IllegalStateException("No buffered content");
