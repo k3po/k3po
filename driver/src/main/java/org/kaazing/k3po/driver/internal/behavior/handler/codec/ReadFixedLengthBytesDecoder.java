@@ -20,10 +20,10 @@ import static java.lang.String.format;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
+import org.kaazing.k3po.driver.internal.behavior.ScriptProgressException;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.value.AstLiteralBytesValue;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
-import org.kaazing.k3po.lang.internal.parser.ScriptParseException;
 
 public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
 
@@ -54,7 +54,7 @@ public abstract class ReadFixedLengthBytesDecoder<T> extends MessageDecoder {
     protected Object decodeBufferLast(ChannelBuffer buffer) throws Exception {
 
         if (buffer.readableBytes() < length) {
-            throw new ScriptParseException("Not enough bytes");
+            throw new ScriptProgressException(getRegionInfo(), String.format("Expected %d bytes, found %d", length, buffer.readableBytes()));
         }
 
         if (captureName == null) {
