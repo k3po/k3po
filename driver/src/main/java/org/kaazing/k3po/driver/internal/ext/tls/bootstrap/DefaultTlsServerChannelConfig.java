@@ -146,16 +146,9 @@ public class DefaultTlsServerChannelConfig extends DefaultServerChannelConfig im
         return wantClientAuth;
     }
 
-    public void setWantClientAuth(boolean wantClientAuth) {
-        this.wantClientAuth = wantClientAuth;
-    }
-
     @Override
     public boolean getNeedClientAuth() {
         return needClientAuth;
     }
 
-    public void setNeedClientAuth(boolean needClientAuth) {
-        this.needClientAuth = needClientAuth;
-    }
 }
