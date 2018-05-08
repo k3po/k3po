@@ -18,10 +18,11 @@ package org.kaazing.k3po.driver.internal.netty.bootstrap.http;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.kaazing.k3po.driver.internal.netty.channel.SimpleChannelHandler;
+
 
 public class HttpChannelHandler extends SimpleChannelHandler {
 

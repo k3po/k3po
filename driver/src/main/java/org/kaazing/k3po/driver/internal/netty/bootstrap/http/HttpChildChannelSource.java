@@ -66,6 +66,7 @@ import org.kaazing.k3po.driver.internal.behavior.handler.codec.http.QueryStringE
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.ChannelConfig;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChildChannel.HttpReadState;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
+import org.kaazing.k3po.driver.internal.netty.channel.ShutdownInputEvent;
 
 public class HttpChildChannelSource extends HttpChannelHandler {
 
@@ -117,6 +118,17 @@ public class HttpChildChannelSource extends HttpChannelHandler {
                     httpChildChannel.setClosed();
                 }
                 break;
+            }
+        }
+    }
+
+    @Override
+    public void inputShutdown(ChannelHandlerContext ctx, ShutdownInputEvent e) {
+        HttpChildChannel httpChildChannel = this.httpChildChannel;
+        if (httpChildChannel != null) {
+            if (httpChildChannel.readState() == HttpReadState.UPGRADED)
+            {
+                fireInputShutdown(httpChildChannel);
             }
         }
     }

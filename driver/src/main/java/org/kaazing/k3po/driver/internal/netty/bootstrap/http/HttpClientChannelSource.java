@@ -42,6 +42,7 @@ import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.kaazing.k3po.driver.internal.netty.channel.ShutdownInputEvent;
 
 
 public class HttpClientChannelSource extends HttpChannelHandler {
@@ -64,6 +65,7 @@ public class HttpClientChannelSource extends HttpChannelHandler {
             Channel transport = ctx.getChannel();
             ChannelPipeline pipeline = transport.getPipeline();
             pipeline.remove(HttpRequestEncoder.class);
+            httpClientChannel.readState(HttpClientChannel.HttpReadState.UPGRADED);
 
             boolean readable = httpClientChannel.isReadable();
             if (!readable) {
@@ -176,6 +178,18 @@ public class HttpClientChannelSource extends HttpChannelHandler {
             }
             else {
                 fireInputAborted(httpClientChannel);
+            }
+        }
+    }
+
+    @Override
+    public void inputShutdown(ChannelHandlerContext ctx, ShutdownInputEvent e) {
+        HttpClientChannel httpClientChannel = this.httpClientChannel;
+
+        if (httpClientChannel != null) {
+            if (httpClientChannel.readState() == HttpClientChannel.HttpReadState.UPGRADED)
+            {
+                fireInputShutdown(httpClientChannel);
             }
         }
     }
