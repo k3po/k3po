@@ -16,4 +16,6 @@
 package org.kaazing.k3po.driver.internal.ext.tls.bootstrap;
 
 public interface TlsServerChannelConfig extends TlsChannelConfig {
+    boolean getWantClientAuth();
+    boolean getNeedClientAuth();
 }

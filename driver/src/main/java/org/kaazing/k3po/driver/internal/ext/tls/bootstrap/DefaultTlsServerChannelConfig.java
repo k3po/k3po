@@ -29,6 +29,8 @@ public class DefaultTlsServerChannelConfig extends DefaultServerChannelConfig im
     private File trustStoreFile;
     private char[] trustStorePassword;
     private String[] applicationProtocols;
+    private boolean needClientAuth;
+    private boolean wantClientAuth;
 
     @Override
     public void setParameters(SSLParameters parameters) {
@@ -110,31 +112,43 @@ public class DefaultTlsServerChannelConfig extends DefaultServerChannelConfig im
         String key,
         Object value)
     {
-        if ("keyStoreFile".equals(key))
-        {
-            keyStoreFile = new File((String) value);
-        }
-        else if ("trustStoreFile".equals(key))
-        {
-            trustStoreFile = new File((String) value);
-        }
-        else if ("keyStorePassword".equals(key))
-        {
-            keyStorePassword = ((String) value).toCharArray();
-        }
-        else if ("trustStorePassword".equals(key))
-        {
-            trustStorePassword = ((String) value).toCharArray();
-        }
-        else if ("applicationProtocols".equals(key))
-        {
-            applicationProtocols = ((String) value).split(",");
-        }
-        else
-        {
-            return false;
+        switch (key) {
+            case "keyStoreFile":
+                keyStoreFile = new File((String) value);
+                break;
+            case "trustStoreFile":
+                trustStoreFile = new File((String) value);
+                break;
+            case "keyStorePassword":
+                keyStorePassword = ((String) value).toCharArray();
+                break;
+            case "trustStorePassword":
+                trustStorePassword = ((String) value).toCharArray();
+                break;
+            case "applicationProtocols":
+                applicationProtocols = ((String) value).split(",");
+                break;
+            case "needClientAuth":
+                needClientAuth = Boolean.valueOf((String) value);
+                break;
+            case "wantClientAuth":
+                wantClientAuth = Boolean.valueOf((String) value);
+                break;
+            default:
+                return false;
         }
 
         return true;
     }
+
+    @Override
+    public boolean getWantClientAuth() {
+        return wantClientAuth;
+    }
+
+    @Override
+    public boolean getNeedClientAuth() {
+        return needClientAuth;
+    }
+
 }
