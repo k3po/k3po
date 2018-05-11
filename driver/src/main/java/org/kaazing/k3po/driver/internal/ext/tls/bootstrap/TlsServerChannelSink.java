@@ -111,7 +111,7 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
                         KeyStore keys = KeyStore.getInstance("JKS");
                         keys.load(new FileInputStream(keyStoreFile), keyStorePassword);
 
-                        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+                        KeyManagerFactory kmf = KeyManagerFactory.getInstance("PKIX");
                         kmf.init(keys, keyStorePassword);
                         keyManagers = kmf.getKeyManagers();
                     }
@@ -122,7 +122,7 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
                         KeyStore trusts = KeyStore.getInstance("JKS");
                         trusts.load(new FileInputStream(trustStoreFile), trustStorePassword);
 
-                        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+                        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
                         tmf.init(trusts);
                         trustManagers = tmf.getTrustManagers();
                     }
