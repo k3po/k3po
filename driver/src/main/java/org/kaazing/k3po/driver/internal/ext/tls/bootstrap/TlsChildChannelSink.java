@@ -24,6 +24,8 @@ import static org.kaazing.k3po.driver.internal.channel.Channels.chainFutures;
 import static org.kaazing.k3po.driver.internal.channel.Channels.chainWriteCompletes;
 import static org.kaazing.k3po.driver.internal.netty.channel.Channels.abortInputOrSuccess;
 import static org.kaazing.k3po.driver.internal.netty.channel.Channels.abortOutputOrClose;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireOutputShutdown;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.shutdownOutputOrClose;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
@@ -109,16 +111,29 @@ public class TlsChildChannelSink extends AbstractChannelSink {
 
     private void shutdownOutputRequested(TlsChildChannel tlsChildChannel, ChannelFuture tlsFuture) {
         SslHandler tlsHandler = transport.getPipeline().get(SslHandler.class);
-        if (tlsHandler != null) {
+        if (tlsChildChannel.isReadClosed()) {
+            chainFutures(shutdownOutputOrClose(transport), tlsFuture);
+        }
+        else if (tlsHandler != null) {
             ChannelFuture tlsCloseFuture = tlsHandler.close();
             tlsCloseFuture.addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture future) throws Exception {
                     if (tlsChildChannel.setWriteClosed()) {
+                        fireOutputShutdown(tlsChildChannel);
                         fireChannelDisconnected(tlsChildChannel);
                         fireChannelUnbound(tlsChildChannel);
                         fireChannelClosed(tlsChildChannel);
                     }
+                    else {
+                        fireOutputShutdown(tlsChildChannel);
+                    }
+                }
+            });
+            tlsHandler.getSSLEngineInboundCloseFuture().addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    shutdownOutputOrClose(transport);
                 }
             });
             chainFutures(tlsCloseFuture, tlsFuture);
