@@ -29,6 +29,7 @@ import static org.kaazing.k3po.driver.internal.channel.Channels.chainWriteComple
 import static org.kaazing.k3po.driver.internal.netty.channel.Channels.abortInputOrSuccess;
 import static org.kaazing.k3po.driver.internal.netty.channel.Channels.abortOutputOrClose;
 import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireInputShutdown;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireOutputShutdown;
 import static org.kaazing.k3po.driver.internal.netty.channel.Channels.shutdownOutputOrClose;
 
 import java.io.File;
@@ -141,7 +142,7 @@ public class TlsClientChannelSink extends AbstractChannelSink {
                     KeyStore keys = KeyStore.getInstance("JKS");
                     keys.load(new FileInputStream(keyStoreFile), keyStorePassword);
 
-                    KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+                    KeyManagerFactory kmf = KeyManagerFactory.getInstance("PKIX");
                     kmf.init(keys, keyStorePassword);
                     keyManagers = kmf.getKeyManagers();
                 }
@@ -152,7 +153,7 @@ public class TlsClientChannelSink extends AbstractChannelSink {
                     KeyStore trusts = KeyStore.getInstance("JKS");
                     trusts.load(new FileInputStream(trustStoreFile), trustStorePassword);
 
-                    TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+                    TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
                     tmf.init(trusts);
                     trustManagers = tmf.getTrustManagers();
                 }
@@ -305,6 +306,7 @@ public class TlsClientChannelSink extends AbstractChannelSink {
         }
         else
         {
+            tlsClientChannel.setReadClosed();
             shutdownOutputRequested(tlsClientChannel, tlsFuture);
         }
     }
@@ -320,9 +322,13 @@ public class TlsClientChannelSink extends AbstractChannelSink {
                 @Override
                 public void operationComplete(ChannelFuture future) throws Exception {
                     if (tlsClientChannel.setWriteClosed()) {
+                        fireOutputShutdown(tlsClientChannel);
                         fireChannelDisconnected(tlsClientChannel);
                         fireChannelUnbound(tlsClientChannel);
                         fireChannelClosed(tlsClientChannel);
+                    }
+                    else {
+                        fireOutputShutdown(tlsClientChannel);
                     }
                 }
             });

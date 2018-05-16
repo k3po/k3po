@@ -21,7 +21,9 @@ import static org.jboss.netty.channel.Channels.fireChannelUnbound;
 import static org.jboss.netty.channel.Channels.fireExceptionCaught;
 import static org.jboss.netty.channel.Channels.fireMessageReceived;
 import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireInputAborted;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireInputShutdown;
 import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireOutputAborted;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.fireOutputShutdown;
 
 import javax.net.ssl.SSLEngine;
 
@@ -33,6 +35,8 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.kaazing.k3po.driver.internal.netty.channel.ReadAbortEvent;
+import org.kaazing.k3po.driver.internal.netty.channel.ShutdownInputEvent;
+import org.kaazing.k3po.driver.internal.netty.channel.ShutdownOutputEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.SimpleChannelHandler;
 import org.kaazing.k3po.driver.internal.netty.channel.WriteAbortEvent;
 
@@ -74,7 +78,6 @@ public class TlsClientChannelSource extends SimpleChannelHandler {
         TlsClientChannel tlsClientChannel = this.tlsClientChannel;
         if (tlsClientChannel != null) {
             if (tlsClientChannel.setReadAborted()) {
-
                 if (tlsClientChannel.setReadClosed()) {
                     fireInputAborted(tlsClientChannel);
                     fireChannelDisconnected(tlsClientChannel);
@@ -93,7 +96,47 @@ public class TlsClientChannelSource extends SimpleChannelHandler {
         TlsClientChannel tlsClientChannel = this.tlsClientChannel;
         if (tlsClientChannel != null) {
             if (tlsClientChannel.setWriteAborted()) {
-                fireOutputAborted(tlsClientChannel);
+                if (tlsClientChannel.setWriteClosed()) {
+                    fireOutputAborted(tlsClientChannel);
+                    fireChannelDisconnected(tlsClientChannel);
+                    fireChannelUnbound(tlsClientChannel);
+                    fireChannelClosed(tlsClientChannel);
+                }
+                else {
+                    fireOutputAborted(tlsClientChannel);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void inputShutdown(ChannelHandlerContext ctx, ShutdownInputEvent e) {
+        TlsClientChannel tlsClientChannel = this.tlsClientChannel;
+        if (tlsClientChannel != null) {
+            if (tlsClientChannel.setReadClosed()) {
+                fireInputShutdown(tlsClientChannel);
+                fireChannelDisconnected(tlsClientChannel);
+                fireChannelUnbound(tlsClientChannel);
+                fireChannelClosed(tlsClientChannel);
+            }
+            else {
+                fireInputShutdown(tlsClientChannel);
+            }
+        }
+    }
+
+    @Override
+    public void outputShutdown(ChannelHandlerContext ctx, ShutdownOutputEvent e) {
+        TlsClientChannel tlsClientChannel = this.tlsClientChannel;
+        if (tlsClientChannel != null) {
+            if (tlsClientChannel.setWriteClosed()) {
+                fireOutputShutdown(tlsClientChannel);
+                fireChannelDisconnected(tlsClientChannel);
+                fireChannelUnbound(tlsClientChannel);
+                fireChannelClosed(tlsClientChannel);
+            }
+            else {
+                fireOutputShutdown(tlsClientChannel);
             }
         }
     }

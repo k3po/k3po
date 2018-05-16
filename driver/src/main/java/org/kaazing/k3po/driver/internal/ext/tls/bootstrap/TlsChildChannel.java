@@ -63,4 +63,8 @@ public final class TlsChildChannel extends AbstractChannel<TlsChannelConfig> {
     protected boolean setWriteAborted() {
         return super.setWriteAborted();
     }
+
+    protected boolean isReadClosed() {
+        return super.isReadClosed();
+    }
 }
