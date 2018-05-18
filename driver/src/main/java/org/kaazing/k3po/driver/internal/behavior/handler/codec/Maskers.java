@@ -102,6 +102,7 @@ public final class Maskers {
 
             offset = (offset + writerIndex - readerIndex) % maskingKey.length;
 
+            // same buffer, so marked writerIndex is retained, needed for message boundaries
             return buffer;
         }
 
@@ -125,6 +126,7 @@ public final class Maskers {
                 }
             }
 
+            // same buffer, so marked writerIndex is retained, needed for message boundaries
             return buffer;
         }
     }
