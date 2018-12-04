@@ -20,4 +20,8 @@ import java.util.Map;
 public interface ChannelConfig extends org.jboss.netty.channel.ChannelConfig
 {
     Map<String, Object> getTransportOptions();
+
+    void setAlignment(String alignment);
+
+    String getAlignment();
 }

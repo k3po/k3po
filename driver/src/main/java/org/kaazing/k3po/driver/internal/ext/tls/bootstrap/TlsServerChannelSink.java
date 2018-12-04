@@ -92,12 +92,14 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
         ChannelAddress address = tlsLocalAddress.getTransport();
         TlsTransport tlsTransport = tlsTransports.get(address);
         if (tlsTransport == null) {
-            TlsChannelConfig tlsConnectConfig = tlsBindChannel.getConfig();
+            TlsServerChannelConfig tlsConnectConfig = tlsBindChannel.getConfig();
             File keyStoreFile = tlsConnectConfig.getKeyStoreFile();
             File trustStoreFile = tlsConnectConfig.getTrustStoreFile();
             char[] keyStorePassword = tlsConnectConfig.getKeyStorePassword();
             char[] trustStorePassword = tlsConnectConfig.getTrustStorePassword();
             String[] applicationProtocols = tlsConnectConfig.getApplicationProtocols();
+            boolean wantClientAuth = tlsConnectConfig.getWantClientAuth();
+            boolean needClientAuth = tlsConnectConfig.getNeedClientAuth();
 
             ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
                 @Override
@@ -109,7 +111,7 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
                         KeyStore keys = KeyStore.getInstance("JKS");
                         keys.load(new FileInputStream(keyStoreFile), keyStorePassword);
 
-                        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+                        KeyManagerFactory kmf = KeyManagerFactory.getInstance("PKIX");
                         kmf.init(keys, keyStorePassword);
                         keyManagers = kmf.getKeyManagers();
                     }
@@ -120,7 +122,7 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
                         KeyStore trusts = KeyStore.getInstance("JKS");
                         trusts.load(new FileInputStream(trustStoreFile), trustStorePassword);
 
-                        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+                        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
                         tmf.init(trusts);
                         trustManagers = tmf.getTrustManagers();
                     }
@@ -135,6 +137,12 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
                     String tlsHostname = tlsLocation.getHost();
 
                     SSLParameters tlsParameters = new SSLParameters();
+                    if (wantClientAuth) {
+                        tlsParameters.setWantClientAuth(true);
+                    }
+                    if (needClientAuth) {
+                        tlsParameters.setNeedClientAuth(true);
+                    }
                     tlsParameters.setSNIMatchers(singleton(createSNIMatcher(tlsHostname)));
                     if (applicationProtocols != null && applicationProtocols.length > 0) {
                         setApplicationProtocols(tlsParameters, applicationProtocols);

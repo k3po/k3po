@@ -24,8 +24,12 @@ public class DefaultChannelConfig extends org.jboss.netty.channel.DefaultChannel
 {
     private final Map<String, Object> transportOptions = new HashMap<>();
 
+    private String alignment;
+
     @Override
-    public final boolean setOption(String key, Object value)
+    public final boolean setOption(
+        String key,
+        Object value)
     {
         if (!setOption0(key, value) && !super.setOption(key, value))
         {
@@ -40,9 +44,30 @@ public class DefaultChannelConfig extends org.jboss.netty.channel.DefaultChannel
         return Collections.unmodifiableMap(transportOptions);
     }
 
-    protected boolean setOption0(String key, Object value)
-    {
-        return false;
+    @Override
+    public void setAlignment(String alignment) {
+        this.alignment = alignment;
     }
 
+    @Override
+    public String getAlignment()
+    {
+        return alignment;
+    }
+
+    protected boolean setOption0(
+        String key,
+        Object value)
+    {
+        if ("alignment".equals(key))
+        {
+            alignment = value.toString();
+        }
+        else
+        {
+            return false;
+        }
+
+        return true;
+    }
 }

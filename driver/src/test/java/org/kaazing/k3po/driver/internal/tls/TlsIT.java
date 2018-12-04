@@ -115,4 +115,13 @@ public class TlsIT {
     public void shouldReceiveClientSentWriteClose() throws Exception {
         k3po.finish();
     }
+
+    @Test
+    @TestSpecification({
+        "client.auth/server",
+        "client.auth/client"
+    })
+    public void shouldClientAuth() throws Exception {
+        k3po.finish();
+    }
 }

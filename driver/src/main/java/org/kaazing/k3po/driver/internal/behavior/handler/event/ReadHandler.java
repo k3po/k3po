@@ -28,6 +28,7 @@ import javax.el.ELException;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelConfig;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -86,7 +87,16 @@ public class ReadHandler extends AbstractEventHandler {
 
     private void messageReceived(ChannelHandlerContext ctx, MessageEvent e, boolean isLast) {
 
+        final Channel channel = ctx.getChannel();
+        final ChannelConfig config = channel.getConfig();
+        final boolean messageAligned = isMessageAligned(config);
+
         ChannelBuffer buf = (ChannelBuffer) e.getMessage();
+        final int writerIndex = buf.writerIndex();
+        buf.resetWriterIndex();
+        final int markedWriterIndex = buf.writerIndex();
+        buf.writerIndex(writerIndex);
+
         // first unmask the bytes (if mask read option is specified)
         buf = unmasker.applyMask(buf);
 
@@ -114,23 +124,48 @@ public class ReadHandler extends AbstractEventHandler {
                 handlerFuture.setFailure(mme);
                 return;
             }
+
             if (buf == null) {
-                // Need more data to complete the decode
+                // need more data to complete the decode, must not detect message boundary when message oriented
+                if (messageAligned && markedWriterIndex != 0)
+                {
+                    handlerFuture.setFailure(new ScriptProgressException(getRegionInfo(), "invalid message boundary"));
+                }
                 return;
             }
-            // Remove the decoder because it is done
+
+            // remove the decoder because it is done
             iterator.remove();
         }
 
-        // If we get through the list of decoders without an exception we are done.
-        handlerFuture.setSuccess();
+        // if we get through the list of decoders without an exception we are done
+        if (messageAligned)
+        {
+            if (buf.readable() || markedWriterIndex != writerIndex)
+            {
+                handlerFuture.setFailure(new ScriptProgressException(getRegionInfo(), "invalid message boundary"));
+            }
+            else
+            {
+                handlerFuture.setSuccess();
+            }
+        }
+        else
+        {
+            handlerFuture.setSuccess();
 
-        // Propagate remaining data for next handler(s)
-        if (buf.readable()) {
-            buf = unmasker.undoMask(buf);
-            fireMessageReceived(ctx, buf, ctx.getChannel().getRemoteAddress());
+            // propagate remaining data for next handler(s) when not message-oriented
+            if (buf.readable()) {
+                buf = unmasker.undoMask(buf);
+                fireMessageReceived(ctx, buf, channel.getRemoteAddress());
+            }
         }
     }
 
-
+    protected boolean isMessageAligned(
+        ChannelConfig config)
+    {
+        return (config instanceof org.kaazing.k3po.driver.internal.netty.bootstrap.channel.ChannelConfig) &&
+                "message".equals(((org.kaazing.k3po.driver.internal.netty.bootstrap.channel.ChannelConfig)config).getAlignment());
+    }
 }

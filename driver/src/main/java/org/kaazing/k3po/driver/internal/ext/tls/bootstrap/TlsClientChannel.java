@@ -71,7 +71,7 @@ public class TlsClientChannel extends AbstractChannel<TlsChannelConfig> {
         return super.setWriteAborted();
     }
 
-    public boolean isReadClosed() {
+    protected boolean isReadClosed() {
         return super.isReadClosed();
     }
 }

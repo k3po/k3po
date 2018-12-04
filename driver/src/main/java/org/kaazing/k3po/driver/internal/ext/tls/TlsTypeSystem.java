@@ -34,6 +34,8 @@ public final class TlsTypeSystem implements TypeSystemSpi
     public static final TypeInfo<String> OPTION_TRUST_STORE_FILE = new TypeInfo<>("trustStoreFile", String.class);
     public static final TypeInfo<String> OPTION_TRUST_STORE_PASSWORD = new TypeInfo<>("trustStorePassword", String.class);
     public static final TypeInfo<String> OPTION_APPLICATION_PROTOCOLS = new TypeInfo<>("applicationProtocols", String.class);
+    public static final TypeInfo<Boolean> OPTION_NEED_CLIENT_AUTH = new TypeInfo<>("needClientAuth", Boolean.class);
+    public static final TypeInfo<Boolean> OPTION_WANT_CLIENT_AUTH = new TypeInfo<>("wantClientAuth", Boolean.class);
 
     private final Set<TypeInfo<?>> acceptOptions;
     private final Set<TypeInfo<?>> connectOptions;
@@ -51,6 +53,8 @@ public final class TlsTypeSystem implements TypeSystemSpi
         acceptOptions.add(OPTION_TRUST_STORE_FILE);
         acceptOptions.add(OPTION_TRUST_STORE_PASSWORD);
         acceptOptions.add(OPTION_APPLICATION_PROTOCOLS);
+        acceptOptions.add(OPTION_NEED_CLIENT_AUTH);
+        acceptOptions.add(OPTION_WANT_CLIENT_AUTH);
         this.acceptOptions = unmodifiableSet(acceptOptions);
 
         Set<TypeInfo<?>> connectOptions = new LinkedHashSet<>();
