@@ -1,5 +1,8 @@
 # Change Log
 
+## [3.0.0-alpha-97](https://github.com/k3po/k3po/tree/3.0.0-alpha-97) (2018-12-05)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-96...3.0.0-alpha-97)
+
 ## [3.0.0-alpha-96](https://github.com/k3po/k3po/tree/3.0.0-alpha-96) (2018-05-18)
 [Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-95...3.0.0-alpha-96)
 
