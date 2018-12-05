@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>k3po.parent</artifactId>
-    <version>3.0.0-alpha-96</version>
+    <version>3.0.0-alpha-97</version>
 
     <name>k3po/parent</name>
     <url>https://github.com/kaazing/k3po</url>
@@ -82,7 +82,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>[4.11,)</version>
+                <version>4.13-beta-1</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
@@ -127,22 +127,22 @@
             <dependency>
                 <groupId>org.kaazing</groupId>
                 <artifactId>net.api</artifactId>
-                <version>[1.1.0.0, 1.2.0.0)</version>
+                <version>1.1.0.9</version>
             </dependency>
             <dependency>
                 <groupId>org.kaazing</groupId>
                 <artifactId>net.data</artifactId>
-                <version>[1.1.0.0, 1.2.0.0)</version>
+                <version>1.1.0.9</version>
             </dependency>
             <dependency>
                 <groupId>org.kaazing</groupId>
                 <artifactId>net.tcp</artifactId>
-                <version>[1.1.0.0, 1.2.0.0)</version>
+                <version>1.1.0.9</version>
             </dependency>
             <dependency>
                 <groupId>org.kaazing</groupId>
                 <artifactId>net.bbosh</artifactId>
-                <version>[1.1.0.0, 1.2.0.0)</version>
+                <version>1.1.0.9</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
