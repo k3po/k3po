@@ -80,6 +80,7 @@ public final class Functions {
         File location = new File(filename);
         int totalRingLength = ringCapacity + RingBufferDescriptor.TRAILER_LENGTH;
         int totalBroadcastLength = broadcastCapacity + BroadcastBufferDescriptor.TRAILER_LENGTH;
+        create &= !location.exists();
         MappedByteBuffer buffer = create ? mapNewFile(location, totalRingLength + totalBroadcastLength)
                                          : mapExistingFile(location, filename);
         AtomicBuffer ring = new UnsafeBuffer(buffer, 0, totalRingLength);
