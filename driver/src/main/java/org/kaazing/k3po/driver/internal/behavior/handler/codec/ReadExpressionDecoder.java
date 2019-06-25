@@ -19,6 +19,7 @@ import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.kaazing.k3po.lang.internal.RegionInfo.newSequential;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import javax.el.ValueExpression;
@@ -26,6 +27,7 @@ import javax.el.ValueExpression;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.kaazing.k3po.driver.internal.behavior.ScriptProgressException;
 import org.kaazing.k3po.driver.internal.util.Utils;
+import org.kaazing.k3po.lang.el.BytesMatcher;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.el.ExpressionContext;
 
@@ -33,6 +35,7 @@ public class ReadExpressionDecoder extends MessageDecoder {
 
     private final ValueExpression expression;
     private final ExpressionContext environment;
+    private BytesMatcher matcher;
 
     public ReadExpressionDecoder(RegionInfo regionInfo, ValueExpression expression, ExpressionContext environment) {
         super(regionInfo);
@@ -54,7 +57,32 @@ public class ReadExpressionDecoder extends MessageDecoder {
             expected = expression.getValue(environment);
         }
 
-        Object read = readValue(buffer, expected);
+        Object read;
+
+        if (matcher == null && expected instanceof BytesMatcher)
+        {
+            matcher = (BytesMatcher) expected;
+        }
+
+        if (matcher != null)
+        {
+            final ByteBuffer byteBuf = buffer.toByteBuffer();
+            final int initialPos = byteBuf.position();
+            try
+            {
+                read = matcher.match(byteBuf);
+            }
+            catch (Exception ex)
+            {
+                throw new ScriptProgressException(getRegionInfo(), ex.getMessage());
+            }
+            final int bytesAdvanced = byteBuf.position() - initialPos;
+            buffer.skipBytes(bytesAdvanced);
+        }
+        else
+        {
+            read = readValue(buffer, expected);
+        }
 
         if (read == null) {
             return null;
