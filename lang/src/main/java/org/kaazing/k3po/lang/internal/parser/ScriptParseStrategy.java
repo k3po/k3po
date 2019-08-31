@@ -35,7 +35,7 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
-import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
+import org.kaazing.k3po.lang.internal.ast.AstAcceptedNode;
 import org.kaazing.k3po.lang.internal.ast.AstBarrierNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
@@ -104,7 +104,7 @@ import org.kaazing.k3po.lang.parser.v2.RobotBaseVisitor;
 import org.kaazing.k3po.lang.parser.v2.RobotParser;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.AcceptNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.AcceptOptionContext;
-import org.kaazing.k3po.lang.parser.v2.RobotParser.AcceptableNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.AcceptedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.BarrierNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.BoundNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ChildClosedNodeContext;
@@ -254,11 +254,11 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
     };
 
-    public static final ScriptParseStrategy<AstAcceptableNode> ACCEPTABLE = new ScriptParseStrategy<AstAcceptableNode>() {
+    public static final ScriptParseStrategy<AstAcceptedNode> ACCEPTED = new ScriptParseStrategy<AstAcceptedNode>() {
         @Override
-        public AstAcceptableNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+        public AstAcceptedNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
                 throws RecognitionException {
-            return new AstAcceptedNodeVisitor(factory, environment).visit(parser.acceptableNode());
+            return new AstAcceptedNodeVisitor(factory, environment).visit(parser.acceptedNode());
         }
     };
 
@@ -725,13 +725,13 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
-        public AstAcceptableNode visitAcceptableNode(AcceptableNodeContext ctx) {
+        public AstAcceptedNode visitAcceptedNode(AcceptedNodeContext ctx) {
             AstAcceptedNodeVisitor visitor = new AstAcceptedNodeVisitor(factory, environment);
-            AstAcceptableNode acceptableNode = visitor.visitAcceptableNode(ctx);
-            if (acceptableNode != null) {
-                childInfos().add(acceptableNode.getRegionInfo());
+            AstAcceptedNode acceptedNode = visitor.visitAcceptedNode(ctx);
+            if (acceptedNode != null) {
+                childInfos().add(acceptedNode.getRegionInfo());
             }
-            return acceptableNode;
+            return acceptedNode;
         }
 
         @Override
@@ -798,25 +798,25 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
     }
 
-    private static class AstAcceptedNodeVisitor extends AstNodeVisitor<AstAcceptableNode> {
+    private static class AstAcceptedNodeVisitor extends AstNodeVisitor<AstAcceptedNode> {
 
         public AstAcceptedNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
             super(factory, environment);
         }
 
         @Override
-        public AstAcceptableNode visitAcceptableNode(AcceptableNodeContext ctx) {
-            node = new AstAcceptableNode();
+        public AstAcceptedNode visitAcceptedNode(AcceptedNodeContext ctx) {
+            node = new AstAcceptedNode();
             if (ctx.text != null) {
                 node.setAcceptName(ctx.text.getText());
             }
-            super.visitAcceptableNode(ctx);
+            super.visitAcceptedNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
             return node;
         }
 
         @Override
-        public AstAcceptableNode visitStreamableNode(StreamableNodeContext ctx) {
+        public AstAcceptedNode visitStreamableNode(StreamableNodeContext ctx) {
             AstStreamableNodeVisitor visitor = new AstStreamableNodeVisitor(factory, environment);
             AstStreamableNode streamableNode = visitor.visitStreamableNode(ctx);
             if (streamableNode != null) {

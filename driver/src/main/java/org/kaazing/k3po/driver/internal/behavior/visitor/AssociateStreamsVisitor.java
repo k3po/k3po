@@ -24,7 +24,7 @@ import java.util.Map;
 import org.kaazing.k3po.driver.internal.behavior.visitor.AssociateStreamsVisitor.State;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
-import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
+import org.kaazing.k3po.lang.internal.ast.AstAcceptedNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildOpenedNode;
@@ -121,7 +121,7 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
             streamable.accept(this, state);
         }
 
-        for (AstAcceptableNode acceptable : acceptNode.getAcceptables()) {
+        for (AstAcceptedNode acceptable : acceptNode.getAcceptables()) {
             assert equivalent(acceptName, acceptable.getAcceptName());
             acceptable.accept(this, state);
         }
@@ -132,9 +132,9 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
     }
 
     @Override
-    public AstScriptNode visit(AstAcceptableNode acceptableNode, State state) {
+    public AstScriptNode visit(AstAcceptedNode acceptableNode, State state) {
 
-        AstAcceptableNode newAcceptableNode = new AstAcceptableNode();
+        AstAcceptedNode newAcceptableNode = new AstAcceptedNode();
         newAcceptableNode.setRegionInfo(acceptableNode.getRegionInfo());
 
         String acceptName = acceptableNode.getAcceptName();

@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.kaazing.k3po.driver.internal.behavior.visitor.InjectEventsVisitor.State;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
-import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
+import org.kaazing.k3po.lang.internal.ast.AstAcceptedNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildOpenedNode;
@@ -102,7 +102,7 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
             streamable.accept(this, state);
         }
 
-        for (AstAcceptableNode acceptable : acceptNode.getAcceptables()) {
+        for (AstAcceptedNode acceptable : acceptNode.getAcceptables()) {
             acceptable.accept(this, state);
         }
 
@@ -112,11 +112,11 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
     }
 
     @Override
-    public AstScriptNode visit(AstAcceptableNode acceptableNode, State state) {
+    public AstScriptNode visit(AstAcceptedNode acceptableNode, State state) {
 
         state.connectivityState = ConnectivityState.NONE;
 
-        AstAcceptableNode newAcceptableNode = new AstAcceptableNode();
+        AstAcceptedNode newAcceptableNode = new AstAcceptedNode();
         newAcceptableNode.setRegionInfo(acceptableNode.getRegionInfo());
         newAcceptableNode.setAcceptName(acceptableNode.getAcceptName());
 

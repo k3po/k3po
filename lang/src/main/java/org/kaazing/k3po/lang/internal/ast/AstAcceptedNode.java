@@ -17,7 +17,7 @@ package org.kaazing.k3po.lang.internal.ast;
 
 import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
 
-public class AstAcceptableNode extends AstStreamNode {
+public class AstAcceptedNode extends AstStreamNode {
 
     private String acceptName;
 
@@ -43,7 +43,7 @@ public class AstAcceptableNode extends AstStreamNode {
 
     @Override
     protected boolean equalTo(AstRegion that) {
-        return that instanceof AstAcceptableNode && equalTo((AstAcceptableNode) that);
+        return that instanceof AstAcceptedNode && equalTo((AstAcceptedNode) that);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class AstAcceptableNode extends AstStreamNode {
         sb.append('\n');
     }
 
-    protected boolean equalTo(AstAcceptableNode that) {
+    protected boolean equalTo(AstAcceptedNode that) {
         return super.equalTo(that) && equivalent(this.acceptName, that.acceptName);
     }
 

@@ -32,7 +32,7 @@ optionName
 
 streamNode
     : acceptNode
-    | acceptableNode
+    | acceptedNode
     | connectNode
     ;
 
@@ -49,7 +49,7 @@ acceptOption
     : OptionKeyword optionName writeValue
     ;
 
-acceptableNode
+acceptedNode
     : AcceptedKeyword ( text=Name )? streamableNode+
     ;
 

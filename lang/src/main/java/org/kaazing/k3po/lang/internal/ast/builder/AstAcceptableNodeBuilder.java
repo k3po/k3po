@@ -16,13 +16,13 @@
 package org.kaazing.k3po.lang.internal.ast.builder;
 
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
-import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
+import org.kaazing.k3po.lang.internal.ast.AstAcceptedNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 
-public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBuilder<AstAcceptableNode> {
+public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBuilder<AstAcceptedNode> {
 
     public AstAcceptableNodeBuilder() {
-        this(new AstAcceptableNode());
+        this(new AstAcceptedNode());
     }
 
     public AstAcceptableNodeBuilder setAcceptName(String acceptName) {
@@ -136,11 +136,11 @@ public final class AstAcceptableNodeBuilder extends AbstractAstAcceptableNodeBui
     }
 
     @Override
-    public AstAcceptableNode done() {
+    public AstAcceptedNode done() {
         return result;
     }
 
-    private AstAcceptableNodeBuilder(AstAcceptableNode node) {
+    private AstAcceptableNodeBuilder(AstAcceptedNode node) {
         super(node, node);
     }
 

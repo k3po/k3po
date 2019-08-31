@@ -20,7 +20,7 @@ import java.util.List;
 import org.kaazing.k3po.driver.internal.behavior.visitor.InjectBarriersVisitor.State;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
-import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
+import org.kaazing.k3po.lang.internal.ast.AstAcceptedNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildOpenedNode;
@@ -104,7 +104,7 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
             streamable.accept(this, state);
         }
 
-        for (AstAcceptableNode acceptableNode : acceptNode.getAcceptables()) {
+        for (AstAcceptedNode acceptableNode : acceptNode.getAcceptables()) {
             acceptableNode.accept(this, state);
         }
 
@@ -114,11 +114,11 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
     }
 
     @Override
-    public AstScriptNode visit(AstAcceptableNode acceptableNode, State state) {
+    public AstScriptNode visit(AstAcceptedNode acceptableNode, State state) {
 
         state.readWriteState = ReadWriteState.NONE;
 
-        AstAcceptableNode newAcceptableNode = new AstAcceptableNode();
+        AstAcceptedNode newAcceptableNode = new AstAcceptedNode();
         newAcceptableNode.setRegionInfo(acceptableNode.getRegionInfo());
         newAcceptableNode.setAcceptName(acceptableNode.getAcceptName());
 

@@ -101,7 +101,7 @@ import org.kaazing.k3po.driver.internal.resolver.OptionsResolver;
 import org.kaazing.k3po.driver.internal.resolver.ServerBootstrapResolver;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
-import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
+import org.kaazing.k3po.lang.internal.ast.AstAcceptedNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildOpenedNode;
@@ -260,7 +260,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     }
 
     @Override
-    public Configuration visit(AstAcceptableNode acceptedNode, State state) {
+    public Configuration visit(AstAcceptedNode acceptedNode, State state) {
 
         // masking is a no-op by default for each stream
         state.readUnmasker = Masker.IDENTITY_MASKER;
@@ -294,7 +294,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         final List<ChannelPipeline> pipelines = new ArrayList<>();
         state.pipelineAsMap = new LinkedHashMap<>();
 
-        for (AstAcceptableNode acceptableNode : acceptNode.getAcceptables()) {
+        for (AstAcceptedNode acceptableNode : acceptNode.getAcceptables()) {
 
             acceptableNode.accept(this, state);
 

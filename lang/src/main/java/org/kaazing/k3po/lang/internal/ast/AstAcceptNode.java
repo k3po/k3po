@@ -30,7 +30,7 @@ public class AstAcceptNode extends AstStreamNode {
     private String acceptName;
     private String notifyName;
     private Map<String, Object> options;
-    private List<AstAcceptableNode> acceptables;
+    private List<AstAcceptedNode> acceptables;
 
     private AstValue<URI> location;
 
@@ -77,7 +77,7 @@ public class AstAcceptNode extends AstStreamNode {
         return options;
     }
 
-    public List<AstAcceptableNode> getAcceptables() {
+    public List<AstAcceptedNode> getAcceptables() {
         if (acceptables == null) {
             acceptables = new LinkedList<>();
         }
@@ -139,7 +139,7 @@ public class AstAcceptNode extends AstStreamNode {
         super.describe(buf);
 
         if (acceptables != null) {
-            for (AstAcceptableNode acceptable : acceptables) {
+            for (AstAcceptedNode acceptable : acceptables) {
                 acceptable.describe(buf);
             }
         }

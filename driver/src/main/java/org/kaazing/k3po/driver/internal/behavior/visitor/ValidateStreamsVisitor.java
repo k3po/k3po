@@ -16,7 +16,7 @@
 package org.kaazing.k3po.driver.internal.behavior.visitor;
 
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
-import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
+import org.kaazing.k3po.lang.internal.ast.AstAcceptedNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildOpenedNode;
@@ -97,7 +97,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
             streamable.accept(this, state);
         }
 
-        for (AstAcceptableNode acceptable : acceptNode.getAcceptables()) {
+        for (AstAcceptedNode acceptable : acceptNode.getAcceptables()) {
             state.readState = StreamState.OPEN;
             state.writeState = StreamState.OPEN;
             acceptable.accept(this, state);
@@ -289,7 +289,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstAcceptableNode acceptableNode, State state) {
+    public AstScriptNode visit(AstAcceptedNode acceptableNode, State state) {
 
         for (AstStreamableNode streamable : acceptableNode.getStreamables()) {
             streamable.accept(this, state);
