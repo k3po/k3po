@@ -30,6 +30,8 @@ import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildOpenedNode;
 import org.kaazing.k3po.lang.internal.ast.AstCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstDisconnectNode;
@@ -170,6 +172,18 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
 
         state.streams.add(newConnectNode);
 
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstConnectAbortNode node, State state) {
+        state.streamables.add(node);
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstConnectAbortedNode node, State state) {
+        state.streamables.add(node);
         return null;
     }
 

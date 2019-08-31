@@ -107,7 +107,8 @@ streamableNode
     ;
 
 commandNode
-    : writeConfigNode
+    : connectAbortNode
+    | writeConfigNode
     | writeNode
     | writeFlushNode
     | writeCloseNode
@@ -117,7 +118,8 @@ commandNode
     ;
 
 eventNode
-    : openedNode
+    : connectAbortedNode
+    | openedNode
     | boundNode
     | readConfigNode
     | readNode
@@ -135,6 +137,14 @@ barrierNode
     | readNotifyNode
     | writeAwaitNode
     | writeNotifyNode
+    ;
+
+connectAbortNode
+    : ConnectKeyword AbortKeyword
+    ;
+
+connectAbortedNode
+    : ConnectKeyword AbortedKeyword
     ;
 
 closeNode

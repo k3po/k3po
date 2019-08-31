@@ -25,6 +25,8 @@ import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildOpenedNode;
 import org.kaazing.k3po.lang.internal.ast.AstCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstDisconnectNode;
@@ -337,6 +339,64 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
         default:
             throw new IllegalStateException("Unexpected event: connected");
+        }
+
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstConnectAbortNode connectAbortNode, State state) {
+
+        switch (state.connectivityState) {
+        case NONE:
+        case OPENED:
+            AstBoundNode boundNode = new AstBoundNode();
+            boundNode.setRegionInfo(connectAbortNode.getRegionInfo());
+            boundNode.accept(this, state);
+            break;
+        default:
+            break;
+        }
+
+        // The above switch might have changed the connectivity state, so
+        // we switch on it again
+        switch (state.connectivityState) {
+        case BOUND:
+            state.streamables.add(connectAbortNode);
+            state.connectivityState = ConnectivityState.CLOSED;
+            break;
+
+        default:
+            throw new IllegalStateException("Unexpected connect abort");
+        }
+
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstConnectAbortedNode connectAbortedNode, State state) {
+
+        switch (state.connectivityState) {
+        case NONE:
+        case OPENED:
+            AstBoundNode boundNode = new AstBoundNode();
+            boundNode.setRegionInfo(connectAbortedNode.getRegionInfo());
+            boundNode.accept(this, state);
+            break;
+        default:
+            break;
+        }
+
+        // The above switch might have changed the connectivity state, so
+        // we switch on it again
+        switch (state.connectivityState) {
+        case BOUND:
+            state.streamables.add(connectAbortedNode);
+            state.connectivityState = ConnectivityState.CLOSED;
+            break;
+
+        default:
+            throw new IllegalStateException("Unexpected event: connect aborted");
         }
 
         return null;

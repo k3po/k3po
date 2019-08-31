@@ -15,11 +15,15 @@
  */
 package org.kaazing.k3po.driver.internal.behavior.handler.command;
 
+import static org.jboss.netty.channel.Channels.future;
+
 import java.net.SocketAddress;
 
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.Channels;
+import org.kaazing.k3po.driver.internal.behavior.ScriptProgressException;
 
 public class ConnectHandler extends AbstractCommandHandler {
 
@@ -33,7 +37,21 @@ public class ConnectHandler extends AbstractCommandHandler {
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
 
         ChannelFuture handlerFuture = getHandlerFuture();
-        Channels.connect(ctx, handlerFuture, remoteAddress);
+        ChannelFuture connectFuture = future(ctx.getChannel(), true);
+        Channels.connect(ctx, connectFuture, remoteAddress);
+        connectFuture.addListener(new ChannelFutureListener() {
+
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+
+                if (future.isSuccess()) {
+                    handlerFuture.setSuccess();
+                }
+                else {
+                    handlerFuture.setFailure(new ScriptProgressException(getRegionInfo(), "connect aborted"));
+                }
+            }
+        });
     }
 
     @Override

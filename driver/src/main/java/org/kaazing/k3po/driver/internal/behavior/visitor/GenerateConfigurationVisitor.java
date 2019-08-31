@@ -46,7 +46,6 @@ import org.kaazing.k3po.driver.internal.behavior.Barrier;
 import org.kaazing.k3po.driver.internal.behavior.BehaviorSystem;
 import org.kaazing.k3po.driver.internal.behavior.Configuration;
 import org.kaazing.k3po.driver.internal.behavior.handler.CompletionHandler;
-import org.kaazing.k3po.driver.internal.behavior.handler.FailureHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.barrier.AwaitBarrierDownstreamHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.barrier.AwaitBarrierUpstreamHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.barrier.NotifyBarrierHandler;
@@ -73,6 +72,7 @@ import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteLongEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteShortEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.WriteTextEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.CloseHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.command.ConnectAbortHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.DisconnectHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.FlushHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.command.ReadAbortHandler;
@@ -84,6 +84,7 @@ import org.kaazing.k3po.driver.internal.behavior.handler.event.BoundHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ChildClosedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ChildOpenedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ClosedHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.event.ConnectAbortedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.ConnectedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.DisconnectedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.event.InputShutdownHandler;
@@ -106,6 +107,8 @@ import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildOpenedNode;
 import org.kaazing.k3po.lang.internal.ast.AstCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstDisconnectNode;
@@ -314,7 +317,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
             @Override
             public ChannelPipeline getPipeline() {
-                return i.hasNext() ? i.next() : pipeline(new FailureHandler(), new CompletionHandler());
+                return i.hasNext() ? i.next() : pipeline();
             }
         };
 
@@ -399,7 +402,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         OptionsResolver optionsResolver = new OptionsResolver(connectNode.getOptions());
 
         ClientBootstrapResolver clientResolver = new ClientBootstrapResolver(bootstrapFactory, addressFactory,
-                pipelineFactory, locationResolver, optionsResolver, awaitBarrier, connectNode.getRegionInfo());
+                pipelineFactory, locationResolver, optionsResolver, awaitBarrier);
 
         // retain pipelines for tear down
         state.configuration.getClientAndServerPipelines().add(pipeline);
@@ -686,6 +689,36 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
         String handlerName = String.format("connected#%d", pipelineAsMap.size() + 1);
+        pipelineAsMap.put(handlerName, handler);
+
+        return state.configuration;
+    }
+
+    @Override
+    public Configuration visit(AstConnectAbortNode node, State state) {
+
+        RegionInfo regionInfo = node.getRegionInfo();
+
+        ConnectAbortHandler handler = new ConnectAbortHandler();
+        handler.setRegionInfo(regionInfo);
+
+        Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+        String handlerName = String.format("connect abort#%d", pipelineAsMap.size() + 1);
+        pipelineAsMap.put(handlerName, handler);
+
+        return state.configuration;
+    }
+
+    @Override
+    public Configuration visit(AstConnectAbortedNode node, State state) {
+
+        RegionInfo regionInfo = node.getRegionInfo();
+
+        ConnectAbortedHandler handler = new ConnectAbortedHandler();
+        handler.setRegionInfo(regionInfo);
+
+        Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+        String handlerName = String.format("connect aborted#%d", pipelineAsMap.size() + 1);
         pipelineAsMap.put(handlerName, handler);
 
         return state.configuration;

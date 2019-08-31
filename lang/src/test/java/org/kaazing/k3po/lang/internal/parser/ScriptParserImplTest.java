@@ -20,6 +20,8 @@ import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.ACCEPT;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.CLOSE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.CLOSED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.CONNECTED;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.CONNECT_ABORT;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.CONNECT_ABORTED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.EXPRESSION_MATCHER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.FIXED_LENGTH_BYTES_MATCHER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.LITERAL_BYTES_VALUE;
@@ -63,6 +65,8 @@ import org.junit.Test;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstPropertyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadAbortNode;
@@ -83,6 +87,8 @@ import org.kaazing.k3po.lang.internal.ast.AstWriteValueNode;
 import org.kaazing.k3po.lang.internal.ast.builder.AstAcceptNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstCloseNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstClosedNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstConnectAbortNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstConnectAbortedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstConnectedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstPropertyNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadAbortNodeBuilder;
@@ -870,6 +876,32 @@ public class ScriptParserImplTest {
 
         ScriptParserImpl parser = new ScriptParserImpl();
         parser.parseWithStrategy(script, SCRIPT);
+    }
+
+    @Test
+    public void shouldParseConnectAbort() throws Exception {
+
+        String scriptFragment = "connect abort";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstConnectAbortNode actual = parser.parseWithStrategy(scriptFragment, CONNECT_ABORT);
+
+        AstConnectAbortNode expected = new AstConnectAbortNodeBuilder().done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseConnectAborted() throws Exception {
+
+        String scriptFragment = "connect aborted";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstConnectAbortedNode actual = parser.parseWithStrategy(scriptFragment, CONNECT_ABORTED);
+
+        AstConnectAbortedNode expected = new AstConnectAbortedNodeBuilder().done();
+
+        assertEquals(expected, actual);
     }
 
     @Test

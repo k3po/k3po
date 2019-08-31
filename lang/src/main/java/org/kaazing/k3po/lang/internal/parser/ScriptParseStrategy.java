@@ -43,6 +43,8 @@ import org.kaazing.k3po.lang.internal.ast.AstChildOpenedNode;
 import org.kaazing.k3po.lang.internal.ast.AstCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstCommandNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstDisconnectNode;
@@ -110,6 +112,8 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.ChildOpenedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.CloseNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ClosedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.CommandNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.ConnectAbortNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.ConnectAbortedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ConnectNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ConnectOptionContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ConnectedNodeContext;
@@ -263,6 +267,22 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstConnectNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
                 throws RecognitionException {
             return new AstConnectNodeVisitor(factory, environment).visit(parser.connectNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstConnectAbortNode> CONNECT_ABORT = new ScriptParseStrategy<AstConnectAbortNode>() {
+        @Override
+        public AstConnectAbortNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+                throws RecognitionException {
+            return new AstConnectAbortNodeVisitor(factory, environment).visit(parser.connectAbortNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstConnectAbortedNode> CONNECT_ABORTED = new ScriptParseStrategy<AstConnectAbortedNode>() {
+        @Override
+        public AstConnectAbortedNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+                throws RecognitionException {
+            return new AstConnectAbortedNodeVisitor(factory, environment).visit(parser.connectAbortedNode());
         }
     };
 
@@ -829,9 +849,7 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
-        public AstConnectNode visitConnectOption(
-            ConnectOptionContext ctx)
-        {
+        public AstConnectNode visitConnectOption(ConnectOptionContext ctx) {
             String optionQName = ctx.optionName().getText();
             TypeInfo<?> optionType = TYPE_SYSTEM.connectOption(optionQName);
             String optionName = optionType.getName();
@@ -853,6 +871,38 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
                 node.getStreamables().add(streamableNode);
                 childInfos().add(streamableNode.getRegionInfo());
             }
+            return node;
+        }
+
+    }
+
+    private static class AstConnectAbortNodeVisitor extends AstNodeVisitor<AstConnectAbortNode> {
+
+        public AstConnectAbortNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
+            super(factory, environment);
+        }
+
+        @Override
+        public AstConnectAbortNode visitConnectAbortNode(ConnectAbortNodeContext ctx) {
+            node = new AstConnectAbortNode();
+            super.visitConnectAbortNode(ctx);
+            node.setRegionInfo(asParallelRegion(childInfos, ctx));
+            return node;
+        }
+
+    }
+
+    private static class AstConnectAbortedNodeVisitor extends AstNodeVisitor<AstConnectAbortedNode> {
+
+        public AstConnectAbortedNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
+            super(factory, environment);
+        }
+
+        @Override
+        public AstConnectAbortedNode visitConnectAbortedNode(ConnectAbortedNodeContext ctx) {
+            node = new AstConnectAbortedNode();
+            super.visitConnectAbortedNode(ctx);
+            node.setRegionInfo(asParallelRegion(childInfos, ctx));
             return node;
         }
 
@@ -1052,6 +1102,16 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
+        public AstConnectAbortedNode visitConnectAbortedNode(ConnectAbortedNodeContext ctx) {
+            AstConnectAbortedNodeVisitor visitor = new AstConnectAbortedNodeVisitor(factory, environment);
+            AstConnectAbortedNode connectAbortedNode = visitor.visitConnectAbortedNode(ctx);
+            if (connectAbortedNode != null) {
+                childInfos().add(connectAbortedNode.getRegionInfo());
+            }
+            return connectAbortedNode;
+        }
+
+        @Override
         public AstConnectedNode visitConnectedNode(ConnectedNodeContext ctx) {
 
             AstConnectedNodeVisitor visitor = new AstConnectedNodeVisitor(factory, environment);
@@ -1164,6 +1224,16 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
         public AstCommandNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
             super(factory, environment);
+        }
+
+        @Override
+        public AstConnectAbortNode visitConnectAbortNode(ConnectAbortNodeContext ctx) {
+            AstConnectAbortNodeVisitor visitor = new AstConnectAbortNodeVisitor(factory, environment);
+            AstConnectAbortNode connectAbortNode = visitor.visitConnectAbortNode(ctx);
+            if (connectAbortNode != null) {
+                childInfos().add(connectAbortNode.getRegionInfo());
+            }
+            return connectAbortNode;
         }
 
         @Override

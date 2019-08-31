@@ -42,22 +42,19 @@ public class ClientBootstrapResolver {
     private final ChannelPipelineFactory pipelineFactory;
     private final Supplier<URI> locationResolver;
     private final Barrier awaitBarrier;
-    private final RegionInfo regionInfo;
     private final OptionsResolver optionsResolver;
 
     private ClientBootstrap bootstrap;
 
     public ClientBootstrapResolver(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory,
             ChannelPipelineFactory pipelineFactory, Supplier<URI> locationResolver,
-            OptionsResolver optionsResolver, Barrier awaitBarrier,
-            RegionInfo regionInfo) {
+            OptionsResolver optionsResolver, Barrier awaitBarrier) {
         this.bootstrapFactory = bootstrapFactory;
         this.addressFactory = addressFactory;
         this.pipelineFactory = pipelineFactory;
         this.locationResolver = locationResolver;
         this.optionsResolver = optionsResolver;
         this.awaitBarrier = awaitBarrier;
-        this.regionInfo = regionInfo;
     }
 
     public ClientBootstrap resolve() throws Exception {
@@ -77,9 +74,5 @@ public class ClientBootstrapResolver {
 
     public Barrier getAwaitBarrier() {
         return this.awaitBarrier;
-    }
-
-    public RegionInfo getRegionInfo() {
-        return this.regionInfo;
     }
 }

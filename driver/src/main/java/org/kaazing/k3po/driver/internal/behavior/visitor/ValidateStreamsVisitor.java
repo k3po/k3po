@@ -23,6 +23,8 @@ import org.kaazing.k3po.lang.internal.ast.AstChildOpenedNode;
 import org.kaazing.k3po.lang.internal.ast.AstCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstCommandNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstDisconnectNode;
@@ -115,6 +117,32 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
             streamable.accept(this, state);
         }
 
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstConnectAbortNode node, State state) {
+
+        switch (state.writeState) {
+        case OPEN:
+            state.readState = StreamState.CLOSED;
+            break;
+        default:
+            throw new IllegalStateException(unexpectedInWriteState(node, state));
+        }
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstConnectAbortedNode node, State state) {
+
+        switch (state.writeState) {
+        case OPEN:
+            state.readState = StreamState.CLOSED;
+            break;
+        default:
+            throw new IllegalStateException(unexpectedInWriteState(node, state));
+        }
         return null;
     }
 
