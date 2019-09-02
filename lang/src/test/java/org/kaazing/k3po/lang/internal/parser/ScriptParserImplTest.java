@@ -17,6 +17,7 @@ package org.kaazing.k3po.lang.internal.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.ACCEPT;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.ACCEPTED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.CLOSE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.CLOSED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.CONNECTED;
@@ -35,6 +36,7 @@ import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_AWA
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_CONFIG;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_NOTIFY;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_OPTION;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.REJECTED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.SCRIPT;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.VARIABLE_LENGTH_BYTES_MATCHER;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE;
@@ -63,6 +65,7 @@ import javax.el.ValueExpression;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
+import org.kaazing.k3po.lang.internal.ast.AstAcceptedNode;
 import org.kaazing.k3po.lang.internal.ast.AstCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectAbortNode;
@@ -76,6 +79,7 @@ import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
+import org.kaazing.k3po.lang.internal.ast.AstRejectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteAbortNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteAbortedNode;
@@ -85,6 +89,7 @@ import org.kaazing.k3po.lang.internal.ast.AstWriteNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteValueNode;
 import org.kaazing.k3po.lang.internal.ast.builder.AstAcceptNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstAcceptedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstCloseNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstClosedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstConnectAbortNodeBuilder;
@@ -98,6 +103,7 @@ import org.kaazing.k3po.lang.internal.ast.builder.AstReadConfigNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadNotifyNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadOptionNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstRejectedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstScriptNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteAbortNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteAbortedNodeBuilder;
@@ -868,14 +874,32 @@ public class ScriptParserImplTest {
         assertEquals(expected, actual);
     }
 
-    @Test(
-        expected = ScriptParseException.class)
+    @Test(expected = ScriptParseException.class)
     public void shouldNotParseAcceptedWithoutBehavior() throws Exception {
 
-        String script = "accepted";
+        String scriptFragment = "accepted";
 
         ScriptParserImpl parser = new ScriptParserImpl();
-        parser.parseWithStrategy(script, SCRIPT);
+        AstAcceptedNode actual = parser.parseWithStrategy(scriptFragment, ACCEPTED);
+
+        AstAcceptedNode expected = new AstAcceptedNodeBuilder()
+                .done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseRejected() throws Exception {
+
+        String scriptFragment = "rejected";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstRejectedNode actual = parser.parseWithStrategy(scriptFragment, REJECTED);
+
+        AstRejectedNode expected = new AstRejectedNodeBuilder()
+                .done();
+
+        assertEquals(expected, actual);
     }
 
     @Test

@@ -16,9 +16,10 @@
 package org.kaazing.k3po.lang.internal.ast.builder;
 
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
+import org.kaazing.k3po.lang.internal.ast.AstRejectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
 
-public class AstReadNotifyNodeBuilder extends AbstractAstStreamableNodeBuilder<AstReadNotifyNode, AstReadNotifyNode> {
+public class AstReadNotifyNodeBuilder extends AbstractAstRejectableNodeBuilder<AstReadNotifyNode, AstReadNotifyNode> {
 
     public AstReadNotifyNodeBuilder() {
         this(new AstReadNotifyNode());
@@ -57,5 +58,25 @@ public class AstReadNotifyNodeBuilder extends AbstractAstStreamableNodeBuilder<A
             return result;
         }
 
+    }
+
+    public static class RejectedNested<R extends AbstractAstNodeBuilder<AstRejectedNode, ?>> extends
+        AbstractAstRejectableNodeBuilder<AstReadNotifyNode, R> {
+
+        public RejectedNested(R builder) {
+            super(new AstReadNotifyNode(), builder);
+        }
+
+        public RejectedNested<R> setBarrierName(String barrierName) {
+            node.setBarrierName(barrierName);
+            return this;
+        }
+
+        @Override
+        public R done() {
+            AstRejectedNode streamNode = result.node;
+            streamNode.getStreamables().add(node);
+            return result;
+        }
     }
 }

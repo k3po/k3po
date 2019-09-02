@@ -40,7 +40,7 @@ public class ConnectAbortedHandler extends ExecutionHandler implements ChannelDo
                     public void operationComplete(ChannelFuture future) throws Exception {
 
                         if (future.isSuccess()) {
-                            handlerFuture.setFailure(new ScriptProgressException(getRegionInfo(), "connected"));
+                            handlerFuture.setFailure(new ScriptProgressException(getRegionInfo(), "connect not aborted"));
                         }
                         else {
                             handlerFuture.setSuccess();

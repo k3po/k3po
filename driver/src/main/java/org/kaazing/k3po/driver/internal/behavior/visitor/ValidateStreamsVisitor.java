@@ -16,6 +16,7 @@
 package org.kaazing.k3po.driver.internal.behavior.visitor;
 
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
+import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptedNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
@@ -41,6 +42,7 @@ import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
+import org.kaazing.k3po.lang.internal.ast.AstRejectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamableNode;
@@ -97,7 +99,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
             streamable.accept(this, state);
         }
 
-        for (AstAcceptedNode acceptable : acceptNode.getAcceptables()) {
+        for (AstAcceptableNode acceptable : acceptNode.getAcceptables()) {
             state.readState = StreamState.OPEN;
             state.writeState = StreamState.OPEN;
             acceptable.accept(this, state);
@@ -289,9 +291,19 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstAcceptedNode acceptableNode, State state) {
+    public AstScriptNode visit(AstAcceptedNode node, State state) {
 
-        for (AstStreamableNode streamable : acceptableNode.getStreamables()) {
+        for (AstStreamableNode streamable : node.getStreamables()) {
+            streamable.accept(this, state);
+        }
+
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstRejectedNode node, State state) {
+
+        for (AstStreamableNode streamable : node.getStreamables()) {
             streamable.accept(this, state);
         }
 

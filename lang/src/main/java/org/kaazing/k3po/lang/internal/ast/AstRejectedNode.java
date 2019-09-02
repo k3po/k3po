@@ -15,11 +15,11 @@
  */
 package org.kaazing.k3po.lang.internal.ast;
 
-public class AstAcceptedNode extends AstAcceptableNode {
+public class AstRejectedNode extends AstAcceptableNode {
 
     @Override
     protected boolean equalTo(AstAcceptableNode that) {
-        return that instanceof AstAcceptedNode && super.equalTo((AstAcceptedNode) that);
+        return that instanceof AstRejectedNode && super.equalTo((AstRejectedNode) that);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class AstAcceptedNode extends AstAcceptableNode {
     protected void describeLine(StringBuilder sb) {
         super.describeLine(sb);
 
-        sb.append("accepted");
+        sb.append("rejected");
 
         String acceptName = getAcceptName();
         if (acceptName != null) {

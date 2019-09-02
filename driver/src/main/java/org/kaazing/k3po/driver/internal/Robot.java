@@ -41,6 +41,7 @@ import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ChildChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
@@ -60,6 +61,7 @@ import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVi
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
+import org.kaazing.k3po.driver.internal.netty.bootstrap.udp.UdpServerChannel;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
 import org.kaazing.k3po.driver.internal.netty.channel.CompositeChannelFuture;
 import org.kaazing.k3po.driver.internal.resolver.ClientBootstrapResolver;
@@ -276,15 +278,33 @@ public class Robot {
 
             /* Keep track of the client channels */
             server.setParentHandler(new SimpleChannelHandler() {
+
+                @Override
+                public void channelBound(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
+                {
+                    super.channelBound(ctx, e);
+
+                    unbindLastStreamIfNotUdp(serverResolver, e.getChannel());
+                }
+
                 @Override
                 public void childChannelOpen(ChannelHandlerContext ctx, ChildChannelStateEvent e) throws Exception {
                     closeableChannels.add(e.getChildChannel());
+
+                    unbindLastStreamIfNotUdp(serverResolver, e.getChannel());
                 }
 
                 @Override
                 public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
                     Channel channel = ctx.getChannel();
                     channel.close();
+                }
+
+                private void unbindLastStreamIfNotUdp(ServerBootstrapResolver serverResolver, Channel server)
+                {
+                    if (!serverResolver.canAccept() && !(server instanceof UdpServerChannel)) {
+                        server.unbind();
+                    }
                 }
             });
 

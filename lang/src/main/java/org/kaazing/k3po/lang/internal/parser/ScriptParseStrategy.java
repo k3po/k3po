@@ -62,6 +62,7 @@ import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
 import org.kaazing.k3po.lang.internal.ast.AstRegion;
+import org.kaazing.k3po.lang.internal.ast.AstRejectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamableNode;
@@ -144,6 +145,8 @@ import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadNotifyNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ReadOptionNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.RegexMatcherContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.RejectableNodeContext;
+import org.kaazing.k3po.lang.parser.v2.RobotParser.RejectedNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ScriptNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.ServerStreamableNodeContext;
 import org.kaazing.k3po.lang.parser.v2.RobotParser.StreamNodeContext;
@@ -259,6 +262,14 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         public AstAcceptedNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
                 throws RecognitionException {
             return new AstAcceptedNodeVisitor(factory, environment).visit(parser.acceptedNode());
+        }
+    };
+
+    public static final ScriptParseStrategy<AstRejectedNode> REJECTED = new ScriptParseStrategy<AstRejectedNode>() {
+        @Override
+        public AstRejectedNode parse(RobotParser parser, ExpressionFactory factory, ExpressionContext environment)
+                throws RecognitionException {
+            return new AstRejectedNodeVisitor(factory, environment).visit(parser.rejectedNode());
         }
     };
 
@@ -735,6 +746,16 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         }
 
         @Override
+        public AstRejectedNode visitRejectedNode(RejectedNodeContext ctx) {
+            AstRejectedNodeVisitor visitor = new AstRejectedNodeVisitor(factory, environment);
+            AstRejectedNode rejectedNode = visitor.visitRejectedNode(ctx);
+            if (rejectedNode != null) {
+                childInfos().add(rejectedNode.getRegionInfo());
+            }
+            return rejectedNode;
+        }
+
+        @Override
         public AstConnectNode visitConnectNode(ConnectNodeContext ctx) {
             AstConnectNodeVisitor visitor = new AstConnectNodeVisitor(factory, environment);
             AstConnectNode connectNode = visitor.visitConnectNode(ctx);
@@ -822,6 +843,36 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             if (streamableNode != null) {
                 node.getStreamables().add(streamableNode);
                 childInfos().add(streamableNode.getRegionInfo());
+            }
+            return node;
+        }
+
+    }
+
+    private static class AstRejectedNodeVisitor extends AstNodeVisitor<AstRejectedNode> {
+
+        public AstRejectedNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
+            super(factory, environment);
+        }
+
+        @Override
+        public AstRejectedNode visitRejectedNode(RejectedNodeContext ctx) {
+            node = new AstRejectedNode();
+            if (ctx.text != null) {
+                node.setAcceptName(ctx.text.getText());
+            }
+            super.visitRejectedNode(ctx);
+            node.setRegionInfo(asParallelRegion(childInfos, ctx));
+            return node;
+        }
+
+        @Override
+        public AstRejectedNode visitRejectableNode(RejectableNodeContext ctx) {
+            AstStreamableNodeVisitor visitor = new AstStreamableNodeVisitor(factory, environment);
+            AstStreamableNode rejectableNode = visitor.visitRejectableNode(ctx);
+            if (rejectableNode != null) {
+                node.getStreamables().add(rejectableNode);
+                childInfos().add(rejectableNode.getRegionInfo());
             }
             return node;
         }

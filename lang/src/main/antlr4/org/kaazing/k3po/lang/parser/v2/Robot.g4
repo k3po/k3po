@@ -33,6 +33,7 @@ optionName
 streamNode
     : acceptNode
     | acceptedNode
+    | rejectedNode
     | connectNode
     ;
 
@@ -51,6 +52,10 @@ acceptOption
 
 acceptedNode
     : AcceptedKeyword ( text=Name )? streamableNode+
+    ;
+
+rejectedNode
+    : RejectedKeyword ( text=Name )? rejectableNode*
     ;
 
 connectNode
@@ -104,6 +109,11 @@ streamableNode
     | eventNode
     | commandNode
     | optionNode
+    ;
+
+rejectableNode
+    : barrierNode
+    | readConfigNode
     ;
 
 commandNode
@@ -454,6 +464,10 @@ PropertyKeyword
 
 ReadKeyword
     : 'read'
+    ;
+
+RejectedKeyword
+    : 'rejected'
     ;
 
 ShortKeyword

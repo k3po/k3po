@@ -17,14 +17,14 @@ package org.kaazing.k3po.lang.internal.ast.builder;
 
 import org.kaazing.k3po.lang.internal.ast.AstAcceptedNode;
 
-public abstract class AbstractAstAcceptableNodeBuilder<R>
+public abstract class AbstractAstAcceptedNodeBuilder<R>
     extends AbstractAstStreamNodeBuilder<AstAcceptedNode, R> {
 
-    public AbstractAstAcceptableNodeBuilder(R result) {
+    public AbstractAstAcceptedNodeBuilder(R result) {
         super(new AstAcceptedNode(), result);
     }
 
-    protected AbstractAstAcceptableNodeBuilder(AstAcceptedNode node, R result) {
+    protected AbstractAstAcceptedNodeBuilder(AstAcceptedNode node, R result) {
         super(node, result);
     }
 }

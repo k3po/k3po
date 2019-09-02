@@ -25,7 +25,6 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +45,7 @@ import org.kaazing.k3po.driver.internal.behavior.Barrier;
 import org.kaazing.k3po.driver.internal.behavior.BehaviorSystem;
 import org.kaazing.k3po.driver.internal.behavior.Configuration;
 import org.kaazing.k3po.driver.internal.behavior.handler.CompletionHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.RejectedHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.barrier.AwaitBarrierDownstreamHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.barrier.AwaitBarrierUpstreamHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.barrier.NotifyBarrierHandler;
@@ -101,6 +101,7 @@ import org.kaazing.k3po.driver.internal.resolver.OptionsResolver;
 import org.kaazing.k3po.driver.internal.resolver.ServerBootstrapResolver;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
+import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptedNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
@@ -124,6 +125,7 @@ import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
+import org.kaazing.k3po.lang.internal.ast.AstRejectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamableNode;
@@ -282,6 +284,32 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
     }
 
     @Override
+    public Configuration visit(AstRejectedNode rejectedNode, State state) {
+
+        // masking is a no-op by default for each stream
+        state.readUnmasker = Masker.IDENTITY_MASKER;
+        state.writeMasker = Masker.IDENTITY_MASKER;
+
+        state.pipelineAsMap = new LinkedHashMap<>();
+
+        Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+        RejectedHandler rejected = new RejectedHandler();
+        String rejectedName = String.format("rejected#%d", pipelineAsMap.size() + 1);
+        pipelineAsMap.put(rejectedName, rejected);
+
+        for (AstStreamableNode streamable : rejectedNode.getStreamables()) {
+            streamable.accept(this, state);
+        }
+
+        String completionName = String.format("completion#%d", pipelineAsMap.size() + 1);
+        CompletionHandler completion = new CompletionHandler();
+        completion.setRegionInfo(rejectedNode.getRegionInfo());
+        pipelineAsMap.put(completionName, completion);
+
+        return state.configuration;
+    }
+
+    @Override
     public Configuration visit(AstAcceptNode acceptNode, State state) {
 
         Map<String, ChannelHandler> savedPipelineAsMap = state.pipelineAsMap;
@@ -294,7 +322,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         final List<ChannelPipeline> pipelines = new ArrayList<>();
         state.pipelineAsMap = new LinkedHashMap<>();
 
-        for (AstAcceptedNode acceptableNode : acceptNode.getAcceptables()) {
+        for (AstAcceptableNode acceptableNode : acceptNode.getAcceptables()) {
 
             acceptableNode.accept(this, state);
 
@@ -307,19 +335,6 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         RegionInfo acceptInfo = acceptNode.getRegionInfo();
         state.configuration.getServerPipelines(acceptInfo).addAll(pipelines);
         state.configuration.getClientAndServerPipelines().addAll(pipelines);
-
-        /*
-         * As new connections are accepted we grab a pipeline line off the list. Note the pipelines map is ordered. Note
-         * that the final pipeline is just a Fail and Complete so that additional connect attempts will fail.
-         */
-        ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
-            private final Iterator<ChannelPipeline> i = pipelines.iterator();
-
-            @Override
-            public ChannelPipeline getPipeline() {
-                return i.hasNext() ? i.next() : pipeline();
-            }
-        };
 
         Map<String, Object> acceptOptions = new HashMap<>();
         acceptOptions.put("regionInfo", acceptInfo);
@@ -338,7 +353,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         // accept uri is available.
         Supplier<URI> locationResolver = acceptNode.getLocation()::getValue;
         ServerBootstrapResolver serverResolver = new ServerBootstrapResolver(bootstrapFactory, addressFactory,
-                pipelineFactory, locationResolver, optionsResolver, notifyBarrier);
+                pipelines, locationResolver, optionsResolver, notifyBarrier);
 
         state.configuration.getServerResolvers().add(serverResolver);
 

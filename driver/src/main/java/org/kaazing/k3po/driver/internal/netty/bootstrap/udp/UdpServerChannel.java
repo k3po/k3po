@@ -34,7 +34,7 @@ import org.kaazing.k3po.driver.internal.netty.channel.udp.UdpChannelAddress;
  * ServerBootStrap.Binder
  *
  */
-class UdpServerChannel extends AbstractServerChannel<ChannelConfig> {
+public class UdpServerChannel extends AbstractServerChannel<ChannelConfig> {
 
     UdpServerChannel(ChannelFactory factory, ChannelPipeline pipeline, ChannelSink sink) {
         super(factory, pipeline, sink, new DefaultServerChannelConfig());

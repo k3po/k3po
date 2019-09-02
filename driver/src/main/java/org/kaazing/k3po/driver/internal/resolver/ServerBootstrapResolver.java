@@ -15,10 +15,15 @@
  */
 package org.kaazing.k3po.driver.internal.resolver;
 
+import static org.jboss.netty.channel.Channels.pipeline;
+
 import java.net.URI;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
@@ -37,6 +42,7 @@ public class ServerBootstrapResolver {
 
     private final BootstrapFactory bootstrapFactory;
     private final ChannelAddressFactory addressFactory;
+    private final Iterator<ChannelPipeline> pipelinesIterator;
     private final ChannelPipelineFactory pipelineFactory;
     private final Supplier<URI> locationResolver;
     private final OptionsResolver optionsResolver;
@@ -45,18 +51,28 @@ public class ServerBootstrapResolver {
     private ServerBootstrap bootstrap;
 
     public ServerBootstrapResolver(BootstrapFactory bootstrapFactory, ChannelAddressFactory addressFactory,
-            ChannelPipelineFactory pipelineFactory, Supplier<URI> locationResolver,
+            List<ChannelPipeline> pipelines, Supplier<URI> locationResolver,
             OptionsResolver optionsResolver, Barrier notifyBarrier) {
         this.bootstrapFactory = bootstrapFactory;
         this.addressFactory = addressFactory;
-        this.pipelineFactory = pipelineFactory;
+        this.pipelinesIterator = pipelines.iterator();
         this.locationResolver = locationResolver;
         this.optionsResolver = optionsResolver;
         this.notifyBarrier = notifyBarrier;
+        this.pipelineFactory = new ChannelPipelineFactory() {
+            @Override
+            public ChannelPipeline getPipeline() {
+                return pipelinesIterator.hasNext() ? pipelinesIterator.next() : pipeline();
+            }
+        };
     }
 
     public Barrier getNotifyBarrier() {
         return notifyBarrier;
+    }
+
+    public boolean canAccept() {
+        return pipelinesIterator.hasNext();
     }
 
     // TODO: asynchronous, triggered by awaitBarrier
@@ -74,5 +90,4 @@ public class ServerBootstrapResolver {
         }
         return bootstrap;
     }
-
 }

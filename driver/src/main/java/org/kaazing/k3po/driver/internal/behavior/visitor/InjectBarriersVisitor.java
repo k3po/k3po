@@ -20,6 +20,7 @@ import java.util.List;
 import org.kaazing.k3po.driver.internal.behavior.visitor.InjectBarriersVisitor.State;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
+import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptedNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
@@ -43,6 +44,7 @@ import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
+import org.kaazing.k3po.lang.internal.ast.AstRejectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamableNode;
@@ -104,7 +106,7 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
             streamable.accept(this, state);
         }
 
-        for (AstAcceptedNode acceptableNode : acceptNode.getAcceptables()) {
+        for (AstAcceptableNode acceptableNode : acceptNode.getAcceptables()) {
             acceptableNode.accept(this, state);
         }
 
@@ -114,20 +116,39 @@ public class InjectBarriersVisitor implements AstNode.Visitor<AstScriptNode, Sta
     }
 
     @Override
-    public AstScriptNode visit(AstAcceptedNode acceptableNode, State state) {
+    public AstScriptNode visit(AstAcceptedNode acceptedNode, State state) {
 
         state.readWriteState = ReadWriteState.NONE;
 
-        AstAcceptedNode newAcceptableNode = new AstAcceptedNode();
-        newAcceptableNode.setRegionInfo(acceptableNode.getRegionInfo());
-        newAcceptableNode.setAcceptName(acceptableNode.getAcceptName());
+        AstAcceptedNode newAcceptedNode = new AstAcceptedNode();
+        newAcceptedNode.setRegionInfo(acceptedNode.getRegionInfo());
+        newAcceptedNode.setAcceptName(acceptedNode.getAcceptName());
 
-        state.streamables = newAcceptableNode.getStreamables();
-        for (AstStreamableNode streamable : acceptableNode.getStreamables()) {
+        state.streamables = newAcceptedNode.getStreamables();
+        for (AstStreamableNode streamable : acceptedNode.getStreamables()) {
             streamable.accept(this, state);
         }
 
-        state.streams.add(newAcceptableNode);
+        state.streams.add(newAcceptedNode);
+
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstRejectedNode rejectedNode, State state) {
+
+        state.readWriteState = ReadWriteState.NONE;
+
+        AstRejectedNode newRejectedNode = new AstRejectedNode();
+        newRejectedNode.setRegionInfo(rejectedNode.getRegionInfo());
+        newRejectedNode.setAcceptName(rejectedNode.getAcceptName());
+
+        state.streamables = newRejectedNode.getStreamables();
+        for (AstStreamableNode streamable : rejectedNode.getStreamables()) {
+            streamable.accept(this, state);
+        }
+
+        state.streams.add(newRejectedNode);
 
         return null;
     }
