@@ -41,6 +41,7 @@ import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ChildChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
@@ -60,6 +61,7 @@ import org.kaazing.k3po.driver.internal.behavior.visitor.GenerateConfigurationVi
 import org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ClientBootstrap;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.ServerBootstrap;
+import org.kaazing.k3po.driver.internal.netty.bootstrap.udp.UdpServerChannel;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory;
 import org.kaazing.k3po.driver.internal.netty.channel.CompositeChannelFuture;
 import org.kaazing.k3po.driver.internal.resolver.ClientBootstrapResolver;
@@ -276,15 +278,33 @@ public class Robot {
 
             /* Keep track of the client channels */
             server.setParentHandler(new SimpleChannelHandler() {
+
+                @Override
+                public void channelBound(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
+                {
+                    super.channelBound(ctx, e);
+
+                    unbindLastStreamIfNotUdp(serverResolver, e.getChannel());
+                }
+
                 @Override
                 public void childChannelOpen(ChannelHandlerContext ctx, ChildChannelStateEvent e) throws Exception {
                     closeableChannels.add(e.getChildChannel());
+
+                    unbindLastStreamIfNotUdp(serverResolver, e.getChannel());
                 }
 
                 @Override
                 public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
                     Channel channel = ctx.getChannel();
                     channel.close();
+                }
+
+                private void unbindLastStreamIfNotUdp(ServerBootstrapResolver serverResolver, Channel server)
+                {
+                    if (!serverResolver.canAccept() && !(server instanceof UdpServerChannel)) {
+                        server.unbind();
+                    }
                 }
             });
 
@@ -324,7 +344,6 @@ public class Robot {
     }
 
     private void connectClient(ClientBootstrapResolver clientResolver) throws Exception {
-        final RegionInfo regionInfo = clientResolver.getRegionInfo();
         ClientBootstrap client = clientResolver.resolve();
 
         if (LOGGER.isDebugEnabled()) {
@@ -333,8 +352,14 @@ public class Robot {
 
         ChannelFuture connectFuture = client.connect();
         connectFutures.add(connectFuture);
-        closeableChannels.add(connectFuture.getChannel());
-        connectFuture.addListener(createConnectCompleteListener(regionInfo));
+        connectFuture.addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                if (future.isSuccess()) {
+                    closeableChannels.add(connectFuture.getChannel());
+                }
+            }
+        });
     }
 
     private void stopConfiguration() throws Exception {
@@ -457,25 +482,6 @@ public class Robot {
                     }
                 }
 
-            }
-        };
-    }
-
-    private ChannelFutureListener createConnectCompleteListener(final RegionInfo regionInfo) {
-        return new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture connectFuture) throws Exception {
-                if (connectFuture.isCancelled()) {
-                    // This is more that the connect never really fired, as in the case of a barrier, or the the connect
-                    // is still in process here, so an empty line annotates that it did not do a connect, an actual
-                    // connect
-                    // failure should fail the future
-                    progress.addScriptFailure(regionInfo, "");
-                } else if (!connectFuture.isSuccess()) {
-                    Throwable cause = connectFuture.getCause();
-                    String message = format("connect failed: %s", cause.getMessage());
-                    progress.addScriptFailure(regionInfo, message);
-                }
             }
         };
     }

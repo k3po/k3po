@@ -32,7 +32,8 @@ optionName
 
 streamNode
     : acceptNode
-    | acceptableNode
+    | acceptedNode
+    | rejectedNode
     | connectNode
     ;
 
@@ -49,8 +50,12 @@ acceptOption
     : OptionKeyword optionName writeValue
     ;
 
-acceptableNode
+acceptedNode
     : AcceptedKeyword ( text=Name )? streamableNode+
+    ;
+
+rejectedNode
+    : RejectedKeyword ( text=Name )? rejectableNode*
     ;
 
 connectNode
@@ -106,8 +111,14 @@ streamableNode
     | optionNode
     ;
 
+rejectableNode
+    : barrierNode
+    | readConfigNode
+    ;
+
 commandNode
-    : writeConfigNode
+    : connectAbortNode
+    | writeConfigNode
     | writeNode
     | writeFlushNode
     | writeCloseNode
@@ -117,7 +128,8 @@ commandNode
     ;
 
 eventNode
-    : openedNode
+    : connectAbortedNode
+    | openedNode
     | boundNode
     | readConfigNode
     | readNode
@@ -135,6 +147,14 @@ barrierNode
     | readNotifyNode
     | writeAwaitNode
     | writeNotifyNode
+    ;
+
+connectAbortNode
+    : ConnectKeyword AbortKeyword
+    ;
+
+connectAbortedNode
+    : ConnectKeyword AbortedKeyword
     ;
 
 closeNode
@@ -444,6 +464,10 @@ PropertyKeyword
 
 ReadKeyword
     : 'read'
+    ;
+
+RejectedKeyword
+    : 'rejected'
     ;
 
 ShortKeyword

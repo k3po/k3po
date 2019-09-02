@@ -15,39 +15,26 @@
  */
 package org.kaazing.k3po.lang.internal.ast;
 
-import static org.kaazing.k3po.lang.internal.ast.util.AstUtil.equivalent;
+public final class AstConnectAbortedNode extends AstEventNode {
 
-public abstract class AstAcceptableNode extends AstStreamNode {
-
-    private String acceptName;
-
-    public String getAcceptName() {
-        return acceptName;
-    }
-
-    public void setAcceptName(String acceptName) {
-        this.acceptName = acceptName;
+    @Override
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
+        return visitor.visit(this, parameter);
     }
 
     @Override
     protected int hashTo() {
-        int hashCode = super.hashTo();
-
-        if (acceptName != null) {
-            hashCode <<= 4;
-            hashCode ^= acceptName.hashCode();
-        }
-
-        return hashCode;
+        return getClass().hashCode();
     }
 
     @Override
     protected boolean equalTo(AstRegion that) {
-        return that instanceof AstAcceptableNode && equalTo((AstAcceptableNode) that);
+        return that instanceof AstConnectAbortedNode;
     }
 
-    protected boolean equalTo(AstAcceptableNode that) {
-        return super.equalTo(that) && equivalent(this.acceptName, that.acceptName);
+    @Override
+    protected void describe(StringBuilder buf) {
+        super.describe(buf);
+        buf.append("connect aborted\n");
     }
-
 }

@@ -13,18 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.lang.internal.ast.builder;
+package org.kaazing.k3po.lang.internal.ast;
 
-import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
+public final class AstConnectAbortNode extends AstCommandNode {
 
-public abstract class AbstractAstAcceptableNodeBuilder<R>
-    extends AbstractAstStreamNodeBuilder<AstAcceptableNode, R> {
-
-    public AbstractAstAcceptableNodeBuilder(R result) {
-        super(new AstAcceptableNode(), result);
+    @Override
+    public <R, P> R accept(Visitor<R, P> visitor, P parameter) {
+        return visitor.visit(this, parameter);
     }
 
-    protected AbstractAstAcceptableNodeBuilder(AstAcceptableNode node, R result) {
-        super(node, result);
+    @Override
+    protected int hashTo() {
+        return getClass().hashCode();
+    }
+
+    @Override
+    protected boolean equalTo(AstRegion that) {
+        return that instanceof AstConnectAbortNode;
+    }
+
+    @Override
+    protected void describe(StringBuilder buf) {
+        super.describe(buf);
+        buf.append("connect abort\n");
     }
 }

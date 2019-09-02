@@ -25,11 +25,14 @@ import org.kaazing.k3po.driver.internal.behavior.visitor.AssociateStreamsVisitor
 import org.kaazing.k3po.lang.internal.RegionInfo;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
+import org.kaazing.k3po.lang.internal.ast.AstAcceptedNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildOpenedNode;
 import org.kaazing.k3po.lang.internal.ast.AstCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstDisconnectNode;
@@ -46,6 +49,7 @@ import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
 import org.kaazing.k3po.lang.internal.ast.AstRegionException;
+import org.kaazing.k3po.lang.internal.ast.AstRejectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamableNode;
@@ -130,29 +134,57 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
     }
 
     @Override
-    public AstScriptNode visit(AstAcceptableNode acceptableNode, State state) {
+    public AstScriptNode visit(AstAcceptedNode acceptedNode, State state) {
 
-        AstAcceptableNode newAcceptableNode = new AstAcceptableNode();
-        newAcceptableNode.setRegionInfo(acceptableNode.getRegionInfo());
+        AstAcceptedNode newAcceptedNode = new AstAcceptedNode();
+        newAcceptedNode.setRegionInfo(acceptedNode.getRegionInfo());
 
-        String acceptName = acceptableNode.getAcceptName();
+        String acceptName = acceptedNode.getAcceptName();
         if (acceptName == null) {
             acceptName = state.implicitAcceptName;
         }
 
         AstAcceptNode acceptNode = state.accepts.get(acceptName);
         if (acceptNode == null) {
-            RegionInfo regionInfo = acceptableNode.getRegionInfo();
+            RegionInfo regionInfo = acceptedNode.getRegionInfo();
             throw new AstRegionException("Accept not found for accepted").initRegionInfo(regionInfo);
         }
 
-        state.streamables = newAcceptableNode.getStreamables();
-        for (AstStreamableNode streamable : acceptableNode.getStreamables()) {
+        state.streamables = newAcceptedNode.getStreamables();
+        for (AstStreamableNode streamable : acceptedNode.getStreamables()) {
             streamable.accept(this, state);
         }
 
         // associate accepted stream to corresponding accept
-        acceptNode.getAcceptables().add(newAcceptableNode);
+        acceptNode.getAcceptables().add(newAcceptedNode);
+
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstRejectedNode rejectedNode, State state) {
+
+        AstRejectedNode newRejectedNode = new AstRejectedNode();
+        newRejectedNode.setRegionInfo(rejectedNode.getRegionInfo());
+
+        String acceptName = rejectedNode.getAcceptName();
+        if (acceptName == null) {
+            acceptName = state.implicitAcceptName;
+        }
+
+        AstAcceptNode acceptNode = state.accepts.get(acceptName);
+        if (acceptNode == null) {
+            RegionInfo regionInfo = rejectedNode.getRegionInfo();
+            throw new AstRegionException("Accept not found for accepted").initRegionInfo(regionInfo);
+        }
+
+        state.streamables = newRejectedNode.getStreamables();
+        for (AstStreamableNode streamable : rejectedNode.getStreamables()) {
+            streamable.accept(this, state);
+        }
+
+        // associate accepted stream to corresponding accept
+        acceptNode.getAcceptables().add(newRejectedNode);
 
         return null;
     }
@@ -170,6 +202,18 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
 
         state.streams.add(newConnectNode);
 
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstConnectAbortNode node, State state) {
+        state.streamables.add(node);
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstConnectAbortedNode node, State state) {
+        state.streamables.add(node);
         return null;
     }
 
