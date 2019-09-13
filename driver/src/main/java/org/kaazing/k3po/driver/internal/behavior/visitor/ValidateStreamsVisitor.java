@@ -153,6 +153,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
 
         switch (state.readState) {
         case OPEN:
+        case CLOSED:
             break;
         default:
             throw new IllegalStateException(String.format("Unexpected read config event (%s) while reading in state %s", node
@@ -166,6 +167,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
 
         switch (state.writeState) {
         case OPEN:
+        case CLOSED:
             break;
         default:
             throw new IllegalStateException(String.format("Unexpected write config command (%s) while writing in state %s", node
