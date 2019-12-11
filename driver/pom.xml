@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.kaazing</groupId>
         <artifactId>k3po.parent</artifactId>
-        <version>3.0.0-alpha-103</version>
+        <version>3.0.0-alpha-104</version>
     </parent>
 
     <artifactId>k3po.driver</artifactId>
@@ -100,7 +100,7 @@
         <dependency>
             <groupId>org.agrona</groupId>
             <artifactId>agrona</artifactId>
-            <version>0.9.35</version>
+            <version>1.1.0</version>
         </dependency>
     </dependencies>
 
