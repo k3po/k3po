@@ -293,8 +293,9 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         state.pipelineAsMap = new LinkedHashMap<>();
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
-        RejectedHandler rejected = new RejectedHandler();
         String rejectedName = String.format("rejected#%d", pipelineAsMap.size() + 1);
+        RejectedHandler rejected = new RejectedHandler();
+        rejected.setRegionInfo(rejectedNode.getRegionInfo());
         pipelineAsMap.put(rejectedName, rejected);
 
         for (AstStreamableNode streamable : rejectedNode.getStreamables()) {
