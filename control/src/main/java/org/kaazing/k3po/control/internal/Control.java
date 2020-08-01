@@ -19,12 +19,11 @@ import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -32,7 +31,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +57,8 @@ import org.kaazing.k3po.control.internal.event.StartedEvent;
  */
 public final class Control {
 
+    private static final int END_OF_STREAM = -1;
+    private static final char END_OF_LINE = '\n';
     private static final String FINISHED_EVENT = "FINISHED";
     private static final String ERROR_EVENT = "ERROR";
     private static final String STARTED_EVENT = "STARTED";
@@ -70,7 +70,8 @@ public final class Control {
 
     private final URL location;
     private URLConnection connection;
-    BufferedReader textIn;
+    private InputStream bytesIn;
+    private ByteArrayOutputStream lineBuf;
 
     /**
      * @param location of k3po server to connect to.
@@ -88,14 +89,13 @@ public final class Control {
         URLConnection newConnection = location.openConnection();
         newConnection.connect();
         connection = newConnection;
-        
-        InputStream bytesIn = connection.getInputStream();
-        CharsetDecoder decoder = UTF_8.newDecoder();
-        textIn = new BufferedReader(new InputStreamReader(bytesIn, decoder));
+
+        bytesIn = connection.getInputStream();
+        lineBuf = new ByteArrayOutputStream();
     }
 
     /**
-     * Discoonects from the k3po server.
+     * Disconnects from the k3po server.
      * @throws Exception if error in closing the connection.
      */
     public void disconnect() throws Exception {
@@ -180,7 +180,7 @@ public final class Control {
         connection.setReadTimeout((int) unit.toMillis(timeout));
 
         CommandEvent event = null;
-        String eventType = textIn.readLine();
+        String eventType = readLine();
 
         if (Thread.interrupted())
         {
@@ -306,9 +306,9 @@ public final class Control {
     private PreparedEvent readPreparedEvent() throws IOException {
         PreparedEvent prepared = new PreparedEvent();
         String line;
-        int length = -1;
+        int length = END_OF_STREAM;
         do {
-            line = textIn.readLine();
+            line = readLine();
             Matcher matcher = HEADER_PATTERN.matcher(line);
             if (matcher.matches()) {
                 String headerName = matcher.group(1);
@@ -329,7 +329,6 @@ public final class Control {
             }
         } while (!line.isEmpty());
 
-        // note: this assumes bytes-length == string-length (ASCII)
         // note: zero-length script should be non-null
         if (length >= 0) {
             prepared.setScript(readContent(length));
@@ -342,7 +341,7 @@ public final class Control {
         StartedEvent started = new StartedEvent();
         String line;
         do {
-            line = textIn.readLine();
+            line = readLine();
             Matcher matcher = HEADER_PATTERN.matcher(line);
             if (matcher.matches()) {
                 String headerName = matcher.group(1);
@@ -362,9 +361,9 @@ public final class Control {
     private FinishedEvent readFinishedEvent() throws IOException {
         FinishedEvent finished = new FinishedEvent();
         String line;
-        int length = -1;
+        int length = END_OF_STREAM;
         do {
-            line = textIn.readLine();
+            line = readLine();
             Matcher matcher = HEADER_PATTERN.matcher(line);
             if (matcher.matches()) {
                 String headerName = matcher.group(1);
@@ -388,7 +387,6 @@ public final class Control {
             }
         } while (!line.isEmpty());
 
-        // note: this assumes bytes-length == string-length (ASCII)
         // note: zero-length script should be non-null
         if (length >= 0) {
             finished.setScript(readContent(length));
@@ -401,7 +399,7 @@ public final class Control {
         NotifiedEvent notified = new NotifiedEvent();
         String line;
         do {
-            line = textIn.readLine();
+            line = readLine();
             Matcher matcher = HEADER_PATTERN.matcher(line);
             if (matcher.matches()) {
                 String headerName = matcher.group(1);
@@ -423,7 +421,7 @@ public final class Control {
         String line;
         int length = 0;
         do {
-            line = textIn.readLine();
+            line = readLine();
             Matcher matcher = HEADER_PATTERN.matcher(line);
             if (matcher.matches()) {
                 String headerName = matcher.group(1);
@@ -444,7 +442,6 @@ public final class Control {
             }
         } while (!line.isEmpty());
 
-        // note: this assumes bytes-length == string-length (ASCII)
         if (length > 0) {
             error.setDescription(readContent(length));
         }
@@ -453,16 +450,30 @@ public final class Control {
     }
 
     private String readContent(final int length) throws IOException {
-        final char[] content = new char[length];
+        final byte[] content = new byte[length];
         int bytesRead = 0;
         do {
-            int result = textIn.read(content, bytesRead, length - bytesRead);
-            if (result == -1) {
+            int result = bytesIn.read(content, bytesRead, length - bytesRead);
+            if (result == END_OF_STREAM) {
                 throw new EOFException("EOF detected before all content read");
             }
             bytesRead += result;
         } while (bytesRead != length);
-        return new String(content);
+        return new String(content, "UTF-8");
+    }
+
+    private String readLine() throws IOException {
+        lineBuf.reset();
+        int b;
+        for (b = bytesIn.read(); b != END_OF_STREAM && b != END_OF_LINE; b = bytesIn.read()) {
+            lineBuf.write(b);
+        }
+
+        String line = null;
+        if (lineBuf.size() != 0 || b != END_OF_STREAM) {
+            line = lineBuf.toString("UTF-8");
+        }
+        return line;
     }
 
     public void notifyBarrier(String barrierName) throws Exception {

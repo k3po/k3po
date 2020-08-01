@@ -214,14 +214,13 @@ public class ControlTest {
 
         mockery.checking(new Expectations() {
             {
+                atLeast(1).of(input).read();
+                will(readBytes(("PREPARED\n" +
+                                "content-length:9\n" +
+                                "future-header:future-value\n" + // test forward compatibility
+                                "\n").getBytes(UTF_8)));
                 oneOf(input).read(with(any(byte[].class)), with(equal(0)), with(any(int.class)));
-                will(readInitialBytes(0, ("PREPARED\n" +
-                                          "content-length:9\n" +
-                                          "future-header:future-value\n" + // test forward compatibility
-                                          "\n" +
-                                          "# comment").getBytes(UTF_8)));
-                allowing(input).available();
-                will(returnValue(0));
+                will(readBytes(0, "# comment".getBytes(UTF_8)));
             }
         });
 
@@ -237,11 +236,10 @@ public class ControlTest {
 
         mockery.checking(new Expectations() {
             {
-                oneOf(input).read(with(any(byte[].class)), with(equal(0)), with(any(int.class)));
-                will(readInitialBytes(0, ("STARTED\n" + "future-header:future-value\n" + // test forward compatibility
-                        "\n").getBytes(UTF_8)));
-                allowing(input).available();
-                will(returnValue(0));
+                atLeast(1).of(input).read();
+                will(readBytes(("STARTED\n" +
+                                "future-header:future-value\n" + // test forward compatibility
+                                "\n").getBytes(UTF_8)));
             }
         });
 
@@ -258,14 +256,13 @@ public class ControlTest {
 
         mockery.checking(new Expectations() {
             {
+                atLeast(1).of(input).read();
+                will(readBytes(("FINISHED\n" +
+                                "content-length:9\n" +
+                                "future-header:future-value\n" + // test forward compatibility
+                                "\n").getBytes(UTF_8)));
                 oneOf(input).read(with(any(byte[].class)), with(equal(0)), with(any(int.class)));
-                will(readInitialBytes(0, ("FINISHED\n" +
-                                          "content-length:9\n" +
-                                          "future-header:future-value\n" + // test forward compatibility
-                                          "\n" +
-                                          "# comment").getBytes(UTF_8)));
-                allowing(input).available();
-                will(returnValue(0));
+                will(readBytes(0, "# comment".getBytes(UTF_8)));
             }
         });
 
@@ -283,15 +280,14 @@ public class ControlTest {
 
         mockery.checking(new Expectations() {
             {
+                atLeast(1).of(input).read();
+                will(readBytes(("ERROR\n" +
+                                "summary:summary text\n" +
+                                "content-length:16\n" +
+                                "future-header:future-value\n" + // test forward compatibility
+                                "\n").getBytes(UTF_8)));
                 oneOf(input).read(with(any(byte[].class)), with(equal(0)), with(any(int.class)));
-                will(readInitialBytes(0, ("ERROR\n" +
-                                          "summary:summary text\n" +
-                                          "content-length:16\n" +
-                                          "future-header:future-value\n" + // test forward compatibility
-                                          "\n" +
-                                          "description text").getBytes(UTF_8)));
-                allowing(input).available();
-                will(returnValue(0));
+                will(readBytes(0, "description text".getBytes(UTF_8)));
             }
         });
 
@@ -331,22 +327,31 @@ public class ControlTest {
         };
     }
 
-    private static Action readInitialBytes(final int parameter, final byte[] initialBytes) {
+    private static Action readBytes(final byte[] bytes) {
+        Action[] actions = new Action[bytes.length];
+        for (int i=0; i < bytes.length; i++)
+        {
+            actions[i] = Expectations.returnValue((int) bytes[i]);
+        }
+        return Expectations.onConsecutiveCalls(actions);
+    }
+
+    private static Action readBytes(final int parameter, final byte[] bytes) {
         return new Action() {
 
             @Override
             public Object invoke(Invocation invocation) throws Throwable {
                 byte[] array = (byte[]) invocation.getParameter(parameter);
 
-                if (array.length < initialBytes.length) {
+                if (array.length < bytes.length) {
                     throw new IndexOutOfBoundsException();
                 }
 
-                for (int i = 0; i < initialBytes.length; i++) {
-                    array[i] = initialBytes[i];
+                for (int i = 0; i < bytes.length; i++) {
+                    array[i] = bytes[i];
                 }
 
-                return initialBytes.length;
+                return bytes.length;
             }
 
             @Override

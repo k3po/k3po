@@ -15,12 +15,9 @@
  */
 package org.kaazing.k3po.lang.internal.parser;
 
-import java.io.InputStream;
-
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 
 public interface ScriptParser {
 
-    AstScriptNode parse(InputStream input) throws ScriptParseException;
-
+    AstScriptNode parse(String input) throws ScriptParseException;
 }

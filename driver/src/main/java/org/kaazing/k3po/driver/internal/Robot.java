@@ -20,12 +20,10 @@ import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.jboss.netty.channel.Channels.pipelineFactory;
-import static org.jboss.netty.util.CharsetUtil.UTF_8;
 import static org.kaazing.k3po.driver.internal.netty.bootstrap.BootstrapFactory.newBootstrapFactory;
 import static org.kaazing.k3po.driver.internal.netty.channel.ChannelAddressFactory.newChannelAddressFactory;
 import static org.kaazing.k3po.lang.internal.RegionInfo.newSequential;
 
-import java.io.ByteArrayInputStream;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -130,7 +128,7 @@ public class Robot {
         }
 
         final ScriptParser parser = new Parser();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(expectedScript.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(expectedScript);
 
         final ScriptValidator validator = new ScriptValidator();
         validator.validate(scriptAST);

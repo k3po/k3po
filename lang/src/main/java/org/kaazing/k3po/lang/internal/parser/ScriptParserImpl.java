@@ -16,21 +16,18 @@
 package org.kaazing.k3po.lang.internal.parser;
 
 import static java.lang.String.format;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.kaazing.k3po.lang.internal.RegionInfo.newParallel;
 import static org.kaazing.k3po.lang.internal.RegionInfo.newSequential;
 import static org.kaazing.k3po.lang.internal.el.ExpressionFactoryUtils.newExpressionFactory;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.SCRIPT;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import javax.el.ExpressionFactory;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.NoViableAltException;
 import org.antlr.v4.runtime.RecognitionException;
@@ -66,7 +63,7 @@ public class ScriptParserImpl implements ScriptParser {
     }
 
     @Override
-    public AstScriptNode parse(InputStream input) throws ScriptParseException {
+    public AstScriptNode parse(String input) throws ScriptParseException {
         try {
             return parseWithStrategy(input, SCRIPT);
         } catch (Exception e) {
@@ -76,52 +73,42 @@ public class ScriptParserImpl implements ScriptParser {
 
     public <T extends AstRegion> T parseWithStrategy(String input, ScriptParseStrategy<T> strategy)
             throws ScriptParseException {
-        return parseWithStrategy(
-                new ByteArrayInputStream(input.getBytes(UTF_8)), strategy);
-    }
-
-    <T extends AstRegion> T parseWithStrategy(InputStream input, ScriptParseStrategy<T> strategy) throws ScriptParseException {
         T result = null;
+
+        int newStart = 0;
+        int newEnd = input.length();
+
+        CharStream ais = CharStreams.fromString(input);
+        RobotLexer lexer = new RobotLexer(ais);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        final RobotParser parser = new RobotParser(tokens);
+        parser.setErrorHandler(new BailErrorStrategy());
+
         try {
-            int newStart = 0;
-            int newEnd = input.available();
-
-            ANTLRInputStream ais = new ANTLRInputStream(input);
-            RobotLexer lexer = new RobotLexer(ais);
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            final RobotParser parser = new RobotParser(tokens);
-            parser.setErrorHandler(new BailErrorStrategy());
-
-            try {
-                result = strategy.parse(parser, factory, context);
-                RegionInfo regionInfo = result.getRegionInfo();
-                List<RegionInfo> newChildren = regionInfo.children;
-                switch (regionInfo.kind) {
-                case SEQUENTIAL:
-                    result.setRegionInfo(newSequential(newChildren, newStart, newEnd));
-                    break;
-                case PARALLEL:
-                    result.setRegionInfo(newParallel(newChildren, newStart, newEnd));
-                    break;
-                }
-
-            }
-            catch (ParseCancellationException pce) {
-                Throwable cause = pce.getCause();
-                if (cause instanceof RecognitionException) {
-                    RecognitionException re = (RecognitionException) cause;
-                    throw createScriptParseException(parser, re);
-                }
-
-                throw pce;
-            }
-            catch (RecognitionException re) {
-                throw createScriptParseException(parser, re);
+            result = strategy.parse(parser, factory, context);
+            RegionInfo regionInfo = result.getRegionInfo();
+            List<RegionInfo> newChildren = regionInfo.children;
+            switch (regionInfo.kind) {
+            case SEQUENTIAL:
+                result.setRegionInfo(newSequential(newChildren, newStart, newEnd));
+                break;
+            case PARALLEL:
+                result.setRegionInfo(newParallel(newChildren, newStart, newEnd));
+                break;
             }
 
         }
-        catch (IOException e) {
-            throw new ScriptParseException(e);
+        catch (ParseCancellationException pce) {
+            Throwable cause = pce.getCause();
+            if (cause instanceof RecognitionException) {
+                RecognitionException re = (RecognitionException) cause;
+                throw createScriptParseException(parser, re);
+            }
+
+            throw pce;
+        }
+        catch (RecognitionException re) {
+            throw createScriptParseException(parser, re);
         }
 
         return result;
