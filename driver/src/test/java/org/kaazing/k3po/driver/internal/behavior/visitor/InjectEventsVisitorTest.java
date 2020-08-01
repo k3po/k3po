@@ -15,10 +15,7 @@
  */
 package org.kaazing.k3po.driver.internal.behavior.visitor;
 
-import static org.jboss.netty.util.CharsetUtil.UTF_8;
 import static org.junit.Assert.assertEquals;
-
-import java.io.ByteArrayInputStream;
 
 import org.junit.Test;
 import org.kaazing.k3po.driver.internal.behavior.parser.Parser;
@@ -319,7 +316,7 @@ public class InjectEventsVisitorTest {
             "closed\n";
 
         ScriptParser parser = new Parser();
-        parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        parser.parse(script);
     }
 
     @Test(expected = ScriptParseException.class)
@@ -336,6 +333,6 @@ public class InjectEventsVisitorTest {
             "closed\n";
 
         ScriptParser parser = new Parser();
-        parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        parser.parse(script);
     }
 }

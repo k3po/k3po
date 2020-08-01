@@ -15,10 +15,7 @@
  */
 package org.kaazing.k3po.driver.internal.behavior;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
-
-import java.io.ByteArrayInputStream;
 
 import org.junit.Test;
 import org.kaazing.k3po.lang.internal.RegionInfo;
@@ -41,7 +38,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
 
@@ -64,7 +61,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
         AstRegion readAST = connectAST.getStreamables().get(1);
 
@@ -97,7 +94,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
         ScriptProgress progress = new ScriptProgress(scriptInfo, script);
@@ -121,7 +118,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
         ScriptProgress progress = new ScriptProgress(scriptInfo, script);
@@ -145,7 +142,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
         ScriptProgress progress = new ScriptProgress(scriptInfo, script);
@@ -167,7 +164,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
         AstRegion closedAST = connectAST.getStreamables().get(2);
 
@@ -195,7 +192,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
         AstRegion closedAST = connectAST.getStreamables().get(2);
 
@@ -227,7 +224,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
         ScriptProgress progress = new ScriptProgress(scriptInfo, script);
@@ -253,7 +250,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
         AstRegion closedAST = connectAST.getStreamables().get(2);
 
@@ -287,7 +284,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
         ScriptProgress progress = new ScriptProgress(scriptInfo, script);
@@ -320,7 +317,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
         ScriptProgress progress = new ScriptProgress(scriptInfo, script);
@@ -353,7 +350,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
         AstRegion closeAST = connectAST.getStreamables().get(1);
 
@@ -405,7 +402,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectOneAST = scriptAST.getStreams().get(0);
         AstRegion closeOneAST = connectOneAST.getStreamables().get(1);
         AstStreamNode connectTwoAST = scriptAST.getStreams().get(1);
@@ -457,7 +454,7 @@ public class ScriptProgressTest {
                 "\t#comment 5\n";
         // @formatter:on
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectAST = scriptAST.getStreams().get(1);
         AstRegion closeAST = connectAST.getStreamables().get(1);
 
@@ -498,7 +495,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
         ScriptProgress progress = new ScriptProgress(scriptInfo, script);
@@ -527,7 +524,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
         ScriptProgress progress = new ScriptProgress(scriptInfo, script);
@@ -556,7 +553,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode acceptedAST = scriptAST.getStreams().get(1);
         AstRegion closeAST = acceptedAST.getStreamables().get(1);
 
@@ -600,7 +597,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
         ScriptProgress progress = new ScriptProgress(scriptInfo, script);
@@ -637,7 +634,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode acceptedAST = scriptAST.getStreams().get(1);
         AstRegion closeAST = acceptedAST.getStreamables().get(1);
 
@@ -684,7 +681,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode acceptedAST = scriptAST.getStreams().get(2);
         AstRegion closeAST = acceptedAST.getStreamables().get(1);
 
@@ -731,7 +728,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode acceptedOneAST = scriptAST.getStreams().get(1);
         AstRegion closeOneAST = acceptedOneAST.getStreamables().get(1);
         AstStreamNode acceptedTwoAST = scriptAST.getStreams().get(2);
@@ -784,7 +781,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
         ScriptProgress progress = new ScriptProgress(scriptInfo, script);
@@ -814,7 +811,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectAST = scriptAST.getStreams().get(1);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
@@ -857,7 +854,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
@@ -900,7 +897,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectAST = scriptAST.getStreams().get(2);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
@@ -947,7 +944,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectAST = scriptAST.getStreams().get(1);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
@@ -995,7 +992,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectAST = scriptAST.getStreams().get(1);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
@@ -1051,7 +1048,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectAST = scriptAST.getStreams().get(1);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
@@ -1094,7 +1091,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode acceptedAST = scriptAST.getStreams().get(1);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
@@ -1130,7 +1127,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode acceptedOneAST = scriptAST.getStreams().get(1);
         AstStreamNode acceptedTwoAST = scriptAST.getStreams().get(3);
 
@@ -1163,7 +1160,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode acceptedAST = scriptAST.getStreams().get(1);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
@@ -1195,7 +1192,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
         AstRegion connectedAST = connectAST.getStreamables().get(0);
 
@@ -1224,7 +1221,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
         ScriptProgress progress = new ScriptProgress(scriptInfo, script);
@@ -1246,7 +1243,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
 
         RegionInfo scriptInfo = scriptAST.getRegionInfo();
@@ -1280,7 +1277,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode acceptedAST = scriptAST.getStreams().get(1);
         AstRegion readAST = acceptedAST.getStreamables().get(1);
 
@@ -1323,7 +1320,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectOneAST = scriptAST.getStreams().get(1);
         AstRegion connectedOneAST = connectOneAST.getStreamables().get(0);
         AstStreamNode connectTwoAST = scriptAST.getStreams().get(2);
@@ -1364,7 +1361,7 @@ public class ScriptProgressTest {
         // @formatter:on
 
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
         AstRegion connectedOneAST = connectAST.getStreamables().get(0);
         AstStreamNode acceptedAST = scriptAST.getStreams().get(2);
@@ -1400,7 +1397,7 @@ public class ScriptProgressTest {
                 "closed\n";
         // @formatter:on
         ScriptParser parser = new ScriptParserImpl();
-        AstScriptNode scriptAST = parser.parse(new ByteArrayInputStream(script.getBytes(UTF_8)));
+        AstScriptNode scriptAST = parser.parse(script);
         AstStreamNode connectAST = scriptAST.getStreams().get(0);
         AstRegion closedAST = connectAST.getStreamables().get(2);
 

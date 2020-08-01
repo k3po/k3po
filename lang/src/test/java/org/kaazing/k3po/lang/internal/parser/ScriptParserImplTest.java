@@ -384,14 +384,14 @@ public class ScriptParserImplTest {
     @Test
     public void shouldParseExpressionMatcher() throws Exception {
 
-        String scriptFragment = "${ byteArray }";
+        String scriptFragment = "${ \"\u0001f602\" }";
 
         ScriptParserImpl parser = new ScriptParserImpl();
         AstExpressionMatcher actual = parser.parseWithStrategy(scriptFragment, EXPRESSION_MATCHER);
 
         ExpressionFactory factory = parser.getExpressionFactory();
         ExpressionContext context = parser.getExpressionContext();
-        ValueExpression value = factory.createValueExpression(context, "${ byteArray }", Object.class);
+        ValueExpression value = factory.createValueExpression(context, "${ \"\u0001f602\" }", Object.class);
         AstExpressionMatcher expected = new AstExpressionMatcher(value, parser.getExpressionContext());
 
         assertEquals(expected, actual);
