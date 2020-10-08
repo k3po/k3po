@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.lang.internal.parser;
+package org.kaazing.k3po.lang.el;
 
-import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
+import java.nio.ByteBuffer;
 
-public interface ScriptParser {
+public interface BytesMatcher {
 
-    AstScriptNode parse(String input) throws ScriptParseException;
+    Object match(ByteBuffer buffer) throws Exception;
+
 }

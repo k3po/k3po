@@ -15,8 +15,6 @@
  */
 package org.kaazing.k3po.driver.internal.behavior.parser;
 
-import java.io.InputStream;
-
 import org.kaazing.k3po.driver.internal.behavior.visitor.AssociateStreamsVisitor;
 import org.kaazing.k3po.driver.internal.behavior.visitor.InjectBarriersVisitor;
 import org.kaazing.k3po.driver.internal.behavior.visitor.InjectEventsVisitor;
@@ -35,7 +33,7 @@ public class Parser implements ScriptParser {
     }
 
     @Override
-    public AstScriptNode parse(InputStream input) throws ScriptParseException {
+    public AstScriptNode parse(String input) throws ScriptParseException {
 
         try {
             AstScriptNode script = parser.parse(input);

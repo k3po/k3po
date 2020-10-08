@@ -134,8 +134,8 @@ public final class AstAcceptNodeBuilder extends AbstractAstAcceptNodeBuilder<Ast
             return this;
         }
 
-        public AstAcceptableNodeBuilder.AcceptNested<ScriptNested<R>> addAcceptedStream() {
-            return new AstAcceptableNodeBuilder.AcceptNested<>(this);
+        public AstAcceptedNodeBuilder.AcceptNested<ScriptNested<R>> addAcceptedStream() {
+            return new AstAcceptedNodeBuilder.AcceptNested<>(this);
         }
 
         @Override

@@ -20,6 +20,7 @@ import static org.jboss.netty.channel.ChannelState.CONNECTED;
 import static org.jboss.netty.channel.ChannelState.OPEN;
 import static org.jboss.netty.channel.Channels.pipeline;
 import static org.junit.Assert.assertFalse;
+import static org.kaazing.k3po.lang.internal.RegionInfo.newSequential;
 
 import org.jboss.netty.channel.ChannelDownstreamHandler;
 import org.jboss.netty.channel.ChannelEvent;
@@ -39,6 +40,7 @@ import org.kaazing.k3po.driver.internal.behavior.handler.ExecutionHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.prepare.PreparationEvent;
 import org.kaazing.k3po.driver.internal.jmock.Expectations;
 import org.kaazing.k3po.driver.internal.jmock.Mockery;
+import org.kaazing.k3po.lang.internal.RegionInfo;
 
 public class ConnectHandlerTest {
 
@@ -64,6 +66,7 @@ public class ConnectHandlerTest {
         execution = new ExecutionHandler();
 
         handler = new ConnectHandler(new LocalAddress("test"));
+        handler.setRegionInfo(newSequential(0, 0));
 
         pipeline = pipeline(new SimpleChannelHandler() {
             @Override

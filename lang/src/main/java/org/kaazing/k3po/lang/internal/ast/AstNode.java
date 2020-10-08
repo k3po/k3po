@@ -24,8 +24,12 @@ public abstract class AstNode extends AstRegion {
         R visit(AstScriptNode node, P parameter);
         R visit(AstPropertyNode node, P parameter);
         R visit(AstAcceptNode node, P parameter);
-        R visit(AstAcceptableNode node, P parameter);
+        R visit(AstAcceptedNode node, P parameter);
+        R visit(AstRejectedNode node, P parameter);
         R visit(AstConnectNode node, P parameter);
+
+        R visit(AstConnectAbortNode node, P parameter);
+        R visit(AstConnectAbortedNode node, P parameter);
 
         R visit(AstWriteFlushNode node, P parameter);
         R visit(AstWriteValueNode node, P parameter);

@@ -1046,13 +1046,13 @@ public class ScriptParserImplParseSCRIPTTest {
 // * there exists a AcceptNode. Note this will be a reference to the
 // * acceptable list inside an AcceptNode
 // */
-// List<AstAcceptableNode> scriptAcceptableList = null;
+// List<AstAcceptedNode> scriptAcceptableList = null;
 //
 // /*
 // * Collect any Acceptable nodes and save them for adding to
 // * scriptAcceptableList
 // */
-// List<AstAcceptableNode> collectAcceptableList = new LinkedList<AstAcceptableNode>();
+// List<AstAcceptedNode> collectAcceptableList = new LinkedList<AstAcceptedNode>();
 //
 // while (iter.hasNext()) {
 // AstStreamNode node = iter.next();
@@ -1071,12 +1071,12 @@ public class ScriptParserImplParseSCRIPTTest {
 // scriptAcceptableList.addAll(collectAcceptableList);
 // scriptAcceptableList = ((AstAcceptNode) node)
 // .getAcceptables();
-// collectAcceptableList = new LinkedList<AstAcceptableNode>();
+// collectAcceptableList = new LinkedList<AstAcceptedNode>();
 // }
-// } else if (node.getClass().equals(AstAcceptableNode.class)) {
+// } else if (node.getClass().equals(AstAcceptedNode.class)) {
 // /* Remove the Acceptable */
 // iter.remove();
-// collectAcceptableList.add((AstAcceptableNode) node);
+// collectAcceptableList.add((AstAcceptedNode) node);
 // }
 // }
 // /* Add all the acceptables to the last AcceptNode found */

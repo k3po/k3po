@@ -20,11 +20,14 @@ import java.util.List;
 import org.kaazing.k3po.driver.internal.behavior.visitor.InjectEventsVisitor.State;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
+import org.kaazing.k3po.lang.internal.ast.AstAcceptedNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildOpenedNode;
 import org.kaazing.k3po.lang.internal.ast.AstCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstDisconnectNode;
@@ -40,6 +43,7 @@ import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
+import org.kaazing.k3po.lang.internal.ast.AstRejectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamableNode;
@@ -110,20 +114,39 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
     }
 
     @Override
-    public AstScriptNode visit(AstAcceptableNode acceptableNode, State state) {
+    public AstScriptNode visit(AstAcceptedNode acceptedNode, State state) {
 
         state.connectivityState = ConnectivityState.NONE;
 
-        AstAcceptableNode newAcceptableNode = new AstAcceptableNode();
-        newAcceptableNode.setRegionInfo(acceptableNode.getRegionInfo());
-        newAcceptableNode.setAcceptName(acceptableNode.getAcceptName());
+        AstAcceptedNode newAcceptedNode = new AstAcceptedNode();
+        newAcceptedNode.setRegionInfo(acceptedNode.getRegionInfo());
+        newAcceptedNode.setAcceptName(acceptedNode.getAcceptName());
 
-        state.streamables = newAcceptableNode.getStreamables();
-        for (AstStreamableNode streamable : acceptableNode.getStreamables()) {
+        state.streamables = newAcceptedNode.getStreamables();
+        for (AstStreamableNode streamable : acceptedNode.getStreamables()) {
             streamable.accept(this, state);
         }
 
-        state.streams.add(newAcceptableNode);
+        state.streams.add(newAcceptedNode);
+
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstRejectedNode rejectedNode, State state) {
+
+        state.connectivityState = ConnectivityState.NONE;
+
+        AstRejectedNode newRejectedNode = new AstRejectedNode();
+        newRejectedNode.setRegionInfo(rejectedNode.getRegionInfo());
+        newRejectedNode.setAcceptName(rejectedNode.getAcceptName());
+
+        state.streamables = newRejectedNode.getStreamables();
+        for (AstStreamableNode streamable : rejectedNode.getStreamables()) {
+            streamable.accept(this, state);
+        }
+
+        state.streams.add(newRejectedNode);
 
         return null;
     }
@@ -337,6 +360,64 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
         default:
             throw new IllegalStateException("Unexpected event: connected");
+        }
+
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstConnectAbortNode connectAbortNode, State state) {
+
+        switch (state.connectivityState) {
+        case NONE:
+        case OPENED:
+            AstBoundNode boundNode = new AstBoundNode();
+            boundNode.setRegionInfo(connectAbortNode.getRegionInfo());
+            boundNode.accept(this, state);
+            break;
+        default:
+            break;
+        }
+
+        // The above switch might have changed the connectivity state, so
+        // we switch on it again
+        switch (state.connectivityState) {
+        case BOUND:
+            state.streamables.add(connectAbortNode);
+            state.connectivityState = ConnectivityState.CLOSED;
+            break;
+
+        default:
+            throw new IllegalStateException("Unexpected connect abort");
+        }
+
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstConnectAbortedNode connectAbortedNode, State state) {
+
+        switch (state.connectivityState) {
+        case NONE:
+        case OPENED:
+            AstBoundNode boundNode = new AstBoundNode();
+            boundNode.setRegionInfo(connectAbortedNode.getRegionInfo());
+            boundNode.accept(this, state);
+            break;
+        default:
+            break;
+        }
+
+        // The above switch might have changed the connectivity state, so
+        // we switch on it again
+        switch (state.connectivityState) {
+        case BOUND:
+            state.streamables.add(connectAbortedNode);
+            state.connectivityState = ConnectivityState.CLOSED;
+            break;
+
+        default:
+            throw new IllegalStateException("Unexpected event: connect aborted");
         }
 
         return null;

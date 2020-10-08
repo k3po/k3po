@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.lang.internal.parser;
+package org.kaazing.k3po.lang.internal.ast.builder;
 
-import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
+import org.kaazing.k3po.lang.internal.ast.AstNode;
 
-public interface ScriptParser {
+public abstract class AbstractAstRejectableNodeBuilder<N extends AstNode, R> extends AbstractAstStreamableNodeBuilder<N, R> {
 
-    AstScriptNode parse(String input) throws ScriptParseException;
+    public AbstractAstRejectableNodeBuilder(N node, R result) {
+        super(node, result);
+    }
 }

@@ -13,11 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.lang.internal.parser;
+package org.kaazing.k3po.driver.internal.behavior.handler;
 
-import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelStateEvent;
 
-public interface ScriptParser {
+public class RejectedHandler extends ExecutionHandler {
 
-    AstScriptNode parse(String input) throws ScriptParseException;
+    @Override
+    public void channelBound(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception
+    {
+        super.channelBound(ctx, e);
+
+        getHandlerFuture().setSuccess();
+    }
+
+    @Override
+    protected StringBuilder describe(StringBuilder sb) {
+        return sb.append("rejected");
+    }
+
 }

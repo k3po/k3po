@@ -20,11 +20,14 @@ import java.util.List;
 import org.kaazing.k3po.driver.internal.behavior.visitor.InjectFlushVisitor.State;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
+import org.kaazing.k3po.lang.internal.ast.AstAcceptedNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildOpenedNode;
 import org.kaazing.k3po.lang.internal.ast.AstCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstDisconnectNode;
@@ -40,6 +43,7 @@ import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
+import org.kaazing.k3po.lang.internal.ast.AstRejectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamableNode;
@@ -112,21 +116,41 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
     }
 
     @Override
-    public AstScriptNode visit(AstAcceptableNode acceptableNode, State state) {
+    public AstScriptNode visit(AstAcceptedNode acceptedNode, State state) {
 
         state.readState = ReadWriteState.NONE;
         state.writeState = ReadWriteState.NONE;
 
-        AstAcceptableNode newAcceptableNode = new AstAcceptableNode();
-        newAcceptableNode.setRegionInfo(acceptableNode.getRegionInfo());
-        newAcceptableNode.setAcceptName(acceptableNode.getAcceptName());
+        AstAcceptedNode newAcceptedNode = new AstAcceptedNode();
+        newAcceptedNode.setRegionInfo(acceptedNode.getRegionInfo());
+        newAcceptedNode.setAcceptName(acceptedNode.getAcceptName());
 
-        state.streamables = newAcceptableNode.getStreamables();
-        for (AstStreamableNode streamable : acceptableNode.getStreamables()) {
+        state.streamables = newAcceptedNode.getStreamables();
+        for (AstStreamableNode streamable : acceptedNode.getStreamables()) {
             streamable.accept(this, state);
         }
 
-        state.streams.add(newAcceptableNode);
+        state.streams.add(newAcceptedNode);
+
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstRejectedNode rejectedNode, State state) {
+
+        state.readState = ReadWriteState.NONE;
+        state.writeState = ReadWriteState.NONE;
+
+        AstRejectedNode newRejectedNode = new AstRejectedNode();
+        newRejectedNode.setRegionInfo(rejectedNode.getRegionInfo());
+        newRejectedNode.setAcceptName(rejectedNode.getAcceptName());
+
+        state.streamables = newRejectedNode.getStreamables();
+        for (AstStreamableNode streamable : rejectedNode.getStreamables()) {
+            streamable.accept(this, state);
+        }
+
+        state.streams.add(newRejectedNode);
 
         return null;
     }
@@ -146,6 +170,18 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
 
         state.streams.add(newConnectNode);
 
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstConnectAbortNode node, State state) {
+        state.streamables.add(node);
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstConnectAbortedNode node, State state) {
+        state.streamables.add(node);
         return null;
     }
 

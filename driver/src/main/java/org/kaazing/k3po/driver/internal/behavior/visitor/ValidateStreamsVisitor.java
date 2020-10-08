@@ -17,12 +17,15 @@ package org.kaazing.k3po.driver.internal.behavior.visitor;
 
 import org.kaazing.k3po.lang.internal.ast.AstAcceptNode;
 import org.kaazing.k3po.lang.internal.ast.AstAcceptableNode;
+import org.kaazing.k3po.lang.internal.ast.AstAcceptedNode;
 import org.kaazing.k3po.lang.internal.ast.AstBoundNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstChildOpenedNode;
 import org.kaazing.k3po.lang.internal.ast.AstCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstCommandNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortNode;
+import org.kaazing.k3po.lang.internal.ast.AstConnectAbortedNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectNode;
 import org.kaazing.k3po.lang.internal.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstDisconnectNode;
@@ -39,6 +42,7 @@ import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadValueNode;
+import org.kaazing.k3po.lang.internal.ast.AstRejectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamNode;
 import org.kaazing.k3po.lang.internal.ast.AstStreamableNode;
@@ -119,10 +123,37 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
+    public AstScriptNode visit(AstConnectAbortNode node, State state) {
+
+        switch (state.writeState) {
+        case OPEN:
+            state.readState = StreamState.CLOSED;
+            break;
+        default:
+            throw new IllegalStateException(unexpectedInWriteState(node, state));
+        }
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstConnectAbortedNode node, State state) {
+
+        switch (state.writeState) {
+        case OPEN:
+            state.readState = StreamState.CLOSED;
+            break;
+        default:
+            throw new IllegalStateException(unexpectedInWriteState(node, state));
+        }
+        return null;
+    }
+
+    @Override
     public AstScriptNode visit(AstReadConfigNode node, State state) {
 
         switch (state.readState) {
         case OPEN:
+        case CLOSED:
             break;
         default:
             throw new IllegalStateException(String.format("Unexpected read config event (%s) while reading in state %s", node
@@ -136,6 +167,7 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
 
         switch (state.writeState) {
         case OPEN:
+        case CLOSED:
             break;
         default:
             throw new IllegalStateException(String.format("Unexpected write config command (%s) while writing in state %s", node
@@ -261,9 +293,19 @@ public class ValidateStreamsVisitor implements AstNode.Visitor<AstScriptNode, Va
     }
 
     @Override
-    public AstScriptNode visit(AstAcceptableNode acceptableNode, State state) {
+    public AstScriptNode visit(AstAcceptedNode node, State state) {
 
-        for (AstStreamableNode streamable : acceptableNode.getStreamables()) {
+        for (AstStreamableNode streamable : node.getStreamables()) {
+            streamable.accept(this, state);
+        }
+
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstRejectedNode node, State state) {
+
+        for (AstStreamableNode streamable : node.getStreamables()) {
             streamable.accept(this, state);
         }
 

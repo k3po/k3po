@@ -159,8 +159,8 @@ public class ValidateStreamsVisitorTest {
         inputScript.accept(injectEvents, new ValidateStreamsVisitor.State());
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldNotAllowWriteConfigAfterWriteClose() throws Exception {
+    @Test
+    public void shouldAllowWriteConfigAfterWriteClose() throws Exception {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addConnectStream()
@@ -183,8 +183,8 @@ public class ValidateStreamsVisitorTest {
         inputScript.accept(injectEvents, new ValidateStreamsVisitor.State());
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldNotAllowReadConfigAfterReadClose() throws Exception {
+    @Test
+    public void shouldAllowReadConfigAfterReadClose() throws Exception {
         // @formatter:off
         AstScriptNode inputScript = new AstScriptNodeBuilder()
             .addAcceptStream()

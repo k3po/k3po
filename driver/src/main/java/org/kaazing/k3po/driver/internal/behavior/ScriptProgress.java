@@ -15,6 +15,7 @@
  */
 package org.kaazing.k3po.driver.internal.behavior;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Iterator;

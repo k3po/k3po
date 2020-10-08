@@ -1,5 +1,56 @@
 # Change Log
 
+## [3.0.0-alpha-97](https://github.com/k3po/k3po/tree/3.0.0-alpha-97) (2018-12-05)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-96...3.0.0-alpha-97)
+
+## [3.0.0-alpha-96](https://github.com/k3po/k3po/tree/3.0.0-alpha-96) (2018-05-18)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-95...3.0.0-alpha-96)
+
+## [3.0.0-alpha-95](https://github.com/k3po/k3po/tree/3.0.0-alpha-95) (2018-05-16)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-93...3.0.0-alpha-95)
+
+**Merged pull requests:**
+
+- Moving to PKIX KeyManagerFactory [\#465](https://github.com/k3po/k3po/pull/465) ([jitsni](https://github.com/jitsni))
+
+## [3.0.0-alpha-93](https://github.com/k3po/k3po/tree/3.0.0-alpha-93) (2018-05-10)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-92...3.0.0-alpha-93)
+
+**Merged pull requests:**
+
+- Implementing TLS client auth [\#464](https://github.com/k3po/k3po/pull/464) ([jitsni](https://github.com/jitsni))
+
+## [3.0.0-alpha-92](https://github.com/k3po/k3po/tree/3.0.0-alpha-92) (2018-04-24)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-91...3.0.0-alpha-92)
+
+**Merged pull requests:**
+
+- Propagate fireInputshutdown to http channel if  upgraded [\#463](https://github.com/k3po/k3po/pull/463) ([akrambek](https://github.com/akrambek))
+
+## [3.0.0-alpha-91](https://github.com/k3po/k3po/tree/3.0.0-alpha-91) (2018-02-16)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-90...3.0.0-alpha-91)
+
+**Merged pull requests:**
+
+- Proper clean up on k3po TLS channel abort [\#462](https://github.com/k3po/k3po/pull/462) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-90](https://github.com/k3po/k3po/tree/3.0.0-alpha-90) (2018-02-14)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-89...3.0.0-alpha-90)
+
+**Merged pull requests:**
+
+- TLS client channel closes low level [\#461](https://github.com/k3po/k3po/pull/461) ([dpwspoon](https://github.com/dpwspoon))
+
+## [3.0.0-alpha-89](https://github.com/k3po/k3po/tree/3.0.0-alpha-89) (2018-02-13)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-88...3.0.0-alpha-89)
+
+## [3.0.0-alpha-88](https://github.com/k3po/k3po/tree/3.0.0-alpha-88) (2018-01-19)
+[Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-87...3.0.0-alpha-88)
+
+**Merged pull requests:**
+
+- Allow builder expressions [\#459](https://github.com/k3po/k3po/pull/459) ([dpwspoon](https://github.com/dpwspoon))
+
 ## [3.0.0-alpha-87](https://github.com/k3po/k3po/tree/3.0.0-alpha-87) (2017-10-28)
 [Full Changelog](https://github.com/k3po/k3po/compare/3.0.0-alpha-86...3.0.0-alpha-87)
 

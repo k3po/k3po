@@ -99,8 +99,8 @@
         </dependency>
         <dependency>
             <groupId>org.agrona</groupId>
-            <artifactId>Agrona</artifactId>
-            <version>0.5.5</version>
+            <artifactId>agrona</artifactId>
+            <version>1.6.0</version>
         </dependency>
     </dependencies>
 

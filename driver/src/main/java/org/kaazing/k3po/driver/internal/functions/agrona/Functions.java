@@ -54,7 +54,7 @@ public final class Functions {
 
     @Function
     public static ChannelReader broadcastReceiver(AtomicBuffer buffer) {
-        return new CopyBroadcastReceiverChannelReader(new CopyBroadcastReceiver(new BroadcastReceiver(buffer)));
+        return new CopyBroadcastReceiverChannelReader(new FlushingCopyBroadcastReceiver(new BroadcastReceiver(buffer)));
     }
 
     @Function
@@ -73,6 +73,20 @@ public final class Functions {
             return "agrona";
         }
 
+    }
+
+    private static final class FlushingCopyBroadcastReceiver extends CopyBroadcastReceiver
+    {
+        public FlushingCopyBroadcastReceiver(
+            BroadcastReceiver receiver)
+        {
+            super(receiver);
+
+            while (receiver.receiveNext())
+            {
+                // flush to latest
+            }
+        }
     }
 
     private Functions() {
