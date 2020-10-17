@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.driver.internal.behavior.handler.codec;
+package org.kaazing.k3po.driver.internal.behavior;
 
-import org.kaazing.k3po.lang.internal.RegionInfo;
+import java.util.function.Function;
 
+import org.jboss.netty.channel.ChannelHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageDecoder;
+import org.kaazing.k3po.lang.internal.ast.AstReadAdvisedNode;
+import org.kaazing.k3po.lang.internal.ast.matcher.AstValueMatcher;
 
-public abstract class AbstractConfigDecoder implements ChannelDecoder {
+public interface ReadAdvisedFactory {
 
-    private RegionInfo regionInfo;
-
-    public RegionInfo getRegionInfo() {
-        return regionInfo;
-    }
-
-    public void setRegionInfo(RegionInfo regionInfo) {
-        this.regionInfo = regionInfo;
-    }
-
+    ChannelHandler newHandler(AstReadAdvisedNode node, Function<AstValueMatcher, MessageDecoder> decoderFactory);
 }

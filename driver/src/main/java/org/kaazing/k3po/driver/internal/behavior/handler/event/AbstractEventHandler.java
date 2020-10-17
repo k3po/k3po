@@ -34,9 +34,11 @@ import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEv
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.OPEN;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.OUTPUT_SHUTDOWN;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.READ_ABORTED;
+import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.READ_ADVISED;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.UNBOUND;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.UNKNOWN;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.WRITE_ABORTED;
+import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.WRITE_ADVISED;
 import static org.kaazing.k3po.driver.internal.behavior.handler.event.AbstractEventHandler.ChannelEventKind.WRITE_COMPLETED;
 
 import java.util.EnumSet;
@@ -57,9 +59,11 @@ import org.kaazing.k3po.driver.internal.behavior.ScriptProgressException;
 import org.kaazing.k3po.driver.internal.behavior.handler.ExecutionHandler;
 import org.kaazing.k3po.driver.internal.netty.channel.FlushEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ReadAbortEvent;
+import org.kaazing.k3po.driver.internal.netty.channel.ReadAdviseEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownInputEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownOutputEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.WriteAbortEvent;
+import org.kaazing.k3po.driver.internal.netty.channel.WriteAdviseEvent;
 
 public abstract class AbstractEventHandler extends ExecutionHandler {
 
@@ -69,7 +73,8 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
 
     public enum ChannelEventKind {
         CHILD_OPEN, CHILD_CLOSED, OPEN, BOUND, CONNECTED, MESSAGE, WRITE_COMPLETED, DISCONNECTED, UNBOUND, CLOSED, EXCEPTION,
-        INTEREST_OPS, IDLE_STATE, INPUT_SHUTDOWN, OUTPUT_SHUTDOWN, FLUSHED, UNKNOWN, READ_ABORTED, WRITE_ABORTED
+        INTEREST_OPS, IDLE_STATE, INPUT_SHUTDOWN, OUTPUT_SHUTDOWN, FLUSHED, UNKNOWN, READ_ABORTED, WRITE_ABORTED,
+        READ_ADVISED, WRITE_ADVISED
     };
 
     private final Set<ChannelEventKind> interestEvents;
@@ -129,6 +134,10 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
                 throw new ScriptProgressException(getRegionInfo(), "read aborted");
             case WRITE_ABORTED:
                 throw new ScriptProgressException(getRegionInfo(), "write aborted");
+            case READ_ADVISED:
+                throw new ScriptProgressException(getRegionInfo(), "read advised ...");
+            case WRITE_ADVISED:
+                throw new ScriptProgressException(getRegionInfo(), "write advised ...");
             case MESSAGE:
                 throw new ScriptProgressException(getRegionInfo(), "read ...");
             case INPUT_SHUTDOWN:
@@ -157,6 +166,14 @@ public abstract class AbstractEventHandler extends ExecutionHandler {
     }
 
     private static ChannelEventKind asEventKind(ChannelEvent evt) {
+        if (evt instanceof ReadAdviseEvent) {
+            return READ_ADVISED;
+        }
+
+        if (evt instanceof WriteAdviseEvent) {
+            return WRITE_ADVISED;
+        }
+
         if (evt instanceof ReadAbortEvent) {
             return READ_ABORTED;
         }

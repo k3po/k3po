@@ -19,12 +19,12 @@ import java.net.URI;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigEncoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.ChannelEncoder;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.channel.AbstractChannel;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChannelConfig;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
-public class HttpHostEncoder implements ConfigEncoder {
+public class HttpHostEncoder implements ChannelEncoder {
 
     @Override
     @SuppressWarnings("unchecked")

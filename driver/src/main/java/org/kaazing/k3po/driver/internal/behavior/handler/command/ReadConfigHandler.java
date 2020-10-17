@@ -28,7 +28,7 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigDecoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.ChannelDecoder;
 
 //
 // Reading the configuration requires the channel to be readable as an indication that
@@ -38,14 +38,14 @@ import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigDecoder;
 //
 public class ReadConfigHandler extends AbstractCommandHandler {
 
-    private final List<ConfigDecoder> decoders;
+    private final List<ChannelDecoder> decoders;
     private ChannelFuture readableFuture;
 
-    public ReadConfigHandler(ConfigDecoder decoder) {
+    public ReadConfigHandler(ChannelDecoder decoder) {
         this(singletonList(decoder));
     }
 
-    public ReadConfigHandler(List<ConfigDecoder> decoders) {
+    public ReadConfigHandler(List<ChannelDecoder> decoders) {
         requireNonNull(decoders, "decoders");
         if (decoders.size() == 0) {
             throw new IllegalArgumentException("must have at least one decoder");
@@ -88,7 +88,7 @@ public class ReadConfigHandler extends AbstractCommandHandler {
         Channel channel = ctx.getChannel();
 
         try {
-            for (ConfigDecoder decoder : decoders) {
+            for (ChannelDecoder decoder : decoders) {
                 decoder.decode(channel);
             }
             getHandlerFuture().setSuccess();

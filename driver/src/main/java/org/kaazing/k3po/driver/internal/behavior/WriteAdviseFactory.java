@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.driver.internal.behavior.handler.codec;
+package org.kaazing.k3po.driver.internal.behavior;
 
-import org.jboss.netty.channel.Channel;
+import java.util.function.Function;
 
-public interface ConfigEncoder {
+import org.jboss.netty.channel.ChannelHandler;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageEncoder;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAdviseNode;
+import org.kaazing.k3po.lang.internal.ast.value.AstValue;
 
-    void encode(Channel channel) throws Exception;
+public interface WriteAdviseFactory {
 
+    ChannelHandler newHandler(AstWriteAdviseNode node, Function<AstValue<?>, MessageEncoder> encoderFactory);
 }

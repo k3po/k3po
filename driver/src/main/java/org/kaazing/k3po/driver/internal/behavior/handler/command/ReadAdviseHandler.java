@@ -18,6 +18,7 @@ package org.kaazing.k3po.driver.internal.behavior.handler.command;
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
+import static org.kaazing.k3po.driver.internal.netty.channel.Channels.adviseInput;
 
 import java.util.List;
 
@@ -25,19 +26,21 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.ChannelEncoder;
 
-public class WriteConfigHandler extends AbstractCommandHandler {
+public class ReadAdviseHandler extends AbstractCommandHandler {
 
+    private final Object value;
     private final List<ChannelEncoder> encoders;
 
-    public WriteConfigHandler(ChannelEncoder encoder) {
-        this(singletonList(encoder));
+    public ReadAdviseHandler(Object value, ChannelEncoder encoder) {
+        this(value, singletonList(encoder));
     }
 
-    public WriteConfigHandler(List<ChannelEncoder> encoders) {
+    public ReadAdviseHandler(Object value, List<ChannelEncoder> encoders) {
         requireNonNull(encoders, "encoders");
         if (encoders.size() == 0) {
             throw new IllegalArgumentException("must have at least one encoder");
         }
+        this.value = value;
         this.encoders = encoders;
     }
 
@@ -48,7 +51,7 @@ public class WriteConfigHandler extends AbstractCommandHandler {
             for (ChannelEncoder encoder : encoders) {
                 encoder.encode(channel);
             }
-            getHandlerFuture().setSuccess();
+            adviseInput(ctx, getHandlerFuture(), value);
         }
         catch (Exception e) {
             getHandlerFuture().setFailure(e);
@@ -57,7 +60,7 @@ public class WriteConfigHandler extends AbstractCommandHandler {
 
     @Override
     protected StringBuilder describe(StringBuilder sb) {
-        return sb.append(format("write config %s", encoders));
+        return sb.append(format("read advise %s %s", value, encoders));
     }
 
 }

@@ -21,9 +21,11 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.FlushEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ReadAbortEvent;
+import org.kaazing.k3po.driver.internal.netty.channel.ReadAdviseEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownInputEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.ShutdownOutputEvent;
 import org.kaazing.k3po.driver.internal.netty.channel.WriteAbortEvent;
+import org.kaazing.k3po.driver.internal.netty.channel.WriteAdviseEvent;
 
 public abstract class AbstractChannelSink extends org.jboss.netty.channel.AbstractChannelSink {
 
@@ -71,6 +73,10 @@ public abstract class AbstractChannelSink extends org.jboss.netty.channel.Abstra
             abortInputRequested(pipeline, (ReadAbortEvent) e);
         } else if (e instanceof WriteAbortEvent) {
             abortOutputRequested(pipeline, (WriteAbortEvent) e);
+        } else if (e instanceof ReadAdviseEvent) {
+            adviseInputRequested(pipeline, (ReadAdviseEvent) e);
+        } else if (e instanceof WriteAdviseEvent) {
+            adviseOutputRequested(pipeline, (WriteAdviseEvent) e);
         } else {
             eventSunk0(pipeline, e);
         }
@@ -107,6 +113,12 @@ public abstract class AbstractChannelSink extends org.jboss.netty.channel.Abstra
     }
 
     protected void abortOutputRequested(ChannelPipeline pipeline, WriteAbortEvent evt) throws Exception {
+    }
+
+    protected void adviseInputRequested(ChannelPipeline pipeline, ReadAdviseEvent evt) throws Exception {
+    }
+
+    protected void adviseOutputRequested(ChannelPipeline pipeline, WriteAdviseEvent evt) throws Exception {
     }
 
     protected void shutdownInputRequested(ChannelPipeline pipeline, ShutdownInputEvent evt) throws Exception {

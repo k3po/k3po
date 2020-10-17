@@ -15,19 +15,11 @@
  */
 package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 
-import org.kaazing.k3po.lang.internal.RegionInfo;
+import org.jboss.netty.channel.Channel;
 
 
-public abstract class AbstractConfigDecoder implements ChannelDecoder {
+public interface ChannelDecoder {
 
-    private RegionInfo regionInfo;
-
-    public RegionInfo getRegionInfo() {
-        return regionInfo;
-    }
-
-    public void setRegionInfo(RegionInfo regionInfo) {
-        this.regionInfo = regionInfo;
-    }
+    boolean decode(Channel channel) throws Exception;
 
 }

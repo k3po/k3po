@@ -124,6 +124,8 @@ commandNode
     | writeCloseNode
     | writeAbortNode
     | readAbortNode
+    | writeAdviseNode
+    | readAdviseNode
     | closeNode
     ;
 
@@ -136,6 +138,8 @@ eventNode
     | readClosedNode
     | readAbortedNode
     | writeAbortedNode
+    | readAdvisedNode
+    | writeAdvisedNode
     | disconnectedNode
     | unboundNode
     | closedNode
@@ -175,6 +179,14 @@ writeAbortNode
 
 writeAbortedNode
     : WriteKeyword AbortedKeyword
+    ;
+
+writeAdviseNode
+    : WriteKeyword AdviseKeyword QualifiedName writeValue*
+    ;
+
+writeAdvisedNode
+    : WriteKeyword AdvisedKeyword QualifiedName matcher* MissingKeyword?
     ;
 
 disconnectNode
@@ -227,6 +239,14 @@ readAbortNode
 
 readAbortedNode
     : ReadKeyword AbortedKeyword
+    ;
+
+readAdviseNode
+    : ReadKeyword AdviseKeyword QualifiedName writeValue*
+    ;
+
+readAdvisedNode
+    : ReadKeyword AdvisedKeyword QualifiedName matcher* MissingKeyword?
     ;
 
 readClosedNode
@@ -376,6 +396,14 @@ AcceptKeyword
 
 AcceptedKeyword
     : 'accepted'
+    ;
+
+AdviseKeyword
+    : 'advise'
+    ;
+
+AdvisedKeyword
+    : 'advised'
     ;
 
 AsKeyword

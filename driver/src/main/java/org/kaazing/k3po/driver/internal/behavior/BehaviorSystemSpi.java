@@ -38,4 +38,16 @@ public interface BehaviorSystemSpi {
 
     WriteConfigFactory writeConfigFactory(StructuredTypeInfo configType);
 
+    Set<StructuredTypeInfo> getReadAdvisoryTypes();
+
+    Set<StructuredTypeInfo> getWriteAdvisoryTypes();
+
+    ReadAdviseFactory readAdviseFactory(StructuredTypeInfo advisoryType);
+
+    ReadAdvisedFactory readAdvisedFactory(StructuredTypeInfo advisoryType);
+
+    WriteAdviseFactory writeAdviseFactory(StructuredTypeInfo advisoryType);
+
+    WriteAdvisedFactory writeAdvisedFactory(StructuredTypeInfo advisoryType);
+
 }

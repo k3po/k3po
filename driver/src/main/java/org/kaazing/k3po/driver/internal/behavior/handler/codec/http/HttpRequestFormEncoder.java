@@ -20,12 +20,12 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 
 import org.jboss.netty.buffer.ChannelBufferFactory;
 import org.jboss.netty.channel.Channel;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigEncoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.ChannelEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageEncoder;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChannelConfig;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpRequestForm;
 
-public class HttpRequestFormEncoder implements ConfigEncoder {
+public class HttpRequestFormEncoder implements ChannelEncoder {
 
     private MessageEncoder formEncoder;
 

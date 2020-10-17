@@ -37,6 +37,8 @@ import org.kaazing.k3po.lang.internal.ast.AstOpenedNode;
 import org.kaazing.k3po.lang.internal.ast.AstPropertyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadAbortNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadAbortedNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadAdviseNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadAdvisedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
@@ -51,6 +53,8 @@ import org.kaazing.k3po.lang.internal.ast.AstUnbindNode;
 import org.kaazing.k3po.lang.internal.ast.AstUnboundNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteAbortNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteAbortedNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAdviseNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAdvisedNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
@@ -382,6 +386,30 @@ public class InjectFlushVisitor implements AstNode.Visitor<AstScriptNode, State>
             state.writeState = ReadWriteState.CONFIG_ONLY;
             break;
         }
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstReadAdviseNode node, State state) {
+        state.streamables.add(node);
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstWriteAdviseNode node, State state) {
+        state.streamables.add(node);
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstReadAdvisedNode node, State state) {
+        state.streamables.add(node);
+        return null;
+    }
+
+    @Override
+    public AstScriptNode visit(AstWriteAdvisedNode node, State state) {
+        state.streamables.add(node);
         return null;
     }
 

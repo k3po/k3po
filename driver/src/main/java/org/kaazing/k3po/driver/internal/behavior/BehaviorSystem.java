@@ -25,8 +25,12 @@ import java.util.function.Function;
 import org.jboss.netty.channel.ChannelHandler;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageDecoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageEncoder;
+import org.kaazing.k3po.lang.internal.ast.AstReadAdviseNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadAdvisedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadOptionNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAdviseNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAdvisedNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteOptionNode;
 import org.kaazing.k3po.lang.internal.ast.matcher.AstValueMatcher;
@@ -40,6 +44,10 @@ public final class BehaviorSystem {
     private final Map<TypeInfo<?>, WriteOptionFactory> writeOptions;
     private final Map<StructuredTypeInfo, ReadConfigFactory> readConfigs;
     private final Map<StructuredTypeInfo, WriteConfigFactory> writeConfigs;
+    private final Map<StructuredTypeInfo, ReadAdviseFactory> readAdvises;
+    private final Map<StructuredTypeInfo, WriteAdviseFactory> writeAdvises;
+    private final Map<StructuredTypeInfo, ReadAdvisedFactory> readAdviseds;
+    private final Map<StructuredTypeInfo, WriteAdvisedFactory> writeAdviseds;
 
     private BehaviorSystem(Iterable<BehaviorSystemSpi> behaviorSystems) {
 
@@ -47,6 +55,10 @@ public final class BehaviorSystem {
         Map<TypeInfo<?>, WriteOptionFactory> writeOptions = new IdentityHashMap<>();
         Map<StructuredTypeInfo, ReadConfigFactory> readConfigs = new IdentityHashMap<>();
         Map<StructuredTypeInfo, WriteConfigFactory> writeConfigs = new IdentityHashMap<>();
+        Map<StructuredTypeInfo, ReadAdviseFactory> readAdvises = new IdentityHashMap<>();
+        Map<StructuredTypeInfo, WriteAdviseFactory> writeAdvises = new IdentityHashMap<>();
+        Map<StructuredTypeInfo, ReadAdvisedFactory> readAdviseds = new IdentityHashMap<>();
+        Map<StructuredTypeInfo, WriteAdvisedFactory> writeAdviseds = new IdentityHashMap<>();
 
         for (BehaviorSystemSpi behaviorSystem : behaviorSystems) {
             for (TypeInfo<?> optionType : behaviorSystem.getReadOptionTypes()) {
@@ -62,12 +74,25 @@ public final class BehaviorSystem {
             for (StructuredTypeInfo configType : behaviorSystem.getWriteConfigTypes()) {
                 writeConfigs.put(configType, behaviorSystem.writeConfigFactory(configType));
             }
+
+            for (StructuredTypeInfo advisoryType : behaviorSystem.getReadAdvisoryTypes()) {
+                readAdvises.put(advisoryType, behaviorSystem.readAdviseFactory(advisoryType));
+                writeAdviseds.put(advisoryType, behaviorSystem.writeAdvisedFactory(advisoryType));
+            }
+            for (StructuredTypeInfo advisoryType : behaviorSystem.getWriteAdvisoryTypes()) {
+                writeAdvises.put(advisoryType, behaviorSystem.writeAdviseFactory(advisoryType));
+                readAdviseds.put(advisoryType, behaviorSystem.readAdvisedFactory(advisoryType));
+            }
         }
 
         this.readOptions = unmodifiableMap(readOptions);
         this.writeOptions = unmodifiableMap(writeOptions);
         this.readConfigs = unmodifiableMap(readConfigs);
         this.writeConfigs = unmodifiableMap(writeConfigs);
+        this.readAdvises = unmodifiableMap(readAdvises);
+        this.writeAdvises = unmodifiableMap(writeAdvises);
+        this.readAdviseds = unmodifiableMap(readAdviseds);
+        this.writeAdviseds = unmodifiableMap(writeAdviseds);
     }
 
     public ChannelHandler newReadOptionHandler(
@@ -102,6 +127,42 @@ public final class BehaviorSystem {
         StructuredTypeInfo type = node.getType();
         WriteConfigFactory factory = writeConfigs.getOrDefault(type, (n, f) -> null);
         return factory.newHandler(node, encoderFactory);
+    }
+
+    public ChannelHandler newReadAdviseHandler(
+        AstReadAdviseNode node,
+        Function<AstValue<?>, MessageEncoder> encoderFactory) {
+
+        StructuredTypeInfo type = node.getType();
+        ReadAdviseFactory factory = readAdvises.getOrDefault(type, (n, f) -> null);
+        return factory.newHandler(node, encoderFactory);
+    }
+
+    public ChannelHandler newWriteAdviseHandler(
+        AstWriteAdviseNode node,
+        Function<AstValue<?>, MessageEncoder> encoderFactory) {
+
+        StructuredTypeInfo type = node.getType();
+        WriteAdviseFactory factory = writeAdvises.getOrDefault(type, (n, f) -> null);
+        return factory.newHandler(node, encoderFactory);
+    }
+
+    public ChannelHandler newReadAdvisedHandler(
+        AstReadAdvisedNode node,
+        Function<AstValueMatcher, MessageDecoder> decoderFactory) {
+
+        StructuredTypeInfo type = node.getType();
+        ReadAdvisedFactory factory = readAdviseds.getOrDefault(type, (n, f) -> null);
+        return factory.newHandler(node, decoderFactory);
+    }
+
+    public ChannelHandler newWriteAdvisedHandler(
+        AstWriteAdvisedNode node,
+        Function<AstValueMatcher, MessageDecoder> decoderFactory) {
+
+        StructuredTypeInfo type = node.getType();
+        WriteAdvisedFactory factory = writeAdviseds.getOrDefault(type, (n, f) -> null);
+        return factory.newHandler(node, decoderFactory);
     }
 
     public static final BehaviorSystem newInstance() {

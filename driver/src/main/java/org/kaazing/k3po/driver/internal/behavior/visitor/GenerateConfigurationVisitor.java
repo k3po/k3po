@@ -119,6 +119,8 @@ import org.kaazing.k3po.lang.internal.ast.AstOpenedNode;
 import org.kaazing.k3po.lang.internal.ast.AstPropertyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadAbortNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadAbortedNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadAdviseNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadAdvisedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadClosedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
@@ -133,6 +135,8 @@ import org.kaazing.k3po.lang.internal.ast.AstUnbindNode;
 import org.kaazing.k3po.lang.internal.ast.AstUnboundNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteAbortNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteAbortedNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAdviseNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAdvisedNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteCloseNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
@@ -983,6 +987,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
             throw new IllegalStateException("Unrecognized configuration type: " + node.getType());
         }
     }
+
     @Override
     public Configuration visit(AstWriteConfigNode node, State state) {
 
@@ -997,6 +1002,74 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         }
         else {
             throw new IllegalStateException("Unrecognized configuration type: " + node.getType());
+        }
+    }
+
+    @Override
+    public Configuration visit(AstReadAdviseNode node, State state) {
+
+        Function<AstValue<?>, MessageEncoder> encoderFactory = v -> v.accept(new GenerateWriteEncoderVisitor(), null);
+        ChannelHandler handler = behaviorSystem.newReadAdviseHandler(node, encoderFactory);
+
+        if (handler != null) {
+            Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+            String handlerName = String.format("readAdvise#%d (%s)", pipelineAsMap.size() + 1, node.getType().getName());
+            pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
+        else {
+            throw new IllegalStateException("Unrecognized advisory type: " + node.getType());
+        }
+    }
+
+    @Override
+    public Configuration visit(AstWriteAdviseNode node, State state) {
+
+        Function<AstValue<?>, MessageEncoder> encoderFactory = v -> v.accept(new GenerateWriteEncoderVisitor(), null);
+        ChannelHandler handler = behaviorSystem.newWriteAdviseHandler(node, encoderFactory);
+
+        if (handler != null) {
+            Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+            String handlerName = String.format("writeAdvise#%d (%s)", pipelineAsMap.size() + 1, node.getType().getName());
+            pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
+        else {
+            throw new IllegalStateException("Unrecognized advisory type: " + node.getType());
+        }
+    }
+
+    @Override
+    public Configuration visit(AstReadAdvisedNode node, State state) {
+
+        Function<AstValueMatcher, MessageDecoder> decoderFactory = m -> m.accept(new GenerateReadDecoderVisitor(), state.configuration);
+        ChannelHandler handler = behaviorSystem.newReadAdvisedHandler(node, decoderFactory);
+
+        if (handler != null) {
+            Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+            String handlerName = String.format("readAdvised#%d (%s)", pipelineAsMap.size() + 1, node.getType().getName());
+            pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
+        else {
+            throw new IllegalStateException("Unrecognized advisory type: " + node.getType());
+        }
+    }
+
+    @Override
+    public Configuration visit(AstWriteAdvisedNode node, State state) {
+
+        Function<AstValueMatcher, MessageDecoder> decoderFactory = m -> m.accept(new GenerateReadDecoderVisitor(), state.configuration);
+        ChannelHandler handler = behaviorSystem.newWriteAdvisedHandler(node, decoderFactory);
+
+        if (handler != null) {
+            Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;
+            String handlerName = String.format("writeAdvised#%d (%s)", pipelineAsMap.size() + 1, node.getType().getName());
+            pipelineAsMap.put(handlerName, handler);
+            return state.configuration;
+        }
+        else {
+            throw new IllegalStateException("Unrecognized advisory type: " + node.getType());
         }
     }
 

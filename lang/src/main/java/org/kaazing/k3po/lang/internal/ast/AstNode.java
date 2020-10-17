@@ -65,5 +65,10 @@ public abstract class AstNode extends AstRegion {
 
         R visit(AstReadOptionNode node, P parameter);
         R visit(AstWriteOptionNode node, P parameter);
+
+        R visit(AstReadAdviseNode node, P parameter);
+        R visit(AstWriteAdviseNode node, P parameter);
+        R visit(AstReadAdvisedNode node, P parameter);
+        R visit(AstWriteAdvisedNode node, P parameter);
     }
 }

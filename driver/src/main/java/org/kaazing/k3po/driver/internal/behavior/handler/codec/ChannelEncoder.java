@@ -17,9 +17,8 @@ package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 
 import org.jboss.netty.channel.Channel;
 
+public interface ChannelEncoder {
 
-public interface ConfigDecoder {
-
-    boolean decode(Channel channel) throws Exception;
+    void encode(Channel channel) throws Exception;
 
 }

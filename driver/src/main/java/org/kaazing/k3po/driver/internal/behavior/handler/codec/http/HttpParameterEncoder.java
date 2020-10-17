@@ -24,12 +24,12 @@ import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBufferFactory;
 import org.jboss.netty.channel.Channel;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigEncoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.ChannelEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageEncoder;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChannelConfig;
 import org.kaazing.k3po.driver.internal.netty.channel.ChannelAddress;
 
-public class HttpParameterEncoder implements ConfigEncoder {
+public class HttpParameterEncoder implements ChannelEncoder {
 
     private final MessageEncoder nameEncoder;
     private final List<MessageEncoder> valueEncoders;

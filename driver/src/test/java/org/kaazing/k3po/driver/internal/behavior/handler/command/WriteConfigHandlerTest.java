@@ -34,7 +34,7 @@ import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.kaazing.k3po.driver.internal.behavior.handler.ExecutionHandler;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigEncoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.ChannelEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.prepare.PreparationEvent;
 import org.kaazing.k3po.driver.internal.jmock.Expectations;
 import org.kaazing.k3po.driver.internal.jmock.Mockery;
@@ -49,7 +49,7 @@ public class WriteConfigHandlerTest {
     private ChannelFactory channelFactory;
     private WriteConfigHandler handler;
     private ExecutionHandler execution;
-    private ConfigEncoder encoder;
+    private ChannelEncoder encoder;
 
     @Before
     public void setUp() throws Exception {
@@ -64,7 +64,7 @@ public class WriteConfigHandlerTest {
 
         execution = new ExecutionHandler();
 
-        encoder = context.mock(ConfigEncoder.class);
+        encoder = context.mock(ChannelEncoder.class);
 
         handler = new WriteConfigHandler(encoder);
 

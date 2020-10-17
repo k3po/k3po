@@ -13,21 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kaazing.k3po.driver.internal.behavior.handler.codec;
+package org.kaazing.k3po.driver.internal.netty.channel;
 
-import org.kaazing.k3po.lang.internal.RegionInfo;
+import org.jboss.netty.channel.ChannelEvent;
 
+public interface ReadAdviseEvent extends ChannelEvent {
 
-public abstract class AbstractConfigDecoder implements ChannelDecoder {
-
-    private RegionInfo regionInfo;
-
-    public RegionInfo getRegionInfo() {
-        return regionInfo;
-    }
-
-    public void setRegionInfo(RegionInfo regionInfo) {
-        this.regionInfo = regionInfo;
-    }
-
+    Object getValue();
 }

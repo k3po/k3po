@@ -17,6 +17,7 @@ package org.kaazing.k3po.driver.internal.types;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 
@@ -49,6 +50,8 @@ public final class HttpTypeSystem implements TypeSystemSpi
     private final Set<TypeInfo<?>> writeOptions;
     private final Set<StructuredTypeInfo> readConfigs;
     private final Set<StructuredTypeInfo> writeConfigs;
+    private final Set<StructuredTypeInfo> readAdvisories;
+    private final Set<StructuredTypeInfo> writeAdvisories;
 
     public HttpTypeSystem()
     {
@@ -77,6 +80,9 @@ public final class HttpTypeSystem implements TypeSystemSpi
         writeConfigs.add(CONFIG_HOST);
         writeConfigs.add(CONFIG_CONTENT_LENGTH);
         this.writeConfigs = writeConfigs;
+
+        this.readAdvisories = emptySet();
+        this.writeAdvisories = emptySet();
     }
 
     @Override
@@ -119,5 +125,17 @@ public final class HttpTypeSystem implements TypeSystemSpi
     public Set<StructuredTypeInfo> writeConfigs()
     {
         return writeConfigs;
+    }
+
+    @Override
+    public Set<StructuredTypeInfo> readAdvisories()
+    {
+        return readAdvisories;
+    }
+
+    @Override
+    public Set<StructuredTypeInfo> writeAdvisories()
+    {
+        return writeAdvisories;
     }
 }
