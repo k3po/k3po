@@ -21,11 +21,11 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 import org.jboss.netty.buffer.ChannelBufferFactory;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigEncoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.ChannelEncoder;
 import org.kaazing.k3po.driver.internal.behavior.handler.codec.MessageEncoder;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChannelConfig;
 
-public class HttpStatusEncoder implements ConfigEncoder {
+public class HttpStatusEncoder implements ChannelEncoder {
 
     private final MessageEncoder codeEncoder;
     private final MessageEncoder reasonEncoder;

@@ -34,6 +34,7 @@ public final class TestTypeSystem implements TypeSystemSpi
     public static final TypeInfo<Integer> OPTION_NUMBER = new TypeInfo<>("number", int.class);
     public static final TypeInfo<Object> OPTION_EXPRESSION = new TypeInfo<>("expression", Object.class);
     public static final StructuredTypeInfo CONFIG_CONFIG = new StructuredTypeInfo("test", "config", emptyList(), Integer.MAX_VALUE);
+    public static final StructuredTypeInfo ADVISORY_ADVICE = new StructuredTypeInfo("test", "advice", emptyList(), Integer.MAX_VALUE);
 
     private final Set<TypeInfo<?>> acceptOptions;
     private final Set<TypeInfo<?>> connectOptions;
@@ -41,6 +42,8 @@ public final class TestTypeSystem implements TypeSystemSpi
     private final Set<TypeInfo<?>> writeOptions;
     private final Set<StructuredTypeInfo> readConfigs;
     private final Set<StructuredTypeInfo> writeConfigs;
+    private final Set<StructuredTypeInfo> readAdvisories;
+    private final Set<StructuredTypeInfo> writeAdvisories;
 
     public TestTypeSystem()
     {
@@ -65,6 +68,8 @@ public final class TestTypeSystem implements TypeSystemSpi
         this.writeOptions = singleton(optionType);
         this.readConfigs = singleton(CONFIG_CONFIG);
         this.writeConfigs = singleton(CONFIG_CONFIG);
+        this.readAdvisories = singleton(ADVISORY_ADVICE);
+        this.writeAdvisories = singleton(ADVISORY_ADVICE);
     }
 
     @Override
@@ -107,5 +112,17 @@ public final class TestTypeSystem implements TypeSystemSpi
     public Set<StructuredTypeInfo> writeConfigs()
     {
         return writeConfigs;
+    }
+
+    @Override
+    public Set<StructuredTypeInfo> readAdvisories()
+    {
+        return readAdvisories;
+    }
+
+    @Override
+    public Set<StructuredTypeInfo> writeAdvisories()
+    {
+        return writeAdvisories;
     }
 }

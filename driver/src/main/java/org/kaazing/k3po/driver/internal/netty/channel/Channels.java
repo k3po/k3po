@@ -183,7 +183,6 @@ public final class Channels {
         return future;
     }
 
-
     public static void abortOutput(ChannelHandlerContext ctx, ChannelFuture future) {
         ctx.sendDownstream(new DownstreamWriteAbortEvent(ctx.getChannel(), future));
     }
@@ -199,13 +198,42 @@ public final class Channels {
         return future;
     }
 
-
     public static void abortInput(ChannelHandlerContext ctx, ChannelFuture future) {
         ctx.sendDownstream(new DownstreamReadAbortEvent(ctx.getChannel(), future));
     }
 
     public static void fireInputAborted(Channel channel) {
         channel.getPipeline().sendUpstream(new UpstreamReadAbortEvent(channel));
+    }
+
+    public static ChannelFuture adviseOutput(Channel channel, Object value) {
+        ChannelFuture future = future(channel);
+        channel.getPipeline().sendDownstream(
+                new DownstreamWriteAdviseEvent(channel, future, value));
+        return future;
+    }
+
+    public static void adviseOutput(ChannelHandlerContext ctx, ChannelFuture future, Object value) {
+        ctx.sendDownstream(new DownstreamWriteAdviseEvent(ctx.getChannel(), future, value));
+    }
+
+    public static void fireOutputAdvised(Channel channel, Object value) {
+        channel.getPipeline().sendUpstream(new UpstreamWriteAdviseEvent(channel, value));
+    }
+
+    public static ChannelFuture adviseInput(Channel channel, Object value) {
+        ChannelFuture future = future(channel);
+        channel.getPipeline().sendDownstream(
+                new DownstreamReadAdviseEvent(channel, future, value));
+        return future;
+    }
+
+    public static void adviseInput(ChannelHandlerContext ctx, ChannelFuture future, Object value) {
+        ctx.sendDownstream(new DownstreamReadAdviseEvent(ctx.getChannel(), future, value));
+    }
+
+    public static void fireInputAdvised(Channel channel, Object value) {
+        channel.getPipeline().sendUpstream(new UpstreamReadAdviseEvent(channel, value));
     }
 
     public static ChannelFuture shutdownOutputOrClose(Channel channel) {

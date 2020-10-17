@@ -16,10 +16,10 @@
 package org.kaazing.k3po.driver.internal.behavior.handler.codec.http;
 
 import org.jboss.netty.channel.Channel;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigEncoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.ChannelEncoder;
 import org.kaazing.k3po.driver.internal.netty.bootstrap.http.HttpChannelConfig;
 
-public class HttpContentLengthEncoder implements ConfigEncoder {
+public class HttpContentLengthEncoder implements ChannelEncoder {
 
     private final int maximumBufferedContentLength;
 

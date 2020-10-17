@@ -38,6 +38,8 @@ public final class FileTypeSystem implements TypeSystemSpi
     private final Set<TypeInfo<?>> writeOptions;
     private final Set<StructuredTypeInfo> readConfigs;
     private final Set<StructuredTypeInfo> writeConfigs;
+    private final Set<StructuredTypeInfo> readAdvisories;
+    private final Set<StructuredTypeInfo> writeAdvisories;
 
     public FileTypeSystem()
     {
@@ -55,6 +57,8 @@ public final class FileTypeSystem implements TypeSystemSpi
         this.writeOptions = singleton(OPTION_OFFSET);
         this.readConfigs = emptySet();
         this.writeConfigs = emptySet();
+        this.readAdvisories = emptySet();
+        this.writeAdvisories = emptySet();
     }
 
     @Override
@@ -97,5 +101,17 @@ public final class FileTypeSystem implements TypeSystemSpi
     public Set<StructuredTypeInfo> writeConfigs()
     {
         return writeConfigs;
+    }
+
+    @Override
+    public Set<StructuredTypeInfo> readAdvisories()
+    {
+        return readAdvisories;
+    }
+
+    @Override
+    public Set<StructuredTypeInfo> writeAdvisories()
+    {
+        return writeAdvisories;
     }
 }

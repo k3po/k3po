@@ -15,6 +15,7 @@
  */
 package org.kaazing.k3po.driver.internal.behavior;
 
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.requireNonNull;
@@ -77,6 +78,11 @@ public class HttpBehaviorSystem implements BehaviorSystemSpi {
     private final Map<StructuredTypeInfo, ReadConfigFactory> readConfigFactories;
     private final Map<StructuredTypeInfo, WriteConfigFactory> writeConfigFactories;
 
+    private final Map<StructuredTypeInfo, ReadAdviseFactory> readAdviseFactories;
+    private final Map<StructuredTypeInfo, WriteAdviseFactory> writeAdviseFactories;
+    private final Map<StructuredTypeInfo, ReadAdvisedFactory> readAdvisedFactories;
+    private final Map<StructuredTypeInfo, WriteAdvisedFactory> writeAdvisedFactories;
+
     public HttpBehaviorSystem()
     {
         this.readOptionFactories = singletonMap(OPTION_CHUNK_EXT, HttpBehaviorSystem::newReadHttpChunkExtHandler);
@@ -102,6 +108,11 @@ public class HttpBehaviorSystem implements BehaviorSystemSpi {
         writeConfigFactories.put(CONFIG_STATUS, HttpBehaviorSystem::newWriteHttpStatusHandler);
         writeConfigFactories.put(CONFIG_TRAILER, HttpBehaviorSystem::newWriteHttpTrailerHandler);
         this.writeConfigFactories = unmodifiableMap(writeConfigFactories);
+
+        this.readAdviseFactories = emptyMap();
+        this.writeAdviseFactories = emptyMap();
+        this.readAdvisedFactories = emptyMap();
+        this.writeAdvisedFactories = emptyMap();
     }
 
     @Override
@@ -128,6 +139,46 @@ public class HttpBehaviorSystem implements BehaviorSystemSpi {
         StructuredTypeInfo configType)
     {
         return writeConfigFactories.get(configType);
+    }
+
+    @Override
+    public Set<StructuredTypeInfo> getReadAdvisoryTypes()
+    {
+        return readAdviseFactories.keySet();
+    }
+
+    @Override
+    public Set<StructuredTypeInfo> getWriteAdvisoryTypes()
+    {
+        return writeAdviseFactories.keySet();
+    }
+
+    @Override
+    public ReadAdviseFactory readAdviseFactory(
+        StructuredTypeInfo advisoryType)
+    {
+        return readAdviseFactories.get(advisoryType);
+    }
+
+    @Override
+    public ReadAdvisedFactory readAdvisedFactory(
+        StructuredTypeInfo advisoryType)
+    {
+        return readAdvisedFactories.get(advisoryType);
+    }
+
+    @Override
+    public WriteAdviseFactory writeAdviseFactory(
+        StructuredTypeInfo advisoryType)
+    {
+        return writeAdviseFactories.get(advisoryType);
+    }
+
+    @Override
+    public WriteAdvisedFactory writeAdvisedFactory(
+        StructuredTypeInfo advisoryType)
+    {
+        return writeAdvisedFactories.get(advisoryType);
     }
 
     @Override

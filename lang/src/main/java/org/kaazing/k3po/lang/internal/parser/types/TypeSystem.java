@@ -34,6 +34,8 @@ public final class TypeSystem {
     private final Map<String, TypeInfo<?>> writeOptions;
     private final Map<String, StructuredTypeInfo> readConfigs;
     private final Map<String, StructuredTypeInfo> writeConfigs;
+    private final Map<String, StructuredTypeInfo> readAdvisories;
+    private final Map<String, StructuredTypeInfo> writeAdvisories;
 
     private TypeSystem(Iterable<TypeSystemSpi> typeSystems) {
 
@@ -43,6 +45,8 @@ public final class TypeSystem {
         Map<String, TypeInfo<?>> writeOptions = new TreeMap<>();
         Map<String, StructuredTypeInfo> readConfigs = new TreeMap<>();
         Map<String, StructuredTypeInfo> writeConfigs = new TreeMap<>();
+        Map<String, StructuredTypeInfo> readAdvisories = new TreeMap<>();
+        Map<String, StructuredTypeInfo> writeAdvisories = new TreeMap<>();
 
         for (TypeSystemSpi typeSystem : typeSystems) {
             Function<TypeInfo<?>, String> namer = t -> String.format("%s:%s", typeSystem.getName(), t.getName());
@@ -54,6 +58,8 @@ public final class TypeSystem {
             populate(namer, writeOptions, typeSystem.writeOptions());
             populate(structNamer, readConfigs, typeSystem.readConfigs());
             populate(structNamer, writeConfigs, typeSystem.writeConfigs());
+            populate(structNamer, readAdvisories, typeSystem.readAdvisories());
+            populate(structNamer, writeAdvisories, typeSystem.writeAdvisories());
         }
 
         Function<TypeInfo<?>, String> defaultNamer = t -> t.getName();
@@ -65,6 +71,8 @@ public final class TypeSystem {
         populate(defaultNamer, writeOptions, defaultTypeSystem.writeOptions());
         populate(defaultStructNamer, readConfigs, defaultTypeSystem.readConfigs());
         populate(defaultStructNamer, writeConfigs, defaultTypeSystem.writeConfigs());
+        populate(defaultStructNamer, readAdvisories, defaultTypeSystem.readAdvisories());
+        populate(defaultStructNamer, writeAdvisories, defaultTypeSystem.writeAdvisories());
 
         this.acceptOptions = acceptOptions;
         this.connectOptions = connectOptions;
@@ -72,6 +80,8 @@ public final class TypeSystem {
         this.writeOptions = writeOptions;
         this.readConfigs = readConfigs;
         this.writeConfigs = writeConfigs;
+        this.readAdvisories = readAdvisories;
+        this.writeAdvisories = writeAdvisories;
     }
 
     public TypeInfo<?> acceptOption(String optionName) {
@@ -98,6 +108,14 @@ public final class TypeSystem {
         return verifyConfig(writeConfigs.get(configName), configName);
     }
 
+    public StructuredTypeInfo readAdvisory(String advisoryName) {
+        return verifyAdvisory(readAdvisories.get(advisoryName), advisoryName);
+    }
+
+    public StructuredTypeInfo writeAdvisory(String advisoryName) {
+        return verifyAdvisory(writeAdvisories.get(advisoryName), advisoryName);
+    }
+
     private static <T> T verifyOption(
         T value,
         String optionName)
@@ -114,6 +132,16 @@ public final class TypeSystem {
     {
         if (value == null) {
             throw new IllegalArgumentException("Unrecognized config: " + optionName);
+        }
+        return value;
+    }
+
+    private static <T> T verifyAdvisory(
+        T value,
+        String advisoryName)
+    {
+        if (value == null) {
+            throw new IllegalArgumentException("Unrecognized advisory: " + advisoryName);
         }
         return value;
     }

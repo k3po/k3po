@@ -34,6 +34,8 @@ public final class UdpTypeSystem implements TypeSystemSpi
     private final Set<TypeInfo<?>> writeOptions;
     private final Set<StructuredTypeInfo> readConfigs;
     private final Set<StructuredTypeInfo> writeConfigs;
+    private final Set<StructuredTypeInfo> readAdvisories;
+    private final Set<StructuredTypeInfo> writeAdvisories;
 
     public UdpTypeSystem()
     {
@@ -43,6 +45,8 @@ public final class UdpTypeSystem implements TypeSystemSpi
         this.writeOptions = emptySet();
         this.readConfigs = emptySet();
         this.writeConfigs = emptySet();
+        this.readAdvisories = emptySet();
+        this.writeAdvisories = emptySet();
     }
 
     @Override
@@ -85,5 +89,17 @@ public final class UdpTypeSystem implements TypeSystemSpi
     public Set<StructuredTypeInfo> writeConfigs()
     {
         return writeConfigs;
+    }
+
+    @Override
+    public Set<StructuredTypeInfo> readAdvisories()
+    {
+        return readAdvisories;
+    }
+
+    @Override
+    public Set<StructuredTypeInfo> writeAdvisories()
+    {
+        return writeAdvisories;
     }
 }

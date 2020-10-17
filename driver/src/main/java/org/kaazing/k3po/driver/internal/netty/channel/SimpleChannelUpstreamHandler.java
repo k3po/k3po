@@ -38,6 +38,12 @@ public class SimpleChannelUpstreamHandler extends org.jboss.netty.channel.Simple
         else if (e instanceof WriteAbortEvent) {
             outputAborted(ctx, (WriteAbortEvent) e);
         }
+        else if (e instanceof ReadAdviseEvent) {
+            inputAdvised(ctx, (ReadAdviseEvent) e);
+        }
+        else if (e instanceof WriteAdviseEvent) {
+            outputAdvised(ctx, (WriteAdviseEvent) e);
+        }
         else {
             super.handleUpstream(ctx, e);
         }
@@ -60,6 +66,14 @@ public class SimpleChannelUpstreamHandler extends org.jboss.netty.channel.Simple
     }
 
     public void outputAborted(ChannelHandlerContext ctx, WriteAbortEvent e) {
+        ctx.sendUpstream(e);
+    }
+
+    public void inputAdvised(ChannelHandlerContext ctx, ReadAdviseEvent e) {
+        ctx.sendUpstream(e);
+    }
+
+    public void outputAdvised(ChannelHandlerContext ctx, WriteAdviseEvent e) {
         ctx.sendUpstream(e);
     }
 }

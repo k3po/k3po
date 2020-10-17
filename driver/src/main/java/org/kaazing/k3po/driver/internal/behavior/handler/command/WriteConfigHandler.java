@@ -23,17 +23,17 @@ import java.util.List;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.kaazing.k3po.driver.internal.behavior.handler.codec.ConfigEncoder;
+import org.kaazing.k3po.driver.internal.behavior.handler.codec.ChannelEncoder;
 
 public class WriteConfigHandler extends AbstractCommandHandler {
 
-    private final List<ConfigEncoder> encoders;
+    private final List<ChannelEncoder> encoders;
 
-    public WriteConfigHandler(ConfigEncoder encoder) {
+    public WriteConfigHandler(ChannelEncoder encoder) {
         this(singletonList(encoder));
     }
 
-    public WriteConfigHandler(List<ConfigEncoder> encoders) {
+    public WriteConfigHandler(List<ChannelEncoder> encoders) {
         requireNonNull(encoders, "encoders");
         if (encoders.size() == 0) {
             throw new IllegalArgumentException("must have at least one encoder");
@@ -45,7 +45,7 @@ public class WriteConfigHandler extends AbstractCommandHandler {
     protected void invokeCommand(ChannelHandlerContext ctx) throws Exception {
         try {
             Channel channel = ctx.getChannel();
-            for (ConfigEncoder encoder : encoders) {
+            for (ChannelEncoder encoder : encoders) {
                 encoder.encode(channel);
             }
             getHandlerFuture().setSuccess();

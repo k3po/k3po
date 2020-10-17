@@ -18,7 +18,7 @@ package org.kaazing.k3po.driver.internal.behavior.handler.codec;
 import org.kaazing.k3po.lang.internal.RegionInfo;
 
 
-public abstract class AbstractConfigDecoder implements ConfigDecoder {
+public abstract class AbstractConfigDecoder implements ChannelDecoder {
 
     private RegionInfo regionInfo;
 

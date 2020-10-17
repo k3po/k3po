@@ -32,4 +32,8 @@ public interface TypeSystemSpi {
     Set<StructuredTypeInfo> readConfigs();
 
     Set<StructuredTypeInfo> writeConfigs();
+
+    Set<StructuredTypeInfo> readAdvisories();
+
+    Set<StructuredTypeInfo> writeAdvisories();
 }

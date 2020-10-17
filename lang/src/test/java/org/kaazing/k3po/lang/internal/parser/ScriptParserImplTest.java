@@ -32,6 +32,8 @@ import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.PROPERTY
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_ABORT;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_ABORTED;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_ADVISE;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_ADVISED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_AWAIT;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_CONFIG;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.READ_NOTIFY;
@@ -42,11 +44,14 @@ import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.VARIABLE
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_ABORT;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_ABORTED;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_ADVISE;
+import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_ADVISED;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_AWAIT;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_CONFIG;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_NOTIFY;
 import static org.kaazing.k3po.lang.internal.parser.ScriptParseStrategy.WRITE_OPTION;
 import static org.kaazing.k3po.lang.internal.parser.types.DefaultTypeSystem.OPTION_MASK;
+import static org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem.ADVISORY_ADVICE;
 import static org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem.CONFIG_CONFIG;
 import static org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem.OPTION_BYTES;
 import static org.kaazing.k3po.lang.internal.parser.types.TestTypeSystem.OPTION_EXPRESSION;
@@ -74,6 +79,8 @@ import org.kaazing.k3po.lang.internal.ast.AstConnectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstPropertyNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadAbortNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadAbortedNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadAdviseNode;
+import org.kaazing.k3po.lang.internal.ast.AstReadAdvisedNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstReadNotifyNode;
@@ -83,6 +90,8 @@ import org.kaazing.k3po.lang.internal.ast.AstRejectedNode;
 import org.kaazing.k3po.lang.internal.ast.AstScriptNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteAbortNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteAbortedNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAdviseNode;
+import org.kaazing.k3po.lang.internal.ast.AstWriteAdvisedNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteAwaitNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteConfigNode;
 import org.kaazing.k3po.lang.internal.ast.AstWriteNotifyNode;
@@ -98,6 +107,8 @@ import org.kaazing.k3po.lang.internal.ast.builder.AstConnectedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstPropertyNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadAbortNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadAbortedNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstReadAdviseNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstReadAdvisedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadAwaitNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadConfigNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstReadNodeBuilder;
@@ -107,6 +118,8 @@ import org.kaazing.k3po.lang.internal.ast.builder.AstRejectedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstScriptNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteAbortNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteAbortedNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstWriteAdviseNodeBuilder;
+import org.kaazing.k3po.lang.internal.ast.builder.AstWriteAdvisedNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteAwaitNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteConfigNodeBuilder;
 import org.kaazing.k3po.lang.internal.ast.builder.AstWriteNodeBuilder;
@@ -2123,6 +2136,112 @@ public class ScriptParserImplTest {
                 .addValue("configName")
                 .addValue(factory.createValueExpression(context, "${'value'}", Object.class),
                         parser.getExpressionContext())
+                .done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseReadAdvise() throws Exception {
+
+        String scriptFragment = "read advise test:advice [0x01 0x02 0x03 0x04]";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadAdviseNode actual = parser.parseWithStrategy(scriptFragment, READ_ADVISE);
+
+        AstReadAdviseNode expected = new AstReadAdviseNodeBuilder()
+                .setType(ADVISORY_ADVICE)
+                .addValue(new byte[]{0x01, 0x02, 0x03, 0x04})
+                .done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseReadAdviseStringExpressionParameter() throws Exception {
+
+        String scriptFragment = "read advise test:advice ${'value'}";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        ExpressionFactory factory = parser.getExpressionFactory();
+        ExpressionContext context = parser.getExpressionContext();
+
+        AstReadAdviseNode actual = parser.parseWithStrategy(scriptFragment, READ_ADVISE);
+
+        AstReadAdviseNode expected = new AstReadAdviseNodeBuilder()
+                .setType(ADVISORY_ADVICE)
+                .addValue(factory.createValueExpression(context, "${'value'}", Object.class),
+                        parser.getExpressionContext())
+                .done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseWriteAdvise() throws Exception {
+
+        String scriptFragment = "write advise test:advice [0x01 0x02 0x03 0x04]";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteAdviseNode actual = parser.parseWithStrategy(scriptFragment, WRITE_ADVISE);
+
+        AstWriteAdviseNode expected = new AstWriteAdviseNodeBuilder()
+                .setType(ADVISORY_ADVICE)
+                .addValue(new byte[]{0x01, 0x02, 0x03, 0x04})
+                .done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseWriteAdviseStringExpressionParameter() throws Exception {
+
+        String scriptFragment = "write advise test:advice ${'value'}";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        ExpressionFactory factory = parser.getExpressionFactory();
+        ExpressionContext context = parser.getExpressionContext();
+
+        AstWriteAdviseNode actual = parser.parseWithStrategy(scriptFragment, WRITE_ADVISE);
+
+        AstWriteAdviseNode expected = new AstWriteAdviseNodeBuilder()
+                .setType(ADVISORY_ADVICE)
+                .addValue(factory.createValueExpression(context, "${'value'}", Object.class),
+                        parser.getExpressionContext())
+                .done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseReadAdvised() throws Exception {
+
+        String scriptFragment = "read advised test:advice \"value1\" \"value2\"";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstReadAdvisedNode actual = parser.parseWithStrategy(scriptFragment, READ_ADVISED);
+
+        AstReadAdvisedNode expected = new AstReadAdvisedNodeBuilder()
+                .setType(ADVISORY_ADVICE)
+                .addMatcherExactText("value1")
+                .addMatcherExactText("value2")
+                .done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldParseWriteAdvised() throws Exception {
+
+        String scriptFragment = "write advised test:advice \"value1\" \"value2\"";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstWriteAdvisedNode actual = parser.parseWithStrategy(scriptFragment, WRITE_ADVISED);
+
+        AstWriteAdvisedNode expected = new AstWriteAdvisedNodeBuilder()
+                .setType(ADVISORY_ADVICE)
+                .addMatcherExactText("value1")
+                .addMatcherExactText("value2")
                 .done();
 
         assertEquals(expected, actual);
