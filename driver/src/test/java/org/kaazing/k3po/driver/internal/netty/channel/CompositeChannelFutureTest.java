@@ -67,7 +67,7 @@ public class CompositeChannelFutureTest {
     }
 
     @Test
-    public void shouldBeSucceededAfterConstructionWithKidsSucceededAndCancelled() throws Exception {
+    public void shouldBeFailedAfterConstructionWithOneKidSucceededAndOneKidCancelled() throws Exception {
         final ChannelFuture future1 = context.mock(ChannelFuture.class, "future1");
         final ChannelFuture future2 = context.mock(ChannelFuture.class, "future2");
         Collection<ChannelFuture> futures = Arrays.asList(future1, future2);
@@ -80,13 +80,12 @@ public class CompositeChannelFutureTest {
                 will(callChannelFutureListener(future2));
                 oneOf(future1).isSuccess(); will(returnValue(true));
                 oneOf(future1).isCancelled(); will(returnValue(false));
-                oneOf(future2).isSuccess(); will(returnValue(false));
                 oneOf(future2).isCancelled(); will(returnValue(true));
             }
         });
         CompositeChannelFuture<ChannelFuture> composite = new CompositeChannelFuture<ChannelFuture>(channel, futures);
         assertTrue(composite.isDone());
-        assertTrue(composite.isSuccess());
+        assertFalse(composite.isSuccess());
         assertFalse(composite.isCancelled());
     }
 
@@ -105,7 +104,6 @@ public class CompositeChannelFutureTest {
                 will(callChannelFutureListener(future2));
                 oneOf(future1).isSuccess(); will(returnValue(true));
                 oneOf(future1).isCancelled(); will(returnValue(false));
-                oneOf(future1).getCause();
                 oneOf(future2).isSuccess(); will(returnValue(false));
                 oneOf(future2).isCancelled(); will(returnValue(false));
                 oneOf(future2).getCause(); will(returnValue(exception));
@@ -136,11 +134,6 @@ public class CompositeChannelFutureTest {
         context.assertIsSatisfied();
         composite.addListener(testListener);
 
-        context.checking(new Expectations() {
-            {
-                oneOf(future1).isDone(); will(returnValue(false));
-            }
-        });
         assertFalse(composite.isDone());
         context.assertIsSatisfied();
 
@@ -153,12 +146,6 @@ public class CompositeChannelFutureTest {
         listeners.get(0).operationComplete(future1);
         context.assertIsSatisfied();
 
-        context.checking(new Expectations() {
-            {
-                oneOf(future1).isDone(); will(returnValue(true));
-                oneOf(future2).isDone(); will(returnValue(false));
-            }
-        });
         assertFalse(composite.isDone());
         context.assertIsSatisfied();
 
@@ -195,11 +182,6 @@ public class CompositeChannelFutureTest {
         context.assertIsSatisfied();
         composite.addListener(testListener);
 
-        context.checking(new Expectations() {
-            {
-                oneOf(future1).isDone(); will(returnValue(false));
-            }
-        });
         assertFalse(composite.isDone());
 
         context.checking(new Expectations() {
@@ -210,12 +192,6 @@ public class CompositeChannelFutureTest {
             }
         });
         listeners.get(0).operationComplete(future1);
-        context.checking(new Expectations() {
-            {
-                oneOf(future1).isDone(); will(returnValue(true));
-                oneOf(future2).isDone(); will(returnValue(false));
-            }
-        });
         assertFalse(composite.isDone());
 
         context.checking(new Expectations() {
@@ -249,12 +225,6 @@ public class CompositeChannelFutureTest {
         });
         CompositeChannelFuture<ChannelFuture> composite = new CompositeChannelFuture<ChannelFuture>(channel, futures, true);
         composite.addListener(testListener);
-
-        context.checking(new Expectations() {
-            {
-                oneOf(future1).isDone(); will(returnValue(false));
-            }
-        });
         assertFalse(composite.isDone());
 
         context.checking(new Expectations() {
